@@ -10,7 +10,7 @@
   <groupId>org.silverpeas.core</groupId>
   <artifactId>silverpeas-core-api</artifactId>
   <packaging>jar</packaging>
-  <name>Api Core - ${project.version}</name>
+  <name>Silverpeas Core Api ${project.version}</name>
   <description>A module providing all the common API of Silverpeas.</description>
 
   <dependencies>

@@ -232,7 +232,7 @@
     <module>core-services</module>
     <module>web-core</module>
     <module>war-core</module>
-    <module>config-core</module>
+    <module>core-configuration</module>
   </modules>
 
   <properties>

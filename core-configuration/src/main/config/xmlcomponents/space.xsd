@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2016 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<xs:schema xmlns="http://silverpeas.org/xml/ns/space" attributeFormDefault="unqualified"
+           elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://silverpeas.org/xml/ns/space">
+  <xs:element name="SpaceTemplate" type="SpaceTemplateType">
+    <xs:annotation>
+      <xs:documentation>Copyright (C) 2000 - 2013 Silverpeas
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        As a special exception to the terms and conditions of version 3.0 of
+        the GPL, you may redistribute this Program in connection with Free/Libre
+        Open Source Software ("FLOSS") applications as described in Silverpeas's
+        FLOSS exception. You should have recieved a copy of the text describing
+        the FLOSS exception, and it is also available here:
+        "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program. If not, see &lt;http://www.gnu.org/licenses/>.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SpaceTemplateType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="template"/>
+      <xs:element type="xs:string" name="defaultName"/>
+      <xs:element type="xs:string" name="description"/>
+      <xs:element type="xs:boolean" name="readonly"/>
+      <xs:element name="components">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="ComponentType" name="component" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ComponentType">
+    <xs:sequence>
+      <xs:element name="type" type="xs:string"/>
+      <xs:element name="label" type="xs:string"/>
+      <xs:element name="description" type="xs:string"/>
+      <xs:element name="parameters" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ParameterType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

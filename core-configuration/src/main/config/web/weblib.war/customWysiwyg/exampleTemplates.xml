@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<Templates imagesBasePath="/weblib/customWysiwyg/img/">
+	<Template title="Mod�le 1" image="model1.gif">
+		<Description>2 colonnes de texte</Description>
+		<Html>
+			<![CDATA[
+        <div class="clear">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td valign="top" class="cellule_gauche">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.</td>
+              <td valign="top" class="cellule_droite">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
+        </div>
+			]]>
+		</Html>
+	</Template>
+
+	<Template title="Mod�le 2" image="model2.gif">
+		<Description>2 colonnes de texte et un bandeau</Description>
+		<Html>
+			<![CDATA[
+        <div class="clear">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td colspan="2" class="cellule_image_centrale"><img src="/weblib/customWysiwyg/img/image_defaut.jpg" width="713" height="161" /></td>
+            </tr>
+            <tr>
+              <td valign="top" class="cellule_gauche">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </td>
+              <td valign="top" class="cellule_droite">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
+        </div>
+			]]>
+		</Html>
+	</Template>
+
+
+	<Template title="Mod�le 3" image="model3.gif">
+		<Description>3 colonnes de texte</Description>
+		<Html>
+			<![CDATA[
+        <div class="clear">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td valign="top" class="cellule_gauche">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </td>
+              <td valign="top" class="cellule_centre">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </td>
+              <td valign="top" class="cellule_droite">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
+        </div>
+			]]>
+		</Html>
+	</Template>
+
+	<Template title="Mod�le 4" image="model4.gif">
+		<Description>2 colonnes de texte et 1 colonne image</Description>
+		<Html>
+			<![CDATA[
+        <div class="clear">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td valign="top" class="cellule_gauche">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </span></td>
+              <td valign="top" class="cellule_centre">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. </span></td>
+              <td valign="top" class="cellule_droite"><img src="/weblib/customWysiwyg/img/image_defaut_2.jpg" width="224" height="224" /></td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
+        </div>
+			]]>
+		</Html>
+	</Template>
+
+	<Template title="Mod�le 5" image="model5.gif">
+		<Description>2 colonnes de texte et Habillage</Description>
+		<Html>
+			<![CDATA[
+        <div class="clear">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td width="50%" valign="top" class="cellule_gauche"><img src="/weblib/customWysiwyg/img/image_defaut_2.jpg" width="224" height="224" class="image_habillage" />Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.<h2>Lorem ipsum dolor</h2> Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.<br />
+	           <h2>Lorem ipsum dolor</h2>
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.
+              <p>&nbsp;</p>
+              </span></td>
+              <td width="50%" valign="top" class="cellule_droite">
+              Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.<br />
+              Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.</td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
+        </div>
+			]]>
+		</Html>
+	</Template>
+
+	<Template title="Mod�le 6" image="model6.gif">
+		<Description>2 colonnes de texte et Habillage (Rubrique Patient)</Description>
+		<Html>
+			<![CDATA[
+        <div class="clear">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td width="50%" valign="top" class="cellule_gauche"><img src="/weblib/customWysiwyg/img/image_defaut_2.jpg" width="224" height="224" class="image_habillage" />Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.<h2>Lorem ipsum dolor</h2> Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.<br />
+	           <h2>Lorem ipsum dolor</h2>
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.
+              <p>&nbsp;</p>
+              </span></td>
+              <td width="50%" valign="top" class="cellule_droite">
+								<table cellspacing="1" cellpadding="1" border="0" style="width: 352px; height: 339px;">
+	                <tbody>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+	                </tbody>
+		            </table>
+              Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.<br />
+              Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.</td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
+        </div>
+			]]>
+		</Html>
+	</Template>
+
+
+	<Template title="Mod�le Service 2" image="service.gif">
+		<Description>Pathologies, nombre de lits, trombinoscope</Description>
+		<Html>
+			<![CDATA[
+		  <table width="100%" border="0" cellspacing="5" cellpadding="0">
+		    <tr>
+		      <td class="dottedline_rouge"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+		        <tr>
+		          <td width="13" height="37"><img src="/weblib/customWysiwyg/img/service/gab_2_fondTitreG.jpg" width="13" height="37" /></td>
+		          <td class="gab2_fondTitre">Chirurgie orthop�dique et traumatologique - PAVILLON T</td>
+		          <td width="13" height="37"><img src="/weblib/customWysiwyg/img/service/gab_2_fondTitreD.jpg" width="13" height="37" /></td>
+		          <td width="120">&nbsp;</td>
+	            </tr>
+	        </table>
+	      </td>
+	      </tr>
+		    <tr>
+		      <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+		        <tr>
+		          <td valign="top" class="gab2_fond_services"><br />
+		            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+		            <tr>
+		              <td>
+				<ul class="tab">
+														<li class="puce_fondbleu"><a href="#">Proth�se totale de hanche</a></li>
+														<li class="puce_fondbleu"><a href="#">Proth�se totale de genou</a></li>
+														<li class="puce_fondbleu"><a href="#">Arthrose du membre inf�rieur</a></li>
+														<li class="puce_fondbleu"><a href="#">Maladies inflammatoires du membre inf�rieur</a></li>
+											    </ul>
+											  </td>
+		              <td>&nbsp;</td>
+		              <td>
+				<ul class="tab">
+														<li class="puce_fondbleu"><a href="#">Proth�se totale de hanche</a></li>
+														<li class="puce_fondbleu"><a href="#">Proth�se totale de genou</a></li>
+														<li class="puce_fondbleu"><a href="#">Arthrose du membre inf�rieur</a></li>
+														<li class="puce_fondbleu"><a href="#">Maladies inflammatoires du membre inf�rieur</a></li>
+											    </ul>
+											  </td>
+	              </tr>
+	            </table>
+	           </td>
+		         <td width="10" class="gab2_dottedLigneVerticale"></td>
+		         <td valign="top">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		            <tr>
+		              <td align="right"><table width="100" border="0" cellspacing="5" cellpadding="0">
+		                <tr>
+		                  <td width="30"><img src="/weblib/customWysiwyg/img/service/mail.jpg" width="24" height="21" /></td>
+		                  <td width="30"><img src="/weblib/customWysiwyg/img/service/imprimante.jpg" width="27" height="22" /></td>
+	                  </tr>
+	                </table></td>
+	              </tr>
+		            <tr>
+		              <td><span class="titre_tableau">Nombre de lits :</span> 60</td>
+	              </tr>
+		            <tr>
+		              <td>&nbsp;</td>
+	              </tr>
+		            <tr>
+		              <td>
+				<li class="puce_flecheBleu"><a href="#" class="puce_flecheBleu">Arthrose du membre inf�rieur</a></li>
+									        <li class="puce_flecheBleu"><a href="#" class="puce_flecheBleu">Maladies inflammatoires du membre inf�rieur</a></li>
+									      </td>
+	              </tr>
+	            </table>
+	           </td>
+	          </tr>
+	        </table></td>
+	      </tr>
+		    <tr>
+		      <td><img src="/weblib/customWysiwyg/img/service/gab_2_sepration_courbe.jpg" width="705" height="40" /></td>
+	      </tr>
+		    <tr>
+		      <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+		        <tr>
+		          <td class="gab2_fondPhoto">
+                       <div class="intervenant">
+													<img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" />
+													<span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
+													<strong class="gris">Chef de service</strong><br />
+													Secr�tariat : 04 72 11 76 32<br />
+													T�l�copie : 04 72 11 76 37<br />
+													<a href="#">jean-paul.carret@chu-lyon.fr</a>
+												</div>
+		                </td>
+		          <td class="gab2_fondPhoto">
+				<div class="intervenant">
+												<img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" />
+												<span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
+												<strong class="gris">Chef de service</strong><br />
+												Secr�tariat : 04 72 11 76 32<br />
+												T�l�copie : 04 72 11 76 37<br />
+												<a href="#">jean-paul.carret@chu-lyon.fr</a>
+			                </div>
+			              </td>
+		          <td class="gab2_fondPhoto">
+				<div class="intervenant">
+												<img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" />
+												<span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
+												<strong class="gris">Chef de service</strong><br />
+												Secr�tariat : 04 72 11 76 32<br />
+												T�l�copie : 04 72 11 76 37<br />
+												<a href="#">jean-paul.carret@chu-lyon.fr</a>
+					</div>
+		                </td>
+	          </tr>
+		        <tr>
+		          <td class="gab2_fondPhoto"><div class="intervenant"> <img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" /> <span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
+		            <strong class="gris">Chef de service</strong><br />
+		            Secr�tariat : 04 72 11 76 32<br />
+		            T�l�copie : 04 72 11 76 37<br />
+										  <a href="#">jean-paul.carret@chu-lyon.fr</a> </div></td>
+		          <td>&nbsp;</td>
+		          <td>&nbsp;</td>
+	          </tr>
+	        </table></td>
+	      </tr>
+	    </table>
+			]]>
+		</Html>
+	</Template>
+</Templates>

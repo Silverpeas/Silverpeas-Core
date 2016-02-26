@@ -10,8 +10,8 @@
   <groupId>org.silverpeas.core</groupId>
   <artifactId>silverpeas-core</artifactId>
   <packaging>jar</packaging>
-  <name>Lib Core - ${project.version}</name>
-  <description>A module providing all the basic services of Silverpeas on which can rely the EJBs and the web parts.</description>
+  <name>Silverpeas Core Library ${project.version}</name>
+  <description>A module providing all the foundation bases of Silverpeas on which can rely the services and the web parts.</description>
 
   <dependencies>
     <dependency>
