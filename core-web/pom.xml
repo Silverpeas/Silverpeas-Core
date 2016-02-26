@@ -160,7 +160,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>silverpeas-core-webservice-test</artifactId>
+      <artifactId>silverpeas-core-web-test</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

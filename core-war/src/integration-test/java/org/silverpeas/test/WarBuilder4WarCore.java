@@ -43,7 +43,7 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
    * Gets an instance of a war archive builder for the specified test class with the
    * following common stuffs:
    * <ul>
-   * <li>silverpeas-core-webservice-test</li>
+   * <li>silverpeas-core-web-test</li>
    * <li>silverpeas-core</li>
    * <li>all the necessary to handle http request ({@link org.silverpeas.servlet.HttpRequest} for example)</li>
    * </ul>

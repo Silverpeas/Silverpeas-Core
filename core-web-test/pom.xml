@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.core</groupId>
-  <artifactId>silverpeas-core-webservice-test</artifactId>
+  <artifactId>silverpeas-core-web-test</artifactId>
   <packaging>jar</packaging>
   <name>Silverpeas Core Web-Service Test ${project.version}</name>
   <description>Providing foundation bases dedicated to the writing of tests of Silverpeas REST Web-Service code.</description>
