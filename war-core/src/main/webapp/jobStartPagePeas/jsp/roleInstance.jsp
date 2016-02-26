@@ -118,13 +118,14 @@ out.println(tabbedPane.print());
 	<br/>
 	<% } %>
 <form name="roleList" action="EffectiveSetInstanceProfile">
-	<viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>" label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>" id="roleItems" updateCallback="SelectUsersGroupsProfileInstance" displayAvatar="false"/>
+	<viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>"
+                                        label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>"
+                                        id="roleItems" updateCallback="SelectUsersGroupsProfileInstance" displayAvatar="false"
+                                        formSaveSelector="form[name=roleList]"/>
 </form>
 <view:buttonPane>
-  <fmt:message var="buttonCancel" key="GML.cancel"/>
-  <fmt:message var="buttonOK" key="GML.validate"/>
-  <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
-  <view:button label="${buttonCancel}" action="GoToCurrentComponent"/>
+  <fmt:message var="backButton" key="GML.back"/>
+  <view:button label="${backButton}" action="GoToCurrentComponent"/>
 </view:buttonPane>
 </view:frame>
 <%
