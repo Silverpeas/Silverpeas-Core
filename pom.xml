@@ -230,7 +230,7 @@
     <module>it-test-core</module>
     <module>core-webservice-test</module>
     <module>core-services</module>
-    <module>web-core</module>
+    <module>core-web</module>
     <module>war-core</module>
     <module>core-configuration</module>
   </modules>
