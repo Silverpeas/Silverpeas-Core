@@ -8,32 +8,32 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>publication</artifactId>
+  <artifactId>silverpeas-core-publication</artifactId>
   <packaging>jar</packaging>
-  <name>EJB Publication - ${project.version}</name>
+  <name>Silverpeas Publication Service ${project.version}</name>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>node</artifactId>
+      <artifactId>silverpeas-core-node</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>tagcloud</artifactId>
+      <artifactId>silverpeas-core-tagcloud</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>formtemplate</artifactId>
+      <artifactId>silverpeas-core-formtemplate</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>clipboard</artifactId>
+      <artifactId>silverpeas-core-clipboard</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>

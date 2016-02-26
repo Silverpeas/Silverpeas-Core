@@ -10,7 +10,7 @@
   <groupId>org.silverpeas.core</groupId>
   <artifactId>silverpeas-core-web</artifactId>
   <packaging>jar</packaging>
-  <name>Web Core Library - ${project.version}</name>
+  <name>Silverpeas Core Web ${project.version}</name>
   <description>Providing web foundation bases of Silverpeas on which can rely the Web GUI.</description>
 
   <dependencies>
@@ -70,73 +70,73 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>personalization</artifactId>
+      <artifactId>silverpeas-core-personalization</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>clipboard</artifactId>
+      <artifactId>silverpeas-core-clipboard</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverstatistics</artifactId>
+      <artifactId>silverpeas-core-silverstatistics</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>pdc</artifactId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>publication</artifactId>
+      <artifactId>silverpeas-core-publication</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>node</artifactId>
+      <artifactId>silverpeas-core-node</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>calendar</artifactId>
+      <artifactId>silverpeas-core-calendar</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>formtemplate</artifactId>
+      <artifactId>silverpeas-core-formtemplate</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>importExport</artifactId>
+      <artifactId>silverpeas-core-importExport</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>comment</artifactId>
+      <artifactId>silverpeas-core-comment</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>searchengine</artifactId>
+      <artifactId>silverpeas-core-searchengine</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>mylinks</artifactId>
+      <artifactId>silverpeas-core-mylinks</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -166,7 +166,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>tagcloud</artifactId>
+      <artifactId>silverpeas-core-tagcloud</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

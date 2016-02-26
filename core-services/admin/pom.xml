@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>admin</artifactId>
+  <artifactId>silverpeas-core-admin</artifactId>
   <packaging>jar</packaging>
-  <name>EJB Admin - ${project.version}</name>
+  <name>Silverpeas Admin EJB ${project.version}</name>
 </project>

@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>comment</artifactId>
+  <artifactId>silverpeas-core-comment</artifactId>
   <packaging>jar</packaging>
-  <name>Lib Comment - ${project.version}</name>
+  <name>Silverpeas Comment Service ${project.version}</name>
 
   <build>
     <testResources>

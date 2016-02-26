@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>personalization</artifactId>
+  <artifactId>silverpeas-core-personalization</artifactId>
   <packaging>jar</packaging>
-  <name>Personalization Service - ${project.version}</name>
+  <name>Silverpeas Personalization Service ${project.version}</name>
 
   <build>
     <testResources>

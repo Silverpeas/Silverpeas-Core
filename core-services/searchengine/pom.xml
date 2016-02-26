@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>searchengine</artifactId>
+  <artifactId>silverpeas-core-searchengine</artifactId>
   <packaging>jar</packaging>
-  <name>Search Engine - ${project.version}</name>
+  <name>Silverpeas Search Engine Service ${project.version}</name>
 </project>

@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>silverstatistics</artifactId>
+  <artifactId>silverpeas-core-silverstatistics</artifactId>
   <packaging>jar</packaging>
-  <name>Silver Statistics - ${project.version}</name>
+  <name>Silverpeas Statistics Service ${project.version}</name>
 </project>

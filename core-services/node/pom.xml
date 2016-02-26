@@ -8,14 +8,14 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>node</artifactId>
+  <artifactId>silverpeas-core-node</artifactId>
   <packaging>jar</packaging>
-  <name>Node - ${project.version}</name>
+  <name>Silverpeas Node Service ${project.version}</name>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>clipboard</artifactId>
+      <artifactId>silverpeas-core-clipboard</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

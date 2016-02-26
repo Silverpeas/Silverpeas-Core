@@ -36,11 +36,11 @@ public class BasicCoreWarBuilder extends BasicWarBuilder {
   protected <T> BasicCoreWarBuilder(final Class<T> test) {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    addMavenDependenciesWithPersistence("org.silverpeas.core.services:publication");
-    addMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc");
-    addMavenDependenciesWithPersistence("org.silverpeas.core.services:node");
+    addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-publication");
+    addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
+    addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
     addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
-    addMavenDependencies("org.silverpeas.core.services:tagcloud");
+    addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     addMavenDependencies("org.apache.tika:tika-core");
     addMavenDependencies("org.apache.tika:tika-parsers");
     // Bundles & Settings

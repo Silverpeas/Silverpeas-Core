@@ -9,20 +9,20 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>questioncontainer</artifactId>
+  <artifactId>silverpeas-core-questioncontainer</artifactId>
   <packaging>jar</packaging>
-  <name>Question Container - ${project.version}</name>
+  <name>Silverpeas Question Container Service ${project.version}</name>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>pdc</artifactId>
+      <artifactId>silverpeas-core-pdc</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>clipboard</artifactId>
+      <artifactId>silverpeas-core-clipboard</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

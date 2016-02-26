@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>mylinks</artifactId>
+  <artifactId>silverpeas-core-mylinks</artifactId>
   <packaging>jar</packaging>
-  <name>My Links - ${project.version}</name>
+  <name>Silverpeas My Links Service ${project.version}</name>
 
   <dependencies>
     <dependency>

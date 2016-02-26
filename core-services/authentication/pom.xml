@@ -9,8 +9,8 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>authentication</artifactId>
+  <artifactId>silverpeas-core-authentication</artifactId>
   <packaging>jar</packaging>
-  <name>EJB Authentication - ${project.version}</name>
+  <name>Silverpeas Authentication EJB ${project.version}</name>
 
 </project>

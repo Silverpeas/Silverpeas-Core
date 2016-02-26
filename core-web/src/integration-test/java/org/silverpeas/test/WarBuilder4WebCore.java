@@ -43,8 +43,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
   protected <T> WarBuilder4WebCore(final Class<T> test) {
     super(test);
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
-    addMavenDependencies("org.silverpeas.core.services:silverstatistics");
-    addMavenDependencies("org.silverpeas.core.services:clipboard");
+    addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
+    addMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard");
     addPackages(true, "com.stratelia.silverpeas.peasCore");
     addPackages(true, "com.silverpeas.peasUtil");
     addClasses(AccessForbiddenException.class, SilverpeasSessionOpener.class);

@@ -21,7 +21,15 @@
 package com.stratelia.webactiv.calendar.control;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.stratelia.webactiv.calendar.model.*;
+import com.stratelia.webactiv.calendar.model.Attendee;
+import com.stratelia.webactiv.calendar.model.Category;
+import com.stratelia.webactiv.calendar.model.HolidayDetail;
+import com.stratelia.webactiv.calendar.model.JournalHeader;
+import com.stratelia.webactiv.calendar.model.ParticipationStatus;
+import com.stratelia.webactiv.calendar.model.Schedulable;
+import com.stratelia.webactiv.calendar.model.SchedulableCount;
+import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -33,12 +41,9 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.logging.SilverLogger;
 
-import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

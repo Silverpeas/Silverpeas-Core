@@ -8,8 +8,8 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>clipboard</artifactId>
+  <artifactId>silverpeas-core-clipboard</artifactId>
   <packaging>jar</packaging>
-  <name>Clipboard - ${project.version}</name>
+  <name>Silverpeas Clipboard Service ${project.version}</name>
 
 </project>

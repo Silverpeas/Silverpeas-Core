@@ -36,12 +36,12 @@ public class WarBuilder4Publication extends BasicWarBuilder {
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:node");
-    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc");
-    warBuilder.createMavenDependencies("org.silverpeas.core.services:tagcloud");
-    warBuilder.createMavenDependencies("org.silverpeas.core.services:clipboard");
-    warBuilder.createMavenDependencies("org.silverpeas.core.services:formtemplate");
-    warBuilder.createMavenDependencies("org.silverpeas.core.services:calendar");
+    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
+    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-formtemplate");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-calendar");
     warBuilder.testFocusedOn(war -> war
         .addClasses(PublicationBm.class, PublicationBmEJB.class, PublicationDAO.class,
             PublicationFatherDAO.class, ValidationStepsDAO.class, PublicationI18NDAO.class,

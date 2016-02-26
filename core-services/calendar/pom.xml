@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>calendar</artifactId>
+  <artifactId>silverpeas-core-calendar</artifactId>
   <packaging>jar</packaging>
-  <name>EJB Calendar - ${project.version}</name>
+  <name>Silverpeas Calendar Service ${project.version}</name>
 
   <build>
     <testResources>
