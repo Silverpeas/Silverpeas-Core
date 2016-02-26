@@ -227,7 +227,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       if (!jarLibForPersistence.isEmpty()) {
         String persistenceXmlContent;
         try (InputStream is = WarBuilder.class
-            .getResourceAsStream("/META-INF/silverpeas-core-test-persistence.xml")) {
+            .getResourceAsStream("/META-INF/core-test-persistence.xml")) {
           persistenceXmlContent = IOUtils.toString(is);
         }
         File persistenceXml = FileUtils
@@ -244,7 +244,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       }
       if (!webParts.isEmpty()) {
         String webXmlContent;
-        try (InputStream is = WarBuilder.class.getResourceAsStream("/META-INF/silverpeas-core-test-web.xml")) {
+        try (InputStream is = WarBuilder.class.getResourceAsStream("/META-INF/core-web-test.xml")) {
           webXmlContent = IOUtils.toString(is);
         }
         File webXml = FileUtils
