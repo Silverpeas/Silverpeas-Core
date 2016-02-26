@@ -42,7 +42,7 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    */
   protected <T> WarBuilder4WebCore(final Class<T> test) {
     super(test);
-    addMavenDependencies("org.silverpeas.core:ws-test-core");
+    addMavenDependencies("org.silverpeas.core:silverpeas-core-webservice-test");
     addMavenDependencies("org.silverpeas.core.services:silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:clipboard");
     addPackages(true, "com.stratelia.silverpeas.peasCore");
@@ -65,7 +65,7 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    * Gets an instance of a war archive builder for the specified test class with the
    * following common stuffs:
    * <ul>
-   * <li>ws-test-core</li>
+   * <li>silverpeas-core-webservice-test</li>
    * <li>silverpeas-core</li>
    * <li>all the necessary to handle http request ({@link HttpRequest} for example)</li>
    * </ul>

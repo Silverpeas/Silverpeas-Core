@@ -228,7 +228,7 @@
     <module>core-test</module>
     <module>core-library</module>
     <module>it-test-core</module>
-    <module>ws-test-core</module>
+    <module>core-webservice-test</module>
     <module>core-services</module>
     <module>web-core</module>
     <module>war-core</module>
