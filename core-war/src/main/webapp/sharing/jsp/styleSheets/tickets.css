@@ -1,0 +1,59 @@
+
+/********* FORMULAIRE DE /MODIFICATION ***************/
+#ticketForm {
+	height:100%;
+	width:99%;
+	margin:0;
+	padding:0;
+}
+
+#ticketInformation legend {
+    background: url("/silverpeas/util/icons/info.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+#suggestionInformation legend {
+    background: url("/silverpeas/util/icons/mini_publi.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+#ticketNameArea,
+#ticketCreationArea,
+#ticketModificationArea,
+#ticketClefArea,
+#ticketValidityTypeArea,
+#ticketValidityEndArea,
+#nbAccessMaxArea,
+#ticketNotificationUserArea,
+#ticketNotificationEmailArea,
+#ticketNotificationMessageArea  {
+    clear: both;
+    width: 98%;
+}
+input#nbAccessMax {
+	width: 36px;
+}
+
+
+#ticketNotificationUserArea textarea,
+#ticketNotificationMessageArea textarea{
+	width:90%;
+}
+
+#ticketValidity legend {
+    background: url("/silverpeas/util/icons/calendar_2.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+#ticketValidityEndArea img {
+	vertical-align:text-bottom;
+}
+
+#ticketNotification legend {
+    background: url("/silverpeas/util/icons/email.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+}
+
+#ticketAccessControl {
+	margin-top:0;
+}
+
+#ticketAccessControl legend {
+    background: url("/silverpeas/util/icons/downloadFile.png") no-repeat scroll 11px 3px rgba(0, 0, 0, 0);
+}

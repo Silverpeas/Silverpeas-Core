@@ -231,7 +231,7 @@
     <module>core-webservice-test</module>
     <module>core-services</module>
     <module>core-web</module>
-    <module>war-core</module>
+    <module>core-war</module>
     <module>core-configuration</module>
   </modules>
 
