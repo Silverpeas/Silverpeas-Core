@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.silverpeas.image.ImageToolDirective.GEOMETRY_SHRINK;
+
 /**
  * Unit tests on the image resizing. *
  * @author mmoquillon
@@ -100,7 +102,7 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
             DimensionOption dimension =
                 DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
             imageTool
-                .convert(sourceImage, resizedImage, dimension);
+                .convert(sourceImage, resizedImage, dimension, GEOMETRY_SHRINK);
             ImageCache.putImage(sourceImage.getAbsolutePath(), resizedImage.getAbsolutePath());
           }
         }
