@@ -1,5 +1,6 @@
 package org.silverpeas.util.security;
 
+import org.silverpeas.util.EncodingUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.FileRepositoryManager;
@@ -462,7 +463,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
 
   private static void assertKeyIsInHexadecimal(String key) {
     try {
-      StringUtil.fromHex(key);
+      EncodingUtil.fromHex(key);
     } catch (ParseException ex) {
       throw new AssertionError("The encryption key '" + key + "' must be in hexadecimal");
     }

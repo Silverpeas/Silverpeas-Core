@@ -37,7 +37,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import java.util.List;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 

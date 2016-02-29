@@ -25,7 +25,6 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AccessController;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.ServiceProvider;
 
 /**
  * This interface extends access controller interface for SimpleDocument resource.

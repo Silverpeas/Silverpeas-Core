@@ -7,7 +7,6 @@ import org.silverpeas.util.ActionType;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 
-import javax.inject.Singleton;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;

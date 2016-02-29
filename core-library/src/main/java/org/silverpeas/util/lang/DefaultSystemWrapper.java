@@ -24,9 +24,6 @@
 
 package org.silverpeas.util.lang;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.io.FileReader;

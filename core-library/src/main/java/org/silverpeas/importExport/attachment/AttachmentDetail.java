@@ -25,7 +25,6 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractBean;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FilenameUtils;

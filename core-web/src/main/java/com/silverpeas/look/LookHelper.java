@@ -29,7 +29,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.http.HttpSession;

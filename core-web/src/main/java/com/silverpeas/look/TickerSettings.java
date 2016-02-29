@@ -1,14 +1,10 @@
 package com.silverpeas.look;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections.EnumerationUtils;
 
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ResourceLocator;
 
 public class TickerSettings {
 

@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.selectionPeas.CacheType;
 import com.stratelia.silverpeas.selectionPeas.control.SelectionPeasSessionController;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

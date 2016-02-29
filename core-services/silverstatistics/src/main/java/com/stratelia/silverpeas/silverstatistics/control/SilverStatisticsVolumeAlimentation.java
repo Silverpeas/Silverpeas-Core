@@ -34,7 +34,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;

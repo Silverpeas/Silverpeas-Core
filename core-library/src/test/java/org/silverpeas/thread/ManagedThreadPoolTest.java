@@ -44,7 +44,6 @@ import java.util.logging.Logger;
 import static java.lang.String.valueOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.defaultConfig;
 import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
 import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 

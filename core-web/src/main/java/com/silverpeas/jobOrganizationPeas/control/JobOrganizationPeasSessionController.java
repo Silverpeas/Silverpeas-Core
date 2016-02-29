@@ -46,7 +46,6 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

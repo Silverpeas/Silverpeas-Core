@@ -24,7 +24,6 @@
 
 package com.silverpeas.export.servlets;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.html.HtmlCleaner;

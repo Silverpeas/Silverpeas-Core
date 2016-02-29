@@ -21,8 +21,6 @@
 package com.silverpeas.bootstrap;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.SilverLogger;

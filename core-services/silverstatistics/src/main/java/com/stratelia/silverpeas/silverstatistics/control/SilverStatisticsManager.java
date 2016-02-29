@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigExc
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
@@ -49,8 +48,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;

@@ -24,7 +24,6 @@
 
 package com.silverpeas.external.webConnections.control;
 
-import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;

@@ -25,13 +25,9 @@
 package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
 import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.xml.Unmarshaller;
-import org.xml.sax.InputSource;
 
 /**
  * A factory of connections to the data source into which are stored the dynamic values to use

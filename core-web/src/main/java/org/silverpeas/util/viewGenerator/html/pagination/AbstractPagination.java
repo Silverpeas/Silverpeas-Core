@@ -24,10 +24,7 @@
 
 package org.silverpeas.util.viewGenerator.html.pagination;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import java.util.MissingResourceException;

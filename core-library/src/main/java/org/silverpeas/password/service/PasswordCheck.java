@@ -27,7 +27,6 @@ import org.silverpeas.password.rule.PasswordRule;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

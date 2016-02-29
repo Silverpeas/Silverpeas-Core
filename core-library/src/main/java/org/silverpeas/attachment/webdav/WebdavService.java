@@ -26,9 +26,6 @@ package org.silverpeas.attachment.webdav;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 public interface WebdavService {
 
   /**

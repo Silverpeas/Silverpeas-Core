@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
-import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.node.control.NodeService;
@@ -33,7 +32,6 @@ import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.viewGenerator.html.pdc.PdcClassificationTagOperation;
 
 import javax.servlet.jsp.JspException;

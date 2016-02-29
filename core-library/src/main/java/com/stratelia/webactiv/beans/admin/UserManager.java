@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;

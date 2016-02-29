@@ -21,7 +21,6 @@
 package org.silverpeas.util;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.net.URI;

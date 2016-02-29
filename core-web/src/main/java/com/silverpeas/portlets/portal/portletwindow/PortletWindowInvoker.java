@@ -31,7 +31,6 @@ import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
 import com.sun.portal.portletcontainer.invoker.WindowInvoker;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;

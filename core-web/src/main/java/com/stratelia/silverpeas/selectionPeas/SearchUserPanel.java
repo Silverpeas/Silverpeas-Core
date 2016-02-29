@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 
 public class SearchUserPanel extends BrowsePanelProvider {
   protected static final int FILTER_LASTNAME = 0;

@@ -1,6 +1,8 @@
 package org.silverpeas.util.crypto;
 
+import org.silverpeas.util.EncodingUtil;
 import org.silverpeas.util.StringUtil;
+
 import java.io.File;
 import java.text.ParseException;
 
@@ -30,7 +32,7 @@ public class CipherKey {
    * @return the cipher key.
    */
   public static CipherKey aKeyFromHexText(String hexKey) throws ParseException {
-    return new CipherKey(StringUtil.fromHex(hexKey));
+    return new CipherKey(EncodingUtil.fromHex(hexKey));
   }
 
   /**

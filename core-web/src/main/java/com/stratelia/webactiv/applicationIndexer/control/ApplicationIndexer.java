@@ -23,7 +23,6 @@ package com.stratelia.webactiv.applicationIndexer.control;
 import com.silverpeas.pdc.PdcIndexer;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;

@@ -23,7 +23,6 @@
  */
 package com.sun.portal.portletcontainer.context.registry;
 
-import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 

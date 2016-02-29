@@ -30,7 +30,6 @@ import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Class used to realize some treatment with SearchEngineSetting.properties file.

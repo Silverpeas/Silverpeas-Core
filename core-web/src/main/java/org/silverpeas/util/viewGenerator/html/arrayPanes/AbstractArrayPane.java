@@ -21,7 +21,6 @@
 package org.silverpeas.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 

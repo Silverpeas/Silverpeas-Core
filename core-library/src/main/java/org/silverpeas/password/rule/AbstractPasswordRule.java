@@ -27,7 +27,6 @@ import org.silverpeas.password.constant.PasswordRuleType;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 
 import java.util.MissingResourceException;
 import java.util.regex.Matcher;

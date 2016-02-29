@@ -31,7 +31,6 @@ import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GoogleSite;
 import com.stratelia.silverpeas.pdcPeas.model.GoogleTab;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 
 public class GoogleTabsUtil {

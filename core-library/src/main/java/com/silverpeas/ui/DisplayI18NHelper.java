@@ -30,7 +30,6 @@ import org.silverpeas.util.SettingBundle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * This class permits to handle the different languages that a user can choose to display the

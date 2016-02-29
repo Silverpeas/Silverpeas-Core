@@ -34,8 +34,6 @@ import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
 
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 /**
  * A QueryDescription packs a query with the different spaces and components to be searched.
  */

@@ -35,13 +35,6 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.test.WarBuilder4WarCore;
 import org.silverpeas.util.ServiceProvider;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.util.AnnotationLiteral;
-import java.util.Set;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 

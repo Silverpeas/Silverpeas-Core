@@ -26,7 +26,6 @@ package org.silverpeas.util;
 
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.DateTime;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.util.time.TimeUnit;

@@ -30,7 +30,6 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

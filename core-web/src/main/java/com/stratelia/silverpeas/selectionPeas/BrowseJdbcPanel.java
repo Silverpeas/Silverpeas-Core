@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.selectionPeas;
 
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 
 public class BrowseJdbcPanel extends BrowsePanelProvider {
 

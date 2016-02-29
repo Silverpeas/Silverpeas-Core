@@ -33,16 +33,13 @@ import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.usernotification.repository.NotificationResourceDataManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.MapUtil;
-import org.silverpeas.util.ResourceLocator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -50,7 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author Yohann Chastagnier

@@ -21,7 +21,6 @@
 package com.silverpeas;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
 /**

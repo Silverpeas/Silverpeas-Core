@@ -20,32 +20,21 @@
  */
 package org.silverpeas.util;
 
-import com.ibm.icu.text.CharsetDetector;
-import com.ibm.icu.text.CharsetMatch;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class StringUtil extends StringUtils {
 
   public static String newline = System.getProperty("line.separator");
 
-  private static final char[] PUNCTUATION
-      = new char[]{'&', '\"', '\'', '{', '(', '[', '-', '|', '`',
-        '_', '\\', '^', '@', ')', ']', '=', '+', '}', '?', ',', '.', ';', '/', ':', '!', '§',
-        '%', '*', '$', '£', '€', '©', '²', '°', '¤'};
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
@@ -79,7 +68,7 @@ public class StringUtil extends StringUtils {
    * @see StringUtils#defaultString(String, String)
    */
   public static String defaultStringIfNotDefined(String string) {
-    return defaultStringIfNotDefined(string, EMPTY);
+    return defaultStringIfNotDefined(string, StringUtils.EMPTY);
   }
 
 
@@ -101,9 +90,10 @@ public class StringUtil extends StringUtils {
    * @see StringUtils#defaultString(String, String)
    */
   public static String defaultStringIfNotDefined(String string, String defaultString) {
-    return defaultString((isDefined(string) ? string : null), defaultString);
+    return StringUtils.defaultString((isDefined(string) ? string : null), defaultString);
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static boolean isInteger(String id) {
     try {
       Integer.parseInt(id);
@@ -113,6 +103,7 @@ public class StringUtil extends StringUtils {
     }
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static boolean isLong(String id) {
     try {
       Long.parseLong(id);
@@ -134,6 +125,7 @@ public class StringUtil extends StringUtils {
     return 0f;
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static boolean isFloat(String id) {
     try {
       Float.parseFloat(id);
@@ -144,7 +136,7 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * @param text
+   * @param text the from which the quotes must be escaped (replaced by spaces in fact).
    * @return a String with all quotes replaced by spaces
    */
   public static String escapeQuote(String text) {
@@ -154,7 +146,7 @@ public class StringUtil extends StringUtils {
   /**
    * Replaces
    *
-   * @param name
+   * @param name the original filename.
    * @return a String with all quotes replaced by spaces
    */
   public static String toAcceptableFilename(String name) {
@@ -245,16 +237,18 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   *
-   * Validate the form of an email address. <P> Return <tt>true</tt> only if <ul> <li>
-   * <tt>aEmailAddress</tt> can successfully construct an
-   * {@link javax.mail.internet.InternetAddress} <li>when parsed with "
-   *
-   * @" as delimiter, <tt>aEmailAddress</tt> contains two tokens which satisfy
-   * </ul> <P> The second condition arises since
-   * local email addresses, simply of the form "<tt>albert</tt>", for example, are valid for
-   * {@link javax.mail.internet.InternetAddress}, but almost always undesired.
-   *
+   * Validate the form of an email address.
+   * <p> Returns <tt>true</tt> only if
+   * <ul>
+   * <li><tt>aEmailAddress</tt> can successfully construct an
+   * {@link javax.mail.internet.InternetAddress}</li>
+   * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which
+   * satisfy</li>
+   * </ul>
+   * </p>
+   * The second condition arises since local email addresses, simply of the form "<tt>albert</tt>",
+   * for example, are valid for {@link javax.mail.internet.InternetAddress}, but almost always
+   * undesired.
    * @param aEmailAddress the address to be validated
    * @return true is the address is a valid email address - false otherwise.
    */
@@ -273,10 +267,7 @@ public class StringUtil extends StringUtils {
   }
 
   public static boolean isValidHour(final String time) {
-    if (!isDefined(time)) {
-      return false;
-    }
-    return Pattern.matches(HOUR_PATTERN, time);
+    return isDefined(time) && Pattern.matches(HOUR_PATTERN, time);
   }
 
   public static String convertToEncoding(String toConvert, String encoding) {
@@ -297,100 +288,6 @@ public class StringUtil extends StringUtils {
     return "true".equalsIgnoreCase(expression) || "yes".equalsIgnoreCase(expression)
         || "y".equalsIgnoreCase(expression) || "oui".equalsIgnoreCase(expression)
         || "1".equalsIgnoreCase(expression);
-  }
-
-  /**
-   * Method for trying to detect encoding
-   *
-   * @param data some data to try to detect the encoding.
-   * @param declaredEncoding expected encoding.
-   * @return
-   */
-  public static String detectEncoding(byte[] data, String declaredEncoding) {
-    CharsetDetector detector = new CharsetDetector();
-    if (!StringUtil.isDefined(declaredEncoding)) {
-      detector.setDeclaredEncoding(CharEncoding.ISO_8859_1);
-    } else {
-      detector.setDeclaredEncoding(declaredEncoding);
-    }
-    detector.setText(data);
-    CharsetMatch detectedEnc = detector.detect();
-    return detectedEnc.getName();
-  }
-
-  /**
-   * Method for trying to detect encoding
-   *
-   * @param data some data to try to detect the encoding.
-   * @param declaredEncoding expected encoding.
-   * @return
-   */
-  public static String detectStringEncoding(byte[] data, String declaredEncoding) throws
-      UnsupportedEncodingException {
-    if (data != null) {
-      String value = new String(data, declaredEncoding);
-      if (!checkEncoding(value)) {
-        Set<String> supportedEncodings;
-        if (CharEncoding.UTF_8.equals(declaredEncoding)) {
-          supportedEncodings = StringUtil.detectMaybeEncoding(data, CharEncoding.ISO_8859_1);
-        } else {
-          supportedEncodings = StringUtil.detectMaybeEncoding(data, CharEncoding.UTF_8);
-        }
-        return reencode(data, supportedEncodings, declaredEncoding);
-      }
-    }
-    return declaredEncoding;
-  }
-
-  private static boolean checkEncoding(String value) {
-    if (value != null) {
-      char[] chars = value.toCharArray();
-      for (char currentChar : chars) {
-        if (!Character.isLetterOrDigit(currentChar) && !Character.isWhitespace(currentChar)
-            && !ArrayUtil.contains(PUNCTUATION, currentChar)) {
-          return false;
-        }
-      }
-    }
-    return true;
-
-  }
-
-  private static String reencode(byte[] data, Set<String> encodings, String declaredEncoding) throws
-      UnsupportedEncodingException {
-    if (!encodings.isEmpty()) {
-      String encoding = encodings.iterator().next();
-      String value = new String(data, encoding);
-      if (!checkEncoding(value)) {
-        encodings.remove(encoding);
-        return reencode(data, encodings, declaredEncoding);
-      }
-      return encoding;
-    }
-    return declaredEncoding;
-  }
-
-  /**
-   * Method for trying to detect encoding
-   *
-   * @param data some data to try to detect the encoding.
-   * @param declaredEncoding expected encoding.
-   * @return
-   */
-  public static Set<String> detectMaybeEncoding(byte[] data, String declaredEncoding) {
-    CharsetDetector detector = new CharsetDetector();
-    if (!StringUtil.isDefined(declaredEncoding)) {
-      detector.setDeclaredEncoding(CharEncoding.ISO_8859_1);
-    } else {
-      detector.setDeclaredEncoding(declaredEncoding);
-    }
-    detector.setText(data);
-    CharsetMatch[] detectedEnc = detector.detectAll();
-    Set<String> encodings = new LinkedHashSet<String>(detectedEnc.length);
-    for (CharsetMatch detectedEncoding : detectedEnc) {
-      encodings.add(detectedEncoding.getName());
-    }
-    return encodings;
   }
 
   /**
@@ -428,33 +325,6 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Encodes the specified binary data into a String representing the hexadecimal values of each
-   * byte in order. The String is in the UTF-8 charset.
-   *
-   * @param binaryData the binary data to concert in hexadecimal-based String.
-   * @return a String representation of the binary data in Hexadecimal characters.
-   */
-  public static String asHex(byte[] binaryData) {
-    return Hex.encodeHexString(binaryData);
-  }
-
-  /**
-   * Decodes the specified text with hexadecimal values in bytes of those same values. The text is
-   * considered to be in the UTF-8 charset.
-   *
-   * @param hexText the text with hexadecimal-based characters.
-   * @return the binary representation of the text.
-   * @throws ParseException if an odd number or illegal of characters is supplied.
-   */
-  public static byte[] fromHex(String hexText) throws ParseException {
-    try {
-      return Hex.decodeHex(hexText.toCharArray());
-    } catch (Exception ex) {
-      throw new ParseException(ex.getMessage(), -1);
-    }
-  }
-
-  /**
    * <p>Splits the provided text into an array, using whitespace as the separator. Whitespace is
    * defined by {@link Character#isWhitespace(char)}.</p>
    *
@@ -475,7 +345,7 @@ public class StringUtil extends StringUtils {
    * @return an array of parsed Strings, {@code null} if null String input
    */
   public static Iterable<String> splitString(String str) {
-    return Arrays.asList(split(str));
+    return Arrays.asList(StringUtils.split(str));
   }
 
   /**
@@ -501,7 +371,7 @@ public class StringUtil extends StringUtils {
    * @return an array of parsed Strings, {@code null} if null String input
    */
   public static Iterable<String> splitString(String str, char separatorChar) {
-    return Arrays.asList(split(str, separatorChar));
+    return Arrays.asList(StringUtils.split(str, separatorChar));
   }
 
   private StringUtil() {

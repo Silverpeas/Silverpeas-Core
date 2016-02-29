@@ -30,7 +30,6 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.SequenceField;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.ecs.html.Input;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;

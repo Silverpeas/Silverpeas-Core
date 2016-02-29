@@ -65,7 +65,6 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.States;
 import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.engine.WorkflowHub;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class implementing the representation of the main &lt;processModel&gt; element of a Process

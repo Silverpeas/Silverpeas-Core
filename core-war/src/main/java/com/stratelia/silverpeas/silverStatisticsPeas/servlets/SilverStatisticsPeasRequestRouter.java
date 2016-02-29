@@ -33,7 +33,6 @@ import com.stratelia.silverpeas.silverStatisticsPeas.vo.AxisStatsFilter;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisStatsFilter;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossStatisticVO;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.chart.period.PeriodChart;

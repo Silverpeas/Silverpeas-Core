@@ -24,13 +24,10 @@
 package com.silverpeas.socialnetwork.model;
 
 import org.silverpeas.persistence.model.CompositeEntityIdentifier;
-import org.silverpeas.persistence.model.EntityIdentifier;
-import org.silverpeas.util.StringUtil;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.io.Serializable;
 
 @Embeddable
 public class ExternalAccountIdentifier implements CompositeEntityIdentifier {

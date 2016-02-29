@@ -28,7 +28,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
-import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -37,8 +36,6 @@ import org.silverpeas.web.token.SynchronizerTokenService;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * @author ehugonnet

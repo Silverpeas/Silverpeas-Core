@@ -31,7 +31,6 @@ import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.util.ResourceLocator;
 
 public class BrowseGroupPanel extends BrowsePanelProvider {
   SelectionUsersGroups extraParams = null;

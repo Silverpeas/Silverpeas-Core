@@ -33,7 +33,6 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.UserField;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 

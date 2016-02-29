@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * and ${sys.TOTO} will be resolved by fetching the value of the <code>FOO</code> system property.
  * @author mmoquillon
  */
-public class VariableResolver {
+class VariableResolver {
 
   private static final Pattern VAR_PATTERN =
       Pattern.compile(".*(\\$\\{)((env|sys)\\..*)(\\}).*$");
@@ -45,7 +45,7 @@ public class VariableResolver {
    * variable declarations.
    * @return the resolved variable.
    */
-  public static Object resolve(Object value) {
+  static Object resolve(Object value) {
     if (value != null && value instanceof String) {
       value = resolve((String) value);
     }
@@ -58,7 +58,7 @@ public class VariableResolver {
    * @param value the value to resolve.
    * @return the resolved variable.
    */
-  public static String resolve(String value) {
+  static String resolve(String value) {
     String resolvedValue = value;
     if (value != null && !value.trim().isEmpty()) {
       Matcher matching = VAR_PATTERN.matcher(value);

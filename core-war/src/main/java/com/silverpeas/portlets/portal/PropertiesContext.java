@@ -26,7 +26,6 @@ import org.silverpeas.util.SettingBundle;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.MissingResourceException;
-import java.util.Properties;
 
 /**
  * PropertiesContext loads the portal driver properties. A portal driver is a lightweight portal

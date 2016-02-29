@@ -43,7 +43,6 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.FileUploadUtil;
 
 /**

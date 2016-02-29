@@ -26,7 +26,6 @@ package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
 
 import java.io.Serializable;

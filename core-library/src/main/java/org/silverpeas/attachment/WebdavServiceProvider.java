@@ -23,8 +23,6 @@
  */
 package org.silverpeas.attachment;
 
-import javax.inject.Inject;
-
 import org.silverpeas.attachment.webdav.WebdavService;
 import org.silverpeas.util.ServiceProvider;
 

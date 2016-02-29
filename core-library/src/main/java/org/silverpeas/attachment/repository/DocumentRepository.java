@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -43,7 +42,6 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.jcr.util.NodeIterable;
 import org.silverpeas.jcr.util.PropertyIterable;
 
-import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;

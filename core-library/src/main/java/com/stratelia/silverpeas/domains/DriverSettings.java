@@ -25,9 +25,6 @@
 package com.stratelia.silverpeas.domains;
 
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 
 /**
  * Settings of a user domain driver.

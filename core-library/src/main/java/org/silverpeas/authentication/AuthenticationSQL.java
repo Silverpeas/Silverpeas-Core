@@ -20,7 +20,6 @@
  */
 package org.silverpeas.authentication;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
@@ -29,7 +28,6 @@ import org.silverpeas.authentication.exception.AuthenticationHostException;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;

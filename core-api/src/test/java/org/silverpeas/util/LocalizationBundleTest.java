@@ -23,7 +23,8 @@
  */
 package org.silverpeas.util;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;

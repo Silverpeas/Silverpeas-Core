@@ -52,7 +52,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.Normalizer;
-import java.util.Properties;
 
 @Singleton
 @Named("sqlDomainService")

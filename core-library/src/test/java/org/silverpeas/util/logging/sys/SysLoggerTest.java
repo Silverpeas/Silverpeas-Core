@@ -30,7 +30,6 @@ import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.Level;
-import org.silverpeas.util.logging.LoggerConfigurationManager;
 import org.silverpeas.util.logging.SilverLogger;
 
 import static org.hamcrest.CoreMatchers.is;

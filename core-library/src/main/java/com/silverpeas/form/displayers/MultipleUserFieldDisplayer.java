@@ -35,7 +35,7 @@ import com.silverpeas.form.fieldType.UserField;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;

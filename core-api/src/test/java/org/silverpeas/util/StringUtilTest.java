@@ -26,10 +26,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.silverpeas.util;
+package org.silverpeas.util;
 
 import org.junit.Test;
-import org.silverpeas.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 
@@ -40,9 +39,6 @@ import static org.junit.Assert.*;
  * @author ehugonnet
  */
 public class StringUtilTest {
-
-  public StringUtilTest() {
-  }
 
   /**
    * Test of isDefined method, of class StringUtil.
@@ -108,34 +104,6 @@ public class StringUtilTest {
   }
 
   /**
-   * Test of format method, of class StringUtil.
-   */
-  /*@Test
-  public void testFormat() {
-  System.out.println("format");
-  String label = "";
-  Map<String, ?> values = null;
-  String expResult = "";
-  String result = StringUtil.format(label, values);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of truncate method, of class StringUtil.
-   */
-  /* @Test
-  public void testTruncate() {
-  System.out.println("truncate");
-  String text = "";
-  int maxLength = 0;
-  String expResult = "";
-  String result = StringUtil.truncate(text, maxLength);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
    * Test of isValidEmailAddress method, of class StringUtil.
    */
   @Test
@@ -194,31 +162,6 @@ public class StringUtilTest {
     assertFalse(StringUtil.getBooleanValue("no"));
     assertFalse(StringUtil.getBooleanValue("0"));
     assertFalse(StringUtil.getBooleanValue(null));
-  }
-
-  /**
-   * Test of detectEncoding method, of class StringUtil.
-   * @throws UnsupportedEncodingException
-   */
-  @Test
-  public void testDetectEncoding() throws UnsupportedEncodingException {
-    String testString = "voici une cha\u00EEne cr\u00E9\u00E9e expr\u00E8s";
-
-    String result = StringUtil.detectEncoding(testString.getBytes("ISO-8859-1"), null);
-    assertThat(result, is("ISO-8859-1"));
-    result = StringUtil.detectEncoding(testString.getBytes("ISO-8859-1"), "UTF-8");
-    assertThat(result, is("ISO-8859-1"));
-    result = StringUtil.detectEncoding(testString.getBytes("UTF-8"), null);
-    assertThat(result, is("UTF-8"));
-    result = StringUtil.detectEncoding(testString.getBytes("UTF-8"), "UTF-8");
-    assertThat(result, is("UTF-8"));
-
-    /*String copyright = "D\u00E9partement de la Dr\u00F4me";
-    result = StringUtil.detectEncoding(copyright.getBytes("UTF-8"), "UTF-8");
-    assertThat(result, is("UTF-8"));
-    copyright = "D\u00E9partement de la Dr\u00F4me";
-    result = StringUtil.detectEncoding(copyright.getBytes("ISO-8859-1"), "UTF-8");
-    assertThat(result, is("ISO-8859-1"));*/
   }
 
   @Test

@@ -32,9 +32,7 @@ import org.silverpeas.util.lang.SystemWrapper;
 
 import java.util.MissingResourceException;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**

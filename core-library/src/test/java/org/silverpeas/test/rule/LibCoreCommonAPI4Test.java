@@ -1,8 +1,6 @@
 package org.silverpeas.test.rule;
 
-import org.junit.runner.Description;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.ComponentHelper;
 
 /**
  * @author Yohann Chastagnier

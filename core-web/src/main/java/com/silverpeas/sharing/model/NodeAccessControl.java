@@ -32,7 +32,6 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 import java.util.Collection;

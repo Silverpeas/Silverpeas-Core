@@ -1,13 +1,9 @@
 package org.silverpeas.util;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This class permits to handle the result of property value list search.
@@ -59,7 +55,8 @@ public class SilverpeasBundleList extends ArrayList<String> {
    */
   public List<String> asStringList(String defaultValue) {
     List<String> values = new ArrayList<>(size());
-    values.addAll(this.stream().map(value -> defaultStringIfNotDefined(value, defaultValue))
+    values.addAll(this.stream().map(value -> StringUtil
+        .defaultStringIfNotDefined(value, defaultValue))
         .collect(Collectors.toList()));
     return values;
   }
@@ -105,7 +102,7 @@ public class SilverpeasBundleList extends ArrayList<String> {
   public List<Integer> asIntegerList(Integer defaultValue) {
     List<Integer> values = new ArrayList<>(size());
     values.addAll(this.stream()
-        .map(value -> isDefined(value) ? Integer.valueOf(Integer.parseInt(value)) : defaultValue)
+        .map(value -> StringUtil.isDefined(value) ? Integer.valueOf(Integer.parseInt(value)) : defaultValue)
         .collect(Collectors.toList()));
     return values;
   }

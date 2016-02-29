@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.persistence.jdbc.ResultSetWrapper;
-import org.silverpeas.persistence.jdbc.SelectResultRowProcess;
 import org.silverpeas.util.crypto.CryptoException;
 
 import com.silverpeas.form.DataRecord;

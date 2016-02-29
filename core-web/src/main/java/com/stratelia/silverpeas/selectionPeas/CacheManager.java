@@ -32,7 +32,6 @@ import com.stratelia.silverpeas.genericPanel.PanelOperation;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;

@@ -26,7 +26,6 @@
 package org.silverpeas.importExport.versioning;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.jcr.JcrDataConverter;

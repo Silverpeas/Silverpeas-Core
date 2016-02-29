@@ -52,11 +52,9 @@ import com.stratelia.webactiv.publication.control.PublicationService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.accesscontrol.PublicationAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.date.Period;
-import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.Rateable;
@@ -73,7 +71,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -926,29 +923,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
           SilverpeasRuntimeException.ERROR,
           "publication.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
     }
-  }
-
-  public Collection<SimpleDocument> getAttachments() {
-    if (getPK() == null) {
-      SilverTrace
-          .info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
-              "getPK() is null !");
-    } else {
-      SilverTrace
-          .info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
-              "getPK() is not null !");
-    }
-    AttachmentPK foreignKey = new AttachmentPK(getPK().getId(), getPK().getSpace(), getPK().
-        getComponentName());
-    SilverTrace.
-        info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-            "foreignKey = " + foreignKey.toString());
-    Collection<SimpleDocument> attachmentList = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
-    SilverTrace.
-        info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-            "attachmentList.size() = " + attachmentList.size());
-    return attachmentList;
   }
 
   public String getWysiwyg() {

@@ -21,7 +21,6 @@
 package com.silverpeas.lookV5;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.sharing.services.SharingServiceProvider;

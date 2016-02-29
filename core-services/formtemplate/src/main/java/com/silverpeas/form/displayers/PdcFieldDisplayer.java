@@ -39,7 +39,6 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.UsedAxisPK;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import org.apache.ecs.AlignType;
 import org.apache.ecs.ElementContainer;

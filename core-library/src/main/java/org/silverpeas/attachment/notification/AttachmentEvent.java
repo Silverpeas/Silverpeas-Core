@@ -23,15 +23,7 @@ package org.silverpeas.attachment.notification;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.exception.DecodingException;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**

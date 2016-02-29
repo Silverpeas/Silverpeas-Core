@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 /**

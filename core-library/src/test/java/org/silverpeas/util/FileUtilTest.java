@@ -21,7 +21,6 @@
 package org.silverpeas.util;
 
 import org.junit.Rule;
-import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.apache.commons.io.FileUtils;
@@ -31,14 +30,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.silverpeas.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;

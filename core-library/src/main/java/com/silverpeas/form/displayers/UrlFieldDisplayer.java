@@ -32,7 +32,6 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.fieldType.TextFieldImpl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
