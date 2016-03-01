@@ -1,2 +1,0 @@
-CREATE TABLE permalinks_document (documentId INT NOT NULL, documentUuid VARCHAR2(50) NOT NULL, CONSTRAINT PK_permalinks_document PRIMARY KEY (documentId));
-CREATE TABLE permalinks_version (versionId INT NOT NULL, versionUuid VARCHAR2(50) NOT NULL, CONSTRAINT PK_permalinks_version PRIMARY KEY (versionId));
