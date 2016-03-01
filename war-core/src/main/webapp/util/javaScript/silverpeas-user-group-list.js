@@ -234,13 +234,13 @@
           e.preventDefault();
           e.stopPropagation();
           this.context.userPanelChanges = 0;
-          var params = "?";
-          if (this.options.userPanelCallback.indexOf('?') !== -1) {
-            params = "&";
-          }
-          params += "UserPanelCurrentUserIds=" + this.context.currentUserIds;
-          params += "&UserPanelCurrentGroupIds=" + this.context.currentGroupIds;
-          SP_openUserPanel(this.options.userPanelCallback + params, "userPanel");
+          SP_openUserPanel({
+            url : this.options.userPanelCallback,
+            params : {
+              "UserPanelCurrentUserIds" : this.context.currentUserIds,
+              "UserPanelCurrentGroupIds" : this.context.currentGroupIds
+            }
+          }, "userPanel");
         }.bind(this));
 
         jQuery(this.context.userSelectionInput).on('change', function() {

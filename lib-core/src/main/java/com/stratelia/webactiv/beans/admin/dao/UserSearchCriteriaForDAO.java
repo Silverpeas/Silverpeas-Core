@@ -43,7 +43,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   private static final String QUERY = "select {0} from {1} where state not in ({2}) {3} {4}";
-  private static final String ORDER_BY_LASTNAME = "order by lastName";
+  private static final String ORDER_BY_LASTNAME = "order by lastName, firstName";
 
   private StringBuilder filter = new StringBuilder();
   private Set<UserState> userStatesToExclude = new HashSet<UserState>();
