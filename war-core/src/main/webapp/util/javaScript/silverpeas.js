@@ -164,8 +164,42 @@ function SP_openWindow(page, name, width, height, options) {
   if (screen.width - 10 <= width) {
     left = 0;
   }
-  return window.open(page, name,
-      "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," + options);
+  var features = "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," +
+      options;
+  if (typeof page === 'object') {
+    var pageOptions = extendsObject({
+      "params" : ''
+    }, page);
+    if (typeof pageOptions.params === 'string') {
+      return window.open(pageOptions.url + pageOptions.params, name, features);
+    }
+    var selector = "form[target=" + name + "]";
+    var form = document.querySelector(selector);
+    if (!form) {
+      form = document.createElement('form');
+      form.setAttribute('action', pageOptions.url);
+      form.setAttribute('method', 'post');
+      form.setAttribute('target', name);
+      var formContainer = document.createElement('div');
+      formContainer.style.display = 'none';
+      formContainer.appendChild(form);
+      document.body.appendChild(formContainer);
+    }
+    form.innerHTML = '';
+    applyTokenSecurity(form.parentNode);
+    for (var paramKey in pageOptions.params) {
+      var paramValue = pageOptions.params[paramKey];
+      var paramInput = document.createElement("input");
+      paramInput.setAttribute("type", "hidden");
+      paramInput.setAttribute("name", paramKey);
+      paramInput.value = paramValue;
+      form.appendChild(paramInput);
+    }
+    var spWindow = window.open('', name, features);
+    form.submit();
+    return spWindow;
+  }
+  return window.open(page, name, features);
 }
 
 function SP_openUserPanel(page, name, options) {

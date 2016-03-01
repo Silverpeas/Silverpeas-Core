@@ -37,7 +37,7 @@
    * @param {Angular.Service} RESTAdapter - the adapter to use to communicate with the web resource representing
    * the users in Silverpeas.
    */
-  silverpeas.factory('User', ['context', 'RESTAdapter', function(context, RESTAdapter) {
+  silverpeas.factory('User', ['context', 'RESTAdapter', '$q', function(context, RESTAdapter, $q) {
       return new function() {
         var defaultParameters = {};
         if (context) {
@@ -65,10 +65,19 @@
             return adapter.find(arguments[0]);
           } else {
             var url = adapter.url + (context.component ? '/application/' + context.component : '');
-            return adapter.find({
+            var deferred = $q.defer();
+            adapter.find({
               url : url,
               criteria : adapter.criteria(arguments[0], defaultParameters)
+            }).then(function(data){
+              if (data.fromRequestSplitIntoSeveralAjaxCalls) {
+                data.sort(__sortUser);
+              }
+              deferred.resolve(data);
+            }, function(data){
+              deferred.reject(data);
             });
+            return deferred.promise;
           }
         };
 
@@ -96,7 +105,7 @@
    * @param {Angular.Service} RESTAdapter - the adapter to use to communicate with the web resource representing
    * the users in Silverpeas.
    */
-  silverpeas.factory('UserGroup', ['context', 'User', 'RESTAdapter', function(context, User, RESTAdapter) {
+  silverpeas.factory('UserGroup', ['context', 'User', 'RESTAdapter', '$q', function(context, User, RESTAdapter, $q) {
       return new function() {
         var defaultParameters = {};
         if (context) {
@@ -133,14 +142,41 @@
             return adapter.find(arguments[0]);
           } else {
             var url = adapter.url + (context.component ? '/application/' + context.component : '');
-            return adapter.find({
-              url: url,
-              criteria: adapter.criteria(arguments[0], defaultParameters)
+            var deferred = $q.defer();
+            adapter.find({
+              url : url,
+              criteria : adapter.criteria(arguments[0], defaultParameters)
+            }).then(function(data){
+              if (data.fromRequestSplitIntoSeveralAjaxCalls) {
+                data.sort(__sortGroup);
+              }
+              deferred.resolve(data);
+            }, function(data){
+              deferred.reject(data);
             });
+            return deferred.promise;
           }
         };
       };
     }]);
+
+  function __sortUser(userA, userB) {
+    var toCompare = [[userA.lastName, userB.lastName], [userA.firstName, userB.firstName]];
+    var result = 0;
+    for (var i = 0; i < toCompare.length && result === 0; i++) {
+      var aLowerCased = toCompare[i][0].toLowerCase();
+      var bLowerCased = toCompare[i][1].toLowerCase();
+      result = ((aLowerCased < bLowerCased) ? -1 : ((aLowerCased > bLowerCased) ? 1 : 0));
+    }
+    return result;
+  }
+
+  function __sortGroup(groupA, groupB) {
+    var aLowerCased = groupA.name.toLowerCase();
+    var bLowerCased = groupB.name.toLowerCase();
+    return ((aLowerCased < bLowerCased) ? -1 : ((aLowerCased > bLowerCased) ? 1 : 0));
+  }
+
 })();
 
 /**
