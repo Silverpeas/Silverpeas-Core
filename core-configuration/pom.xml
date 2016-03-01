@@ -9,18 +9,15 @@
 
   <groupId>org.silverpeas.core</groupId>
   <artifactId>silverpeas-core-configuration</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>Silverpeas Core Configuration ${project.version}</name>
   <description>A module to store all the configuration for the core of Silverpeas.</description>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <skipAssembly>false</skipAssembly>
-        </configuration>
-      </plugin>
-    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/config</directory>
+      </resource>
+    </resources>
   </build>
 </project>
