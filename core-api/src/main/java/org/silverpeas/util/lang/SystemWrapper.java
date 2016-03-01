@@ -42,7 +42,7 @@ public interface SystemWrapper {
    * Gets the wrapped {@link System} instance.
    * @return the instance of the System Wrapper.
    */
-  public static SystemWrapper get() {
+  static SystemWrapper get() {
     return ServiceProvider.getService(SystemWrapper.class);
   }
 

@@ -281,11 +281,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
-    if (!contains(ResourceLocator.class)) {
-      addClasses(ResourceLocator.class, DisplayI18NHelper.class, ConfigurationClassLoader.class,
-          ConfigurationControl.class, VariableResolver.class, PropertiesWrapper.class,
-          SilverpeasBundle.class, LocalizationBundle.class, SettingBundle.class, FileUtil.class,
-          Mail.class, MimeTypes.class, RelativeFileAccessException.class, MetadataExtractor.class);
+    if (!contains(MimeTypes.class)) {
+      addClasses(DisplayI18NHelper.class, FileUtil.class, Mail.class, MimeTypes.class,
+          RelativeFileAccessException.class, MetadataExtractor.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
       addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
