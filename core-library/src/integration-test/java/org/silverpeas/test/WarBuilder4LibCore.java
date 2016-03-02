@@ -35,7 +35,6 @@ import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.session.SessionInfo;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
@@ -51,8 +50,6 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.JcrContext;
-import org.silverpeas.cache.service.VolatileCacheServiceProvider;
-import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.contribution.model.ContributionContent;
 import org.silverpeas.contribution.model.ContributionIdentifier;
@@ -129,26 +126,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
         "META-INF/services/org.silverpeas.util.logging.SilverLoggerFactory");
     warBuilder.addAsResource("maven.properties");
     return warBuilder;
-  }
-
-  /**
-   * Adds cache features:
-   * <ul>
-   * <li>org.silverpeas.cache</li>
-   * </ul>
-   * Calls automatically:
-   * <ul>
-   * <li>{@link #addCommonBasicUtilities()}</li>
-   * </ul>
-   * @return the instance of the war builder.
-   */
-  public WarBuilder4LibCore addCacheFeatures() {
-    if (!contains(VolatileCacheServiceProvider.class)) {
-      addClasses(VolatileCacheServiceProvider.class, VolatileResourceCacheService.class);
-      addClasses(SessionInfo.class);
-      addCommonBasicUtilities();
-    }
-    return this;
   }
 
   /**
@@ -349,17 +326,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Sets JPA persistence features.
    * Calls automatically:
    * <ul>
-   * <li>{@link #addDatabaseToolFeatures()}</li>
+   * <li>{@link #addCommonBasicUtilities()}</li>
    * <li>{@link #addBundleBaseFeatures()}</li>
-   * <li>{@link #addCacheFeatures()}</li>
    * <li>{@link #addCommonUserBeans()}</li>
    * </ul>
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addJpaPersistenceFeatures() {
-    addDatabaseToolFeatures();
+    addCommonBasicUtilities();
     addBundleBaseFeatures();
-    addCacheFeatures();
     addCommonUserBeans();
     if (!contains(AbstractJpaEntity.class)) {
       addClasses(ResourceIdentifier.class);

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 import org.silverpeas.image.option.AbstractImageToolOption;
 
@@ -39,6 +40,8 @@ import static java.util.Collections.singleton;
  * @author Yohann Chastagnier
  */
 public abstract class AbstractImageTool implements ImageTool {
+
+  private final Semaphore semaphore = new Semaphore(5, true);
 
   /**
    * Convert an image with dimensions and options directives
@@ -90,8 +93,8 @@ public abstract class AbstractImageTool implements ImageTool {
   }
 
   /**
-   * Centralizes convert calling
-   *
+   * Centralizes convert calling.<br/>
+   * It can not be performed at a same time more than the {@link #semaphore} is specifying.
    * @param source
    * @param destination
    * @param options
@@ -104,9 +107,12 @@ public abstract class AbstractImageTool implements ImageTool {
         destination = source;
       }
       try {
+        semaphore.acquire();
         convert(source, destination, toMap(options), toSet(directives));
       } catch (final Exception e) {
         throw new ImageToolException(e);
+      } finally {
+        semaphore.release();
       }
     }
   }

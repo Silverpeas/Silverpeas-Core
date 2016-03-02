@@ -66,7 +66,6 @@ public class SimulationActionInterceptorTest {
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
         .addCommonUserBeans()
-        .addCacheFeatures()
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.process");
         }).build();

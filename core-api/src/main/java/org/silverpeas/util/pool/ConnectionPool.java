@@ -46,13 +46,22 @@ public class ConnectionPool {
   private DataSource dataSource;
 
   /**
-   * Return a connection to the Silverpeas data source.
-   * @return a connection to the Silverpeas data source.
+   * Return a connection from the Silverpeas data source.
+   * @return a connection from the Silverpeas data source.
    * @throws java.sql.SQLException if an error occurs while getting an available connection.
    */
   public static Connection getConnection() throws SQLException {
     ConnectionPool connectionPool = ServiceProvider.getService(ConnectionPool.class);
-    return connectionPool.dataSource.getConnection();
+    return connectionPool.getDataSourceConnection();
+  }
+
+  /**
+   * Return a connection from the Silverpeas data source.
+   * @return a connection from the Silverpeas data source.
+   * @throws java.sql.SQLException if an error occurs while getting an available connection.
+   */
+  Connection getDataSourceConnection() throws SQLException {
+    return dataSource.getConnection();
   }
 
   protected ConnectionPool() {

@@ -623,9 +623,6 @@ public class GenericRecordSetManager {
    * Returns a connection.
    */
   private Connection getConnection() throws FormException {
-
-
-
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {

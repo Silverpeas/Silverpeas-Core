@@ -65,7 +65,6 @@ public class LogAnnotationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(LogAnnotationIntegrationTest.class)
         .addCommonBasicUtilities()
-        .addCacheFeatures()
         .addCommonUserBeans()
         .build();
   }

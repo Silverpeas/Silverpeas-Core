@@ -52,7 +52,7 @@ public class ImageResizingProcessorIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(ImageResizingProcessorIntegrationTest.class)
         .addCommonBasicUtilities().addSilverpeasExceptionBases().addFileRepositoryFeatures()
-        .addImageToolFeatures().addCacheFeatures()
+        .addImageToolFeatures()
         .testFocusedOn(warBuilder -> {
           warBuilder.addClasses(AbstractSilverpeasFileProcessor.class, ImageResizingProcessor.class,
               SilverpeasFileProcessor.class, SilverpeasFile.class, SilverpeasFileProvider.class,

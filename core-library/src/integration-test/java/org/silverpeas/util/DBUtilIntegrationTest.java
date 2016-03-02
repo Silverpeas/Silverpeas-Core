@@ -81,7 +81,7 @@ public class DBUtilIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(DBUtilIntegrationTest.class)
         .addBenchmarkTestFeatures()
-        .addDatabaseToolFeatures()
+        .testFocusedOn(warBuilder -> warBuilder.addClasses(DBUtil.class))
         .build();
   }
 
