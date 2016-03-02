@@ -96,7 +96,7 @@ public class DBUtil {
    * @return a new connection to the database.
    */
   public static Connection openConnection() throws SQLException {
-    return ServiceProvider.getService(ConnectionPool.class).getConnection();
+    return ConnectionPool.getConnection();
   }
 
   /**

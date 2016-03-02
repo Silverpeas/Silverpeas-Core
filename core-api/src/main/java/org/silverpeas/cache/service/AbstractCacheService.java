@@ -23,8 +23,6 @@
  */
 package org.silverpeas.cache.service;
 
-import net.sf.ehcache.Element;
-
 import java.util.UUID;
 
 /**

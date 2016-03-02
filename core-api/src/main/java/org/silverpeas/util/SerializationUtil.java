@@ -23,13 +23,11 @@
  */
 package org.silverpeas.util;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
-
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+import java.util.Base64;
 
 /**
  * @author Yohann Chastagnier
@@ -45,7 +43,7 @@ public class SerializationUtil extends SerializationUtils {
    * @throws SerializationException (runtime) if the serialization fails
    */
   public static String serializeAsString(Serializable obj) {
-    return encodeBase64String(serialize(obj));
+    return Base64.getEncoder().encodeToString(serialize(obj));
   }
 
 
@@ -58,6 +56,9 @@ public class SerializationUtil extends SerializationUtils {
    */
   @SuppressWarnings("unchecked")
   public static <T extends Serializable> T deserializeFromString(String objectStringData) {
-    return (T) SerializationUtils.deserialize(Base64.decodeBase64(objectStringData));
+    if (objectStringData == null) {
+      throw new IllegalArgumentException("data must exist");
+    }
+    return (T) SerializationUtils.deserialize(Base64.getDecoder().decode(objectStringData));
   }
 }

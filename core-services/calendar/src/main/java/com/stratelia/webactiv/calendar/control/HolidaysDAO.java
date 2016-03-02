@@ -28,7 +28,6 @@
  */
 package com.stratelia.webactiv.calendar.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.model.HolidayDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;

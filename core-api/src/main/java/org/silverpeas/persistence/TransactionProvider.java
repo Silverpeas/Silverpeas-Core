@@ -25,8 +25,6 @@ package org.silverpeas.persistence;
 
 import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
-
 /**
  * A factory of transaction instances.
  * <p/>

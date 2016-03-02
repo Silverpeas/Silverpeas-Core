@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.ValidationStep;
 

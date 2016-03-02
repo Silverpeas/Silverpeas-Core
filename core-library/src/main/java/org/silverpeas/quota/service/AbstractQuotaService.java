@@ -23,7 +23,6 @@
  */
 package org.silverpeas.quota.service;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.quota.QuotaKey;

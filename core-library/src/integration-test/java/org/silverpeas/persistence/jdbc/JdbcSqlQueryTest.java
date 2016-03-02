@@ -77,7 +77,7 @@ public class JdbcSqlQueryTest {
     return WarBuilder4LibCore.onWarForTestClass(JdbcSqlQueryTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
-        .addJdbcPersistenceFeatures()
+        .addDatabaseToolFeatures()
         .build();
   }
 

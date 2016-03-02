@@ -24,8 +24,8 @@
 
 package com.silverpeas.calendar;
 
-import org.silverpeas.util.DateUtil;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.util.DateUtil;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -120,13 +120,13 @@ public class DateTime extends AbstractDateDatable<DateTime> {
 
   @Override
   public String toISO8601() {
-    FastDateFormat formatter = FastDateFormat.getInstance(ISO_8601_PATTERN, getTimeZone());
+    FastDateFormat formatter = FastDateFormat.getInstance(Datable.ISO_8601_PATTERN, getTimeZone());
     return formatter.format(this);
   }
 
   @Override
   public String toShortISO8601() {
-    FastDateFormat formatter = FastDateFormat.getInstance(SHORT_ISO_8601_PATTERN, getTimeZone());
+    FastDateFormat formatter = FastDateFormat.getInstance(Datable.SHORT_ISO_8601_PATTERN, getTimeZone());
     return formatter.format(this);
   }
 

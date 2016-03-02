@@ -28,7 +28,6 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.provider.ProviderSwitchInterface;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

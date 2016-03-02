@@ -32,7 +32,6 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import org.silverpeas.util.EncodeHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import java.io.PrintWriter;
 import java.util.Collections;

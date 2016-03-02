@@ -77,7 +77,7 @@ public class MassiveAsynchronousNotificationIntegrationTest {
         .onWarForTestClass(MassiveAsynchronousNotificationIntegrationTest.class)
         .addCacheFeatures()
         .addSubscriptionFeatures()
-        .addJdbcPersistenceFeatures()
+        .addDatabaseToolFeatures()
         .testFocusedOn((war) -> {
           WarBuilder4LibCore warBuilder = ((WarBuilder4LibCore) war);
           warBuilder.addSynchAndAsynchResourceEventFeatures();

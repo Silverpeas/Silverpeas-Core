@@ -54,7 +54,7 @@ public class ThumbnailDAOTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(ThumbnailDAOTest.class)
-        .addJdbcPersistenceFeatures()
+        .addDatabaseToolFeatures()
         .testFocusedOn(war -> war.addPackages(true, "com.silverpeas.thumbnail"))
         .addAsResource("com/silverpeas/thumbnail/create-database.sql")
         .build();

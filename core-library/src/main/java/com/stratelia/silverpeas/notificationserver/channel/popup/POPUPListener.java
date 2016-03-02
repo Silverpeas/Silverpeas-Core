@@ -23,7 +23,6 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.logging.SilverLogger;

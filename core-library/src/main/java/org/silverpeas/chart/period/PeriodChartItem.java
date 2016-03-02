@@ -28,8 +28,6 @@ import org.silverpeas.date.Period;
 import org.silverpeas.util.JSONCodec.JSONArray;
 import org.silverpeas.util.JSONCodec.JSONObject;
 
-import java.util.function.Function;
-
 /**
  * @author Yohann Chastagnier
  */

@@ -50,7 +50,7 @@ public class ComponentInstanceThumbnailDeletionIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore
         .onWarForTestClass(ComponentInstanceThumbnailDeletionIntegrationTest.class)
-        .addJdbcPersistenceFeatures().addSilverpeasExceptionBases().addFileRepositoryFeatures()
+        .addDatabaseToolFeatures().addSilverpeasExceptionBases().addFileRepositoryFeatures()
         .addProcessFeatures().addApacheFileUploadFeatures()
         .addComponentInstanceDeletionFeatures()
         .testFocusedOn(war -> war

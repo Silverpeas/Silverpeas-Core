@@ -33,7 +33,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 import org.silverpeas.util.UnitUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.memory.MemoryUnit;

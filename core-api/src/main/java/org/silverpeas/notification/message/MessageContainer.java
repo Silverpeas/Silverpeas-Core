@@ -23,9 +23,9 @@
  */
 package org.silverpeas.notification.message;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.i18n.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public class MessageContainer {
   private final List<MessageListener> listeners = new ArrayList<>();
-  private String language = I18NHelper.defaultLanguage;
+  private String language = DisplayI18NHelper.getDefaultLanguage();
   private final Set<Message> messages = new LinkedHashSet<>();
 
   /**

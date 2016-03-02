@@ -24,6 +24,8 @@
 
 package org.silverpeas.util.pool;
 
+import org.silverpeas.util.ServiceProvider;
+
 import javax.annotation.Resource;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -48,8 +50,9 @@ public class ConnectionPool {
    * @return a connection to the Silverpeas data source.
    * @throws java.sql.SQLException if an error occurs while getting an available connection.
    */
-  public Connection getConnection() throws SQLException {
-    return dataSource.getConnection();
+  public static Connection getConnection() throws SQLException {
+    ConnectionPool connectionPool = ServiceProvider.getService(ConnectionPool.class);
+    return connectionPool.dataSource.getConnection();
   }
 
   protected ConnectionPool() {

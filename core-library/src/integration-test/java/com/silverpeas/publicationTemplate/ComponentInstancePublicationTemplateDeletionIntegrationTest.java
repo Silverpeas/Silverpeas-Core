@@ -39,7 +39,7 @@ public class ComponentInstancePublicationTemplateDeletionIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore
         .onWarForTestClass(ComponentInstancePublicationTemplateDeletionIntegrationTest.class)
-        .addJdbcPersistenceFeatures()
+        .addDatabaseToolFeatures()
         .addSilverpeasExceptionBases()
         .addOrganisationFeatures()
         .addPublicationTemplateFeatures()

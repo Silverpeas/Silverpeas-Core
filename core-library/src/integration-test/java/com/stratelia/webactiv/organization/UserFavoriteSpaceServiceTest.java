@@ -83,7 +83,7 @@ public class UserFavoriteSpaceServiceTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(UserFavoriteSpaceServiceTest.class)
-        .addJdbcPersistenceFeatures()
+        .addDatabaseToolFeatures()
         .addSilverpeasExceptionBases()
         .testFocusedOn((warBuilder) -> {
           warBuilder.addClasses(AdminException.class, PersistenceException.class);

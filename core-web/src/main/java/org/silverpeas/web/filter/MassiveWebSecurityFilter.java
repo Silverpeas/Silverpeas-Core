@@ -29,7 +29,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.filter.exception.WebSecurityException;
@@ -49,7 +48,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

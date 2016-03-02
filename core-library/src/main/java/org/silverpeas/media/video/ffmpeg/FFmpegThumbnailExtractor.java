@@ -23,7 +23,6 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
 import org.silverpeas.util.MetaData;

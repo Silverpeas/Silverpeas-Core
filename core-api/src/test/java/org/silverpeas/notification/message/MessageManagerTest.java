@@ -23,13 +23,13 @@
  */
 package org.silverpeas.notification.message;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.ResourceLocator;
+import com.silverpeas.ui.DisplayI18NHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.LocalizationBundle;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,9 +44,13 @@ import static org.hamcrest.Matchers.*;
  */
 public class MessageManagerTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   @Before
   public void setup() {
     MessageManager.initialize();
+    assertThat(getMessageContainer().getMessages(), emptyIterable());
   }
 
   @After
@@ -55,43 +59,26 @@ public class MessageManagerTest {
     MessageManager.destroy();
   }
 
-  /**
-   * Initialize the manager in order to be used everywhere in treatments.
-   */
-  public void initialize() {
-    String registredKey =
-        CacheServiceProvider.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceProvider.getRequestCacheService().put(MessageManager.class, registredKey);
-    assertThat(getMessageContainer().getMessages(), emptyIterable());
-  }
-
-  /**
-   * Clear out the thread cache the registred key referenced.
-   */
-  public void destroy() {
-    CacheServiceProvider.getRequestCacheService().remove(MessageManager.class);
-  }
-
   @Test
   public void getLanguage() {
-    assertThat(MessageManager.getLanguage(), is(I18NHelper.defaultLanguage));
+    assertThat(MessageManager.getLanguage(), is(DisplayI18NHelper.getDefaultLanguage()));
     String otherLanguage = "otherLanguage";
     MessageManager.setLanguage(otherLanguage);
-    assertThat(I18NHelper.defaultLanguage, not(is(otherLanguage)));
+    assertThat(DisplayI18NHelper.getDefaultLanguage(), not(is(otherLanguage)));
     assertThat(MessageManager.getLanguage(), is(otherLanguage));
   }
 
   @Test
   public void getResourceLocator() {
     LocalizationBundle locator =
-        MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
+        MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n");
     LocalizationBundle utilLocator =
-        MessageManager.getResourceLocator("org.silverpeas.util.multilang.util");
+        MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.util");
     MessageManager.setLanguage("otherLanguage");
     LocalizationBundle locatorOtherLanguage =
-        MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
+        MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n");
     LocalizationBundle utilLocatorOtherLanguage =
-        MessageManager.getResourceLocator("org.silverpeas.util.multilang.util");
+        MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.util");
 
     assertThat(locator, notNullValue());
     assertThat(locatorOtherLanguage, notNullValue());
@@ -105,21 +92,21 @@ public class MessageManagerTest {
     assertThat(locatorOtherLanguage, not(sameInstance(utilLocatorOtherLanguage)));
     assertThat(utilLocator, not(sameInstance(utilLocatorOtherLanguage)));
 
-    MessageManager.setLanguage(I18NHelper.defaultLanguage);
+    MessageManager.setLanguage(DisplayI18NHelper.getDefaultLanguage());
     assertThat(locator,
-        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n")));
+        sameInstance(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n")));
     assertThat(utilLocator,
-        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util")));
+        sameInstance(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.util")));
     MessageManager.setLanguage("otherLanguage");
     assertThat(locatorOtherLanguage,
-        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n")));
+        sameInstance(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n")));
     assertThat(utilLocatorOtherLanguage,
-        sameInstance(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util")));
+        sameInstance(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.util")));
 
 
     MessageManager.setLanguage("en");
     LocalizationBundle locatorEn =
-        MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
+        MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n");
 
     assertThat(locator.getString("language_fr"), is("Fran\u00e7ais"));
     assertThat(locatorEn.getString("language_fr"), is("French"));
@@ -129,14 +116,14 @@ public class MessageManagerTest {
   public void getResourceLocatorVerifyAfterTrash() {
     getResourceLocator();
     MessageManager.destroy();
-    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n"),
+    assertThat(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n"),
         nullValue());
-    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util"),
+    assertThat(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.util"),
         nullValue());
     MessageManager.setLanguage("otherLanguage");
-    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n"),
+    assertThat(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.i18n"),
         nullValue());
-    assertThat(MessageManager.getResourceLocator("org.silverpeas.util.multilang.util"),
+    assertThat(MessageManager.getLocalizationBundle("org.silverpeas.util.multilang.util"),
         nullValue());
   }
 
@@ -191,9 +178,9 @@ public class MessageManagerTest {
 
   @Test
   public void addListener() {
-    final List<Object> counterLanguage = new LinkedList<Object>();
-    final List<Object> counterBefore = new LinkedList<Object>();
-    final List<Object> counterAfter = new LinkedList<Object>();
+    final List<Object> counterLanguage = new LinkedList<>();
+    final List<Object> counterBefore = new LinkedList<>();
+    final List<Object> counterAfter = new LinkedList<>();
     MessageManager.addListener(new MessageListener() {
       @Override
       public void beforeGetLanguage(final MessageContainer container) {

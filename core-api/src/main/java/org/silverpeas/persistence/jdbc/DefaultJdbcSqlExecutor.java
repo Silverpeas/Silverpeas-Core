@@ -25,7 +25,7 @@
 package org.silverpeas.persistence.jdbc;
 
 import com.silverpeas.calendar.DateTime;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.pool.ConnectionPool;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -56,7 +56,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
 
   @Override
   public long selectCount(JdbcSqlQuery selectCountQueryBuilder) throws SQLException {
-    try (Connection con = DBUtil.openConnection()) {
+    try (Connection con = ConnectionPool.getConnection()) {
       try (PreparedStatement st = con.prepareStatement(selectCountQueryBuilder.getSqlQuery())) {
         setParameters(st, selectCountQueryBuilder.getParameters());
         try (ResultSet rs = st.executeQuery()) {
@@ -74,7 +74,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   @Override
   public <ROW_ENTITY> List<ROW_ENTITY> select(JdbcSqlQuery selectQueryBuilder,
       SelectResultRowProcess<ROW_ENTITY> process) throws SQLException {
-    try (Connection con = DBUtil.openConnection()) {
+    try (Connection con = ConnectionPool.getConnection()) {
       try (PreparedStatement st = con.prepareStatement(selectQueryBuilder.getSqlQuery())) {
         setParameters(st, selectQueryBuilder.getParameters());
         try (ResultSet rs = st.executeQuery()) {
@@ -106,7 +106,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   @Override
   public long executeModify(List<JdbcSqlQuery> modifySqlQueries) throws SQLException {
     long nbUpdate = 0;
-    try (Connection con = DBUtil.openConnection()) {
+    try (Connection con = ConnectionPool.getConnection()) {
       for (JdbcSqlQuery modifyQuery : modifySqlQueries) {
         modifyQuery.finalizeBeforeExecution();
         try (PreparedStatement prepStmt = con.prepareStatement(modifyQuery.getSqlQuery())) {

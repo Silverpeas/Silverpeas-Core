@@ -25,7 +25,6 @@
 package com.stratelia.webactiv.persistence;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.sun.org.apache.xpath.internal.SourceTree;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.WAPrimaryKey;

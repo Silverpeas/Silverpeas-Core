@@ -23,11 +23,11 @@
  */
 package org.silverpeas.notification.message;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * This manager provides tools to register and restitute volatile messages (info, success or error)
@@ -67,10 +67,10 @@ public class MessageManager {
    * Initialize the manager in order to be used everywhere in treatments.
    */
   public static String initialize() {
-    String registredKey =
+    String registeredKey =
         CacheServiceProvider.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceProvider.getRequestCacheService().put(MessageManager.class, registredKey);
-    return registredKey;
+    CacheServiceProvider.getRequestCacheService().put(MessageManager.class, registeredKey);
+    return registeredKey;
   }
 
   /**
@@ -135,7 +135,7 @@ public class MessageManager {
     if (container != null) {
       return container.getLanguage();
     }
-    return I18NHelper.defaultLanguage;
+    return DisplayI18NHelper.getDefaultLanguage();
   }
 
   /**
@@ -175,8 +175,7 @@ public class MessageManager {
 
     // If null, manager has not been initialized -> ERROR is traced
     if (container == null) {
-      SilverTrace.error("notification", "MessageManager.getLocalizationBundle",
-          "MESSAGE_MANAGER.NOT_INITIALIZED", "ResourceLocator : " + bundleBaseName);
+      SilverLogger.getLogger("notification").error("ResourceLocator : " + bundleBaseName);
       return null;
     }
 
@@ -315,9 +314,8 @@ public class MessageManager {
 
     // If null, manager has not been initialized -> ERROR is traced
     if (container == null) {
-      SilverTrace
-          .error("notification", "MessageManager.addMessage", "MESSAGE_MANAGER.NOT_INITIALIZED",
-              "Type : " + message.getType() + ", Message : " + message.getContent());
+      SilverLogger.getLogger("notification")
+          .error("Type : " + message.getType() + ", Message : " + message.getContent());
     } else {
       container.addMessage(message);
     }

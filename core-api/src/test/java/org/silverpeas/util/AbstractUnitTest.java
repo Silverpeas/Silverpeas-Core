@@ -1,12 +1,13 @@
 package org.silverpeas.util;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.test.rule.MockByReflectionRule;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -24,8 +25,10 @@ public abstract class AbstractUnitTest {
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+
   private Locale currentLocale;
-  private String currentLanguage;
   private Map<String, SilverpeasBundle> bundleCache;
 
   private final static Map<String, String> bundle = new HashMap<>();
@@ -59,9 +62,9 @@ public abstract class AbstractUnitTest {
   @Before
   public void setup() throws Exception {
     currentLocale = Locale.getDefault();
-    currentLanguage = I18NHelper.defaultLanguage;
     Locale.setDefault(Locale.FRANCE);
-    I18NHelper.defaultLanguage = Locale.getDefault().getLanguage();
+    reflectionRule
+        .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
     bundleCache = (Map) FieldUtils.readStaticField(ResourceLocator.class, "bundles", true);
     LocalizationBundle unitsBundle = mock(LocalizationBundle.class);
     when(unitsBundle.handleGetObject(anyString())).thenAnswer(invocation -> {
@@ -76,7 +79,6 @@ public abstract class AbstractUnitTest {
   @After
   public void clear() {
     Locale.setDefault(currentLocale);
-    I18NHelper.defaultLanguage = currentLanguage;
     bundleCache.clear();
   }
 }

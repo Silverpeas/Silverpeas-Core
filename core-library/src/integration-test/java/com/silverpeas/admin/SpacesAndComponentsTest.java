@@ -24,7 +24,6 @@
 package com.silverpeas.admin;
 
 import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.components.WAComponentRegistry;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;

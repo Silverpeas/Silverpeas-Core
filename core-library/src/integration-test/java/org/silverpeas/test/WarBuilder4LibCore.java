@@ -31,11 +31,11 @@ import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
@@ -51,6 +51,8 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.JcrContext;
+import org.silverpeas.cache.service.VolatileCacheServiceProvider;
+import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.contribution.model.ContributionContent;
 import org.silverpeas.contribution.model.ContributionIdentifier;
@@ -59,9 +61,6 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.jcr.JcrRepositoryProvider;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionProvider;
-import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.quota.QuotaKey;
@@ -86,11 +85,7 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.logging.LogAnnotationProcessor;
 import org.silverpeas.util.logging.LogsAccessor;
 import org.silverpeas.util.mail.Mail;
-import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.time.TimeConversionBoardKey;
-import org.silverpeas.util.time.TimeData;
-import org.silverpeas.util.time.TimeUnit;
 import org.silverpeas.wysiwyg.control.WysiwygManager;
 
 /**
@@ -139,7 +134,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   /**
    * Adds cache features:
    * <ul>
-   * <li>ehcache maven dependencies</li>
    * <li>org.silverpeas.cache</li>
    * </ul>
    * Calls automatically:
@@ -149,9 +143,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addCacheFeatures() {
-    if (!contains("org.silverpeas.cache")) {
-      addMavenDependencies("net.sf.ehcache:ehcache-core");
-      addPackages(true, "org.silverpeas.cache");
+    if (!contains(VolatileCacheServiceProvider.class)) {
+      addClasses(VolatileCacheServiceProvider.class, VolatileResourceCacheService.class);
       addClasses(SessionInfo.class);
       addCommonBasicUtilities();
     }
@@ -162,10 +155,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Adds common utilities classes:
    * <ul>
    * <li>{@link ArrayUtil}</li>
-   * <li>{@link StringUtil}</li>
    * <li>{@link CollectionUtil}</li>
    * <li>{@link MapUtil}</li>
-   * <li>{@link DateUtil}</li>
    * <li>{@link AssertArgument}</li>
    * <li>{@link EncodeHelper}</li>
    * <li>{@link ActionType} and classes in {@link org.silverpeas.util.annotation}</li>
@@ -173,7 +164,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link AbstractComplexComparator}</li>
    * <li>{@link AbstractComparator}</li>
    * <li>{@link ListSlice}</li>
-   * <li>{@link UnitUtil}</li>
    * </ul>
    * @return the instance of the war builder.
    */
@@ -181,20 +171,13 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(ArrayUtil.class)) {
       addClasses(ArrayUtil.class);
     }
-    if (!contains(StringUtil.class)) {
-      addClasses(StringUtil.class);
-    }
     if (!contains(MapUtil.class)) {
       addClasses(MapUtil.class);
-    }
-    if (!contains(ArrayUtil.class)) {
-      addClasses(ArrayUtil.class);
     }
     if (!contains(EncodeHelper.class)) {
       addClasses(EncodeHelper.class);
     }
-    if (!contains(DateUtil.class)) {
-      addClasses(DateUtil.class);
+    if (!contains(CalendarEvent.class)) {
       addPackages(true, "com.silverpeas.calendar");
     }
     if (!contains(Charsets.class)) {
@@ -222,12 +205,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(GlobalContext.class)) {
       addClasses(GlobalContext.class);
-    }
-    if (!contains(UnitUtil.class)) {
-      addClasses(UnitUtil.class);
-      addClasses(TimeData.class);
-      addClasses(TimeUnit.class);
-      addClasses(TimeConversionBoardKey.class);
     }
     return this;
   }
@@ -282,7 +259,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
     if (!contains(MimeTypes.class)) {
-      addClasses(DisplayI18NHelper.class, FileUtil.class, Mail.class, MimeTypes.class,
+      addClasses(FileUtil.class, Mail.class, MimeTypes.class,
           RelativeFileAccessException.class, MetadataExtractor.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
@@ -353,19 +330,17 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
-   * Sets JDBC persistence features.
+   * Sets Database tool features.
    * Calls automatically:
    * <ul>
    * <li>{@link #addCommonBasicUtilities()}</li>
    * </ul>
    * @return the instance of the war builder.
    */
-  public WarBuilder4LibCore addJdbcPersistenceFeatures() {
+  public WarBuilder4LibCore addDatabaseToolFeatures() {
     addCommonBasicUtilities();
     if (!contains(DBUtil.class)) {
-      addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-          TransactionRuntimeException.class);
-      addPackages(false, "org.silverpeas.persistence.jdbc");
+      addClasses(DBUtil.class);
     }
     return this;
   }
@@ -374,7 +349,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Sets JPA persistence features.
    * Calls automatically:
    * <ul>
-   * <li>{@link #addJdbcPersistenceFeatures()}</li>
+   * <li>{@link #addDatabaseToolFeatures()}</li>
    * <li>{@link #addBundleBaseFeatures()}</li>
    * <li>{@link #addCacheFeatures()}</li>
    * <li>{@link #addCommonUserBeans()}</li>
@@ -382,7 +357,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addJpaPersistenceFeatures() {
-    addJdbcPersistenceFeatures();
+    addDatabaseToolFeatures();
     addBundleBaseFeatures();
     addCacheFeatures();
     addCommonUserBeans();

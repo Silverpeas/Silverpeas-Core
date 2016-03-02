@@ -24,7 +24,6 @@
 
 package org.silverpeas.util.viewGenerator.html.calendar;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.viewGenerator.html.monthCalendar.Event;
 

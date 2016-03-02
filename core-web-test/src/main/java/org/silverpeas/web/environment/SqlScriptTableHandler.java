@@ -30,9 +30,7 @@ import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
