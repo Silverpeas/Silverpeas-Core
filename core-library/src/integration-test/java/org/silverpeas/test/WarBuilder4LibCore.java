@@ -604,6 +604,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       // Exclusions
       applyManually(war -> war.deleteClass(StubbedAdministration.class));
       // Centralized features
+      addDatabaseToolFeatures();
       addJpaPersistenceFeatures();
       addQuotaBasesFeatures();
       addStringTemplateFeatures();
