@@ -2256,7 +2256,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
                 if (instanceId.startsWith("kmelia")) {
                   if (componentSecurity == null) {
                     componentSecurity = (ComponentSecurity) Class
-                        .forName("com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
+                        .forName("org.silverpeas.components.kmelia.KmeliaSecurity").newInstance();
                     componentSecurity.enableCache();
                   }
 

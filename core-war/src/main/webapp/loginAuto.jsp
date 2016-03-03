@@ -33,8 +33,8 @@
 <%@ include file="headLog.jsp" %>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
-<%@ page import="com.stratelia.webactiv.kmelia.KmeliaSecurity" %>
-<%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper" %>
+<%@ page import="org.silverpeas.components.kmelia.KmeliaSecurity" %>
+<%@ page import="org.silverpeas.components.kmelia.control.KmeliaHelper" %>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 

@@ -564,7 +564,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ComponentSecurity getSecurityIntf() throws Exception {
     if (componentSecurity == null) {
       componentSecurity = (ComponentSecurity) Class.forName(
-          "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
+          "org.silverpeas.components.kmelia.KmeliaSecurity").newInstance();
     }
 
     return componentSecurity;

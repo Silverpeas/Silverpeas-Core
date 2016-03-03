@@ -50,7 +50,7 @@
         <description>Dernieres publications</description>
         <portlet-name>LastPublicationsPortlet</portlet-name>
         <display-name>LastPublicationsPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.LastPublicationsPortlet</portlet-class>
+        <portlet-class>org.silverpeas.components.kmelia.portlets.LastPublicationsPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>

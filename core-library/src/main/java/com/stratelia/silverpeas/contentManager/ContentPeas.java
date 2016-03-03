@@ -63,26 +63,26 @@ public class ContentPeas {
           "com.silverpeas.questionReply.control.QuestionReplyContentManager",
           "questionReplyPDC", "admin", "publisher", "writer", "user");
     } else if ("kmelia".equals(sContentDescriptorPath)) {
-      this.init("kmelia", "com.stratelia.webactiv.kmelia.KmeliaContentManager", "kmelia", "admin",
+      this.init("kmelia", "org.silverpeas.components.kmelia.KmeliaContentManager", "kmelia", "admin",
           "publisher", "writer", "user");
     } else if ("survey".equals(sContentDescriptorPath)) {
       this.init("survey", "com.stratelia.webactiv.survey.SurveyContentManager", "survey", "admin",
           "user");
     } else if ("toolbox".equals(sContentDescriptorPath)) {
-      this.init("toolbox", "com.stratelia.webactiv.kmelia.KmeliaContentManager", "kmelia", "admin",
+      this.init("toolbox", "org.silverpeas.components.kmelia.KmeliaContentManager", "kmelia", "admin",
           "publisher", "user");
     } else if ("quickinfo".equals(sContentDescriptorPath)) {
       this.init("quickinfo", "com.stratelia.webactiv.quickinfo.QuickInfoContentManager",
           "quickinfo",
           "admin", "publisher", "user");
     } else if ("almanach".equals(sContentDescriptorPath)) {
-      this.init("almanach", "com.stratelia.webactiv.almanach.AlmanachContentManager", "almanach",
+      this.init("almanach", "org.silverpeas.components.almanach.AlmanachContentManager", "almanach",
           "admin", "publisher", "user");
     } else if ("quizz".equals(sContentDescriptorPath)) {
       this.init("quizz", "com.stratelia.webactiv.quizz.QuizzContentManager", "quizz", "admin",
           "publisher", "user");
     } else if (sContentDescriptorPath.equals("forums")) {
-      this.init("forums", "com.stratelia.webactiv.forums.ForumsContentManager", "forums", "admin",
+      this.init("forums", "org.silverpeas.components.forums.ForumsContentManager", "forums", "admin",
           "user");
     } else if ("pollingStation".equals(sContentDescriptorPath)) {
       this.init("pollingStation", "com.stratelia.webactiv.survey.SurveyContentManager", "survey",
@@ -94,7 +94,7 @@ public class ContentPeas {
       this.init("chat", "com.stratelia.silverpeas.chat.ChatContentManager", "chat", "admin",
           "publisher", "user");
     } else if ("infoLetter".equals(sContentDescriptorPath)) {
-      this.init("infoLetter", "com.stratelia.silverpeas.infoLetter.InfoLetterContentManager",
+      this.init("infoLetter", "org.silverpeas.components.infoLetter.InfoLetterContentManager",
           "infoLetter", "admin", "publisher", "user");
     } else if ("expertLocator".equals(sContentDescriptorPath)) {
       this.init("expertLocator",
@@ -104,10 +104,10 @@ public class ContentPeas {
       this.init("webSites", "com.stratelia.webactiv.webSites.WebSitesContentManager", "webSites",
           "Publisher", "Reader");
     } else if ("gallery".equals(sContentDescriptorPath)) {
-      this.init("gallery", "com.silverpeas.gallery.GalleryContentManager", "gallery", "admin",
+      this.init("gallery", "org.silverpeas.components.gallery.GalleryContentManager", "gallery", "admin",
           "publisher", "writer", "user");
     } else if (sContentDescriptorPath.equals("blog")) {
-      this.init("blog", "com.silverpeas.blog.BlogContentManager", "blog", "admin", "user");
+      this.init("blog", "org.silverpeas.components.blog.BlogContentManager", "blog", "admin", "user");
     }
   }
 

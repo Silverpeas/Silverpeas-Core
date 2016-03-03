@@ -45,7 +45,7 @@ public class ImportExportFactory {
     Class<? extends GEDImportExport> gedImportExportClass;
     try {
       gedImportExportClass = (Class<? extends GEDImportExport>) Class
-          .forName("com.silverpeas.kmelia.importexport.KmeliaImportExport");
+          .forName("org.silverpeas.components.kmelia.importexport.KmeliaImportExport");
       Constructor gedImportExportConstructor =
           gedImportExportClass.getConstructor(UserDetail.class, String.class);
       return (GEDImportExport) gedImportExportConstructor
