@@ -76,6 +76,7 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(
         SILVERMAILMessageBeanRepositoryIntegrationTest.class)
+        .addDatabaseToolFeatures()
         .addJpaPersistenceFeatures()
         .testFocusedOn(war -> war.addClasses(SILVERMAILMessageBean.class,
             SILVERMAILMessageBeanRepository.class))

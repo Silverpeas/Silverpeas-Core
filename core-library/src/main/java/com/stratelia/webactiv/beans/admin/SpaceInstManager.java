@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
@@ -188,7 +189,8 @@ public class SpaceInstManager {
         for (String componentId : asCompoIds) {
           ComponentInst componentInst = componentInstManager.getComponentInst(
               ddManager, idAsInt(componentId), spaceInstLocalId);
-          spaceInst.addComponentInst(componentInst);
+          WAComponent.get(componentInst.getName())
+              .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
         }
       }
 
@@ -249,7 +251,8 @@ public class SpaceInstManager {
         for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
           ComponentInst componentInst = componentInstManager.getComponentInst(
               ddManager, idAsInt(asCompoIds[nI]), spaceInst.getLocalId());
-          spaceInst.addComponentInst(componentInst);
+          WAComponent.get(componentInst.getName())
+              .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
         }
 
         spaceInst.setLanguage(space.lang);

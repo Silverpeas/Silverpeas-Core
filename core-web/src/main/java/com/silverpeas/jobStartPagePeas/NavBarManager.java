@@ -1,27 +1,29 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * <p>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
+ * <p>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.jobStartPagePeas;
 
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -29,12 +31,16 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.owasp.encoder.Encode;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import org.owasp.encoder.Encode;
 
 public class NavBarManager {
   // Constants used by urlFactory
@@ -47,12 +53,11 @@ public class NavBarManager {
   final static int SPACE_COMPONENT = 4;
   final static int SUBSPACE_COMPONENT = 5;
   final static int SUBSPACE_LAST_COMPONENT = 6;
-  final static String POPUP_PARAM_NAME = "popupDisplay";
   UserDetail m_user = null;
   AdminController m_administrationCtrl = null;
   AbstractComponentSessionController m_SessionCtrl = null;
   String m_sContext;
-  HashSet<String> m_ManageableSpaces = new HashSet<String>();
+  HashSet<String> m_ManageableSpaces = new HashSet<>();
   DisplaySorted[] m_Spaces = null;
   String m_CurrentSpaceId = null;
   DisplaySorted[] m_SpaceComponents = null;
@@ -159,8 +164,7 @@ public class NavBarManager {
     m_SubSpaceComponents = new DisplaySorted[0];
 
     if (!m_user.isAccessAdmin()) {
-      String[] allManageableSpaceIds = m_administrationCtrl
-          .getUserManageableSpaceIds(sUserId);
+      String[] allManageableSpaceIds = m_administrationCtrl.getUserManageableSpaceIds(sUserId);
       // First of all, add the manageable spaces into the set
       m_ManageableSpaces.clear();
       for (String manageableSpaceId : allManageableSpaceIds) {
@@ -193,8 +197,7 @@ public class NavBarManager {
     // Reset the selected sub space
     m_CurrentSubSpaceId = null;
     m_SubSpaceComponents = new DisplaySorted[0];
-    if (StringUtil.isDefined(m_CurrentSpaceId)
-        && getSpaceCache(m_CurrentSpaceId) == null) {
+    if (StringUtil.isDefined(m_CurrentSpaceId) && getSpaceCache(m_CurrentSpaceId) == null) {
       m_CurrentSpaceId = null;
     }
 
@@ -202,8 +205,7 @@ public class NavBarManager {
       m_SpaceComponents = new DisplaySorted[0];
       m_SubSpaces = new DisplaySorted[0];
     } else {
-      SpaceInst spaceInst = m_administrationCtrl.getSpaceInstById("WA"
-          + spaceId);
+      SpaceInst spaceInst = m_administrationCtrl.getSpaceInstById("WA" + spaceId);
       // Get the space's components and sub-spaces
       if (spaceInst == null) {
         m_SpaceComponents = new DisplaySorted[0];
@@ -213,7 +215,7 @@ public class NavBarManager {
         m_SpaceComponents = createComponentObjects(spaceInst, false);
         List<SpaceInst> subspaces = spaceInst.getSubSpaces();
         String[] spaceIds = new String[subspaces.size()];
-        for(int i = 0; i < subspaces.size(); i++) {
+        for (int i = 0; i < subspaces.size(); i++) {
           spaceIds[i] = subspaces.get(i).getId();
         }
         m_SubSpaces = createSpaceObjects(spaceIds, true);
@@ -251,8 +253,7 @@ public class NavBarManager {
     SpaceInst sp = null;
 
     m_CurrentSubSpaceId = subSpaceId;
-    if (StringUtil.isDefined(m_CurrentSubSpaceId)
-        && (getSpaceCache(m_CurrentSubSpaceId) == null)) {
+    if (StringUtil.isDefined(m_CurrentSubSpaceId) && (getSpaceCache(m_CurrentSubSpaceId) == null)) {
       m_CurrentSubSpaceId = null;
     }
     if (StringUtil.isDefined(m_CurrentSubSpaceId)) {
@@ -299,26 +300,6 @@ public class NavBarManager {
     return null;
   }
 
-  protected DisplaySorted getComponentCache(String componentId) {
-    if (componentId == null) {
-      return null;
-    }
-
-    for (DisplaySorted spaceComponent : m_SpaceComponents) {
-      if (componentId.equals(spaceComponent.id)) {
-        return spaceComponent;
-      }
-    }
-
-    for (DisplaySorted subspaceComponent : m_SubSpaceComponents) {
-      if (componentId.equals(subspaceComponent.id)) {
-        return subspaceComponent;
-      }
-    }
-
-    return null;
-  }
-
   protected DisplaySorted[] createSpaceObjects(String[] spaceIds, boolean goRecurs) {
     if (spaceIds == null) {
       return new DisplaySorted[0];
@@ -330,7 +311,7 @@ public class NavBarManager {
     Arrays.sort(valret);
     if (goRecurs) {
       DisplaySorted[] parents = valret;
-      List<DisplaySorted> alValret = new ArrayList<DisplaySorted>();
+      List<DisplaySorted> alValret = new ArrayList<>();
       for (DisplaySorted parent : parents) {
         alValret.add(parent);
         String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parent.id);
@@ -352,10 +333,9 @@ public class NavBarManager {
       valret.type = DisplaySorted.TYPE_SPACE;
       valret.isAdmin = m_user.isAccessAdmin() || m_ManageableSpaces.contains(valret.id);
       if (!valret.isAdmin) { // Rattrapage....
-        String[] manageableSubSpaceIds = m_administrationCtrl
-            .getUserManageableSubSpaceIds(m_user.getId(), valret.id);
-        if ((manageableSubSpaceIds == null)
-            || (manageableSubSpaceIds.length <= 0)) {
+        String[] manageableSubSpaceIds =
+            m_administrationCtrl.getUserManageableSubSpaceIds(m_user.getId(), valret.id);
+        if ((manageableSubSpaceIds == null) || (manageableSubSpaceIds.length <= 0)) {
           valret.isVisible = false;
         }
       }
@@ -363,10 +343,9 @@ public class NavBarManager {
       valret.type = DisplaySorted.TYPE_SUBSPACE;
       valret.isAdmin = m_user.isAccessAdmin() || isAdminOfSpace(spaceInst);
       if (!valret.isAdmin) { // Rattrapage....
-        String[] manageableSubSpaceIds = m_administrationCtrl
-            .getUserManageableSubSpaceIds(m_user.getId(), valret.id);
-        if ((manageableSubSpaceIds == null)
-            || (manageableSubSpaceIds.length <= 0)) {
+        String[] manageableSubSpaceIds =
+            m_administrationCtrl.getUserManageableSubSpaceIds(m_user.getId(), valret.id);
+        if ((manageableSubSpaceIds == null) || (manageableSubSpaceIds.length <= 0)) {
           valret.isVisible = false;
         }
       }
@@ -394,8 +373,7 @@ public class NavBarManager {
         String spaceName;
         StringBuilder spacesSpaces = new StringBuilder();
 
-        objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED
-            : SPACE_COLLAPSE;
+        objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED : SPACE_COLLAPSE;
         link = "GoToSubSpace?SubSpace=" + space.id;
         if (m_SessionCtrl.isSpaceInMaintenance(space.id)) {
           spaceName = space.name + " (M)";
@@ -405,12 +383,8 @@ public class NavBarManager {
         for (int i = 0; i < space.deep - 1; i++) {
           spacesSpaces.append("&nbsp;&nbsp;");
         }
-        space.htmlLine = spacesSpaces.toString()
-            + "<a name=\""
-            + space.id
-            + "\"/>"
-            + urlFactory(link, "space" + space.id, "", spaceName, SPACE,
-            objType, m_sContext, "", space);
+        space.htmlLine = spacesSpaces.toString() + "<a name=\"" + space.id + "\"/>" +
+            urlFactory(link, "space" + space.id, "", spaceName, SPACE, objType, m_sContext, "");
       } else {
         StringBuilder sb = new StringBuilder();
         sb.append("<option ");
@@ -430,32 +404,27 @@ public class NavBarManager {
   }
 
   protected boolean isAdminOfSpace(SpaceInstLight spaceInst) {
-    boolean valret = m_ManageableSpaces.contains(spaceInst.getLocalId())
-        || m_ManageableSpaces.contains(getShortSpaceId(spaceInst
-        .getFatherId()));
+    boolean valret = m_ManageableSpaces.contains(String.valueOf(spaceInst.getLocalId())) ||
+        m_ManageableSpaces.contains(getShortSpaceId(spaceInst.getFatherId()));
     SpaceInstLight parcSpaceInst = spaceInst;
 
     while (!valret && !parcSpaceInst.isRoot()) {
-      parcSpaceInst = m_administrationCtrl.getSpaceInstLight(parcSpaceInst
-          .getFatherId());
-      valret = m_ManageableSpaces.contains(parcSpaceInst.getLocalId());
+      parcSpaceInst = m_administrationCtrl.getSpaceInstLight(parcSpaceInst.getFatherId());
+      valret = m_ManageableSpaces.contains(String.valueOf(parcSpaceInst.getLocalId()));
     }
 
     return valret;
   }
 
-  protected DisplaySorted[] createComponentObjects(SpaceInst spaceInst,
-      boolean subSpaces) {
+  protected DisplaySorted[] createComponentObjects(SpaceInst spaceInst, boolean subSpaces) {
     // Get the space's components
     List<ComponentInst> components = spaceInst.getAllComponentsInst();
-    String label;
-    String link;
-    int objType;
     boolean isTheSpaceAdmin =
         m_user.isAccessAdmin() || isAdminOfSpace(new SpaceInstLight(spaceInst));
-    List<DisplaySorted> result = new ArrayList<DisplaySorted>();
-    int i = 0;
-    for (ComponentInst ci : components) {
+    List<DisplaySorted> result = new ArrayList<>();
+    Iterator<ComponentInst> componentInstIterator = components.iterator();
+    while (componentInstIterator.hasNext()) {
+      ComponentInst ci = componentInstIterator.next();
       DisplaySorted ds = new DisplaySorted();
       ds.name = ci.getLabel(m_SessionCtrl.getLanguage());
       if (ds.name == null) {
@@ -469,10 +438,11 @@ public class NavBarManager {
       ds.isVisible = isTheSpaceAdmin;
       if (ds.isVisible) {
         // Build HTML Line
-        label = ds.name;
-        link = "GoToComponent?ComponentId=" + ci.getId();
+        String label = ds.name;
+        String link = "GoToComponent?ComponentId=" + ci.getId();
+        final int objType;
         if (subSpaces) {
-          if (i + 1 == components.size()) {
+          if (componentInstIterator.hasNext()) {
             objType = SUBSPACE_LAST_COMPONENT;
           } else {
             objType = SUBSPACE_COMPONENT;
@@ -488,23 +458,20 @@ public class NavBarManager {
         if (ci.isWorkflow()) {
           componentIcon = "processManager";
         }
-        ds.htmlLine = componentsSpaces.toString()
-            + urlFactory(link, "element" + m_elmtCounter++, componentIcon,
-            label, COMPONENT, objType, m_sContext,
-            "startPageContent", ds);
+        ds.htmlLine = componentsSpaces.toString() +
+            urlFactory(link, "element" + m_elmtCounter++, componentIcon, label, COMPONENT,
+                objType, m_sContext, "startPageContent");
       } else {
         ds.htmlLine = "";
       }
       result.add(ds);
-      i++;
     }
     Collections.sort(result);
     return result.toArray(new DisplaySorted[result.size()]);
   }
 
-  protected String urlFactory(String link, String elementLabel,
-      String imageLinked, String labelLinked, int elementType, int imageType,
-      String m_sContext, String target, DisplaySorted extraInfos) {
+  protected String urlFactory(String link, String elementLabel, String imageLinked,
+      String labelLinked, int elementType, int imageType, String m_sContext, String target) {
     StringBuilder result = new StringBuilder();
     String boldStart = "";
     String boldEnd = "";
@@ -529,53 +496,42 @@ public class NavBarManager {
         break;
     }
     String safeElementLabel = Encode.forHtml(elementLabel);
-    imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext
-        + "/util/icons/component/" + imageLinked
-        + "Small.gif\" class=\"component-icon\"/>";
+    imageLinked =
+        "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext + "/util/icons/component/" +
+            imageLinked + "Small.gif\" class=\"component-icon\"/>";
     switch (imageType) {
       case SPACE_COLLAPSE:
-        result.append("<a href=\"").append(link).append("\"").append(target)
-            .append("><img src=\"").append(m_sContext).append(
-            "/util/icons/plusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
-        imageLinked = "<img name=\""
-            + safeElementLabel
-            + "\" src=\""
-            + m_sContext
-            + "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" align=\"absmiddle\">";
+        result.append("<a href=\"").append(link).append("\"").append(target).append("><img src=\"")
+            .append(m_sContext)
+            .append("/util/icons/plusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
+        imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext +
+            "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" " +
+            "align=\"absmiddle\">";
         break;
       case SPACE_EXPANDED:
-        result
-            .append("<a href=\"")
-            .append(link)
-            .append("\"")
-            .append(target)
-            .append("><img src=\"")
+        result.append("<a href=\"").append(link).append("\"").append(target).append("><img src=\"")
             .append(m_sContext)
-            .append(
-            "/util/icons/minusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
-        imageLinked = "<img name=\""
-            + safeElementLabel
-            + "\" src=\""
-            + m_sContext
-            + "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" align=\"absmiddle\">";
+            .append("/util/icons/minusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
+        imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext +
+            "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" " +
+            "align=\"absmiddle\">";
         break;
       case SPACE_COMPONENT:
         break;
       case SUBSPACE_COMPONENT:
-        result.append("<img src=\"").append(m_sContext).append(
-            "/util/icons/minusTreeT.gif\" border=\"0\" align=\"absmiddle\">");
+        result.append("<img src=\"").append(m_sContext)
+            .append("/util/icons/minusTreeT.gif\" border=\"0\" align=\"absmiddle\">");
         break;
       case SUBSPACE_LAST_COMPONENT:
-        result.append("<img src=\"").append(m_sContext).append(
-            "/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
+        result.append("<img src=\"").append(m_sContext)
+            .append("/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
         break;
     }
     String safeLabelLinked = Encode.forHtml(labelLinked);
-    result.append("<a href=\"").append(link).append("\" ").append(target)
-        .append(">").append(imageLinked).append("&nbsp;</a>");
-    result.append("<a href=\"").append(link).append("\" ").append(target)
-        .append(">").append(boldStart).append(safeLabelLinked).append(boldEnd)
-        .append("</a><br/>");
+    result.append("<a href=\"").append(link).append("\" ").append(target).append(">")
+        .append(imageLinked).append("&nbsp;</a>");
+    result.append("<a href=\"").append(link).append("\" ").append(target).append(">")
+        .append(boldStart).append(safeLabelLinked).append(boldEnd).append("</a><br/>");
     return result.toString();
   }
 }

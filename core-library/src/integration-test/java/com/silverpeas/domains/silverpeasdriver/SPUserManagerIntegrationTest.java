@@ -100,6 +100,7 @@ public class SPUserManagerIntegrationTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(SPUserManagerIntegrationTest.class)
+        .addDatabaseToolFeatures()
         .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> warBuilder
             .addClasses(SPUserManager.class, SPUserJpaManager.class, SPUser.class, SPGroup.class))
         .build();
