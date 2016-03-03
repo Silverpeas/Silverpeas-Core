@@ -4132,7 +4132,8 @@ class Admin implements Administration {
       ComponentInstLight component = getComponentInstLight(componentId);
       if (component != null) {
         List<String> toCheck = Arrays.asList(spaceIds);
-        manageable = toCheck.contains(getDriverSpaceId(component.getDomainFatherId()));
+        final int driverSpaceId = getDriverSpaceId(component.getDomainFatherId());
+        manageable = toCheck.contains(String.valueOf(driverSpaceId));
       }
     }
     return manageable;

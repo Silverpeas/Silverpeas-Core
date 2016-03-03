@@ -28,11 +28,13 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 abstract public class AbstractDomainDriver implements DomainDriver {
 
@@ -156,7 +158,11 @@ abstract public class AbstractDomainDriver implements DomainDriver {
       LocalizationBundle msg =
           ResourceLocator.getLocalizationBundle(m_PropertiesMultilang, language);
       for (String key : keys) {
-        newLabels.put(key, msg.getString(key));
+        try {
+          newLabels.put(key, msg.getString(key));
+        } catch (MissingResourceException mre) {
+          SilverLogger.getLogger(this).warn(mre.getMessage());
+        }
       }
       m_PropertiesLabels.put(language, newLabels);
       valret = newLabels;
@@ -173,7 +179,11 @@ abstract public class AbstractDomainDriver implements DomainDriver {
       LocalizationBundle msg =
           ResourceLocator.getLocalizationBundle(m_PropertiesMultilang, language);
       for (String key : keys) {
-        newDescriptions.put(key, msg.getString(key + ".description"));
+        try {
+          newDescriptions.put(key, msg.getString(key + ".description"));
+        } catch (MissingResourceException mre) {
+          SilverLogger.getLogger(this).warn(mre.getMessage());
+        }
       }
       m_PropertiesDescriptions.put(language, newDescriptions);
       valret = newDescriptions;

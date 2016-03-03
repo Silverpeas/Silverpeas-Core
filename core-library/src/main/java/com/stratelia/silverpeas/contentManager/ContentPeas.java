@@ -56,7 +56,7 @@ public class ContentPeas {
       this.init("fileBoxPlus", "com.stratelia.silverpeas.fileBoxPlus.FileBoxPlusContentManager",
           "fileBoxPlus", "admin", "publisher", "user");
     } else if ("whitePages".equals(sContentDescriptorPath)) {
-      this.init("whitePages", "com.silverpeas.whitePages.control.WhitePagesContentManager",
+      this.init("whitePages", "org.silverpeas.components.whitepages.control.WhitePagesContentManager",
           "whitePagesPDC", "admin", "user");
     } else if ("questionReply".equals(sContentDescriptorPath)) {
       this.init("questionReply",

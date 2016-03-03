@@ -413,7 +413,7 @@ public class AdminCache {
 
   public String[] getAvailCompoIds(int spaceId, String userId) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
+      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(String.valueOf(spaceId));
       if (spaceTable != null) {
         return spaceTable.get(userId);
       }
