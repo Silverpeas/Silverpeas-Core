@@ -88,7 +88,7 @@ public class ContentPeas {
       this.init("pollingStation", "com.stratelia.webactiv.survey.SurveyContentManager", "survey",
           "admin", "user");
     } else if ("bookmark".equals(sContentDescriptorPath)) {
-      this.init("bookmark", "com.stratelia.webactiv.webSites.WebSitesContentManager", "webSites",
+      this.init("bookmark", "org.silverpeas.components.websites.WebSitesContentManager", "webSites",
           "Publisher", "Reader");
     } else if ("chat".equals(sContentDescriptorPath)) {
       this.init("chat", "com.stratelia.silverpeas.chat.ChatContentManager", "chat", "admin",
@@ -101,7 +101,7 @@ public class ContentPeas {
           "com.silverpeas.expertLocator.control.ExpertLocatorContentManager",
           "expertLocator", "admin", "user");
     } else if ("webSites".equals(sContentDescriptorPath)) {
-      this.init("webSites", "com.stratelia.webactiv.webSites.WebSitesContentManager", "webSites",
+      this.init("webSites", "org.silverpeas.components.websites.WebSitesContentManager", "webSites",
           "Publisher", "Reader");
     } else if ("gallery".equals(sContentDescriptorPath)) {
       this.init("gallery", "org.silverpeas.components.gallery.GalleryContentManager", "gallery", "admin",
