@@ -72,7 +72,7 @@ public class ContentPeas {
       this.init("toolbox", "org.silverpeas.components.kmelia.KmeliaContentManager", "kmelia", "admin",
           "publisher", "user");
     } else if ("quickinfo".equals(sContentDescriptorPath)) {
-      this.init("quickinfo", "com.stratelia.webactiv.quickinfo.QuickInfoContentManager",
+      this.init("quickinfo", "org.silverpeas.components.quickinfo.service.QuickInfoContentManager",
           "quickinfo",
           "admin", "publisher", "user");
     } else if ("almanach".equals(sContentDescriptorPath)) {

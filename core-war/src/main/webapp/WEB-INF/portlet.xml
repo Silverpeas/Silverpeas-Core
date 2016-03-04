@@ -188,7 +188,7 @@
         <description>Actualites</description>
         <portlet-name>QuickInfosPortlet</portlet-name>
         <display-name>QuickInfosPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.QuickInfosPortlet</portlet-class>
+        <portlet-class>org.silverpeas.components.quickinfo.portlets.QuickInfosPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
