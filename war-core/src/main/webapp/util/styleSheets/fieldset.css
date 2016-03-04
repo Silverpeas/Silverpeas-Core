@@ -24,9 +24,6 @@
 
 /**mise en page g�n�rale pour les fieldset & formulaire de ce genre **/
 
-html, body {
-	height:100%;
-	}
 
 form {
 	margin:0;
@@ -43,13 +40,9 @@ fieldset.skinFieldset {
 	min-height:80px;
 	display:block;
 	background-color:#F4F4F4;
+	background: linear-gradient(left, #fff, #e5e5e5);
 	background: -webkit-gradient(linear, left top, right top, from(#fff), to(#e5e5e5));
 	background: -moz-linear-gradient(left, #fff, #e5e5e5);
-	/* For Internet Explorer 5.5 - 7 */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
-	/* For Internet Explorer 8 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
-
  }
 
  .table {
@@ -122,7 +115,6 @@ fieldset.skinFieldset {
 	margin: 10px 15px 0;
 	position:relative;
 	clear: both;
-	height:100%;
 	max-width:100%;
 }
 
