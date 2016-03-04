@@ -40,6 +40,7 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -294,9 +295,10 @@ public class HtmlSearchResultTag extends TagSupport {
         result.append("<img class=\"avatar\" src=\"").append(
             URLManager.getApplicationURL()).append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
       } else {
-        result.append("<img src=\"").append(gsr.getThumbnailURL()).append(
-            "\" border=\"0\" width=\"").append(gsr.getThumbnailWidth()).append(
-            "\" height=\"").append(gsr.getThumbnailHeight()).append("\"/>");
+        ImageTag image = new ImageTag();
+        image.setSrc(gsr.getThumbnailURL());
+        image.setSize("60x");
+        result.append(image.toString());
       }
       result.append("</div>");
     }

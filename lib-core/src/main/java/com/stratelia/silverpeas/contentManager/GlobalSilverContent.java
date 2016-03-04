@@ -48,9 +48,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   private String icon_url = "";
 
   private String thumbnailURL = "";
-  private String thumbnailMimeType = "";
-  private String thumbnailWidth = "";
-  private String thumbnailHeight = "";
 
   private String userId = "";
   private String creatorFirstName = "";
@@ -233,36 +230,12 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     setName(title);
   }
 
-  public String getThumbnailHeight() {
-    return thumbnailHeight;
-  }
-
-  public void setThumbnailHeight(String iconHeight) {
-    this.thumbnailHeight = iconHeight;
-  }
-
-  public String getThumbnailWidth() {
-    return thumbnailWidth;
-  }
-
-  public void setThumbnailWidth(String iconWidth) {
-    this.thumbnailWidth = iconWidth;
-  }
-
   public String getThumbnailURL() {
     return thumbnailURL;
   }
 
   public void setThumbnailURL(String thumbnailURL) {
     this.thumbnailURL = thumbnailURL;
-  }
-
-  public String getThumbnailMimeType() {
-    return thumbnailMimeType;
-  }
-
-  public void setThumbnailMimeType(String thumbnailMimeType) {
-    this.thumbnailMimeType = thumbnailMimeType;
   }
 
   /**

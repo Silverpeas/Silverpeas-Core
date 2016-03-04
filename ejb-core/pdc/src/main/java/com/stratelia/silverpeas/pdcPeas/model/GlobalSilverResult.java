@@ -24,14 +24,11 @@
 
 package com.stratelia.silverpeas.pdcPeas.model;
 
-import com.silverpeas.util.ImageUtil;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
-import java.io.File;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+
 import java.util.List;
 import java.util.Map;
 
@@ -73,9 +70,6 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setURL(gsc.getURL());
     super.setScore(1);
 
-    super.setThumbnailHeight(gsc.getThumbnailHeight());
-    super.setThumbnailMimeType(gsc.getThumbnailMimeType());
-    super.setThumbnailWidth(gsc.getThumbnailWidth());
     super.setThumbnailURL(gsc.getThumbnailURL());
   }
 
@@ -89,43 +83,14 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     this.attachmentFilename = mie.getFilename();
 
     if (mie.getThumbnail() != null) {
-      File image;
       if (mie.getThumbnail().startsWith("/")) {
         // case of a thumbnail picked up in a gallery
         super.setThumbnailURL(mie.getThumbnail());
-
-        // thumbnail URL is like
-        // /silverpeas/GalleryInWysiwyg/dummy?ImageId=31&ComponentId=gallery6974&UseOriginal=true
-        String url = mie.getThumbnail();
-        url = url.substring(url.indexOf("?"));
-        String[] parameters = url.split("&");
-
-        String imageId = parameters[0].substring(parameters[0].indexOf("=") + 1);
-        String componentId = parameters[1].substring(parameters[1].indexOf("=") + 1);
-
-        String filePath =
-            FileRepositoryManager.getAbsolutePath(componentId) + "image" + imageId +
-            File.separator + imageId + "_preview.jpg";
-
-        image = new File(filePath);
       } else {
         // case of an uploaded image
         super.setThumbnailURL(FileServerUtils.getUrl(mie.getComponent(),
             mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
-
-        String[] directory = new String[1];
-        directory[0] = mie.getThumbnailDirectory();
-
-        image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
-            + mie.getThumbnail());
       }
-      String[] dimensions = ImageUtil.getWidthAndHeightByWidth(image, 60);
-      if (!StringUtil.isDefined(dimensions[0])) {
-        dimensions[0] = "60";
-        dimensions[1] = "45";
-      }
-      setThumbnailWidth(dimensions[0]);
-      setThumbnailHeight(dimensions[1]);
     }
   }
 
