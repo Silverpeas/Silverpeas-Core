@@ -34,7 +34,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%@ page import="org.silverpeas.components.kmelia.KmeliaSecurity" %>
-<%@ page import="org.silverpeas.components.kmelia.control.KmeliaHelper" %>
+<%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper" %>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
