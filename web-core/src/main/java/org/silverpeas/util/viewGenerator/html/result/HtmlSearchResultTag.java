@@ -36,12 +36,12 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.util.viewGenerator.html.ImageTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -290,9 +290,10 @@ public class HtmlSearchResultTag extends TagSupport {
         result.append("<img class=\"avatar\" src=\"").append(URLManager.getApplicationURL())
             .append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
       } else {
-        result.append("<img src=\"").append(gsr.getThumbnailURL())
-            .append("\" border=\"0\" width=\"").append(gsr.getThumbnailWidth())
-            .append("\" height=\"").append(gsr.getThumbnailHeight()).append("\"/>");
+        ImageTag image = new ImageTag();
+        image.setSrc(gsr.getThumbnailURL());
+        image.setSize("60x");
+        result.append(image.toString());
       }
       result.append("</div>");
     }
