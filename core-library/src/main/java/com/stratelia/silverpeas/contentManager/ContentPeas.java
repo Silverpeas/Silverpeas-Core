@@ -60,7 +60,7 @@ public class ContentPeas {
           "whitePagesPDC", "admin", "user");
     } else if ("questionReply".equals(sContentDescriptorPath)) {
       this.init("questionReply",
-          "com.silverpeas.questionReply.control.QuestionReplyContentManager",
+          "org.silverpeas.components.questionreply.service.QuestionReplyContentManager",
           "questionReplyPDC", "admin", "publisher", "writer", "user");
     } else if ("kmelia".equals(sContentDescriptorPath)) {
       this.init("kmelia", "org.silverpeas.components.kmelia.KmeliaContentManager", "kmelia", "admin",
