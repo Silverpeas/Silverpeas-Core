@@ -79,7 +79,7 @@ public class ContentPeas {
       this.init("almanach", "org.silverpeas.components.almanach.AlmanachContentManager", "almanach",
           "admin", "publisher", "user");
     } else if ("quizz".equals(sContentDescriptorPath)) {
-      this.init("quizz", "com.stratelia.webactiv.quizz.QuizzContentManager", "quizz", "admin",
+      this.init("quizz", "org.silverpeas.components.quizz.QuizzContentManager", "quizz", "admin",
           "publisher", "user");
     } else if (sContentDescriptorPath.equals("forums")) {
       this.init("forums", "org.silverpeas.components.forums.ForumsContentManager", "forums", "admin",
