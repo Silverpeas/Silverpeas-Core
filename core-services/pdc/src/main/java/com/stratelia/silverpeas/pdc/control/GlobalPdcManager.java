@@ -1875,13 +1875,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
       if (alertSubscribers) {
         // Alert subscribers to the position
-        try {
-          pdcSubscriptionManager
-              .checkSubscriptions(position.getValues(), sComponentId, silverObjectId);
-        } catch (RemoteException e) {
-          throw new PdcException("GlobalPdcManager.addPosition", PdcException.ERROR,
-              "pdcPeas.EX_CHECK_SUBSCRIPTION", e);
-        }
+       pdcSubscriptionManager
+           .checkSubscriptions(position.getValues(), sComponentId, silverObjectId);
       }
     }
 
@@ -1924,12 +1919,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     }
 
     if (alertSubscribers) {
-      try {
-        pdcSubscriptionManager.checkSubscriptions(position.getValues(), instanceId, silverObjectId);
-      } catch (RemoteException e) {
-        throw new PdcException("GlobalPdcManager.updatePosition", PdcException.ERROR,
-            "pdcPeas.EX_CHECH_SUBSCRIPTION", e);
-      }
+      pdcSubscriptionManager.checkSubscriptions(position.getValues(), instanceId, silverObjectId);
     }
 
     return 0;

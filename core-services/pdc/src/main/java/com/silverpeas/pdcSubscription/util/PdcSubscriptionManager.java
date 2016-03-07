@@ -31,7 +31,6 @@ import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -51,32 +50,29 @@ public class PdcSubscriptionManager {
 
   }
 
-  public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException {
+  public PDCSubscription getPDCSubsriptionById(int id) {
     return pdcSubscriptionService.getPDCSubsriptionById(id);
   }
 
-  public void createPDCSubsription(PDCSubscription subscription) throws RemoteException {
+  public void createPDCSubsription(PDCSubscription subscription) {
     pdcSubscriptionService.createPDCSubscription(subscription);
   }
 
-  public void updatePDCSubsription(PDCSubscription subscription)
-      throws RemoteException {
+  public void updatePDCSubsription(PDCSubscription subscription) {
     pdcSubscriptionService.updatePDCSubscription(subscription);
   }
 
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
-      int silverObjectid) throws RemoteException {
+      int silverObjectid) {
     pdcSubscriptionService.checkSubscriptions(classifyValues, componentId, silverObjectid);
   }
 
-  public void checkAxisOnDelete(int axisId, String axisName)
-      throws RemoteException {
+  public void checkAxisOnDelete(int axisId, String axisName) {
     pdcSubscriptionService.checkAxisOnDelete(axisId, axisName);
   }
 
   public void checkValueOnDelete(int axiId, String axisName, List<String> oldPath,
-      List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo)
-      throws RemoteException {
+      List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo) {
     pdcSubscriptionService.checkValueOnDelete(axiId, axisName, oldPath, newPath, pathInfo);
   }
 }
