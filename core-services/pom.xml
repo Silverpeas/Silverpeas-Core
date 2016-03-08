@@ -51,6 +51,7 @@
     <module>mylinks</module>
     <module>questioncontainer</module>
     <module>importExport</module>
+    <module>viewer</module>
   </modules>
 
 </project>

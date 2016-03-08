@@ -27,16 +27,18 @@ import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Rule;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.image.imagemagick.Im4javaManager;
 import org.silverpeas.initialization.Initialization;
-import org.silverpeas.test.WarBuilder4ItTestCore;
+import org.silverpeas.test.WarBuilder4Viewer;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.test.util.SilverProperties;
 import org.silverpeas.util.ServiceProvider;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -47,12 +49,12 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractViewerTest {
 
+  /*@Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);*/
+
   @Deployment
   public static Archive<?> createTestArchive() throws IOException {
-    return WarBuilder4ItTestCore.onWarForTestClass(PreviewServiceTest.class)
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
-        }).build();
+    return WarBuilder4Viewer.onWarForTestClass(AbstractViewerTest.class).build();
   }
 
   private static File tempPath;
@@ -69,17 +71,16 @@ public abstract class AbstractViewerTest {
   }
 
   protected static File getTemporaryPath() {
-    init();
     return tempPath;
   }
 
   private static File getResourceTestDirFile() {
-    init();
     return resourceTestDir;
   }
 
   @Before
   public void setupCommonServices() throws Exception {
+    init();
     for (Initialization serviceToInitialize : new Initialization[]{
         ServiceProvider.getService(Im4javaManager.class),
         ServiceProvider.getService(SwfToolManager.class),
