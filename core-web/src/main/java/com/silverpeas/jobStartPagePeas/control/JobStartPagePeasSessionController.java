@@ -889,16 +889,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(), spyAction);
   }
 
-  public void updateSpaceManagersDescription(SpaceProfileInst spaceProfileInst) {
-    SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSC.updateSpaceManagersDescription", spaceProfileInst.getSpaceFatherId(),
-        "N/A", spaceProfileInst.getName(), getUserId(),
-        SilverTrace.SPY_ACTION_UPDATE);
-
-    // Update the profile description
-    adminController.updateSpaceProfileInst(spaceProfileInst, getUserId());
-  }
-
   /**
    * ********************* Gestion de la corbeille ****************************************
    */
@@ -1394,34 +1384,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     // mise à jour
     setManagedProfile(profile);
-  }
-
-  public void updateProfileInstanceDescription(String name, String desc) {
-    // Update the profile
-    ProfileInst profile = new ProfileInst();
-    profile.setId(getManagedProfile().getId());
-    profile.setName(getManagedProfile().getName());
-    profile.setLabel(name);
-    profile.setDescription(desc);
-    profile.setComponentFatherId(getManagedProfile().getComponentFatherId());
-    // groupes
-    List<String> groups = getManagedProfile().getAllGroups();
-    if (groups != null) {
-      for (String group : groups) {
-        profile.addGroup(group);
-      }
-    }
-    // users
-    List<String> users = getManagedProfile().getAllUsers();
-    if (users != null) {
-      for (String user : users) {
-        profile.addUser(user);
-      }
-    }
-    // mise à jour
-    setManagedProfile(profile);
-    // Update the profile
-    adminController.updateProfileInst(profile);
   }
 
   /**

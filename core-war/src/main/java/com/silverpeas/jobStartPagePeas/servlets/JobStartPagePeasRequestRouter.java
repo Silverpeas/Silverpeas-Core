@@ -396,29 +396,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       refreshNavBar(jobStartPageSC, request);
       request.setAttribute("urlToReload", "GoToCurrentComponent");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("ProfileInstanceDescription")) {
-      ComponentInst compoint1 = jobStartPageSC.getComponentInst(
-          jobStartPageSC.getManagedInstanceId());
-      request.setAttribute("compoName", compoint1.getLabel());
-
-      String espaceId = compoint1.getDomainFatherId(); // WAid
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(espaceId);
-      setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-
-      request.setAttribute("Profile", jobStartPageSC.getManagedProfile());
-
-      destination = "/jobStartPagePeas/jsp/descriptionProfileInstance.jsp";
-    } else if (function.equals("EffectiveUpdateProfileInstanceDescription")) {
-      String name = request.getParameter("NameObject");
-      String desc = request.getParameter("Description");
-      if (desc == null) {
-        desc = "";
-      }
-
-      jobStartPageSC.updateProfileInstanceDescription(name, desc);
-
-      request.setAttribute("urlToReload", "CurrentRoleInstance");
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.startsWith("copy")) {
       String objectId = request.getParameter("Id");
       String objectType = request.getParameter("Type");
@@ -695,51 +672,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           .splitString(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
       jobStartPageSC.updateSpaceRole(role, userIds, groupIds);
       destination = getDestination("SpaceManager", jobStartPageSC, request);
-    } else if (function.equals("SpaceManagerDescription")) {
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-      List<SpaceProfileInst> listSpaceProfileInst = spaceint1.getAllSpaceProfilesInst();
-      int i = 0;
-      SpaceProfileInst spaceProfileInst;
-      String name = "";
-      String desc = "";
-      if (i < listSpaceProfileInst.size()) {// seulement le premier profil
-        // (manager)
-        spaceProfileInst = listSpaceProfileInst.get(i);
-        name = spaceProfileInst.getLabel();
-        if (name.equals("")) {
-          name = jobStartPageSC.getMultilang().getString("Manager");
-        }
-        desc = spaceProfileInst.getDescription();
-      }
-
-      setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-
-      request.setAttribute("Name", name);
-      request.setAttribute("Description", desc);
-      destination = "/jobStartPagePeas/jsp/descriptionSpaceManager.jsp";
-    } else if (function.equals("EffectiveUpdateSpaceManagerDescription")) {
-      String name = request.getParameter("NameObject");
-      String desc = request.getParameter("Description");
-      if (desc == null) {
-        desc = "";
-      }
-
-      // Update the space
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-      List<SpaceProfileInst> listSpaceProfileInst = spaceint1.getAllSpaceProfilesInst();
-      int i = 0;
-      SpaceProfileInst spaceProfileInst;
-      if (i < listSpaceProfileInst.size()) {// seulement le premier profil
-        // (manager)
-        spaceProfileInst = listSpaceProfileInst.get(i);
-        spaceProfileInst.setLabel(name);
-        spaceProfileInst.setDescription(desc);
-
-        jobStartPageSC.updateSpaceManagersDescription(spaceProfileInst);
-      }
-
-      request.setAttribute("urlToReload", "SpaceManager");
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.equals("SpaceLook")) {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
 
