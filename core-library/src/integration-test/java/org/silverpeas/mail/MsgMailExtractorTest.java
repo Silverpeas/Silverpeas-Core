@@ -33,7 +33,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4ItTestCore;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.StringUtil;
@@ -41,7 +41,6 @@ import org.silverpeas.util.StringUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,10 +67,19 @@ public class MsgMailExtractorTest {
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Deployment
-  public static Archive<?> createTestArchive() throws IOException {
-    return WarBuilder4ItTestCore.onWarForTestClass(MsgMailExtractorTest.class)
-        .testFocusedOn((warBuilder) -> {
-          warBuilder.addAsResource("org/silverpeas/mail/mailWithAttachments.msg");
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarForTestClass(MsgMailExtractorTest.class)
+        .addCommonBasicUtilities()
+        .addSilverpeasExceptionBases()
+        .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
+            "org.apache.commons:commons-exec", "com.artofsolving:jodconverter")
+        .addPackages(true, "com.silverpeas.converter")
+        .addAsResource("org/silverpeas/converter")
+        .testFocusedOn(warBuilder -> {
+          warBuilder
+              .addMavenDependencies("com.icegreen:greenmail")
+              .addPackages(true, "org.silverpeas.mail")
+              .addAsResource("org/silverpeas/mail/mailWithAttachments.msg");
         }).build();
   }
 
