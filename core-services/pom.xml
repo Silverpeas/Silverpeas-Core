@@ -35,8 +35,6 @@
   </dependencies>
 
   <modules>
-    <module>admin</module>
-    <module>authentication</module>
     <module>clipboard</module>
     <module>personalization</module>
     <module>searchengine</module>
