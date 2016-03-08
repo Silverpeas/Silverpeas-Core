@@ -28,8 +28,9 @@
 
 <%@ include file="check.jsp" %>
 
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="com.silverpeas.form.*"%>
+<%@ page import="com.silverpeas.form.DataRecord"%>
+<%@ page import="com.silverpeas.form.Form"%>
+<%@ page import="com.silverpeas.form.PagesContext" %>
 
 <%
 Form 				form	 	= (Form) request.getAttribute("XMLForm");

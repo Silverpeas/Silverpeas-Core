@@ -588,6 +588,12 @@
       org.silverpeas.util.viewGenerator.html.board.BoardTag
     </tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to display a frame. A Frame should be used inside a Window.</description>

@@ -32,28 +32,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.agenda.view.*"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.agenda.model.*"%>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="com.stratelia.webactiv.agenda.model.CalendarImportSettings"%>
 
 <%@ include file="checkAgenda.jsp" %>
 

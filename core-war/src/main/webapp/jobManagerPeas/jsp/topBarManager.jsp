@@ -79,9 +79,9 @@ function notifyPopup(context,compoId,users,groups) {
                 &nbsp;&nbsp;<span class="textePetitBold"><%=resource.getString("JMP.tools")%>&nbsp;:</span>&nbsp;&nbsp;<img src="<%=resource.getIcon("JMP.arrow") %>" border="0"/>&nbsp;&nbsp;
                 <a href="javascript:notifyPopup('<%=m_context%>','','Administrators','')"><img border="0" src="<%=resource.getIcon("JMP.mailAdmin")%>" alt="<%=resource.getString("JMP.feedback") %>" title="<%=resource.getString("JMP.feedback") %>"/></a>&nbsp;
                 <a href="javascript:exit()"><img border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"/></a>&nbsp;
-                <a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank""><img border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"/></a>&nbsp;
+                <a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><img border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"/></a>&nbsp;
                 <a href="<%=m_context + URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>" target="IdleFrame"><img src="<%=resource.getIcon("JMP.clipboardIcon")%>" border="0" alt="<%=resource.getString("JMP.clipboard")%>" onfocus="self.blur()" title="<%=resource.getString("JMP.clipboard")%>"/></a>&nbsp;
-                <a href="<%=frontOfficeURL%>" target="_top""><img border="0" src="<%=resource.getIcon("JMP.peas")%>" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/></a>&nbsp;
+                <a href="<%=frontOfficeURL%>" target="_top"><img border="0" src="<%=resource.getIcon("JMP.peas")%>" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/></a>&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="textePetitBold"><%=resource.getString("GML.date")%> :
                 &nbsp;&nbsp;<img src="<%=resource.getIcon("JMP.arrow") %>" border="0"/>&nbsp;&nbsp;

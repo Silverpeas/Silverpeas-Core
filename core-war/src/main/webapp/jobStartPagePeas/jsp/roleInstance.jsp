@@ -30,8 +30,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

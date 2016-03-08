@@ -1,26 +1,36 @@
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.webactiv.agenda.control.*"%>
-<%@ page import="java.util.*"%>
-<%@ page import="java.io.*"%>
-<%@ page import="com.stratelia.webactiv.agenda.view.*"%>
-<%@ page import="com.stratelia.webactiv.agenda.model.*"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.*"%>
-
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
+<%@ page import="com.stratelia.webactiv.agenda.control.AgendaSessionController"%>
+<%@ page import="com.stratelia.webactiv.agenda.control.AgendaUserException"%>
+<%@ page import="com.stratelia.webactiv.agenda.view.AgendaHtmlView"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.Attendee"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.Category"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.Classification"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.JournalHeader"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.ParticipationStatus"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.Priority"%>
+<%@ page import="org.silverpeas.util.DBUtil"%>
+<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
 
 <%!
 String m_context = URLManager.getApplicationURL();

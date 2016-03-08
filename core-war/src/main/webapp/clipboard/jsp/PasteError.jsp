@@ -32,13 +32,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
-<%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
-<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
+<%@ page import="java.util.Enumeration"%>
 
 <%@ include file="checkClipboard.jsp" %>
 

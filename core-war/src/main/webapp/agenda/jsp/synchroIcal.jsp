@@ -36,7 +36,7 @@
 	String urlIcalendar = "";
 	String loginIcalendar = "";
 	String pwdIcalendar = "";
-	String charset = settings.getString("defautCharset");
+	String charset = settings.getString("defaultCharset");
 
 	if (StringUtil.isDefined((String) request.getAttribute("UrlIcalendar")))
 		urlIcalendar = (String) request.getAttribute("UrlIcalendar");
@@ -44,8 +44,8 @@
 		loginIcalendar = (String) request.getAttribute("LoginIcalendar");
 	if (StringUtil.isDefined((String) request.getAttribute("PwdIcalendar")))
 		pwdIcalendar = (String) request.getAttribute("PwdIcalendar");
-	if (StringUtil.isDefined((String) request.getAttribute("DefautCharset")))
-		charset = (String) request.getAttribute("DefautCharset");
+	if (StringUtil.isDefined((String) request.getAttribute("defaultCharset")))
+		charset = (String) request.getAttribute("defaultCharset");
 
 	if (StringUtil.isDefined((String) request.getAttribute("SynchroReturnCode")))
 	{
@@ -137,7 +137,7 @@ function synchroIcal() {
 						      <td>
 							<select name="Charset">
                       <option value="UTF-8">UTF-8</option>
-								<option value="UTF-8">UTF-8</option>
+								<option value="ISO-8859-1">ISO-8859-1</option>
 								<option value="US-ASCII">US-ASCII</option>
 							</select>
 						      </td>

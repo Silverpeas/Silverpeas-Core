@@ -57,7 +57,7 @@
           Button closeButton = (Button) gef.getFormButton(resource.getString("GML.close"), "javascript:onClick=window.close();", false);
     %>
 
-    <table ALIGN="CENTER" CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH="98%" CLASS=""intfdcolor">
+    <table ALIGN="CENTER" CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH="98%" CLASS="intfdcolor">
       <tr>
         <td>
           <table ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>

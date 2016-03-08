@@ -33,18 +33,19 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.util.*" %>
 <%@ page import="com.silverpeas.look.LookHelper" %>
-<%@ page import="org.silverpeas.util.*" %>
-<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*" %>
+<%@ page import="com.silverpeas.session.SessionManagement" %>
+<%@ page import="com.silverpeas.session.SessionManagementProvider" %>
+<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController" %>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="com.silverpeas.session.SessionManagement" %>
-<%@ page import="com.silverpeas.session.SessionManagementProvider" %>
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="java.util.Enumeration" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 

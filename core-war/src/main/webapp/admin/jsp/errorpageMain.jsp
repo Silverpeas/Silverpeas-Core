@@ -37,21 +37,10 @@ if (response.isCommitted() == false) {
  % (via the template.jsp)
 --%>
 
-<%@ page isErrorPage="false" import="java.io.*" %>
+<%@ page isErrorPage="false" import="com.stratelia.webactiv.homepage.HomePageUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="javax.ejb.EJBException, javax.ejb.FinderException, javax.ejb.NoSuchEntityException, java.rmi.RemoteException, java.sql.SQLException, javax.ejb.RemoveException, javax.ejb.CreateException, javax.naming.NamingException, javax.transaction.TransactionRolledbackException"%>
-<%@ page import="java.util.Collection, java.util.Iterator, java.lang.Throwable"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="org.silverpeas.util.exception.*"%>
-<%@ page import="com.stratelia.webactiv.homepage.*"%>
+<%@ page import="java.io.PrintWriter"%>
 
 <%@ include file="import.jsp" %>
 

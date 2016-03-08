@@ -37,7 +37,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%
     String code = (String) request.getParameter("Code");

@@ -42,15 +42,13 @@ import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
  */
 public interface Board extends SimpleGraphicElement {
   /**
+   * set CSS classes on the board.
+   */
+  public void setClasses(String classes);
+  /**
    * add a string on the board.
    */
   public void addBody(String body);
-
-  /**
-   * Print the board in an html format
-   * @return The Frame representation
-   */
-  public String print();
 
   /**
    * Method declaration

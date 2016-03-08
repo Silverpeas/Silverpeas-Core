@@ -27,10 +27,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="importFrameSet.jsp" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.silverpeas.look.LookHelper"%>
 <%@ page import="com.silverpeas.look.TopItem"%>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="com.silverpeas.look.LookHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

@@ -1,5 +1,3 @@
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
-<%@ page import="com.stratelia.webactiv.agenda.control.AgendaSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

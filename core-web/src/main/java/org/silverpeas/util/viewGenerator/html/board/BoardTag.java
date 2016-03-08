@@ -36,6 +36,12 @@ public class BoardTag extends TagSupport {
   private static final long serialVersionUID = 8744598404692060576L;
   private static final String BOARD_PAGE_ATT = "pageContextBoard";
 
+  private String classes = null;
+
+  public void setClasses(final String classes) {
+    this.classes = classes;
+  }
+
   public int doEndTag() throws JspException {
     Board board = (Board) pageContext.getAttribute(BOARD_PAGE_ATT);
     try {
@@ -51,6 +57,7 @@ public class BoardTag extends TagSupport {
         .getSession()
         .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     Board board = gef.getBoard();
+    board.setClasses(classes);
     pageContext.setAttribute(BOARD_PAGE_ATT, board);
     try {
       pageContext.getOut().println(board.printBefore());

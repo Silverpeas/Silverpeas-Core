@@ -26,8 +26,6 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
-<%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ include file="check.jsp" %>
 <%
 String spaceId = (String) request.getAttribute("CurrentSpaceId");

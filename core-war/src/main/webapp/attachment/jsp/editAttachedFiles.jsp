@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
-<%@page import="org.silverpeas.attachment.web.VersioningSessionController"%>
+<%@page import="org.silverpeas.attachment.AttachmentServiceProvider"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -35,11 +35,10 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
-<%@ page import="org.silverpeas.util.ForeignPK" %>
-<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
+<%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ include file="checkAttachment.jsp"%>
 <view:setConstant var="spinfire" constant="org.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
 <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
@@ -119,26 +118,6 @@
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 <script type="text/javascript" language='Javascript'>
-  function checkoutOfficeFile(attachmentId)  {
-    document.attachmentForm.action = '<c:url value="/attachment/jsp/checkOut.jsp" />';
-    document.attachmentForm.IdAttachment.value = attachmentId;
-    document.attachmentForm.submit();
-  }
-
-  function checkinOfficeFile(attachmentId) {
-    document.attachmentForm.action = '<c:url value="/attachment/jsp/checkIn.jsp" />';
-    document.attachmentForm.IdAttachment.value = attachmentId;
-    document.attachmentForm.submit();
-  }
-
-  function checkinOpenOfficeFile(attachmentId) {
-    if(confirm('<fmt:message key="confirm.checkin.message" />')) {
-      document.attachmentForm.update_attachment.value='true';
-    }
-    document.attachmentForm.action = '<c:url value="/attachment/jsp/checkIn.jsp" />';
-    document.attachmentForm.IdAttachment.value = attachmentId;
-    document.attachmentForm.submit();
-  }
 
   function moveAttachmentUp(id) {
     $.ajax({
@@ -169,7 +148,6 @@
   function uploadCompleted() {
     reloadPage();
   }
-
 
   function displayAttachment(attachment) {
     $('#fileName').text(attachment.fileName);
@@ -406,8 +384,8 @@
   }
 </script>
 <div style="text-align: center;">
-  <view:board>
-  <table border="0" width="100%" class="attachmentDragAndDrop${id}">
+  <view:board classes="attachmentDragAndDrop${id}">
+  <table border="0" width="100%">
     <tr>
       <td><!--formulaire de gestion des fichiers joints -->
         <table border="0" cellspacing="3" cellpadding="0" width="100%">

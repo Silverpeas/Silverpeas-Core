@@ -39,18 +39,18 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.silverpeas.util.clipboard.*"%>
-<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.search.indexEngine.model.IndexEntry"%>
+<%@ page import="org.silverpeas.util.clipboard.ClipboardSelection"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
 
 <%@ include file="checkClipboard.jsp" %>
 
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.clipboard.ClipboardSelection" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
+<%@page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Iterator" %>
 <HTML>
 <HEAD>
 <view:looknfeel/>

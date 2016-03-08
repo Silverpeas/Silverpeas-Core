@@ -26,38 +26,18 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, javax.ejb.EJBException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-<%@ page import="java.util.Collection, java.util.Iterator, java.util.ArrayList, java.util.Date"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-<%@ page import="java.lang.String"%>
-<%@ page import="java.util.*"%>
-
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.webactiv.homepage.*"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.OrganizationController"%>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.node.model.NodePK, com.stratelia.webactiv.node.control.*, com.stratelia.webactiv.node.model.*, org.silverpeas.util.exception.* "%>
-
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="javax.servlet.http.HttpServletResponse"%>
+<%@ page import="java.util.List"%>
 
 <%
   MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(

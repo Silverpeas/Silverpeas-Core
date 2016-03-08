@@ -26,11 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.ArrayList,
-                 com.silverpeas.interestCenter.model.InterestCenter,
-                 java.util.List,
-                 com.stratelia.silverpeas.peasCore.URLManager,
-                 java.net.URLEncoder"%>
+<%@ page import="com.silverpeas.interestCenter.model.InterestCenter,
+                 java.net.URLEncoder,
+                 java.util.ArrayList,
+                 java.util.List"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkICenter.jsp" %>

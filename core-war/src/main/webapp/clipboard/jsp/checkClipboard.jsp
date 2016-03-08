@@ -1,7 +1,7 @@
-<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="static org.silverpeas.util.ResourceLocator.*" %>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
@@ -11,11 +11,11 @@
 	if (clipboardSC == null)
 	{
 	    // No quickinfo session controller in the request -> security exception
-	    String sessionTimeout = getGeneralSettingBundle().getString("sessionTimeout");
+	    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
 
-	String m_context = getGeneralSettingBundle().getString("ApplicationURL");
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 %>
