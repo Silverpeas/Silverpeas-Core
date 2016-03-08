@@ -24,17 +24,22 @@
 
 package com.silverpeas.converter;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -47,26 +52,16 @@ import static org.junit.Assert.assertThat;
  * Test the conversion of documents with an OpenOffice server.
  * @author Yohann Chastagnier
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-converter.xml")
-public class ToHTMLConverterTest {
+@RunWith(Arquillian.class)
+public class ToHTMLConverterIntegrationTest extends AbstractConverterIntegrationTest {
 
   private static final String ODT_DOCUMENT_NAME = "API_REST_Silverpeas.odt";
   private static final String DOC_DOCUMENT_NAME = "API_REST_Silverpeas.doc";
   private static final String RTF_DOCUMENT_NAME = "file.rtf";
 
   private ToHTMLConverter converter;
-  private File document;
 
-  public ToHTMLConverterTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  public ToHTMLConverterIntegrationTest() {
   }
 
   @Before
@@ -102,15 +97,10 @@ public class ToHTMLConverterTest {
 
   @Test
   public void convertAnRtfInputStreamToHTMLOutputStream() throws Exception {
-    InputStream rtfDocument = openDocumentNamedInputStream(RTF_DOCUMENT_NAME);
-    try {
+    try(InputStream rtfDocument = openDocumentNamedInputStream(RTF_DOCUMENT_NAME)) {
       ByteArrayOutputStream htmlDocument = new ByteArrayOutputStream();
       converter.convert(rtfDocument, inFormat(rtf), htmlDocument, inFormat(html));
       assertThat(htmlDocument.size(), greaterThan(0));
-    } finally {
-      if (rtfDocument != null) {
-        rtfDocument.close();
-      }
     }
   }
 
@@ -152,12 +142,8 @@ public class ToHTMLConverterTest {
     converter.convert(document, inFormat(odt));
   }
 
-  private File getDocumentNamed(final String name) throws Exception {
-    final URL documentLocation = getClass().getResource(name);
-    return new File(documentLocation.toURI());
-  }
-
   private InputStream openDocumentNamedInputStream(final String name) throws Exception {
-    return getClass().getResourceAsStream(name);
+    File document = getDocumentNamed(name);
+    return new FileInputStream(document);
   }
 }

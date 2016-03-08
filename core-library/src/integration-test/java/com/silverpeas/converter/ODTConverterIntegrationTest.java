@@ -24,44 +24,40 @@
 
 package com.silverpeas.converter;
 
-import java.io.File;
-import java.net.URL;
-import javax.inject.Inject;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.net.URL;
+
 import static com.silverpeas.converter.DocumentFormat.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test the conversion of documents with an OpenOffice server.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/spring-converter.xml")
-public class HTMLConverterTest {
+@RunWith(Arquillian.class)
+public class ODTConverterIntegrationTest extends AbstractConverterIntegrationTest {
 
-  private static final String DOCUMENT_NAME = "wysiwyg2.html";
+  private static final String DOCUMENT_NAME = "API_REST_Silverpeas.odt";
   private static final String WRONG_DOCUMENT_NAME = "API_REST_Silverpeas.doc";
 
   @Inject
-  private HTMLConverter converter;
-  private File document;
+  private ODTConverter converter;
 
-  public HTMLConverterTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  public ODTConverterIntegrationTest() {
   }
 
   @Before
@@ -75,26 +71,36 @@ public class HTMLConverterTest {
   }
 
   @Test
-  public void convertAnHTMLDocumentToODT() throws Exception {
-    File convertedDocument = converter.convert(document, inFormat(odt));
+  public void convertAnODTDocumentToPDF() throws Exception {
+    File convertedDocument = converter.convert(document, inFormat(pdf));
     assertThat(convertedDocument.exists(), is(true));
-    //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(12378l));
+    //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(143312l));
+  }
+
+  @Test
+  public void convertAnODTDocumentToDoc() throws Exception {
+    File convertedDocument = converter.convert(document, inFormat(doc));
+    assertThat(convertedDocument.exists(), is(true));
+    //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(155000l));
+  }
+
+  @Test
+  public void convertAnODTDocumentToRTF() throws Exception {
+    File convertedDocument = converter.convert(document, inFormat(rtf));
+    assertThat(convertedDocument.exists(), is(true));
+    //assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(1333739l));
   }
 
   @Test(expected=DocumentFormatException.class)
-  public void convertANonHTMLDocument() throws Exception {
+  public void convertANonODTDocument() throws Exception {
     File wrongDocument = getDocumentNamed(WRONG_DOCUMENT_NAME);
     assertThat(wrongDocument.exists(), is(true));
-    converter.convert(wrongDocument, inFormat(odt));
+    converter.convert(wrongDocument, inFormat(pdf));
   }
 
   @Test(expected=DocumentFormatException.class)
-  public void convertAnHTMLDocumentIntoANonSupportedFormat() throws Exception {
-    converter.convert(document, inFormat(pdf));
+  public void convertAnODTDocumentIntoANonSupportedFormat() throws Exception {
+    converter.convert(document, inFormat(odt));
   }
 
-  private File getDocumentNamed(String name) throws Exception {
-    URL documentLocation = getClass().getResource(name);
-    return new File(documentLocation.toURI());
-  }
 }

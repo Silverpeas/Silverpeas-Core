@@ -24,55 +24,41 @@
 
 package com.silverpeas.converter;
 
-import static com.silverpeas.converter.DocumentFormat.doc;
-import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static com.silverpeas.converter.DocumentFormat.odt;
-import static com.silverpeas.converter.DocumentFormat.pdf;
-import static com.silverpeas.converter.DocumentFormat.rtf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.net.URL;
-
-import javax.inject.Inject;
-
-import org.apache.commons.io.FileUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import javax.inject.Inject;
+import java.io.File;
+import java.net.URL;
+
+import static com.silverpeas.converter.DocumentFormat.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test the conversion of documents with an OpenOffice server.
  * @author Yohann Chastagnier
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-converter.xml")
-public class ToPDFConverterTest {
+@RunWith(Arquillian.class)
+public class ToPDFConverterIntegrationTest extends AbstractConverterIntegrationTest {
 
   private static final String ODT_DOCUMENT_NAME = "API_REST_Silverpeas.odt";
   private static final String DOC_DOCUMENT_NAME = "API_REST_Silverpeas.doc";
 
   @Inject
   private ToPDFConverter converter;
-  private File document;
 
-  public ToPDFConverterTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  public ToPDFConverterIntegrationTest() {
   }
 
   @Before
@@ -140,10 +126,5 @@ public class ToPDFConverterTest {
   @Test(expected = DocumentFormatException.class)
   public void convertAnODTDocumentIntoANonSupportedFormat() throws Exception {
     converter.convert(document, inFormat(odt));
-  }
-
-  private File getDocumentNamed(final String name) throws Exception {
-    final URL documentLocation = getClass().getResource(name);
-    return new File(documentLocation.toURI());
   }
 }

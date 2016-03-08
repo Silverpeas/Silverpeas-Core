@@ -56,7 +56,7 @@ import static org.junit.Assert.assertThat;
  * User: Yohann Chastagnier Date: 21/01/13
  */
 @RunWith(Arquillian.class)
-public class MsgMailExtractorTest {
+public class MsgMailExtractorIntegrationTest {
 
   private final static String FILENAME_MAIL_WITH_ATTACHMENTS = "mailWithAttachments.msg";
 
@@ -68,7 +68,7 @@ public class MsgMailExtractorTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(MsgMailExtractorTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(MsgMailExtractorIntegrationTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
