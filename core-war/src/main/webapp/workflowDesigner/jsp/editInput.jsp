@@ -40,7 +40,7 @@
     ArrayPane       inputPane = gef.getArrayPane( "inputPane", strCurrentScreen, request, session );
     boolean         fExistingInput = ( (Boolean)request.getAttribute( "IsExisitingInput" ) ).booleanValue();
     List<Item>      folderItems = (List<Item>) request.getAttribute("FolderItems");
-    List<String>    folderItemNames = new ArrayList<String>();
+    List<String>    folderItemNames = new ArrayList<>();
     folderItemNames.add(resource.getString("GML.none"));
     for (Item folderItem : folderItems) {
       folderItemNames.add(folderItem.getName());
@@ -157,7 +157,7 @@
     row = inputPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.folderItem") );
     cellText.setStyleSheet( "txtlibform" );
-    cellSelect = row.addArrayCellSelect( "item", folderItemNames);
+    cellSelect = row.addArrayCellSelect("item", folderItemNames);
     cellSelect.setSize( "1" );
     cellSelect.setSelectedValues( new String[] { input.getItem() == null ? "" : input.getItem().getName() } );
 
@@ -175,7 +175,7 @@
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.displayerName") );
     cellText.setStyleSheet( "txtlibform" );
     //astrTypeNames[0] = resource.getString( "GML.none" );
-    cellSelect = row.addArrayCellSelect( "displayerName", new ArrayList<String>());
+    cellSelect = row.addArrayCellSelect( "displayerName", new ArrayList<>());
     cellSelect.setSize( "1" );
     cellSelect.setSelectedValues( new String[] { input.getDisplayerName() == null ? "" : input.getDisplayerName() } );
 

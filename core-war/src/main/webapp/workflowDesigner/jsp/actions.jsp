@@ -1,4 +1,3 @@
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -35,7 +34,7 @@
 String     strActionName,
            strModifyAction,
            strCurrentTab = "ViewActions";
-Actions    actions = (Actions)request.getAttribute( "Actions" );
+Actions actions = (Actions)request.getAttribute( "Actions" );
 ArrayPane  actionsPane = gef.getArrayPane("actionsList", strCurrentTab, request, session);
 %>
 

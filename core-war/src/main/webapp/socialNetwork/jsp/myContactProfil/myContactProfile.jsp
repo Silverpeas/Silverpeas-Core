@@ -28,18 +28,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ page import="com.silverpeas.directory.model.Member"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
-<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@page import="com.silverpeas.directory.model.Member"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="java.util.List"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

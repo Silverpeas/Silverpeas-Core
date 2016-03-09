@@ -34,9 +34,7 @@
 Collection 	connections 		= (Collection) request.getAttribute("Connections");
 %>
 
-<%@page import="java.util.Enumeration"%>
-<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
 <html>
 <head>
   <view:looknfeel />

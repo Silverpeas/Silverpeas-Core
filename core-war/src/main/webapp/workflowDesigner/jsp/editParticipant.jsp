@@ -42,9 +42,9 @@
     boolean         fExistingParticipant = ( (Boolean)request.getAttribute( "IsExisitingParticipant" ) ).booleanValue();
 %>
 
-<%@page import="java.util.Arrays"%><HTML>
+<HTML>
 <HEAD>
-<view:looknfeel withCheckFormScript="true"/>
+  <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">
     function sendData()

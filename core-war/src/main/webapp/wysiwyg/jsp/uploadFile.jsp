@@ -31,29 +31,18 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.attachment.model.DocumentType"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
-<%@ page import="org.silverpeas.attachment.model.DocumentType" %>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 
-<%@ page import="org.silverpeas.wysiwyg.*" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);

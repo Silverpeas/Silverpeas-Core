@@ -24,11 +24,9 @@
 
 --%>
 
-<%@page import="org.apache.commons.io.FilenameUtils"%>
-<%@page import="org.apache.commons.io.FileUtils"%>
-<%@page import="org.silverpeas.util.crypto.CryptoException"%>
 <%@page import="com.silverpeas.admin.components.LocalizedComponent"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
+<%@page import="org.apache.commons.io.FilenameUtils"%>
+<%@page import="org.silverpeas.util.crypto.CryptoException"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

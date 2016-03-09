@@ -26,8 +26,6 @@
 
 <%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID"%>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes" %>
-<%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>

@@ -29,6 +29,7 @@ import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author jboulet
@@ -72,6 +73,13 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
     name = strName;
     values.addAll(Arrays.asList(astrValues));
     labels.addAll(Arrays.asList(astrLabels));
+  }
+
+  public ArrayCellSelect(String strName, List<String> values, ArrayLine line) {
+    super(line);
+    name = strName;
+    this.values.addAll(values);
+    labels.addAll(values);
   }
 
   /**

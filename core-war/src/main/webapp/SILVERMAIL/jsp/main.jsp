@@ -37,16 +37,15 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ include file="graphicBox.jsp" %>
 <%@ include file="checkSilvermail.jsp" %>
 <%@ include file="tabManager.jsp" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="java.util.Date"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
-<view:looknfeel/>
+  <title></title>
+  <view:looknfeel/>
 <script type="text/javascript">
 function readMessage(id){
 	SP_openWindow("ReadMessage.jsp?ID=" + id,"readMessage","600","380","scrollable=yes,scrollbars=yes");

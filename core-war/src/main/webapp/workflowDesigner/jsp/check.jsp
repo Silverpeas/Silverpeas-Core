@@ -26,81 +26,65 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="java.io.UnsupportedEncodingException"%><%
+<%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="com.silverpeas.workflow.api.model.Action" %>
+<%@ page import="com.silverpeas.workflow.api.model.Actions" %>
+<%@ page import="com.silverpeas.workflow.api.model.AllowedActions" %>
+<%@ page import="com.silverpeas.workflow.api.model.Column" %>
+<%@ page import="com.silverpeas.workflow.api.model.Columns" %>
+<%@ page import="com.silverpeas.workflow.api.model.Consequence" %>
+<%@ page import="com.silverpeas.workflow.api.model.ContextualDesignation" %>
+<%@ page import="com.silverpeas.workflow.api.model.DataFolder" %>
+<%@ page import="com.silverpeas.workflow.api.model.Form" %>
+<%@ page import="com.silverpeas.workflow.api.model.Forms" %>
+<%@ page import="com.silverpeas.workflow.api.model.Item" %>
+<%@ page import="com.silverpeas.workflow.api.model.Input" %>
+<%@ page import="com.silverpeas.workflow.api.model.QualifiedUsers" %>
+<%@ page import="com.silverpeas.workflow.api.model.Parameter" %>
+<%@ page import="com.silverpeas.workflow.api.model.Participant" %>
+<%@ page import="com.silverpeas.workflow.api.model.Participants" %>
+<%@ page import="com.silverpeas.workflow.api.model.Presentation" %>
+<%@ page import="com.silverpeas.workflow.api.model.ProcessModel" %>
+<%@ page import="com.silverpeas.workflow.api.model.RelatedUser" %>
+<%@ page import="com.silverpeas.workflow.api.model.Role" %>
+<%@ page import="com.silverpeas.workflow.api.model.Roles" %>
+<%@ page import="com.silverpeas.workflow.api.model.State" %>
+<%@ page import="com.silverpeas.workflow.api.model.States" %>
+<%@ page import="com.silverpeas.workflowdesigner.control.WorkflowDesignerSessionController"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-
-<%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellInputText"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellRadio"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellSelect"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="java.io.UnsupportedEncodingException"%>
+<%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
-
-<%@page import="com.silverpeas.form.DataRecord"%>
-<%@page import="com.silverpeas.form.PagesContext"%>
-
-<%@ page import="com.silverpeas.workflow.api.model.Action"%>
-<%@ page import="com.silverpeas.workflow.api.model.Actions"%>
-<%@ page import="com.silverpeas.workflow.api.model.AllowedAction"%>
-<%@ page import="com.silverpeas.workflow.api.model.AllowedActions"%>
-<%@ page import="com.silverpeas.workflow.api.model.Column"%>
-<%@ page import="com.silverpeas.workflow.api.model.Columns"%>
-<%@ page import="com.silverpeas.workflow.api.model.Consequence"%>
-<%@ page import="com.silverpeas.workflow.api.model.Consequences"%>
-<%@ page import="com.silverpeas.workflow.api.model.ContextualDesignation"%>
-<%@ page import="com.silverpeas.workflow.api.model.ContextualDesignations"%>
-<%@ page import="com.silverpeas.workflow.api.model.DataFolder"%>
-<%@ page import="com.silverpeas.workflow.api.model.Form"%>
-<%@ page import="com.silverpeas.workflow.api.model.Forms"%>
-<%@ page import="com.silverpeas.workflow.api.model.Input"%>
-<%@ page import="com.silverpeas.workflow.api.model.Item"%>
-<%@ page import="com.silverpeas.workflow.api.model.Parameter"%>
-<%@ page import="com.silverpeas.workflow.api.model.Participant"%>
-<%@ page import="com.silverpeas.workflow.api.model.Participants"%>
-<%@ page import="com.silverpeas.workflow.api.model.Presentation"%>
-<%@ page import="com.silverpeas.workflow.api.model.ProcessModel" %>
-<%@ page import="com.silverpeas.workflow.api.model.QualifiedUsers"%>
-<%@ page import="com.silverpeas.workflow.api.model.RelatedUser"%>
-<%@ page import="com.silverpeas.workflow.api.model.Role" %>
-<%@ page import="com.silverpeas.workflow.api.model.Roles"%>
-<%@ page import="com.silverpeas.workflow.api.model.State"%>
-<%@ page import="com.silverpeas.workflow.api.model.States"%>
-<%@ page import="com.silverpeas.workflow.api.model.StateSetter"%>
-<%@ page import="com.silverpeas.workflow.api.model.UserInRole"%>
-
-<%@ page import="com.silverpeas.workflowdesigner.control.WorkflowDesignerSessionController"%>
 
 <%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.net.URLEncoder"%>
+<%@page import="java.util.Iterator"%>
+
+<%@page import="java.util.List"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%

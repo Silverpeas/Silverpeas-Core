@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.form.displayers.MapFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

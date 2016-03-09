@@ -30,14 +30,12 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@page import="com.silverpeas.tools.domainSP2LDAP.*"%>
-<%@page import="java.util.List"%>
-<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="com.silverpeas.tools.domainSP2LDAP.DomainSP2LDAPBatch"%>
 <%@page import="com.stratelia.webactiv.beans.admin.Domain"%>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="java.util.ArrayList"%>
 <%@ include file="../check.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <html>
@@ -93,9 +91,8 @@
       HashMap usersSPProcessed = (HashMap) resultUsers.get(0);
       HashMap usersSPNotProcessed = (HashMap) resultUsers.get(1);
       %>
-      <center>
 			<table>
-		<tr><td colspan="5">La migration se fait sur la comparaison du <b>pr&eacute;nom+nom</b></center></td></tr>
+		<tr><td colspan="5">La migration se fait sur la comparaison du <b>pr&eacute;nom+nom</b></td></tr>
 			<tr><td colspan="5"><b><%=db.getNbUsers(db.DOMAIN_SILVERPEAS_ID) %></b> utilisateurs dans le domaine Silverpeas</td></tr>
 			<tr><td colspan="5"><b><%=db.getNbUsers(domainLDAPId) %></b> utilisateurs dans le LDAP</td></tr>
 			<tr><td colspan="5"><b><%=usersSPProcessed.size() %></b> utilisateurs trait&eacute;s</td></tr>

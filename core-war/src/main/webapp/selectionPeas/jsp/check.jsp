@@ -32,42 +32,33 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.*"%>
+<%@ page import="com.stratelia.silverpeas.genericPanel.PanelLine"%>
+<%@ page import="com.stratelia.silverpeas.genericPanel.PanelOperation"%>
+<%@ page import="com.stratelia.silverpeas.selectionPeas.SelectionPeasSettings"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 <%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-
-<%@ page import="java.util.*"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 
-<%@ page import="com.stratelia.silverpeas.selectionPeas.*"%>
-<%@ page import="com.stratelia.silverpeas.genericPanel.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="java.util.StringTokenizer"%>
 
-
-
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

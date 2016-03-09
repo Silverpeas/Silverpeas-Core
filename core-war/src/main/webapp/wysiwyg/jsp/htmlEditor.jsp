@@ -1,4 +1,3 @@
-
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -33,17 +32,17 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
-<%@ page import="org.silverpeas.wysiwyg.*" %>
 <%@ page import="com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
-<%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException" %>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>

@@ -33,18 +33,17 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.apache.commons.fileupload.FileItem"%>
+<%@ page import="org.silverpeas.servlet.HttpRequest"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
-<%@ page import="org.apache.commons.fileupload.FileItem"%>
-<%@ page import="java.io.File"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.servlet.HttpRequest" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button "%>
+<%@ page import="java.io.File" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

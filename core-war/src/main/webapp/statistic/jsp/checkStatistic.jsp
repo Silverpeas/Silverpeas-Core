@@ -32,34 +32,31 @@ response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController,
-                 org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.webactiv.statistic.control.StatisticService"%>
+<%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser "%>
+<%@ page import="com.stratelia.webactiv.statistic.model.HistoryObjectDetail"%>
 <%@ page import="org.silverpeas.util.DateUtil"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ServiceProvider"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
-<%@ page import="com.stratelia.webactiv.statistic.model.HistoryObjectDetail"%>
-<%@ page import="com.stratelia.webactiv.statistic.control.StatisticService"%>
-<%@ page import="org.silverpeas.util.JNDINames"%>
-<%@ page import="org.silverpeas.util.ServiceProvider" %>
-
-<%@ page import="java.net.*"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="java.util.Iterator" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

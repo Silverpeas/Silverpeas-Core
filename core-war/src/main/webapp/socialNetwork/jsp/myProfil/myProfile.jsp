@@ -36,14 +36,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
-<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@page import="com.silverpeas.directory.model.Member"%>
-<%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
-<%@ page import="org.silverpeas.util.*" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
