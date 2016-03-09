@@ -30,9 +30,6 @@
                 com.sun.portal.portletcontainer.driver.admin.AdminConstants" %>
 <%@page import="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

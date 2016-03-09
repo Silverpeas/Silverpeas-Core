@@ -1,4 +1,3 @@
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

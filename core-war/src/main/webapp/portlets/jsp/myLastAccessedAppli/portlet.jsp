@@ -24,10 +24,10 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>

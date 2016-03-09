@@ -24,13 +24,14 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
 
 <%@ include file="../portletImport.jsp"%>
 

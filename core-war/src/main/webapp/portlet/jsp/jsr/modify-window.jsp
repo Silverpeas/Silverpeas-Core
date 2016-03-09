@@ -26,9 +26,9 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.portlets.portal.DriverUtil,
-                com.sun.portal.portletcontainer.driver.admin.AdminConstants,
-                com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants" %>
+<%@page import="com.silverpeas.portlets.portal.DriverUtil" %>
+<%@page import="com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants" %>
+<%@page import="com.sun.portal.portletcontainer.driver.admin.AdminConstants" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

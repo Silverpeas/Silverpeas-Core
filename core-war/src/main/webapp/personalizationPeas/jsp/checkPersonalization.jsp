@@ -31,42 +31,29 @@
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.util.Properties"%>
-<%@ page import="java.util.Iterator"%>
-
+<%@ page import="com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController"%>
+<%@ page import="org.owasp.encoder.Encode"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 
-<%@ page import="com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLineTag"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.owasp.encoder.Encode"%>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="java.util.Properties"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

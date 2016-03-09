@@ -26,35 +26,26 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.beans.*"%>
-<%@ page import="java.lang.String"%>
-<%@ page import="java.util.*"%>
+<%@ page import="com.silverpeas.portlets.FormNames"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.SettingBundle"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="javax.portlet.PortletPreferences"%>
 
 <%@ page import="javax.portlet.RenderRequest" %>
 <%@ page import="javax.portlet.RenderResponse" %>
-<%@ page import="javax.portlet.PortletPreferences" %>
-<%@ page import="javax.portlet.PortletURL" %>
-<%@ page import="javax.portlet.WindowState"%>
+<%@ page import="javax.portlet.WindowState" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="java.util.Collection"%>
 
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="com.stratelia.webactiv.homepage.*"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-
-<%@ page import="com.silverpeas.portlets.FormNames" %>
-
-<%@ page import="org.silverpeas.util.DateUtil"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.List"%>
 
 
 <%

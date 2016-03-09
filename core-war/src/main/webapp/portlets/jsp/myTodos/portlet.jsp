@@ -24,10 +24,10 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.webactiv.calendar.model.ToDoHeader"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.calendar.model.ToDoHeader"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 <%@ include file="../portletImport.jsp"%>
 

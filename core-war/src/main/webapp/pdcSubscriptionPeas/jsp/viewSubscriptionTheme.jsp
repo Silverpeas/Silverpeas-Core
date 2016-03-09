@@ -1,6 +1,3 @@
-<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
-<%@ page import="org.silverpeas.subscription.bean.NodeSubscriptionBean" %>
-<%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -26,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
+<%@ page import="org.silverpeas.subscription.bean.NodeSubscriptionBean" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

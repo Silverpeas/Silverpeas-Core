@@ -24,11 +24,10 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="com.silverpeas.myLinks.model.LinkDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 <%@ include file="../portletImport.jsp"%>
 

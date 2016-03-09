@@ -1,3 +1,6 @@
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="java.util.ArrayList" %>
 <%  ArrayList notifPreferences = personalizationScc.getNotifPreferences() ; %>
 
 <script>

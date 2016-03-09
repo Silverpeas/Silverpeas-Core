@@ -24,15 +24,9 @@
 
 --%>
 
+<%@page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
 <%@page import="org.owasp.encoder.Encode"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
-<%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
-
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ include file="../portletImport.jsp"%>
 

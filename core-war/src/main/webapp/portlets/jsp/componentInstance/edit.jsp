@@ -26,11 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ page import="com.silverpeas.portlets.FormNames" %>
+<%@ page import="javax.portlet.PortletPreferences" %>
 <%@ page import="javax.portlet.RenderRequest" %>
 <%@ page import="javax.portlet.RenderResponse" %>
-<%@ page import="javax.portlet.PortletPreferences" %>
-<%@ page import="javax.portlet.PortletURL" %>
-<%@ page import="com.silverpeas.portlets.FormNames" %>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>

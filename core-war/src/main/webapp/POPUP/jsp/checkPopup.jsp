@@ -28,22 +28,13 @@
 
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionController"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%
       POPUPSessionController popupScc = (POPUPSessionController) request.getAttribute("POPUP");
 
