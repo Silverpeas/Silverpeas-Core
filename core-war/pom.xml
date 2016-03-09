@@ -133,11 +133,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-node</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-publication</artifactId>
       <version>${project.version}</version>
     </dependency>

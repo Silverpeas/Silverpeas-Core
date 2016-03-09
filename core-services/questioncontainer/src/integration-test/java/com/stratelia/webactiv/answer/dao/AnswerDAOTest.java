@@ -91,7 +91,6 @@ public class AnswerDAOTest extends DataSetTest {
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard")

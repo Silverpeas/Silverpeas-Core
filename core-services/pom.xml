@@ -40,7 +40,6 @@
     <module>searchengine</module>
     <module>silverstatistics</module>
     <module>tagcloud</module>
-    <module>node</module>
     <module>contact</module>
     <module>calendar</module>
     <module>formtemplate</module>

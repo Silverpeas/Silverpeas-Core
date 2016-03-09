@@ -20,15 +20,13 @@
  */
 package com.stratelia.webactiv.node.control;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.Local;
-
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.ServiceProvider;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This is the Node BM interface.

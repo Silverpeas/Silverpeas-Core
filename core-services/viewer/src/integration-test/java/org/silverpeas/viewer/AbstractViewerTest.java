@@ -49,9 +49,6 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractViewerTest {
 
-  /*@Rule
-  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);*/
-
   @Deployment
   public static Archive<?> createTestArchive() throws IOException {
     return WarBuilder4Viewer.onWarForTestClass(AbstractViewerTest.class).build();

@@ -36,7 +36,6 @@ public class WarBuilder4Publication extends BasicWarBuilder {
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-node");
     warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
     warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard");
