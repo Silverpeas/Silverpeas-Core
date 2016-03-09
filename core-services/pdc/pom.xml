@@ -16,15 +16,6 @@
     a Silverpeas component instance, to classify a content, etc.
   </description>
 
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>silverpeas-core-personalization</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
   <build>
     <testResources>
       <testResource>
