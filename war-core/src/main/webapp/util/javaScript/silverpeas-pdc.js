@@ -62,7 +62,7 @@
           };
           $this.pdcAxisValuesSelector(settings.selectorParameters);
         }, function(pdc, error) {
-          alert(error.message);
+          notyError(error.message);
         });
       });
     },
@@ -91,14 +91,14 @@
             loadPdC(url, function(loadedPdC) {
               updatedAxis = loadedPdC.axis;
             }, function(pdc, error) {
-              alert(error.message);
+              notyError(error.message);
             }, true);
 
             return updatedAxis;
           };
           $this.pdcAxisValuesSelector(settings.selectorParameters);
         }, function(pdc, error) {
-          alert(error.message);
+          notyError(error.message);
         });
       });
     },
@@ -133,7 +133,7 @@
     } else if (typeof method === 'object' || !method) {
       return methods.init.apply(this, arguments);
     } else {
-      $.error('Method ' + method + ' does not exist on jQuery.pdc');
+      notyError('Method ' + method + ' does not exist on jQuery.pdc');
     }
   };
 
