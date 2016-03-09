@@ -45,18 +45,6 @@ CREATE TABLE ST_SpaceI18N(
 
 -- Component
 
-CREATE TABLE ST_Component (
-  id            INT          NOT NULL,
-  componentName VARCHAR(100) NOT NULL,
-  description   VARCHAR(400) NULL
-);
-ALTER TABLE ST_Component ADD CONSTRAINT PK_Component PRIMARY KEY(id);
-ALTER TABLE ST_Component ADD CONSTRAINT UN_ST_Component_1 UNIQUE(componentName);
-
-INSERT INTO st_component
-(id,componentname   ,description) VALUES
-(0 ,'dummyComponent',null       );
-
 CREATE TABLE ST_ComponentInstance(
   id                   INT              NOT NULL,
   spaceId              INT              NOT NULL,

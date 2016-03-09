@@ -129,12 +129,6 @@ CREATE TABLE IF NOT EXISTS ST_SpaceI18N
   description VARCHAR(400)
 );
 
-CREATE TABLE IF NOT EXISTS ST_Component (
-  id            INT          NOT NULL,
-  componentName VARCHAR(100) NOT NULL,
-  description   VARCHAR(400) NULL
-);
-
 CREATE TABLE IF NOT EXISTS ST_ComponentInstance
 (
   id                   INT              NOT NULL,

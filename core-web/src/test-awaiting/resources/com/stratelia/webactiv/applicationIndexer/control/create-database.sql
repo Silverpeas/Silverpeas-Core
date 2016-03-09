@@ -109,12 +109,6 @@ CREATE TABLE ST_SpaceI18N
     description		varchar(400)
 );
 
-CREATE TABLE ST_Component (
-	id		int 		NOT NULL,
-	componentName	varchar(100) 	NOT NULL ,
-	description	varchar(400) 	NULL
-);
-
 CREATE TABLE ST_ComponentInstance
 (
     id            	int           NOT NULL,

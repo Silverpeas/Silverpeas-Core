@@ -17,13 +17,6 @@ INSERT INTO st_domain (id, name, description, propFileName, className, authentic
 VALUES (1, 'SILVERPEAS', 'Zimbra Silverpeas', 'org.silverpeas.domains.domainSILVERPEAS',
         'org.silverpeas.domains.ldapdriver.LDAPDriver', 'autDomainSILVERPEAS');
 
-
-/* Components */
-INSERT INTO st_component (id, componentname) VALUES (1, 'blog');
-INSERT INTO st_component (id, componentname) VALUES (2, 'kmelia');
-INSERT INTO st_component (id, componentname) VALUES (3, 'almanach');
-
-
 /* Users */
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, state, stateSaveDate)
 VALUES (0, 0, '0', '', 'Administrateur', 'ehu@silverpeas.com', 'SilverAdmin', '', 'A', 'VALID',

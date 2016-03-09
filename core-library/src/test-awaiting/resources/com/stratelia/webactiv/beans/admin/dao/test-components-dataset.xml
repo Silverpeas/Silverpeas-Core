@@ -26,25 +26,6 @@
 -->
 
 <dataset>
-  <st_component id="1" componentname="connecteurJDBC"/>
-  <st_component id="2" componentname="outlook"/>
-  <st_component id="3" componentname="quickinfo"/>
-  <st_component id="4" componentname="kmelia"/>
-  <st_component id="5" componentname="newsEdito"/>
-  <st_component id="6" componentname="pollingStation"/>
-  <st_component id="7" componentname="hyperlink"/>
-  <st_component id="8" componentname="almanach"/>
-  <st_component id="9" componentname="bookmark"/>
-  <st_component id="10" componentname="quizz"/>
-  <st_component id="11" componentname="taskm"/>
-  <st_component id="12" componentname="websites"/>
-  <st_component id="13" componentname="yellowpages"/>
-  <st_component id="14" componentname="survey"/>
-  <st_component id="15" componentname="forums"/>
-  <st_component id="16" componentname="toolbox"/>
-  <st_component id="17" componentname="kmax"/>
-  <st_component id="18" componentname="formManager"/>
-  <st_component id="19" componentname="infoLetter"/>
   <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="ehu@silverpeas.com" login="bsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson" email="homer@simpson.com" login="homer@simpson.com" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
