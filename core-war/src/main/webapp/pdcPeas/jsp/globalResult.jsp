@@ -26,15 +26,14 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.net.URLDecoder"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.result.HtmlSearchResultTag"%>
-<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.Facet"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.FacetEntryVO"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="java.net.URLDecoder"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 
@@ -130,7 +129,6 @@ String sortOrder		= (String) request.getAttribute("SortOrder");
 String sortResXForm = (String) request.getAttribute("XmlFormSortValue");
 String sortImplementor = (String) request.getAttribute("sortImp");
 
-List<GoogleTab>	webTabs			= (List<GoogleTab>) request.getAttribute("WebTabs");
 // spelling words
 List<String> spellingWords = (List<String>) request.getAttribute("spellingWords");
 
@@ -175,7 +173,8 @@ String facetToggleShow = resource.getString("pdcPeas.facet.toggle.show");
 String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%><c:out value="${anotherUserId}"></c:out></title>
 <view:looknfeel />
@@ -498,12 +497,6 @@ function viewFile(target, attachmentId, versioned, componentId) {
 <%
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "#", true);
-	if (webTabs != null) {
-		for (int i=0; i<webTabs.size(); i++) {
-			GoogleTab webTab = webTabs.get(i);
-			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
-		}
-	}
 	if (expertSearchVisible) {
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);

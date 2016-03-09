@@ -33,73 +33,56 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 
 <!-- import java -->
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.util.TreeSet"%>
-<%@ page import="java.beans.*"%>
-<%@ page import="java.util.Collection, java.util.ArrayList, java.util.List, java.util.Iterator, java.util.Date, java.util.StringTokenizer"%>
+<%@ page import="com.silverpeas.interestCenter.model.InterestCenter"%>
+<%@ page import="com.silverpeas.thesaurus.ThesaurusException"%>
+<%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
+<%@ page import="com.silverpeas.thesaurus.model.Jargon"%>
+<%@ page import="com.stratelia.silverpeas.contentManager.GlobalSilverContent"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.model.QueryParameters"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <!-- import PDC -->
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.*"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.model.*"%>
-<%@ page import="com.stratelia.silverpeas.containerManager.ContainerWorkspace"%>
-<%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
-<%@ page import="com.stratelia.silverpeas.contentManager.GlobalSilverContent"%>
+<%@ page import="org.silverpeas.util.WAAttributeValuePair"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.pagination.Pagination"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="javax.servlet.jsp.JspWriter"%>
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.text.NumberFormat"%>
 
 
 <!-- import plainSearch -->
-<%@ page import="com.stratelia.webactiv.calendar.model.*"%>
-<%@ page import="org.silverpeas.util.WAAttributeValuePair"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.CompoSpace"%>
-<%@ page import="java.text.NumberFormat"%>
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.Map.Entry"%>
+<%@ page import="java.util.Set"%>
+<%@ page import="java.util.StringTokenizer"%>
+<%@ page import="java.util.Vector"%>
 
 <!-- common -->
-
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.pagination.Pagination"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.thesaurus.model.*"%>
-<%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
-<%@ page import="com.silverpeas.interestCenter.model.InterestCenter"%>
-<%@ page import="com.silverpeas.thesaurus.*"%>
-<%@ page import="java.util.Map"%>
-<%@ page import="java.util.Set"%>
-<%@ page import="java.util.Map.Entry"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

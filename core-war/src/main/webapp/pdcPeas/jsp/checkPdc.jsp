@@ -32,62 +32,53 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-
-<%@ page import="java.util.Collection, java.util.ArrayList, java.util.Iterator, java.util.Date, java.util.StringTokenizer"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-
-<%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-
-<%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-
-
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
-
-<%@ page import="com.stratelia.silverpeas.pdc.model.*"%>
-<%@ page import="java.util.List"%>
-
-<%@ page import="com.stratelia.silverpeas.containerManager.ContainerWorkspace"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.ContainerContext"%>
+<%@ page import="com.stratelia.silverpeas.containerManager.ContainerWorkspace"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
 <%@ page import="com.stratelia.silverpeas.contentManager.SilverContentInterface"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.Axis"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.AxisHeader"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyPosition"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
 
+
+<%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.UsedAxis"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
-
-<%@ page import="org.silverpeas.util.i18n.I18NHelper"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+
+<%// En fonction de ce dont vous avez besoin %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="javax.servlet.http.HttpSession"%>
+<%@ page import="javax.servlet.jsp.JspWriter"%>
+
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Iterator"%>
+
+
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.StringTokenizer" %>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -196,7 +187,7 @@ String troncatePath(String completPath, List list, boolean isLinked, int withLas
 * Cette methode construit le chemin complet pour acceder a une valeur
 * @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas etre nulle
 * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
-* @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur selectionnee.
+* @param withLastValue - 0 si l'on veut afficher le chemin complet de la valeur selectionnee.
 *                                               1 si l'on ne souhaite afficher que le chemin complet sans la valeur selectionnee
 * @return completPath - le chemin fabrique
 */

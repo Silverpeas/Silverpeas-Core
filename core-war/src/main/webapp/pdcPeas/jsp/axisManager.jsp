@@ -1,5 +1,3 @@
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -25,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -96,7 +96,9 @@
 	AxisHeader tempAxisHeader = null;
 	String axisName = "";
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>

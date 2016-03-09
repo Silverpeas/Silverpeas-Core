@@ -50,7 +50,6 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.pdcPeas.control.GoogleTabsUtil;
 import com.stratelia.silverpeas.pdcPeas.control.Keys;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
@@ -317,8 +316,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
 
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
-
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.startsWith("AddCriteria")) {
         // USED ONLY IN LOCAL MODE -- the user add a criteria into the SearchContext.
@@ -345,8 +342,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
 
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
-
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.startsWith("DeleteCriteria")) {
         // USED ONLY IN LOCAL MODE -- the user deletes a criteria from the SearchContext.
@@ -371,8 +366,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, true);
 
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
 
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.startsWith("ModifyCriteria")) {
@@ -399,8 +392,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, true);
 
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
 
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.startsWith("GlobalView")) {
@@ -446,8 +437,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         ThesaurusHelper.initializeJargon(pdcSC);
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
 
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
-
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.startsWith("ViewAdvancedSearch")) {
 
@@ -458,8 +447,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         ThesaurusHelper.initializeJargon(pdcSC);
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
 
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.equals("Pagination")) {
@@ -678,28 +665,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           || function.startsWith("GlobalActivateThesaurus")
           || function.startsWith("GlobalDesactivateThesaurus")) {
 
-        PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
-
         destination = processThesaurusActions(function, pdcSC, request);
-      } else if (function.startsWith("SpecificDomainView")) {
-        // To do a search in a domain that is not Silverpeas
-        try {
-          String domainId = request.getParameter("searchDomainId");
-          if (domainId == null) {
-            destination = getDestination("GlobalView", pdcSC, request);
-          } else {
-            // request.setAttribute("domains", pdcSC.getDomains());
-            PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, domainId);
-            destination = getDomainSearchPage(pdcSC.getSearchDomains(), domainId);
-            if (destination == null) {
-              destination = getDestination("GlobalView", pdcSC, request);
-            }
-          }
-        } catch (Exception e) {
-          SilverTrace.error("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-              "root.MSG_ERR_CALCULATE_SEARCHFORM", e);
-          destination = getDestination("GlobalView", pdcSC, request);
-        }
       } else if (function.startsWith("ToUserPanel")) {// utilisation de userPanel et userPanelPeas
         try {
           destination = pdcSC.initUserPanel();
@@ -738,13 +704,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         request.setAttribute("selectedResultsWa", selectedResultsWa);
         // jump to importExportPeas
         destination = "/RimportExportPeas/jsp/ExportPDF";
-      } else if ("ViewWebTab".equals(function)) {
-        String id = request.getParameter("Id");
-
-        request.setAttribute("WebTabId", id);
-        request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
-        setTabsInfoIntoRequest(pdcSC, request);
-        destination = "/pdcPeas/jsp/webTab.jsp";
       } else if ("markAsRead".equals(function)) {
         PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, request);
         destination = "/pdcPeas/jsp/blank.html";
@@ -1002,7 +961,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       request.setAttribute("context", context);
     }
 
-    PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
     // put search type
     request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
     return getDestinationDuringSearch(pdcSC, request);
@@ -1015,24 +973,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
     ThesaurusHelper.initializeJargon(pdcSC);
     ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-  }
-
-  /**
-   * Return the url corresponding to the given domain Id
-   *
-   * @param searchDomains the domains defined in domains.properties
-   * @param domainId the search domain id
-   * @return the destination page url
-   */
-  private String getDomainSearchPage(List<String[]> searchDomains, String domainId) {
-    for (int i = 0; searchDomains != null && i < searchDomains.size(); i++) {
-      String[] domainDetails = searchDomains.get(i);
-      if (domainDetails[2].equals(domainId)) {
-        return domainDetails[1];
-      }
-    }
-
-    return null;
   }
 
   private void viewArbo(PdcSearchSessionController pdcSC, HttpServletRequest request)
@@ -1809,7 +1749,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   private void setTabsInfoIntoRequest(PdcSearchSessionController pdcSC, HttpServletRequest request) {
     request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
-    request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
     request.setAttribute("ExpertSearchVisible", pdcSC.isPlatformUsesPDC());
   }
 }

@@ -106,8 +106,6 @@ import java.util.*;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
-  static public final String ALL_SPACES = "*";
-  static public final String ALL_COMPONENTS = "*";
   // Container and Content Peas
   private ContainerWorkspace containerWorkspace = null;
   private ContainerPeas containerPeasPDC = null;
@@ -159,7 +157,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final int SHOWRESULTS_ALL = 0;
   public static final int SHOWRESULTS_OnlyPDC = 1;
   // spelling word
-  private List<String> spellingwords = Collections.EMPTY_LIST;
+  private List<String> spellingwords = Collections.<String>emptyList();
   // Activate external search
   private boolean isEnableExternalSearch = false;
   private List<ExternalSPConfigVO> externalServers = null;
@@ -199,8 +197,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     try {
       platformUsesPDC = !getPdcManager().getAxis().isEmpty();
-    } catch (PdcException e) {
-
+    } catch (PdcException ignored) {
     }
 
     includeUsers = getSettings().getBoolean("search.users.included", false);
@@ -217,7 +214,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private void getExternalSPConfig() {
     if (isEnableExternalSearch) {
       curServerName = getSettings().getString("server.name");
-      externalServers = new ArrayList<ExternalSPConfigVO>();
+      externalServers = new ArrayList<>();
       String prefixKey = "external.search.server.";
       String nameKey = ".name";
       String pathKey = ".data.path";
@@ -264,14 +261,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @throws Exception
    * ****************************************************************************************************************
    */
-  public void setPDCResults(List<GlobalSilverContent> globalSilverContents) throws Exception {
-    indexOfFirstItemToDisplay = 0;
-    processResultsToDisplay(globalSilverContents);
-  }
 
   public int getNbItemsPerPage() {
     if (nbItemsPerPage == -1) {
-      nbItemsPerPage = new Integer(getSettings().getString("NbItemsParPage", "20")).intValue();
+      nbItemsPerPage = new Integer(getSettings().getString("NbItemsParPage", "20"));
     }
     return nbItemsPerPage;
   }
@@ -281,7 +274,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = new Integer(index).intValue();
+    this.indexOfFirstItemToDisplay = new Integer(index);
   }
 
   /**
@@ -312,7 +305,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<String> getListChoiceNbResToDisplay() {
-    List<String> choiceNbResToDisplay = new ArrayList<String>();
+    List<String> choiceNbResToDisplay = new ArrayList<>();
     StringTokenizer st = new StringTokenizer(getSettings().getString("ChoiceNbResToDisplay"), ",");
     while (st.hasMoreTokens()) {
       String choice = st.nextToken();
@@ -354,10 +347,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.sortValue = sortValue;
   }
 
-  public void setQueryParameters(QueryParameters query) {
-    this.queryParameters = query;
-  }
-
   public QueryParameters getQueryParameters() {
     if (this.queryParameters == null) {
       this.queryParameters = new QueryParameters();
@@ -375,7 +364,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       org.silverpeas.search.searchEngine.model.ParseException {
 
     MatchingIndexEntry[] plainSearchResults = null;
-    QueryDescription query = null;
+    QueryDescription query;
     selectedFacetEntries = null;
     try {
       // spelling words initialization
@@ -436,12 +425,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
 
       }
-    } catch (ParseException e) {
-      String keyword = "";
-      if (query != null) {
-        keyword = query.getQuery();
-      }
-
+    } catch (ParseException ignore) {
     }
 
 
@@ -473,7 +457,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param extServerCfg the external server configuration read from properties file
    */
   private void browseExternalServerDirectory(QueryDescription query, ExternalSPConfigVO extServerCfg) {
-    Collection<File> listDir = new ArrayList<File>();
+    Collection<File> listDir = new ArrayList<>();
     try {
       listDir =
           FileFolderManager.getAllSubFolder(extServerCfg.getDataPath() + File.separator
@@ -593,12 +577,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     Facet fileTypeFacet = new Facet("filetype", getString("pdcPeas.facet.filetype"));
 
     // key is the fieldName
-    Map<String, Facet> fieldFacetsMap = new HashMap<String, Facet>();
+    Map<String, Facet> fieldFacetsMap = new HashMap<>();
 
     if (results != null) {
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList = getFacetBlackList();
-      Map<String, ComponentInstLight> components = new HashMap<String, ComponentInstLight>();
+      Map<String, ComponentInstLight> components = new HashMap<>();
 
       // Loop on each result
       for (GlobalSilverResult result : results) {
@@ -635,7 +619,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     res.setComponentFacet(componentFacet);
     res.setDatatypeFacet(dataTypeFacet);
     res.setFiletypeFacet(fileTypeFacet);
-    res.setFormFieldFacets(new ArrayList<Facet>(fieldFacetsMap.values()));
+    res.setFormFieldFacets(new ArrayList<>(fieldFacetsMap.values()));
 
     // sort facets entries descending
     res.sortFacetsEntries();
@@ -853,7 +837,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     List<GlobalSilverResult> sortedResults = sortResults.execute(results, sortOrder, sortValString,
         getLanguage());
-    List<GlobalSilverResult> resultsToDisplay = new ArrayList<GlobalSilverResult>();
+    List<GlobalSilverResult> resultsToDisplay;
     if (filter != null && !filter.isEmpty()) {
       // Check Author filter
       resultsToDisplay = filterResult(filter, sortedResults);
@@ -907,7 +891,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   private List<GlobalSilverResult> filterResult(ResultFilterVO filter,
       List<GlobalSilverResult> listGSR) {
-    List<GlobalSilverResult> sortedResults = new ArrayList<GlobalSilverResult>();
+    List<GlobalSilverResult> sortedResults = new ArrayList<>();
     List<GlobalSilverResult> sortedResultsToDisplay;
 
     String authorFilter = filter.getAuthorId();
@@ -923,7 +907,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     boolean filterFormFields = !filter.isSelectedFormFieldFacetsEmpty();
 
     List<String> blackList = getFacetBlackList();
-    Map<String, ComponentInstLight> components = new HashMap<String, ComponentInstLight>();
+    Map<String, ComponentInstLight> components = new HashMap<>();
 
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
@@ -1005,7 +989,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private List<String> getFacetBlackList() {
     String sBlackList = getSettings().getString("searchengine.facet.component.blacklist", "");
-    List<String> blackList = new ArrayList<String>();
+    List<String> blackList = new ArrayList<>();
     if (StringUtil.isDefined(sBlackList)) {
       blackList = Arrays.asList(sBlackList.split(",\\s*"));
     }
@@ -1019,7 +1003,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   private void setExtraInfoToResultsToDisplay(List<GlobalSilverResult> results) {
     String titleLink = "";
-    String downloadLink = "";
+    String downloadLink;
     String resultType = "";
     String underLink;
     // activate the mark as read functionality on results list
@@ -1243,10 +1227,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return getGlobalSR().size();
   }
 
-  public int getTotalFilteredResults() {
-    return getFilteredSR().size();
-  }
-
   private int getLastIndexToDisplay() {
     int end = getIndexOfFirstResultToDisplay() + getNbResToDisplay();
 
@@ -1266,17 +1246,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<GlobalSilverResult> matchingIndexEntries2GlobalSilverResults(
       List<MatchingIndexEntry> matchingIndexEntries) throws Exception {
     if (matchingIndexEntries == null || matchingIndexEntries.isEmpty()) {
-      return new ArrayList<GlobalSilverResult>();
+      return new ArrayList<>();
     }
 
     // Initialize loop variables
     Map<String, String> places = null;
-    List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
+    List<GlobalSilverResult> results = new ArrayList<>();
 
     // Retrieve list of object type filter
     List<String> objectTypeFilter = getListObjectTypeFilter();
 
-    List<String> wysiwygSuffixes = new ArrayList<String>();
+    List<String> wysiwygSuffixes = new ArrayList<>();
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       wysiwygSuffixes.add(WysiwygController.WYSIWYG_CONTEXT + "_" + language + ".txt");
     }
@@ -1318,7 +1298,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             place = "";
           } else {
             if (places == null) {
-              places = new HashMap<String, String>();
+              places = new HashMap<>();
             }
             place = places.get(componentId);
             if (place == null) {
@@ -1451,9 +1431,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     // reinitialisation
-    String title = matchingIndexEntry.getTitle();
     String componentId = matchingIndexEntry.getComponent();
-    String location = null;
+    String location;
 
     GlobalSilverResult gsr = new GlobalSilverResult(matchingIndexEntry);
 
@@ -1482,9 +1461,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<GlobalSilverResult> globalSilverContents2GlobalSilverResults(
       List<GlobalSilverContent> globalSilverContents) throws Exception {
     if (globalSilverContents == null || globalSilverContents.isEmpty()) {
-      return new ArrayList<GlobalSilverResult>();
+      return new ArrayList<>();
     }
-    List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
+    List<GlobalSilverResult> results = new ArrayList<>();
     for (int i = 0; i < globalSilverContents.size(); i++) {
       GlobalSilverContent gsc = globalSilverContents.get(i);
       GlobalSilverResult gsr = new GlobalSilverResult(gsc);
@@ -1584,9 +1563,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * search from DomainsBar methods /
    * ****************************************************************************************************************
    */
-  public void setCurrentValue(Value value) {
-    this.currentValue = value;
-  }
 
   public Value getCurrentValue() {
     return this.currentValue;
@@ -1606,18 +1582,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public void setCurrentComponentIds(List<String> componentList) {
-    String componentId;
-    for (int i = 0; componentList != null && i < componentList.size(); i++) {
-      componentId = componentList.get(i);
-    }
     this.componentList = componentList;
   }
 
   public List<String> getCurrentComponentIds() {
-
-    for (int i = 0; componentList != null && i < componentList.size(); i++) {
-      String componentId = componentList.get(i);
-    }
     return this.componentList;
   }
 
@@ -1651,7 +1619,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         return getPdcManager().getPertinentAxisByInstanceId(searchContext, viewType,
             getCurrentComponentId());
       }
-      return new ArrayList<SearchAxis>();
+      return new ArrayList<>();
     } else {
       // we get all axis (pertinent or not) from a type P or S
       List<AxisHeader> axis = getPdcManager().getAxisByType(viewType);
@@ -1662,7 +1630,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private List<SearchAxis> transformAxisHeadersIntoSearchAxis(List<AxisHeader> axis) {
-    ArrayList<SearchAxis> transformedAxis = new ArrayList<SearchAxis>();
+    ArrayList<SearchAxis> transformedAxis = new ArrayList<>();
     try {
       for (int i = 0; i < axis.size(); i++) {
         AxisHeader ah = axis.get(i);
@@ -1674,7 +1642,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         sa.setNbObjects(1);
         transformedAxis.add(sa);
       }
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
     return transformedAxis;
   }
@@ -1777,14 +1745,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public ContainerPeas getContainerPeas() {
     return containerPeasPDC;
   }
-
-  public void setContentPeas(ContentPeas contentGivenPeasPDC) {
-    contentPeasPDC = contentGivenPeasPDC;
-  }
-
-  public ContentPeas getContentPeas() {
-    return contentPeasPDC;
-  }
   /**
    * ***************************************************************************************************************
    */
@@ -1822,7 +1782,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<String> getInstanceIdsFromComponentName(String componentName) {
     CompoSpace[] compoIds = getOrganisationController().getCompoForUser(getUserId(), componentName);
 
-    List<String> instanceIds = new ArrayList<String>();
+    List<String> instanceIds = new ArrayList<>();
     for (CompoSpace component : compoIds) {
       instanceIds.add(component.getComponentId());
     }
@@ -1838,8 +1798,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
   private boolean activeThesaurus = false; // thesaurus actif
   private Jargon jargon = null;// jargon utilisé par l'utilisateur
-  private Map<String, Collection<String>> synonyms = new HashMap<String, Collection<String>>();
-  private static final int QUOTE_CHAR = new Integer('"').intValue();
+  private Map<String, Collection<String>> synonyms = new HashMap<>();
+  private static final int QUOTE_CHAR = new Integer('"');
   private static String[] KEYWORDS = null;
   private boolean isThesaurusEnableByUser = false;
 
@@ -1866,7 +1826,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private String getSynonymsQueryString(String queryString) {
-    String synonymsQueryString = "";
+    String synonymsQueryString;
     String header = "";
     if (queryString == null || queryString.equals("") || !isThesaurusEnableByUser) {
       synonymsQueryString = queryString;
@@ -2033,7 +1993,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       allAxis = getUsedAxisHeaderByInstanceId(instanceId);
     }
 
-    List<Value> axises = new ArrayList<Value>();
+    List<Value> axises = new ArrayList<>();
 
     for (int i = 0; i < allAxis.size(); i++) {
       AxisHeader sa = allAxis.get(i);
@@ -2047,7 +2007,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<AxisHeader> getUsedAxisHeaderByInstanceId(String instanceId)
       throws PdcException {
     List<UsedAxis> usedAxisList = getPdcManager().getUsedAxisByInstanceId(instanceId);
-    List<AxisHeader> allAxis = new ArrayList<AxisHeader>(usedAxisList.size());
+    List<AxisHeader> allAxis = new ArrayList<>(usedAxisList.size());
     // get all AxisHeader corresponding to usedAxis for this instance
     for (UsedAxis usedAxis : usedAxisList) {
       String axisId = new Integer(usedAxis.getAxisId()).toString();
@@ -2059,7 +2019,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public List<String> getUsedTreeIds(String instanceId) throws PdcException {
     List<AxisHeader> usedAxisHeaders = getUsedAxisHeaderByInstanceId(instanceId);
-    List<String> usedTreeIds = new ArrayList<String>(usedAxisHeaders.size());
+    List<String> usedTreeIds = new ArrayList<>(usedAxisHeaders.size());
     for (int i = 0; i < usedAxisHeaders.size(); i++) {
       AxisHeader axisHeader = usedAxisHeaders.get(i);
       if (axisHeader != null) {
@@ -2081,7 +2041,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<Axis> getUsedAxisByAComponentInstance(String instanceId)
       throws PdcException {
     List<UsedAxis> usedAxisList = getPdcManager().getUsedAxisByInstanceId(instanceId);
-    List<Axis> axisList = new ArrayList<Axis>(usedAxisList.size());
+    List<Axis> axisList = new ArrayList<>(usedAxisList.size());
     for (UsedAxis usedAxis : usedAxisList) {
       axisList.add(getAxisDetail(new Integer(usedAxis.getAxisId()).toString()));
     }
@@ -2186,7 +2146,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ******************************************************************************************
    */
   public void buildComponentListWhereToSearch(String space, String component) {
-    componentList = new ArrayList<String>();
+    componentList = new ArrayList<>();
 
     if (space == null) {
       // Il n'y a pas de restriction sur un espace particulier
@@ -2214,7 +2174,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private List<String> getComponentsExcludedFromGlobalSearch() {
-    List<String> excluded = new ArrayList<String>();
+    List<String> excluded = new ArrayList<>();
 
     // exclude all components of all excluded spaces
     List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
@@ -2233,7 +2193,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private List<String> getItemsExcludedFromGlobalSearch(String parameterName) {
-    List<String> items = new ArrayList<String>();
+    List<String> items = new ArrayList<>();
     String param = getSettings().getString(parameterName);
     if (StringUtil.isDefined(param)) {
       StringTokenizer tokenizer = new StringTokenizer(param, ",");
@@ -2251,7 +2211,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param components a list of selected components
    */
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
-    componentList = new ArrayList<String>();
+    componentList = new ArrayList<>();
 
     if (space == null) {
       String[] allowedComponentIds = getUserAvailComponentIds();
@@ -2313,7 +2273,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Returns the list of allowed components for the current user in the given space/domain.
    */
   public List<ComponentInstLight> getAllowedComponents(String space) {
-    List<ComponentInstLight> allowedList = new ArrayList<ComponentInstLight>();
+    List<ComponentInstLight> allowedList = new ArrayList<>();
     if (space != null) {
       String[] asAvailCompoForCurUser =
           getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId());
@@ -2364,77 +2324,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else {
       return componentId;
     }
-  }
-  /**
-   * ******************************************************************************************
-   */
-  /**
-   * AskOnce methods *
-   */
-  /**
-   * ******************************************************************************************
-   */
-  private List<String[]> searchDomains = null; // All the domains available for search
-
-  /**
-   * Get the search domains available for search The search domains are contained in a Vector of
-   * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
-   */
-  public List<String[]> getSearchDomains() {
-    if (searchDomains == null) {
-      setSearchDomains();
-    }
-
-    return searchDomains;
-  }
-
-  /**
-   * Set the search domains available for search The search domains are contained in a Vector of
-   * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
-   */
-  public void setSearchDomains() {
-    SettingBundle resource;
-    List<String[]> domains = new ArrayList<String[]>();
-
-    try {
-      resource = ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.domains");
-      if (resource != null) {
-        int i = 1;
-        boolean stop = false;
-        while (!stop) {
-          // Retrieve url that will be called if domain is selected
-          String url = resource.getString("domain" + i + ".url", null);
-          if (url == null) {
-            stop = true;
-          } else {
-            // Retrieve localized domain's name
-            String name = resource.getString("domain" + i + ".name_"
-                + getLanguage(), null);
-
-            // Retrieve domain internal id (used for specific treatment in
-            // requestrouter)
-            String id = resource.getString("domain" + i + ".id", null);
-
-            // Retrieve default domain's name, if localized one not found
-            if (name == null) {
-              name = resource.getString("domain" + i + ".name");
-            }
-
-            // build an array and store it in Vector
-            String[] domain = new String[3];
-            domain[0] = name;
-            domain[1] = url;
-            domain[2] = id;
-            domains.add(domain);
-          }
-          i++;
-        }
-      }
-    } catch (MissingResourceException e) {
-      SilverLogger.getLogger(this).error("Cannot find domain properties", e);
-    }
-
-    searchDomains = domains;
   }
 
   /**
@@ -2516,10 +2405,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<MatchingIndexEntry> filterMatchingIndexEntries(
       MatchingIndexEntry[] matchingIndexEntries) {
     if (matchingIndexEntries == null || matchingIndexEntries.length == 0) {
-      return new ArrayList<MatchingIndexEntry>();
+      return new ArrayList<>();
     }
-    List<MatchingIndexEntry> results =
-        new ArrayList<MatchingIndexEntry>(matchingIndexEntries.length);
+    List<MatchingIndexEntry> results = new ArrayList<>(matchingIndexEntries.length);
     try {
       getSecurityIntf().enableCache();
     } catch (Exception e) {
@@ -2547,7 +2435,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     try {
       getSecurityIntf().disableCache();
-    } catch (Exception e) {
+    } catch (Exception ignored) {
 
     }
     return results;
@@ -2587,7 +2475,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public PublicationTemplateImpl setXmlTemplate(String fileName)
       throws PdcPeasRuntimeException {
     clearXmlTemplateAndData(); // init xml template data
-    PublicationTemplateImpl template = null;
+    PublicationTemplateImpl template;
     try {
       template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
           loadPublicationTemplate(fileName);
@@ -2780,7 +2668,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private List<String> getCopyOfInstanceIds() {
-    return new ArrayList<String>(componentList);
+    return new ArrayList<>(componentList);
   }
 
   /**
@@ -2790,7 +2678,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public List<SearchTypeConfigurationVO> getSearchTypeConfig() {
     if (dataSearchTypes == null) {
-      List<SearchTypeConfigurationVO> configs = new ArrayList<SearchTypeConfigurationVO>();
+      List<SearchTypeConfigurationVO> configs = new ArrayList<>();
 
       int cpt = 1;
       String postConfigKey = "search.type.";
@@ -2800,7 +2688,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String nameValue = getString(postConfigKey + cpt + ".label");
 
         List<String> listComponents = Arrays.asList(componentsValue.split(","));
-        List<String> listTypes = new ArrayList<String>();
+        List<String> listTypes = new ArrayList<>();
         if (StringUtil.isDefined(typesValue)) {
           listTypes = Arrays.asList(typesValue.split(","));
         }

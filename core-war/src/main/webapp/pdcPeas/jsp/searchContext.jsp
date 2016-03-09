@@ -61,8 +61,7 @@ String axisId = "";
 String axisRootId = "";
 SearchAxis searchAxis = null;
 SearchCriteria searchCriteria = null;
-ArrayList criteriaList = new ArrayList();
-ArrayList axisCriteriaList = new ArrayList();
+List<String> axisCriteriaList = new ArrayList<>();
 
 if (selectedAxisId == null)
 	selectedAxisId = "";
@@ -75,19 +74,19 @@ if (showSndSearchAxis == null)
 // l'objet SearchContext n'est pas vide
 if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 	// on r�cup�re tous les contextes
-	criteriaList = searchContext.getCriterias();
+	List<SearchCriteria> criteriaList = searchContext.getCriterias();
 	// et on r�cup�re dans une liste tous les axes que ne doivent pas apparaitre
 	// dans le primaire ou secondaire
 	for (int i=0;i<criteriaList.size() ;i++ ){
-		searchCriteria = (SearchCriteria) criteriaList.get(i);
-		axisCriteriaList.add(new Integer(searchCriteria.getAxisId()).toString());
+		searchCriteria = criteriaList.get(i);
+		axisCriteriaList.add(Integer.toString(searchCriteria.getAxisId()));
 	}
 	isEmptySearchContext = false;
 }
 %>
 
-<html>
-<!-- searchContext.jsp -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>
@@ -221,22 +220,22 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 				String completPath = "";
 				String id = "";
 				String valueId = "";
-				criteriaList = searchContext.getCriterias();
+        List<SearchCriteria> criteriaList = searchContext.getCriterias();
 				SearchCriteria sc = null;
 				if ( (pathCriteria != null) && (pathCriteria.size()>0) ){
 					// comments please
 					for (int k=0;k<pathCriteria.size();k++ ){
 						list = (List)pathCriteria.get(k);
 						completPath = buildCompletPath((ArrayList)list);
-						sc = (SearchCriteria) criteriaList.get(k);
-						id = new Integer(sc.getAxisId()).toString();
+						sc = criteriaList.get(k);
+						id = Integer.toString(sc.getAxisId());
 						valueId = (sc.getValue());
 						// calcul du nombre de document !
 						SearchAxis sa = null;
 						boolean searchSecondAxis = true;
 						for (int i=0;i<primaryAxis.size(); i++){
 							sa = (SearchAxis)primaryAxis.get(i);
-							axisId = new Integer(sa.getAxisId()).toString();
+							axisId = Integer.toString(sa.getAxisId());
 							if (axisId.equals(id)){
 								nbPositions = sa.getNbObjects();
 								searchSecondAxis = false;

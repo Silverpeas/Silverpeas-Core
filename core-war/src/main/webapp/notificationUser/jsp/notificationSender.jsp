@@ -24,9 +24,9 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@page import="com.stratelia.silverpeas.notificationUser.Notification"%>
+<%@page import="com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -37,19 +37,12 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController"%>
-<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.util.*"%>
-
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

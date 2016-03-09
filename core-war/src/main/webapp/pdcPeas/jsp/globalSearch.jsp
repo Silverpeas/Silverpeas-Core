@@ -1,4 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -26,18 +25,12 @@
 --%>
 
 
-<%@page import="com.stratelia.silverpeas.pdc.control.PdcManager"%>
-<%@page import="com.silverpeas.pdc.PdcServiceProvider"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.apache.lucene.queryParser.QueryParser"%>
+<%@page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="java.util.List"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
-<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
-<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -58,7 +51,6 @@ List 			choiceNbResToDisplay = (List) request.getAttribute("ChoiceNbResToDisplay
 Integer			nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer			sortValue			= (Integer) request.getAttribute("SortValue");
 String			sortOrder			= (String) request.getAttribute("SortOrder");
-List			webTabs				= (List) request.getAttribute("WebTabs");
 
 if (activeSelection == null) {
 	activeSelection = new Boolean(false);
@@ -143,7 +135,7 @@ int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 %>
 
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -340,21 +332,6 @@ function callUserPanel()
 	SP_openWindow('ToUserPanel','', '750', '550','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function calculateAction()
-{
-	var index = document.AdvancedSearch.searchDomainId.selectedIndex;
-	var value = document.AdvancedSearch.searchDomainId.options[index].value;
-	if (value!="SILVERPEAS")
-	{
-		document.AdvancedSearch.action = "SpecificDomainView";
-	}
-	else
-	{
-		document.AdvancedSearch.action = "GlobalView";
-	}
-	document.AdvancedSearch.submit();
-}
-
 //fonction pour force la soumission du formulaire par la touche entr�e
 function checkEnter(e){
 	var characterCode;
@@ -432,12 +409,6 @@ function showExplorer() {
 
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "LastResults", searchType==0);
-	if (webTabs != null) {
-		for (int i=0; i<webTabs.size(); i++) {
-			GoogleTab webTab = (GoogleTab) webTabs.get(i);
-			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
-		}
-	}
 	if (expertSearchVisible) {
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);

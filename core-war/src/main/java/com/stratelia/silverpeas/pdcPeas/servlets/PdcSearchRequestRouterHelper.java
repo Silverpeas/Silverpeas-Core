@@ -439,13 +439,6 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("SelectedValue", value);
   }
 
-  public static void processSearchDomains(PdcSearchSessionController pdcSC,
-      HttpServletRequest request, String currentDomain) {
-    // Set search domains
-    request.setAttribute("searchDomains", pdcSC.getSearchDomains());
-    request.setAttribute("currentSearchDomainId", currentDomain);
-  }
-
   /**
    * Checks the list of result and marks a result as read
    *

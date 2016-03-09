@@ -26,11 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.control.Keys"%>
 <%@ page import="com.silverpeas.form.DataRecord"%>
-<%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="com.silverpeas.form.Form"%>
+<%@ page import="com.silverpeas.form.PagesContext"%>
+<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
@@ -46,7 +45,6 @@ PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Temp
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
 PagesContext		context		= (PagesContext) request.getAttribute("context");
 context.setUseMandatory(false);
-List				webTabs		= (List) request.getAttribute("WebTabs");
 
 Form form = null;
 String selectedTemplate = null;
@@ -77,7 +75,8 @@ if (!StringUtil.isDefined(pageId)) {
 }
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
@@ -116,14 +115,6 @@ function viewXmlSearch(){
 
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "LastResults", false);
-	if (webTabs != null)
-	{
-		for (int i=0; i<webTabs.size(); i++)
-		{
-			GoogleTab webTab = (GoogleTab) webTabs.get(i);
-			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
-		}
-	}
 	if (expertSearchVisible) {
 		tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
 		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
