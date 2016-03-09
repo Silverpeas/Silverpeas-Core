@@ -123,16 +123,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         request.setAttribute("urlToReload", "StartPageInfo");
         return "/jobStartPagePeas/jsp/closeWindow.jsp";
       case Portlet:
-        if (jobStartPageSC.isJSR168Used()) {
-          spaceint1 = jobStartPageSC.getSpaceInstById();
-          spaceint1.setFirstPageType(SpaceInst.FP_TYPE_PORTLET);
-          jobStartPageSC.updateSpaceInst(spaceint1);
-          request.setAttribute("fullURL", URLManager.getApplicationURL()
-              + "/dt?dt.SpaceId=" + jobStartPageSC.getManagedSpaceId() + "&dt.Role=Admin");
-        } else {
-          request.setAttribute("fullURL", URLManager.getApplicationURL()
-              + "/Rportlet/jsp/admin?spaceId=" + jobStartPageSC.getManagedSpaceId());
-        }
+        spaceint1 = jobStartPageSC.getSpaceInstById();
+        spaceint1.setFirstPageType(SpaceInst.FP_TYPE_PORTLET);
+        jobStartPageSC.updateSpaceInst(spaceint1);
+        request.setAttribute("fullURL", URLManager.getApplicationURL()
+            + "/dt?dt.SpaceId=" + jobStartPageSC.getManagedSpaceId() + "&dt.Role=Admin");
         return "/jobStartPagePeas/jsp/goBack.jsp";
       case SelectPeas:
         spaceint1 = jobStartPageSC.getSpaceInstById();

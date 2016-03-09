@@ -38,7 +38,6 @@ public class JobStartPagePeasSettings {
   public static boolean useBasketWhenAdmin;
   public static boolean isInheritanceEnable;
   public static boolean isPublicParameterEnable;
-  public static boolean useJSR168Portlets;
   public static boolean useComponentsCopy;
   public static String SPACEDISPLAYPOSITION_AFTER;
   public static String SPACEDISPLAYPOSITION_BEFORE;
@@ -63,7 +62,6 @@ public class JobStartPagePeasSettings {
     useBasketWhenAdmin = rs.getBoolean("UseBasketWhenAdmin", false);
     isInheritanceEnable = rs.getBoolean("UseProfileInheritance", false);
     isPublicParameterEnable = rs.getBoolean("UsePublicParameter", true);
-    useJSR168Portlets = rs.getBoolean("UseJSR168Portlets", false);
     useComponentsCopy = rs.getBoolean("UseComponentsCopy", false);
     SPACEDISPLAYPOSITION_CONFIG = rs.getString("DisplaySpacePositionConfiguration", "BEFORE");
     SPACEDISPLAYPOSITION_AFTER = rs.getString("DisplaySpacesAfterComponents", "AFTER");

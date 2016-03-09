@@ -128,10 +128,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return JobStartPagePeasSettings.isInheritanceEnable;
   }
 
-  public boolean isJSR168Used() {
-    return JobStartPagePeasSettings.useJSR168Portlets;
-  }
-
   public boolean isUserAdmin() {
     return getUserDetail().isAccessAdmin();
   }
