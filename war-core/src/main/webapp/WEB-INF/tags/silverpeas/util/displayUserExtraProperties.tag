@@ -102,7 +102,7 @@
           ${silfn:escapeHtml(user.getSpecificLabel(_language, propertyName))}
         </label>
         <div class="champs">
-          <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or (isCurrentUserAdmin and user.isPropertyUpdatableByAdmin(propertyName)) or (not isCurrentUserAdmin and user.isPropertyUpdatableByUser(propertyName)))}"/>
+          <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or (isCurrentUserAdmin and user.isPropertyUpdatableByAdmin(propertyName)) or user.isPropertyUpdatableByUser(propertyName))}"/>
           <c:choose>
             <c:when test="${user.getPropertyType(propertyName) eq propertyTypeString}">
               <c:if test="${propertyUpdatable}">
