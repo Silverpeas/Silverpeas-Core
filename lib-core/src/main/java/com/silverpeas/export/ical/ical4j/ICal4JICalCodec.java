@@ -36,7 +36,6 @@ import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
-import net.fortuna.ical4j.util.UidGenerator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
 
@@ -54,7 +53,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class ICal4JICalCodec implements ICalCodec {
 
-  private UidGenerator generator = new UidGenerator(new OffLineInetAddressHostInfo(), Uid.UID);
+  private OffLineInetAddressHostInfo hostInfo = new OffLineInetAddressHostInfo();
 
   @Inject
   private ICal4JDateCodec iCal4JDateCodec;
@@ -86,7 +85,7 @@ public class ICal4JICalCodec implements ICalCodec {
       }
 
       // Generate UID
-      iCalEvent.getProperties().add(generator.generateUid());
+      iCalEvent.getProperties().add(generateUid(event));
 
       // Add recurring data if any
       if (event.isRecurring()) {
@@ -162,5 +161,16 @@ public class ICal4JICalCodec implements ICalCodec {
     DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
         .collect(Collectors.toCollection(DateList::new));
     return new ExDate(exDatesList);
+  }
+
+  private Uid generateUid(CalendarEvent event) {
+    StringBuffer b = new StringBuffer();
+    b.append(event.getId());
+    if(this.hostInfo != null) {
+      b.append('@');
+      b.append(this.hostInfo.getHostName());
+    }
+
+    return new Uid(b.toString());
   }
 }

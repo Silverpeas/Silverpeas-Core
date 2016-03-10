@@ -24,6 +24,7 @@
 
 package com.silverpeas.calendar;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.annotation.constraint.DateRange;
 import java.io.Serializable;
 import java.net.URL;
@@ -49,6 +50,7 @@ public class CalendarEvent implements Serializable {
   private CalendarEventRecurrence recurrence = CalendarEventRecurrence.NO_RECURRENCE;
   private final CalendarEventCategories categories = new CalendarEventCategories();
   private final CalendarEventAttendees attendees = new CalendarEventAttendees();
+  private String id = "";
 
   /**
    * Creates a new calendar event starting and ending at the specified date.
@@ -286,6 +288,22 @@ public class CalendarEvent implements Serializable {
    */
   public boolean isOnAllDay() {
     return this.startDate instanceof Date || this.endDate instanceof Date;
+  }
+
+  public CalendarEvent from(SilverpeasContent content) {
+    identifiedBy(content.getComponentInstanceId(), content.getId());
+    this.title = content.getTitle();
+    this.description = content.getDescription();
+    return this;
+  }
+
+  public CalendarEvent identifiedBy(String appId, String eventId) {
+    this.id = appId+"-"+eventId;
+    return this;
+  }
+
+  public String getId() {
+    return id;
   }
 
   private CalendarEvent() {
