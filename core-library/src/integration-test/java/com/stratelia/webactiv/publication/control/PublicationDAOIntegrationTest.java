@@ -18,11 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.util.publication.ejb;
+package com.stratelia.webactiv.publication.control;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationDAO;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationWithStatus;
@@ -33,7 +32,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4Publication;
+import org.silverpeas.publication.test.WarBuilder4Publication;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.test.util.RandomGenerator;
 import org.silverpeas.util.DateUtil;

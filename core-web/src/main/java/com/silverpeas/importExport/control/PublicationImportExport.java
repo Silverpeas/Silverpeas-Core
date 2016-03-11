@@ -160,14 +160,14 @@ public class PublicationImportExport {
    */
   public static void addNodesToPublication(PublicationPK pubPK, List<Integer> nodes) {
     for (Integer coordinateId : nodes) {
-      getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(), pubPK));
+      getPublicationService().addFather(pubPK, new NodePK(coordinateId.toString(), pubPK));
     }
   }
 
   /**
-   * @return PublicationBm service layer
+   * @return the service working on the publications
    */
-  private static PublicationService getPublicationBm() {
+  private static PublicationService getPublicationService() {
     return ServiceProvider.getService(PublicationService.class);
   }
 
@@ -177,7 +177,7 @@ public class PublicationImportExport {
    * @return ArrayList of publicationDetail
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
-    return new ArrayList<>(getPublicationBm().getOrphanPublications(
+    return new ArrayList<>(getPublicationService().getOrphanPublications(
         new PublicationPK("useless", componentId)));
   }
 }

@@ -42,7 +42,6 @@
     <module>contact</module>
     <module>calendar</module>
     <module>formtemplate</module>
-    <module>publication</module>
     <module>statistic</module>
     <module>comment</module>
     <module>pdc</module>

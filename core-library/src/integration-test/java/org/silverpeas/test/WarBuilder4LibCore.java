@@ -36,6 +36,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
@@ -99,6 +100,17 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   protected <T> WarBuilder4LibCore(final Class<T> test) {
     super(test);
+    addClasses(SilverTrace.class);
+    addServiceProviderFeatures();
+    addBundleBaseFeatures();
+    addClasses(EntityReference.class);
+    addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
+    addPackages(true, "org.silverpeas.util.logging.sys");
+    addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
+    addAsResource(
+        "META-INF/services/test-org.silverpeas.util.logging.SilverLoggerFactory",
+        "META-INF/services/org.silverpeas.util.logging.SilverLoggerFactory");
+    addAsResource("maven.properties");
   }
 
   /**
@@ -113,19 +125,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war archive builder.
    */
   public static <T> WarBuilder4LibCore onWarForTestClass(Class<T> test) {
-    WarBuilder4LibCore warBuilder = new WarBuilder4LibCore(test);
-    warBuilder.addClasses(SilverTrace.class);
-    warBuilder.addServiceProviderFeatures();
-    warBuilder.addBundleBaseFeatures();
-    warBuilder.addClasses(EntityReference.class);
-    warBuilder.addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
-    warBuilder.addPackages(true, "org.silverpeas.util.logging.sys");
-    warBuilder.addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
-    warBuilder.addAsResource(
-        "META-INF/services/test-org.silverpeas.util.logging.SilverLoggerFactory",
-        "META-INF/services/org.silverpeas.util.logging.SilverLoggerFactory");
-    warBuilder.addAsResource("maven.properties");
-    return warBuilder;
+    return new WarBuilder4LibCore(test);
   }
 
   /**
@@ -278,6 +278,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(SilverContentInterface.class)) {
       addClasses(SilverContentInterface.class);
+    }
+    if (!contains(ContentManagerException.class)) {
+      addClasses(ContentManagerException.class);
     }
     if (!contains(WAPrimaryKey.class)) {
       addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,

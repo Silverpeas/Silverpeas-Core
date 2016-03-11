@@ -42,7 +42,6 @@ public class WarBuilder4Viewer extends BasicWarBuilder {
     addMavenDependencies("org.apache.tika:tika-core");
     addMavenDependencies("org.apache.tika:tika-parsers");
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard");
     addPackages(true, "org.silverpeas.viewer");
     addAsResource("org/silverpeas/viewer/viewer.properties");

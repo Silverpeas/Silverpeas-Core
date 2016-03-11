@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.util.publication.ejb;
+package com.stratelia.webactiv.publication.control;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
@@ -31,7 +31,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4Publication;
+import org.silverpeas.publication.test.WarBuilder4Publication;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
@@ -165,15 +165,12 @@ public class QueryStringFactoryIntegrationTest {
   private void assertQueryStructure(final String query,
       final String fileNameContainingExpectedQueryResult) throws Exception {
     assertThat(
-        query.trim().replaceAll("[ ]{2,}", " "),
-        is(IOUtils
-        .toString(
-        this.getClass()
-        .getClassLoader()
-        .getResourceAsStream(
-        "com/stratelia/webactiv/util/publication/ejb/" + fileNameContainingExpectedQueryResult
-        + ".txt"), "UTF-8").trim()
-        .replaceAll("[\r\n]", "")));
+        query.trim().replaceAll("[ ]{2,}", " "), is(IOUtils.toString(this.getClass()
+            .getClassLoader()
+            .getResourceAsStream("com/stratelia/webactiv/publication/control/" +
+                fileNameContainingExpectedQueryResult + ".txt"), "UTF-8")
+            .trim()
+            .replaceAll("[\r\n]", "")));
   }
 
   /**

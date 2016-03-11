@@ -30,7 +30,6 @@ public class WarBuilder4MyLinks extends BasicWarBuilder {
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
     warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-    warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-publication");
     warBuilder.createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard");
     warBuilder.testFocusedOn(war -> war
         .addPackages(true, "com.silverpeas.myLinks")

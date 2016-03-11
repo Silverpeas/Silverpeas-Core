@@ -36,7 +36,6 @@ public class BasicCoreWarBuilder extends BasicWarBuilder {
   protected <T> BasicCoreWarBuilder(final Class<T> test) {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-publication");
     addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
     addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");

@@ -1,8 +1,7 @@
 package org.silverpeas.publication.service;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.stratelia.webactiv.publication.control.PublicationBmEJB;
-import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.control.DefaultPublicationService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -12,11 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.test.WarBuilder4Publication;
+import org.silverpeas.publication.test.WarBuilder4Publication;
 import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,9 +30,6 @@ public class ComponentInstancePublicationDeletionIntegrationTest {
   private static final String DATASET_SCRIPT =
       "publication-component-instance-deletion-dataset.sql";
 
-  @Inject
-  private PublicationService publicationServiceByInjection;
-
   private ComponentInstanceDeletion publicationService;
 
   @Rule
@@ -43,14 +38,14 @@ public class ComponentInstancePublicationDeletionIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4Publication
-        .onWarForTestClass(ComponentInstancePublicationDeletionIntegrationTest.class).build();
+    return WarBuilder4Publication.onWarForTestClass(
+        ComponentInstancePublicationDeletionIntegrationTest.class).build();
   }
 
   @Before
   public void setup() {
-    publicationService = ServiceProvider.getService(PublicationBmEJB.class);
-    assertThat(publicationService, sameInstance(publicationServiceByInjection));
+    publicationService = ServiceProvider.getService(DefaultPublicationService.class);
+    assertThat(publicationService, notNullValue());
   }
 
   @Test

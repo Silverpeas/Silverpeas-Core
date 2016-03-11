@@ -26,9 +26,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.stratelia.webactiv.util.publication.ejb;
+package com.stratelia.webactiv.publication.control;
 
-import com.stratelia.webactiv.publication.control.PublicationDAO;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.hamcrest.collection.IsIterableContainingInOrder;
@@ -38,7 +37,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4Publication;
+import org.silverpeas.publication.test.WarBuilder4Publication;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
