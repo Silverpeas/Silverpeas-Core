@@ -42,20 +42,7 @@ import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.Attendee;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Categories;
-import net.fortuna.ical4j.model.property.Clazz;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.ExDate;
-import net.fortuna.ical4j.model.property.Location;
-import net.fortuna.ical4j.model.property.Priority;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.RRule;
-import net.fortuna.ical4j.model.property.Uid;
-import net.fortuna.ical4j.model.property.Url;
-import net.fortuna.ical4j.model.property.Version;
-import net.fortuna.ical4j.util.UidGenerator;
+import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
 
@@ -68,7 +55,7 @@ import static com.silverpeas.export.ical.ical4j.ICal4JRecurrenceCodec.anICal4JRe
 @Named("iCalCodec")
 public class ICal4JICalCodec implements ICalCodec {
 
-  private UidGenerator generator = new UidGenerator(new OffLineInetAddressHostInfo(), Uid.UID);
+  private OffLineInetAddressHostInfo hostInfo = new OffLineInetAddressHostInfo();
 
   @Override
   @SuppressWarnings("unchecked")
@@ -94,7 +81,7 @@ public class ICal4JICalCodec implements ICalCodec {
       }
 
       // Generate UID
-      iCalEvent.getProperties().add(generator.generateUid());
+      iCalEvent.getProperties().add(generateUid(event));
 
       // Add recurring data if any
       if (event.isRecurring()) {
@@ -173,5 +160,16 @@ public class ICal4JICalCodec implements ICalCodec {
       exDatesList.add(dateCodec.encode(anExceptionDate));
     }
     return new ExDate(exDatesList);
+  }
+
+  private Uid generateUid(CalendarEvent event) {
+    StringBuffer b = new StringBuffer();
+    b.append(event.getId());
+    if(this.hostInfo != null) {
+      b.append('@');
+      b.append(this.hostInfo.getHostName());
+    }
+
+    return new Uid(b.toString());
   }
 }
