@@ -117,7 +117,7 @@ out.println(tabbedPane.print());
   <viewTags:displayListOfUsersAndGroups users="<%=inheritedUsers%>" groups="<%=inheritedGroups%>" label="<%=labelInheritedRights%>" displayAvatar="false"/>
 	<br/>
 	<% } %>
-<form name="roleList" action="EffectiveSetInstanceProfile">
+<form name="roleList" action="EffectiveSetInstanceProfile" method="post">
 	<viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>"
                                         label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>"
                                         id="roleItems" updateCallback="SelectUsersGroupsProfileInstance" displayAvatar="false"

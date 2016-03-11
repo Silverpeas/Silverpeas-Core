@@ -97,7 +97,7 @@ out.println(tabbedPane.print());
     <viewTags:displayListOfUsersAndGroups users="<%=inheritedUsers%>" groups="<%=inheritedGroups%>" label="<%=labelInheritedRights%>" displayAvatar="false"/>
 	<% } %>
 
-  <form name="roleList" action="EffectiveSetSpaceProfile">
+  <form name="roleList" action="EffectiveSetSpaceProfile" method="post">
     <c:set var="callback" value=""/>
     <c:if test="${m_SpaceExtraInfos.admin}">
       <c:set var="callback" value="SelectUsersGroupsSpace"/>

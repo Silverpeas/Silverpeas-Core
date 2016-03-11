@@ -64,17 +64,33 @@
       else if (typeof window.console !== 'undefined')
         console.warn("An unknown and unexpected error occurred");
     }
-       
+
     function _get(url, convert) {
-      var deferred = $q.defer();
-      $http.get(url).error(function(data, status, headers) {
-        _error(data, status, headers);
-        deferred.reject(data);
-      }).success(function(data, status, headers) {
-        var result = _fetchData(data, convert, headers);
-        deferred.resolve(result);
-      });
-      return deferred.promise;
+      var _realGet = function(url, convert) {
+        var deferred = $q.defer();
+        $http.get(url).error(function(data, status, headers) {
+          _error(data, status, headers);
+          deferred.reject(data);
+        }).success(function(data, status, headers) {
+          var result = _fetchData(data, convert, headers);
+          deferred.resolve(result);
+        });
+        return deferred.promise;
+      };
+      var urls = new UrlParamSplitter(url).getUrls();
+      if (urls.length > 1) {
+        var promises = [];
+        urls.forEach(function(url) {
+          promises.push(_realGet(url, convert));
+        });
+        // All promises are verified, and the promise of this method is resolved after the last
+        // one of queries is performed.
+        return synchronizePromises.call($q, promises, function(promiseData, resolvedResultData) {
+          resolvedResultData.fromRequestSplitIntoSeveralAjaxCalls = true;
+          Array.prototype.push.apply(resolvedResultData, promiseData);
+        }, []);
+      }
+      return _realGet(urls[0], convert);
     }
 
     function _put(url, data, convert) {
@@ -292,4 +308,101 @@
       }
     };
   }]);
+
+  /**
+   * Processes all the specified promises and returns a promise that ensures that all specified
+   * are well performed.
+   * @param promises
+   * @param thenHandler
+   * @param resolvedResultData
+   * @returns {*}
+   */
+  function synchronizePromises(promises, thenHandler, resolvedResultData) {
+    var $q = this;
+    var undefined;
+    if (!thenHandler) {
+      thenHandler = undefined;
+    }
+    if (!resolvedResultData) {
+      resolvedResultData = undefined;
+    }
+    var deferred = $q.defer();
+    if (promises.length == 0) {
+      // The case of no data exists is not forgotten
+      deferred.resolve(resolvedResultData);
+    } else {
+      var index = 0;
+      var promiseProcessor = function(promiseData) {
+        if (thenHandler) {
+          thenHandler.call(this, promiseData, resolvedResultData);
+        }
+        index++;
+        if (promises.length == index) {
+          // The last promise has been performed
+          deferred.resolve(resolvedResultData);
+        } else {
+          promises[index].then(promiseProcessor);
+        }
+      };
+      promises[index].then(promiseProcessor);
+    }
+    return deferred.promise;
+  }
+
+  var UrlParamSplitter = function(url) {
+    var urls = [];
+    if (url.length > 2000) {
+      var decodedParams = {};
+      var hugestParam = {key : '', values : []};
+      var pivotIndex = url.indexOf("?");
+      var baseUrl = url.substring(0, pivotIndex);
+      var splitParams = url.substring(pivotIndex + 1).split("&");
+      splitParams.forEach(function(param) {
+        var splitParam = param.split("=");
+        if (splitParam.length === 2) {
+          var key = splitParam[0];
+          var value = splitParam[1];
+          var params = decodedParams[key];
+          if (!params) {
+            params = [];
+            decodedParams[key] = params;
+          }
+          params.push(value);
+          if (params.length > hugestParam.values.length) {
+            hugestParam.key = key;
+            hugestParam.values = params;
+          }
+        }
+      });
+      delete decodedParams[hugestParam.key];
+      var commonParams = '?';
+      for (var key in decodedParams) {
+        if (commonParams.length > 1) {
+          commonParams += '&';
+        }
+        var params = decodedParams[key];
+        commonParams += key + "=" + params.join("&" + key + "=");
+      }
+      var batchParams = commonParams.length > 1 ? '&' : '';
+      hugestParam.values.forEach(function(value){
+        if (batchParams.length > 1) {
+          batchParams += "&";
+        }
+        batchParams += hugestParam.key + '=' + value;
+        if (batchParams.length > 2000) {
+          urls.push(baseUrl + commonParams + batchParams);
+          batchParams = commonParams.length > 1 ? '&' : '';
+        }
+      });
+      if (batchParams.length > 1) {
+        urls.push(baseUrl + commonParams + batchParams);
+      }
+    } else {
+      urls.push(url);
+    }
+
+    this.getUrls = function() {
+      return urls;
+    };
+  }
 })();
