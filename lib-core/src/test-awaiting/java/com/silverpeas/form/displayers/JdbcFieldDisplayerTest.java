@@ -164,11 +164,11 @@ public class JdbcFieldDisplayerTest {
     instance.display(printer, field, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
     assertThat(display, is(notNullValue()));
-    assertThat(display.length(), is(299));
+    assertThat(display.length(), is(323));
 
     assertThat(display, is(
-        "<select name=\"monChamps\" >" + unixLineSeparator
-        + "<option></option><option value=\"0\">0</option>" + unixLineSeparator
+        "<select name=\"monChamps\" id=\"monChamps\" >" + unixLineSeparator
+        + "<option value=\"\"></option><option value=\"0\">0</option>" + unixLineSeparator
         + "<option value=\"1\">1</option>" + unixLineSeparator + "<option value=\"2\">2</option>"
         + unixLineSeparator + "<option value=\"3\">3</option>" + unixLineSeparator
         + "<option value=\"4\">4</option>" + unixLineSeparator
