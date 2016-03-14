@@ -718,15 +718,12 @@ public class SimpleDocument implements Serializable {
     if (!webAppContext.endsWith("/")) {
       url.append('/');
     }
-    url.append(URLUtils.encodePathSegment(GeneralPropertiesManager.getString("webdav.respository"))).
+    url.append(GeneralPropertiesManager.getString("webdav.respository")).
         append('/').
-        append(URLUtils.encodePathSegment(GeneralPropertiesManager.getString("webdav.workspace")));
+        append(GeneralPropertiesManager.getString("webdav.workspace")).
+        append('/').
+        append(getWebdavJcrPath());
 
-    String[] pathParts = StringUtil.split(getWebdavJcrPath(), '/');
-    for(String pathElement : pathParts) {
-      url.append('/');
-      url.append((URLUtils.encodePathSegment(pathElement)));
-    }
     return url.toString();
   }
 

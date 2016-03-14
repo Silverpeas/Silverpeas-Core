@@ -406,12 +406,12 @@ public class SimpleDocumentTest {
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
     instance.setPK(pk);
     String expResult = "/silverpeas/repository/jackrabbit/webdav/attachments/kmelia36/" + id
-        + "/fr/Mon%20fichier%20%C3%A9l%C3%A8ve%202012%20-%20fait%20%C3%A0%2080%25.odt";
+        + "/fr/Mon fichier élève 2012 - fait à 80%.odt";
     String result = instance.getWebdavUrl();
     assertThat(result, is(expResult));
     instance.setLanguage("en");
     expResult = "/silverpeas/repository/jackrabbit/webdav/attachments/kmelia36/" + id
-        + "/en/Mon%20fichier%20%C3%A9l%C3%A8ve%202012%20-%20fait%20%C3%A0%2080%25.odt";
+        + "/en/Mon fichier élève 2012 - fait à 80%.odt";
     result = instance.getWebdavUrl();
     assertThat(result, is(expResult));
   }
