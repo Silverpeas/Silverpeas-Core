@@ -271,12 +271,12 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
   private void getListboxFragment(FieldTemplate template, String fieldValue, String valueFieldType,
       Collection<String> entries, PagesContext pageContext, StringBuilder html) {
     html.append("<select name=\"").append(template.getFieldName()).append("\"");
-
+    html.append(" id=\"").append(template.getFieldName()).append("\"");
     if (template.isDisabled() || template.isReadOnly()) {
       html.append(" disabled=\"disabled\"");
     }
     html.append(" >\n");
-    html.append("<option></option>");
+    html.append("<option value=\"\"></option>");
     for (String entry : entries) {
       html.append("<option");
       if (entry.equals(fieldValue)) {
