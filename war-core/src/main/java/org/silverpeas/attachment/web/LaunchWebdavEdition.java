@@ -25,6 +25,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,12 +66,19 @@ public class LaunchWebdavEdition extends HttpServlet {
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
       }
-      String documentUrl = request.getParameter("documentUrl");
+      String id = request.getParameter("id");
+      String language = request.getParameter("lang");
+      AttachmentService documentService = AttachmentServiceFactory.getAttachmentService();
+      SimpleDocument
+          document = documentService.searchDocumentById(new SimpleDocumentPK(id), language);
+      String documentUrl = URLManager.getServerURL(request)+document.getWebdavUrl();
       String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
       String webDavUrl = computeWebDavUrl(documentUrl, token);
       if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
         response.setContentType("application/javascript");
         response.setHeader("Content-Disposition", "inline; filename=launch.js");
+        webDavUrl = webDavUrl.replaceFirst("http://", "spwebdav://");
+        webDavUrl = webDavUrl.replaceFirst("https://", "spwebdavs://");
         out.append("window.location.href='").append(webDavUrl).append("';");
       } else {
         response.setContentType("application/x-java-jnlp-file");
