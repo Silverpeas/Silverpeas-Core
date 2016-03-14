@@ -143,8 +143,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
               attachment.getLanguage()), userLanguage);
       checkoutAndEditLabel += " (" + webdavContentEditionLanguageLabel + ")";
     }
-    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ");",
-        checkoutAndEditLabel);
+    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ",'" +
+        attachment.getWebdavContentEditionLanguage() + "');", checkoutAndEditLabel);
     prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + "," +
         attachment.isOpenOfficeCompatible() + ", false, " + attachment.isVersioned() + ", '" +
         webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));
@@ -189,16 +189,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     String oMenuId = "oMenu" + attachmentId;
 
     builder.append("var ").append(oMenuId).append(";");
-    builder.append("var webDav").append(attachmentId).append(" = \"");
-    String webDavURL = httpServerBase + attachment.getWebdavUrl();
-    if (settings.getBoolean("attachment.onlineEditing.customProtocol", false)) {
-      webDavURL = webDavURL.replaceFirst("http://", "spwebdav://");
-      webDavURL = webDavURL.replaceFirst("https://", "spwebdavs://");
-    } else {
-      webDavURL = URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(), CharEncoding.UTF_8);
-    }
-
-    builder.append(webDavURL).append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
     if (useContextualMenu) {
