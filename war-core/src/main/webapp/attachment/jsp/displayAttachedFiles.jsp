@@ -459,7 +459,7 @@
   <c:if test="${contextualMenuEnabled}" >
     var pageMustBeReloadingAfterSorting = false;
 
-    function checkout(id, oldId, webdav, edit, download) {
+    function checkout(id, oldId, webdav, edit, download, lang) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
         $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(formattedDateTimeData) {
@@ -478,13 +478,12 @@
             $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> " + formattedDateTimeData);
             $worker.css({'visibility':'visible'});
             if (edit) {
-              var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               <c:if test="${onlineEditingWithCustomProtocol}">
                 // display alert popin
-                showInformationAboutOnlineEditingWithCustomProtocol(decodeURIComponent(url));
+                showInformationAboutOnlineEditingWithCustomProtocol(id, lang);
               </c:if>
               <c:if test="${not onlineEditingWithCustomProtocol}">
-                window.open(url, '_self');
+                window.open(getOnlineEditionLauncherURL(id, lang), '_self');
               </c:if>
             } else if (download) {
               var url = $('#url_' + oldId).attr('href');
@@ -503,8 +502,8 @@
       checkout(id, oldId, webdav, false, true);
     }
 
-    function checkoutAndEdit(id, oldId) {
-      checkout(id, oldId, true, true, false);
+    function checkoutAndEdit(id, oldId, lang) {
+      checkout(id, oldId, true, true, false, lang);
     }
 
     function switchState(id, isVersioned, isLastPublicVersion) {
@@ -1102,7 +1101,7 @@
         buttons: {
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.edit"/>": function() {
             $.cookie(customProtocolCookieName, "IKnowIt", { expires: 3650, path: '/' });
-            $.get($(this).data('webDavURL'));
+            openDocViaCustomProtocol($(this).data('docId'), $(this).data('lang'));
             $(this).dialog("close");
           },
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.cancel"/>": function() {
@@ -1244,14 +1243,23 @@
   }
 
   var customProtocolCookieName = "Silverpeas_OnlineEditing_CustomProtocol";
-  function showInformationAboutOnlineEditingWithCustomProtocol(webDavURL) {
+  function showInformationAboutOnlineEditingWithCustomProtocol(id, lang) {
     var customProtocolCookieValue = $.cookie(customProtocolCookieName);
     if (${onlineEditingWithCustomProtocolAlert} && ("IKnowIt" != customProtocolCookieValue)) {
-      $("#dialog-attachment-onlineEditing-customProtocol").data('webDavURL', webDavURL).dialog("open");
+      $("#dialog-attachment-onlineEditing-customProtocol").data({
+        'docId': id,
+        'lang':lang}).dialog("open");
     } else {
-      /*window.location.href = webDavURL;*/
-      $.get(webDavURL);
+      openDocViaCustomProtocol(id, lang);
     }
+  }
+
+  function getOnlineEditionLauncherURL(docId, lang) {
+    return "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?id="+docId+"&lang="+lang;
+  }
+
+  function openDocViaCustomProtocol(docId, lang) {
+    $.get(getOnlineEditionLauncherURL(docId, lang));
   }
 </script>
 
