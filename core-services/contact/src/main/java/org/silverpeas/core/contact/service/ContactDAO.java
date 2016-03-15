@@ -18,15 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.contact.control;
+package org.silverpeas.core.contact.service;
 
-import com.stratelia.webactiv.contact.model.CompleteContact;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.contact.model.ContactPK;
-import com.stratelia.webactiv.contact.model.ContactRuntimeException;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
+import org.silverpeas.core.contact.model.ContactRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -61,7 +61,7 @@ public class ContactDAO {
    * @param fatherPK the father NodePK to add
    * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.node.model.NodePK
-   * @see com.stratelia.webactiv.contact.model.ContactPK
+   * @see ContactPK
    * @since 1.0
    */
   public static void addFather(Connection con, ContactPK contactPK, NodePK fatherPK)
@@ -84,7 +84,7 @@ public class ContactDAO {
    * @param fatherPK the father NodePK to delete
    * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.node.model.NodePK
-   * @see com.stratelia.webactiv.contact.model.ContactPK
+   * @see ContactPK
    * @since 1.0
    */
   public static void removeFather(Connection con, ContactPK contactPK, NodePK fatherPK)
@@ -108,7 +108,7 @@ public class ContactDAO {
    * @param con Connection to database
    * @param contactPK the contact ContactPK
    * @throws java.sql.SQLException
-   * @see com.stratelia.webactiv.contact.model.ContactPK
+   * @see ContactPK
    * @since 1.0
    */
   public static void removeAllFather(Connection con, ContactPK contactPK) throws SQLException {
@@ -133,7 +133,7 @@ public class ContactDAO {
    * @param originPK the node which is deleted
    * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.node.model.NodePK
-   * @see com.stratelia.webactiv.contact.model.ContactPK
+   * @see ContactPK
    * @since 1.0
    */
   public static void removeAllIssue(Connection con, NodePK originPK, ContactPK contactPK)
@@ -181,7 +181,7 @@ public class ContactDAO {
    * @param contactPK the contact ContactPK
    * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.node.model.NodePK
-   * @see com.stratelia.webactiv.contact.model.ContactPK
+   * @see ContactPK
    * @since 1.0
    */
   public static Collection<NodePK> getAllFatherPK(Connection con, ContactPK contactPK)

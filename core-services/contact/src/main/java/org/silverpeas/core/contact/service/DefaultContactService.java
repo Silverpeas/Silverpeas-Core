@@ -18,17 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.contact.control;
+package org.silverpeas.core.contact.service;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.stratelia.webactiv.contact.info.InfoDAO;
-import com.stratelia.webactiv.contact.model.CompleteContact;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.contact.model.ContactPK;
-import com.stratelia.webactiv.contact.model.ContactRuntimeException;
+import org.silverpeas.core.contact.info.InfoDAO;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
+import org.silverpeas.core.contact.model.ContactRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
+public class DefaultContactService implements ContactService, ComponentInstanceDeletion {
 
   private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -59,11 +59,11 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
       if (primary != null) {
         return primary.contactDetail;
       } else {
-        throw new ContactRuntimeException("ContactBmImpl.getDetail()",
+        throw new ContactRuntimeException("DefaultContactService.getDetail()",
             SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_NOT_FOUND");
       }
     } catch (SQLException | ParseException re) {
-      throw new ContactRuntimeException("ContactBmImpl.getDetail()",
+      throw new ContactRuntimeException("DefaultContactService.getDetail()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED",
           "id = " + contactPK.getId(), re);
     } finally {
@@ -91,7 +91,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
       createIndex(contact);
       return contact.getPK();
     } catch (Exception e) {
-      throw new ContactRuntimeException("ContactBmImpl.createContact()",
+      throw new ContactRuntimeException("DefaultContactService.createContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_FAILED",
           "contactDetail = " + contact.toString(), e);
     } finally {
@@ -120,7 +120,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
       // remove contact index
       deleteIndex(contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.removeContact()",
+      throw new ContactRuntimeException("DefaultContactService.removeContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_DELETE_FAILED", "pk = " + contactPK,
           re);
     } finally {
@@ -141,7 +141,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
 
       createIndex(contact);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.setDetail()",
+      throw new ContactRuntimeException("DefaultContactService.setDetail()",
           SilverpeasRuntimeException.ERROR, "contact.EX_SET_CONTACT_DETAIL_FAILED",
           "contactDetail = " + contact, re);
     } finally {
@@ -182,7 +182,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       ContactDAO.removeFather(con, contactPK, fatherPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.removeFather()",
+      throw new ContactRuntimeException("DefaultContactService.removeFather()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_FROM_FATHER_FAILED",
           "fatherPK = " + fatherPK, re);
     } finally {
@@ -201,7 +201,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       ContactDAO.removeAllFather(con, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.removeAllFather()",
+      throw new ContactRuntimeException("DefaultContactService.removeAllFather()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_FROM_ALLFATHERS_FAILED",
           "contactPK = " + contactPK, re);
     } finally {
@@ -222,7 +222,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       ContactDAO.removeAllIssue(con, originPK, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.removeAllIssue()",
+      throw new ContactRuntimeException("DefaultContactService.removeAllIssue()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_ALLISSUES_FAILED",
           "fatherPK = " + originPK, re);
     } finally {
@@ -236,7 +236,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.getOrphanContacts(con, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getOrphanContacts()",
+      throw new ContactRuntimeException("DefaultContactService.getOrphanContacts()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_WITHOUT_FATHERS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -250,7 +250,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       ContactDAO.deleteOrphanContactsByCreatorId(con, contactPK, creatorId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.deleteOrphanContactsByCreatorId()",
+      throw new ContactRuntimeException("DefaultContactService.deleteOrphanContactsByCreatorId()",
           SilverpeasRuntimeException.ERROR, "contact.EX_DELETE_CONTACTS_WITHOUT_FATHERS_FAILED",
           re);
     } finally {
@@ -265,7 +265,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.getUnavailableContactsByPublisherId(con, contactPK, publisherId, nodeId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getUnavailableContactsByPublisherId()",
+      throw new ContactRuntimeException("DefaultContactService.getUnavailableContactsByPublisherId()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -282,7 +282,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.getAllFatherPK(con, contactPK);
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactBmImpl.getAllFatherPK()",
+      throw new ContactRuntimeException("DefaultContactService.getAllFatherPK()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_FATHERS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -299,7 +299,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.selectByFatherPK(con, fatherPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getDetailsByFatherPK()",
+      throw new ContactRuntimeException("DefaultContactService.getDetailsByFatherPK()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -312,7 +312,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.selectByLastName(con, pk, query);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getDetailsByLastName()",
+      throw new ContactRuntimeException("DefaultContactService.getDetailsByLastName()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -325,7 +325,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.selectByLastNameOrFirstName(con, pk, query);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getDetailsByLastNameOrFirstName()",
+      throw new ContactRuntimeException("DefaultContactService.getDetailsByLastNameOrFirstName()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -339,7 +339,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.selectByLastNameAndFirstName(con, pk, lastName, firstName);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getDetailsByLastNameAndFirstName()",
+      throw new ContactRuntimeException("DefaultContactService.getDetailsByLastNameAndFirstName()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -353,7 +353,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       InfoDAO.createInfo(con, modelId, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.createInfoModel()",
+      throw new ContactRuntimeException("DefaultContactService.createInfoModel()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_INFOMODEL_CREATE_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -385,7 +385,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
       }
       return new CompleteContact(contact, modelId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getCompleteContact()",
+      throw new ContactRuntimeException("DefaultContactService.getCompleteContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -398,7 +398,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.selectByContactPKs(con, contactPKs);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getContacts()",
+      throw new ContactRuntimeException("DefaultContactService.getContacts()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -412,7 +412,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
       int result = ContactDAO.getNbPubInFatherPKs(con, fatherPKs);
       return result;
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getNbPubInFatherPKs()",
+      throw new ContactRuntimeException("DefaultContactService.getNbPubInFatherPKs()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -426,7 +426,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.selectByFatherPKs(con, fatherPKs, contactPK, nodePK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getContacts()",
+      throw new ContactRuntimeException("DefaultContactService.getContacts()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -439,7 +439,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return ContactDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.getNbPubByFatherPath()",
+      throw new ContactRuntimeException("DefaultContactService.getNbPubByFatherPath()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -463,7 +463,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     try {
       return DBUtil.openConnection();
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactBmImpl.getConnection()",
+      throw new ContactRuntimeException("DefaultContactService.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);
     }
   }
@@ -495,7 +495,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmImpl.createIndex()",
+      throw new ContactRuntimeException("DefaultContactService.createIndex()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_INDEX_FAILED", re);
     }
   }
@@ -509,7 +509,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
-  public ContactBmImpl() {
+  public DefaultContactService() {
   }
 
   /**

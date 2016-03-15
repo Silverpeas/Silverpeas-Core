@@ -22,49 +22,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.contact.model;
+package org.silverpeas.core.contact.info.model;
 
 import java.io.Serializable;
 
-/**
- * This object contains the description of a contact and a node (contact parameter, model detail,
- * info)
- * @author SC
- * @version 1.0
- */
-public class ContactFatherDetail implements Serializable {
+import org.silverpeas.util.WAPrimaryKey;
 
-  private ContactDetail contactDetail;
-  private String nodeId;
-  private String nodeName;
+public class InfoPK extends WAPrimaryKey implements Serializable {
 
-  /**
-   * Create a new ContactFatherDetail
-   * @param contactDetail the contact detail
-   * @param nodeId the node identifier
-   * @param nodeName the node name
-   */
-  public ContactFatherDetail(ContactDetail contactDetail, String nodeId, String nodeName) {
-    this.contactDetail = contactDetail;
-    this.nodeId = nodeId;
-    this.nodeName = nodeName;
+  public InfoPK(String id) {
+    super(id);
+  }
+
+  public InfoPK(String id, String space, String componentName) {
+    super(id, space, componentName);
+  }
+
+  public InfoPK(String id, WAPrimaryKey pk) {
+    super(id, pk);
+  }
+
+  public String getRootTableName() {
+    return "Info";
+  }
+
+  public String getTableName() {
+    return "SB_Contact_Info";
+  }
+
+  public boolean equals(Object other) {
+    if (!(other instanceof InfoPK))
+      return false;
+    return (id.equals(((InfoPK) other).getId()))
+        && (space.equals(((InfoPK) other).getSpace()))
+        && (componentName.equals(((InfoPK) other).getComponentName()));
+  }
+
+  public String toString() {
+    return "(id = " + getId() + ", space = " + getSpace()
+        + ", componentName = " + getComponentName() + ")";
   }
 
   /**
-   * Get the contact parameters
-   * @return a ContactDetail - the contact parameters
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
-   * @since 1.0
+   * Returns a hash code for the key
+   * @return A hash code for this object
    */
-  public ContactDetail getContactDetail() {
-    return contactDetail;
+  public int hashCode() {
+    return toString().hashCode();
   }
 
-  public String getNodeId() {
-    return nodeId;
-  }
-
-  public String getNodeName() {
-    return nodeName;
-  }
 }

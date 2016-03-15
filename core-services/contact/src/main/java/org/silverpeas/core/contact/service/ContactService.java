@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * GNU Affero General License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
@@ -13,28 +13,28 @@
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
+ * You should have received a copy of the GNU Affero General License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.contact.control;
+package org.silverpeas.core.contact.service;
 
-import com.stratelia.webactiv.contact.model.CompleteContact;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.contact.model.ContactPK;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
 
-public interface ContactBm {
+public interface ContactService {
 
-  public static ContactBm get() {
-    return ServiceProvider.getService(ContactBm.class);
+  static ContactService get() {
+    return ServiceProvider.getService(ContactService.class);
   }
 
   /**
@@ -42,7 +42,7 @@ public interface ContactBm {
    * @param contactPK the contact primary key
    * @return the contact detail
    */
-  public ContactDetail getDetail(ContactPK contactPK);
+  ContactDetail getDetail(ContactPK contactPK);
 
   /**
    * Create a new contact A new line will be added in contact table. The "id" in
@@ -50,19 +50,19 @@ public interface ContactBm {
    * @param contact the contact detail
    * @return contact primary key
    */
-  public ContactPK createContact(Contact contact);
+  ContactPK createContact(Contact contact);
 
   /**
    * removeContact() remove the contact designed by contactPK parameter.
    * @param contactPK
    */
-  public void removeContact(ContactPK contactPK);
+  void removeContact(ContactPK contactPK);
 
   /**
    * setDetail() update the contact content.
    * @param detail the contact detail to update
    */
-  public void setDetail(Contact detail);
+  void setDetail(Contact detail);
 
   /**
    * addFather() add a new father (designed by "fatherPK") to a contact ("contactPK") The contact
@@ -70,7 +70,7 @@ public interface ContactBm {
    * @param contactPK
    * @param fatherPK
    */
-  public void addFather(ContactPK contactPK, NodePK fatherPK);
+  void addFather(ContactPK contactPK, NodePK fatherPK);
 
   /**
    * removeFather() remove a father (designed by "fatherPK") from a contact ("pubPK") The contact
@@ -78,13 +78,13 @@ public interface ContactBm {
    * @param contactPK
    * @param fatherPK
    */
-  public void removeFather(ContactPK contactPK, NodePK fatherPK);
+  void removeFather(ContactPK contactPK, NodePK fatherPK);
 
   /**
    * removeAllFather() remove all father from a contact ("pubPK") The contact won't be visible.
    * @param contactPK
    */
-  public void removeAllFather(ContactPK contactPK);
+  void removeAllFather(ContactPK contactPK);
 
   /**
    * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
@@ -92,18 +92,18 @@ public interface ContactBm {
    * @param originPK
    * @param contactPK
    */
-  public void removeAllIssue(NodePK originPK, ContactPK contactPK);
+  void removeAllIssue(NodePK originPK, ContactPK contactPK);
 
   /**
    * getOrphanContacts() return the Detail of contact which are not linked to a father
    * @param contactPK the contact primary key
    * @return list of contact which are not linked to a father
    */
-  public Collection<ContactDetail> getOrphanContacts(ContactPK contactPK);
+  Collection<ContactDetail> getOrphanContacts(ContactPK contactPK);
 
-  public void deleteOrphanContactsByCreatorId(ContactPK contactPK, String creatorId);
+  void deleteOrphanContactsByCreatorId(ContactPK contactPK, String creatorId);
 
-  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK contactPK,
+  Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK contactPK,
       String publisherId, String nodeId);
 
   /**
@@ -112,7 +112,7 @@ public interface ContactBm {
    * @param contactPK
    * @return
    */
-  public Collection<NodePK> getAllFatherPK(ContactPK contactPK);
+  Collection<NodePK> getAllFatherPK(ContactPK contactPK);
 
   /**
    * getDetailsByFatherPK() return a ContactDetail collection of all contact visible from the node
@@ -120,29 +120,29 @@ public interface ContactBm {
    * @param fatherPK
    * @return
    */
-  public Collection<ContactDetail> getDetailsByFatherPK(NodePK fatherPK);
+  Collection<ContactDetail> getDetailsByFatherPK(NodePK fatherPK);
 
-  public Collection<ContactDetail> getDetailsByLastName(ContactPK pk, String query);
+  Collection<ContactDetail> getDetailsByLastName(ContactPK pk, String query);
 
-  public Collection<ContactDetail> getDetailsByLastNameOrFirstName(ContactPK pk, String query);
+  Collection<ContactDetail> getDetailsByLastNameOrFirstName(ContactPK pk, String query);
 
-  public Collection<ContactDetail> getDetailsByLastNameAndFirstName(ContactPK pk, String lastName,
+  Collection<ContactDetail> getDetailsByLastNameAndFirstName(ContactPK pk, String lastName,
       String firstName);
 
-  public void createInfoModel(ContactPK contactPK, String modelId);
+  void createInfoModel(ContactPK contactPK, String modelId);
 
-  public CompleteContact getCompleteContact(ContactPK contactPK);
+  CompleteContact getCompleteContact(ContactPK contactPK);
 
-  public CompleteContact getCompleteContact(ContactPK pubPK, String modelId);
+  CompleteContact getCompleteContact(ContactPK pubPK, String modelId);
 
-  public Collection<ContactDetail> getContacts(Collection<ContactPK> contactPKs);
+  Collection<ContactDetail> getContacts(Collection<ContactPK> contactPKs);
 
-  public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
+  int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
 
-  public Collection<ContactFatherDetail> getDetailsByFatherPKs(Collection<NodePK> fatherPKs,
+  Collection<ContactFatherDetail> getDetailsByFatherPKs(Collection<NodePK> fatherPKs,
       ContactPK contactPK, NodePK nodePK);
 
-  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
+  int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
 
   /**
    * Gets all non transitive contacts from an component represented by the given identifier that are
@@ -151,10 +151,10 @@ public interface ContactBm {
    * @param instanceId the identifier of the component instance into which contact are retrieved.
    * @return the list of complete contact data. Empty list if none.
    */
-  public List<CompleteContact> getVisibleContacts(String instanceId);
+  List<CompleteContact> getVisibleContacts(String instanceId);
 
-  public void index(ContactPK contactPK);
+  void index(ContactPK contactPK);
 
-  public void deleteIndex(ContactPK contactPK);
+  void deleteIndex(ContactPK contactPK);
 
 }

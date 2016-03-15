@@ -22,41 +22,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.contact.model;
+package org.silverpeas.core.contact.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import java.io.Serializable;
 
-public class ContactRuntimeException extends SilverpeasRuntimeException {
+/**
+ * This object contains the description of a contact and a node (contact parameter, model detail,
+ * info)
+ * @author SC
+ * @version 1.0
+ */
+public class ContactFatherDetail implements Serializable {
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public ContactRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  public ContactRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public ContactRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public ContactRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
+  private ContactDetail contactDetail;
+  private String nodeId;
+  private String nodeName;
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule
+   * Create a new ContactFatherDetail
+   * @param contactDetail the contact detail
+   * @param nodeId the node identifier
+   * @param nodeName the node name
    */
-  public String getModule() {
-    return "contact";
+  public ContactFatherDetail(ContactDetail contactDetail, String nodeId, String nodeName) {
+    this.contactDetail = contactDetail;
+    this.nodeId = nodeId;
+    this.nodeName = nodeName;
   }
 
+  /**
+   * Get the contact parameters
+   * @return a ContactDetail - the contact parameters
+   * @see ContactDetail
+   * @since 1.0
+   */
+  public ContactDetail getContactDetail() {
+    return contactDetail;
+  }
+
+  public String getNodeId() {
+    return nodeId;
+  }
+
+  public String getNodeName() {
+    return nodeName;
+  }
 }

@@ -22,10 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.contact.model;
+package org.silverpeas.core.contact.model;
 
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.contact.model.Contact;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.StringUtil;
 

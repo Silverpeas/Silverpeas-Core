@@ -23,10 +23,10 @@
  */
 
 //TODO : reporter dans CVS (done)
-package com.stratelia.webactiv.contact.info;
+package org.silverpeas.core.contact.info;
 
-import com.stratelia.webactiv.contact.info.model.InfoPK;
-import com.stratelia.webactiv.contact.model.ContactPK;
+import org.silverpeas.core.contact.info.model.InfoPK;
+import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;

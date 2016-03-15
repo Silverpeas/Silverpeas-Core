@@ -22,67 +22,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.directory.model;
+package org.silverpeas.core.contact.model;
 
-import org.silverpeas.core.contact.model.CompleteContact;
-import org.silverpeas.core.contact.model.Contact;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import java.util.Date;
+public class ContactRuntimeException extends SilverpeasRuntimeException {
 
-public class ContactItem extends AbstractDirectoryItem {
-
-  private CompleteContact contact;
-
-  public ContactItem(CompleteContact contact) {
-    this.contact = contact;
+  /**
+   * --------------------------------------------------------------------------
+   * constructors
+   */
+  public ContactRuntimeException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  @Override
-  public String getFirstName() {
-    return getContact().getFirstName();
+  public ContactRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  @Override
-  public String getLastName() {
-    return getContact().getLastName();
+  public ContactRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  @Override
-  public String getAvatar() {
-    return null;
+  public ContactRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  @Override
-  public DirectoryItem.ITEM_TYPE getType() {
-    return DirectoryItem.ITEM_TYPE.Contact;
+  /**
+   * --------------------------------------------------------------------------
+   * getModule
+   */
+  public String getModule() {
+    return "contact";
   }
 
-  @Override
-  public Date getCreationDate() {
-    return getContact().getCreationDate();
-  }
-
-  @Override
-  public String getOriginalId() {
-    return getContact().getPK().getId();
-  }
-
-  @Override
-  public String getMail() {
-    return getContact().getEmail();
-  }
-
-  public Contact getContact() {
-    return contact;
-  }
-
-  @Override
-  public String getPhone() {
-    return getContact().getPhone();
-  }
-
-  @Override
-  public String getFax() {
-    return getContact().getFax();
-  }
 }

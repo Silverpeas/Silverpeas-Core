@@ -25,7 +25,7 @@
 package com.silverpeas.directory.model;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.CompleteContact;
 
 import java.util.ArrayList;
 import java.util.Collection;

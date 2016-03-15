@@ -22,45 +22,74 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.contact.info.model;
+package org.silverpeas.core.contact.model;
 
 import java.io.Serializable;
 
 import org.silverpeas.util.WAPrimaryKey;
 
-public class InfoPK extends WAPrimaryKey implements Serializable {
+/**
+ * It's the Contact PrimaryKey object It identify a Contact
+ * @author Nicolas Eysseric
+ * @version 1.0
+ */
+public class ContactPK extends WAPrimaryKey implements Serializable {
 
-  public InfoPK(String id) {
+  // for flat pk design pattern
+  public transient ContactDetail contactDetail = null;
+
+  /**
+   * Constructor which set only the id
+   * @since 1.0
+   */
+  public ContactPK(String id) {
     super(id);
   }
 
-  public InfoPK(String id, String space, String componentName) {
-    super(id, space, componentName);
+  /**
+   * Constructor which set the id The WAPrimaryKey provides space and component name
+   * @since 1.0
+   */
+  public ContactPK(String id, String componentName) {
+    super(id, componentName);
   }
 
-  public InfoPK(String id, WAPrimaryKey pk) {
+  /**
+   * Constructor which set the id The WAPrimaryKey provides space and component name
+   * @since 1.0
+   */
+  public ContactPK(String id, WAPrimaryKey pk) {
     super(id, pk);
   }
 
+  /**
+   * Return the object root table name
+   * @return the root table name of the object
+   * @since 1.0
+   */
   public String getRootTableName() {
-    return "Info";
+    return "Contact";
   }
 
+  /**
+   * Return the object table name
+   * @return the table name of the object
+   * @since 1.0
+   */
   public String getTableName() {
-    return "SB_Contact_Info";
+    return "SB_Contact_Contact";
   }
 
+  /**
+   * Check if an another object is equal to this object
+   * @param other the object to compare to this ContactPK
+   * @return true if other is equals to this object
+   * @since 1.0
+   */
   public boolean equals(Object other) {
-    if (!(other instanceof InfoPK))
-      return false;
-    return (id.equals(((InfoPK) other).getId()))
-        && (space.equals(((InfoPK) other).getSpace()))
-        && (componentName.equals(((InfoPK) other).getComponentName()));
-  }
-
-  public String toString() {
-    return "(id = " + getId() + ", space = " + getSpace()
-        + ", componentName = " + getComponentName() + ")";
+    return other instanceof ContactPK && (id.equals(((ContactPK) other).getId())) &&
+        (space.equals(((ContactPK) other).getSpace())) &&
+        (componentName.equals(((ContactPK) other).getComponentName()));
   }
 
   /**
@@ -70,5 +99,4 @@ public class InfoPK extends WAPrimaryKey implements Serializable {
   public int hashCode() {
     return toString().hashCode();
   }
-
 }

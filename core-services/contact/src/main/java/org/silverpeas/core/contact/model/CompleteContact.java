@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.contact.model;
+package org.silverpeas.core.contact.model;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -40,7 +40,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.contact.model.Contact;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -75,7 +74,7 @@ public class CompleteContact implements Contact, Serializable {
    * Create a new CompleteContact
    * @param contactDetail the contact detail
    * @param modelId the modeil identifier
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    * @since 1.0
    */
   public CompleteContact(ContactDetail contactDetail, String modelId) {
@@ -90,7 +89,7 @@ public class CompleteContact implements Contact, Serializable {
   /**
    * Get the contact parameters
    * @return a ContactDetail - the contact parameters
-   * @see com.stratelia.webactiv.contact.model.ContactDetail
+   * @see ContactDetail
    * @since 1.0
    */
   public ContactDetail getContactDetail() {

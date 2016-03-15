@@ -50,9 +50,9 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.contact.control.ContactBm;
-import com.stratelia.webactiv.contact.model.CompleteContact;
-import com.stratelia.webactiv.contact.model.ContactPK;
+import org.silverpeas.core.contact.service.ContactService;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -714,8 +714,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   }
 
-  private ContactBm getContactBm() {
-    return ContactBm.get();
+  private ContactService getContactBm() {
+    return ContactService.get();
   }
 
   private List<String> getContactComponentIds() {
