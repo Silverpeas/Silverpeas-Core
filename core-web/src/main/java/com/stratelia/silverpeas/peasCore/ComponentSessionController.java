@@ -32,7 +32,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;

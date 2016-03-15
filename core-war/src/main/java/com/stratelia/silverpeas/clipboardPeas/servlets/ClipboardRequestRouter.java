@@ -24,7 +24,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardException;
 import com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

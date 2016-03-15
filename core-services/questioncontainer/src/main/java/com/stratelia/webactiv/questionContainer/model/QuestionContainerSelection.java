@@ -30,9 +30,9 @@ import java.util.Date;
 
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
-import org.silverpeas.util.clipboard.ClipboardSelection;
-import org.silverpeas.util.clipboard.SKDException;
-import org.silverpeas.util.clipboard.SilverpeasKeyData;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.SKDException;
+import org.silverpeas.core.clipboard.SilverpeasKeyData;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

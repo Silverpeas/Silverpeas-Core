@@ -37,8 +37,8 @@ import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessage;
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory;

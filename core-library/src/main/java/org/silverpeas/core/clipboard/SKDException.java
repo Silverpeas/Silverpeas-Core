@@ -29,23 +29,21 @@
  * @version 1.0
  */
 
-package org.silverpeas.util.clipboard;
-
-import org.silverpeas.util.exception.SilverpeasException;
+package org.silverpeas.core.clipboard;
 
 /**
  * Class declaration
  * @author
  */
-public class ClipboardException extends SilverpeasException {
+public class SKDException extends ClipboardException {
 
-  private static final long serialVersionUID = 8029410339708408226L;
+  private static final long serialVersionUID = -3001137137162651068L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public ClipboardException(String callingClass, int errorLevel, String message) {
+  public SKDException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -57,8 +55,8 @@ public class ClipboardException extends SilverpeasException {
    * @param extraParams
    * @see
    */
-  public ClipboardException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public SKDException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -70,8 +68,8 @@ public class ClipboardException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public ClipboardException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public SKDException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -84,8 +82,8 @@ public class ClipboardException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public ClipboardException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public SKDException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

@@ -37,7 +37,6 @@ public class WarBuilder4Calendar extends BasicWarBuilder {
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard")
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.core.calendar")
               .addAsResource("org/silverpeas/core/calendar")

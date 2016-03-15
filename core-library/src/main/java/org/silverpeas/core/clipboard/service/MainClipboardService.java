@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.clipboard.control;
+package org.silverpeas.core.clipboard.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,12 +32,12 @@ import javax.transaction.Transactional;
 
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import static org.silverpeas.util.clipboard.ClipboardSelection.IndexFlavor;
+import static org.silverpeas.core.clipboard.ClipboardSelection.IndexFlavor;
 
 /**
  * Silverpeas Service to maintain the status of the main clipboard.

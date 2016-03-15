@@ -44,7 +44,7 @@ import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;

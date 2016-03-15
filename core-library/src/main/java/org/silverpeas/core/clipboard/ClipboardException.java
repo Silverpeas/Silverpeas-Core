@@ -29,21 +29,23 @@
  * @version 1.0
  */
 
-package org.silverpeas.util.clipboard;
+package org.silverpeas.core.clipboard;
+
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Class declaration
  * @author
  */
-public class SKDException extends ClipboardException {
+public class ClipboardException extends SilverpeasException {
 
-  private static final long serialVersionUID = -3001137137162651068L;
+  private static final long serialVersionUID = 8029410339708408226L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public SKDException(String callingClass, int errorLevel, String message) {
+  public ClipboardException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -55,8 +57,8 @@ public class SKDException extends ClipboardException {
    * @param extraParams
    * @see
    */
-  public SKDException(String callingClass, int errorLevel, String message,
-      String extraParams) {
+  public ClipboardException(String callingClass, int errorLevel,
+      String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -68,8 +70,8 @@ public class SKDException extends ClipboardException {
    * @param nested
    * @see
    */
-  public SKDException(String callingClass, int errorLevel, String message,
-      Exception nested) {
+  public ClipboardException(String callingClass, int errorLevel,
+      String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -82,8 +84,8 @@ public class SKDException extends ClipboardException {
    * @param nested
    * @see
    */
-  public SKDException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
+  public ClipboardException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

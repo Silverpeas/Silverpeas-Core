@@ -18,14 +18,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.clipboard.control;
+package org.silverpeas.core.clipboard.service;
 
 import java.util.Collection;
 
-import javax.ejb.Local;
-
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 
 /**
  * A clipboard in Silverpeas to receive the objects cut or copied by users in Silverpeas.

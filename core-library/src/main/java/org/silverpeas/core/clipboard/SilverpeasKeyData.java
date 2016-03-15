@@ -25,7 +25,7 @@
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
-package org.silverpeas.util.clipboard;
+package org.silverpeas.core.clipboard;
 
 import java.io.Serializable;
 import java.util.Date;

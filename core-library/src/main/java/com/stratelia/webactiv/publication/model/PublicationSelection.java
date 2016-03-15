@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.publication.model;
 
-import org.silverpeas.util.clipboard.ClipboardSelection;
-import org.silverpeas.util.clipboard.SKDException;
-import org.silverpeas.util.clipboard.SilverpeasKeyData;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.SKDException;
+import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;

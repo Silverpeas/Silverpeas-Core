@@ -22,9 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.clipboard;
+package org.silverpeas.core.clipboard;
 
 import org.silverpeas.search.indexEngine.model.IndexEntry;
+
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;

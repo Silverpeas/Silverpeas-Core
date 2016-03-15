@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.clipboard.control;
+package org.silverpeas.core.clipboard.service;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;

@@ -35,7 +35,6 @@
   </dependencies>
 
   <modules>
-    <module>clipboard</module>
     <module>searchengine</module>
     <module>silverstatistics</module>
     <module>tagcloud</module>

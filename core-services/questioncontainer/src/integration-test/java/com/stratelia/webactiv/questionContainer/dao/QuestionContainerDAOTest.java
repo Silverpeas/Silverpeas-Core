@@ -98,7 +98,6 @@ public class QuestionContainerDAOTest extends DataSetTest {
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-clipboard")
         .testFocusedOn(war -> {
           war.addPackages(true, "com.stratelia.webactiv.questionContainer")
               .addPackages(true, "com.stratelia.webactiv.question")
