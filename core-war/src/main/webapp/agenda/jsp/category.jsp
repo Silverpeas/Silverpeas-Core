@@ -33,6 +33,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.calendar.model.JournalHeader" %>
+<%@ page import="org.silverpeas.core.calendar.model.Category" %>
 
 <%@ include file="checkAgenda.jsp" %>
 

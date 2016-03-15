@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="com.stratelia.webactiv.agenda.view.CalendarHtmlView"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.SchedulableCount"%>
+<%@ page import="org.silverpeas.core.calendar.model.SchedulableCount"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 
 <%@ include file="checkAgenda.jsp" %>

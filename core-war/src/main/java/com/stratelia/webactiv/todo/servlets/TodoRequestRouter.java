@@ -30,8 +30,7 @@ package com.stratelia.webactiv.todo.servlets;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.model.Attendee;
+import org.silverpeas.core.calendar.model.Attendee;
 import com.stratelia.webactiv.todo.control.ToDoSessionController;
 import org.silverpeas.servlet.HttpRequest;
 

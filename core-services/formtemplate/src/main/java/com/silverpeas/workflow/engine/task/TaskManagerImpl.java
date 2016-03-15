@@ -37,9 +37,9 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.TodoDetail;
-import com.stratelia.webactiv.calendar.model.Attendee;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.calendar.model.TodoDetail;
+import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.logging.SilverLogger;
 

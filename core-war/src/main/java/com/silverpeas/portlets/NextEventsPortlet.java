@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
+import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.util.StringUtil;
 
 import javax.portlet.*;

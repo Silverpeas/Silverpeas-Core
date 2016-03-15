@@ -35,8 +35,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.Attendee"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.ToDoHeader"%>
+<%@ page import="org.silverpeas.core.calendar.model.Attendee"%>
+<%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
 <%@ page import="com.stratelia.webactiv.todo.control.ToDoSessionController"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>

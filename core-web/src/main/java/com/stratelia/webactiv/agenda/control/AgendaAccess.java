@@ -20,9 +20,9 @@
  */
 package com.stratelia.webactiv.agenda.control;
 
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
-import com.stratelia.webactiv.calendar.model.ParticipationStatus;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.calendar.model.JournalHeader;
+import org.silverpeas.core.calendar.model.ParticipationStatus;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;

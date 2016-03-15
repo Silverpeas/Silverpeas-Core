@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
+<%@page import="org.silverpeas.core.calendar.model.Schedulable"%>
 <%@page import="org.owasp.encoder.Encode"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

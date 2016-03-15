@@ -27,8 +27,8 @@ package com.stratelia.webactiv.agenda.view;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
-import com.stratelia.webactiv.calendar.model.SchedulableCount;
+import org.silverpeas.core.calendar.model.JournalHeader;
+import org.silverpeas.core.calendar.model.SchedulableCount;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

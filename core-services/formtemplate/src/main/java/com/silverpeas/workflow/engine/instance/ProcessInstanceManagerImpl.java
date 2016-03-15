@@ -35,7 +35,7 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;

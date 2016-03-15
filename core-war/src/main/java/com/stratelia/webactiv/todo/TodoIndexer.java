@@ -28,7 +28,7 @@
 package com.stratelia.webactiv.todo;
 
 import com.stratelia.webactiv.applicationIndexer.control.PersonalToolIndexation;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import com.stratelia.webactiv.todo.control.TodoException;
 
 import javax.inject.Inject;

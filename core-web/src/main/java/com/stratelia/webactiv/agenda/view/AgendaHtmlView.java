@@ -27,12 +27,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.calendar.model.Category;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
-import com.stratelia.webactiv.calendar.model.Schedulable;
-import com.stratelia.webactiv.calendar.model.SchedulableCount;
-import com.stratelia.webactiv.calendar.model.SchedulableGroup;
-import com.stratelia.webactiv.calendar.model.SchedulableList;
+import org.silverpeas.core.calendar.model.Category;
+import org.silverpeas.core.calendar.model.JournalHeader;
+import org.silverpeas.core.calendar.model.Schedulable;
+import org.silverpeas.core.calendar.model.SchedulableCount;
+import org.silverpeas.core.calendar.model.SchedulableGroup;
+import org.silverpeas.core.calendar.model.SchedulableList;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

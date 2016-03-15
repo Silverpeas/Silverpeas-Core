@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.agenda;
 
 import com.stratelia.webactiv.applicationIndexer.control.PersonalToolIndexation;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -27,10 +27,10 @@
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.calendar.model.Attendee"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.Classification" %>
-<%@ page import="com.stratelia.webactiv.calendar.model.Priority" %>
-<%@ page import="com.stratelia.webactiv.calendar.model.ToDoHeader"%>
+<%@ page import="org.silverpeas.core.calendar.model.Attendee"%>
+<%@ page import="org.silverpeas.core.calendar.model.Classification" %>
+<%@ page import="org.silverpeas.core.calendar.model.Priority" %>
+<%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
 <%@ page import="com.stratelia.webactiv.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
 <%@ page import="org.silverpeas.util.DateUtil" %>
