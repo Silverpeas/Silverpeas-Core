@@ -142,7 +142,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       checkoutAndEditLabel += " (" + webdavContentEditionLanguageLabel + ")";
     }
     prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ",'" +
-        attachment.getWebdavContentEditionLanguage() + "');", checkoutAndEditLabel);
+        StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+            attachment.getLanguage()) + "');", checkoutAndEditLabel);
     prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + "," +
         attachment.isOpenOfficeCompatible() + ", false, " + attachment.isVersioned() + ", '" +
         webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));

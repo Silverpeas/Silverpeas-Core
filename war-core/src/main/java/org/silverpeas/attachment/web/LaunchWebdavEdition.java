@@ -20,6 +20,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.jcrutil.SilverpeasJcrWebdavContext;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -71,19 +72,20 @@ public class LaunchWebdavEdition extends HttpServlet {
       AttachmentService documentService = AttachmentServiceFactory.getAttachmentService();
       SimpleDocument
           document = documentService.searchDocumentById(new SimpleDocumentPK(id), language);
-      String documentUrl = URLManager.getServerURL(request)+document.getWebdavUrl();
+      String documentUrl = URLManager.getServerURL(request) + document.getWebdavUrl();
       String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
-      String webDavUrl = computeWebDavUrl(documentUrl, token);
+      SilverpeasJcrWebdavContext silverpeasJcrWebdavContext =
+          SilverpeasJcrWebdavContext.from(documentUrl, token);
       if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
         response.setContentType("application/javascript");
         response.setHeader("Content-Disposition", "inline; filename=launch.js");
-        webDavUrl = webDavUrl.replaceFirst("http://", "spwebdav://");
-        webDavUrl = webDavUrl.replaceFirst("https://", "spwebdavs://");
+        String webDavUrl =
+            silverpeasJcrWebdavContext.getWebDavUrl().replaceFirst("^http", "spwebdav");
         out.append("window.location.href='").append(webDavUrl).append("';");
       } else {
         response.setContentType("application/x-java-jnlp-file");
         response.setHeader("Content-Disposition", "inline; filename=launch.jnlp");
-        prepareJNLP(request, out, user.getLogin(), webDavUrl);
+        prepareJNLP(request, out, user.getLogin(), silverpeasJcrWebdavContext.getWebDavUrl());
       }
     } finally {
       out.close();
@@ -189,9 +191,5 @@ public class LaunchWebdavEdition extends HttpServlet {
       return paths[paths.length - 3];
     }
     return null;
-  }
-
-  private static String computeWebDavUrl(String documentUrl, String token) {
-    return documentUrl.replaceAll("/webdav/", "/webdav/" + token + "/");
   }
 }

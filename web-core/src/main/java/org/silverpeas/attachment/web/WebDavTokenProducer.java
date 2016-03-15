@@ -20,6 +20,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.jcrutil.SilverpeasJcrWebdavContext;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -71,6 +72,7 @@ public class WebDavTokenProducer {
         throw new IllegalArgumentException("No token for user " + user.getId() +
             " to access document " + documentId);
       }
+      SilverpeasJcrWebdavContext.clearFromToken(token);
       cacheService.remove(token);
       cacheService.remove(documentTokenKey);
     }
