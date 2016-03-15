@@ -21,15 +21,12 @@
  */
 package com.silverpeas;
 
-import com.silverpeas.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerProvider;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 
 /**
  * Provides services to be used in Silverpeas
@@ -44,10 +41,6 @@ public class SilverpeasServiceProvider {
 
   public static PersonalizationService getPersonalizationService() {
     return PersonalizationServiceProvider.getPersonalizationService();
-  }
-
-  public static CommentService getCommentService() {
-    return CommentServiceProvider.getCommentService();
   }
 
   public static AttachmentService getAttachmentService() {

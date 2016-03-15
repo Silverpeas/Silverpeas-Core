@@ -33,7 +33,7 @@ import java.util.List;
 
 public interface SocialCommentPublicationsInterface {
 
-  public static SocialCommentPublicationsInterface get() {
+  static SocialCommentPublicationsInterface get() {
     return ServiceProvider.getService(SocialCommentPublicationsInterface.class);
   }
 
@@ -45,7 +45,7 @@ public interface SocialCommentPublicationsInterface {
    * @return List<SocialInformation>
    * @throws SilverpeasException
    */
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+  List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException;
 
   /**
@@ -57,6 +57,6 @@ public interface SocialCommentPublicationsInterface {
    * @return List<SocialInformation>
    * @throws SilverpeasException
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 }

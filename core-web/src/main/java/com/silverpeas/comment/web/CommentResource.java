@@ -25,10 +25,10 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.annotation.Authorized;
-import com.silverpeas.comment.CommentRuntimeException;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentService;
+import org.silverpeas.core.comment.CommentRuntimeException;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentService;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.util.logging.SilverLogger;
 

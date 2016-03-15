@@ -27,7 +27,7 @@ package com.silverpeas.subscribe.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.comment.CommentRuntimeException;
+import org.silverpeas.core.comment.CommentRuntimeException;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;

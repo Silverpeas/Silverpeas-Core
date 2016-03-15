@@ -600,7 +600,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.admin.space.notification");
       addPackages(true, "org.silverpeas.admin.user.constant");
       addPackages(true, "org.silverpeas.admin.user.notification");
-      addPackages(true, "org.silverpeas.util.clipboard");
+      addPackages(true, "org.silverpeas.core.clipboard");
       addAsResource("xmlcomponents");
       addAsResource("org/silverpeas/admin/roleMapping.properties");
       addAsResource("org/silverpeas/beans/admin/admin.properties");
