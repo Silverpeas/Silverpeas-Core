@@ -30,30 +30,28 @@ import org.apache.jackrabbit.webdav.simple.LocatorFactoryImplEx;
  */
 public class JcrResourceLocatorFactory extends LocatorFactoryImplEx implements DavLocatorFactory {
 
-  private static final String TOKEN_PATTERN = "/[a-zA-Z0-9]{16}+/";
-
   public JcrResourceLocatorFactory(final String repositoryPrefix) {
     super(repositoryPrefix);
   }
 
   @Override
   public DavResourceLocator createResourceLocator(final String prefix, final String href) {
-    return super.createResourceLocator(prefix, filterToken(href));
+    return super.createResourceLocator(prefix, filterPath(href));
   }
 
   @Override
   public DavResourceLocator createResourceLocator(String prefix, String workspacePath, String path,
       boolean isResourcePath) {
-    return super.createResourceLocator(prefix, workspacePath, filterToken(path), isResourcePath);
+    return super.createResourceLocator(prefix, workspacePath, filterPath(path), isResourcePath);
   }
 
   @Override
   public DavResourceLocator createResourceLocator(final String prefix, final String workspacePath,
       final String resourcePath) {
-    return super.createResourceLocator(prefix, workspacePath, filterToken(resourcePath));
+    return super.createResourceLocator(prefix, workspacePath, filterPath(resourcePath));
   }
 
-  private String filterToken(String path) {
-    return path.replaceFirst(TOKEN_PATTERN, "/");
+  private String filterPath(String path) {
+    return SilverpeasJcrWebdavContext.from(path).getJcrDocumentUrlLocation();
   }
 }

@@ -51,7 +51,7 @@ public class ViewerContext implements Cloneable {
    */
   public static ViewerContext from(SimpleDocument document) {
     return new ViewerContext(document.getFilename(), new File(document.
-        getAttachmentPath())).withUniqueDocumentId(document.getId());
+        getAttachmentPath())).withUniqueDocumentId(document.getLanguage() + "-" + document.getId());
   }
 
   protected ViewerContext(final String originalFileName, final File originalSourceFile) {
