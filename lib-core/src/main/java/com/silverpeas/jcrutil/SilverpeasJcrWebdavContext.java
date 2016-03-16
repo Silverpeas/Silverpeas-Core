@@ -58,7 +58,7 @@ public class SilverpeasJcrWebdavContext {
    * @return the {@link SilverpeasJcrWebdavContext} instance initialized with the given data. The
    * webdavUrl has been computed.
    */
-  public static SilverpeasJcrWebdavContext from(final String jcrDocumentUrlLocation,
+  public static SilverpeasJcrWebdavContext createWebdavContext(final String jcrDocumentUrlLocation,
       final String token) {
 
     // Handle the filename
@@ -86,7 +86,7 @@ public class SilverpeasJcrWebdavContext {
    * @return the {@link SilverpeasJcrWebdavContext} instance initialized with the given webdavUrl.
    * The document URL location into the JCR is decoded and the token has been extracted.
    */
-  public static SilverpeasJcrWebdavContext from(final String webDavUrl) {
+  public static SilverpeasJcrWebdavContext getWebdavContext(final String webDavUrl) {
     String token = "";
     String clearedWebdavUrl = webDavUrl;
     Matcher tokenMatcher = TOKEN_PATTERN.matcher(webDavUrl);

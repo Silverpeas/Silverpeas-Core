@@ -831,7 +831,6 @@ public class SimpleDocument implements Serializable {
 
   /**
    * Is the specified user can access this document?
-   * <p/>
    * @param user a user in Silverpeas.
    * @return true if the user can access this document, false otherwise.
    */
@@ -839,6 +838,18 @@ public class SimpleDocument implements Serializable {
     AccessController<SimpleDocument> accessController =
         AccessControllerProvider.getAccessController("simpleDocumentAccessController");
     return accessController.isUserAuthorized(user.getId(), this);
+  }
+
+  /**
+   * Is the specified user can access this document on persist context?
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this document, false otherwise.
+   */
+  public boolean canBeModifiedBy(final UserDetail user) {
+    AccessController<SimpleDocument> accessController =
+        AccessControllerProvider.getAccessController("simpleDocumentAccessController");
+    return accessController.isUserAuthorized(user.getId(), this,
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
   /**
