@@ -22,10 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar.control;
+package org.silverpeas.core.calendar.service;
 
 import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.core.calendar.service.JournalDAO;
 import org.silverpeas.core.calendar.socialnetwork.SocialInformationEvent;
 import org.silverpeas.core.calendar.test.WarBuilder4Calendar;
 import org.jboss.arquillian.container.test.api.Deployment;

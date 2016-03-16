@@ -21,11 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.control;
+package org.silverpeas.core.calendar.service;
 
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.ToDoHeader;
-import org.silverpeas.core.calendar.service.DefaultCalendarService;
 import org.silverpeas.core.calendar.test.WarBuilder4Calendar;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
