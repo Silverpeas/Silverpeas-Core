@@ -21,6 +21,7 @@
 
 package com.silverpeas.jcrutil.security.impl;
 
+import com.silverpeas.jcrutil.SilverpeasJcrWebdavContext;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.silverpeas.cache.service.CacheServiceFactory;
@@ -29,8 +30,6 @@ import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A provider of WebDav credentials for the WebDAV servlet.
@@ -38,15 +37,12 @@ import java.util.regex.Pattern;
  */
 public class WebDavCredentialsProvider implements CredentialsProvider {
 
-  private static final Pattern TOKEN_PATTERN = Pattern.compile(".*/([a-zA-Z0-9]{16}+)/.*");
-
   @Override
   public Credentials getCredentials(final HttpServletRequest request)
       throws LoginException, ServletException {
     Credentials credentials;
-    Matcher matcher = TOKEN_PATTERN.matcher(request.getPathInfo());
-    if (matcher.matches()) {
-      String authToken = matcher.group(1);
+    String authToken = SilverpeasJcrWebdavContext.from(request.getPathInfo()).getToken();
+    if (!authToken.isEmpty()) {
       UserDetail user =
           CacheServiceFactory.getApplicationCacheService().get(authToken, UserDetail.class);
       if (user != null) {
