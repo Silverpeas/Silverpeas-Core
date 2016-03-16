@@ -26,8 +26,8 @@ package org.silverpeas.mylinks.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.myLinks.control.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -305,9 +305,9 @@ public class MyLinksResource extends RESTWebService {
     return uri;
   }
 
-  protected MyLinksBm getMyLinksBm() {
+  protected MyLinksService getMyLinksBm() {
     try {
-      return ServiceProvider.getService(MyLinksBm.class);
+      return ServiceProvider.getService(MyLinksService.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }

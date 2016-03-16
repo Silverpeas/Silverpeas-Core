@@ -23,9 +23,9 @@
  */
 package com.silverpeas.myLinksPeas.control;
 
-import com.silverpeas.myLinks.MyLinksRuntimeException;
-import com.silverpeas.myLinks.control.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.MyLinksRuntimeException;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -58,7 +58,7 @@ public class MyLinksPeasSessionControllerTest {
   private static final String CURRENT_USER_ID = "26";
 
   private MyLinksPeasSessionController ctrl;
-  private MyLinksBm ejb;
+  private MyLinksService ejb;
 
   @Before
   public void setup() throws Exception {
@@ -73,7 +73,7 @@ public class MyLinksPeasSessionControllerTest {
     doReturn("Bundle value").when(ctrl).getString(anyString());
 
     ctrl.getUserDetail().setId(CURRENT_USER_ID);
-    ejb = commonAPI4Test.injectIntoMockedBeanContainer(mock(MyLinksBm.class));
+    ejb = commonAPI4Test.injectIntoMockedBeanContainer(mock(MyLinksService.class));
   }
 
   @Test

@@ -29,7 +29,7 @@ import java.util.Collection;
 import org.silverpeas.mylinks.web.MyLinkEntity;
 import org.silverpeas.servlet.HttpRequest;
 
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;

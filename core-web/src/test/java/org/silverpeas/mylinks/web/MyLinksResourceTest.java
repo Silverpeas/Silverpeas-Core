@@ -23,9 +23,9 @@
  */
 package org.silverpeas.mylinks.web;
 
-import com.silverpeas.myLinks.control.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.myLinks.model.LinkDetailComparator;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -69,7 +69,7 @@ public class MyLinksResourceTest {
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private MyLinksResource4Test rest;
-  private MyLinksBm service;
+  private MyLinksService service;
   private OrganizationController orgaCtrl;
   boolean oldI18nActivationValue;
 
@@ -83,7 +83,7 @@ public class MyLinksResourceTest {
     doReturn(new UserPreferences(CURRENT_USER_ID, "de", null, null, false, false, false,
         UserMenuDisplay.ALL)).when(rest).getUserPreferences();
     doReturn(mock(UriInfo.class)).when(rest).getUriInfo();
-    doReturn(mock(MyLinksBm.class)).when(rest).getMyLinksBm();
+    doReturn(mock(MyLinksService.class)).when(rest).getMyLinksBm();
     doReturn(mock(OrganizationController.class)).when(rest).getOrganisationController();
 
     rest.getUserDetail().setId(CURRENT_USER_ID);

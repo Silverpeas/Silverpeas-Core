@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.silverpeas.web.WebEntity;
 
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 
 /**
  * The mylink entity is a mylink object that is exposed in the web as an entity (web entity). As

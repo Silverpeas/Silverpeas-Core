@@ -24,13 +24,12 @@
 
 package com.silverpeas.myLinksPeas.control;
 
-import com.silverpeas.myLinks.MyLinksRuntimeException;
-import com.silverpeas.myLinks.control.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.MyLinksRuntimeException;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.mylinks.web.MyLinkEntity;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.ServiceProvider;
@@ -171,8 +170,8 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     }
   }
 
-  private MyLinksBm getMyLinksBm() {
-    return ServiceProvider.getService(MyLinksBm.class);
+  private MyLinksService getMyLinksBm() {
+    return ServiceProvider.getService(MyLinksService.class);
   }
 
   public String getUrl() {

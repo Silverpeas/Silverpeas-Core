@@ -20,8 +20,8 @@
  */
 package com.silverpeas.portlets;
 
-import com.silverpeas.myLinks.control.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.mylinks.model.LinkDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ServiceProvider;
@@ -45,9 +45,9 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
     UserDetail currentUser = UserDetail.getCurrentRequester();
     if (currentUser != null) {
       try {
-        MyLinksBm myLinksBm = getMyLinksBm();
-        if (myLinksBm != null) {
-          links = myLinksBm.getAllLinks(currentUser.getId());
+        MyLinksService myLinksService = getMyLinksBm();
+        if (myLinksService != null) {
+          links = myLinksService.getAllLinks(currentUser.getId());
         }
       } catch (Exception e) {
         SilverTrace.error("portlet", "MyBookmarksPortlet", "portlet.ERROR", e);
@@ -73,8 +73,8 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
     include(request, response, "help.jsp");
   }
 
-  private MyLinksBm getMyLinksBm() throws Exception {
-    return ServiceProvider.getService(MyLinksBm.class);
+  private MyLinksService getMyLinksBm() throws Exception {
+    return ServiceProvider.getService(MyLinksService.class);
   }
 
   /**
