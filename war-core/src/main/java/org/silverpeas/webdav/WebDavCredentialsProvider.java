@@ -32,7 +32,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
 
-/** A provider of WebDav credentials for the WebDAV servlet.
+import static org.silverpeas.webdav.SilverpeasJcrWebdavContext.getWebdavContext;
+
+/**
+ * A provider of WebDav credentials for the WebDAV servlet.
  * @author mmoquillon
  */
 public class WebDavCredentialsProvider implements CredentialsProvider {
@@ -44,7 +47,7 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
   public Credentials getCredentials(final HttpServletRequest request)
       throws LoginException, ServletException {
     Credentials credentials;
-    String authToken = SilverpeasJcrWebdavContext.from(request.getPathInfo()).getToken();
+    String authToken = getWebdavContext(request.getPathInfo()).getToken();
     if (!authToken.isEmpty()) {
       UserDetail user =
           CacheServiceProvider.getApplicationCacheService().get(authToken, UserDetail.class);

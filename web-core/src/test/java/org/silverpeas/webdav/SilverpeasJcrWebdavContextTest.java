@@ -29,11 +29,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.silverpeas.webdav.SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.silverpeas.cache.service.CacheServiceProvider.getApplicationCacheService;
+import static org.silverpeas.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
+import static org.silverpeas.webdav.SilverpeasJcrWebdavContext.getWebdavContext;
 
 /**
  * @author Yohann Chastagnier
@@ -63,7 +64,7 @@ public class SilverpeasJcrWebdavContextTest {
     assertThat(getApplicationCacheService().get(
         SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + AUTH_TOKEN), nullValue());
 
-    SilverpeasJcrWebdavContext.from("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN)
+    createWebdavContext("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN)
         .getWebDavUrl();
 
     assertThat(getApplicationCacheService().get(
@@ -81,8 +82,8 @@ public class SilverpeasJcrWebdavContextTest {
     String expectedWebdavUrl =
         "/webdav/" + AUTH_TOKEN + "/" + EncodeUtil.escape(FILENAME_WITH_SPECIAL_CHARS);
 
-    SilverpeasJcrWebdavContext context = SilverpeasJcrWebdavContext
-        .from("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN);
+    SilverpeasJcrWebdavContext context =
+        createWebdavContext("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN);
     MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(),
         is("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS));
     MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
@@ -91,10 +92,11 @@ public class SilverpeasJcrWebdavContextTest {
 
   @Test
   public void shouldBeWellDecoded() {
-    String webdavUrl = SilverpeasJcrWebdavContext
-        .from("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN).getWebDavUrl();
+    String webdavUrl =
+        createWebdavContext("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN)
+            .getWebDavUrl();
 
-    SilverpeasJcrWebdavContext context = SilverpeasJcrWebdavContext.from(webdavUrl);
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
     MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(),
         is("/webdav/document/" + EncodeUtil.escape(FILENAME_WITH_SPECIAL_CHARS)));
     assertThat(EncodeUtil.unescape(context.getJcrDocumentUrlLocation()),
@@ -105,10 +107,9 @@ public class SilverpeasJcrWebdavContextTest {
 
   @Test
   public void parentPathShouldBeWellDecoded() {
-    String webdavUrl =
-        SilverpeasJcrWebdavContext.from("/webdav/document/a", AUTH_TOKEN).getWebDavUrl();
+    String webdavUrl = createWebdavContext("/webdav/document/a", AUTH_TOKEN).getWebDavUrl();
 
-    SilverpeasJcrWebdavContext context = SilverpeasJcrWebdavContext.from(webdavUrl);
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
     MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/webdav/document/a"));
     MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
     MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
@@ -116,10 +117,9 @@ public class SilverpeasJcrWebdavContextTest {
 
   @Test
   public void otherParentPathThatShouldAlsoBeWellDecoded() {
-    String webdavUrl =
-        SilverpeasJcrWebdavContext.from("/webdav/document", AUTH_TOKEN).getWebDavUrl();
+    String webdavUrl = createWebdavContext("/webdav/document", AUTH_TOKEN).getWebDavUrl();
 
-    SilverpeasJcrWebdavContext context = SilverpeasJcrWebdavContext.from(webdavUrl);
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
     MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/webdav/document"));
     MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
     MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
@@ -127,10 +127,10 @@ public class SilverpeasJcrWebdavContextTest {
 
   @Test
   public void shouldBeAlsoWellDecoded() {
-    String webdavUrl = SilverpeasJcrWebdavContext.from("/webdav/document/dummyFileName", AUTH_TOKEN)
-        .getWebDavUrl();
+    String webdavUrl =
+        createWebdavContext("/webdav/document/dummyFileName", AUTH_TOKEN).getWebDavUrl();
 
-    SilverpeasJcrWebdavContext context = SilverpeasJcrWebdavContext.from(webdavUrl);
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
     MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/webdav/document/dummyFileName"));
     MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
     MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));

@@ -25,6 +25,8 @@ import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
 import org.apache.jackrabbit.webdav.simple.LocatorFactoryImplEx;
 
+import static org.silverpeas.webdav.SilverpeasJcrWebdavContext.getWebdavContext;
+
 /**
  * @author mmoquillon
  */
@@ -52,6 +54,6 @@ public class JcrResourceLocatorFactory extends LocatorFactoryImplEx implements D
   }
 
   private String filterPath(String path) {
-    return SilverpeasJcrWebdavContext.from(path).getJcrDocumentUrlLocation();
+    return getWebdavContext(path).getJcrDocumentUrlLocation();
   }
 }
