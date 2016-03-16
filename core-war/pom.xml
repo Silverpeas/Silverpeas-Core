@@ -121,7 +121,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-importExport</artifactId>
+      <artifactId>silverpeas-core-importexport</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

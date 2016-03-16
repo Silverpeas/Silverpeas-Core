@@ -26,8 +26,7 @@ package com.silverpeas.importExportPeas.control;
 
 import java.util.List;
 
-import com.silverpeas.importExport.control.ImportExport;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.importexport.control.ImportExport;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;

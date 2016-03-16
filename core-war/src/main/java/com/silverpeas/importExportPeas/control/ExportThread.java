@@ -24,7 +24,7 @@
 
 package com.silverpeas.importExportPeas.control;
 
-import com.silverpeas.importExport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ExportReport;
 
 public class ExportThread extends Thread {
   protected ImportExportSessionController m_toAwake = null;

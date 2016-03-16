@@ -34,7 +34,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.notation.control.RatingService;

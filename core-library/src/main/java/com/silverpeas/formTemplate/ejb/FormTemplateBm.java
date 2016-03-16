@@ -20,13 +20,11 @@
  */
 package com.silverpeas.formTemplate.ejb;
 
-import java.util.List;
-
-import javax.ejb.Local;
-
 import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+
+import java.util.List;
 
 /**
  * Interface declaration

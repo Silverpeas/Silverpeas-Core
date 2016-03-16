@@ -38,7 +38,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.attachment.util.AttachmentSettings;
-import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;

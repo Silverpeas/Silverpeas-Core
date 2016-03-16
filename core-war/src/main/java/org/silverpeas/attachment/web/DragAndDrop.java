@@ -43,7 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.silverpeas.importExport.control.RepositoriesTypeManager.handleFileToAttach;
+import static org.silverpeas.core.importexport.control.RepositoriesTypeManager.handleFileToAttach;
 import static org.silverpeas.util.StringUtil.getBooleanValue;
 import static org.silverpeas.util.i18n.I18NHelper.checkLanguage;
 

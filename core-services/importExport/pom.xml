@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.silverpeas.core.services</groupId>
-  <artifactId>silverpeas-core-importExport</artifactId>
+  <artifactId>silverpeas-core-importexport</artifactId>
   <packaging>jar</packaging>
   <name>Silverpeas ImportExport Service ${project.version}</name>
 

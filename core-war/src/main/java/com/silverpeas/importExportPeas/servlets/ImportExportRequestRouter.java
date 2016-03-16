@@ -24,9 +24,9 @@
 
 package com.silverpeas.importExportPeas.servlets;
 
-import com.silverpeas.importExport.report.ExportPDFReport;
-import com.silverpeas.importExport.report.ExportReport;
-import com.silverpeas.importExport.report.ImportReport;
+import org.silverpeas.core.importexport.report.ExportPDFReport;
+import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ImportReport;
 import com.silverpeas.importExportPeas.control.ImportExportSessionController;
 
 import org.silverpeas.servlet.FileUploadUtil;

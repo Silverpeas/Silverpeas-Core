@@ -23,13 +23,13 @@
  */
 package com.silverpeas.importExportPeas.servlets;
 
-import com.silverpeas.importExport.control.ImportSettings;
-import com.silverpeas.importExport.control.MassiveDocumentImport;
-import com.silverpeas.importExport.model.ImportExportException;
-import com.silverpeas.importExport.report.ComponentReport;
-import com.silverpeas.importExport.report.ImportReport;
-import com.silverpeas.importExport.report.MassiveReport;
-import com.silverpeas.importExport.report.UnitReport;
+import org.silverpeas.core.importexport.control.ImportSettings;
+import org.silverpeas.core.importexport.control.MassiveDocumentImport;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.report.ComponentReport;
+import org.silverpeas.core.importexport.report.ImportReport;
+import org.silverpeas.core.importexport.report.MassiveReport;
+import org.silverpeas.core.importexport.report.UnitReport;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;

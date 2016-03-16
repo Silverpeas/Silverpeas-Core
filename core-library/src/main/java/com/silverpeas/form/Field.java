@@ -37,95 +37,95 @@ import java.io.Serializable;
  */
 public interface Field extends Serializable, Comparable {
 
-  public final static String TYPE_FILE = "file";
-  public final static String FILE_PARAM_NAME_SUFFIX = "$$id";
+  String TYPE_FILE = "file";
+  String FILE_PARAM_NAME_SUFFIX = "$$id";
 
   /**
    * Returns the type name of this field.
    */
-  public String getTypeName();
+  String getTypeName();
 
   /**
    * Returns the normalized value of this field.
    */
-  public String getValue();
+  String getValue();
 
   /**
    * Set this field value from a normalized string value.
    * @throws FormException when the field is readOnly or when the string value is ill formed.
    */
-  public void setValue(String value) throws FormException;
+  void setValue(String value) throws FormException;
 
   /**
    * Returns true if the value isn't ill formed and this field isn't read only.
    */
-  public boolean acceptValue(String value);
+  boolean acceptValue(String value);
 
   /**
    * Returns the local string value of this field.
    */
-  public String getValue(String lang);
+  String getValue(String lang);
 
   /**
    * Set this field value from a local string value.
    * @throws FormException when the field is readOnly or when the string value is ill formed.
    */
-  public void setValue(String value, String lang) throws FormException;
+  void setValue(String value, String lang) throws FormException;
 
   /**
    * Returns true if the local value isn't ill formed and this field isn't read only.
    */
-  public boolean acceptValue(String value, String lang);
+  boolean acceptValue(String value, String lang);
 
   /**
    * Returns the normalized String value.
    */
-  public String getStringValue();
+  String getStringValue();
 
   /**
    * Set this field value from a normalized String value.
    * @throws FormException when the field is readOnly or FormException when the value is not a
    * normalized.
    */
-  public void setStringValue(String value) throws FormException;
+  void setStringValue(String value) throws FormException;
 
   /**
    * Returns true if the value isn't normalized and this field isn't read only.
    */
-  public boolean acceptStringValue(String value);
+  boolean acceptStringValue(String value);
 
   /**
    * Returns the value of this field.
    */
-  public Object getObjectValue();
+  Object getObjectValue();
 
   /**
    * Set this field value.
    * @throws FormException when the field is readOnly or when the value has a wrong type.
    */
-  public void setObjectValue(Object value) throws FormException;
+  void setObjectValue(Object value) throws FormException;
 
   /**
    * Returns true if the value hasn't a wrong type and this field isn't read only.
    */
-  public boolean acceptObjectValue(Object value);
+  boolean acceptObjectValue(Object value);
 
   /**
    * Returns true if this field is not set.
    */
-  public boolean isNull();
+  boolean isNull();
 
   /**
    * Set to null this field.
    * @throws FormException when the field is mandatory or when the field is read only.
    */
-  public void setNull() throws FormException;
+  void setNull() throws FormException;
 
-  public int getOccurrence();
+  int getOccurrence();
 
-  public void setOccurrence(int i);
+  void setOccurrence(int i);
 
-  public void setName(String name);
+  void setName(String name);
 
-  public String getName();
+  String getName();
 }

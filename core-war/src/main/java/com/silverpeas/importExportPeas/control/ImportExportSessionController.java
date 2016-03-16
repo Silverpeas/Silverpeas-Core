@@ -24,15 +24,14 @@
 
 package com.silverpeas.importExportPeas.control;
 
-import com.silverpeas.importExport.control.ImportExport;
-import com.silverpeas.importExport.model.ImportExportException;
-import com.silverpeas.importExport.report.ExportPDFReport;
-import com.silverpeas.importExport.report.ExportReport;
-import com.silverpeas.importExport.report.ImportReport;
+import org.silverpeas.core.importexport.control.ImportExport;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.report.ExportPDFReport;
+import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.importexport.report.ImportReport;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAAttributeValuePair;
