@@ -88,12 +88,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-formtemplate</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-importExport</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

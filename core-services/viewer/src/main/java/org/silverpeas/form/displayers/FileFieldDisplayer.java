@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form.displayers;
+package org.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -30,6 +30,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
+import com.silverpeas.form.displayers.AbstractFileFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;

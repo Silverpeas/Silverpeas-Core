@@ -32,7 +32,6 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.AccessPathField;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

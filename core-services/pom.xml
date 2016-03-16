@@ -40,7 +40,6 @@
     <module>tagcloud</module>
     <module>contact</module>
     <module>calendar</module>
-    <module>formtemplate</module>
     <module>statistic</module>
     <module>comment</module>
     <module>pdc</module>
@@ -48,6 +47,7 @@
     <module>questioncontainer</module>
     <module>importExport</module>
     <module>viewer</module>
+    <module>workflow</module>
   </modules>
 
 </project>
