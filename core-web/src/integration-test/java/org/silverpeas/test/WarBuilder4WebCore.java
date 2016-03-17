@@ -59,6 +59,7 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addAsResource("org/silverpeas/searchEngine/searchEngineSettings.properties");
     addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
     addAsResource("org/silverpeas/util/attachment/Attachment.properties");
+    addAsResource("org/silverpeas/util/security.properties");
   }
 
   /**

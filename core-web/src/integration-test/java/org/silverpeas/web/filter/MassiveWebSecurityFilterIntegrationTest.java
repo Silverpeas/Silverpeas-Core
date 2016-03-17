@@ -23,27 +23,20 @@
  */
 package org.silverpeas.web.filter;
 
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import org.silverpeas.util.DBUtil;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.servlet.HttpRequest;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.silverpeas.test.WarBuilder4WebCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -55,10 +48,22 @@ import static org.mockito.Mockito.*;
  * User: Yohann Chastagnier
  * Date: 06/03/14
  */
-public class MassiveWebSecurityFilterTest {
+@RunWith(Arquillian.class)
+public class MassiveWebSecurityFilterIntegrationTest {
 
-  // Spring context
-  private ClassPathXmlApplicationContext context;
+  private static final String DATASET_SCRIPT =
+      "/org/silverpeas/web/filter/massive-web-security-database.sql";
+
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(DATASET_SCRIPT);
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4WebCore.onWarForTestClass(MassiveWebSecurityFilterIntegrationTest.class)
+        .addRESTWebServiceEnvironment()
+        .testFocusedOn(warBuilder -> warBuilder.addPackages(true, "org.silverpeas.web.filter"))
+        .build();
+  }
 
   private final static String COMMON_PARAMETER_NAME = "parameterName";
   private final static String SKIPED_PARAMETER_NAME = "editor";
@@ -69,45 +74,6 @@ public class MassiveWebSecurityFilterTest {
 
   private HttpRequest httpRequest = Mockito.mock(HttpRequest.class);
   private HttpServletResponse httpResponse = Mockito.mock(HttpServletResponse.class);
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-  }
-
-  @AfterClass
-  public static void tearDownClass() {
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
-  }
-
-  @Before
-  public void setUp() throws Exception {
-
-    // Spring
-    context = new ClassPathXmlApplicationContext("spring-massive-web-security.xml");
-
-    // Beans
-    final DataSource dataSource = (DataSource) context.getBean("dataSource");
-
-    // Database
-    DatabaseOperation.INSERT
-        .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
-    DBUtil.getInstanceForTest(dataSource.getConnection());
-  }
-
-  protected IDataSet getDataSet() throws DataSetException {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        this.getClass().getClassLoader()
-            .getResourceAsStream("org/silverpeas/web/filter/massive-web-security-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    DBUtil.clearTestInstance();
-    context.close();
-  }
 
   @Test
   public void testXss() {
@@ -406,7 +372,7 @@ public class MassiveWebSecurityFilterTest {
         verify(httpResponse, times(injectionHasToBeDetected ? 1 : 0))
             .sendError(eq(HttpServletResponse.SC_FORBIDDEN), contains(messagePart));
       } catch (Exception e) {
-        assertThat(false, is(true));
+        assertThat(e.getMessage(), false, is(true));
       }
     }
   }
@@ -443,7 +409,7 @@ public class MassiveWebSecurityFilterTest {
 
       when(httpRequest.getRequestURI()).then(new Returns(parameterName + " -> " + parameterValue));
 
-      Map<String, String[]> httpRequestParameterMap = new LinkedHashMap<String, String[]>();
+      Map<String, String[]> httpRequestParameterMap = new LinkedHashMap<>();
 
       switch (parameterConfig) {
         case SECOND_PARAMETER_SECOND_VALUE:
