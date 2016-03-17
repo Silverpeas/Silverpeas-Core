@@ -24,9 +24,7 @@
 
 package com.silverpeas.authentication;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.enterprise.inject.Alternative;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Custom encryption algorithm of the user credentials before storing them in cookies.

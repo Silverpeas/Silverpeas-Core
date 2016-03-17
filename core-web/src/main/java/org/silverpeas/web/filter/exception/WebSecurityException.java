@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.filter.exception;
 
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 
 /**
  * User: Yohann Chastagnier

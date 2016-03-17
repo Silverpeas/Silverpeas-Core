@@ -20,7 +20,7 @@
 */
 package org.silverpeas.search.indexEngine.parser;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.indexEngine.parser.tika.TikaParser;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.ResourceLocator;

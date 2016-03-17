@@ -27,7 +27,7 @@ package com.silverpeas.socialnetwork.relationShip;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;

@@ -25,7 +25,7 @@ import com.silverpeas.look.LookHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.Charsets;

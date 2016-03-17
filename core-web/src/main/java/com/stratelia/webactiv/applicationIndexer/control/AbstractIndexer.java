@@ -26,7 +26,7 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 
 /**

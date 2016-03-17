@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.questionContainer.control;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.answer.control.AnswerService;
 import com.stratelia.webactiv.answer.dao.AnswerDAO;
 import com.stratelia.webactiv.answer.model.Answer;

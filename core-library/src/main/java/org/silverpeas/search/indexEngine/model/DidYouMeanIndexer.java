@@ -26,7 +26,7 @@ package org.silverpeas.search.indexEngine.model;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
 

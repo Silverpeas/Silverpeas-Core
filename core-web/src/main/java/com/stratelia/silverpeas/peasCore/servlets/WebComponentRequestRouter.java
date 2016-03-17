@@ -25,7 +25,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.ServletConfig;
@@ -36,7 +36,6 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
-import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
 
 /**

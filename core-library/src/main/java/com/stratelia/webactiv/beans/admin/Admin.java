@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.cache.AdminCache;
 import com.stratelia.webactiv.beans.admin.cache.DomainCache;
@@ -82,7 +82,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
+import static org.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
  * The class Admin is the main class of the Administrator.

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.util.logging.web;
 
-import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mail.engine;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.mail.MailToSend;
 
 import javax.mail.Address;

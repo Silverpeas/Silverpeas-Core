@@ -29,10 +29,9 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.ScheduledJob;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import java.io.Serializable;
 import java.util.Date;
-import static com.silverpeas.scheduler.SchedulerProvider.*;
 
 /**
  * The QuartzSchedulerJob is, as its name implies, a job that will be scheduled within the Quartz

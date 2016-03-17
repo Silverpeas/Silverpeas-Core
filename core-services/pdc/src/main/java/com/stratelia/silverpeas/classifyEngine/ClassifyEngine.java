@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.JoinStatement;

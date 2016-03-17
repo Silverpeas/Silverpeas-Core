@@ -24,7 +24,7 @@
 
 package com.silverpeas.portlets;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.beans.admin.UserDetail;

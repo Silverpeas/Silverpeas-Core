@@ -21,11 +21,10 @@
 package org.silverpeas.servlets.credentials;
 
 import com.silverpeas.authentication.SilverpeasSessionOpener;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.util.crypto.CryptMD5;

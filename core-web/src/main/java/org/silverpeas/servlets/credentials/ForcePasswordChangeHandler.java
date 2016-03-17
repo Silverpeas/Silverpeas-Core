@@ -24,7 +24,7 @@
 
 package org.silverpeas.servlets.credentials;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.servlet.http.HttpServletRequest;

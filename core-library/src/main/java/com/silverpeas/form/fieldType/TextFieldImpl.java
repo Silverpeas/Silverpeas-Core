@@ -24,7 +24,7 @@
 package com.silverpeas.form.fieldType;
 
 import com.silverpeas.form.PagesContext;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;

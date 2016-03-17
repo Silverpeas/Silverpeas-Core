@@ -26,7 +26,7 @@ package org.silverpeas.language.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;

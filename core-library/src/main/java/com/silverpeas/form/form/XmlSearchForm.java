@@ -25,7 +25,7 @@
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.*;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.StringUtil;
 

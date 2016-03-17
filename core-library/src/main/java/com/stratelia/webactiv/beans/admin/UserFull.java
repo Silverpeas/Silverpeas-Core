@@ -21,7 +21,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;

@@ -23,7 +23,7 @@ package org.silverpeas.search.indexEngine.model;
 
 import org.silverpeas.search.indexEngine.IndexFileManager;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * The IndexEngineProxy class encapsulates the calls to the index engine server.

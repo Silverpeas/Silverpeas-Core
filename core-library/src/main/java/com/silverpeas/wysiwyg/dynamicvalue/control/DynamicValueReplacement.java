@@ -27,7 +27,7 @@ package com.silverpeas.wysiwyg.dynamicvalue.control;
 import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionFactory;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.LocalizationBundle;

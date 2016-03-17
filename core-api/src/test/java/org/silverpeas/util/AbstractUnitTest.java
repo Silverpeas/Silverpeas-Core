@@ -1,6 +1,6 @@
 package org.silverpeas.util;
 
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;

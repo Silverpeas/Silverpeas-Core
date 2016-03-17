@@ -49,7 +49,7 @@ import org.silverpeas.thread.ManagedThreadPool;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 

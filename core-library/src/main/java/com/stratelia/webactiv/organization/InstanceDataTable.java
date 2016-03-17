@@ -31,7 +31,7 @@ import java.util.List;
 
 import com.silverpeas.admin.components.Parameter;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.HashMap;
 

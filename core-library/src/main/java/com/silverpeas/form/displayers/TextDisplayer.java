@@ -32,7 +32,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;

@@ -26,7 +26,7 @@ package com.silverpeas.usernotification.delayed.scheduler;
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import javax.inject.Singleton;
 

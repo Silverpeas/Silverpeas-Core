@@ -24,7 +24,7 @@
 package org.silverpeas.chart.period;
 
 import org.silverpeas.chart.AbstractAxisChartItem;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.util.JSONCodec.JSONArray;
 import org.silverpeas.util.JSONCodec.JSONObject;
 

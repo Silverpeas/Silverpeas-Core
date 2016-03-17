@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.question.dao;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.question.model.QuestionPK;
 import com.stratelia.webactiv.question.model.QuestionRuntimeException;

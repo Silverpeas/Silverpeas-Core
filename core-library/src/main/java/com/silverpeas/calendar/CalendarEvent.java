@@ -26,6 +26,9 @@ package com.silverpeas.calendar;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.annotation.constraint.DateRange;
+import org.silverpeas.date.Datable;
+import org.silverpeas.date.Date;
+
 import java.io.Serializable;
 import java.net.URL;
 import static org.silverpeas.util.StringUtil.*;

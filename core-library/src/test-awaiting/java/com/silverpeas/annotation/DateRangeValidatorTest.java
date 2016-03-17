@@ -25,7 +25,7 @@
 package com.silverpeas.annotation;
 
 import com.silverpeas.annotation.constraint.DateRange;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import org.junit.runner.RunWith;
@@ -38,8 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.calendar.Date.*;
-import static com.silverpeas.calendar.DateTime.*;
+import static org.silverpeas.date.Date.*;
+import static org.silverpeas.date.DateTime.*;
 
 /**
  * Unit tests on the DateRangeValidator validation.

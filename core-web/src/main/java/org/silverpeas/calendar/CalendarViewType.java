@@ -25,7 +25,7 @@ package org.silverpeas.calendar;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.silverpeas.date.PeriodType;
+import org.silverpeas.date.period.PeriodType;
 
 /**
  * It defines the type of view mode of a calendar.

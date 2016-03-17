@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.calendar.service;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.model.ToDoHeader;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;

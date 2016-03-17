@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.pdc.model;
 
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
 import java.util.List;

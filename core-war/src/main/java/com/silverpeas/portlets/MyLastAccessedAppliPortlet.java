@@ -21,7 +21,7 @@
 package com.silverpeas.portlets;
 
 import com.stratelia.silverpeas.silverStatisticsPeas.control.SilverStatisticsPeasDAOAccesVolume;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;

@@ -34,7 +34,7 @@ import com.silverpeas.form.FieldDisplayer;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;

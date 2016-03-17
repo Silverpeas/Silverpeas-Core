@@ -26,7 +26,7 @@ package org.silverpeas.search.searchEngine.model;
 
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
 import org.silverpeas.search.indexEngine.model.IndexManager;

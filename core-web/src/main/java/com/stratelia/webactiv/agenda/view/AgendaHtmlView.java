@@ -23,7 +23,7 @@ package com.stratelia.webactiv.agenda.view;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;

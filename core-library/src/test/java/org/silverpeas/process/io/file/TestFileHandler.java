@@ -23,14 +23,11 @@
  */
 package org.silverpeas.process.io.file;
 
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
-import org.silverpeas.test.TestBeanContainer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,8 +47,6 @@ import static org.apache.commons.io.IOUtils.write;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Yohann Chastagnier

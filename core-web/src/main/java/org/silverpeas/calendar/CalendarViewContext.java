@@ -24,8 +24,8 @@
 package org.silverpeas.calendar;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.silverpeas.date.Period;
-import org.silverpeas.date.PeriodType;
+import org.silverpeas.date.period.Period;
+import org.silverpeas.date.period.PeriodType;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;

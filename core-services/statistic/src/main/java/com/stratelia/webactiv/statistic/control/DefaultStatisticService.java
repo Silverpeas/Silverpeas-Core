@@ -22,7 +22,7 @@ package com.stratelia.webactiv.statistic.control;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.statistic.dao.HistoryObjectDAO;
 import com.stratelia.webactiv.statistic.model.HistoryByUser;

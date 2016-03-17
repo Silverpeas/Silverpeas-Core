@@ -23,7 +23,7 @@
  */
 package org.silverpeas.persistence.model.jpa;
 
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
 

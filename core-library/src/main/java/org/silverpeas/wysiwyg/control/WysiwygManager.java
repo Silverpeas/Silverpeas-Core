@@ -23,7 +23,7 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

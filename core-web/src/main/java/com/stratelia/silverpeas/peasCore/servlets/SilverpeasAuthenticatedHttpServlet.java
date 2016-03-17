@@ -27,7 +27,7 @@ import com.silverpeas.authentication.SilverpeasSessionOpener;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.util.ResourceLocator;

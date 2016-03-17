@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;

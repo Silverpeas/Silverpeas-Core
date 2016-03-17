@@ -23,7 +23,7 @@
  */
 package com.silverpeas.comment.web;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;

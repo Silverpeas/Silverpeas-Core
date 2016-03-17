@@ -28,7 +28,7 @@ package com.silverpeas.pdcSubscription.control;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

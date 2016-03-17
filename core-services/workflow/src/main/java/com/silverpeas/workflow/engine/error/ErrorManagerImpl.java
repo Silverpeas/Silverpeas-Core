@@ -26,7 +26,7 @@ package com.silverpeas.workflow.engine.error;
 
 import java.util.Vector;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import com.silverpeas.workflow.api.*;
 import com.silverpeas.workflow.api.error.WorkflowError;

@@ -45,7 +45,7 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;

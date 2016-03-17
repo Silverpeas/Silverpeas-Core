@@ -24,7 +24,7 @@
 
 package org.silverpeas.util.i18n;
 
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.LocalizationBundle;
@@ -46,7 +46,7 @@ import java.util.StringTokenizer;
 /**
  * This class permits to manage the activated and displayed content languages.<br/>
  * Be careful, this class handles possible content languages and not possible user languages.<br/>
- * The different user languages are managed by {@link com.silverpeas.ui.DisplayI18NHelper}.
+ * The different user languages are managed by {@link DisplayI18NHelper}.
  */
 public class I18NHelper {
 

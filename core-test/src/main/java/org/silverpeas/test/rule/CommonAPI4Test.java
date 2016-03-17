@@ -24,7 +24,7 @@
 
 package org.silverpeas.test.rule;
 
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import org.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.rules.TestRule;

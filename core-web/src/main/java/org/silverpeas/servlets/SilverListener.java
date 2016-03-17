@@ -29,7 +29,7 @@ import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.InMemoryCacheService;

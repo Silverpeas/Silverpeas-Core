@@ -30,7 +30,7 @@ import org.silverpeas.core.importexport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
 import org.silverpeas.core.importexport.publication.XMLModelContentType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;

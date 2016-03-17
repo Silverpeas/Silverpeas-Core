@@ -24,7 +24,7 @@
 
 package com.silverpeas.portlets;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.todo.control.ToDoAccess;
 import com.stratelia.webactiv.todo.control.TodoException;

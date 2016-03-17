@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Compute the total size of a directory.

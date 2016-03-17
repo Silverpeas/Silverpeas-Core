@@ -43,7 +43,7 @@ import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.pdc.model.*;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.control.TreeService;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
@@ -61,7 +61,6 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
 
 import javax.inject.Singleton;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;

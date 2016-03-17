@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.annotation;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.management.ProcessExecutionContext;

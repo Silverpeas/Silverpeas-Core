@@ -44,7 +44,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
@@ -679,6 +679,6 @@ public class CommentRequesterIntegrationTest {
   }
 
   private Date aDate() {
-    return new com.silverpeas.calendar.Date(DUUMMY_DATE);
+    return new org.silverpeas.date.Date(DUUMMY_DATE);
   }
 }

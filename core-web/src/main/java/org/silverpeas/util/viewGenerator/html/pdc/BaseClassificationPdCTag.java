@@ -20,7 +20,6 @@
  */
 package org.silverpeas.util.viewGenerator.html.pdc;
 
-import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.node.control.NodeService;
@@ -33,7 +32,6 @@ import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -51,7 +49,6 @@ import static org.silverpeas.util.viewGenerator.html.pdc.PdcClassificationTagOpe
  */
 public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
-  private static final long serialVersionUID = -486056418553072731L;
   /**
    * The key with which is associated the language of the user carried in his session.
    */
@@ -211,7 +208,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    *
    * @param operation the operation to execute.
    * @return the javascript code to handle the classification onto the PdC.
-   * @throws if an error occurs during the processing of the plugin.
+   * @throws JspTagException if an error occurs during the processing of the plugin.
    */
   private String executePlugin(PdcClassificationTagOperation operation) throws JspTagException {
     String context = URLManager.getApplicationURL();
@@ -230,6 +227,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
         + "', positionLabel: '" + resources.getString("pdcPeas.position")
         + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
         + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
+        + "', canBeModified: '" + resources.getString("pdcPeas.predefined.update.allowed.true")
+        + "', cannotBeModified: '" + resources.getString("pdcPeas.predefined.update.allowed.false")
         + "'";
     if (operation != PREVIEW_CLASSIFICATION) {
       if (operation != READ_CLASSIFICATION) {
@@ -238,7 +237,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
           if (!isDefined(nodeId)) {
             nodeId = "0";
           }
-          NodeDetail node = getNodeService().getDetail(new NodePK(nodeId, componentId));
+          NodeDetail node = NodeService.get().getDetail(new NodePK(nodeId, componentId));
           MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
           String inLanguage = controller.getFavoriteLanguage();
           nodeName = node.getName(inLanguage);
@@ -316,14 +315,5 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   protected JspWriter getOut() {
     return getJspContext().getOut();
-  }
-
-  protected NodeService getNodeService() {
-    try {
-      return NodeService.get();
-    } catch (Exception ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
   }
 }

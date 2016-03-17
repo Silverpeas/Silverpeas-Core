@@ -35,7 +35,7 @@ import org.silverpeas.search.indexEngine.model.IndexEntry;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import static org.silverpeas.core.clipboard.ClipboardSelection.IndexFlavor;
 

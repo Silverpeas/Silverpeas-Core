@@ -1,4 +1,4 @@
-<%@ page import="com.silverpeas.ui.DisplayI18NHelper" %>
+<%@ page import="org.silverpeas.ui.DisplayI18NHelper" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas

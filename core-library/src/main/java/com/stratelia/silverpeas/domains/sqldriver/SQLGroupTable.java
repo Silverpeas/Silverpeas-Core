@@ -32,7 +32,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import org.silverpeas.util.DBUtil;

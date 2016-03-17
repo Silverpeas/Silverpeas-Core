@@ -21,12 +21,12 @@
 package com.silverpeas.ical;
 
 import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.calendar.Datable;
+import org.silverpeas.date.Datable;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;

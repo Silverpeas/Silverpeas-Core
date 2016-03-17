@@ -33,7 +33,7 @@ import com.silverpeas.workflow.api.model.DataFolder;
 import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.ProcessModel;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.mapping.Mapping;

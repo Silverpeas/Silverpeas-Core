@@ -29,7 +29,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import com.stratelia.webactiv.coordinates.persistence.CoordinatesDAO;
 import com.stratelia.webactiv.coordinates.model.Coordinate;

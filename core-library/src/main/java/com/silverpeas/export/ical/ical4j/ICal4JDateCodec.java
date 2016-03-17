@@ -25,8 +25,9 @@
 package com.silverpeas.export.ical.ical4j;
 
 import com.silverpeas.export.EncodingException;
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.Datable;
+import org.silverpeas.date.Date;
+import org.silverpeas.date.DateTime;
 import java.text.ParseException;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -81,7 +82,7 @@ public class ICal4JDateCodec {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICal());
           ((net.fortuna.ical4j.model.DateTime)iCal4JDate).setTimeZone(getTimeZone(aDate));
         }
-      } else if (aDate instanceof com.silverpeas.calendar.Date) {
+      } else if (aDate instanceof Date) {
         iCal4JDate = new net.fortuna.ical4j.model.Date(aDate.toICal());
       }
     } catch (ParseException ex) {

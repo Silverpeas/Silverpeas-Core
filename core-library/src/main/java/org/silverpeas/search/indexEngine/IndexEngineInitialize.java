@@ -20,7 +20,7 @@
  */
 package org.silverpeas.search.indexEngine;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;

@@ -1,7 +1,7 @@
 package com.silverpeas.util.security;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.HashMap;

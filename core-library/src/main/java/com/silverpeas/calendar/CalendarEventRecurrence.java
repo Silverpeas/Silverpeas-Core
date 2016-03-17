@@ -24,6 +24,8 @@
 
 package com.silverpeas.calendar;
 
+import org.silverpeas.date.Datable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

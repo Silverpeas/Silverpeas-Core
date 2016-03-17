@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.token;
 
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;

@@ -26,7 +26,7 @@ package org.silverpeas.authentication;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationPwdChangeNotAvailException;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 

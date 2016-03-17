@@ -31,7 +31,7 @@ import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.mapping.MappingException;
 
 import com.silverpeas.workflow.api.WorkflowException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 

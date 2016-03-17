@@ -33,7 +33,7 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;

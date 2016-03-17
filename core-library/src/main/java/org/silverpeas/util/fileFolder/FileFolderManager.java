@@ -31,7 +31,7 @@ package org.silverpeas.util.fileFolder;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ImageUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.UtilException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;

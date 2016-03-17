@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.node.control.dao;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.node.model.NodePK;

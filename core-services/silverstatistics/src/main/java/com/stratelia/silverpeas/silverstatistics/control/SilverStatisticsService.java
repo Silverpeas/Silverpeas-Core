@@ -25,16 +25,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
-
-import com.silverpeas.annotation.Service;
 
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
 import org.apache.commons.lang3.text.StrTokenizer;

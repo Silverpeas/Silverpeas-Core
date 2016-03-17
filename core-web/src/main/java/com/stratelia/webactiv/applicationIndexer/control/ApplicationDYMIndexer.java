@@ -29,7 +29,7 @@ import java.io.FilenameFilter;
 
 import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ServiceProvider;
 
 /**

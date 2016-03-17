@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganizationControllerProvider;

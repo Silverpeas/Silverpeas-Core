@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 public class GoToAgenda extends GoTo {
 

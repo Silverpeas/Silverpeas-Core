@@ -41,7 +41,7 @@ import org.silverpeas.core.importexport.publication.PublicationContentType;
 import org.silverpeas.core.importexport.publication.XMLModelContentType;
 import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.search.indexEngine.parser.htmlParser;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.search.indexEngine.parser.Parser;
 

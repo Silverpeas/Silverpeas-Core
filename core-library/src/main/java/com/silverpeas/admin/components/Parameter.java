@@ -38,8 +38,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * <p>

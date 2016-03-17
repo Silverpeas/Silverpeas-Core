@@ -25,7 +25,7 @@
 package com.silverpeas.workflow.api;
 
 import com.silverpeas.workflow.engine.WorkflowHub;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 

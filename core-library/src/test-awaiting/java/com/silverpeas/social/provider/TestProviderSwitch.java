@@ -157,11 +157,11 @@ public class TestProviderSwitch {
     switch1.setSocialStatusInterface(statusInterface);
     switch1.setSocialRelationShipsInterface(socialRelationShipsInterface);
 
-    com.silverpeas.calendar.Date begin = null;
-    com.silverpeas.calendar.Date end = null;
+    org.silverpeas.date.Date begin = null;
+    org.silverpeas.date.Date end = null;
     try {
-      begin = new com.silverpeas.calendar.Date(DateUtil.parse("2011/02/28"));
-      end = new com.silverpeas.calendar.Date(DateUtil.parse("2011/02/01"));
+      begin = new org.silverpeas.date.Date(DateUtil.parse("2011/02/28"));
+      end = new org.silverpeas.date.Date(DateUtil.parse("2011/02/01"));
     } catch (ParseException e) {
       e.printStackTrace();
     }

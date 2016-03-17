@@ -26,7 +26,7 @@ package com.silverpeas.admin.spaces;
 
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.ResourceLocator;

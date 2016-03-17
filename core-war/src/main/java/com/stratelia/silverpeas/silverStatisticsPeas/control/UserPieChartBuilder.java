@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.silverpeas.chart.pie.PieChart;

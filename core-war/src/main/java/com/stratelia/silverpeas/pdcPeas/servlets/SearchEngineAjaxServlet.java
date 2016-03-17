@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.JSONCodec;
 
 import javax.servlet.ServletException;

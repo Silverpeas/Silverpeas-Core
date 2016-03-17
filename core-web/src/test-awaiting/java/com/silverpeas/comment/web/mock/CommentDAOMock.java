@@ -32,7 +32,7 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 
 import java.util.ArrayList;
 import java.util.HashMap;

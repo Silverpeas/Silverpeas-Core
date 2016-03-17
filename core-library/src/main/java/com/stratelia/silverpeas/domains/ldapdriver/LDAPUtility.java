@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import org.silverpeas.util.exception.SilverpeasException;

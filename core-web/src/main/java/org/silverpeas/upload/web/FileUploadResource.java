@@ -27,7 +27,7 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;

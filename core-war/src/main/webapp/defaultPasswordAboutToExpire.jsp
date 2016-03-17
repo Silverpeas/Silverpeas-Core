@@ -29,7 +29,7 @@
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="com.silverpeas.ui.DisplayI18NHelper" %>
+<%@ page import="org.silverpeas.ui.DisplayI18NHelper" %>
 <%@ include file="headLog.jsp" %>
 
 <%

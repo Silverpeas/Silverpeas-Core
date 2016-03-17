@@ -24,7 +24,7 @@
 package com.silverpeas.form;
 
 import org.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 

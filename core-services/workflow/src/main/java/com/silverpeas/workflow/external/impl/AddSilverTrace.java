@@ -24,7 +24,7 @@
 
 package com.silverpeas.workflow.external.impl;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 public class AddSilverTrace extends ExternalActionImpl {
 

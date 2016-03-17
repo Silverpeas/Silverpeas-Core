@@ -20,10 +20,10 @@
  */
 package org.silverpeas.core.calendar.socialnetwork;
 
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.JournalHeader;

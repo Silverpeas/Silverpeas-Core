@@ -26,7 +26,6 @@ package org.silverpeas.util.viewGenerator.html.arrayPanes;
 
 import java.util.Collections;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 

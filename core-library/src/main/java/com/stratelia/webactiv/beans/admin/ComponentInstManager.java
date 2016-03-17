@@ -21,7 +21,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Parameter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;

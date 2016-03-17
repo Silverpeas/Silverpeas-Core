@@ -23,7 +23,7 @@
  */
 package org.silverpeas.notification.message;
 
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

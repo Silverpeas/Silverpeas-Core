@@ -24,8 +24,8 @@
 
 package org.silverpeas.util;
 
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.Datable;
+import org.silverpeas.date.DateTime;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.util.time.TimeUnit;
@@ -174,7 +174,7 @@ public class DateUtil {
   }
 
   private static boolean isNotDefined(Date date) {
-    return (date == null) || new com.silverpeas.calendar.Date(date).isNotDefined();
+    return (date == null) || new org.silverpeas.date.Date(date).isNotDefined();
   }
 
   public static String getInputDate(String dateDB, String language) throws ParseException {
@@ -736,7 +736,7 @@ public class DateUtil {
     if (withTime) {
       datable = new DateTime(aDate);
     } else {
-      datable = new com.silverpeas.calendar.Date(aDate);
+      datable = new org.silverpeas.date.Date(aDate);
     }
     return datable;
   }

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.util.FileRepositoryManager;
 import java.io.File;

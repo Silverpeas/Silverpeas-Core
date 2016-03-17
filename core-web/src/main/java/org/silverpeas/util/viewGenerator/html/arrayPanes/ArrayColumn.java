@@ -30,7 +30,6 @@ import static org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane.TARGET
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
 
 /**

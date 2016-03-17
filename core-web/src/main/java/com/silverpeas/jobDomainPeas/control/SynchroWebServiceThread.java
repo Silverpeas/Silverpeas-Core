@@ -27,7 +27,7 @@
 
 package com.silverpeas.jobDomainPeas.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 public class SynchroWebServiceThread extends SynchroThread {
 

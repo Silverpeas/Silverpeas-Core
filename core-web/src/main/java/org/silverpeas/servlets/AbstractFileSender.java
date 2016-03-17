@@ -23,7 +23,7 @@
  */
 package org.silverpeas.servlets;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.file.SilverpeasFile;

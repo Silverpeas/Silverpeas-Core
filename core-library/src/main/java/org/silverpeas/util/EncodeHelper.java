@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringEscapeUtils;
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.search.indexEngine.parser.rtfParser;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.indexEngine.parser.PipedParser;
 import org.apache.commons.io.IOUtils;
 

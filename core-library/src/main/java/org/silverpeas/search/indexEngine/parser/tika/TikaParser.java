@@ -28,7 +28,7 @@ import java.io.StringReader;
 
 import org.silverpeas.search.indexEngine.parser.Parser;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import org.apache.tika.Tika;
 

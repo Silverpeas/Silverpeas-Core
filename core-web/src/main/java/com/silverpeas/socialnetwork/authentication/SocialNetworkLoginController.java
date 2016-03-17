@@ -21,7 +21,6 @@
 package com.silverpeas.socialnetwork.authentication;
 
 import com.silverpeas.admin.service.UserService;
-import com.silverpeas.admin.service.UserServiceProvider;
 import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
@@ -29,7 +28,7 @@ import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import java.io.IOException;
 import javax.inject.Inject;

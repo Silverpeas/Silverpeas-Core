@@ -56,7 +56,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ContentEncryptionService;
 import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
 /**

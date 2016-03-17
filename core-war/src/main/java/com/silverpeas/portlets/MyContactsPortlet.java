@@ -26,7 +26,7 @@ package com.silverpeas.portlets;
 
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;
 

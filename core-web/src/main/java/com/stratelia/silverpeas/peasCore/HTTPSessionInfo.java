@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
 import java.util.Enumeration;

@@ -26,9 +26,8 @@ package org.silverpeas.core.comment.socialnetwork;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.calendar.Date;
+import org.silverpeas.date.Date;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentPublicationsInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -38,7 +37,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.accesscontrol.PublicationAccessControl;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.date.Period;
+import org.silverpeas.date.period.Period;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;

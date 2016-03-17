@@ -23,8 +23,8 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.calendar.Date;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.Date;
+import org.silverpeas.date.DateTime;
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;

@@ -25,7 +25,7 @@
 package org.silverpeas.admin.domain;
 
 import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;

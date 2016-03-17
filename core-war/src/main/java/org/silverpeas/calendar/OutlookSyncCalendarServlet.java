@@ -23,7 +23,7 @@ package org.silverpeas.calendar;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.Classification;

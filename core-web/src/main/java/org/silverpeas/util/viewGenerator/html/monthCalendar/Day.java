@@ -33,8 +33,6 @@
 
 package org.silverpeas.util.viewGenerator.html.monthCalendar;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.util.Calendar;
 import java.util.Date;
 

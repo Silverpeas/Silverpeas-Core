@@ -24,7 +24,7 @@
 
 package org.silverpeas.admin.domain;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.service.QuotaService;
 import org.silverpeas.util.ServiceProvider;

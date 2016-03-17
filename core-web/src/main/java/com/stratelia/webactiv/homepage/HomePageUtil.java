@@ -27,7 +27,7 @@
 
 package com.stratelia.webactiv.homepage;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.FromModule;
 import org.silverpeas.util.exception.SilverpeasException;
 

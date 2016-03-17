@@ -58,7 +58,7 @@ import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.FileRepositoryManager;

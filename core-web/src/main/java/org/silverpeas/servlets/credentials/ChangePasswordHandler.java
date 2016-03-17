@@ -26,7 +26,7 @@ package org.silverpeas.servlets.credentials;
 
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.authentication.AuthenticationServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;

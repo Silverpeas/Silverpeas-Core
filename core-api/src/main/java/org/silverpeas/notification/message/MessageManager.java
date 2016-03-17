@@ -23,7 +23,7 @@
  */
 package org.silverpeas.notification.message;
 
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;

@@ -21,7 +21,7 @@
 package org.silverpeas.search.indexEngine.model;
 
 import org.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

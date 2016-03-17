@@ -35,7 +35,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ImageUtil;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;

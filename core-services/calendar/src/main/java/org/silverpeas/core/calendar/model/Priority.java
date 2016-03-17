@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar.model;
 
 import java.io.Serializable;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;
 
 public class Priority implements Serializable, Comparable<Priority> {

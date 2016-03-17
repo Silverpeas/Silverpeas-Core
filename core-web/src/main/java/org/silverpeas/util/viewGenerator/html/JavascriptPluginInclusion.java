@@ -25,7 +25,7 @@ package org.silverpeas.util.viewGenerator.html;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.viewGenerator.html.JavascriptBundleProducer;
+import org.silverpeas.util.viewGenerator.html.JavascriptBundleProducer;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;

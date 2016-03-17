@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mail.engine;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailToSend;

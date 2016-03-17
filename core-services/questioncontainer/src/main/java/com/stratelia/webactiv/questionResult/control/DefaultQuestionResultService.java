@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.questionResult.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.answer.model.AnswerPK;
 import com.stratelia.webactiv.questionResult.dao.QuestionResultDAO;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;

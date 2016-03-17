@@ -23,7 +23,7 @@
  */
 package org.silverpeas.publication.dateReminder;
 
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

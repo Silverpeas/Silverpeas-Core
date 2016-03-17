@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 

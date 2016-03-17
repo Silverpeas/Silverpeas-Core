@@ -800,7 +800,7 @@
     </description>
     <name>confirmComponentSubscriptionNotificationSending</name>
     <tag-class>
-      com.stratelia.webactiv.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+      org.silverpeas.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -818,7 +818,7 @@
     </description>
     <name>confirmResourceSubscriptionNotificationSending</name>
     <tag-class>
-      com.stratelia.webactiv.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+      org.silverpeas.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -2112,7 +2112,7 @@
   <tag>
     <description>SCRIPT HTML TAG OVERRIDE</description>
     <name>script</name>
-    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.ScriptTag</tag-class>
+    <tag-class>org.silverpeas.util.viewGenerator.html.override.ScriptTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>
@@ -2135,7 +2135,7 @@
   <tag>
     <description>LINK HTML TAG OVERRIDE</description>
     <name>link</name>
-    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.LinkTag</tag-class>
+    <tag-class>org.silverpeas.util.viewGenerator.html.override.LinkTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>
@@ -2160,7 +2160,7 @@
       Tag to print out the full path of an application
     </description>
     <name>componentPath</name>
-    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.ComponentPathTag</tag-class>
+    <tag-class>org.silverpeas.util.viewGenerator.html.ComponentPathTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The unique identifier of the application</description>

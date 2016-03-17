@@ -42,8 +42,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.CalendarEventRecurrence;
-import com.silverpeas.calendar.Date;
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.Date;
+import org.silverpeas.date.DateTime;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;

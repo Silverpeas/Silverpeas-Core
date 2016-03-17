@@ -23,7 +23,7 @@ package org.silverpeas.core.calendar.model;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.DateUtil.*;

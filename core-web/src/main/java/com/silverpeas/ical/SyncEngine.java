@@ -27,7 +27,7 @@
 //
 package com.silverpeas.ical;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.sun.syndication.feed.synd.SyndFeed;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;

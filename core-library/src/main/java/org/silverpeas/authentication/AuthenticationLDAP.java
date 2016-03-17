@@ -41,7 +41,7 @@ import org.silverpeas.util.Charsets;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import com.novell.ldap.LDAPAttribute;

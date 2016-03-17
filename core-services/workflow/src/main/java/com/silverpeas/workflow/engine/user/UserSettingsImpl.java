@@ -32,7 +32,7 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.user.UserInfo;
 import com.silverpeas.workflow.api.user.UserSettings;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;

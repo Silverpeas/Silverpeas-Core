@@ -24,7 +24,7 @@
 
 package org.silverpeas.search.indexEngine.model;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

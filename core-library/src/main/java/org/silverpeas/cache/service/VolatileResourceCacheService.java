@@ -25,7 +25,7 @@ package org.silverpeas.cache.service;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.session.SessionInfo;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.ForeignPK;

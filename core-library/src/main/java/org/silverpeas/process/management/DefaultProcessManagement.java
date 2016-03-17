@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.management;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.process.SilverpeasProcess;
 import org.silverpeas.process.check.ProcessCheck;
 import org.silverpeas.process.session.ProcessSession;

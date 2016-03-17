@@ -22,7 +22,7 @@ package com.silverpeas.export.ical.ical4j;
 
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.CalendarEventRecurrence;
-import com.silverpeas.calendar.Datable;
+import org.silverpeas.date.Datable;
 import com.silverpeas.export.EncodingException;
 import com.silverpeas.export.ical.ICalCodec;
 

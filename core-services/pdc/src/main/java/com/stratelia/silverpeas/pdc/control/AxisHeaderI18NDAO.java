@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.pdc.control;
 
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;

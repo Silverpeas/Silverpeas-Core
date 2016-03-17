@@ -28,9 +28,8 @@ package com.stratelia.silverpeas.pdc.control;
 
 import java.util.List;
 
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * This object is used by the MainSessionController like userPanel, personalization. It allows to

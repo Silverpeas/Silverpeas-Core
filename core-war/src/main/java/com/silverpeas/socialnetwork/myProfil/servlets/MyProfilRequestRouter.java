@@ -27,7 +27,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
 import com.silverpeas.socialnetwork.user.model.SNFullUser;
-import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;

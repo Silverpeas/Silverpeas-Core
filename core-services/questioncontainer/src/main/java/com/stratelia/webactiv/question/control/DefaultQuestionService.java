@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.question.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.answer.control.AnswerService;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;
@@ -36,7 +36,6 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

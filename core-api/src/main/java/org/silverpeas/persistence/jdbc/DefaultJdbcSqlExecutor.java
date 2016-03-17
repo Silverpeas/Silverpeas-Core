@@ -24,7 +24,7 @@
 
 package org.silverpeas.persistence.jdbc;
 
-import com.silverpeas.calendar.DateTime;
+import org.silverpeas.date.DateTime;
 import org.silverpeas.util.pool.ConnectionPool;
 
 import javax.inject.Singleton;

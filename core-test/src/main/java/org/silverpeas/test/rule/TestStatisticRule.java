@@ -24,26 +24,12 @@
 
 package org.silverpeas.test.rule;
 
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.mockito.internal.util.MockUtil;
-import org.silverpeas.test.TestBeanContainer;
-import org.silverpeas.test.util.lang.TestSystemWrapper;
-import org.silverpeas.test.util.log.TestSilverpeasTrace;
-import org.silverpeas.thread.ManagedThreadPool;
-import org.silverpeas.util.lang.SystemWrapper;
 
-import javax.enterprise.concurrent.ManagedThreadFactory;
-import java.io.File;
 import java.util.logging.Logger;
-
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Yohann Chastagnier

@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.domains;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import org.silverpeas.initialization.Initialization;
 

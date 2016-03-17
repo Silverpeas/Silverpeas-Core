@@ -30,7 +30,7 @@ import org.apache.poi.hslf.extractor.PowerPointExtractor;
 
 import org.silverpeas.search.indexEngine.parser.Parser;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 /**
  * a pptParser uses POI to extract the text wich will be indexed

@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
 public class TagCloudDAO {

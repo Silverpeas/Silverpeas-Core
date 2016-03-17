@@ -23,7 +23,7 @@
  */
 package com.silverpeas.form.fieldType;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;

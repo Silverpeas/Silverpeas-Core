@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

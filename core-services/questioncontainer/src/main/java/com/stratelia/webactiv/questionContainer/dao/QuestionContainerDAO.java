@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.questionContainer.dao;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.questionContainer.model.Comment;
 import com.stratelia.webactiv.questionContainer.model.CommentPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;

@@ -24,7 +24,7 @@
 
 package com.silverpeas.ical;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;

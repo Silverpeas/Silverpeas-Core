@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.notification.JMSOperation;
 import org.silverpeas.util.ServiceProvider;
 
