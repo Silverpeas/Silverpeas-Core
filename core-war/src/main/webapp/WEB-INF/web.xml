@@ -165,10 +165,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </filter-mapping>
 
   <listener>
-    <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
+    <listener-class>org.silverpeas.web.bootstrap.SilverpeasContextBootStrapper</listener-class>
   </listener>
   <listener>
-    <listener-class>org.silverpeas.initialization.SilverpeasServiceInitializationListener</listener-class>
+    <listener-class>org.silverpeas.web.initialization.SilverpeasServiceInitializationListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.silverpeas.web.token.SessionSynchronizerTokenSetter</listener-class>
@@ -196,47 +196,47 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>FileServer</servlet-name>
-    <servlet-class>org.silverpeas.servlets.FileServer</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.FileServer</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>OnlineFileServer</servlet-name>
-    <servlet-class>org.silverpeas.servlets.OnlineFileServer</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.OnlineFileServer</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TempFileServer</servlet-name>
-    <servlet-class>org.silverpeas.servlets.TempFileServer</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.TempFileServer</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>RestOnlineFileServer</servlet-name>
-    <servlet-class>org.silverpeas.servlets.RestOnlineFileServer</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.RestOnlineFileServer</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToPublication</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToPublication</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToPublication</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToTopic</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToTopic</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToTopic</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToComponent</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToComponent</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToComponent</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToSpace</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToSpace</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToSpace</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToFile</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToFile</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToFile</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToDocument</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToDocument</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToDocument</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToVersion</servlet-name>
-    <servlet-class>org.silverpeas.servlets.GoToVersion</servlet-class>
+    <servlet-class>org.silverpeas.web.servlets.GoToVersion</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MainRequestRouter</servlet-name>
@@ -248,96 +248,96 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>POPUPRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.notificationserver.channel.popup.POPUPRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.notificationserver.channel.popup.POPUPRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SILVERMAILRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AlertUserPeasRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.alertUserPeas.servlets.AlertUserPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.alertuser.servlets.AlertUserPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ClipboardRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.clipboardPeas.servlets.ClipboardRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.clipboard.servlets.ClipboardRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GenericPanelPeasRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.genericPanelPeas.servlets.GenericPanelPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.genericpanel.servlets.GenericPanelPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobDomainPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobDomainPeasAjaxServlet</servlet-name>
-    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasAjaxServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasAjaxServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobDomainPeasGroupPathServlet</servlet-name>
-    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasGroupPathServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasGroupPathServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobDomainPeasComponentPathServlet</servlet-name>
-    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasComponentPathServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasComponentPathServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.jobManagerPeas.servlets.JobManagerPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.jobmanager.servlets.JobManagerPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobOrganizationPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.jobOrganizationPeas.servlets.JobOrganizationPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.joborganization.servlets.JobOrganizationPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobStartPagePeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.jobStartPagePeas.servlets.JobStartPagePeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.jobstartpage.servlets.JobStartPagePeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobSearchPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.jobSearchPeas.servlets.JobSearchPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.jobsearch.servlets.JobSearchPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>DragAndDrop</servlet-name>
-    <servlet-class>org.silverpeas.attachment.web.DragAndDrop</servlet-class>
+    <servlet-class>org.silverpeas.web.attachment.DragAndDrop</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ActifyToAttachment</servlet-name>
-    <servlet-class>org.silverpeas.attachment.web.ActifyToAttachment</servlet-class>
+    <servlet-class>org.silverpeas.web.attachment.ActifyToAttachment</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.PdcRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcUtilizationRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcUtilizationRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.PdcUtilizationRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcClassifyRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcClassifyRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.PdcClassifyRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcSearchRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcSearchRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.PdcSearchRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>CommunicationUserRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.communicationUser.servlets.CommunicationUserRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.communicationuser.servlets.CommunicationUserRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxCommunicationUserServlet</servlet-name>
-    <servlet-class>com.silverpeas.communicationUser.servlets.AjaxCommunicationUserServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.communicationuser.servlets.AjaxCommunicationUserServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcSubscriptionPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.pdcSubscriptionPeas.servlets.PdcSubscriptionPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.pdcsubscription.servlets.PdcSubscriptionPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository.</description>
     <servlet-name>Webdav</servlet-name>
-    <servlet-class>org.silverpeas.webdav.SilverpeasJcrWebdavServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.webdav.SilverpeasJcrWebdavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>
@@ -353,7 +353,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository for Office 2000.</description>
     <servlet-name>BasicWebdav</servlet-name>
-    <servlet-class>org.silverpeas.webdav.SilverpeasJcrWebdavServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.webdav.SilverpeasJcrWebdavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>
@@ -368,47 +368,47 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>PersoPeasRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.personalizationPeas.servlets.PersoPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.personalization.servlets.PersoPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxServletSilverpeasV5</servlet-name>
-    <servlet-class>com.silverpeas.lookV5.AjaxServletLookV5</servlet-class>
+    <servlet-class>org.silverpeas.web.look.AjaxServletLookV5</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxActionServlet</servlet-name>
-    <servlet-class>com.silverpeas.lookV5.AjaxActionServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.look.AjaxActionServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.lookV5.PersonalSpaceJSONServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.look.PersonalSpaceJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SelectionPeasRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.selectionPeas.servlets.SelectionPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.selection.servlets.SelectionPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SelectionPeasWrapper</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.selectionPeas.servlets.SelectionPeasWrapper</servlet-class>
+    <servlet-class>org.silverpeas.web.selection.servlets.SelectionPeasWrapper</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AgendaRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.agenda.servlets.AgendaRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.agenda.servlets.AgendaRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToAgenda</servlet-name>
-    <servlet-class>com.stratelia.webactiv.agenda.servlets.GoToAgenda</servlet-class>
+    <servlet-class>org.silverpeas.web.agenda.servlets.GoToAgenda</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AgendaRssServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.agenda.servlets.AgendaRssServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.agenda.servlets.AgendaRssServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SubscribeAgenda</servlet-name>
-    <servlet-class>com.stratelia.webactiv.agenda.servlets.SubscribeAgenda</servlet-class>
+    <servlet-class>org.silverpeas.web.agenda.servlets.SubscribeAgenda</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PortletContainerDesktopServlet</servlet-name>
-    <servlet-class>com.silverpeas.portlets.portal.SPDesktopServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.portlets.portal.SPDesktopServlet</servlet-class>
     <!-- <load-on-startup>1</load-on-startup> -->
   </servlet>
   <servlet>
@@ -438,79 +438,79 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>TodoRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.todo.servlets.TodoRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.todo.servlets.TodoRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MyLinksPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.myLinksPeas.servlets.MyLinksPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.mylinks.servlets.MyLinksPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>InterestCenterPeasRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.interestCenterPeas.servlets.InterestCenterPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.interests.servlets.InterestCenterPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>NotificationUserRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.notificationUser.servlets.NotificationUserRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.notificationuser.servlets.NotificationUserRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TemplateDesignerRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.templatedesigner.servlets.TemplateDesignerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TemplateDesignerAJAXServlet</servlet-name>
-    <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerAJAXServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.templatedesigner.servlets.TemplateDesignerAJAXServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>FormLayerServlet</servlet-name>
-    <servlet-class>com.silverpeas.templatedesigner.servlets.FormLayerServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.templatedesigner.servlets.FormLayerServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ThesaurusRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.thesaurusPeas.servlets.ThesaurusRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.thesaurus.servlets.ThesaurusRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>VersioningRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.attachment.web.VersioningRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.attachment.VersioningRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.SilverStatisticsPeasRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.silverstatistics.servlets.SilverStatisticsPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>FormTemplateRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.formTemplate.servlets.FormTemplateRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.formtemplate.servlets.FormTemplateRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>FileSharingRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.sharing.servlets.FileSharingRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.sharing.servlets.FileSharingRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GetInfoFromKey</servlet-name>
-    <servlet-class>com.silverpeas.sharing.servlets.GetInfoFromKeyServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.sharing.servlets.GetInfoFromKeyServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GetLinkFile</servlet-name>
-    <servlet-class>com.silverpeas.sharing.servlets.GetLinkFileServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.sharing.servlets.GetLinkFileServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ImportExportRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.importExportPeas.servlets.ImportExportRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.importexport.servlets.ImportExportRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ImportDragAndDrop</servlet-name>
-    <servlet-class>com.silverpeas.importExportPeas.servlets.ImportDragAndDrop</servlet-class>
+    <servlet-class>org.silverpeas.web.importexport.servlets.ImportDragAndDrop</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>WorkflowDesignerRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.workflowdesigner.servlets.WorkflowDesignerRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.workflowdesigner.servlets.WorkflowDesignerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>WebConnectionsRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.external.webConnections.servlets.WebConnectionsRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.external.webconnections.servlets.WebConnectionsRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AttachmentAjaxServlet</servlet-name>
-    <servlet-class>org.silverpeas.attachment.web.AjaxServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.attachment.AjaxServlet</servlet-class>
   </servlet>
   <!--
   <servlet>
@@ -528,7 +528,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
   <servlet>
     <servlet-name>AutocompleteServlet</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.AutocompleteServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TreeMenuAjaxServlet</servlet-name>
@@ -536,55 +536,55 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>PdcAjaxServlet</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcAjaxServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.PdcAjaxServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SearchEngineAjaxServlet</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.SearchEngineAjaxServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.pdc.servlets.SearchEngineAjaxServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>DirectoryRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.directory.servlets.DirectoryRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.directory.servlets.DirectoryRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ImageDisplay</servlet-name>
-    <servlet-class>com.silverpeas.directory.servlets.ImageDisplay</servlet-class>
+    <servlet-class>org.silverpeas.web.directory.servlets.ImageDisplay</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>InvitationJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ProfilRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.profil.servlets.ProfilRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.profil.servlets.ProfilRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MyProfilRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.MyProfilRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfilRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToMyProfile</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.GoToMyProfile</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.myprofil.servlets.GoToMyProfile</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MyProfilJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.JSONServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.myprofil.servlets.JSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MyContactProfilRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.myContactProfil.servlets.MyContactProfilRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.mycontactprofil.servlets.MyContactProfilRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>NewsFeedJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.newsFeed.servlets.NewsFeedJSONServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.newsfeed.servlets.NewsFeedJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>DirectoryJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.directory.servlets.DirectoryJSONServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.directory.servlets.DirectoryJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ThumbnailRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.thumbnail.servlets.ThumbnailRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.thumbnail.servlets.ThumbnailRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ExportServlet</servlet-name>
@@ -592,15 +592,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>AjaxServletRSS</servlet-name>
-    <servlet-class>com.silverpeas.lookV5.AjaxServletRSS</servlet-class>
+    <servlet-class>org.silverpeas.web.look.AjaxServletRSS</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AutoRedirectServlet</servlet-name>
-    <servlet-class>com.silverpeas.core.AutoRedirectServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.AutoRedirectServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>NodesJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.node.servlets.GetNodes</servlet-class>
+    <servlet-class>org.silverpeas.web.node.servlets.GetNodes</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SocialNetworkLoginController</servlet-name>
@@ -608,23 +608,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>MailExistsServlet</servlet-name>
-    <servlet-class>com.silverpeas.admin.MailExistsServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.admin.MailExistsServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>QaptchaServlet</servlet-name>
-    <servlet-class>com.silverpeas.admin.QaptchaServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.admin.QaptchaServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>LaunchWebdavEdition</servlet-name>
-    <servlet-class>org.silverpeas.attachment.web.LaunchWebdavEdition</servlet-class>
+    <servlet-class>org.silverpeas.web.attachment.LaunchWebdavEdition</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SubscriptionRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.subscription.servlets.SubscriptionRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.web.subscription.servlets.SubscriptionRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>OutlookSyncCalendarServlet</servlet-name>
-    <servlet-class>org.silverpeas.calendar.OutlookSyncCalendarServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.calendar.OutlookSyncCalendarServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TokenWebPageUpdater</servlet-name>

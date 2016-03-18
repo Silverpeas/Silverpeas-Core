@@ -25,8 +25,8 @@
 --%>
 
 <%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
-<%@page import="com.stratelia.silverpeas.notificationUser.Notification"%>
-<%@page import="com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController"%>
+<%@page import="org.silverpeas.web.notificationuser.Notification"%>
+<%@page import="org.silverpeas.web.notificationuser.control.NotificationUserSessionController"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

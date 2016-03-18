@@ -26,10 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.Facet"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.FacetEntryVO"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter"%>
+<%@ page import="org.silverpeas.web.pdc.control.PdcSearchSessionController"%>
+<%@ page import="org.silverpeas.web.pdc.vo.Facet"%>
+<%@ page import="org.silverpeas.web.pdc.vo.FacetEntryVO"%>
+<%@ page import="org.silverpeas.web.pdc.vo.ResultGroupFilter"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
 <%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>

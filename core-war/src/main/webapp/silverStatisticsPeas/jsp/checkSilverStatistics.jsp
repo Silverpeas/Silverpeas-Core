@@ -31,9 +31,9 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisAccessVO"%>
-<%@ page import="com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossStatisticVO"%>
-<%@ page import="com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO"%>
+<%@ page import="org.silverpeas.web.silverstatistics.vo.CrossAxisAccessVO"%>
+<%@ page import="org.silverpeas.web.silverstatistics.vo.CrossStatisticVO"%>
+<%@ page import="org.silverpeas.web.silverstatistics.vo.StatisticVO"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

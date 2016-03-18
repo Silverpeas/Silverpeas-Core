@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionController"%>
+<%@ page import="org.silverpeas.web.notificationserver.channel.popup.POPUPSessionController"%>
 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 
-<%@ page import="com.silverpeas.form.FormTemplateSessionController "%>
+<%@ page import="org.silverpeas.web.form.FormTemplateSessionController "%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 

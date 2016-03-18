@@ -32,7 +32,7 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.silverpeas.communicationUser.control.CommunicationUserSessionController"%>
+<%@ page import="org.silverpeas.web.communicationuser.control.CommunicationUserSessionController"%>
 <%@ page import="com.silverpeas.session.SessionInfo"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 

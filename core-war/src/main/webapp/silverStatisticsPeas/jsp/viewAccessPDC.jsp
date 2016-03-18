@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.web.silverstatistics.vo.StatisticVO" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

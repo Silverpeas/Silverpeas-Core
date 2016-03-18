@@ -20,7 +20,7 @@
  */
 package org.silverpeas.attachment.web;
 
-import org.silverpeas.webdav.SilverpeasJcrWebdavContext;
+import org.silverpeas.core.webdav.web.SilverpeasJcrWebdavContext;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheService;
 import org.silverpeas.cache.service.CacheServiceProvider;

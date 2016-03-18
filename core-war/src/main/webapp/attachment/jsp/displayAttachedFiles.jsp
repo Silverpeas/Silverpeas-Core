@@ -38,7 +38,7 @@
 <%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
-<%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
+<%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole" %>
 

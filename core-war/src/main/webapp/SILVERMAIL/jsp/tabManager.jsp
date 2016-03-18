@@ -1,6 +1,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="javax.servlet.jsp.JspWriter"%>
 <%@ page import="java.io.IOException"%>
+<%@ page import="org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController" %>
 
 <%!
 void displayBeginFrame(JspWriter out) throws IOException {

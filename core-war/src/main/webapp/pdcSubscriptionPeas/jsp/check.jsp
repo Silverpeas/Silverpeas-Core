@@ -32,7 +32,7 @@
     response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 <%@ page import="org.silverpeas.core.pdc.subscription.model.PdcSubscription" %>
-<%@ page import="com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController" %>
+<%@ page import="org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController" %>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Value" %>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

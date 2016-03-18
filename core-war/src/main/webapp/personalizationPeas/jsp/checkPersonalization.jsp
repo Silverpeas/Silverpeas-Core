@@ -31,7 +31,7 @@
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
 	response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController"%>
+<%@ page import="org.silverpeas.web.personalization.control.PersonalizationSessionController"%>
 <%@ page import="org.owasp.encoder.Encode"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>

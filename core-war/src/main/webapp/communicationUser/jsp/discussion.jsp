@@ -145,7 +145,7 @@ setInterval(checkMessage, 1000);
 			<textarea rows="6" name="msg" id="txtMsg" cols="60" onkeydown="checkSubmit(event);"></textarea>
         </td>
 		<td align="left">
-			<a href="javascript:onClick=sendMessage();"><img src="<%=resources.getIcon("communicationUser.chatroomSendMessage")%>" alt="<%=resources.getString("GML.validate")%>" title="<%=resources.getString("GML.validate")%>" border="0"></a>
+			<a href="javascript:onClick=sendMessage();"><img src="<%=resources.getIcon("ommunicationUser.chatroomSendMessage")%>" alt="<%=resources.getString("GML.validate")%>" title="<%=resources.getString("GML.validate")%>" border="0"></a>
 		</td>
 		<td width="100%">&nbsp;</td>
 	</tr>

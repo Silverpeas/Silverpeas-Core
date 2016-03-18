@@ -27,9 +27,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.socialnetwork.invitation.model.InvitationUser"%>
-<%@page import="com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONActions"%>
-<%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
+<%@page import="org.silverpeas.web.socialnetwork.invitation.model.InvitationUser"%>
+<%@page import="org.silverpeas.web.socialnetwork.invitation.servlets.InvitationJSONActions"%>
+<%@page import="org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>

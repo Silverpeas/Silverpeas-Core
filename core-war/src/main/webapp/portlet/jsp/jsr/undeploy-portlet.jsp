@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.portlets.portal.DriverUtil,
+<%@page import="org.silverpeas.web.portlets.portal.DriverUtil,
                 com.sun.portal.portletcontainer.driver.admin.AdminConstants" %>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button "%>

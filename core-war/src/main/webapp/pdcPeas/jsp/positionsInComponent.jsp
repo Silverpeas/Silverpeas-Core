@@ -30,7 +30,7 @@
 <%@ page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
 <%@ page import="org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager"%>
 <%@ page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcClassifySessionController"%>
+<%@ page import="org.silverpeas.web.pdc.control.PdcClassifySessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 

@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.WarBuilder4WarCore;
 import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasDAOConnexion;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ public class SilverStatisticsPeasDAOConnexionTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4WarCore.onWarForTestClass(SilverStatisticsPeasDAOConnexionTest.class)
         .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "com.stratelia.silverpeas.silverStatisticsPeas");
+          warBuilder.addPackages(true, "org.silverpeas.web.silverstatistics");
         }).build();
   }
 

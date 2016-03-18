@@ -37,7 +37,7 @@
 
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
-<%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
+<%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ include file="checkAttachment.jsp"%>
 <view:setConstant var="spinfire" constant="org.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />

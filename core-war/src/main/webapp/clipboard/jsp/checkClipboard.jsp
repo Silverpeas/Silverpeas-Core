@@ -1,4 +1,4 @@
-<%@ page import="com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController"%>
+<%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>

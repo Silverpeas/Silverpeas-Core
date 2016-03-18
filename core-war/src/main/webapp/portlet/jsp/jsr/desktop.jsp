@@ -141,7 +141,7 @@
   <c:url value="/portletAdmin?${DRIVER_SPACEID}=${spaceId}" var="actionUrl" />
   <form id="create-portlet" name="createForm" method="post" action="${actionUrl}">
     <c:set value="${sessionScope['com.silverpeas.portletcontainer.driver.admin.silverpeasSpaceId']}" var="silverpeasSpaceId"/>
-    <view:setConstant var="existingPortlets" constant="com.silverpeas.portlets.portal.DesktopConstants.AVAILABLE_PORTLET_WINDOWS"/>
+    <view:setConstant var="existingPortlets" constant="org.silverpeas.web.portlets.portal.DesktopConstants.AVAILABLE_PORTLET_WINDOWS"/>
     <c:set var="list" value="${sessionScope[existingPortlets]}"/>
     <table cellpadding="5">
       <tr>

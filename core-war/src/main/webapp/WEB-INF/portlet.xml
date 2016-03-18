@@ -32,7 +32,7 @@
         <description>Test portlet embarquee dans SP</description>
         <portlet-name>HelloSilverpeasPortlet</portlet-name>
         <display-name>HelloSilverpeasPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.HelloSilverpeasPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.HelloSilverpeasPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -74,7 +74,7 @@
         <description>Prochains evenements</description>
         <portlet-name>NextEventsPortlet</portlet-name>
         <display-name>NextEventsPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.NextEventsPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.NextEventsPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -98,7 +98,7 @@
         <description>Mes requetes favorites</description>
         <portlet-name>FavoriteQueriesPortlet</portlet-name>
         <display-name>FavoriteQueriesPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.FavoriteQueriesPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.FavoriteQueriesPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -116,7 +116,7 @@
         <description>Un composant</description>
         <portlet-name>ComponentInstancePortlet</portlet-name>
         <display-name>ComponentInstancePortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.ComponentInstancePortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.ComponentInstancePortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -138,7 +138,7 @@
         <description>Mes liens</description>
         <portlet-name>MyBookmarksPortlet</portlet-name>
         <display-name>MyBookmarksPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyBookmarksPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyBookmarksPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -154,7 +154,7 @@
     <description>Responsables de l'espace</description>
     <portlet-name>SpaceResponsiblesPortlet</portlet-name>
     <display-name>SpaceResponsiblesPortlet</display-name>
-    <portlet-class>com.silverpeas.portlets.SpaceResponsiblesPortlet</portlet-class>
+    <portlet-class>org.silverpeas.web.portlets.SpaceResponsiblesPortlet</portlet-class>
     <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
@@ -172,7 +172,7 @@
         <description>Mes taches</description>
         <portlet-name>MyTodosPortlet</portlet-name>
         <display-name>MyTodosPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyTodosPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyTodosPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -204,7 +204,7 @@
         <description>Mes fichiers reserves</description>
         <portlet-name>MyCheckOutFiles</portlet-name>
         <display-name>MyCheckOutFiles</display-name>
-        <portlet-class>com.silverpeas.portlets.MyCheckOutFiles</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyCheckOutFiles</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -220,7 +220,7 @@
         <description>Mes notifications</description>
         <portlet-name>MyNotificationsPortlet</portlet-name>
         <display-name>MyNotificationsPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyNotificationsPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyNotificationsPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -236,7 +236,7 @@
         <description>Portlet iFrame</description>
         <portlet-name>IFramePortlet</portlet-name>
         <display-name>IFramePortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.IFramePortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.IFramePortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -258,7 +258,7 @@
         <description>Mes brouillons</description>
         <portlet-name>MyDraftsPortlet</portlet-name>
         <display-name>MyDraftsPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyDrafts</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyDrafts</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -274,7 +274,7 @@
         <description>Dernieres publications consultees</description>
         <portlet-name>MyLastPubliReadPortlet</portlet-name>
         <display-name>MyLastPubliReadPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyLastPubliReadPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyLastPubliReadPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -291,7 +291,7 @@
         <description>Dernieres applications consultees</description>
         <portlet-name>MyLastAccessedAppliPortlet</portlet-name>
         <display-name>MyLastAccessedAppliPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyLastAccessedAppliPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyLastAccessedAppliPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -308,7 +308,7 @@
         <description>Mes contacts</description>
         <portlet-name>MyContactsPortlet</portlet-name>
         <display-name>MyContactsPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyContactsPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyContactsPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -325,7 +325,7 @@
         <description>Mon fil d'informations</description>
         <portlet-name>MyNewsFeedPortlet</portlet-name>
         <display-name>MyNewsFeedPortlet</display-name>
-        <portlet-class>com.silverpeas.portlets.MyNewsFeedPortlet</portlet-class>
+        <portlet-class>org.silverpeas.web.portlets.MyNewsFeedPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>

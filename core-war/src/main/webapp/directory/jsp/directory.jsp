@@ -35,13 +35,13 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<view:setConstant var="DIRECTORY_DEFAULT" constant="com.silverpeas.directory.control.DirectorySessionController.DIRECTORY_DEFAULT"/>
-<view:setConstant var="DIRECTORY_DOMAIN" constant="com.silverpeas.directory.control.DirectorySessionController.DIRECTORY_DOMAIN"/>
-<view:setConstant var="SORT_PERTINENCE" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_PERTINENCE"/>
-<view:setConstant var="SORT_ALPHA" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_ALPHA"/>
-<view:setConstant var="SORT_NEWEST" constant="com.silverpeas.directory.control.DirectorySessionController.SORT_NEWEST"/>
-<view:setConstant var="VIEW_ALL" constant="com.silverpeas.directory.control.DirectorySessionController.VIEW_ALL"/>
-<view:setConstant var="VIEW_CONNECTED" constant="com.silverpeas.directory.control.DirectorySessionController.VIEW_CONNECTED"/>
+<view:setConstant var="DIRECTORY_DEFAULT" constant="org.silverpeas.web.directory.control.DirectorySessionController.DIRECTORY_DEFAULT"/>
+<view:setConstant var="DIRECTORY_DOMAIN" constant="org.silverpeas.web.directory.control.DirectorySessionController.DIRECTORY_DOMAIN"/>
+<view:setConstant var="SORT_PERTINENCE" constant="org.silverpeas.web.directory.control.DirectorySessionController.SORT_PERTINENCE"/>
+<view:setConstant var="SORT_ALPHA" constant="org.silverpeas.web.directory.control.DirectorySessionController.SORT_ALPHA"/>
+<view:setConstant var="SORT_NEWEST" constant="org.silverpeas.web.directory.control.DirectorySessionController.SORT_NEWEST"/>
+<view:setConstant var="VIEW_ALL" constant="org.silverpeas.web.directory.control.DirectorySessionController.VIEW_ALL"/>
+<view:setConstant var="VIEW_CONNECTED" constant="org.silverpeas.web.directory.control.DirectorySessionController.VIEW_CONNECTED"/>
 
 <c:set var="breadcrumb" value="${requestScope.BreadCrumb}"/>
 <c:set var="pagination" value="${requestScope.pagination}"/>

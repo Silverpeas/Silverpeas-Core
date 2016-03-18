@@ -25,7 +25,6 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;

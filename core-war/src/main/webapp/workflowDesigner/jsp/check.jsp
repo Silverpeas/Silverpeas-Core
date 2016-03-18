@@ -55,7 +55,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.workflow.api.model.Roles" %>
 <%@ page import="com.silverpeas.workflow.api.model.State" %>
 <%@ page import="com.silverpeas.workflow.api.model.States" %>
-<%@ page import="com.silverpeas.workflowdesigner.control.WorkflowDesignerSessionController"%>
+<%@ page import="org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController"%>
+<%@ page import="org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController"%>
 
 <%@ page import=" org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>

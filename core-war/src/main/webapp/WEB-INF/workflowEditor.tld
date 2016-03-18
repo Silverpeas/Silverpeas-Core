@@ -11,7 +11,7 @@
     <description>Tag to display a set of Workflow Designer tabs.</description>
     <name>processModelTabs</name>
     <tag-class>
-      com.silverpeas.workflowdesigner.taglib.ProcessModelTabs
+      org.silverpeas.web.workflowdesigner.taglib.ProcessModelTabs
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -28,7 +28,7 @@
     <description>Tag to display a pair of OK/ Cancel buttons.</description>
     <name>buttonPane</name>
     <tag-class>
-      com.silverpeas.workflowdesigner.taglib.ProcessModelButtonPane
+      org.silverpeas.web.workflowdesigner.taglib.ProcessModelButtonPane
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -43,7 +43,7 @@
     <description>Tag to display a ContextualDesignations object ( a list of ContextualDesignations).</description>
     <name>contextualDesignationList</name>
     <tag-class>
-      com.silverpeas.workflowdesigner.taglib.ContextualDesignationList
+      org.silverpeas.web.workflowdesigner.taglib.ContextualDesignationList
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -92,7 +92,7 @@
     <description>Tag to display a list of RelatedUsers.</description>
     <name>relatedUsersList</name>
     <tag-class>
-      com.silverpeas.workflowdesigner.taglib.RelatedUserList
+      org.silverpeas.web.workflowdesigner.taglib.RelatedUserList
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -123,7 +123,7 @@
     <description>Tag to display a list of Items.</description>
     <name>itemList</name>
     <tag-class>
-      com.silverpeas.workflowdesigner.taglib.ItemList
+      org.silverpeas.web.workflowdesigner.taglib.ItemList
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>

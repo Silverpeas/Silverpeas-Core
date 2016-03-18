@@ -163,6 +163,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parsers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <artifactId>rome</artifactId>
       <groupId>rome</groupId>
     </dependency>
@@ -179,6 +189,12 @@
         <filtering>true</filtering>
       </resource>
     </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -50,7 +50,7 @@ public class SimpleDocumentAccessControllerIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4WarCore.onWarForTestClass(SimpleDocumentAccessControllerIntegrationTest.class)
         .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "com.stratelia.silverpeas.silverStatisticsPeas");
+          warBuilder.addPackages(true, "org.silverpeas.web.silverstatistics");
           warBuilder.addAsResource("org/silverpeas/publication/publicationSettings.properties");
         }).build();
   }

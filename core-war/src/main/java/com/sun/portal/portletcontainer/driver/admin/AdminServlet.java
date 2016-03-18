@@ -23,7 +23,7 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
-import com.silverpeas.portlets.portal.DesktopMessages;
+import org.silverpeas.web.portlets.portal.DesktopMessages;
 import com.silverpeas.portlets.portal.PortletWindowData;
 import com.silverpeas.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.silvertrace.SilverTrace;

@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.core.calendar.model.Classification" %>
 <%@ page import="org.silverpeas.core.calendar.model.Priority" %>
 <%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
-<%@ page import="com.stratelia.webactiv.todo.control.TodoUserException" %>
+<%@ page import="org.silverpeas.web.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
 <%@ page import="org.silverpeas.util.DateUtil" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>

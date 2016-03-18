@@ -29,7 +29,7 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
-<%@ page import="com.silverpeas.thumbnail.ThumbnailSessionController"%>
+<%@ page import="org.silverpeas.web.thumbnail.ThumbnailSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
