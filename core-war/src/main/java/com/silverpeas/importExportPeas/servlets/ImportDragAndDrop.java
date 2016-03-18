@@ -30,8 +30,8 @@ import org.silverpeas.core.importexport.report.ComponentReport;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.silvertrace.SilverTrace;
@@ -53,7 +53,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.List;
 
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * Class declaration

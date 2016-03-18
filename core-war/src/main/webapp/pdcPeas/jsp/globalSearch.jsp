@@ -31,6 +31,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.pdc.interests.model.Interests" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -637,10 +638,10 @@ if (!activeSelection.booleanValue())
                  <option value="-1"></option>
                  <%
                      String			requestId		= "";
-					 InterestCenter favoriteRequest = null;
+					 Interests favoriteRequest = null;
                      for (int i=0;i<favoriteRequests.size() ;i++ ){
 						selected		= "";
-						favoriteRequest = (InterestCenter) favoriteRequests.get(i);
+						favoriteRequest = (Interests) favoriteRequests.get(i);
 						requestId		= new Integer(favoriteRequest.getId()).toString();
 						if (requestId.equals(requestSelected)){
 							 selected = " selected=\"selected\"";

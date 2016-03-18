@@ -28,9 +28,13 @@
 <migration module="dbbuilder" order="0"
            xmlns="http://www.silverpeas.org/schema/migration">
 
-  <current version="003">
+  <current version="004">
     <script name="create_table.sql" type="sql"/>
   </current>
+
+  <upgrade fromVersion="003">
+    <script name="update_table.sql" type="sql"/>
+  </upgrade>
 
   <upgrade fromVersion="002">
     <script name="drop_table.sql" type="sql"/>

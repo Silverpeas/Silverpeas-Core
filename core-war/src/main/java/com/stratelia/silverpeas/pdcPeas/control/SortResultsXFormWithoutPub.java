@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.pdcPeas.control;
 
 import com.stratelia.silverpeas.contentManager.XMLFormFieldComparator;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;

@@ -24,7 +24,7 @@
 
 package com.silverpeas.glossary;
 
-import com.stratelia.silverpeas.treeManager.model.TreeNode;
+import org.silverpeas.core.pdc.tree.model.TreeNode;
 import java.util.Comparator;
 
 /**

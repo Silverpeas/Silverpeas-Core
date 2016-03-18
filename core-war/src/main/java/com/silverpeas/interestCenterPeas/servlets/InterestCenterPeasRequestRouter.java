@@ -27,7 +27,7 @@
 
 package com.silverpeas.interestCenterPeas.servlets;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
+import org.silverpeas.core.pdc.interests.model.Interests;
 import com.silverpeas.interestCenterPeas.control.InterestCenterSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -105,7 +105,7 @@ public class InterestCenterPeasRequestRouter
             icSC.removeICByPKs(iDs);
           }
         }
-        List<InterestCenter> icList = icSC.getICByUserId();
+        List<Interests> icList = icSC.getICByUserId();
         request.setAttribute("icList", icList);
         destination = "iCenterList.jsp";
       }

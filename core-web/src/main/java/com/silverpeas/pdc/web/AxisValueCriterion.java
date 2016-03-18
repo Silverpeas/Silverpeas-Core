@@ -24,7 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
+import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import java.util.ArrayList;
 import java.util.List;
 

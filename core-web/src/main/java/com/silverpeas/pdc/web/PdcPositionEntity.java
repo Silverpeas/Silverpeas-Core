@@ -24,13 +24,13 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.model.PdcAxisValue;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.thesaurus.ThesaurusException;
+import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import static org.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.WebEntity;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;

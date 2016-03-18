@@ -26,10 +26,10 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.net.URI;
@@ -39,8 +39,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.pdc.model.PdcClassification
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification
     .aPredefinedPdcClassificationForComponentInstance;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 

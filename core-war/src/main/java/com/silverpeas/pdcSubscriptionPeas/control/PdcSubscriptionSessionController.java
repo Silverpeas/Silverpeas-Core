@@ -20,8 +20,8 @@
  */
 package com.silverpeas.pdcSubscriptionPeas.control;
 
-import com.silverpeas.pdcSubscription.control.PdcSubscriptionService;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
+import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionService;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
@@ -29,11 +29,11 @@ import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.classification.Criteria;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -55,7 +55,7 @@ import java.util.List;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
-  private PDCSubscription currentPDCSubscription = null;
+  private PdcSubscription currentPdcSubscription = null;
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
@@ -164,24 +164,24 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     }
   }
 
-  public List<PDCSubscription> getUserPDCSubscription() throws RemoteException {
+  public List<PdcSubscription> getUserPDCSubscription() throws RemoteException {
     return getPdcSubscriptionService().getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
   }
 
-  public List<PDCSubscription> getUserPDCSubscription(int userId) throws RemoteException {
+  public List<PdcSubscription> getUserPDCSubscription(int userId) throws RemoteException {
     return getPdcSubscriptionService().getPDCSubscriptionByUserId(userId);
   }
 
-  public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException {
+  public PdcSubscription getPDCSubsriptionById(int id) throws RemoteException {
     return getPdcSubscriptionService().getPDCSubsriptionById(id);
   }
 
-  public void createPDCSubscription(PDCSubscription subscription)
+  public void createPDCSubscription(PdcSubscription subscription)
       throws RemoteException {
     subscription.setId(getPdcSubscriptionService().createPDCSubscription(subscription));
   }
 
-  public void updatePDCSubscription(PDCSubscription subscription) throws RemoteException {
+  public void updatePDCSubscription(PdcSubscription subscription) throws RemoteException {
     getPdcSubscriptionService().updatePDCSubscription(subscription);
   }
 
@@ -244,24 +244,24 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   public void close() {
   }
 
-  public PDCSubscription getCurrentPDCSubscription() {
-    return currentPDCSubscription;
+  public PdcSubscription getCurrentPdcSubscription() {
+    return currentPdcSubscription;
   }
 
-  public void setCurrentPDCSubscription(PDCSubscription currentPDCSubscription) {
-    this.currentPDCSubscription = currentPDCSubscription;
+  public void setCurrentPdcSubscription(PdcSubscription currentPdcSubscription) {
+    this.currentPdcSubscription = currentPdcSubscription;
   }
 
   public void createPDCSubscription(String name, final List<? extends Criteria> criteria) throws
       RemoteException {
-    PDCSubscription subscription =
-        new PDCSubscription(-1, name, criteria, Integer.parseInt(getUserId()));
+    PdcSubscription subscription =
+        new PdcSubscription(-1, name, criteria, Integer.parseInt(getUserId()));
     createPDCSubscription(subscription);
   }
 
   public void updateCurrentSubscription(String name, final List<? extends Criteria> criteria) throws
       RemoteException {
-    PDCSubscription subscription = getCurrentPDCSubscription();
+    PdcSubscription subscription = getCurrentPdcSubscription();
     if (StringUtil.isDefined(name)) {
       subscription.setName(name);
     }
@@ -270,10 +270,10 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     updatePDCSubscription(subscription);
   }
 
-  public PDCSubscription setAsCurrentPDCSubscription(String subscriptionId) throws RemoteException {
+  public PdcSubscription setAsCurrentPDCSubscription(String subscriptionId) throws RemoteException {
     int id = Integer.valueOf(subscriptionId);
-    PDCSubscription pdcSubscription = getPDCSubsriptionById(id);
-    setCurrentPDCSubscription(pdcSubscription);
+    PdcSubscription pdcSubscription = getPDCSubsriptionById(id);
+    setCurrentPdcSubscription(pdcSubscription);
     return pdcSubscription;
   }
 }

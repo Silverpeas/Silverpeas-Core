@@ -24,11 +24,11 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.thesaurus.ThesaurusException;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import com.silverpeas.web.WebEntity;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.exception.DecodingException;
 

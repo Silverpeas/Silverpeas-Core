@@ -29,7 +29,7 @@ import org.silverpeas.core.importexport.versioning.DocumentsType;
 
 import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
 import com.silverpeas.node.importexport.NodePositionsType;
-import com.silverpeas.pdc.importExport.PdcPositionsType;
+import org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
 
 import com.stratelia.webactiv.publication.model.PublicationDetail;

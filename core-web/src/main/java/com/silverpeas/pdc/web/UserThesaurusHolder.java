@@ -24,9 +24,9 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.thesaurus.control.ThesaurusManager;
-import com.silverpeas.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.Collection;
  */
 public class UserThesaurusHolder {
 
-  private ThesaurusManager thesaurus = com.silverpeas.pdc.PdcServiceProvider.getThesaurusManager();
+  private ThesaurusManager thesaurus = org.silverpeas.core.pdc.PdcServiceProvider.getThesaurusManager();
   private UserDetail user;
 
   public static UserThesaurusHolder holdThesaurus(final UserDetail user) {

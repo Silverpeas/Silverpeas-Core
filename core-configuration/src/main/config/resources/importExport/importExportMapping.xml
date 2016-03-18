@@ -43,7 +43,7 @@
     <castor:field name="repositoriesType" type="RepositoriesType">
       <castor:bind-xml name="sp:repositories" node="element"/>
     </castor:field>
-    <castor:field name="pdcType" type="com.silverpeas.pdc.importExport.PdcType">
+    <castor:field name="pdcType" type="org.silverpeas.core.pdc.pdc.importexport.PdcType">
       <castor:bind-xml name="sp:pdc" node="element"/>
     </castor:field>
     <castor:field name="nodeTreesType" type="com.silverpeas.node.importexport.NodeTreesType">
@@ -82,7 +82,7 @@
     <castor:field name="nodePositionsType" type="com.silverpeas.node.importexport.NodePositionsType">
       <castor:bind-xml name="sp:topicPositions" node="element"/>
     </castor:field>
-    <castor:field name="pdcPositionsType" type="com.silverpeas.pdc.importExport.PdcPositionsType">
+    <castor:field name="pdcPositionsType" type="org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType">
       <castor:bind-xml name="sp:pdcPositions" node="element"/>
     </castor:field>
     <castor:field name="coordinatesPositionsType" type="org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType">
@@ -249,9 +249,9 @@
       <castor:bind-xml name="explicitPath" node="attribute"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.silverpeas.pdc.importExport.PdcPositionsType">
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType">
     <castor:map-to xml="pdcPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listClassifyPosition" type="com.stratelia.silverpeas.pdc.model.ClassifyPosition" collection="arraylist">
+    <castor:field name="listClassifyPosition" type="org.silverpeas.core.pdc.pdc.model.ClassifyPosition" collection="arraylist">
       <castor:bind-xml name="sp:pdcPosition" node="element"/>
     </castor:field>
   </castor:class>
@@ -297,13 +297,13 @@
       <castor:bind-xml name="path" node="attribute"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.stratelia.silverpeas.pdc.model.ClassifyPosition">
+  <castor:class name="org.silverpeas.core.pdc.pdc.model.ClassifyPosition">
     <castor:map-to xml="pdcPosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listClassifyValue" type="com.stratelia.silverpeas.pdc.model.ClassifyValue" collection="arraylist">
+    <castor:field name="listClassifyValue" type="org.silverpeas.core.pdc.pdc.model.ClassifyValue" collection="arraylist">
       <castor:bind-xml name="sp:axisPosition" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.stratelia.silverpeas.pdc.model.ClassifyValue">
+  <castor:class name="org.silverpeas.core.pdc.pdc.model.ClassifyValue">
     <castor:map-to xml="axisPosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="axisId">
       <castor:bind-xml name="axisId" node="attribute"/>
@@ -354,13 +354,13 @@
       <castor:bind-xml name="sp:topic" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.silverpeas.pdc.importExport.PdcType">
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.PdcType">
     <castor:map-to xml="pdc" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listAxisType" type="com.silverpeas.pdc.importExport.AxisType" collection="arraylist">
+    <castor:field name="listAxisType" type="org.silverpeas.core.pdc.pdc.importexport.AxisType" collection="arraylist">
       <castor:bind-xml name="sp:axis" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.silverpeas.pdc.importExport.AxisType">
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.AxisType">
     <castor:map-to xml="axis" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="id">
       <castor:bind-xml name="id" node="attribute"/>
@@ -371,11 +371,11 @@
     <castor:field name="path" type="string">
       <castor:bind-xml name="pdcValuePath" node="attribute"/>
     </castor:field>
-    <castor:field name="listPdcValueType" type="com.silverpeas.pdc.importExport.PdcValueType" collection="arraylist">
+    <castor:field name="listPdcValueType" type="org.silverpeas.core.pdc.pdc.importexport.PdcValueType" collection="arraylist">
       <castor:bind-xml name="sp:pdcValue" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.silverpeas.pdc.importExport.PdcValueType">
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.PdcValueType">
     <castor:map-to xml="pdcValue" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="path" type="string">
       <castor:bind-xml name="pdcValuePath" node="attribute"/>
@@ -383,7 +383,7 @@
     <castor:field name="name" type="string">
       <castor:bind-xml name="sp:name" node="element"/>
     </castor:field>
-    <castor:field name="listPdcValueType" type="com.silverpeas.pdc.importExport.PdcValueType" collection="arraylist">
+    <castor:field name="listPdcValueType" type="org.silverpeas.core.pdc.pdc.importexport.PdcValueType" collection="arraylist">
       <castor:bind-xml name="sp:pdcValue" node="element"/>
     </castor:field>
   </castor:class>

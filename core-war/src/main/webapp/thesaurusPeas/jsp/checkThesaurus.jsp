@@ -31,11 +31,11 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
-<%@ page import="com.silverpeas.thesaurus.model.Jargon"%>
-<%@ page import="com.silverpeas.thesaurus.model.Vocabulary"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.model.Vocabulary"%>
 <%@ page import="com.silverpeas.thesaurusPeas.control.ThesaurusSessionController"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.AxisHeader"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.AxisHeader"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.Value"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>

@@ -24,9 +24,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.interestCenter.InterestCenterRuntimeException;
-import com.silverpeas.interestCenter.control.InterestCenterService;
-import com.silverpeas.interestCenter.model.InterestCenter;
+import org.silverpeas.core.pdc.interests.model.Interests;
+import org.silverpeas.core.pdc.interests.service.InterestsRuntimeException;
+import org.silverpeas.core.pdc.interests.service.InterestsService;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -35,11 +35,11 @@ import org.silverpeas.util.ServiceProvider;
 
 public class InterestCenterSessionController extends AbstractComponentSessionController {
 
-  private InterestCenterService interestCS =
-      ServiceProvider.getService(InterestCenterService.class);
+  private InterestsService interestCS =
+      ServiceProvider.getService(InterestsService.class);
 
   /**
-   * Constructor Creates new InterestCenter Session Controller
+   * Constructor Creates new Interests Session Controller
    */
   public InterestCenterSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -54,46 +54,46 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
    */
   private void checkServiceInjection() {
     if (interestCS == null) {
-      throw new InterestCenterRuntimeException(
+      throw new InterestsRuntimeException(
           "InterestCenterSessionController.checkServiceInjection()", "",
           "root.EX_CANT_GET_REMOTE_OBJECT");
     }
   }
 
   /**
-   * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
+   * Method getInterestsByUserId returns ArrayList of all Interests objects for user given by userId
    */
-  public List<InterestCenter> getICByUserId() throws RemoteException {
+  public List<Interests> getICByUserId() throws RemoteException {
     checkServiceInjection();
-    return interestCS.getICByUserID(Integer.parseInt(getUserId()));
+    return interestCS.getInterestsByUserId(Integer.parseInt(getUserId()));
   }
 
   /**
-   * Method getICByPK returns InterestCenter object by pk
+   * Method getInterestsByPK returns Interests object by pk
    */
-  public InterestCenter getICByPK(int pk) throws RemoteException {
+  public Interests getICByPK(int pk) throws RemoteException {
     checkServiceInjection();
-    return interestCS.getICByID(pk);
+    return interestCS.getInterestsById(pk);
   }
 
   /**
-   * Method createIC creates new InterestCenter
+   * Method createInterests creates new Interests
    */
-  public void createIC(InterestCenter icToCreate) throws RemoteException {
+  public void createIC(Interests icToCreate) throws RemoteException {
     checkServiceInjection();
-    interestCS.createIC(icToCreate);
+    interestCS.createInterests(icToCreate);
   }
 
   /**
-   * Method updateIC updates existing InterestCenter
+   * Method updateInterests updates existing Interests
    */
-  public void updateIC(InterestCenter icToUpdate) throws RemoteException {
+  public void updateIC(Interests icToUpdate) throws RemoteException {
     checkServiceInjection();
-    interestCS.updateIC(icToUpdate);
+    interestCS.updateInterests(icToUpdate);
   }
 
   /**
-   * Method removeICByPKs removes InterestCenter objects corresponding to PKs from given ArrayList
+   * Method removeICByPKs removes Interests objects corresponding to PKs from given ArrayList
    */
   public void removeICByPKs(String[] iDs) throws RemoteException {
     checkServiceInjection();
@@ -101,20 +101,20 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
     for (String id : iDs) {
       pkToRemove.add(Integer.valueOf(id));
     }
-    interestCS.removeICByPK(pkToRemove, getUserId());
+    interestCS.removeInterestsById(pkToRemove, getUserId());
   }
 
   /**
-   * Method removeICByPK removes InterestCenter object corresponding to given PK
+   * Method removeInterestsById removes Interests object corresponding to given PK
    */
   public void removeICByPK(int pk) throws RemoteException {
     checkServiceInjection();
-    interestCS.removeICByPK(pk);
+    interestCS.removeInterestsById(pk);
   }
 
   public boolean isICExists(String nameIC) throws RemoteException {
-    List<InterestCenter> icList = getICByUserId();
-    for (InterestCenter ic : icList) {
+    List<Interests> icList = getICByUserId();
+    for (Interests ic : icList) {
       if (nameIC.equals(ic.getName())) {
         return true;
       }

@@ -33,17 +33,17 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 
 <!-- import java -->
-<%@ page import="com.silverpeas.interestCenter.model.InterestCenter"%>
-<%@ page import="com.silverpeas.thesaurus.ThesaurusException"%>
-<%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
-<%@ page import="com.silverpeas.thesaurus.model.Jargon"%>
+<%@ page import="org.silverpeas.core.pdc.interests.model.Interests"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
 <%@ page import="com.stratelia.silverpeas.contentManager.GlobalSilverContent"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.model.QueryParameters"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.SearchContext"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.SearchCriteria"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.Value"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.GlobalSilverResult"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.QueryParameters"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>

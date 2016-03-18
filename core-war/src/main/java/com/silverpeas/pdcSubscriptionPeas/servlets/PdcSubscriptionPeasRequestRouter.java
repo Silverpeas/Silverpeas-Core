@@ -21,10 +21,10 @@
 package com.silverpeas.pdcSubscriptionPeas.servlets;
 
 import com.silverpeas.pdc.web.AxisValueCriterion;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
+import org.silverpeas.core.pdc.classification.Criteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -114,11 +114,11 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
           pdcSC.deleteComponentSubscription(subscriptions);
         }
         destination = getDestination("ViewSubscriptionComponent", pdcSC, request);
-      } else if (function.startsWith("PDCSubscription")) {
+      } else if (function.startsWith("PdcSubscription")) {
         String subscriptionId = request.getParameter("pdcSId");
         if (StringUtil.isDefined(subscriptionId)) {
-          PDCSubscription pdcSubscription = pdcSC.setAsCurrentPDCSubscription(subscriptionId);
-          request.setAttribute("PDCSubscription", pdcSubscription);
+          PdcSubscription pdcSubscription = pdcSC.setAsCurrentPDCSubscription(subscriptionId);
+          request.setAttribute("PdcSubscription", pdcSubscription);
           request.setAttribute("PDCSubscriptionName", pdcSubscription.getName());
           request.setAttribute("IsNewPDCSubscription", false);
         } else {
@@ -171,7 +171,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
         pdcSC.removeICByPK(ids_i);
       }
     }
-    List<PDCSubscription> list = pdcSC.getUserPDCSubscription();
+    List<PdcSubscription> list = pdcSC.getUserPDCSubscription();
 
     return doInitSubscrListRequest(request, pdcSC, list);
   }
@@ -184,7 +184,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
       throws Exception {
     request.setAttribute("action", "showUserSubscriptions");
     request.setAttribute("userId", String.valueOf(userId));
-    List<PDCSubscription> list = pdcSC.getUserPDCSubscription(userId);
+    List<PdcSubscription> list = pdcSC.getUserPDCSubscription(userId);
     return doInitSubscrListRequest(request, pdcSC, list);
   }
 
@@ -193,15 +193,15 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
    * <code>Request</code> initialization for furure use in subscriptionList.jsp
    *
    * @param request a <code>HttpServletRequest</code> to be forwarded
-   * @param subscriptions a list of loaded PDCSubscription to be shown
+   * @param subscriptions a list of loaded PdcSubscription to be shown
    * @return jsp name
    */
   private String doInitSubscrListRequest(HttpServletRequest request,
-      PdcSubscriptionSessionController pdcSC, List<PDCSubscription> subscriptions)
+      PdcSubscriptionSessionController pdcSC, List<PdcSubscription> subscriptions)
       throws Exception {
     request.setAttribute("subscriptionList", subscriptions);
     List pathContext = new ArrayList();
-    for (PDCSubscription subscription : subscriptions) {
+    for (PdcSubscription subscription : subscriptions) {
       pathContext.add(pdcSC.getPathCriterias(subscription.getPdcContext()));
     }
     request.setAttribute("PathContext", pathContext);

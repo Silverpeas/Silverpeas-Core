@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
+import org.silverpeas.core.pdc.interests.model.Interests;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.util.DateUtil;
@@ -50,7 +50,7 @@ public class InterestCentersHelper {
     String mode = request.getParameter("mode");
     // if mode is SaveRequest it saves whole search request to DB
     if ("SaveRequest".equals(mode)) {
-      InterestCenter ic = new InterestCenter();
+      Interests ic = new Interests();
       ic.setName(request.getParameter("requestName"));
       ic.setQuery(request.getParameter("query"));
       ic.setWorkSpaceID(request.getParameter("spaces"));

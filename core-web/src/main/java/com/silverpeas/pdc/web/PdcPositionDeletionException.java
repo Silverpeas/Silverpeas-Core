@@ -24,7 +24,7 @@
 
 package com.silverpeas.pdc.web;
 
-import com.stratelia.silverpeas.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 
 /**
  * An exception that is thrown when a position onto a PdC cannot be deleted within a given context

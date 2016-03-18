@@ -24,10 +24,10 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.silverpeas.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdcPeas.control.PdcClassifySessionController;
 import com.stratelia.silverpeas.pdcPeas.control.PdcFieldPositionsManager;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;

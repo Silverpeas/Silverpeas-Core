@@ -24,8 +24,8 @@
 
 package com.silverpeas.portlets;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
-import com.silverpeas.interestCenter.util.InterestCenterManager;
+import org.silverpeas.core.pdc.interests.model.Interests;
+import org.silverpeas.core.pdc.interests.service.InterestsManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;
 
@@ -42,7 +42,7 @@ public class FavoriteQueriesPortlet extends GenericPortlet implements FormNames 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    Iterator<InterestCenter> iCentersList = InterestCenterManager.getInstance().getICByUserId(
+    Iterator<Interests> iCentersList = InterestsManager.getInstance().getInterestsByUserId(
         Integer.parseInt(UserDetail.getCurrentRequester().getId())).iterator();
 
     request.setAttribute("Queries", iCentersList);

@@ -24,7 +24,7 @@ import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.MassiveReport;
-import com.silverpeas.pdc.importExport.PdcImportExport;
+import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
@@ -41,7 +41,7 @@ public class MassiveDocumentImport {
     return ServiceProvider.getService(MassiveDocumentImport.class);
   }
 
-  private MassiveDocumentImport() {
+  protected MassiveDocumentImport() {
   }
 
   /**

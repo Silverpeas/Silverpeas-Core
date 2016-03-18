@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import java.util.List;
 
 /**

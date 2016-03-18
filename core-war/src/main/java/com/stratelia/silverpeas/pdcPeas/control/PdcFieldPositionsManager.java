@@ -27,10 +27,10 @@ package com.stratelia.silverpeas.pdcPeas.control;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.form.displayers.PdcFieldDisplayer;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 
 /**
  * Manages the positions of a PDC field.

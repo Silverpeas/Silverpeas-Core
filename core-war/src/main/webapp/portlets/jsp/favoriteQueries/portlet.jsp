@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.interestCenter.model.InterestCenter"%>
+<%@page import="org.silverpeas.core.pdc.interests.model.Interests"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.net.URLEncoder"%>
@@ -51,7 +51,7 @@ else
 	int j = 0;
 	while (queries.hasNext())
 	{
-		InterestCenter ic = (InterestCenter) queries.next();
+		Interests ic = (Interests) queries.next();
 		if (j == 0)
 			out.println("<tr>");
 		out.println("<td width='50%'>&#149; <a href='" + icLink + ic.getId() + "'>" + ic.getName() + "</a></td>");

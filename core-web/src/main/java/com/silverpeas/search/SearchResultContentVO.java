@@ -24,7 +24,7 @@
 
 package com.silverpeas.search;
 
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.util.MultiSilverpeasBundle;
 
 /**

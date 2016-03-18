@@ -26,8 +26,8 @@ package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.thesaurus.model.Jargon;
-import com.stratelia.silverpeas.pdc.model.PdcException;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 
 public class ThesaurusHelper {

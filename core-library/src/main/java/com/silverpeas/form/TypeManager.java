@@ -317,7 +317,7 @@ public class TypeManager {
           setDisplayer(className, typeName, displayerName, "default".equals(displayerName));
         }
       }
-    } catch (MissingResourceException e) {
+    } catch (Exception e) {
       throw new FormFatalException("TypeManager", "form.EXP_MISSING_DISPLAYER_PROPERTIES",
           "org.silverpeas.form.settings.types", e);
     }

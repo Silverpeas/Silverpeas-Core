@@ -34,7 +34,7 @@ import com.silverpeas.search.SearchResultContentVO;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

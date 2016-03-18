@@ -36,17 +36,17 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.containerManager.ContainerWorkspace"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
 <%@ page import="com.stratelia.silverpeas.contentManager.SilverContentInterface"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Axis"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.AxisHeader"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyPosition"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.Axis"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.AxisHeader"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyPosition"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyValue"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
 
 
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.UsedAxis"%>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.SearchContext"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.SearchCriteria"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.UsedAxis"%>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.Value"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

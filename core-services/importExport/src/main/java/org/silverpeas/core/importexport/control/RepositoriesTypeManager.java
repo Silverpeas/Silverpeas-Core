@@ -27,7 +27,7 @@ import org.silverpeas.core.importexport.model.RepositoryType;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
-import com.silverpeas.pdc.importExport.PdcImportExport;
+import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
 import org.silverpeas.core.importexport.publication.XMLModelContentType;
 import org.silverpeas.silvertrace.SilverTrace;

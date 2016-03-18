@@ -24,17 +24,17 @@
 
 package com.silverpeas.thesaurusPeas.control;
 
-import com.silverpeas.pdc.PdcServiceProvider;
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.thesaurus.control.ThesaurusService;
-import com.silverpeas.thesaurus.model.Jargon;
-import com.silverpeas.thesaurus.model.Synonym;
-import com.silverpeas.thesaurus.model.Vocabulary;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.Synonym;
+import org.silverpeas.core.pdc.thesaurus.model.Vocabulary;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.Axis;
+import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

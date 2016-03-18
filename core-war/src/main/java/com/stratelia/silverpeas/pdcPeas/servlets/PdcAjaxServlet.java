@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.silverpeas.form.displayers.PdcFieldDisplayer;
+import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

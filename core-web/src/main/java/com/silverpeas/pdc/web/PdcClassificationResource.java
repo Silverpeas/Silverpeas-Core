@@ -29,8 +29,8 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;

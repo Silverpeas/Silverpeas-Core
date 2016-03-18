@@ -175,9 +175,9 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 
 [0m[0m16:57:54,466 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-7) JNDI bindings for session bean named Thesaurus in deployment unit deployment "silverpeas.war" are as follows:
 
-	java:global/silverpeas/Thesaurus!com.silverpeas.thesaurus.ejb.ThesaurusBm
-	java:app/silverpeas/Thesaurus!com.silverpeas.thesaurus.ejb.ThesaurusBm
-	java:module/Thesaurus!com.silverpeas.thesaurus.ejb.ThesaurusBm
+	java:global/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:app/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:module/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
 	java:global/silverpeas/Thesaurus
 	java:app/silverpeas/Thesaurus
 	java:module/Thesaurus
@@ -306,9 +306,9 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 
 [0m[0m17:05:26,407 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-3) JNDI bindings for session bean named Thesaurus in deployment unit deployment "silverpeas.war" are as follows:
 
-	java:global/silverpeas/Thesaurus!com.silverpeas.thesaurus.ejb.ThesaurusBm
-	java:app/silverpeas/Thesaurus!com.silverpeas.thesaurus.ejb.ThesaurusBm
-	java:module/Thesaurus!com.silverpeas.thesaurus.ejb.ThesaurusBm
+	java:global/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:app/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:module/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
 	java:global/silverpeas/Thesaurus
 	java:app/silverpeas/Thesaurus
 	java:module/Thesaurus

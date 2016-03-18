@@ -32,7 +32,7 @@ package org.silverpeas.core.importexport.model;
 
 import org.silverpeas.core.importexport.admin.ComponentsType;
 import com.silverpeas.node.importexport.NodeTreesType;
-import com.silverpeas.pdc.importExport.PdcType;
+import org.silverpeas.core.pdc.pdc.importexport.PdcType;
 
 /**
  * @author tleroi

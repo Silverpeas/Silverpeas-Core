@@ -20,7 +20,7 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

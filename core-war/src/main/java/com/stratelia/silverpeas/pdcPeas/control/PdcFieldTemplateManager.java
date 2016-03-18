@@ -31,8 +31,8 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Parameter;
 import com.silverpeas.form.record.ParameterValue;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.UsedAxisPK;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.model.UsedAxisPK;
 
 /**
  * Manages the axis and values from PDC to define a PDC field.

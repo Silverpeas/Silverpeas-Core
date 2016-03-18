@@ -25,7 +25,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

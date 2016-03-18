@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 
 /**
  * @author David Derigent

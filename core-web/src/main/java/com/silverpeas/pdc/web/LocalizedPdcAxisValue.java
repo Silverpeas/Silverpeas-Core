@@ -24,9 +24,9 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.model.PdcAxisValue;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import java.util.Set;
 
 /**

@@ -26,7 +26,7 @@ package com.silverpeas.search;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.MultiSilverpeasBundle;

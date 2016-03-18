@@ -26,10 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.silverpeas.pdc.PdcServiceProvider"%>
-<%@ page import="com.silverpeas.thesaurus.ThesaurusException"%>
-<%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
-<%@ page import="com.silverpeas.thesaurus.model.Jargon"%>
+<%@ page import="org.silverpeas.core.pdc.PdcServiceProvider"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager"%>
+<%@ page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcClassifySessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>

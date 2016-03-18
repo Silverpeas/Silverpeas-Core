@@ -31,9 +31,9 @@
     response.setHeader("Pragma","no-cache");        //HTTP 1.0
     response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
-<%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription" %>
+<%@ page import="org.silverpeas.core.pdc.subscription.model.PdcSubscription" %>
 <%@ page import="com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController" %>
-<%@ page import="com.stratelia.silverpeas.pdc.model.Value" %>
+<%@ page import="org.silverpeas.core.pdc.pdc.model.Value" %>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>

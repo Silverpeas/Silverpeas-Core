@@ -20,12 +20,12 @@
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import com.silverpeas.pdc.PdcIndexer;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 
@@ -71,9 +71,8 @@ public class ApplicationIndexer extends AbstractIndexer {
         }
         componentIndexer.index(compoInst);
       } catch (Exception e) {
-        SilverTrace.error(silvertraceModule, "ApplicationIndexer.indexComponent()",
-            "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = "
-            + compoInst.getLabel(), e);
+        SilverLogger.getLogger(this).error("Failure while indexing component {0}",
+            new String[] {compoInst.getId()}, e);
       }
     }
   }
@@ -85,13 +84,11 @@ public class ApplicationIndexer extends AbstractIndexer {
       PersonalToolIndexation personalToolIndexer = ServiceProvider.getService(compoName);
       personalToolIndexer.index();
     } catch (IllegalStateException ce) {
-      SilverTrace.warn(silvertraceModule, "ApplicationIndexer.indexPersonalComponent()",
-          "applicationIndexer.EX_INDEXER_PERSONAL_COMPONENT_NOT_FOUND",
-          "personalComponent = " + personalComponent);
+      SilverLogger.getLogger(this).error("Cannot get personal component {0}",
+          new String[] {personalComponent}, ce);
     } catch (Exception e) {
-      SilverTrace.error(silvertraceModule, "ApplicationIndexer.indexPersonalComponent()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
-          "personalComponent = " + personalComponent, e);
+      SilverLogger.getLogger(this).error("Failure while indexing personal component {0}",
+          new String[] {personalComponent}, e);
     }
   }
 
@@ -121,9 +118,8 @@ public class ApplicationIndexer extends AbstractIndexer {
       String qualifier = compoInst.getName() + ComponentIndexation.QUALIFIER_SUFFIX;
       componentIndexer = ServiceProvider.getService(qualifier);
     } catch (IllegalStateException ex) {
-      SilverTrace.warn(silvertraceModule, "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
-          "component = " + firstLetterToUpperCase(compoInst.getName()));
+      SilverLogger.getLogger(this).error("Cannot get indexer for component {0}",
+          new String[] {compoInst.getId()}, ex);
       componentIndexer = ServiceProvider.getService(ComponentIndexerAdapter.class);
     }
     return componentIndexer;

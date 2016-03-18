@@ -40,7 +40,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.fieldType.PdcField;
+import org.silverpeas.core.pdc.form.fieldtype.PdcField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Label;
 import com.silverpeas.form.record.Parameter;

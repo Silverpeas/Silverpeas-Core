@@ -24,15 +24,14 @@
 
 package com.silverpeas.thesaurusPeas.servlets;
 
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.thesaurus.model.Jargon;
-import com.silverpeas.thesaurus.model.Synonym;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import com.silverpeas.thesaurusPeas.control.ThesaurusSessionController;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

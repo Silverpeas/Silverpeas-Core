@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.silverpeas.interestCenter.model.InterestCenter,
+<%@ page import="org.silverpeas.core.pdc.interests.model.Interests,
                  java.net.URLEncoder,
                  java.util.ArrayList,
                  java.util.List"%>
@@ -40,10 +40,10 @@
     String iconDelete	= resource.getIcon("icoDelete");
     String path			= resource.getString("Path");
 
-    List<InterestCenter> iCentersList = (ArrayList<InterestCenter>)request.getAttribute("icList");
+    List<Interests> iCentersList = (ArrayList<Interests>)request.getAttribute("icList");
 
     if ( iCentersList == null ){
-       iCentersList = new ArrayList<InterestCenter>();
+       iCentersList = new ArrayList<Interests>();
     }
 %>
 
@@ -99,7 +99,7 @@ function deleteICenter() {
       String link = m_context+"/RpdcSearch/jsp/AdvancedSearch?urlToRedirect=" +
               URLEncoder.encode(m_context + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)+ "iCenterList.jsp") + "&icId=";
 
-	  for (InterestCenter ic : iCentersList) {
+	  for (Interests ic : iCentersList) {
          ligne	= arrayPane.addArrayLine();
 
          iconPane	= gef.getIconPane();

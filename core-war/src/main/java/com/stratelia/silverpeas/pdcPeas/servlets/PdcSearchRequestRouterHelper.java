@@ -20,21 +20,21 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
+import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.model.Axis;
+import org.silverpeas.core.pdc.pdc.model.SearchAxis;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import com.stratelia.silverpeas.pdcPeas.control.Keys;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
@@ -78,7 +78,7 @@ public class PdcSearchRequestRouterHelper {
     String urlToRedirect = request.getParameter("urlToRedirect");
     request.setAttribute("urlToRedirect", urlToRedirect);
     // load settings of selected Interest center
-    InterestCenter ic = pdcSC.loadICenter(favoriteRequestId);
+    Interests ic = pdcSC.loadICenter(favoriteRequestId);
     QueryParameters queryParameters = saveFavoriteRequest(pdcSC, ic);
     setUserChoices(request, pdcSC);
     setAttributesAdvancedSearch(pdcSC, request, true);
@@ -89,7 +89,7 @@ public class PdcSearchRequestRouterHelper {
   }
 
   public static QueryParameters saveFavoriteRequest(PdcSearchSessionController pdcSC,
-      InterestCenter favoriteRequest) throws Exception {
+      Interests favoriteRequest) throws Exception {
     String query = favoriteRequest.getQuery();
     String spaceId = favoriteRequest.getWorkSpaceID();
     String componentId = favoriteRequest.getPeasID();
@@ -185,8 +185,7 @@ public class PdcSearchRequestRouterHelper {
     try {
       return DateUtil.stringToDate(str, language);
     } catch (ParseException e) {
-      SilverTrace.warn("pdcPeas", "PdcPeasRequestRouterHelper.getDateFromRequest()",
-          "ERR_CANT_PARSE_DATE", e);
+      SilverLogger.getLogger(PdcSearchRequestRouter.class).warn(e.getMessage());
     }
     return null;
   }
@@ -219,7 +218,7 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("ItemType", pdcSC.getDataType());
 
     // List of user favorite requests
-    List<InterestCenter> favoriteRequests = buildICentersList(pdcSC);
+    List<Interests> favoriteRequests = buildICentersList(pdcSC);
     String requestSelected = request.getParameter("iCenterId");
     request.setAttribute("RequestList", favoriteRequests);
     if (requestSelected != null) {
@@ -422,7 +421,7 @@ public class PdcSearchRequestRouterHelper {
     return newValueId;
   }
 
-  private static List<InterestCenter> buildICentersList(PdcSearchSessionController pdcSC) {
+  private static List<Interests> buildICentersList(PdcSearchSessionController pdcSC) {
     return pdcSC.getICenters();
   }
 
@@ -458,8 +457,8 @@ public class PdcSearchRequestRouterHelper {
           }
         }
       } catch (Exception e) {
-        SilverTrace.error("pdcPeas", "PdcSearchRequestRouterHelper.markResultAsRead",
-            "pdcPeas.ERROR_WHEN_MARKING_RESULT", "resultId = " + sId);
+        SilverLogger.getLogger(PdcSearchRequestRouterHelper.class)
+            .error("Error when marking result {0} as read", new String[] {sId}, e);
       }
     }
 

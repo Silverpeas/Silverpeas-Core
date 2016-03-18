@@ -20,30 +20,31 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
-import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.ArrayList;
-import java.util.List;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.pdc.pdc.model.Axis;
+import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
+import org.silverpeas.util.exception.SilverpeasException;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.silverpeas.core.admin.OrganizationController;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
@@ -141,7 +142,7 @@ public class PdcServiceProvider {
       for (UsedAxis anAxis : axis) {
         if (anAxis.getMandatory() == 1) {
           throw new PdcPositionDeletionException(getClass().getSimpleName(),
-              SilverTrace.TRACE_LEVEL_ERROR,
+              SilverpeasException.ERROR,
               "Pdc.CANNOT_DELETE_VALUE");
         }
       }

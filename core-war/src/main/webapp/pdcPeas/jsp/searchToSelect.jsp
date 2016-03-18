@@ -1,4 +1,4 @@
-<%@ page import="com.silverpeas.pdc.PdcServiceProvider" %><%--
+<%@ page import="org.silverpeas.core.pdc.PdcServiceProvider" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

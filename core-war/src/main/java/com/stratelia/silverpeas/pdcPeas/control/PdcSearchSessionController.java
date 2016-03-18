@@ -28,35 +28,35 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.fieldType.TextFieldImpl;
-import com.silverpeas.interestCenter.model.InterestCenter;
-import com.silverpeas.interestCenter.util.InterestCenterManager;
-import com.silverpeas.pdc.PdcServiceProvider;
+import org.silverpeas.core.pdc.interests.model.Interests;
+import org.silverpeas.core.pdc.interests.service.InterestsManager;
+import org.silverpeas.core.pdc.PdcServiceProvider;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.thesaurus.control.ThesaurusManager;
-import com.silverpeas.thesaurus.model.Jargon;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.classification.Criteria;
 import com.stratelia.silverpeas.containerManager.ContainerPeas;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.containerManager.ContainerWorkspace;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
-import com.stratelia.silverpeas.pdc.control.Pdc;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.Pdc;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.Axis;
+import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.SearchAxis;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import com.stratelia.silverpeas.pdcPeas.vo.ExternalSPConfigVO;
 import com.stratelia.silverpeas.pdcPeas.vo.Facet;
 import com.stratelia.silverpeas.pdcPeas.vo.FacetEntryVO;
@@ -2063,11 +2063,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Interest Center methods /
    * ****************************************************************************************************************
    */
-  public int saveICenter(InterestCenter ic) throws PdcException {
+  public int saveICenter(Interests ic) throws PdcException {
     try {
       int userId = Integer.parseInt(getUserId());
       ic.setOwnerID(userId);
-      return InterestCenterManager.getInstance().createIC(ic);
+      return InterestsManager.getInstance().createInterests(ic);
     } catch (Exception e) {
       throw new PdcPeasRuntimeException(
           "PdcSearchSessionController.saveICenter", SilverpeasException.ERROR,
@@ -2075,10 +2075,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public List<InterestCenter> getICenters() {
+  public List<Interests> getICenters() {
     try {
       int id = Integer.parseInt(getUserId());
-      return InterestCenterManager.getInstance().getICByUserId(id);
+      return InterestsManager.getInstance().getInterestsByUserId(id);
     } catch (Exception e) {
       throw new PdcPeasRuntimeException(
           "PdcSearchSessionController.getICenters", SilverpeasException.ERROR,
@@ -2086,10 +2086,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public InterestCenter loadICenter(String icId) throws PdcException {
+  public Interests loadICenter(String icId) throws PdcException {
     try {
       int id = Integer.parseInt(icId);
-      InterestCenter ic = InterestCenterManager.getInstance().getICByID(id);
+      Interests ic = InterestsManager.getInstance().getInterestsById(id);
       if (StringUtil.isDefined(ic.getPeasID()) &&
           !getComponentAccessController().isUserAuthorized(getUserId(), ic.getPeasID())) {
         ic.setPeasID(null);

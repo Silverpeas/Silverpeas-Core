@@ -56,7 +56,7 @@ public class ContainerPeas {
     // -------------------------------------------------
     if (sContainerDescriptorPath.equals("containerPDC")) {
       this.setType("containerPDC");
-      this.setContainerInterface("com.stratelia.silverpeas.pdc.control.GlobalPdcManager");
+      this.setContainerInterface("org.silverpeas.core.pdc.pdc.service.GlobalPdcManager");
 
       List<String> asUserRoles = new ArrayList<>();
       asUserRoles.add("containerPDC_admin");

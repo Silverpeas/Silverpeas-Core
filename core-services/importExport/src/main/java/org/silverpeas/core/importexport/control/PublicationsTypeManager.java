@@ -20,28 +20,10 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.core.importexport.coordinates.CoordinateImportExport;
-import org.silverpeas.core.importexport.coordinates.CoordinatePointType;
-import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
 import com.silverpeas.form.XMLField;
-import org.silverpeas.core.importexport.model.ImportExportException;
-import org.silverpeas.core.importexport.model.PublicationType;
-import org.silverpeas.core.importexport.model.PublicationsType;
-import org.silverpeas.core.importexport.report.ExportPDFReport;
-import org.silverpeas.core.importexport.report.ExportReport;
-import org.silverpeas.core.importexport.report.HtmlExportPublicationGenerator;
-import org.silverpeas.core.importexport.report.ImportReportManager;
-import org.silverpeas.core.importexport.report.UnitReport;
 import com.silverpeas.node.importexport.NodeImportExport;
 import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;
-import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.silverpeas.pdc.importExport.PdcPositionsType;
-import org.silverpeas.core.importexport.publication.PublicationContentType;
-import org.silverpeas.core.importexport.publication.XMLModelContentType;
-import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -59,9 +41,26 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentsType;
+import org.silverpeas.core.importexport.coordinates.CoordinateImportExport;
+import org.silverpeas.core.importexport.coordinates.CoordinatePointType;
+import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.model.PublicationType;
+import org.silverpeas.core.importexport.model.PublicationsType;
+import org.silverpeas.core.importexport.publication.PublicationContentType;
+import org.silverpeas.core.importexport.publication.XMLModelContentType;
+import org.silverpeas.core.importexport.report.ExportPDFReport;
+import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.importexport.report.HtmlExportPublicationGenerator;
+import org.silverpeas.core.importexport.report.ImportReportManager;
+import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.importexport.versioning.Document;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.importexport.versioning.VersioningImportExport;
+import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
+import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
+import org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
@@ -72,6 +71,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAAttributeValuePair;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -254,8 +254,7 @@ public class PublicationsTypeManager {
       }
     } catch (Exception ex) {
       // Do not block export in case of error
-      SilverTrace.warn("importExport", "PublicationsTypeManager.exportPdc",
-          "importExport.EX_CANT_GET_PDC_POSITION", ex);
+      SilverLogger.getLogger(this).warn("Cannot get PdC positions: {0}", ex.getMessage());
     }
   }
 
@@ -285,8 +284,7 @@ public class PublicationsTypeManager {
             FileRepositoryManager
                 .copyFile(fromPath, exportPublicationPath + separator + wysiwygFile);
           } catch (Exception e) {
-            SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                "root.EX_CANT_WRITE_FILE_XMLWYSIWYG", e);
+            SilverLogger.getLogger(this).warn("Cannot write WYSIWYG content: {0}", e.getMessage());
           }
 
         } else if (value.startsWith("image")) {
@@ -297,8 +295,7 @@ public class PublicationsTypeManager {
                 .searchDocumentById(new SimpleDocumentPK(imageId, publicationPk.getInstanceId()),
                     null);
           } catch (RuntimeException e1) {
-            SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                "root.EX_CANT_WRITE_FILE", e1);
+            SilverLogger.getLogger(this).warn("Cannot get image: {0}", e1.getMessage());
           }
 
           if (attachment != null) {
@@ -308,8 +305,7 @@ public class PublicationsTypeManager {
               FileRepositoryManager
                   .copyFile(fromPath, exportPublicationPath + separator + attachment.getFilename());
             } catch (Exception e) {
-              SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                  "root.EX_CANT_WRITE_FILE", e);
+              SilverLogger.getLogger(this).warn("Cannot write file: {0}", e.getMessage());
             }
             xmlField.setValue(exportPublicationRelativePath + separator + attachment.getFilename());
           }
@@ -322,8 +318,7 @@ public class PublicationsTypeManager {
                 .searchDocumentById(new SimpleDocumentPK(fileId, publicationPk.getInstanceId()),
                     null);
           } catch (RuntimeException e1) {
-            SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                "root.EX_CANT_WRITE_FILE", e1);
+            SilverLogger.getLogger(this).warn("Cannot get attachment: {0}", e1.getMessage());
           }
           if (attachment != null) {
             xmlField.setValue(exportPublicationRelativePath + separator + attachment.getFilename());
@@ -822,8 +817,7 @@ public class PublicationsTypeManager {
               }
             }
           } catch (Exception ex) {
-            SilverTrace.error("importExport", "PublicationsTypeManager.processImport()",
-                "root.EX_NO_MESSAGE", ex);
+            SilverLogger.getLogger(this).error(ex.getMessage(), ex);
             unitReport.setError(UnitReport.ERROR_ERROR);
             SilverpeasTransverseErrorUtil
                 .throwTransverseErrorIfAny(ex, userDetail.getUserPreferences().getLanguage());

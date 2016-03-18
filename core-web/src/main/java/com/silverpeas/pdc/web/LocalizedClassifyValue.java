@@ -24,9 +24,9 @@
 
 package com.silverpeas.pdc.web;
 
-import com.stratelia.silverpeas.classifyEngine.ClassifyEngineException;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.classification.ClassifyEngineException;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import java.util.List;
 
 /**

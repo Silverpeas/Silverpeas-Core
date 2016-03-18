@@ -21,8 +21,8 @@
 package com.silverpeas.jobSearchPeas.control;
 
 import com.silverpeas.jobSearchPeas.SearchResult;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

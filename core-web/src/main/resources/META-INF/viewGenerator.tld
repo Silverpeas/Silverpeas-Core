@@ -1616,7 +1616,7 @@
       <name>gsr</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult</type>
+      <type>org.silverpeas.core.pdc.pdc.model.GlobalSilverResult</type>
     </attribute>
     <attribute>
       <description>Sort value</description>

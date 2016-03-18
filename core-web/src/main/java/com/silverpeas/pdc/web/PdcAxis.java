@@ -20,11 +20,11 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.model.Axis;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.model.Value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
