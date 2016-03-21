@@ -26,6 +26,7 @@ package com.stratelia.webactiv.applicationIndexer.control;
 
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 
@@ -41,6 +42,6 @@ public class ComponentIndexerAdapter implements ComponentIndexation {
   @Override
   public void index(ComponentInst componentInst) throws
       Exception {
-
+    SilverLogger.getLogger(this).info("Fake indexer when we have problems loading a real one.");
   }
 }

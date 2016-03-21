@@ -35,12 +35,12 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
  */
 public interface ComponentIndexation {
 
-  public static final String QUALIFIER_SUFFIX = "Indexation";
+  String QUALIFIER_SUFFIX = "Indexation";
 
   /**
    * Indexes the data managed by the specified component instance.
    * @param componentInst the instance of the component managing the data to index or to reindex.
    * @throws Exception if an error occurs during the indexation.
    */
-  public void index(ComponentInst componentInst) throws Exception;
+  void index(ComponentInst componentInst) throws Exception;
 }

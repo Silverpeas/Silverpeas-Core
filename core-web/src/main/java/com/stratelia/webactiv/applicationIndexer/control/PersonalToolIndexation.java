@@ -29,9 +29,11 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  */
 public interface PersonalToolIndexation {
 
+  String QUALIFIER_SUFFIX = "PersonalToolIndexation";
+
   /**
    * Indexes all the data managed by this personal tool.
    * @throws Exception if an error occurs during the indexation.
    */
-  public void index() throws Exception;
+  void index() throws Exception;
 }

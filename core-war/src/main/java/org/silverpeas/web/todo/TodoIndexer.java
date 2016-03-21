@@ -32,9 +32,11 @@ import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.web.todo.control.TodoException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("todo" + PersonalToolIndexation.QUALIFIER_SUFFIX)
 public class TodoIndexer implements PersonalToolIndexation {
 
   @Inject

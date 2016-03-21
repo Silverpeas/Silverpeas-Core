@@ -63,6 +63,7 @@ public class TagCloudPublicationService extends DefaultPublicationService {
 
   @PostConstruct
   protected void init() {
+    super.init();
     SettingBundle publicationSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
     useTagCloud = publicationSettings.getBoolean("useTagCloud", false);

@@ -81,11 +81,12 @@ public class ApplicationIndexer extends AbstractIndexer {
   public void indexPersonalComponent(String personalComponent) {
     String compoName = firstLetterToLowerCase(personalComponent);
     try {
-      PersonalToolIndexation personalToolIndexer = ServiceProvider.getService(compoName);
+      PersonalToolIndexation personalToolIndexer =
+          ServiceProvider.getService(compoName + PersonalToolIndexation.QUALIFIER_SUFFIX);
       personalToolIndexer.index();
     } catch (IllegalStateException ce) {
-      SilverLogger.getLogger(this).error("Cannot get personal component {0}",
-          new String[] {personalComponent}, ce);
+      SilverLogger.getLogger(this)
+          .warn("Cannot get personal component {0} ({1})", personalComponent, ce.getMessage());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Failure while indexing personal component {0}",
           new String[] {personalComponent}, e);
@@ -118,8 +119,8 @@ public class ApplicationIndexer extends AbstractIndexer {
       String qualifier = compoInst.getName() + ComponentIndexation.QUALIFIER_SUFFIX;
       componentIndexer = ServiceProvider.getService(qualifier);
     } catch (IllegalStateException ex) {
-      SilverLogger.getLogger(this).error("Cannot get indexer for component {0}",
-          new String[] {compoInst.getId()}, ex);
+      SilverLogger.getLogger(this)
+          .warn("No indexer for component {0} ({1})", compoInst.getId(), ex.getMessage());
       componentIndexer = ServiceProvider.getService(ComponentIndexerAdapter.class);
     }
     return componentIndexer;

@@ -28,9 +28,11 @@ import com.stratelia.webactiv.applicationIndexer.control.PersonalToolIndexation;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@Named("agenda" + PersonalToolIndexation.QUALIFIER_SUFFIX)
 public class AgendaIndexer implements PersonalToolIndexation {
 
   @Inject
