@@ -149,6 +149,7 @@ public class PublicationImportExport {
     PublicationDetail publication =
         new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
             settings.getUser().getId(), "1", null, motsClefs, content);
+    publication.setTargetValidatorId(settings.getTargetValidatorIds());
     publication.setLanguage(settings.getContentLanguage());
     if (lastModificationDate != null) {
       publication.setUpdateDate(lastModificationDate);
