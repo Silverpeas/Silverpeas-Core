@@ -25,9 +25,9 @@
 package org.silverpeas.web.silverstatistics.servlets;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasSessionController;
 import org.silverpeas.web.silverstatistics.vo.AxisStatsFilter;
 import org.silverpeas.web.silverstatistics.vo.CrossAxisStatsFilter;
@@ -37,7 +37,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.chart.period.PeriodChart;
 import org.silverpeas.chart.pie.PieChart;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;

@@ -23,19 +23,24 @@
 */
 package org.silverpeas.web.selection.control;
 
+import org.silverpeas.core.web.selection.BrowsePanelProvider;
+import org.silverpeas.core.web.selection.CacheManager;
+import org.silverpeas.core.web.selection.CacheManagerJdbcConnector;
+import org.silverpeas.core.web.selection.CacheManagerUsersGroups;
+import org.silverpeas.core.web.selection.CacheType;
+import org.silverpeas.core.web.selection.SelectionPeasSettings;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
-import com.stratelia.silverpeas.selectionPeas.*;
-import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
+import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
 import org.silverpeas.util.Pair;
 import java.util.*;
 

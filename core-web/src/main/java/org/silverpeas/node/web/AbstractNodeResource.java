@@ -28,7 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;

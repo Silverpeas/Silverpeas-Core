@@ -37,9 +37,13 @@
  % (via the template.jsp)
 --%>
 
-<%@ page import="com.stratelia.webactiv.homepage.HomePageUtil"%>
+<%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil"%>
 <%@ page import="org.silverpeas.util.exception.SilverpeasTrappedException"%>
 <%@ page import="java.io.PrintWriter"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
 
 <%@ include file="import.jsp" %>
 

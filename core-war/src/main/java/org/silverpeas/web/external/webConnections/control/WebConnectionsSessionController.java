@@ -26,9 +26,9 @@ package org.silverpeas.web.external.webconnections.control;
 
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.util.StringUtil;
 

@@ -26,8 +26,8 @@ package com.silverpeas.treeMenu.process;
 
 import com.silverpeas.treeMenu.model.MenuItem;
 import com.silverpeas.treeMenu.model.NodeType;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 

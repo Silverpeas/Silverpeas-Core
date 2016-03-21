@@ -28,15 +28,15 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.sharing.services.SharingServiceProvider;
-import org.silverpeas.sharing.bean.SharingNotificationVO;
-import org.silverpeas.sharing.notification.FileSharingUserNotification;
+import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
+import org.silverpeas.core.web.sharing.notification.FileSharingUserNotification;
 
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class FileSharingSessionController extends AbstractComponentSessionController {

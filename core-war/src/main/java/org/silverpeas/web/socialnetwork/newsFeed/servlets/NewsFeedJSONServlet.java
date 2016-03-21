@@ -28,7 +28,7 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;

@@ -29,10 +29,10 @@ import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.web.thesaurus.control.ThesaurusSessionController;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

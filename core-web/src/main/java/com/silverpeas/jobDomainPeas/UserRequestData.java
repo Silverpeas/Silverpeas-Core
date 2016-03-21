@@ -27,9 +27,9 @@ import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.servlet.RequestParameterDecoder;
-import org.silverpeas.servlet.UnescapeHtml;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.web.http.UnescapeHtml;
 
 import javax.ws.rs.FormParam;
 

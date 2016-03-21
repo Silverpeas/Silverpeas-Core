@@ -20,11 +20,11 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
-import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -34,7 +34,8 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
@@ -59,7 +60,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
+import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 @Service
 @RequestScoped
@@ -277,7 +278,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
    * also used instead at class level for both authentication and authorization.
    *
-   * @see com.silverpeas.web.UserPrivilegeValidator
+   * @see UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.

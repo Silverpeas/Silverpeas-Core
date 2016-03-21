@@ -32,7 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
 
-import static org.silverpeas.core.webdav.web.SilverpeasJcrWebdavContext.getWebdavContext;
+import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.getWebdavContext;
 
 /**
  * A provider of WebDav credentials for the WebDAV servlet.

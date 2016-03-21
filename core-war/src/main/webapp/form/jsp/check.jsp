@@ -31,10 +31,10 @@
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

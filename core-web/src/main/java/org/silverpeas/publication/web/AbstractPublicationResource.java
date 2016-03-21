@@ -20,7 +20,7 @@
  */
 package org.silverpeas.publication.web;
 
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;

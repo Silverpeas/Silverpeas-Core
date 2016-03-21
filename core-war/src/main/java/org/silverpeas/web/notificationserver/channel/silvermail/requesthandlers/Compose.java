@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 
 /**
  * Class declaration

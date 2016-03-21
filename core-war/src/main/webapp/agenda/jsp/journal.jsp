@@ -28,6 +28,10 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
 <%@ include file="checkAgenda.jsp" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -607,7 +611,7 @@ else
 			if (journal.getId() != null) {
 				operationPane.addOperation(agendaDelSrc,
 					agenda.getString("supprimerNote"),
-					"javascript:onClick=deleteConfirm('"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(journal.getName()))+"')"
+					"javascript:onClick=deleteConfirm('"+ Encode.javaStringToHtmlString(Encode.javaStringToJsString(journal.getName()))+"')"
 				);
 				operationPane.addLine();
 			}

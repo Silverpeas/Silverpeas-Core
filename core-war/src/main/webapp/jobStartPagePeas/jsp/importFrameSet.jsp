@@ -26,10 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController, org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController, org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);

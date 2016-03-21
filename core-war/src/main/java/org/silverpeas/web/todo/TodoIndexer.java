@@ -27,7 +27,7 @@
 
 package org.silverpeas.web.todo;
 
-import com.stratelia.webactiv.applicationIndexer.control.PersonalToolIndexation;
+import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.web.todo.control.TodoException;
 

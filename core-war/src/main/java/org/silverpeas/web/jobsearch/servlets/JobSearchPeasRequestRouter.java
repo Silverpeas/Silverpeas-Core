@@ -26,11 +26,11 @@ package org.silverpeas.web.jobsearch.servlets;
 
 import com.silverpeas.jobSearchPeas.SearchResult;
 import com.silverpeas.jobSearchPeas.control.JobSearchPeasSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.List;
 

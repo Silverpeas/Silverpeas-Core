@@ -38,7 +38,7 @@
 <%@ page import="com.silverpeas.session.SessionManagementProvider" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>

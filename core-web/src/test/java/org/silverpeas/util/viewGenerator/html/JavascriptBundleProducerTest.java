@@ -24,6 +24,7 @@
 package org.silverpeas.util.viewGenerator.html;
 
 import org.junit.Test;
+import org.silverpeas.core.web.util.viewGenerator.html.JavascriptBundleProducer;
 import org.silverpeas.util.SilverpeasBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;

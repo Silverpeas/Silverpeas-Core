@@ -30,8 +30,8 @@
 <%@page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
 <%@page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.QueryParameters"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchContext"%>

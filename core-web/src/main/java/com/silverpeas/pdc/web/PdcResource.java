@@ -20,12 +20,12 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;

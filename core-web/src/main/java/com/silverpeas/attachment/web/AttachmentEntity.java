@@ -24,7 +24,7 @@
 
 package com.silverpeas.attachment.web;
 
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 import org.apache.commons.lang3.CharEncoding;

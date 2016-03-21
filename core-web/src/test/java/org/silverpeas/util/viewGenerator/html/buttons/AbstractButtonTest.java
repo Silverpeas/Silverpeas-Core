@@ -24,7 +24,8 @@
 package org.silverpeas.util.viewGenerator.html.buttons;
 
 import org.junit.Test;
-import org.silverpeas.util.viewGenerator.html.buttons.AbstractButton;
+import org.silverpeas.core.web.util.viewGenerator.html.buttons.AbstractButton;
+import org.silverpeas.core.web.util.viewGenerator.html.buttons.Button;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -100,7 +101,7 @@ public class AbstractButtonTest {
 
 
   /**
-   * Implementation of {@link org.silverpeas.util.viewGenerator.html.buttons.Button}
+   * Implementation of {@link Button}
    */
   private static class ButtonForTest extends AbstractButton {
 

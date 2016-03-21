@@ -32,21 +32,21 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
 
 <%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%

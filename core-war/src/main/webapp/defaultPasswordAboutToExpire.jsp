@@ -26,7 +26,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.ui.DisplayI18NHelper" %>

@@ -14,7 +14,7 @@
       Tag to print out contextual menu of an SimpleDocument.
     </description>
     <name>simpleDocument</name>
-    <tag-class>org.silverpeas.attachment.tag.SimpleDocumentContextualMenu</tag-class>
+    <tag-class>org.silverpeas.core.web.attachment.tag.SimpleDocumentContextualMenu</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The attachment related to the current menu.</description>

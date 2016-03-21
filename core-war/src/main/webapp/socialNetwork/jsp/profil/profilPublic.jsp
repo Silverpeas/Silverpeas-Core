@@ -24,15 +24,15 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>

@@ -21,7 +21,7 @@
 package com.silverpeas.pdc.web;
 
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import java.net.URI;

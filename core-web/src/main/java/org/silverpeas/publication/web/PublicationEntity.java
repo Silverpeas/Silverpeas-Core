@@ -28,7 +28,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;

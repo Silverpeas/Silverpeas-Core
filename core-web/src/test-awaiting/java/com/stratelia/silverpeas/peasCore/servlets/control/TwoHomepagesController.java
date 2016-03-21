@@ -27,8 +27,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.silverpeas.peasCore.servlets.WebComponentController;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,7 +36,7 @@ import javax.ws.rs.Path;
 /**
  * @author: Yohann Chastagnier
  */
-@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
+@org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
 public class TwoHomepagesController extends WebComponentController<TestWebComponentRequestContext> {
 

@@ -23,9 +23,11 @@
  */
 package org.silverpeas.web.token;
 
-import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
+import org.silverpeas.core.web.token.TokenSettingTemplate;
+import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 import org.silverpeas.token.Token;
-import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
+import org.silverpeas.core.web.token.TokenSettingTemplate.Parameter;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -37,8 +39,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.silverpeas.web.token.SynchronizerTokenService.NAVIGATION_TOKEN_KEY;
-import static org.silverpeas.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
+import static org.silverpeas.core.web.token.SynchronizerTokenService.NAVIGATION_TOKEN_KEY;
+import static org.silverpeas.core.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
 
 /**
  * A setter of security tokens in the web pages, so any requests emitted from them will be validated

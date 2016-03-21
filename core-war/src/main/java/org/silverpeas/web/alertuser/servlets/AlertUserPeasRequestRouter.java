@@ -22,12 +22,12 @@ package org.silverpeas.web.alertuser.servlets;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.alertuser.control.AlertUserPeasSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Class declaration

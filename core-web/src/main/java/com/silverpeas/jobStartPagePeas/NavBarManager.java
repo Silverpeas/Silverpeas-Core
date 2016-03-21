@@ -23,8 +23,7 @@
  */
 package com.silverpeas.jobStartPagePeas;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;

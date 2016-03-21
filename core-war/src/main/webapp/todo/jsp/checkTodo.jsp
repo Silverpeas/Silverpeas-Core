@@ -43,16 +43,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 
 <%@ page import="org.silverpeas.util.SettingBundle"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Iterator"%>

@@ -26,7 +26,7 @@ package com.silverpeas.profile.web;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
@@ -49,8 +49,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import static com.silverpeas.web.UserPrivilegeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
+import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
+import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import static org.silverpeas.util.StringUtil.isDefined;
 
 /**

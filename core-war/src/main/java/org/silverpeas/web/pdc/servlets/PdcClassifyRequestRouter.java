@@ -31,10 +31,10 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.web.pdc.control.PdcClassifySessionController;
 import org.silverpeas.web.pdc.control.PdcFieldPositionsManager;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

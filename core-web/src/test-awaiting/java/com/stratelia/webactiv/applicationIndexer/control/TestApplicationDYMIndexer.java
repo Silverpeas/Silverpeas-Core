@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer
+ * Tests org.silverpeas.core.web.index.ApplicationDYMIndexer
  */
 public class TestApplicationDYMIndexer extends AbstractTestDao {
 

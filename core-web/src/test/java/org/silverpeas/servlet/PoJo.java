@@ -23,6 +23,9 @@
  */
 package org.silverpeas.servlet;
 
+import org.silverpeas.core.web.http.RequestFile;
+import org.silverpeas.core.web.http.UnescapeHtml;
+
 import javax.ws.rs.FormParam;
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;

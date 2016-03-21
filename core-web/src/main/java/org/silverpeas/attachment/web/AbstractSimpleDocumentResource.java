@@ -24,7 +24,7 @@
 package org.silverpeas.attachment.web;
 
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.util.NotifierUtil;

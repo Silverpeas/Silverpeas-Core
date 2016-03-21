@@ -35,12 +35,12 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.workflow.api.model.DataFolder;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane;
-import org.silverpeas.util.viewGenerator.html.iconPanes.IconPane;
-import org.silverpeas.util.viewGenerator.html.icons.Icon;
+import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane;
+import org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane;
+import org.silverpeas.core.web.util.viewGenerator.html.icons.Icon;
 
 /**
  * Class implementing the tag &lt;itemList&gt; from workflowEditor.tld

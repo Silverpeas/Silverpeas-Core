@@ -24,12 +24,12 @@
 
 package org.silverpeas.web;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -40,10 +40,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static org.silverpeas.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
+import static org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
 
 /**
  * @author ehugonnet

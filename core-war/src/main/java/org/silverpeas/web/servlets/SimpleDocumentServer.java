@@ -40,7 +40,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ClientBrowserUtil;

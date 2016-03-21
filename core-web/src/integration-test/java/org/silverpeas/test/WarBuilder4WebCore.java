@@ -24,9 +24,9 @@
 
 package org.silverpeas.test;
 
-import com.silverpeas.authentication.SilverpeasSessionOpener;
+import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import com.silverpeas.peasUtil.AccessForbiddenException;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * This builder extends the {@link org.silverpeas.test.WarBuilder} in order to centralize the

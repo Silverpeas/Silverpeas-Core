@@ -42,9 +42,9 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessage;
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;

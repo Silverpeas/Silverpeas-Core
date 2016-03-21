@@ -20,21 +20,21 @@
  */
 package org.silverpeas.web.agenda.servlets;
 
-import com.silverpeas.ical.ImportIcalManager;
-import com.silverpeas.ical.PasswordEncoder;
-import com.silverpeas.ical.StringUtils;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.calendar.ical.ImportIcalManager;
+import org.silverpeas.core.web.calendar.ical.PasswordEncoder;
+import org.silverpeas.core.web.calendar.ical.StringUtils;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.agenda.model.CalendarImportSettings;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
+import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.Category;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;

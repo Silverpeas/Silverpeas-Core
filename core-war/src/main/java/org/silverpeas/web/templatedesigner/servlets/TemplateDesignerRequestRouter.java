@@ -50,11 +50,11 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.util.FileRepositoryManager;
 
 public class TemplateDesignerRequestRouter extends

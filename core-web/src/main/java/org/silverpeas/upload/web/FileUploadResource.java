@@ -23,15 +23,15 @@
  */
 package org.silverpeas.upload.web;
 
-import com.silverpeas.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
-import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.upload.UploadSession;
 import org.silverpeas.upload.UploadSessionFile;
 import org.silverpeas.util.FileRepositoryManager;
@@ -59,7 +59,7 @@ import java.text.MessageFormat;
 import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
+import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  * A REST Web resource that permits to upload files. It has to be used with one of the following

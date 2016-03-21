@@ -27,10 +27,10 @@ package org.silverpeas.web.socialnetwork.profil.servlets;
 import com.silverpeas.directory.model.Member;
 import org.silverpeas.web.socialnetwork.profil.control.ProfilSessionController;
 import com.silverpeas.socialnetwork.SocialNetworkException;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.logging.SilverLogger;
 
 

@@ -24,7 +24,7 @@
 
 --%>
 <%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
-<%@ page import="org.silverpeas.subscription.bean.NodeSubscriptionBean" %>
+<%@ page import="org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

@@ -31,16 +31,16 @@ import org.silverpeas.web.importexport.control.ImportExportSessionController;
 
 import org.silverpeas.servlet.FileUploadUtil;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import java.io.File;
 import java.util.List;

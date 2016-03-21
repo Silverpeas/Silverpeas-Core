@@ -36,16 +36,16 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ page import="
-				 com.stratelia.silverpeas.peasCore.MainSessionController,
+				 org.silverpeas.core.web.mvc.controller.MainSessionController,
                  com.stratelia.silverpeas.peasCore.URLManager,
                  org.silverpeas.util.MultiSilverpeasBundle,
                  org.silverpeas.util.FileRepositoryManager,
                  org.silverpeas.util.FileServerUtils,
-                 org.silverpeas.util.viewGenerator.html.GraphicElementFactory,
-                 org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText,
-                 org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+                 org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory,
+                 org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellText,
+                 org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane" %>
 <%@ page import="org.apache.commons.lang3.CharEncoding" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@page import="org.silverpeas.web.attachment.VersioningSessionController" %>

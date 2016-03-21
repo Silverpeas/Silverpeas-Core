@@ -25,7 +25,7 @@ package com.silverpeas.socialnetwork.invitation.web;
 
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import java.net.URI;
 import java.util.Date;

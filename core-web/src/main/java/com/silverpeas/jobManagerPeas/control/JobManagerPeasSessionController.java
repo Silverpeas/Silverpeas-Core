@@ -24,9 +24,9 @@ import com.silverpeas.jobManagerPeas.JobManagerService;
 import com.silverpeas.jobManagerPeas.JobManagerSettings;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
 
 import java.util.ArrayList;

@@ -27,13 +27,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 /**
  * A REST Web resource representing a given thumbnail.

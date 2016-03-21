@@ -22,7 +22,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@page import="org.silverpeas.servlets.credentials.RegistrationSettings"%>
+<%@page import="org.silverpeas.core.web.authentication.credentials.RegistrationSettings"%>
 <%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 

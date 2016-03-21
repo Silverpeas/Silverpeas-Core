@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.OrganizationController"%>
@@ -34,8 +34,8 @@
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.SettingBundle"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
 <%@ page import="javax.servlet.http.HttpServletResponse"%>
 <%@ page import="java.util.List"%>
 

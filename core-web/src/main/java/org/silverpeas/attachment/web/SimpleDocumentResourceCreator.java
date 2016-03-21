@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
@@ -39,7 +39,7 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MetaData;
@@ -63,7 +63,7 @@ import java.net.URI;
 import java.util.Date;
 
 import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
+import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  * @author ehugonnet

@@ -25,7 +25,8 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -49,7 +50,7 @@ import java.io.IOException;
  * A validator of a session token for each incoming request. For each protected web resources, the
  * requests are expected to carry a synchronizer token that must match the token mapped with the
  * user session. The request validation is in fact delegated to a
- * {@link org.silverpeas.web.token.SynchronizerTokenService} instance; this object just process the
+ * {@link SynchronizerTokenService} instance; this object just process the
  * status of the validation.
  *
  * @author mmoquillon

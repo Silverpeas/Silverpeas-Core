@@ -37,11 +37,11 @@
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.Date" %>

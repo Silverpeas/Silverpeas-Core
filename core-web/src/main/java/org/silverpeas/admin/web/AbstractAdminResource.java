@@ -24,7 +24,7 @@
 package org.silverpeas.admin.web;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;

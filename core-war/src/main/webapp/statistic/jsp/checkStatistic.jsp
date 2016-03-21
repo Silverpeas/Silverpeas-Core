@@ -32,7 +32,7 @@ response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser "%>
@@ -43,18 +43,18 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.ServiceProvider"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator" %>
 

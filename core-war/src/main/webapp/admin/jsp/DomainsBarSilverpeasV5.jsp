@@ -37,8 +37,8 @@
 
 <%@ page import="org.silverpeas.util.SettingBundle" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
 <%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

@@ -28,15 +28,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.sharing.bean.SharingNotificationVO;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
 import org.silverpeas.web.sharing.control.FileSharingSessionController;
 import com.silverpeas.sharing.model.Ticket;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 

@@ -92,7 +92,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       are set the messages for the end-user.
     </description>
     <filter-name>MessageFilter</filter-name>
-    <filter-class>org.silverpeas.web.filter.MessageFilter</filter-class>
+    <filter-class>org.silverpeas.core.web.filter.MessageFilter</filter-class>
   </filter>
   <filter>
     <description>
@@ -121,12 +121,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       To handle cross-origin resource sharing.
     </description>
     <filter-name>WebCORSFilter</filter-name>
-    <filter-class>org.silverpeas.web.filter.WebCORSFilter</filter-class>
+    <filter-class>org.silverpeas.core.web.filter.WebCORSFilter</filter-class>
   </filter>
   <filter>
     <!-- MassiveWebSecurityFilter Filter -->
     <filter-name>MassiveWebSecurityFilter</filter-name>
-    <filter-class>org.silverpeas.web.filter.MassiveWebSecurityFilter</filter-class>
+    <filter-class>org.silverpeas.core.web.filter.MassiveWebSecurityFilter</filter-class>
   </filter>
 
   <filter-mapping>
@@ -180,7 +180,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <listener-class>com.sun.portal.portletcontainer.impl.PortletContainerContextListenerImpl</listener-class>
   </listener>
   <listener>
-    <listener-class>org.silverpeas.servlets.SilverListener</listener-class>
+    <listener-class>org.silverpeas.core.web.mvc.SilverListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
@@ -188,11 +188,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
   <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>
-    <servlet-class>com.silverpeas.authentication.AuthenticationServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.web.authentication.AuthenticationServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>CredentialsServlet</servlet-name>
-    <servlet-class>org.silverpeas.servlets.CredentialsServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.web.authentication.CredentialsServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>FileServer</servlet-name>
@@ -240,11 +240,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>MainRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.servlets.MainRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.core.web.mvc.route.MainRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>LogoutServlet</servlet-name>
-    <servlet-class>org.silverpeas.servlets.LogoutServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.web.authentication.LogoutServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>POPUPRequestRouter</servlet-name>
@@ -515,7 +515,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <!--
   <servlet>
     <servlet-name>AjaxFileUploadServlet</servlet-name>
-    <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.web.upload.servlet.AjaxFileUploadServlet</servlet-class>
     <init-param>
       <param-name>UPLOAD_DIRECTORY</param-name>
       <param-value>C:/tmp/ajax</param-value>

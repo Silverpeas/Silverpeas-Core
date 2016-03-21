@@ -31,8 +31,8 @@
 <%@ page import="org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager"%>
 <%@ page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
 <%@ page import="org.silverpeas.web.pdc.control.PdcClassifySessionController"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.ComponentContext"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 
 <%@ include file="checkPdc.jsp"%>
 

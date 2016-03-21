@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.filter;
 
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * A filter to decorate the incoming request into a {@link org.silverpeas.servlet.HttpRequest}
+ * A filter to decorate the incoming request into a {@link HttpRequest}
  * instance.
  * @author mmoquillon
  */

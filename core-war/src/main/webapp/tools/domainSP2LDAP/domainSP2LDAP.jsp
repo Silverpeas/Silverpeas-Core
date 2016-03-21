@@ -36,6 +36,8 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Iterator"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
 <%@ include file="../check.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <html>

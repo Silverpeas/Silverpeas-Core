@@ -23,13 +23,13 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.util.CollectionUtil;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.PaginationPage;

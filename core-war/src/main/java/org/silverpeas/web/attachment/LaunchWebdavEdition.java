@@ -21,7 +21,7 @@
 package org.silverpeas.web.attachment;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentService;
@@ -30,7 +30,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.web.WebDavTokenProducer;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.core.webdav.web.SilverpeasJcrWebdavContext;
+import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +40,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static org.silverpeas.core.webdav.web.SilverpeasJcrWebdavContext.createWebdavContext;
+import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
 
 /**
  * @author ehugonnet

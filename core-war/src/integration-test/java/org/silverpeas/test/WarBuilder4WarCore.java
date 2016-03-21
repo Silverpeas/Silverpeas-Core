@@ -24,6 +24,8 @@
 
 package org.silverpeas.test;
 
+import org.silverpeas.core.web.http.HttpRequest;
+
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
  * definition of common archive part definitions.
@@ -45,7 +47,7 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
    * <ul>
    * <li>silverpeas-core-web-test</li>
    * <li>silverpeas-core</li>
-   * <li>all the necessary to handle http request ({@link org.silverpeas.servlet.HttpRequest} for example)</li>
+   * <li>all the necessary to handle http request ({@link HttpRequest} for example)</li>
    * </ul>
    * @return the instance of the war archive builder.
    */

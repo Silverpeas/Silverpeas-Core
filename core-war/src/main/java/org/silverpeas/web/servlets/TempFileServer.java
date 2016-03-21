@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.servlets;
 
-import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;

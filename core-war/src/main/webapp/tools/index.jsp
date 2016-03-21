@@ -36,7 +36,7 @@
 
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
-<view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT"/>
+<view:setConstant var="mainSessionControllerAtt" constant="org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT"/>
 <c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}"/>
 <html>
 <head>

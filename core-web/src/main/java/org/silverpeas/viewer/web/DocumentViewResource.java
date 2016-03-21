@@ -1,10 +1,10 @@
 package org.silverpeas.viewer.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;

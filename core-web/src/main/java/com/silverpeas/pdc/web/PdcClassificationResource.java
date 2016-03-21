@@ -23,11 +23,11 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;

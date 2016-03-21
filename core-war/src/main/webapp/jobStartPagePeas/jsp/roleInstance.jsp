@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPane" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

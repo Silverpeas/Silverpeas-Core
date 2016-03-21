@@ -26,9 +26,11 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.UserNameGenerator"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.UserNameGenerator"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

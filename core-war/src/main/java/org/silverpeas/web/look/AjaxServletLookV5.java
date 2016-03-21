@@ -37,7 +37,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -52,7 +52,7 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;

@@ -25,8 +25,8 @@
 --%>
 
 <%@page import="org.owasp.encoder.Encode"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPaneType"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPaneType"%>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="org.silverpeas.util.StringUtil"%>

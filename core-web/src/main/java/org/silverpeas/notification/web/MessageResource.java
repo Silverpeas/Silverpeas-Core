@@ -23,10 +23,10 @@
  */
 package org.silverpeas.notification.web;
 
-import com.silverpeas.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.notification.message.MessageManager;
 
 import javax.ws.rs.GET;

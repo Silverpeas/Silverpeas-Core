@@ -27,16 +27,16 @@ package org.silverpeas.web.mylinks.servlets;
 import java.util.Collection;
 
 import org.silverpeas.mylinks.web.MyLinkEntity;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.web.mylinks.control.MyLinksPeasSessionController;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.util.NotifierUtil;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeasSessionController> {

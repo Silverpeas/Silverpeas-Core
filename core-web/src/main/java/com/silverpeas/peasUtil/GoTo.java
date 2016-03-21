@@ -22,15 +22,15 @@
 package com.silverpeas.peasUtil;
 
 import com.silverpeas.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;

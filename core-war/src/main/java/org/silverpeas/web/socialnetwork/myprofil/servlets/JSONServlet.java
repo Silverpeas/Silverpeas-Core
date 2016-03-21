@@ -21,7 +21,7 @@
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.JSONCodec;
 

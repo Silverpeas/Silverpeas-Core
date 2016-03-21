@@ -1,7 +1,7 @@
 package org.silverpeas.web.templatedesigner.servlets;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;

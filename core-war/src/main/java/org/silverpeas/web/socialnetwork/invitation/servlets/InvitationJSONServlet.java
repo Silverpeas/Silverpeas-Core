@@ -25,7 +25,7 @@
 package org.silverpeas.web.socialnetwork.invitation.servlets;
 
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.util.JSONCodec;
 
 import javax.servlet.ServletException;
@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import static org.silverpeas.web.socialnetwork.invitation.servlets.InvitationJSONActions.valueOf;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public class InvitationJSONServlet extends HttpServlet {
 

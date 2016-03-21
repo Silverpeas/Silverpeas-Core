@@ -22,14 +22,14 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
-<%@ page import="org.silverpeas.subscription.bean.ComponentSubscriptionBean" %>
+<%@ page import="org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
 <%
-  Collection<org.silverpeas.subscription.bean.ComponentSubscriptionBean> subscriptions =
+  Collection<org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean> subscriptions =
       (Collection) request.getAttribute("subscriptions");
   String currentUserId = (String) request.getAttribute("currentUserId");
   String userId = (String) request.getAttribute("userId");

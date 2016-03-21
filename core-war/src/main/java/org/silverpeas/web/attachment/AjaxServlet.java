@@ -23,13 +23,13 @@
  */
 package org.silverpeas.web.attachment;
 
-import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;

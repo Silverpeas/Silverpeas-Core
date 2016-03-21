@@ -25,8 +25,8 @@
 package org.silverpeas.web.directory.control;
 
 import org.silverpeas.web.directory.model.DirectoryItemList;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
@@ -36,7 +36,6 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.web.directory.control.DirectorySessionController;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -161,7 +161,7 @@ public class WebComponentRequestRouterTest {
     WebComponentRequestRouter routerInstance = new WebComponentRequestRouter();
     ServletConfig servletConfig = mock(ServletConfig.class);
     when(servletConfig.getInitParameter(
-        com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController.class
+        org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class
             .getSimpleName())).thenReturn(controller.getName());
     ServletContext servletContext = mock(ServletContext.class);
     when(servletConfig.getServletContext()).thenReturn(servletContext);

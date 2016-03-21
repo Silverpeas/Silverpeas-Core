@@ -31,7 +31,7 @@
         response.resetBuffer();
 %>
 
-<%@ page import="com.stratelia.webactiv.homepage.HomePageUtil"%>
+<%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil"%>
 <%@ page import="java.io.PrintWriter"%>
 
 <%

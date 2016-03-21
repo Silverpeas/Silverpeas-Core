@@ -23,16 +23,16 @@
  */
 package org.silverpeas.sharing.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingServiceProvider;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPrivilegeValidation;
-import org.silverpeas.sharing.bean.SharingNotificationVO;
-import org.silverpeas.sharing.notification.FileSharingUserNotification;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
+import org.silverpeas.core.web.sharing.notification.FileSharingUserNotification;
 import org.silverpeas.util.CollectionUtil;
 
 import javax.ws.rs.Consumes;

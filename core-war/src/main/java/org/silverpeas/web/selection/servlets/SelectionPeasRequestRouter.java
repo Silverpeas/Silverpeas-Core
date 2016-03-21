@@ -25,15 +25,15 @@
 package org.silverpeas.web.selection.servlets;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
-import com.stratelia.silverpeas.selectionPeas.CacheType;
+import org.silverpeas.core.web.selection.CacheType;
 import org.silverpeas.web.selection.control.SelectionPeasSessionController;
-import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
+import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,7 +44,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Class declaration

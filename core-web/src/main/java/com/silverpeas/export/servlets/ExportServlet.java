@@ -27,8 +27,8 @@ package com.silverpeas.export.servlets;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.html.HtmlCleaner;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

@@ -34,9 +34,9 @@ import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.Pair;
 

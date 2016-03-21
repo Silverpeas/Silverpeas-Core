@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane.*;
+import static org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane.*;
 
 public class MyNotificationsPortlet extends GenericPortlet implements FormNames {
 

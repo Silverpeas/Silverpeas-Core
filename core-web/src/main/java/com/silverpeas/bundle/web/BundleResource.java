@@ -23,9 +23,9 @@
  */
 package com.silverpeas.bundle.web;
 
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

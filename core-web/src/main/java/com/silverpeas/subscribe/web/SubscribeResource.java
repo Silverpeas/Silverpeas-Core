@@ -24,7 +24,7 @@
 */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
@@ -32,7 +32,7 @@ import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.NotifierUtil;

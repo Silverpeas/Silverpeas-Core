@@ -26,13 +26,13 @@ import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.web.clipboard.control.ClipboardSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Class declaration

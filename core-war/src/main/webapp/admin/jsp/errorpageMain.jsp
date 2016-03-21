@@ -37,10 +37,14 @@ if (response.isCommitted() == false) {
  % (via the template.jsp)
 --%>
 
-<%@ page isErrorPage="false" import="com.stratelia.webactiv.homepage.HomePageUtil" %>
+<%@ page isErrorPage="false" import="org.silverpeas.core.web.mvc.util.HomePageUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.io.PrintWriter"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
 
 <%@ include file="import.jsp" %>
 

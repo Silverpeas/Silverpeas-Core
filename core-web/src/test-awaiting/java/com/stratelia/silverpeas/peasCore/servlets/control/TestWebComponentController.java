@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.AbstractNavigationContextListener;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 import com.stratelia.webactiv.SilverpeasRole;
 
 import javax.ws.rs.DELETE;
@@ -44,7 +44,7 @@ import javax.ws.rs.core.Response;
 /**
  * @author: Yohann Chastagnier
  */
-@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
+@org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
 public class TestWebComponentController extends ParentTestWebComponentController {
 

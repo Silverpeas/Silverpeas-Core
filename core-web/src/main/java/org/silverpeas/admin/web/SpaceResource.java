@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.web;
 
-import com.silverpeas.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;

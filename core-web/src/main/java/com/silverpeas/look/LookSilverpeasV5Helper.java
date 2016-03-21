@@ -24,7 +24,7 @@ import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -44,7 +44,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -195,7 +195,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   /*
    * (non-Javadoc)
    * @see
-   * com.silverpeas.look.LookHelper#init(com.stratelia.silverpeas.peasCore.MainSessionController,
+   * com.silverpeas.look.LookHelper#init(org.silverpeas.core.web.mvc.controller.MainSessionController,
    * org.silverpeas.util.ResourceLocator, org.silverpeas.util.ResourceLocator)
    */
   @Override

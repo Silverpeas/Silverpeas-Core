@@ -25,14 +25,14 @@ package com.stratelia.silverpeas.peasCore.servlets.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
 
 import javax.ws.rs.GET;
 
 /**
  * @author: Yohann Chastagnier
  */
-@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
+@org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
 public class MissingNavigationController extends ParentTestWebComponentController {
 

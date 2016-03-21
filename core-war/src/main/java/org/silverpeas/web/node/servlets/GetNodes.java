@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.node.servlets;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -51,7 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public class GetNodes extends HttpServlet {
 

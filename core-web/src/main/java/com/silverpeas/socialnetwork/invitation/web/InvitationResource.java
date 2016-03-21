@@ -23,10 +23,10 @@
  */
 package com.silverpeas.socialnetwork.invitation.web;
 
-import com.silverpeas.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

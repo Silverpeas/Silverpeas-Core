@@ -33,7 +33,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.apache.commons.io.FilenameUtils;

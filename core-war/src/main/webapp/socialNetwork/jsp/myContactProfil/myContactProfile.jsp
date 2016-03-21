@@ -31,7 +31,7 @@
 <%@ page import="com.silverpeas.directory.model.Member"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

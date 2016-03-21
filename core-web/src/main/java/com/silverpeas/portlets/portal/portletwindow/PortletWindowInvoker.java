@@ -24,7 +24,7 @@
 
 package com.silverpeas.portlets.portal.portletwindow;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.sun.portal.container.*;
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowErrorCode;

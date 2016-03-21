@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
+<%@page import="org.silverpeas.core.web.mvc.controller.ComponentContext"%>
 <%@page import="org.silverpeas.attachment.AttachmentServiceProvider"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

@@ -24,7 +24,7 @@
 */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
@@ -38,7 +38,7 @@ import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
 import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.StringUtil;
 

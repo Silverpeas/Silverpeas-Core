@@ -26,6 +26,7 @@ package org.silverpeas.servlet;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.SettingBundle;

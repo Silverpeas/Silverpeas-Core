@@ -32,6 +32,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
 <%@ include file="import.jsp" %>
 
 <%

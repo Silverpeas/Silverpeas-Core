@@ -42,13 +42,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.index.indexing.model.IndexEntry"%>
 <%@ page import="org.silverpeas.core.clipboard.ClipboardSelection"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine"%>
 
 <%@ include file="checkClipboard.jsp" %>
 
-<%@page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.Iterator" %>
 <HTML>

@@ -34,15 +34,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.sharing.model.Ticket"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
 
 <%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

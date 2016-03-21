@@ -20,7 +20,7 @@
  */
 package org.silverpeas.node.web;
 
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.node.model.NodePK;

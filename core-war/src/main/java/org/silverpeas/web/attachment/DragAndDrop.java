@@ -24,14 +24,14 @@
 package org.silverpeas.web.attachment;
 
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
-import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;

@@ -1,7 +1,7 @@
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%

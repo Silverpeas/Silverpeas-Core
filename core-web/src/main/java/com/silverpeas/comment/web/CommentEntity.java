@@ -28,7 +28,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.profile.web.UserProfileEntity;
-import com.silverpeas.web.WebEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.util.i18n.I18NHelper;

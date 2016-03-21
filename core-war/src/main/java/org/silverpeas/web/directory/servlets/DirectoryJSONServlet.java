@@ -23,7 +23,7 @@ package org.silverpeas.web.directory.servlets;
 import org.silverpeas.web.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.JSONCodec;

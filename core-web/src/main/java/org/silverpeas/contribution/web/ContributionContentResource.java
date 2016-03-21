@@ -23,7 +23,7 @@
  */
 package org.silverpeas.contribution.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;

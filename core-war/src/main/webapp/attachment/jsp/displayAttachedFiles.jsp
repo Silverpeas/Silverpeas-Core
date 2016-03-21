@@ -34,7 +34,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.ComponentContext" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>

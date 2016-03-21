@@ -24,7 +24,7 @@
 package org.silverpeas.password.web;
 
 import org.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.password.rule.PasswordRule;
 import org.silverpeas.password.service.PasswordCheck;
 

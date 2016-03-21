@@ -20,9 +20,9 @@
  */
 package org.silverpeas.web.servlets;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.servlets.AbstractFileSender;
+import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.admin.OrganizationController;

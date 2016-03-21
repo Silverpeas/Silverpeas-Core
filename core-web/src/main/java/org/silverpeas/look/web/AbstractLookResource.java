@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.look.web.delegate.LookWebDelegate;
 
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 /**
  * Centralizations of look resource processings

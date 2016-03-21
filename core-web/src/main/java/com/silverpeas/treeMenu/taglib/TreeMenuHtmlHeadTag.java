@@ -25,7 +25,6 @@
 package com.silverpeas.treeMenu.taglib;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 
@@ -33,7 +32,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 

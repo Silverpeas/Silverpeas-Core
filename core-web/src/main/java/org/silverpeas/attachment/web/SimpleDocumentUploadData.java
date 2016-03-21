@@ -23,11 +23,11 @@
  */
 package org.silverpeas.attachment.web;
 
-import org.silverpeas.servlet.RequestFile;
+import org.silverpeas.core.web.http.RequestFile;
 
 import javax.ws.rs.FormParam;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
+import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
 
 /**
  * @author: Yohann Chastagnier

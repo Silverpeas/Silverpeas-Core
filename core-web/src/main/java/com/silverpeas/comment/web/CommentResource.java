@@ -24,12 +24,12 @@
 
 package com.silverpeas.comment.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.enterprise.context.RequestScoped;

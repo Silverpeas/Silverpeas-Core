@@ -33,10 +33,10 @@ package org.silverpeas.web.notificationserver.channel.popup;
  * @version 1.0
  */
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Class declaration

@@ -35,12 +35,12 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane;
-import org.silverpeas.util.viewGenerator.html.iconPanes.IconPane;
-import org.silverpeas.util.viewGenerator.html.icons.Icon;
+import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine;
+import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane;
+import org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane;
+import org.silverpeas.core.web.util.viewGenerator.html.icons.Icon;
 
 /**
  * Class implementing the tag &lt;contextualDesignationList&gt; from workflowEditor.tld

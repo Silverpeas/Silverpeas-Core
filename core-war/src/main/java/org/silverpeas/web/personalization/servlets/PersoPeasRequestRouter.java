@@ -26,12 +26,12 @@ package org.silverpeas.web.personalization.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
 import org.silverpeas.web.personalization.control.PersonalizationSessionController;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.ArrayList;
 import java.util.Properties;

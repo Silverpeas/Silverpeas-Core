@@ -24,6 +24,9 @@
 package org.silverpeas.servlet;
 
 import org.junit.Rule;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.http.RequestFile;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.DateUtil;

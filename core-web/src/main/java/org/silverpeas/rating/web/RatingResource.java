@@ -23,11 +23,11 @@
  */
 package org.silverpeas.rating.web;
 
-import com.silverpeas.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.notation.control.RatingService;
-import com.silverpeas.web.RESTWebService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRating;

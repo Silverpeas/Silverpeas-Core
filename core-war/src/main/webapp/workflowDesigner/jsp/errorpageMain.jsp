@@ -35,8 +35,8 @@
  % error details are available in the explicit 'exception' object.
 --%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.webactiv.homepage.HomePageUtil"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.exception.SilverpeasException"%>
 

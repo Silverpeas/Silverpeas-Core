@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 /**
  * @author: Yohann Chastagnier
  */
-@com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController(
+@org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
 public class HomePageIsNotSpecifiedController extends ParentTestWebComponentController {
 
