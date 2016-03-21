@@ -168,6 +168,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-all-7.0</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <artifactId>rome</artifactId>
       <groupId>rome</groupId>
     </dependency>

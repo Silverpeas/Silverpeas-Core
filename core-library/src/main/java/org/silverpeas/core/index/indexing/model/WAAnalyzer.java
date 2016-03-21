@@ -137,7 +137,7 @@ public final class WAAnalyzer extends Analyzer {
   }
   static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
   static private final SettingBundle settings =
-      ResourceLocator.getSettingBundle("org.silverpeas.util.indexing.IndexEngine");
+      ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
   /**
    * The words which are usually not useful for searching.
    */

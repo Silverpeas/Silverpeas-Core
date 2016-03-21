@@ -25,12 +25,11 @@
 package org.silverpeas.web.directory.servlets;
 
 
-import javax.servlet.http.HttpServletRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.silverpeas.web.directory.servlets.ImageDisplay;
 
+import javax.servlet.http.HttpServletRequest;
 
 public class ImageDisplayTest {
 

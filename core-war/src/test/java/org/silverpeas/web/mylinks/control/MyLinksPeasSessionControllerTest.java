@@ -38,7 +38,6 @@ import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.web.mylinks.control.MyLinksPeasSessionController;
 
 import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
