@@ -27,7 +27,7 @@
 
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.apache.lucene.queryParser.QueryParser"%>
-<%@page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
+<%@page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.util.StringUtil"%>

@@ -25,12 +25,12 @@ package com.stratelia.webactiv.beans.admin.indexation;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ParseException;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.ParseException;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.index.search.model.WAIndexSearcher;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.ArrayList;

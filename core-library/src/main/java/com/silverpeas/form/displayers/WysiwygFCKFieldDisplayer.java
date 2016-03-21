@@ -43,7 +43,7 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;

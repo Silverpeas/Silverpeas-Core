@@ -23,7 +23,7 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.core.index.search.model.QueryDescription;
 
 import java.text.ParseException;
 import java.util.Date;

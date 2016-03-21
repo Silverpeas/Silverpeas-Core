@@ -41,7 +41,7 @@ import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ForeignPK;

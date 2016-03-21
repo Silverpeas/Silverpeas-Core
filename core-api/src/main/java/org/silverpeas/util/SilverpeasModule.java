@@ -41,6 +41,10 @@ public class SilverpeasModule {
   private static final Pattern pattern = Pattern.compile(
       "(org\\.silverpeas|com\\.silverpeas|com\\.stratelia\\.webactiv|com\\.stratelia" +
           "\\.silverpeas)\\.(\\w+).*");
+  /* TODO replace the pattern above by the one below once the package renaming done and don't forget to remove all the Peas-like logger modules
+  "(org\\.silverpeas\\.core\\.web|org\\.silverpeas\\.web|org\\.silverpeas\\.core\\.components|" +
+        "org\\.silverpeas\\.core|org\\.silverpeas)\\.(\\w+).*")
+   */
 
   /**
    * Gets the name of the module to which the specified object belongs. The module name is first

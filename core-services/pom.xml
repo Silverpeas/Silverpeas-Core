@@ -35,7 +35,6 @@
   </dependencies>
 
   <modules>
-    <module>searchengine</module>
     <module>silverstatistics</module>
     <module>tagcloud</module>
     <module>contact</module>

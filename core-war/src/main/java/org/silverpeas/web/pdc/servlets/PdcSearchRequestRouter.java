@@ -43,6 +43,7 @@ import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.ContainerContextImpl;
@@ -64,8 +65,8 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.ScoreComparator;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ServiceProvider;
@@ -561,7 +562,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           MatchingIndexEntry[] ie;
           try {
             ie = pdcSC.search(); // launch the classical research
-          } catch (org.silverpeas.search.searchEngine.model.ParseException pex) {
+          } catch (ParseException pex) {
             ie = new MatchingIndexEntry[0];
             request.setAttribute("parseException", "pdcPeas.badRequest");
           }

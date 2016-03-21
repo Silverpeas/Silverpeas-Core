@@ -79,11 +79,11 @@ import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.search.PlainSearchResult;
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.core.index.search.PlainSearchResult;
+import org.silverpeas.core.index.search.SearchEngineProvider;
+import org.silverpeas.core.index.search.model.AxisFilter;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.util.*;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -361,7 +361,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public MatchingIndexEntry[] search() throws
-      org.silverpeas.search.searchEngine.model.ParseException {
+      org.silverpeas.core.index.search.model.ParseException {
 
     MatchingIndexEntry[] plainSearchResults = null;
     QueryDescription query;
@@ -1923,13 +1923,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (KEYWORDS == null) {
       try {
         LocalizationBundle resource =
-            ResourceLocator.getLocalizationBundle("org.silverpeas.search.indexEngine.StopWords",
+            ResourceLocator.getLocalizationBundle("org.silverpeas.index.indexing.StopWords",
                 getLanguage());
         List<String> wordList = new ArrayList<>(resource.keySet());
         KEYWORDS = wordList.toArray(new String[wordList.size()]);
       } catch (MissingResourceException e) {
         SilverLogger.getLogger(this)
-            .warn("Missing stop words in org.silverpeas.search.indexEngine.StopWords");
+            .warn("Missing stop words in org.silverpeas.search.indexing.StopWords");
         return new String[0];
       }
     }
@@ -1961,7 +1961,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         PlainSearchResult result = SearchEngineProvider.getSearchEngine().search(queryDescription);
         glossaryResults = result.getEntries().toArray(new MatchingIndexEntry[result.getEntries().
             size()]);
-      } catch (org.silverpeas.search.searchEngine.model.ParseException e) {
+      } catch (org.silverpeas.core.index.search.model.ParseException e) {
         throw new PdcException("PdcSearchSessionController.glossarySearch()",
             SilverpeasException.ERROR, "pdcPeas.EX_CAN_SEARCH_QUERY", "query : "
             + queryDescription.getQuery(), e);

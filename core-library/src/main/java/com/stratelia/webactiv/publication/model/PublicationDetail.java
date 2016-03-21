@@ -58,7 +58,7 @@ import org.silverpeas.date.period.Period;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.Rateable;
-import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ServiceProvider;

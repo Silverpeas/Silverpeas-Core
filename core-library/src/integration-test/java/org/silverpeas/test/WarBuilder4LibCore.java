@@ -65,8 +65,8 @@ import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.service.QuotaService;
-import org.silverpeas.search.indexEngine.IndexFileManager;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.test.jcr.JcrIntegrationTest;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
@@ -401,8 +401,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addMavenDependencies("org.apache.lucene:lucene-core");
       addMavenDependencies("org.apache.lucene:lucene-analyzers");
       addMavenDependencies("org.apache.lucene:lucene-spellchecker");
-      addPackages(true, "org.silverpeas.search.indexEngine");
-      addAsResource("org/silverpeas/search/indexEngine");
+      addPackages(true, "org.silverpeas.core.index.indexing");
+      addAsResource("org/silverpeas/index/indexing");
       addClasses(IndexFileManager.class);
     }
     return this;

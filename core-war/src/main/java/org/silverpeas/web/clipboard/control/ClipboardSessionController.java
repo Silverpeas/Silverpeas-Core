@@ -33,7 +33,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.owasp.encoder.Encode;
-import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.SettingBundle;

@@ -31,8 +31,8 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

@@ -30,7 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
-import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;

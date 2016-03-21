@@ -37,10 +37,10 @@ import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.search.searchEngine.model.ParseException;
-import org.silverpeas.search.searchEngine.model.SearchEngineException;
-import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
-import org.silverpeas.search.util.SearchEnginePropertiesManager;
+import org.silverpeas.core.index.search.model.ParseException;
+import org.silverpeas.core.index.search.model.SearchEngineException;
+import org.silverpeas.core.index.search.model.WAIndexSearcher;
+import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.token.exception.TokenException;
@@ -77,12 +77,12 @@ public class UsersAndGroupsTest {
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
         .addSynchAndAsynchResourceEventFeatures()
+        .addIndexEngineFeatures()
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
         .addAsResource("com/silverpeas/domains/silverpeasdriver")
         .addMavenDependencies("org.apache.lucene:lucene-core")
         .addMavenDependencies("org.apache.lucene:lucene-analyzers")
         .addPackages(false, "org.silverpeas.admin.space.quota")
-        .addPackages(true, "org.silverpeas.search.indexEngine")
         .addPackages(false, "com.stratelia.silverpeas.peasCore")
         .addPackages(false, "com.stratelia.silverpeas.containerManager")
         .addPackages(false, "com.stratelia.silverpeas.contentManager")

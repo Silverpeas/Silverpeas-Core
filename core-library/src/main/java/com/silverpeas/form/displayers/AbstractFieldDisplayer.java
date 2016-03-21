@@ -31,7 +31,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.util.StringUtil;
 

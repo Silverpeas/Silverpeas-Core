@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilter;
 
 import org.silverpeas.util.CollectionUtil;
 

@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test class for org.silverpeas.search.indexEngine.model.DidYouMeanIndexer
+ * Test class for DidYouMeanIndexer
  */
 public class TestDidYouMeanIndexer {
 

@@ -101,11 +101,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-searchengine</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-calendar</artifactId>
       <version>${project.version}</version>
     </dependency>

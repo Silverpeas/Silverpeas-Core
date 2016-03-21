@@ -21,10 +21,10 @@
 package org.silverpeas.web.pdc.control;
 
 import com.stratelia.silverpeas.contentManager.XMLFormFieldComparator;
+import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.WAIndexSearcher;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 import javax.inject.Named;
 import java.util.ArrayList;

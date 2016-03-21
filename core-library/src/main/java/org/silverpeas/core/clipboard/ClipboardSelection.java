@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.clipboard;
 
-import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;

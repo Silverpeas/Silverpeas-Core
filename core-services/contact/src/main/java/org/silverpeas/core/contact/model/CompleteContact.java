@@ -42,7 +42,7 @@ import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.util.StringUtil;
 
 import java.io.PrintWriter;

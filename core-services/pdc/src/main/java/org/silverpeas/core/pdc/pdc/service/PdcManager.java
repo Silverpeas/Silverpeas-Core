@@ -31,7 +31,7 @@ import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Connection;

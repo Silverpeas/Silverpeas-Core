@@ -25,7 +25,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 import java.text.ParseException;
 
-import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;

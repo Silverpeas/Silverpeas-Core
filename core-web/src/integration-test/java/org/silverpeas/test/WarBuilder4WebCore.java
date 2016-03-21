@@ -55,8 +55,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
     addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");
     addAsResource("org/silverpeas/peasCore/SessionManager.properties");
-    addAsResource("org/silverpeas/search/indexEngine/StopWords.properties");
-    addAsResource("org/silverpeas/searchEngine/searchEngineSettings.properties");
+    addAsResource("org/silverpeas/index/indexing/StopWords.properties");
+    addAsResource("org/silverpeas/index/search/searchEngineSettings.properties");
     addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
     addAsResource("org/silverpeas/util/attachment/Attachment.properties");
     addAsResource("org/silverpeas/util/security.properties");

@@ -33,14 +33,14 @@ import org.silverpeas.core.pdc.tree.model.TreeNodePersistence;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
-import org.silverpeas.search.searchEngine.model.AxisFilterNode;
+import org.silverpeas.core.index.search.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilterNode;
 
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

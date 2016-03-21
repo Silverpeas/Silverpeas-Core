@@ -27,7 +27,7 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilter;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;

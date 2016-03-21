@@ -60,7 +60,7 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
-import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;

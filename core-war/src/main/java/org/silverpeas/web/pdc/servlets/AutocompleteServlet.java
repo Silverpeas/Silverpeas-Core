@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
-import org.silverpeas.search.searchEngine.model.SearchCompletion;
+import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

@@ -27,7 +27,8 @@ package com.stratelia.webactiv.applicationIndexer.control;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
 
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ServiceProvider;
@@ -65,7 +66,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
   public void indexComponent(String spaceId, String componentId) throws Exception {
 
     try {
-      String ComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
+      String ComponentIndexPath = IndexFileManager
           .getAbsoluteIndexPath(null, componentId);
       DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);
     } catch (Exception e) {
@@ -84,7 +85,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
   public void indexPersonalComponent(String personalComponent) {
     try {
       File file = new File(
-          org.silverpeas.search.indexEngine.IndexFileManager.getIndexUpLoadPath());
+          IndexFileManager.getIndexUpLoadPath());
       FilenameFilter filter = null;
       if ("agenda".equalsIgnoreCase(personalComponent)) {
         filter = new FileFilterAgenda();
@@ -99,7 +100,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
       }
       String[] paths = file.list(filter);
       for (String personalComponentName : paths) {
-        String personalComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
+        String personalComponentIndexPath = IndexFileManager
             .getAbsoluteIndexPath(null,
                 personalComponentName);
         DidYouMeanIndexer.createSpellIndex("content", personalComponentIndexPath);
@@ -118,7 +119,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   public void indexPdc() {
     setSilverTraceLevel();
-    String pdcIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
+    String pdcIndexPath = IndexFileManager
         .getAbsoluteIndexPath(null, "pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
   }

@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
-<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>

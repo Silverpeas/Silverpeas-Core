@@ -30,7 +30,7 @@ import java.sql.Connection;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilter;
 
 public interface TreeService {
 

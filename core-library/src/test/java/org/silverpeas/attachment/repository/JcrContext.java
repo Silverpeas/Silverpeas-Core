@@ -39,7 +39,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.jcr.JcrRepositoryProvider;
 import org.silverpeas.jcr.JcrSession;
 import org.silverpeas.jcr.SilverpeasJcrSchemaRegistering;
-import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ServiceProvider;

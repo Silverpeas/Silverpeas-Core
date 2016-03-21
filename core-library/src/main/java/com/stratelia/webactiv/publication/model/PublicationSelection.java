@@ -33,7 +33,7 @@ import java.io.Serializable;
 
 import org.silverpeas.silvertrace.SilverTrace;
 
-import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 public class PublicationSelection extends ClipboardSelection implements Serializable {
 

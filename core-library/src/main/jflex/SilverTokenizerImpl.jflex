@@ -1,4 +1,4 @@
-package org.silverpeas.search.indexEngine.analysis;
+package org.silverpeas.core.index.indexing.analysis;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more

@@ -47,7 +47,7 @@ import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 import org.silverpeas.core.pdc.tree.service.TreeService;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.ServiceProvider;

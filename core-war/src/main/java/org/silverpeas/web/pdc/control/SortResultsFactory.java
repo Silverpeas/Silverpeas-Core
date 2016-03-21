@@ -49,7 +49,7 @@ public class SortResultsFactory {
    */
   public static SortResults getSortResults(String implementor) {
     SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.searchEngine.searchEngineSettings");
+        ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
     String qualifier = settings.getString(implementor, "defaultSortResults");
     if (StringUtil.isDefined(qualifier)) {
       try {

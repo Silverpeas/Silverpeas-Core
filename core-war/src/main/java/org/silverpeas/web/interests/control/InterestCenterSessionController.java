@@ -44,8 +44,8 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   public InterestCenterSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.interestCenterPeas.multilang.interestCenterBundle",
-        "org.silverpeas.interestCenterPeas.settings.interestCenterPeasIcons");
+        "org.silverpeas.interests.multilang.interestsBundle",
+        "org.silverpeas.interests.settings.interestsIcons");
   }
 
   /**

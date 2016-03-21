@@ -42,7 +42,6 @@ import javax.inject.Inject;
 
 /**
  * Class ThesaurusManager Classe servant d'interface aux autres composants ayant besoin du thesaurus
- * (module pdc et searchEngine)
  */
 public class ThesaurusManager {
 
