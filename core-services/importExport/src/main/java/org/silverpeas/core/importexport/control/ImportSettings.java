@@ -45,6 +45,7 @@ public class ImportSettings implements Cloneable {
   private int versionType;
   private int method;
   private String contentLanguage;
+  private String targetValidatorIds;
   private PublicationDetail publicationForAllFiles = new PublicationDetail();
 
   public ImportSettings(String pathToImport, UserDetail user, String componentId, String folderId,
@@ -171,6 +172,14 @@ public class ImportSettings implements Cloneable {
 
   public void setContentLanguage(final String contentLanguage) {
     this.contentLanguage = contentLanguage;
+  }
+
+  public String getTargetValidatorIds() {
+    return targetValidatorIds;
+  }
+
+  public void setTargetValidatorIds(final String targetValidatorIds) {
+    this.targetValidatorIds = targetValidatorIds;
   }
 
   public boolean useFileDates() {
