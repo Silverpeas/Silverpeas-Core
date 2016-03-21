@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.webdav;
+package org.silverpeas.core.webdav.web;
 
 import org.apache.jackrabbit.webdav.util.EncodeUtil;
 import org.hamcrest.MatcherAssert;
