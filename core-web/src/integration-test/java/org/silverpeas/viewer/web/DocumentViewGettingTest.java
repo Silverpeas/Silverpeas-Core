@@ -36,9 +36,9 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.test.WarBuilder4WebCore;
-import org.silverpeas.viewer.DefaultViewService;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewerContext;
+import org.silverpeas.core.viewer.service.DefaultViewService;
+import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.service.ViewerContext;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

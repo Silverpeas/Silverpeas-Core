@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,50 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
+package org.silverpeas.core.viewer.service;
 
-import com.silverpeas.util.Default;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.ViewerContext;
+import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Named;
 import java.io.File;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("documentViewService")
-@Default
-public class DocumentViewServiceMockWrapper implements ViewService {
+public interface PreviewService {
 
-  private final ViewService mock;
-
-  public DocumentViewServiceMockWrapper() {
-    mock = mock(ViewService.class);
+  static PreviewService get() {
+    return ServiceProvider.getService(PreviewService.class);
   }
 
-  public ViewService getMock() {
-    return mock;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#isViewable
+  /**
+   * Verifying if it is possible to obtain an preview of the given file.
+   * @param file
+   * @return
    */
-  @Override
-  public boolean isViewable(final File file) {
-    return mock.isViewable(file);
-  }
+  boolean isPreviewable(File file);
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView
+  /**
+   * Getting an Preview instance of the given file
+   * @param viewerContext
+   * @return
    */
-  @Override
-  public DocumentView getDocumentView(final ViewerContext viewerContext) {
-    return mock.getDocumentView(viewerContext);
-  }
+  Preview getPreview(ViewerContext viewerContext);
 }

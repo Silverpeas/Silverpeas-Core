@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,50 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
+package org.silverpeas.core.viewer.service;
 
-import com.silverpeas.util.Default;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.ViewerContext;
-
-import javax.inject.Named;
-import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("documentViewService")
-@Default
-public class DocumentViewServiceMockWrapper implements ViewService {
+public class ViewerException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 2259738068129938704L;
 
-  private final ViewService mock;
-
-  public DocumentViewServiceMockWrapper() {
-    mock = mock(ViewService.class);
+  /**
+   * Default constructor
+   * @param e
+   */
+  public ViewerException(final Exception e) {
+    super("Viewer", SilverpeasException.ERROR, e.getMessage(), e);
   }
 
-  public ViewService getMock() {
-    return mock;
+  /**
+   * Default constructor
+   * @param message
+   */
+  public ViewerException(final String message) {
+    super("Viewer", SilverpeasException.ERROR, message);
   }
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#isViewable
+   * @see org.silverpeas.util.exception.SilverpeasException#getModule()
    */
   @Override
-  public boolean isViewable(final File file) {
-    return mock.isViewable(file);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView
-   */
-  @Override
-  public DocumentView getDocumentView(final ViewerContext viewerContext) {
-    return mock.getDocumentView(viewerContext);
+  public String getModule() {
+    return "viewer";
   }
 }

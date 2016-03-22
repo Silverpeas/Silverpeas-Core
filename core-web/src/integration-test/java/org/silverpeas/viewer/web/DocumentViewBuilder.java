@@ -23,8 +23,8 @@
  */
 package org.silverpeas.viewer.web;
 
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.exception.ViewerException;
+import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.service.ViewerException;
 
 import java.io.File;
 
@@ -57,7 +57,7 @@ public class DocumentViewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.DocumentView#getDisplayLicenseKey()
+     * @see org.silverpeas.core.viewer.model.DocumentView#getDisplayLicenseKey()
      */
     @Override
     public String getDisplayLicenseKey() {
@@ -66,7 +66,7 @@ public class DocumentViewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.DocumentView#getURLAsString()
+     * @see org.silverpeas.core.viewer.model.DocumentView#getURLAsString()
      */
     @Override
     public String getURLAsString() throws ViewerException {
@@ -75,7 +75,7 @@ public class DocumentViewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.DocumentView#getAttachment()
+     * @see org.silverpeas.core.viewer.model.DocumentView#getAttachment()
      */
     @Override
     public File getPhysicalFile() {
@@ -84,7 +84,7 @@ public class DocumentViewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.DocumentView#getOriginalFileName()
+     * @see org.silverpeas.core.viewer.model.DocumentView#getOriginalFileName()
      */
     @Override
     public String getOriginalFileName() {
@@ -93,7 +93,7 @@ public class DocumentViewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.DocumentView#getWidth()
+     * @see org.silverpeas.core.viewer.model.DocumentView#getWidth()
      */
     @Override
     public String getWidth() {
@@ -102,7 +102,7 @@ public class DocumentViewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.DocumentView#getHeight()
+     * @see org.silverpeas.core.viewer.model.DocumentView#getHeight()
      */
     @Override
     public String getHeight() {

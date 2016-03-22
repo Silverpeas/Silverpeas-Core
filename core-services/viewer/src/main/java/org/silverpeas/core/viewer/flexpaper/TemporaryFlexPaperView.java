@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,50 +21,48 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
+package org.silverpeas.core.viewer.flexpaper;
 
-import com.silverpeas.util.Default;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.ViewerContext;
+import org.silverpeas.core.viewer.model.AbstractView;
+import org.silverpeas.core.viewer.util.DocumentInfo;
 
-import javax.inject.Named;
 import java.io.File;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("documentViewService")
-@Default
-public class DocumentViewServiceMockWrapper implements ViewService {
+public class TemporaryFlexPaperView extends AbstractView {
+  private static final long serialVersionUID = 2467847236159432664L;
 
-  private final ViewService mock;
+  private int width = 0;
+  private int height = 0;
 
-  public DocumentViewServiceMockWrapper() {
-    mock = mock(ViewService.class);
-  }
-
-  public ViewService getMock() {
-    return mock;
+  /**
+   * Default constructor
+   * @param physicalFile
+   */
+  public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
+      final DocumentInfo info) {
+    super(originalFileName, physicalFile, info.getNbPages());
+    width = info.getMaxWidh();
+    height = info.getMaxHeight();
   }
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#isViewable
+   * @see org.silverpeas.core.viewer.model.AbstractPreview#getWidth()
    */
   @Override
-  public boolean isViewable(final File file) {
-    return mock.isViewable(file);
+  public String getWidth() {
+    return String.valueOf(width);
   }
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView
+   * @see org.silverpeas.core.viewer.model.AbstractPreview#getHeight()
    */
   @Override
-  public DocumentView getDocumentView(final ViewerContext viewerContext) {
-    return mock.getDocumentView(viewerContext);
+  public String getHeight() {
+    return String.valueOf(height);
   }
 }

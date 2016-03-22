@@ -21,50 +21,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
+package org.silverpeas.core.viewer.service;
 
-import com.silverpeas.util.Default;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.ViewerContext;
+import org.apache.commons.exec.CommandLine;
+import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecution.Config;
+import org.silverpeas.initialization.Initialization;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
-import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("documentViewService")
-@Default
-public class DocumentViewServiceMockWrapper implements ViewService {
+public class JsonPdfToolManager implements Initialization {
 
-  private final ViewService mock;
+  private static boolean isActivated = false;
 
-  public DocumentViewServiceMockWrapper() {
-    mock = mock(ViewService.class);
-  }
-
-  public ViewService getMock() {
-    return mock;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#isViewable
-   */
   @Override
-  public boolean isViewable(final File file) {
-    return mock.isViewable(file);
+  public void init() throws Exception {
+
+    // pdf2json settings
+    for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
+      if ("path".equals(entry.getKey().toLowerCase())) {
+        try {
+          CommandLine commandLine = new CommandLine("pdf2json");
+          commandLine.addArgument("-v");
+          ExternalExecution.exec(commandLine,
+              Config.init().successfulExitStatusValueIs(1).doNotDisplayErrorTrace());
+          isActivated = true;
+        } catch (final Exception e) {
+          // pdf2json is not installed
+          System.err.println("pdf2json is not installed");
+        }
+      }
+    }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView
+  /**
+   * Indicates if im4java is activated
+   * @return
    */
-  @Override
-  public DocumentView getDocumentView(final ViewerContext viewerContext) {
-    return mock.getDocumentView(viewerContext);
+  public static boolean isActivated() {
+    return isActivated;
   }
 }

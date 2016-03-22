@@ -8,10 +8,10 @@ import com.silverpeas.web.RESTWebService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.viewer.Preview;
-import org.silverpeas.viewer.PreviewService;
-import org.silverpeas.viewer.ViewerContext;
-import org.silverpeas.viewer.exception.ViewerException;
+import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.core.viewer.service.PreviewService;
+import org.silverpeas.core.viewer.service.ViewerContext;
+import org.silverpeas.core.viewer.service.ViewerException;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

@@ -54,7 +54,7 @@ public class PreviewServiceMockWrapper implements PreviewService {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.viewer.PreviewService#isItPossibleGettingPreview(java.io.File)
+   * @see org.silverpeas.core.viewer.service.PreviewService#isItPossibleGettingPreview(java.io.File)
    */
   @Override
   public boolean isPreviewable(final File file) {
@@ -63,7 +63,7 @@ public class PreviewServiceMockWrapper implements PreviewService {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.viewer.PreviewService#getPreview(java.io.File)
+   * @see org.silverpeas.core.viewer.service.PreviewService#getPreview(java.io.File)
    */
   @Override
   public Preview getPreview(final ViewerContext viewerContext) {

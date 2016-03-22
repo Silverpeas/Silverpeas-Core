@@ -25,8 +25,8 @@ package org.silverpeas.viewer.web;
 
 import java.io.File;
 
-import org.silverpeas.viewer.Preview;
-import org.silverpeas.viewer.exception.ViewerException;
+import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.core.viewer.service.ViewerException;
 
 /**
  * @author Yohann Chastagnier
@@ -57,7 +57,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+     * @see org.silverpeas.core.viewer.model.Preview#getDisplayLicenseKey()
      */
     @Override
     public String getDisplayLicenseKey() {
@@ -66,7 +66,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getURLAsString()
+     * @see org.silverpeas.core.viewer.model.Preview#getURLAsString()
      */
     @Override
     public String getURLAsString() throws ViewerException {
@@ -75,7 +75,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getAttachment()
+     * @see org.silverpeas.core.viewer.model.Preview#getAttachment()
      */
     @Override
     public File getPhysicalFile() {
@@ -84,7 +84,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getOriginalFileName()
+     * @see org.silverpeas.core.viewer.model.Preview#getOriginalFileName()
      */
     @Override
     public String getOriginalFileName() {
@@ -93,7 +93,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getWidth()
+     * @see org.silverpeas.core.viewer.model.Preview#getWidth()
      */
     @Override
     public String getWidth() {
@@ -102,7 +102,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getHeight()
+     * @see org.silverpeas.core.viewer.model.Preview#getHeight()
      */
     @Override
     public String getHeight() {

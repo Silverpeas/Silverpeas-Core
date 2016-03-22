@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,50 +21,49 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
+package org.silverpeas.core.viewer.model;
 
-import com.silverpeas.util.Default;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.ViewerContext;
-
-import javax.inject.Named;
 import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import java.io.Serializable;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("documentViewService")
-@Default
-public class DocumentViewServiceMockWrapper implements ViewService {
+public interface Preview extends Serializable {
 
-  private final ViewService mock;
-
-  public DocumentViewServiceMockWrapper() {
-    mock = mock(ViewService.class);
-  }
-
-  public ViewService getMock() {
-    return mock;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#isViewable
+  /**
+   * Getting the license of display software product if any
+   * @return
    */
-  @Override
-  public boolean isViewable(final File file) {
-    return mock.isViewable(file);
-  }
+  String getDisplayLicenseKey();
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView
+  /**
+   * Getting URL of the document
+   * @return
    */
-  @Override
-  public DocumentView getDocumentView(final ViewerContext viewerContext) {
-    return mock.getDocumentView(viewerContext);
-  }
+  String getURLAsString();
+
+  /**
+   * Getting the original file of the document
+   * @return
+   */
+  String getOriginalFileName();
+
+  /**
+   * Getting the physical file of the document
+   * @return
+   */
+  File getPhysicalFile();
+
+  /**
+   * Getting the width of the document
+   * @return
+   */
+  String getWidth();
+
+  /**
+   * Getting the height of the document
+   * @return
+   */
+  String getHeight();
 }

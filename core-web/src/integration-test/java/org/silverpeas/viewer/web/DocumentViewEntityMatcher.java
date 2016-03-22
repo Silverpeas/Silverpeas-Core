@@ -25,7 +25,7 @@ package org.silverpeas.viewer.web;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.silverpeas.viewer.DocumentView;
+import org.silverpeas.core.viewer.model.DocumentView;
 
 /**
  * @author Yohann Chastagnier

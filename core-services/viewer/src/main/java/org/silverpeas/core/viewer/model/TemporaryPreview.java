@@ -21,45 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web;
+package org.silverpeas.core.viewer.model;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.silverpeas.core.viewer.model.Preview;
+import java.io.File;
 
 /**
  * @author Yohann Chastagnier
  */
-public class PreviewEntityMatcher extends BaseMatcher<PreviewEntity> {
+public class TemporaryPreview extends AbstractPreview {
+  private static final long serialVersionUID = -8976465787358834699L;
 
-  private final Preview expected;
-
-  protected PreviewEntityMatcher(final Preview expected) {
-    this.expected = expected;
-  }
-
-  @Override
-  public void describeTo(final Description description) {
-    description.appendValue(expected);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.hamcrest.Matcher#matches(java.lang.Object)
+  /**
+   * Default constructor
+   * @param physicalFile
    */
-  @Override
-  public boolean matches(final Object item) {
-    boolean match = false;
-    if (item instanceof PreviewEntity) {
-      final PreviewEntity actual = (PreviewEntity) item;
-      match = expected.getURLAsString().equals(actual.getURL().toString()) &&
-          expected.getOriginalFileName().equals(actual.getOriginalFileName())
-          && actual.getURI().toString().endsWith("/preview/dummyComponent0/attachment/7");
-    }
-    return match;
-  }
-
-  public static PreviewEntityMatcher matches(final Preview expected) {
-    return new PreviewEntityMatcher(expected);
+  public TemporaryPreview(final String originalFilename, final File physicalFile) {
+    super(originalFilename, physicalFile);
   }
 }

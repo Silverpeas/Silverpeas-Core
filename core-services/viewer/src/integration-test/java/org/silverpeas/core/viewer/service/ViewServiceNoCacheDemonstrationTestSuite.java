@@ -21,50 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
+package org.silverpeas.core.viewer.service;
 
-import com.silverpeas.util.Default;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.ViewerContext;
-
-import javax.inject.Named;
-import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("documentViewService")
-@Default
-public class DocumentViewServiceMockWrapper implements ViewService {
 
-  private final ViewService mock;
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    ViewServiceNoCacheDemonstrationTestBefore.class,
+    ViewServiceNoCacheDemonstrationTestAfter.class
+})
+public class ViewServiceNoCacheDemonstrationTestSuite {
 
-  public DocumentViewServiceMockWrapper() {
-    mock = mock(ViewService.class);
-  }
-
-  public ViewService getMock() {
-    return mock;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#isViewable
-   */
-  @Override
-  public boolean isViewable(final File file) {
-    return mock.isViewable(file);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.viewer.service.ViewService#getDocumentView
-   */
-  @Override
-  public DocumentView getDocumentView(final ViewerContext viewerContext) {
-    return mock.getDocumentView(viewerContext);
-  }
+  public final static String CONVERSION_DURATION_FILE_NAME = "CONVERSION_DURATION";
+  public final static String DOCUMENT_VIEW_FILE_NAME = "DOCUMENT_VIEW";
 }

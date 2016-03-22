@@ -21,45 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web;
-
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.silverpeas.core.viewer.model.Preview;
+package org.silverpeas.core.viewer.model;
 
 /**
  * @author Yohann Chastagnier
  */
-public class PreviewEntityMatcher extends BaseMatcher<PreviewEntity> {
+public interface DocumentView extends Preview {
 
-  private final Preview expected;
-
-  protected PreviewEntityMatcher(final Preview expected) {
-    this.expected = expected;
-  }
-
-  @Override
-  public void describeTo(final Description description) {
-    description.appendValue(expected);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.hamcrest.Matcher#matches(java.lang.Object)
+  /**
+   * Gets total of pages
+   * @return
    */
-  @Override
-  public boolean matches(final Object item) {
-    boolean match = false;
-    if (item instanceof PreviewEntity) {
-      final PreviewEntity actual = (PreviewEntity) item;
-      match = expected.getURLAsString().equals(actual.getURL().toString()) &&
-          expected.getOriginalFileName().equals(actual.getOriginalFileName())
-          && actual.getURI().toString().endsWith("/preview/dummyComponent0/attachment/7");
-    }
-    return match;
-  }
+  int getNbPages();
 
-  public static PreviewEntityMatcher matches(final Preview expected) {
-    return new PreviewEntityMatcher(expected);
-  }
+  /**
+   * Indicates if the document view is split into several pieces.
+   * @return true if the document view is split, false otherwise.
+   */
+  boolean isDocumentSplit();
+
+  /**
+   * Indicates if search data have been computed.
+   * @return true if search data have been computed, false otherwise.
+   */
+  boolean areSearchDataComputed();
 }
