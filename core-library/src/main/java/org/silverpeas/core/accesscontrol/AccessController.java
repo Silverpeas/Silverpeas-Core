@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.util.CollectionUtil;

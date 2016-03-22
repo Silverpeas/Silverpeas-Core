@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.accesscontrol;
 
-import com.silverpeas.accesscontrol.AccessController;
-import org.silverpeas.util.ServiceProvider;
+package org.silverpeas.core.accesscontrol;
+
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
- * This interface extends access controller for a Space resource.
+ * This interface extends access controller for a Node resource.
  * @author Yohann Chastagnier
  */
-public interface SpaceAccessControl extends AccessController<String> {
+public interface NodeAccessControl extends AccessController<NodePK>{
 }

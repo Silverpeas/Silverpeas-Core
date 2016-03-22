@@ -21,16 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.accesscontrol;
 
-package org.silverpeas.accesscontrol;
-
-import com.silverpeas.accesscontrol.AccessController;
-import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
- * This interface extends access controller for a Node resource.
+ * This interface extends access controller interface for SimpleDocument resource.
  * @author Yohann Chastagnier
  */
-public interface NodeAccessControl extends AccessController<NodePK>{
+public interface SimpleDocumentAccessControl extends AccessController<SimpleDocument> {
 }

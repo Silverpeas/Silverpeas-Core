@@ -21,15 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.admin.OrganizationController;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * This interface extends access controller for a Publication resource.
+ * Check the access to a space for a user.
  * @author Yohann Chastagnier
  */
-public interface PublicationAccessControl extends AccessController<PublicationPK> {
+@Singleton
+public class SpaceAccessController extends AbstractAccessController<String>
+    implements SpaceAccessControl {
+
+  @Inject
+  private OrganizationController organizationController;
+
+  SpaceAccessController() {
+    // Instance by IoC only.
+  }
+
+  @Override
+  public boolean isUserAuthorized(final String userId, final String spaceId,
+      final AccessControlContext context) {
+    return organizationController.isSpaceAvailable(spaceId, userId);
+  }
 }

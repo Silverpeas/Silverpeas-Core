@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

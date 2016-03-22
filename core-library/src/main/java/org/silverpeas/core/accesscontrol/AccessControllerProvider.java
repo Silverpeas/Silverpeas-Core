@@ -21,11 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
 import org.silverpeas.util.ServiceProvider;
-
-import java.lang.annotation.Annotation;
 
 /**
  * A provider of the different access controllers available in Silverpeas.

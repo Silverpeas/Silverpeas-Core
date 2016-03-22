@@ -26,7 +26,7 @@ package org.silverpeas.upload;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.StringUtil;
@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.silverpeas.accesscontrol.AccessControllerProvider.getAccessController;
+import static org.silverpeas.core.accesscontrol.AccessControllerProvider.getAccessController;
 import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
 
 /**

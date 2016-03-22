@@ -20,14 +20,14 @@
  */
 package com.stratelia.webactiv.publication.social;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import org.silverpeas.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.accesscontrol.PublicationAccessControl;
+import org.silverpeas.core.accesscontrol.PublicationAccessControl;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.exception.SilverpeasException;

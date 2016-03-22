@@ -23,8 +23,8 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.AccessControlOperation;
+import org.silverpeas.core.accesscontrol.AccessControlContext;
+import org.silverpeas.core.accesscontrol.AccessControlOperation;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionValidationContext;
@@ -32,8 +32,8 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
+import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.attachment.model;
 
-import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.AccessControlOperation;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.accesscontrol.AccessControlContext;
+import org.silverpeas.core.accesscontrol.AccessControlOperation;
+import org.silverpeas.core.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
+import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.WebdavServiceProvider;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.*;

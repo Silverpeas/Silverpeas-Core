@@ -24,11 +24,12 @@
 package com.silverpeas.accesscontrol;
 
 import org.junit.Test;
+import org.silverpeas.core.accesscontrol.AccessControlOperation;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.silverpeas.accesscontrol.AccessControlOperation.*;
+import static org.silverpeas.core.accesscontrol.AccessControlOperation.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

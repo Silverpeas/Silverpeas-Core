@@ -22,10 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
-import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeService;
@@ -39,7 +37,6 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ComponentHelper;
 
 import java.util.Set;
 

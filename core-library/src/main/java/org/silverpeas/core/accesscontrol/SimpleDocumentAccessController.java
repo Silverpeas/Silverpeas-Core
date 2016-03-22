@@ -21,10 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
-import com.silverpeas.accesscontrol.AbstractAccessController;
-import com.silverpeas.accesscontrol.AccessControlContext;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -37,7 +35,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Set;
 
-import static com.silverpeas.accesscontrol.AccessControlOperation.*;
+import static org.silverpeas.core.accesscontrol.AccessControlOperation.*;
 
 /**
  * @author ehugonnet

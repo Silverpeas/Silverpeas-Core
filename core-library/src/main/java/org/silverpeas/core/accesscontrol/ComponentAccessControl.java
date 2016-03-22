@@ -22,10 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.accesscontrol;
-
-import com.silverpeas.accesscontrol.AccessController;
-import org.silverpeas.util.ServiceProvider;
+package org.silverpeas.core.accesscontrol;
 
 /**
  * This interface extends access controller interface for a Component resource.

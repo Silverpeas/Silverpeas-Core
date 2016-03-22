@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
+import org.silverpeas.core.accesscontrol.ForbiddenRuntimeException;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;

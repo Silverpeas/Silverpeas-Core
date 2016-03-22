@@ -23,7 +23,7 @@
  */
 package org.silverpeas.upload;
 
-import com.silverpeas.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
@@ -31,7 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;

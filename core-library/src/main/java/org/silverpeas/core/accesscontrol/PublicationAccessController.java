@@ -22,10 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
-import com.silverpeas.accesscontrol.AbstractAccessController;
-import com.silverpeas.accesscontrol.AccessControlContext;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -41,8 +39,8 @@ import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Set;
 
-import static com.silverpeas.accesscontrol.AccessControlOperation.isPersistActionFrom;
-import static com.silverpeas.accesscontrol.AccessControlOperation.isSharingActionFrom;
+import static org.silverpeas.core.accesscontrol.AccessControlOperation.isPersistActionFrom;
+import static org.silverpeas.core.accesscontrol.AccessControlOperation.isSharingActionFrom;
 
 /**
  * Check the access to a publication for a user.

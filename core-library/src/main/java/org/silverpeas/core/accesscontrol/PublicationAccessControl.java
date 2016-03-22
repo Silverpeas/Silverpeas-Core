@@ -21,14 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.accesscontrol;
+package org.silverpeas.core.accesscontrol;
 
-import com.silverpeas.accesscontrol.AccessController;
-import org.silverpeas.attachment.model.SimpleDocument;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 /**
- * This interface extends access controller interface for SimpleDocument resource.
+ * This interface extends access controller for a Publication resource.
  * @author Yohann Chastagnier
  */
-public interface SimpleDocumentAccessControl extends AccessController<SimpleDocument> {
+public interface PublicationAccessControl extends AccessController<PublicationPK> {
 }

@@ -28,7 +28,7 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.silverpeas.accesscontrol.SpaceAccessControl;
+import org.silverpeas.core.accesscontrol.SpaceAccessControl;
 import org.silverpeas.admin.web.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.admin.web.tools.AbstractTool;
 import org.silverpeas.look.web.delegate.LookWebDelegate;

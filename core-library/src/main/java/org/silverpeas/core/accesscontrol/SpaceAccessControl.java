@@ -21,33 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.accesscontrol;
-
-import com.silverpeas.accesscontrol.AbstractAccessController;
-import com.silverpeas.accesscontrol.AccessControlContext;
-import org.silverpeas.core.admin.OrganizationController;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
+package org.silverpeas.core.accesscontrol;
 
 /**
- * Check the access to a space for a user.
+ * This interface extends access controller for a Space resource.
  * @author Yohann Chastagnier
  */
-@Singleton
-public class SpaceAccessController extends AbstractAccessController<String>
-    implements SpaceAccessControl {
-
-  @Inject
-  private OrganizationController organizationController;
-
-  SpaceAccessController() {
-    // Instance by IoC only.
-  }
-
-  @Override
-  public boolean isUserAuthorized(final String userId, final String spaceId,
-      final AccessControlContext context) {
-    return organizationController.isSpaceAvailable(spaceId, userId);
-  }
+public interface SpaceAccessControl extends AccessController<String> {
 }

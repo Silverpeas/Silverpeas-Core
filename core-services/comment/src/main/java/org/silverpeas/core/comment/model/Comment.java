@@ -24,10 +24,10 @@
 package org.silverpeas.core.comment.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.Date;

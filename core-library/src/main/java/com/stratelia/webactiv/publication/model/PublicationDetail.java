@@ -24,10 +24,10 @@
 package com.stratelia.webactiv.publication.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.AccessControlOperation;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.accesscontrol.AccessControlContext;
+import org.silverpeas.core.accesscontrol.AccessControlOperation;
+import org.silverpeas.core.accesscontrol.AccessController;
+import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -50,7 +50,7 @@ import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.accesscontrol.PublicationAccessControl;
+import org.silverpeas.core.accesscontrol.PublicationAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
