@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -51,8 +52,7 @@ public abstract class AbstractFileSender extends HttpServlet {
         FileUtils.copyFile(file, response.getOutputStream());
         response.getOutputStream().flush();
       } catch (IOException e) {
-        SilverTrace.error("util", "AbstractFileSender.sendFile", "root.EX_CANT_READ_FILE",
-            " file: " + file.getAbsolutePath(), e);
+        SilverLogger.getLogger(this).error("file: " + file.getAbsolutePath(), e);
         displayWarningHtmlCode(response);
       }
     } else {
@@ -73,8 +73,7 @@ public abstract class AbstractFileSender extends HttpServlet {
       IOUtils.copy(sr, out);
       out.flush();
     } catch (IOException e) {
-      SilverTrace.warn("util", "AbstractFileSender.displayWarningHtmlCode",
-          "root.EX_CANT_READ_FILE", "warning properties", e);
+      SilverLogger.getLogger(this).error("warning properties", e);
     } finally {
       IOUtils.closeQuietly(sr);
     }

@@ -35,7 +35,7 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;

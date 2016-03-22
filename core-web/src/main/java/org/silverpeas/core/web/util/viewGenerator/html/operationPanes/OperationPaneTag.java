@@ -22,12 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.operationPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import javax.servlet.jsp.JspException;
 
-import org.silverpeas.core.web.util.viewGenerator.html.NeedWindowTag;
-import org.silverpeas.core.web.util.viewGenerator.html.window.WindowTag;
+import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
+import org.silverpeas.core.web.util.viewgenerator.html.window.WindowTag;
 
 public class OperationPaneTag extends NeedWindowTag {
   static final String OPERATION_PANE_PAGE_ATT = "pageContextOperationPane";

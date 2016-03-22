@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.arrayPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import javax.servlet.jsp.tagext.TagSupport;
 
 /**

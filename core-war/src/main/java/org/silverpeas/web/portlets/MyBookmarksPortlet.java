@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.silvertrace.SilverTrace;

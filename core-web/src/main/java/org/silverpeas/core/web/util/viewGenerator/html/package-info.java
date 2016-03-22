@@ -27,6 +27,6 @@
  * @author mmoquillon
  */
 @Module("viewgenerator")
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.annotation.Module;

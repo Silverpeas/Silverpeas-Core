@@ -24,14 +24,14 @@
  *
  * Created on 13 decembre 2000
  */
-package org.silverpeas.core.web.util.viewGenerator.html.formPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
 import java.util.Vector;
 import javax.servlet.jsp.PageContext;
 
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.util.Charsets;
 
 /**

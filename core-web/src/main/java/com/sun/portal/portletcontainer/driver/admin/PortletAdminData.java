@@ -25,8 +25,8 @@ package com.sun.portal.portletcontainer.driver.admin;
 
 import java.util.List;
 
-import com.silverpeas.portlets.portal.PortletAppData;
-import com.silverpeas.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletAppData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 

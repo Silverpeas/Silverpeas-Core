@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.icons;
+package org.silverpeas.core.web.util.viewgenerator.html.icons;
 
 public abstract class AbstractIcon implements Icon {
 

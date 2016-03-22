@@ -24,11 +24,11 @@
 
 package org.silverpeas.web.servlets;
 
-import com.silverpeas.look.LookHelper;
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

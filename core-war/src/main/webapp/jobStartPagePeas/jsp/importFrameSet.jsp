@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController, org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);

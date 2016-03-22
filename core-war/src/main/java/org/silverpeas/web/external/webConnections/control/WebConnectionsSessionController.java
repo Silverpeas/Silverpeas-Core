@@ -24,8 +24,8 @@
 
 package org.silverpeas.web.external.webconnections.control;
 
-import com.silverpeas.external.webConnections.model.ConnectionDetail;
-import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
+import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
+import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

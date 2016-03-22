@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.arrayPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * @author jboulet

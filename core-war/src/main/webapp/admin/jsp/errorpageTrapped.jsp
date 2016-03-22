@@ -40,10 +40,10 @@
 <%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil"%>
 <%@ page import="org.silverpeas.util.exception.SilverpeasTrappedException"%>
 <%@ page import="java.io.PrintWriter"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 
 <%@ include file="import.jsp" %>
 

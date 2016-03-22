@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.window;
+package org.silverpeas.core.web.util.viewgenerator.html.window;
 
-import org.silverpeas.core.web.util.viewGenerator.html.NeedWindowTag;
+import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;

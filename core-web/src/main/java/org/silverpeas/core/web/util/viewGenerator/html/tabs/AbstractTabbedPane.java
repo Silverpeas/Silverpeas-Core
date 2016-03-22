@@ -31,13 +31,13 @@
  * Created on 10 octobre 2000, 16:11
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.tabs;
+package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 /**
  * @author squere

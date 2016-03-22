@@ -29,7 +29,7 @@ import org.silverpeas.web.clipboard.control.ClipboardSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.core.web.http.HttpRequest;

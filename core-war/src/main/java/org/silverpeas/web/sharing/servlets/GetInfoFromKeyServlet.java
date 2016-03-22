@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.sharing.servlets;
 
-import com.silverpeas.look.SilverpeasLook;
+import org.silverpeas.core.web.look.SilverpeasLook;
 import com.silverpeas.sharing.model.NodeTicket;
 import com.silverpeas.sharing.model.PublicationTicket;
 import com.silverpeas.sharing.model.SimpleFileTicket;

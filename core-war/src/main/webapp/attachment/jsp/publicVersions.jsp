@@ -41,11 +41,11 @@
                  org.silverpeas.util.MultiSilverpeasBundle,
                  org.silverpeas.util.FileRepositoryManager,
                  org.silverpeas.util.FileServerUtils,
-                 org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory,
-                 org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellText,
-                 org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+                 org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory,
+                 org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText,
+                 org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="org.apache.commons.lang3.CharEncoding" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@page import="org.silverpeas.web.attachment.VersioningSessionController" %>

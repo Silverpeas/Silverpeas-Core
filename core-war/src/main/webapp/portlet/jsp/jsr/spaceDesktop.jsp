@@ -1,5 +1,5 @@
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

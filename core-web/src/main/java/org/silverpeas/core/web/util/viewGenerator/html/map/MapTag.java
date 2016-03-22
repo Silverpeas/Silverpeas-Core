@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.map;
+package org.silverpeas.core.web.util.viewgenerator.html.map;
 
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;

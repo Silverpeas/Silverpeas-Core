@@ -30,7 +30,7 @@
  *
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.formPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;

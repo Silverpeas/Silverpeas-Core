@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.icons;
+package org.silverpeas.core.web.util.viewgenerator.html.icons;
 
 import org.silverpeas.util.StringUtil;
 

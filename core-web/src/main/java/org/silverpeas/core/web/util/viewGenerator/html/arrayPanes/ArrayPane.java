@@ -22,13 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.arrayPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * The ArrayPane interface gives us the skeleton for all funtionnalities we need to display typical

@@ -31,7 +31,7 @@
  * Created on 10 octobre 2000, 16:11
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.tabs;
+package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
 /**
  * @author squere

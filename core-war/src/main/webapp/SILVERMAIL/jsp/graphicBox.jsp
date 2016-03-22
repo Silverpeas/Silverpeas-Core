@@ -27,19 +27,19 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 
 <%//____/ VIEW GENERATOR \_________________________________________________________________________%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
 

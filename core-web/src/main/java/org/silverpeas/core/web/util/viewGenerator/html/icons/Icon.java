@@ -19,9 +19,9 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.silverpeas.core.web.util.viewGenerator.html.icons;
+package org.silverpeas.core.web.util.viewgenerator.html.icons;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
 * @author neysseri

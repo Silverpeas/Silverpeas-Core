@@ -1,5 +1,5 @@
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame" %><%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

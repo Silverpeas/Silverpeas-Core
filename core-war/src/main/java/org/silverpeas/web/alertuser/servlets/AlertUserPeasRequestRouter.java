@@ -24,7 +24,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.alertuser.control.AlertUserPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.web.http.HttpRequest;

@@ -31,7 +31,7 @@
  * Created on 28 mars 2001, 10:32
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.navigationList;
+package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
 import java.util.Collection;
 

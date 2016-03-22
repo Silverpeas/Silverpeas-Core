@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.window;
+package org.silverpeas.core.web.util.viewgenerator.html.window;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -36,10 +36,10 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar;
-import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane;
-import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPaneType;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType;
 
 /**
  * @author neysseri

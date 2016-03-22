@@ -30,7 +30,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.portlets.portal.portletwindow.PortletWindowInvoker;
+import org.silverpeas.core.web.portlets.portal.portletwindow.PortletWindowInvoker;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.portletcontainer.invoker.InvokerException;

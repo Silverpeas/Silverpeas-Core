@@ -34,9 +34,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import com.silverpeas.portlets.portal.PortletAppData;
-import com.silverpeas.portlets.portal.PortletAppDataImpl;
-import com.silverpeas.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletAppData;
+import org.silverpeas.core.web.portlets.portal.PortletAppDataImpl;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import org.silverpeas.util.StringUtil;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletType;

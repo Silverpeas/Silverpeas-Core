@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html.comment;
+package org.silverpeas.core.web.util.viewgenerator.html.comment;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.web.util.viewGenerator.html.JavascriptPluginInclusion;
+import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

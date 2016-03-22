@@ -27,8 +27,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%
 String userId = m_MainSessionCtrl.getUserId();
 

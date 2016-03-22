@@ -33,7 +33,7 @@ import org.silverpeas.servlet.FileUploadUtil;
 
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAAttributeValuePair;

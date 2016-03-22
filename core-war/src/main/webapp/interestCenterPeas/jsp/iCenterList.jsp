@@ -30,8 +30,8 @@
                  java.net.URLEncoder,
                  java.util.ArrayList,
                  java.util.List"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkICenter.jsp" %>

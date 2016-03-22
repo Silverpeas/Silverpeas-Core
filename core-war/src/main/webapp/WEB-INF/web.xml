@@ -515,7 +515,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <!--
   <servlet>
     <servlet-name>AjaxFileUploadServlet</servlet-name>
-    <servlet-class>org.silverpeas.core.web.upload.servlet.AjaxFileUploadServlet</servlet-class>
+    <servlet-class>org.silverpeas.web.upload.AjaxFileUploadServlet</servlet-class>
     <init-param>
       <param-name>UPLOAD_DIRECTORY</param-name>
       <param-value>C:/tmp/ajax</param-value>
@@ -532,7 +532,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>TreeMenuAjaxServlet</servlet-name>
-    <servlet-class>com.silverpeas.treeMenu.servlet.TreeMenuAjaxServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.web.treemenu.servlet.TreeMenuAjaxServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcAjaxServlet</servlet-name>
@@ -588,7 +588,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>ExportServlet</servlet-name>
-    <servlet-class>com.silverpeas.export.servlets.ExportServlet</servlet-class>
+    <servlet-class>org.silverpeas.core.web.export.ExportServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxServletRSS</servlet-name>
@@ -604,7 +604,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>SocialNetworkLoginController</servlet-name>
-    <servlet-class>com.silverpeas.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
+    <servlet-class>org.silverpeas.web.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MailExistsServlet</servlet-name>

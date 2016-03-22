@@ -31,7 +31,7 @@
  * Created on 13 decembre 2000
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.formPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
 import javax.servlet.jsp.PageContext;
 

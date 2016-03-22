@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.servlets.credentials;
+package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;

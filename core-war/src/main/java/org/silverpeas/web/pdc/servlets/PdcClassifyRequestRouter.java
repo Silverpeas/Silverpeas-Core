@@ -33,7 +33,7 @@ import org.silverpeas.web.pdc.control.PdcFieldPositionsManager;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

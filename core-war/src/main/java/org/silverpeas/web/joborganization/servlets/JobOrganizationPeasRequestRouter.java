@@ -24,11 +24,11 @@
 
 package org.silverpeas.web.joborganization.servlets;
 
-import com.silverpeas.jobOrganizationPeas.JobOrganizationPeasException;
-import com.silverpeas.jobOrganizationPeas.control.JobOrganizationPeasSessionController;
+import org.silverpeas.web.joborganization.JobOrganizationPeasException;
+import org.silverpeas.web.joborganization.control.JobOrganizationPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.web.http.HttpRequest;
 

@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="javax.servlet.jsp.JspWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController" %>

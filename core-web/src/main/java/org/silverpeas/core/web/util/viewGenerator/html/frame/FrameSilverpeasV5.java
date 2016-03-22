@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.frame;
+package org.silverpeas.core.web.util.viewgenerator.html.frame;
 
 /**
  * @author mraverdy&lloiseau

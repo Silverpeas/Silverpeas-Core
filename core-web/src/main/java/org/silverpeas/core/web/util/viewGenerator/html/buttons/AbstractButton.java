@@ -31,11 +31,11 @@
  * Created on 10 octobre 2000, 16:18
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.buttons;
+package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.text.MessageFormat;
 import java.util.regex.Matcher;

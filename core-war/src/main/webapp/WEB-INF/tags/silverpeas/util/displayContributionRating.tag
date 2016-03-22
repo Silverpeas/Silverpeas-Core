@@ -50,7 +50,7 @@
 <%@ attribute name="canUserRating" required="false" description="Can the user perform a rating on the contribution? (default true)" type="java.lang.Boolean" %>
 
 <%-- A rater rating WEB entity --%>
-<%@ attribute name="raterRating" required="true" type="org.silverpeas.rating.web.RaterRatingEntity"
+<%@ attribute name="raterRating" required="true" type="org.silverpeas.core.webapi.rating.RaterRatingEntity"
               description="A rater rating WEB entity." %>
 
 <c:if test="${readOnly != null}">

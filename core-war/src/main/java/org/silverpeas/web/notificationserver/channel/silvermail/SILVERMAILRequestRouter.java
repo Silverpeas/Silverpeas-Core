@@ -30,7 +30,7 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.web.http.HttpRequest;
 

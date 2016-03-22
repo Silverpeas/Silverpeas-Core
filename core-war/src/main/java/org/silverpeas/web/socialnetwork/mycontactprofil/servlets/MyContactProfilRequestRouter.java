@@ -24,11 +24,11 @@
 
 package org.silverpeas.web.socialnetwork.mycontactprofil.servlets;
 
-import com.silverpeas.directory.model.Member;
+import org.silverpeas.core.web.directory.model.Member;
 import org.silverpeas.web.socialnetwork.mycontactprofil.control.MyContactProfilSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.web.http.HttpRequest;
 

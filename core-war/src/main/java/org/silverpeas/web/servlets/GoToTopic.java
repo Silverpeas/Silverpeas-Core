@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.servlets;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;

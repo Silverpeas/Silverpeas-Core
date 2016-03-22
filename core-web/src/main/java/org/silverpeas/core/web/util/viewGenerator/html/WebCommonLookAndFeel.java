@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
-import com.silverpeas.look.SilverpeasLook;
+import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -38,7 +38,7 @@ import org.silverpeas.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static org.silverpeas.core.web.util.viewGenerator.html.JavascriptPluginInclusion.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 public class WebCommonLookAndFeel {
 

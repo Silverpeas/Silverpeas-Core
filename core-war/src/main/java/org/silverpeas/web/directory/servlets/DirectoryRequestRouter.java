@@ -29,10 +29,10 @@ import org.silverpeas.web.directory.model.DirectoryItemList;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.Domain;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.pagination.Pagination;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import com.stratelia.webactiv.beans.admin.Group;
 import org.silverpeas.core.web.http.HttpRequest;
 

@@ -29,7 +29,7 @@ import static org.silverpeas.look.web.LookResourceURIs.DISPLAY_BASE_URI;
 
 import javax.ws.rs.Path;
 
-import org.silverpeas.look.web.delegate.LookWebDelegate;
+import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
@@ -49,7 +49,7 @@ public class DisplayResourceMock extends org.silverpeas.look.web.DisplayResource
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.admin.web.AbstractAdminResource#getLookServices()
+   * @see org.silverpeas.core.webapi.admin.AbstractAdminResource#getLookServices()
    */
   @Override
   protected LookWebDelegate getLookDelegate() {

@@ -31,9 +31,9 @@
  * Created on 10 octobre 2000, 16:11
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.tabs;
+package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * TabbedPane is an interface to be implemented by a graphic element to print tabs in an html

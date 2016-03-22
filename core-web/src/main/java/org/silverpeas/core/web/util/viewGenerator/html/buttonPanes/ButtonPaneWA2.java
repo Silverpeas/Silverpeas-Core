@@ -27,9 +27,9 @@
  *
  * Created on 10 octobre 2000, 16:11
  */
-package org.silverpeas.core.web.util.viewGenerator.html.buttonPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.buttons.Button;
+import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 import java.util.List;
 
 /**

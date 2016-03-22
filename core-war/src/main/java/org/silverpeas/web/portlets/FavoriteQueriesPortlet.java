@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.pdc.interests.service.InterestsManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;

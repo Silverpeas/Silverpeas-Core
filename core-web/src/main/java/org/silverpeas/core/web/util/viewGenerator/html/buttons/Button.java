@@ -31,9 +31,9 @@
  * Created on 10 octobre 2000, 16:16
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.buttons;
+package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * @author neysseri

@@ -25,11 +25,11 @@
 package org.silverpeas.web.external.webconnections.servlets;
 
 import org.silverpeas.web.external.webconnections.control.WebConnectionsSessionController;
-import com.silverpeas.external.webConnections.model.ConnectionDetail;
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.StringUtil;

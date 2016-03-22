@@ -20,14 +20,14 @@
  */
 package org.silverpeas.web.pdcsubscription.servlets;
 
-import com.silverpeas.pdc.web.AxisValueCriterion;
+import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.web.http.HttpRequest;
 

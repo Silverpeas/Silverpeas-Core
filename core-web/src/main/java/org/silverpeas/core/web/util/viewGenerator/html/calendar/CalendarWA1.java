@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.calendar;
+package org.silverpeas.core.web.util.viewgenerator.html.calendar;
 
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.monthCalendar.Event;
+import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 import java.util.Calendar;
 import java.util.Collection;

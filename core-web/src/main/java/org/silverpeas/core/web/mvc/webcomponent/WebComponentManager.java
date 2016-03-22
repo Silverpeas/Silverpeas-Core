@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import com.silverpeas.peasUtil.AccessForbiddenException;
+import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;

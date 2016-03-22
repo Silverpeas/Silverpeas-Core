@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;
 

@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.web.jobstartpage.DisplaySorted" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

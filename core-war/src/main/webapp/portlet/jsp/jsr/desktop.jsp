@@ -28,9 +28,9 @@
 
 <%@page import="com.sun.portal.portletcontainer.driver.admin.AdminConstants"%>
 <%@page import="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants" %>
-<%@page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPaneType" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>

@@ -22,14 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.tabs;
+package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 public class TabbedPaneTag extends TagSupport {
 

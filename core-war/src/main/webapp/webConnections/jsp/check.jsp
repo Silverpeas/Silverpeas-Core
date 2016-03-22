@@ -32,26 +32,26 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.silverpeas.external.webConnections.model.ConnectionDetail"%>
+<%@ page import="org.silverpeas.core.web.external.webconnections.model.ConnectionDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 
 <%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="java.util.Collection"%>
 
 <%@ page import="java.util.Iterator" %>

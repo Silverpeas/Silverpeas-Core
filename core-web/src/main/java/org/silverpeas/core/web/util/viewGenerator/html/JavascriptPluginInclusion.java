@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -34,7 +34,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
-import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 
 import java.text.MessageFormat;
 

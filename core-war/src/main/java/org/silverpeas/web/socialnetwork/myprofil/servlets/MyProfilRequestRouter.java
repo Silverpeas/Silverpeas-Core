@@ -21,16 +21,16 @@
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
 import org.silverpeas.web.directory.servlets.ImageProfil;
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
-import com.silverpeas.socialnetwork.user.model.SNFullUser;
+import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
 import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;

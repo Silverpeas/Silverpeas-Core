@@ -22,14 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.buttons;
+package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.JavascriptPluginInclusion;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

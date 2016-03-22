@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.chart.pie.PieChart" %>
 <%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>

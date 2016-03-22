@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.servlets.credentials;
+package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
@@ -29,7 +29,7 @@ import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

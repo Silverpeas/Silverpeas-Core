@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 
-<%@page import="com.silverpeas.jobOrganizationPeas.control.JobOrganizationPeasSessionController"%>
+<%@page import="org.silverpeas.web.joborganization.control.JobOrganizationPeasSessionController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 

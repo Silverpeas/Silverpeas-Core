@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.override;
+package org.silverpeas.core.web.util.viewgenerator.html.override;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.ecs.ElementContainer;
-import org.silverpeas.core.web.util.viewGenerator.html.JavascriptPluginInclusion;
+import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.pdc.servlets;
 
-import com.silverpeas.peasUtil.AccessForbiddenException;
+import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.pdc.pdc.model.Axis;
@@ -34,7 +34,7 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.web.pdc.control.PdcSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;

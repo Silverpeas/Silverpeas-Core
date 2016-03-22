@@ -25,7 +25,7 @@ import org.silverpeas.core.web.calendar.ical.PasswordEncoder;
 import org.silverpeas.core.web.calendar.ical.StringUtils;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.browseBars;
+package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
 public class BrowseBarElement {
 

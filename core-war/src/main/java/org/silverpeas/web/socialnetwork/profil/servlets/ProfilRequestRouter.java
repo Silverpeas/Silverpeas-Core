@@ -24,12 +24,12 @@
 
 package org.silverpeas.web.socialnetwork.profil.servlets;
 
-import com.silverpeas.directory.model.Member;
+import org.silverpeas.core.web.directory.model.Member;
 import org.silverpeas.web.socialnetwork.profil.control.ProfilSessionController;
 import com.silverpeas.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.logging.SilverLogger;
 

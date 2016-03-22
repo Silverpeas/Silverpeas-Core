@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.override;
+package org.silverpeas.core.web.util.viewgenerator.html.override;
 
 import org.apache.ecs.xhtml.form;
 import org.apache.ecs.xhtml.input;

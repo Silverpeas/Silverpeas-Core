@@ -34,8 +34,8 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@ page import="org.silverpeas.util.Pair" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%@ include file="check.jsp" %>
 

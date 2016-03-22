@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.buttonPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
-import org.silverpeas.core.web.util.viewGenerator.html.buttons.Button;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 
 /**
  * The Browse interface gives us the skeleton for all funtionnalities we need to display typical WA

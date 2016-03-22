@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.web.mvc.controller;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.accesscontrol.ComponentAccessController;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;

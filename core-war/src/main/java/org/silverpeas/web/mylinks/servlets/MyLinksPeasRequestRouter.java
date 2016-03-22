@@ -26,7 +26,7 @@ package org.silverpeas.web.mylinks.servlets;
 
 import java.util.Collection;
 
-import org.silverpeas.mylinks.web.MyLinkEntity;
+import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import org.silverpeas.core.mylinks.model.LinkDetail;
@@ -35,7 +35,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.util.NotifierUtil;
 

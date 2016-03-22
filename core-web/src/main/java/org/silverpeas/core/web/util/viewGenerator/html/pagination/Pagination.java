@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.pagination;
+package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * Pagination is an interface to be implemented by a graphic element to print a pages index or a

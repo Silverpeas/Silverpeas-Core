@@ -34,7 +34,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;

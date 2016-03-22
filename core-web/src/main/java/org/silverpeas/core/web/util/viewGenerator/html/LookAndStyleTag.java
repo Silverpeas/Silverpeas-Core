@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.ecs.ElementContainer;

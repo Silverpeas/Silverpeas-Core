@@ -24,10 +24,10 @@
 package org.silverpeas.web.look;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
-import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
-import com.silverpeas.look.LookHelper;
-import com.silverpeas.look.SilverpeasLook;
+import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
+import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.sharing.services.SharingServiceProvider;
@@ -52,7 +52,7 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;

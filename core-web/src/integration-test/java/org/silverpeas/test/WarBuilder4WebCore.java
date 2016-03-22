@@ -25,7 +25,7 @@
 package org.silverpeas.test;
 
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
-import com.silverpeas.peasUtil.AccessForbiddenException;
+import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**
@@ -45,11 +45,11 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
-    addPackages(true, "com.stratelia.silverpeas.peasCore");
-    addPackages(true, "com.silverpeas.peasUtil");
-    addClasses(AccessForbiddenException.class, SilverpeasSessionOpener.class);
-    addPackages(true, "org.silverpeas.servlet");
-    addPackages(true, "org.silverpeas.subscription");
+    addClasses(SilverpeasSessionOpener.class);
+    addPackages(true, "org.silverpeas.core.web.http");
+    addPackages(true, "org.silverpeas.core.web.mvc");
+    addPackages(true, "org.silverpeas.core.web.subscription");
+    addPackages(true, "org.silverpeas.core.web.util.servlet");
     // Bundles & Settings
     addAsResource("org/silverpeas/publication/publicationSettings.properties");
     addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
@@ -81,9 +81,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    * @return the instance of the war archive builder.
    */
   public WarBuilder4WebCore addRESTWebServiceEnvironment() {
-    addPackages(true, "com.silverpeas.web");
-    addPackages(true, "com.silverpeas.annotation");
-    addPackages(true, "org.silverpeas.web.token");
+    addPackages(true, "org.silverpeas.core.web.token");
+    addPackages(true, "org.silverpeas.core.webapi.base");
     return this;
   }
 

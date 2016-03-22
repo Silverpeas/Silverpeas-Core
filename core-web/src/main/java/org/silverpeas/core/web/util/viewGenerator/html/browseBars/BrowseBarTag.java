@@ -22,16 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.browseBars;
+package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.web.util.viewGenerator.html.NeedWindowTag;
-import org.silverpeas.core.web.util.viewGenerator.html.window.Window;
+import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
+import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 
 import javax.servlet.jsp.JspException;
 

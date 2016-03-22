@@ -34,12 +34,12 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.silverpeas.core.workflow.api.model.RelatedUser;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLine;
-import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane;
-import org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane;
-import org.silverpeas.core.web.util.viewGenerator.html.icons.Icon;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
+import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
+import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
 
 /**
  * Class implementing the tag &lt;relatedUserList&gt; from workflowEditor.tld

@@ -27,7 +27,7 @@ package org.silverpeas.web.communicationuser.servlets;
 import org.silverpeas.web.communicationuser.control.CommunicationUserSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.io.File;

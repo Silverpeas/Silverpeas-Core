@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.comment;
+package org.silverpeas.core.web.util.viewgenerator.html.comment;
 
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;

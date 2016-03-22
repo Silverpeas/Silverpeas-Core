@@ -31,7 +31,7 @@
  * Created on 10 octobre 2000, 16:18
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.progressMessage;
+package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import java.util.List;

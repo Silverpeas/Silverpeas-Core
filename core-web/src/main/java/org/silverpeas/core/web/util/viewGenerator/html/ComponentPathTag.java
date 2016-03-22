@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;

@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.pdc;
+package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
-import static org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**
  * A tag that renders an HTML/javascript section with which a classification onto the PdC can be

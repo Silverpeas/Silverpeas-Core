@@ -28,10 +28,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.silverpeas.directory.model.Member"%>
+<%@ page import="org.silverpeas.core.web.directory.model.Member"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

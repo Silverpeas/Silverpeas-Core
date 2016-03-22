@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.pagination;
+package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.util.MissingResourceException;
 

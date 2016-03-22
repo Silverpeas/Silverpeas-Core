@@ -35,7 +35,7 @@
  * @version
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.calendar;
+package org.silverpeas.core.web.util.viewgenerator.html.calendar;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +44,7 @@ import java.util.List;
 
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.web.util.viewGenerator.html.monthCalendar.Event;
+import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 /**
  * Class declaration

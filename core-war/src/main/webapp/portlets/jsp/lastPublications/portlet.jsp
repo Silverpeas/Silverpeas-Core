@@ -29,6 +29,7 @@
 
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.web.portlets.FormNames" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

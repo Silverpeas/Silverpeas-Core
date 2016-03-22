@@ -31,7 +31,7 @@
  * Created on 17 avril 2001, 17:44
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.navigationList;
+package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
 /**
  * @author lloiseau

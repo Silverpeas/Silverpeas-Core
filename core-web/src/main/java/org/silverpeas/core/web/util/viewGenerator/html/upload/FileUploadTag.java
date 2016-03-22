@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html.upload;
+package org.silverpeas.core.web.util.viewgenerator.html.upload;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.ecs.ElementContainer;
@@ -34,7 +34,7 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.core.web.util.viewGenerator.html.JavascriptPluginInclusion;
+import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;

@@ -31,12 +31,12 @@
  * Created on 10 octobre 2000, 16:16
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.progressMessage;
+package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import java.util.List;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * @author neysseri

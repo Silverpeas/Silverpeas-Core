@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.frame;
+package org.silverpeas.core.web.util.viewgenerator.html.frame;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * Frame is an interface to be implemented by a graphic element to print a frame in an html format.

@@ -13,7 +13,7 @@
        Loads the css and javascript file relating to tree menu
     </description>
 		<name>head</name>
-		<tag-class>com.silverpeas.treeMenu.taglib.TreeMenuHtmlHeadTag</tag-class>
+		<tag-class>org.silverpeas.core.web.treemenu.taglib.TreeMenuHtmlHeadTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>

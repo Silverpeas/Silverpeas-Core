@@ -23,7 +23,7 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
-import com.silverpeas.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletLang;
 import com.sun.portal.container.PortletType;

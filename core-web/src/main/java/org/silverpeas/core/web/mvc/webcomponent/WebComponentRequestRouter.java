@@ -26,6 +26,7 @@ package org.silverpeas.core.web.mvc.webcomponent;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

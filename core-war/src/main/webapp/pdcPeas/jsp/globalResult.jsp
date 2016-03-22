@@ -34,7 +34,7 @@
 <%@ page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="java.net.URLDecoder"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 

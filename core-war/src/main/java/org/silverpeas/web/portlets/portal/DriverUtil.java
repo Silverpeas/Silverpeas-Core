@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.portletcontainer.admin.PortletUndeployerInfo;

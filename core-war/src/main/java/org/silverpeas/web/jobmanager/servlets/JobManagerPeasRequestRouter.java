@@ -24,11 +24,11 @@
 
 package org.silverpeas.web.jobmanager.servlets;
 
-import com.silverpeas.jobManagerPeas.JobManagerService;
-import com.silverpeas.jobManagerPeas.control.JobManagerPeasSessionController;
+import org.silverpeas.web.jobmanager.JobManagerService;
+import org.silverpeas.web.jobmanager.control.JobManagerPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

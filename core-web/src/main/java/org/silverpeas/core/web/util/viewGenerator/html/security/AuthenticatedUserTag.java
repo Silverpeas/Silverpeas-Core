@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.security;
+package org.silverpeas.core.web.util.viewgenerator.html.security;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;

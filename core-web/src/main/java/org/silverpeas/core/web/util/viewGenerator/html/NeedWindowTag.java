@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.web.util.viewGenerator.html.window.Window;
+import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;

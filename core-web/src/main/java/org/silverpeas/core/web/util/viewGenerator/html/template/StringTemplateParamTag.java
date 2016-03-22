@@ -1,4 +1,4 @@
-package org.silverpeas.core.web.util.viewGenerator.html.template;
+package org.silverpeas.core.web.util.viewgenerator.html.template;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

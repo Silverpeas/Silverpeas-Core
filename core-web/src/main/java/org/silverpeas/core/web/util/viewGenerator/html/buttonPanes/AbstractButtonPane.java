@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.buttonPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.buttons.Button;
+import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

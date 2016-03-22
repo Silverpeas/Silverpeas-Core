@@ -42,11 +42,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator, org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory, org.silverpeas.core.web.util.viewGenerator.html.board.Board, org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar, org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.ResourceLocator, org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory, org.silverpeas.core.web.util.viewgenerator.html.board.Board, org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar, org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
 

@@ -20,8 +20,8 @@
  */
 package org.silverpeas.web.portlets.portal;
 
-import com.silverpeas.portlets.portal.PortletWindowData;
-import com.silverpeas.portlets.portal.PortletWindowDataImpl;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
@@ -44,7 +44,7 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;

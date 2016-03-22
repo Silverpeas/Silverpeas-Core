@@ -1,4 +1,4 @@
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;

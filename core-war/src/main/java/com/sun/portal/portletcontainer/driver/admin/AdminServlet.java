@@ -24,8 +24,8 @@
 package com.sun.portal.portletcontainer.driver.admin;
 
 import org.silverpeas.web.portlets.portal.DesktopMessages;
-import com.silverpeas.portlets.portal.PortletWindowData;
-import com.silverpeas.portlets.portal.PortletWindowDataImpl;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;

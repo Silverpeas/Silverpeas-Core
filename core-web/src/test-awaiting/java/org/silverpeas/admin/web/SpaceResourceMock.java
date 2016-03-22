@@ -37,9 +37,9 @@ import javax.ws.rs.Path;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.admin.web.delegate.AdminPersonalWebDelegate;
-import org.silverpeas.admin.web.tools.AbstractTool;
-import org.silverpeas.look.web.delegate.LookWebDelegate;
+import org.silverpeas.core.webapi.admin.delegate.AdminPersonalWebDelegate;
+import org.silverpeas.core.webapi.admin.tools.AbstractTool;
+import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.annotation.Authenticated;
@@ -62,7 +62,7 @@ public class SpaceResourceMock extends org.silverpeas.admin.web.SpaceResource {
   LookWebDelegate lookWebServiceMock = null;
 
   /* (non-Javadoc)
-   * @see org.silverpeas.admin.web.AbstractAdminResource#isUserAuthorizedToAccessLookContext()
+   * @see org.silverpeas.core.webapi.admin.AbstractAdminResource#isUserAuthorizedToAccessLookContext()
    */
   @Override
   protected boolean isUserAuthorizedToAccessLookContext() {
@@ -71,7 +71,7 @@ public class SpaceResourceMock extends org.silverpeas.admin.web.SpaceResource {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.admin.web.AbstractAdminResource#getLookServices()
+   * @see org.silverpeas.core.webapi.admin.AbstractAdminResource#getLookServices()
    */
   @Override
   protected LookWebDelegate getLookDelegate() {
@@ -132,7 +132,7 @@ public class SpaceResourceMock extends org.silverpeas.admin.web.SpaceResource {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.admin.web.AbstractAdminResource#getAdminPersonalDelegate()
+   * @see org.silverpeas.core.webapi.admin.AbstractAdminResource#getAdminPersonalDelegate()
    */
   @Override
   protected AdminPersonalWebDelegate getAdminPersonalDelegate() {

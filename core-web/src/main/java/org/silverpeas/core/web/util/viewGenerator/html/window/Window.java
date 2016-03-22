@@ -22,12 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.window;
+package org.silverpeas.core.web.util.viewgenerator.html.window;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
-import org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar;
-import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane;
 
 /**
  * The Window interface gives us the skeleton for all funtionnalities we need to display typical WA

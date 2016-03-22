@@ -24,11 +24,11 @@
 
 package org.silverpeas.web.jobsearch.servlets;
 
-import com.silverpeas.jobSearchPeas.SearchResult;
-import com.silverpeas.jobSearchPeas.control.JobSearchPeasSessionController;
+import org.silverpeas.web.jobsearch.SearchResult;
+import org.silverpeas.web.jobsearch.JobSearchPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.web.http.HttpRequest;
 

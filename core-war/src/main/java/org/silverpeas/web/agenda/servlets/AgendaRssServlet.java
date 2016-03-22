@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.agenda.servlets;
 
-import com.silverpeas.peasUtil.RssServlet;
+import org.silverpeas.core.web.util.servlet.RssServlet;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.tools.agenda.control.AgendaAccess;
@@ -46,7 +46,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#isComponentRss(java.lang.String)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#isComponentRss(java.lang.String)
    */
   public boolean isComponentRss(String userIdAgenda) {
     return true;
@@ -54,7 +54,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#isComponentAvailable(java.lang.String,
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#isComponentAvailable(java.lang.String,
    * java.lang.String)
    */
   public boolean isComponentAvailable(String userIdAgenda, String currentUserId) {
@@ -72,7 +72,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getListElements(java.lang.String, int)
    */
   public Collection<JournalHeader> getListElements(String userIdAgenda, int nbReturned)
       throws RemoteException {
@@ -85,7 +85,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
    */
   public String getElementTitle(Object element, String currentUserId) {
     JournalHeader event = (JournalHeader) element;
@@ -104,7 +104,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object, java.lang.String)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementLink(java.lang.Object, java.lang.String)
    */
   public String getElementLink(Object element, String currentUserId) {
     JournalHeader event = (JournalHeader) element;
@@ -130,7 +130,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
   public String getElementDescription(Object element, String currentUserId) {
@@ -145,7 +145,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
+   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDate(java.lang.Object)
    */
   public Date getElementDate(Object element) {
     JournalHeader event = (JournalHeader) element;

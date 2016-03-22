@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.glossary;
+package org.silverpeas.core.web.util.viewgenerator.html.glossary;
 
-import com.silverpeas.glossary.HighlightGlossaryTerms;
+import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 

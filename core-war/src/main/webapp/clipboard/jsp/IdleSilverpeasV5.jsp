@@ -33,7 +33,7 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.silverpeas.look.LookHelper" %>
+<%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementProvider" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>

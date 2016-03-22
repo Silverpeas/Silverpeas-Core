@@ -36,7 +36,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.attachment.AttachmentException;

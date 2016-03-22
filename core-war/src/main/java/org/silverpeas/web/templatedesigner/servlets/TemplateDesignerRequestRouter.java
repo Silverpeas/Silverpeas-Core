@@ -54,7 +54,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.util.FileRepositoryManager;
 
 public class TemplateDesignerRequestRouter extends

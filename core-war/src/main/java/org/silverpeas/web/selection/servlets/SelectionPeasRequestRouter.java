@@ -28,7 +28,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import org.silverpeas.core.web.selection.CacheType;

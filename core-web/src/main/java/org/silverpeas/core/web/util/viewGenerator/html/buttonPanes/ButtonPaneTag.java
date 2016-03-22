@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.buttonPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.buttons.Button;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

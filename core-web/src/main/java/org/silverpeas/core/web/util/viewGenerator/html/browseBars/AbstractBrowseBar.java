@@ -24,14 +24,14 @@
  *
  * Created on 10 octobre 2000, 16:11
  */
-package org.silverpeas.core.web.util.viewGenerator.html.browseBars;
+package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import org.owasp.encoder.Encode;

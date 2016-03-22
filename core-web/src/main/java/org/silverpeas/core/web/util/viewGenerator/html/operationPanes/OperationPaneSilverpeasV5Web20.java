@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html.operationPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;

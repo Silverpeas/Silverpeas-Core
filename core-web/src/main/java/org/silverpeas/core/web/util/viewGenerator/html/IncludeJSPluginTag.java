@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -31,7 +31,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.apache.ecs.ElementContainer;
 
-import static org.silverpeas.core.web.util.viewGenerator.html.JavascriptPluginInclusion.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 /**
  * This tag is for including javascript plugins with their stylesheets.

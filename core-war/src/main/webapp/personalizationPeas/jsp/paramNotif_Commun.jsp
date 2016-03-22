@@ -1,7 +1,7 @@
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 <%  ArrayList notifPreferences = personalizationScc.getNotifPreferences() ; %>
 
 <script>

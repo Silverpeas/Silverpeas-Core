@@ -30,6 +30,7 @@ import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
+import org.silverpeas.core.webapi.attachment.SimpleDocumentResource;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.accesscontrol.ComponentAccessController;
 import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
@@ -54,7 +55,7 @@ import java.io.IOException;
 
 /**
  * @deprecated this servlet is replaced by the SimpleDocumentResource REST service
- * @see org.silverpeas.attachment.web.SimpleDocumentResource#getFileContent(String)
+ * @see SimpleDocumentResource#getFileContent(String)
  */
 @Deprecated
 public class RestOnlineFileServer extends AbstractFileSender {

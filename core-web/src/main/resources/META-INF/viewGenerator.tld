@@ -18,7 +18,7 @@
       org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
     </description>
     <name>image</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.ImageTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.ImageTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>
@@ -95,7 +95,7 @@
       and for a given resource.
     </description>
     <name>attachmentPane</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.AttachmentPaneTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.AttachmentPaneTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The unique identifier of the resource that accepts the attachements.</description>
@@ -128,7 +128,7 @@
       plugin.
     </description>
     <name>username</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.UserNameTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.UserNameTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The unique identifier of the user</description>
@@ -152,10 +152,10 @@
       Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
       in charge by the tag. If the javascript requires a stylesheet, it is also included with
       the script. Currently, the supported plugins (JQuery as well Silverpeas ones) are defined in
-      the enum org.silverpeas.core.web.util.viewGenerator.html.SupportedJavaScriptPlugins.
+      the enum org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScriptPlugins.
     </description>
     <name>includePlugin</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.IncludeJSPluginTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.IncludeJSPluginTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The plugin name (plugin identifier). For example, qtip for the JQuery qtip plugin</description>
@@ -171,7 +171,7 @@
       modified.
     </description>
     <name>pdcPredefinedClassification</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured.
@@ -198,7 +198,7 @@
       given component instance, only the axis used by this later will be loaded.
     </description>
     <name>pdcClassification</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The identifier to set for the HTML element within the classificiation will be rendered</description>
@@ -239,7 +239,7 @@
       classification on the PdC of a given resource content is rendered.
     </description>
     <name>pdcClassificationPreview</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationPreviewTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationPreviewTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured.
@@ -266,7 +266,7 @@
       no side effect with the Silverpeas collaborative portal.
     </description>
     <name>pdcNewContentClassification</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcNewContentClassificationTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcNewContentClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured. If a
@@ -296,7 +296,7 @@
       message.
     </description>
     <name>pdcValidateClassification</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationValidationTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationValidationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The name of the Javascript variable that will accept the error message when the
@@ -330,7 +330,7 @@
       of a content.
     </description>
     <name>pdcPositions</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The name of the Javascript variable that will accept the positions set through the
@@ -345,7 +345,7 @@
   <tag>
     <description>Tag to print out a date localized from the specified language</description>
     <name>formatDate</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.FormatDateTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.FormatDateTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>The date to format</description>
@@ -367,7 +367,7 @@
   <tag>
     <description>Tag to print out a date and time localized from the specified language</description>
     <name>formatDateTime</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.FormatDateTimeTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.FormatDateTimeTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>The date and time to format</description>
@@ -389,7 +389,7 @@
   <tag>
     <description>Tag to print out a list of comments on a given resource</description>
     <name>commentListing</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.comment.CommentListTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.comment.CommentListTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
@@ -437,7 +437,7 @@
       The edition is printed only for non-guest users.
     </description>
     <name>commentEdition</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.comment.CommentEditionTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.comment.CommentEditionTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
@@ -495,7 +495,7 @@
       The edition form is printed only for non-guest users.
     </description>
     <name>comments</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.comment.CommentTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.comment.CommentTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
@@ -563,7 +563,7 @@
     <description>Tag to print out the URL of a Silverpeas component instance.</description>
     <name>componentUrl</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.ComponentURLTag
+      org.silverpeas.core.web.util.viewgenerator.html.ComponentURLTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -585,7 +585,7 @@
     <description>Simple tag to display a Board. A Board should be used inside a Frame.</description>
     <name>board</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.board.BoardTag
+      org.silverpeas.core.web.util.viewgenerator.html.board.BoardTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -599,7 +599,7 @@
     <description>Simple tag to display a frame. A Frame should be used inside a Window.</description>
     <name>frame</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.frame.FrameTag
+      org.silverpeas.core.web.util.viewgenerator.html.frame.FrameTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -612,7 +612,7 @@
     <description>Simple tag to create HTML to access the look and feel.</description>
     <name>looknfeel</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.LookAndStyleTag
+      org.silverpeas.core.web.util.viewgenerator.html.LookAndStyleTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -634,7 +634,7 @@
     <description>Simple tag to display a list of icons.</description>
     <name>icons</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPaneTag
+      org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPaneTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -656,7 +656,7 @@
     <description>Simple tag to display an icon.</description>
     <name>icon</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.icons.IconTag
+      org.silverpeas.core.web.util.viewgenerator.html.icons.IconTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -692,7 +692,7 @@
     <description>Simple tag to display a list of tabs.</description>
     <name>tabs</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPaneTag
+      org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPaneTag
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
@@ -700,7 +700,7 @@
     <description>Simple tag to display a list of tabs. It should be used inside a Window.</description>
     <name>tab</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.tabs.TabTag
+      org.silverpeas.core.web.util.viewgenerator.html.tabs.TabTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -729,7 +729,7 @@
     <description>Simple tag to display a button pane.</description>
     <name>buttonPane</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPaneTag
+      org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPaneTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -767,7 +767,7 @@
     <description>Simple tag to display a button.</description>
     <name>button</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.buttons.ButtonTag
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ButtonTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -800,7 +800,7 @@
     </description>
     <name>confirmComponentSubscriptionNotificationSending</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -818,7 +818,7 @@
     </description>
     <name>confirmResourceSubscriptionNotificationSending</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -848,7 +848,7 @@
     <description>Simple tag to display a navigation item list.</description>
     <name>navigationList</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.navigationList.NavigationListTag
+      org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -870,7 +870,7 @@
     <description>Simple tag to display a navigation item list.</description>
     <name>navigationListItem</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.navigationList.NavigationListItemTag
+      org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListItemTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -913,7 +913,7 @@
     <description>Simple tag to display a window. A window can contain TabbedPane, Frames and Boards. It should be used after the BrowseBar and the OperationPane.</description>
     <name>window</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.window.WindowTag
+      org.silverpeas.core.web.util.viewgenerator.html.window.WindowTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -939,7 +939,7 @@
     <description>Simple tag to define a Window browse bar. It should be declared and used before a Window.</description>
     <name>browseBar</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBarTag
+      org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -991,7 +991,7 @@
     <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>
     <name>browseBarElt</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBarElementTag
+      org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElementTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1022,7 +1022,7 @@
     </description>
     <name>operationPane</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPaneTag
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1030,7 +1030,7 @@
       <name>type</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPaneType</type>
+      <type>org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType</type>
     </attribute>
   </tag>
   <tag>
@@ -1038,7 +1038,7 @@
     </description>
     <name>operationSeparator</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationSeparatorTag
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationSeparatorTag
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
@@ -1046,7 +1046,7 @@
     <description>Simple tag to create HTML to display operations of creation.</description>
     <name>areaOfOperationOfCreation</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
@@ -1054,7 +1054,7 @@
     <description>Simple tag to define an operation in an OperationPane.</description>
     <name>operation</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationTag
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1083,7 +1083,7 @@
     <description>Simple tag to define an operation of creation in an OperationPane.</description>
     <name>operationOfCreation</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationOfCreationTag
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationOfCreationTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1111,7 +1111,7 @@
   <tag>
     <description>Tag to create an ArrayPane: a table to display a list of data.</description>
     <name>arrayPane</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPaneTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPaneTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>title</name>
@@ -1169,7 +1169,7 @@
   <tag>
     <description>Tag to create a column header for an ArrayPane</description>
     <name>arrayColumn</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayColumnTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumnTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The String to be displayed as a title in the Column Header</description>
@@ -1187,7 +1187,7 @@
   <tag>
     <description>Tag to create a new line in the ArrayPane</description>
     <name>arrayLine</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayLineTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLineTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>The String to identified this line</description>
@@ -1199,7 +1199,7 @@
   <tag>
     <description>Tag to create a new cell in the current line of the ArrayPane.</description>
     <name>arrayCellText</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellTextTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellTextTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>The text to be displayed if the body is empty</description>
@@ -1212,7 +1212,7 @@
     <description>Simple tag to define a pagination navigation bar.</description>
     <name>pagination</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.pagination.PaginationTag
+      org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1310,7 +1310,7 @@
     <description>Equivalent of the JSTL fmt:setBundle tag but with support for the ResourceWrapper</description>
     <name>setBundle</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.SetBundleTag
+      org.silverpeas.core.web.util.viewgenerator.html.SetBundleTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1352,7 +1352,7 @@
     <description>Simple tag to display a div with the style corresponding to the mime type.</description>
     <name>mimeTypeIcon</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.icons.MimeTypeIconTag
+      org.silverpeas.core.web.util.viewgenerator.html.icons.MimeTypeIconTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1386,7 +1386,7 @@
     <description>Tag to highlight some terms contained in his body</description>
     <name>highlight</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.glossary.HighlightTermTag
+      org.silverpeas.core.web.util.viewgenerator.html.glossary.HighlightTermTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1422,7 +1422,7 @@
     <description>Simple tag to display a progress message.</description>
     <name>progressMessage</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.progressMessage.ProgressMessageTag
+      org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessageTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1437,7 +1437,7 @@
     <description>Simple tag to manage upload of files.</description>
     <name>fileUpload</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.upload.FileUploadTag
+      org.silverpeas.core.web.util.viewgenerator.html.upload.FileUploadTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1505,7 +1505,7 @@
     <description>Simple tag to play a video in flowplayer.</description>
     <name>video</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.VideoPlayerTag
+      org.silverpeas.core.web.util.viewgenerator.html.VideoPlayerTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1541,7 +1541,7 @@
     <description>Simple tag to encode a java String into a Javascript String.</description>
     <name>encodeJs</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.JavascriptEncoderTag
+      org.silverpeas.core.web.util.viewgenerator.html.JavascriptEncoderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1556,7 +1556,7 @@
     <description>Simple tag to encode a java String into an HTML String.</description>
     <name>encodeHtml</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.HtmlEncoderTag
+      org.silverpeas.core.web.util.viewgenerator.html.HtmlEncoderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1571,7 +1571,7 @@
     <description>Simple tag to encode a java String into a XML escaped String.</description>
     <name>encodeXml</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.XMLEncoderTag
+      org.silverpeas.core.web.util.viewgenerator.html.XMLEncoderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1586,7 +1586,7 @@
     <description>Simple tag to encode a java String into an HTML Paragraph String.</description>
     <name>encodeHtmlParagraph</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.HtmlParagraphEncoderTag
+      org.silverpeas.core.web.util.viewgenerator.html.HtmlParagraphEncoderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1601,7 +1601,7 @@
     <description>Generate HTML search result element.</description>
     <name>displayResult</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.result.HtmlSearchResultTag
+      org.silverpeas.core.web.util.viewgenerator.html.result.HtmlSearchResultTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1651,7 +1651,7 @@
     <description>Generate HTML for the site Map.</description>
     <name>map</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.map.MapTag
+      org.silverpeas.core.web.util.viewgenerator.html.map.MapTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1666,7 +1666,7 @@
     <description>Tag that checks the validity of the current session and forwards to the error page.</description>
     <name>timeout</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.security.SessionTimeoutTag
+      org.silverpeas.core.web.util.viewgenerator.html.security.SessionTimeoutTag
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
@@ -1674,7 +1674,7 @@
     <description>Tag that checks the user is currently authenticated and that he is not an anonymous user.</description>
     <name>authenticatedUser</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.security.AuthenticatedUserTag
+      org.silverpeas.core.web.util.viewgenerator.html.security.AuthenticatedUserTag
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
@@ -1682,7 +1682,7 @@
     <description>Tag that display javascript initialization of Wysiwyg editor</description>
     <name>wysiwyg</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.wysiwyg.WysiwygTag
+      org.silverpeas.core.web.util.viewgenerator.html.wysiwyg.WysiwygTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1774,7 +1774,7 @@
     <description>Tag that displays the available languages.</description>
     <name>langSelect</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.LanguageSelectorTag
+      org.silverpeas.core.web.util.viewgenerator.html.LanguageSelectorTag
     </tag-class>
     <body-content>empty</body-content>
     <attribute>
@@ -1878,7 +1878,7 @@
   <tag>
     <description>Tag that display a StringTemplate content.</description>
     <name>applyTemplate</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.template.StringTemplateTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.template.StringTemplateTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
@@ -1906,7 +1906,7 @@
   <tag>
     <description>Parameter of a StringTemplate Tag. This parameter represents a StringTemplate attribute.</description>
     <name>templateParam</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.template.StringTemplateParamTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.template.StringTemplateParamTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>Name of the parameter.</description>
@@ -2040,7 +2040,7 @@
   <tag>
     <description>FORM HTML TAG OVERRIDE</description>
     <name>form</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.override.FormTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.FormTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>id</name>
@@ -2070,7 +2070,7 @@
   <tag>
     <description>A HTML TAG OVERRIDE</description>
     <name>a</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.override.ATag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.ATag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>id</name>
@@ -2112,7 +2112,7 @@
   <tag>
     <description>SCRIPT HTML TAG OVERRIDE</description>
     <name>script</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.override.ScriptTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.ScriptTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>
@@ -2135,7 +2135,7 @@
   <tag>
     <description>LINK HTML TAG OVERRIDE</description>
     <name>link</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.override.LinkTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.LinkTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>
@@ -2160,7 +2160,7 @@
       Tag to print out the full path of an application
     </description>
     <name>componentPath</name>
-    <tag-class>org.silverpeas.core.web.util.viewGenerator.html.ComponentPathTag</tag-class>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.ComponentPathTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The unique identifier of the application</description>
@@ -2188,7 +2188,7 @@
     <description>Tag that display date reminder</description>
     <name>dateReminder</name>
     <tag-class>
-      org.silverpeas.core.web.util.viewGenerator.html.dateReminder.DateReminderTag
+      org.silverpeas.core.web.util.viewgenerator.html.datereminder.DateReminderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>

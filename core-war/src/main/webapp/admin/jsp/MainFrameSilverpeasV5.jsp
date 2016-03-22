@@ -37,7 +37,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
-<%@ page import="com.silverpeas.look.LookHelper"%>
+<%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 
 <%

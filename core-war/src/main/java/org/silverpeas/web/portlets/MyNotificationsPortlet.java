@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.silvertrace.SilverTrace;
@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;
 
 public class MyNotificationsPortlet extends GenericPortlet implements FormNames {
 

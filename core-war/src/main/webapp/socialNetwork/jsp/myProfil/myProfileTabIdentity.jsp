@@ -32,8 +32,8 @@
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.util.ResourceLocator"%>
 <%@page import="org.silverpeas.util.SettingBundle"%>
-<%@page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button"%>
+<%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 
 <%
   MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");

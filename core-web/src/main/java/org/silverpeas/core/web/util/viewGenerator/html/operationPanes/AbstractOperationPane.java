@@ -31,14 +31,14 @@
  * Created on 10 octobre 2000, 16:11
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.operationPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 /**
  * The default implementation of ArrayPane interface

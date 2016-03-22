@@ -30,7 +30,7 @@
 <%@ include file="checkTodo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
 
 <%
   String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");

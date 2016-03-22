@@ -31,7 +31,7 @@
  * Created on 27 mars 2001, 15:22
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.board;
+package org.silverpeas.core.web.util.viewgenerator.html.board;
 
 import org.silverpeas.util.StringUtil;
 

@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html.pdc;
+package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -42,7 +42,7 @@ import java.text.MessageFormat;
 
 import static org.silverpeas.util.StringUtil.getBooleanValue;
 import static org.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.core.web.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**
  * The base tag for all concrete tags on the PdC classification of a content.

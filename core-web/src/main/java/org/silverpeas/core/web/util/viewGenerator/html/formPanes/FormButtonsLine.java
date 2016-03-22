@@ -26,7 +26,7 @@
  * FormButtonsLine.java
  *
  */
-package org.silverpeas.core.web.util.viewGenerator.html.formPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
 import java.util.ArrayList;
 import java.util.List;

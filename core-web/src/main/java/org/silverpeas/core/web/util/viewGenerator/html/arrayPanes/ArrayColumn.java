@@ -22,15 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.arrayPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import static org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane.ACTION_PARAMETER_NAME;
-import static org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane.COLUMN_PARAMETER_NAME;
-import static org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane.TARGET_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.ACTION_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.COLUMN_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.TARGET_PARAMETER_NAME;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * @author squere

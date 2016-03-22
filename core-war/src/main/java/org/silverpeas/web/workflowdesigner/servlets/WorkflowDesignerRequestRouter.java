@@ -32,7 +32,7 @@ import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionContro
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.ResourceLocator;

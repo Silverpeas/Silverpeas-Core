@@ -38,12 +38,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="java.util.Date"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

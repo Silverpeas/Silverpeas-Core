@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaAccess;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;

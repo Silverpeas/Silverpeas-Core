@@ -29,11 +29,11 @@
 
 <%@ page import="java.util.List"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCell"%>
-<%@page import="org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
-<%@ page import="com.silverpeas.jobSearchPeas.SearchResult"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
+<%@page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCell"%>
+<%@page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellLink"%>
+<%@ page import="org.silverpeas.web.jobsearch.SearchResult"%>
 <%@ include file="check.jsp" %>
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

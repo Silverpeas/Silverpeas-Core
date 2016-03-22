@@ -29,7 +29,7 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class GoToAgenda extends GoTo {

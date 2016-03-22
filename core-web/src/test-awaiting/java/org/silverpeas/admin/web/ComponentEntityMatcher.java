@@ -43,7 +43,7 @@ public class ComponentEntityMatcher extends
    * (non-Javadoc)
    * @see
    * org.silverpeas.admin.web.StructureElementEntityMatcher#matches(org.apache.commons.lang3.builder
-   * .EqualsBuilder, java.lang.Object, org.silverpeas.admin.web.StructureElementEntity)
+   * .EqualsBuilder, java.lang.Object, org.silverpeas.core.webapi.admin.StructureElementEntity)
    */
   @Override
   protected void matches(final EqualsBuilder matcher, final ComponentInstLight expected,

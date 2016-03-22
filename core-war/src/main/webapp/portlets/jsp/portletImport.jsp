@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.silverpeas.portlets.FormNames"%>
+<%@ page import="org.silverpeas.core.web.portlets.FormNames"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.DateUtil"%>
@@ -34,7 +34,7 @@
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.SettingBundle"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="javax.portlet.PortletPreferences"%>
 
 <%@ page import="javax.portlet.RenderRequest" %>

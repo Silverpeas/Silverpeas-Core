@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewGenerator.html;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -29,34 +29,34 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPane;
-import org.silverpeas.core.web.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.board.Board;
-import org.silverpeas.core.web.util.viewGenerator.html.board.BoardSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBar;
-import org.silverpeas.core.web.util.viewGenerator.html.browseBars.BrowseBarComplete;
-import org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane;
-import org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPaneWA2;
-import org.silverpeas.core.web.util.viewGenerator.html.buttons.Button;
-import org.silverpeas.core.web.util.viewGenerator.html.buttons.ButtonSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.calendar.Calendar;
-import org.silverpeas.core.web.util.viewGenerator.html.calendar.CalendarWA1;
-import org.silverpeas.core.web.util.viewGenerator.html.frame.Frame;
-import org.silverpeas.core.web.util.viewGenerator.html.frame.FrameSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPane;
-import org.silverpeas.core.web.util.viewGenerator.html.iconPanes.IconPaneWA;
-import org.silverpeas.core.web.util.viewGenerator.html.navigationList.NavigationList;
-import org.silverpeas.core.web.util.viewGenerator.html.navigationList.NavigationListSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPane;
-import org.silverpeas.core.web.util.viewGenerator.html.operationPanes.OperationPaneSilverpeasV5Web20;
-import org.silverpeas.core.web.util.viewGenerator.html.pagination.Pagination;
-import org.silverpeas.core.web.util.viewGenerator.html.pagination.PaginationSP;
-import org.silverpeas.core.web.util.viewGenerator.html.progressMessage.ProgressMessage;
-import org.silverpeas.core.web.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPane;
-import org.silverpeas.core.web.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
-import org.silverpeas.core.web.util.viewGenerator.html.window.Window;
-import org.silverpeas.core.web.util.viewGenerator.html.window.WindowWeb20V5;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPaneSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.board.Board;
+import org.silverpeas.core.web.util.viewgenerator.html.board.BoardSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
+import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarComplete;
+import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane;
+import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPaneWA2;
+import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
+import org.silverpeas.core.web.util.viewgenerator.html.buttons.ButtonSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.calendar.Calendar;
+import org.silverpeas.core.web.util.viewgenerator.html.calendar.CalendarWA1;
+import org.silverpeas.core.web.util.viewgenerator.html.frame.Frame;
+import org.silverpeas.core.web.util.viewgenerator.html.frame.FrameSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
+import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPaneWA;
+import org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList;
+import org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneSilverpeasV5Web20;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationSP;
+import org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessage;
+import org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessageSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
+import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPaneSilverpeasV5;
+import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
+import org.silverpeas.core.web.util.viewgenerator.html.window.WindowWeb20V5;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
@@ -582,7 +582,7 @@ public class GraphicElementFactory {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination", null);
     Pagination pagination;
     if (paginationClassName == null) {
-      paginationClassName = "org.silverpeas.util.viewGenerator.html.pagination.PaginationSP";
+      paginationClassName = "org.silverpeas.core.web.util.viewGenerator.html.pagination.PaginationSP";
     }
     try {
       pagination = (Pagination) Class.forName(paginationClassName).newInstance();
@@ -599,7 +599,7 @@ public class GraphicElementFactory {
     ProgressMessage progress;
     if (progressClassName == null) {
       progressClassName =
-          "org.silverpeas.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
+          "org.silverpeas.core.web.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
     }
     try {
       progress = (ProgressMessage) Class.forName(progressClassName).newInstance();

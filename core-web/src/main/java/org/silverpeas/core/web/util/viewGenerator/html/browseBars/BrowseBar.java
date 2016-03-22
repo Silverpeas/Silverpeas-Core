@@ -22,14 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.browseBars;
+package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
 import java.util.List;
 
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.util.i18n.I18NBean;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * The Browse interface gives us the skeleton for all funtionnalities we need to display typical WA

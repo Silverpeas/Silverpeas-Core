@@ -37,7 +37,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ValidatorException;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.util.StringUtil;
 
 public class IFramePortlet extends GenericPortlet implements FormNames {

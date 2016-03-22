@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.operationPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 public class OperationPaneSilverpeasV5StringFactory {
   /**

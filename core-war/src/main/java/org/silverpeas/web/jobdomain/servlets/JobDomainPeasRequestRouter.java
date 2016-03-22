@@ -20,13 +20,13 @@
  */
 package org.silverpeas.web.jobdomain.servlets;
 
-import com.silverpeas.jobDomainPeas.JobDomainPeasException;
-import com.silverpeas.jobDomainPeas.JobDomainSettings;
-import com.silverpeas.jobDomainPeas.UserRequestData;
-import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
+import org.silverpeas.web.jobdomain.JobDomainPeasException;
+import org.silverpeas.web.jobdomain.JobDomainSettings;
+import org.silverpeas.web.jobdomain.UserRequestData;
+import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;

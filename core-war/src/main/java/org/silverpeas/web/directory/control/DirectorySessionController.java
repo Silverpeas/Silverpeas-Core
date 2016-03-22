@@ -61,7 +61,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.web.util.viewGenerator.html.ImageTag;
+import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 
 import java.sql.SQLException;
 import java.text.ParseException;

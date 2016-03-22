@@ -21,8 +21,8 @@
 package org.silverpeas.web.look;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
-import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
+import org.silverpeas.core.web.look.LookHelper;
 import com.silverpeas.sharing.services.SharingServiceProvider;
 import com.silverpeas.sharing.services.SharingTicketService;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;

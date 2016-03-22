@@ -27,7 +27,7 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.FileUploadUtil;

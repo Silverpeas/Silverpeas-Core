@@ -28,10 +28,10 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.Encode" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ include file="checkAgenda.jsp" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

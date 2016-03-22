@@ -29,7 +29,7 @@
 <%@page import="org.silverpeas.web.portlets.portal.DriverUtil,
                 com.sun.portal.portletcontainer.driver.admin.AdminConstants" %>
 
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button "%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button "%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

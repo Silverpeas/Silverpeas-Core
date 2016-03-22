@@ -38,11 +38,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button "%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button "%>
 <%@ page import="java.io.File" %>
 
 <%

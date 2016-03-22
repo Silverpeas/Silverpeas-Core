@@ -31,7 +31,7 @@
 <%@ page import="com.silverpeas.form.DataRecord"%>
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.PagesContext" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%
 Form 				formUpdate 	= (Form) request.getAttribute("XMLForm");

@@ -31,12 +31,12 @@
  * Created on 28 mars 2001, 10:09
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.navigationList;
+package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 /**
  * Abstract class of the NavigationList

@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
+import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import org.silverpeas.core.admin.OrganizationController;

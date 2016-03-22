@@ -1,10 +1,10 @@
-package org.silverpeas.core.web.util.viewGenerator.html.wysiwyg;
+package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 public class Wysiwyg {
 

@@ -31,10 +31,10 @@
  * Created on 07 decembre 2000, 11:26
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.operationPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * The Browse interface gives us the skeleton for all funtionnalities we need to display typical WA

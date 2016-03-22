@@ -28,9 +28,9 @@
  * Created on 27 march 2001, 16:11
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.board;
+package org.silverpeas.core.web.util.viewgenerator.html.board;
 
-import org.silverpeas.core.web.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 /**
  * @author lloiseau

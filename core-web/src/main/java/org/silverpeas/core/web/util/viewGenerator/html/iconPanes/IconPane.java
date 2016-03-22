@@ -31,10 +31,10 @@
  * Created on 12 decembre 2000, 11:47
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.iconPanes;
+package org.silverpeas.core.web.util.viewgenerator.html.iconpanes;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
-import org.silverpeas.core.web.util.viewGenerator.html.icons.Icon;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
 
 /**
  * @author neysseri

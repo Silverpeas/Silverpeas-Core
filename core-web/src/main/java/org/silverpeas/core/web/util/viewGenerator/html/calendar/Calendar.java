@@ -28,13 +28,13 @@
  * Created on 11 juin 2001, 14:38
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.calendar;
+package org.silverpeas.core.web.util.viewgenerator.html.calendar;
 
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.web.util.viewGenerator.html.SimpleGraphicElement;
-import org.silverpeas.core.web.util.viewGenerator.html.monthCalendar.Event;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 /**
  * @author groccia

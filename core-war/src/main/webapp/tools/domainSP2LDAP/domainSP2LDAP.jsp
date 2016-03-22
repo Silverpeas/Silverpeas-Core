@@ -30,14 +30,14 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@page import="com.silverpeas.tools.domainSP2LDAP.DomainSP2LDAPBatch"%>
+<%@page import="org.silverpeas.core.web.admin.migration.DomainSP2LDAPBatch"%>
 <%@page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Iterator"%>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttonPanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ include file="../check.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <html>

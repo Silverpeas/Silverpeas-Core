@@ -22,15 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewGenerator.html.result;
+package org.silverpeas.core.web.util.viewgenerator.html.result;
 
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.search.ResultDisplayer;
-import com.silverpeas.search.ResultDisplayerProvider;
-import com.silverpeas.search.ResultSearchRendererUtil;
-import com.silverpeas.search.SearchResultContentVO;
+import org.silverpeas.core.web.search.ResultDisplayer;
+import org.silverpeas.core.web.search.ResultDisplayerProvider;
+import org.silverpeas.core.web.search.ResultSearchRendererUtil;
+import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
@@ -41,7 +41,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.web.util.viewGenerator.html.ImageTag;
+import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;

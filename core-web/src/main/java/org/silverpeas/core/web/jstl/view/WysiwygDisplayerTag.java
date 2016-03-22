@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.jstl.view;
 
-import com.silverpeas.glossary.HighlightGlossaryTerms;
+import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;

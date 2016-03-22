@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.portlets;
 
-import com.silverpeas.portlets.FormNames;
+import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasDAOAccesVolume;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
