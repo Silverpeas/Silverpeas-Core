@@ -28,6 +28,7 @@
 
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -65,13 +66,11 @@
     ArrayColumn columnDetail = arrayPane.addArrayColumn(messages.getString("statistic.detail"));
     columnDetail.setSortable(false);
     
-    Iterator it = readingState.iterator();
-    while (it.hasNext())
-    {
+    for (HistoryByUser historyByUser : readingState) {
     	ArrayLine ligne = arrayPane.addArrayLine();
-    	
-    	HistoryByUser historyByUser = (HistoryByUser) it.next();
-    	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), currentUserId));
+      UserDetail user = historyByUser.getUser();
+    	ArrayCellText cell0 = ligne.addArrayCellText(UserNameGenerator.toString(user, currentUserId));
+      cell0.setCompareOn(user.getLastName() + user.getFirstName());
     	Date haveRead = historyByUser.getLastAccess();
     	String readingDate = "";
         if (haveRead == null) {
