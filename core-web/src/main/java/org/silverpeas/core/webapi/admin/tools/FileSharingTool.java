@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.silverpeas.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
 

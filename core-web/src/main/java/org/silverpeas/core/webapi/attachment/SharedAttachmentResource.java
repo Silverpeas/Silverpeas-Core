@@ -22,9 +22,9 @@ package org.silverpeas.core.webapi.attachment;
 
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.security.ShareableAttachment;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.FileRepositoryManager;

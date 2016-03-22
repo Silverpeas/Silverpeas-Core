@@ -24,14 +24,14 @@
 package org.silverpeas.web.sharing.servlets;
 
 import org.silverpeas.core.web.look.SilverpeasLook;
-import com.silverpeas.sharing.model.NodeTicket;
-import com.silverpeas.sharing.model.PublicationTicket;
-import com.silverpeas.sharing.model.SimpleFileTicket;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.model.VersionFileTicket;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.security.ShareableResource;
-import com.silverpeas.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.model.NodeTicket;
+import org.silverpeas.core.sharing.model.PublicationTicket;
+import org.silverpeas.core.sharing.model.SimpleFileTicket;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.VersionFileTicket;
+import org.silverpeas.core.sharing.security.ShareableAttachment;
+import org.silverpeas.core.sharing.security.ShareableResource;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.core.admin.OrganizationControllerProvider;

@@ -33,9 +33,9 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
-import com.silverpeas.sharing.model.DownloadDetail;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.model.TicketFactory;
+import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.TicketFactory;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;

@@ -20,11 +20,11 @@
  */
 package org.silverpeas.web.sharing.servlets;
 
-import com.silverpeas.sharing.model.DownloadDetail;
-import com.silverpeas.sharing.model.SimpleFileTicket;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.model.VersionFileTicket;
-import com.silverpeas.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.SimpleFileTicket;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.VersionFileTicket;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.web.servlet.RestRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

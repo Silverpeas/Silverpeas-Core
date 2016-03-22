@@ -27,7 +27,7 @@ import java.net.URI;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.silverpeas.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 

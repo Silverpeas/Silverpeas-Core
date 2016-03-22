@@ -46,6 +46,7 @@
     <module>importExport</module>
     <module>viewer</module>
     <module>workflow</module>
+    <module>sharing</module>
   </modules>
 
 </project>

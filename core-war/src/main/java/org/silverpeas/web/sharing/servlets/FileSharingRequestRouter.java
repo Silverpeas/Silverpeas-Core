@@ -32,7 +32,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
 import org.silverpeas.web.sharing.control.FileSharingSessionController;
-import com.silverpeas.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

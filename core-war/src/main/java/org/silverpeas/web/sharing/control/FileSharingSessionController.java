@@ -27,12 +27,12 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 import org.silverpeas.core.web.sharing.notification.FileSharingUserNotification;
 
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingTicketService;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

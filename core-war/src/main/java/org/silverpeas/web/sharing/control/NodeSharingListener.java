@@ -25,8 +25,8 @@
 package org.silverpeas.web.sharing.control;
 
 import com.silverpeas.node.notification.NodeEvent;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingTicketService;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.services.SharingTicketService;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.notification.CDIResourceEventListener;
 

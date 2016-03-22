@@ -24,8 +24,8 @@
  */
 package org.silverpeas.web.sharing.control;
 
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingTicketService;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.publication.notification.PublicationEvent;
 

@@ -28,9 +28,9 @@ import javax.ws.rs.core.MediaType;
 
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableNode;
-import com.silverpeas.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.security.ShareableNode;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import com.stratelia.webactiv.node.model.NodeDetail;
 
 /**
