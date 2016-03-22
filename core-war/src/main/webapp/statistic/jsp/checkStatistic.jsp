@@ -34,9 +34,9 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.statistic.control.StatisticService"%>
-<%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser "%>
-<%@ page import="com.stratelia.webactiv.statistic.model.HistoryObjectDetail"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser "%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
 <%@ page import="org.silverpeas.util.DateUtil"%>
 <%@ page import="org.silverpeas.util.ForeignPK"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>

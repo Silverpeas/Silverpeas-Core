@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
+import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;
 import org.silverpeas.util.UnitUtil;
 
 import org.silverpeas.util.DBUtil;

@@ -25,8 +25,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticService;
-import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 

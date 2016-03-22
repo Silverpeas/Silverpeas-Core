@@ -4004,11 +4004,11 @@ class Admin implements Administration {
       Integer[] asManageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
 
       // retain only root spaces
-      List<Integer> manageableRootSpaceIds = new ArrayList<>();
+      List<String> manageableRootSpaceIds = new ArrayList<>();
       for (Integer asManageableSpaceId : asManageableSpaceIds) {
         SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceId);
         if (space != null && space.isRoot()) {
-          manageableRootSpaceIds.add(asManageableSpaceId);
+          manageableRootSpaceIds.add(asManageableSpaceId.toString());
         }
       }
       return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);

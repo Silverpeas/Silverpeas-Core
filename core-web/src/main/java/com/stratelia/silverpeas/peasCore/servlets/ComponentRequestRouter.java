@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
-import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
+import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;

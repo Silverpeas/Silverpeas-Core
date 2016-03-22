@@ -24,7 +24,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.servlets.AbstractFileSender;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.statistic.control.StatisticService;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
