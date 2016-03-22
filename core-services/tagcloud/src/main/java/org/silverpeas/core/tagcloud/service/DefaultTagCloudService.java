@@ -18,8 +18,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.tagcloud.ejb;
+package org.silverpeas.core.tagcloud.service;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.tagcloud.model.TagCloud;
+import org.silverpeas.core.tagcloud.dao.TagCloudDAO;
+import org.silverpeas.core.tagcloud.dao.TagCloudPK;
+import org.silverpeas.core.tagcloud.model.TagCloudUtil;
+import org.silverpeas.core.tagcloud.model.comparator.TagCloudByCountComparator;
+import org.silverpeas.core.tagcloud.model.comparator.TagCloudByNameComparator;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,31 +42,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.transaction.Transactional;
-
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.silverpeas.tagcloud.model.TagCloud;
-import com.silverpeas.tagcloud.model.TagCloudDAO;
-import com.silverpeas.tagcloud.model.TagCloudPK;
-import com.silverpeas.tagcloud.model.TagCloudUtil;
-import com.silverpeas.tagcloud.model.comparator.TagCloudByCountComparator;
-import com.silverpeas.tagcloud.model.comparator.TagCloudByNameComparator;
-
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-
-@Stateless(name = "TagCloud", description = "EJB to manage tags")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
+public class DefaultTagCloudService implements TagCloudService, ComponentInstanceDeletion {
 
   private Connection openConnection() {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.getConnection()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
@@ -68,7 +66,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
     try {
       TagCloudDAO.createTagCloud(con, tagCloud);
     } catch (SQLException e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.createTagCloud()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.createTagCloud()",
           SilverpeasRuntimeException.ERROR, "tagCloud.CREATING_NEW_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -85,7 +83,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
     try {
       TagCloudDAO.deleteTagCloud(con, pk, type);
     } catch (SQLException e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.deleteTagCloud()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.deleteTagCloud()",
           SilverpeasRuntimeException.ERROR, "tagCloud.DELETE_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -144,7 +142,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
       }
       return tagList;
     } catch (SQLException e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.getInstanceTagClouds()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.getInstanceTagClouds()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -162,7 +160,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
     try {
       return TagCloudDAO.getElementTagClouds(con, pk);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.getElementTagClouds()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.getElementTagClouds()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -183,7 +181,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
     try {
       return TagCloudDAO.getTagCloudsByTags(con, TagCloudUtil.getTag(tags), instanceId, type);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByTags()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.getTagCloudsByTags()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -204,7 +202,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
       return TagCloudDAO.getTagCloudsByElement(con, instanceId, externalId,
           type);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByElement()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.getTagCloudsByElement()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -217,7 +215,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
     try {
       return TagCloudDAO.getTagsByElement(con, pk);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagsByElement()",
+      throw new TagCloudRuntimeException("DefaultTagCloudService.getTagsByElement()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);

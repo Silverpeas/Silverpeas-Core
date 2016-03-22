@@ -18,40 +18,29 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.tagcloud.control;
+package org.silverpeas.core.tagcloud.service;
 
-import com.silverpeas.tagcloud.ejb.TagCloudBm;
-import com.silverpeas.tagcloud.ejb.TagCloudRuntimeException;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.tagcloud.model.TagCloud;
+import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 
-public class TagCloudController {
+import java.util.Collection;
 
-  // Home interface of session bean TagCloudBmEJB.
-  private static TagCloudBm tagCloudBm = null;
+public interface TagCloudService {
 
-  public TagCloudController() {
-    getTagCloudBm();
-  }
+  void createTagCloud(TagCloud tagCloud);
 
-  /**
-   * Getter of the home object of TagCloud EJB (initializes it if needed).
-   */
-  private static TagCloudBm getTagCloudBm() {
-    synchronized (TagCloudController.class) {
-      if (tagCloudBm == null) {
-        try {
-          tagCloudBm = ServiceProvider.getService(TagCloudBm.class);
-        } catch (Exception e) {
-          throw new TagCloudRuntimeException("TagCloudController.initHome()",
-              SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-        }
-      }
-    }
-    return tagCloudBm;
-  }
+  void deleteTagCloud(TagCloudPK pk, int type);
 
-  public synchronized void close() {
-    tagCloudBm = null;
-  }
+  Collection<TagCloud> getInstanceTagClouds(String instanceId);
+
+  Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount);
+
+  Collection<TagCloud> getElementTagClouds(TagCloudPK pk);
+
+  Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type);
+
+  Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
+      int type);
+
+  String getTagsByElement(TagCloudPK pk);
 }

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.tagcloud.model;
+package org.silverpeas.core.tagcloud.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 

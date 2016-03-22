@@ -22,16 +22,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.tagcloud.model.comparator;
+package org.silverpeas.core.tagcloud.service;
 
-import java.util.Comparator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import com.silverpeas.tagcloud.model.TagCloud;
+public class TagCloudRuntimeException extends SilverpeasRuntimeException {
 
-public class TagCloudByCountComparator implements Comparator<TagCloud> {
+  private static final long serialVersionUID = -1257445104199066209L;
 
-  public int compare(TagCloud o1, TagCloud o2) {
-    return o2.getCount() - o1.getCount();
+  public String getModule() {
+    return "tagcloud";
+  }
+
+  public TagCloudRuntimeException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
+  }
+
+  public TagCloudRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
+
+  public TagCloudRuntimeException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public TagCloudRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
 }

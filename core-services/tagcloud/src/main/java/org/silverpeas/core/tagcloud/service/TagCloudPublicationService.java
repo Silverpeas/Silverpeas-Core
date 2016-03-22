@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.tagcloud.ejb;
+package org.silverpeas.core.tagcloud.service;
 
-import com.silverpeas.tagcloud.model.TagCloud;
-import com.silverpeas.tagcloud.model.TagCloudPK;
-import com.silverpeas.tagcloud.model.TagCloudUtil;
+import org.silverpeas.core.tagcloud.model.TagCloud;
+import org.silverpeas.core.tagcloud.dao.TagCloudPK;
+import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import com.stratelia.webactiv.publication.control.DefaultPublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -59,7 +59,7 @@ public class TagCloudPublicationService extends DefaultPublicationService {
   private boolean useTagCloud;
 
   @Inject
-  private TagCloudBm tagCloudBm;
+  private TagCloudService tagCloudService;
 
   @PostConstruct
   protected void init() {
@@ -120,7 +120,7 @@ public class TagCloudPublicationService extends DefaultPublicationService {
         if (!tagList.contains(tagKey)) {
           tagCloud.setTag(tagKey);
           tagCloud.setLabel(tag.toLowerCase(I18NHelper.defaultLocale));
-          tagCloudBm.createTagCloud(tagCloud);
+          tagCloudService.createTagCloud(tagCloud);
           tagList.add(tagKey);
         }
       }
@@ -133,7 +133,7 @@ public class TagCloudPublicationService extends DefaultPublicationService {
    * @
    */
   private void deleteTagCloud(PublicationPK pubPK) {
-    tagCloudBm.deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
+    tagCloudService.deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
         TagCloud.TYPE_PUBLICATION);
   }
 
