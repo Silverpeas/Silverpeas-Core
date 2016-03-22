@@ -28,7 +28,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.silverpeas.core.viewer.util.SwfUtil;
 
 import java.io.File;
 

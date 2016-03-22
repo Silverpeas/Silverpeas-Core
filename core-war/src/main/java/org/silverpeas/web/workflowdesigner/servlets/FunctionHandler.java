@@ -26,7 +26,7 @@ package org.silverpeas.web.workflowdesigner.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 

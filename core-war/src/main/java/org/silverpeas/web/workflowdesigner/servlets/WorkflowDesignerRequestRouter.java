@@ -24,10 +24,10 @@
 
 package org.silverpeas.web.workflowdesigner.servlets;
 
-import com.silverpeas.workflow.api.Workflow;
-import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.model.*;
-import com.silverpeas.workflow.engine.model.ProcessModelImpl;
+import org.silverpeas.core.workflow.api.Workflow;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.model.*;
+import org.silverpeas.core.workflow.engine.model.ProcessModelImpl;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;

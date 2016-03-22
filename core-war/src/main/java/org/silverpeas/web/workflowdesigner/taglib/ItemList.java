@@ -32,8 +32,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.silverpeas.util.EncodeHelper;
-import com.silverpeas.workflow.api.model.DataFolder;
-import com.silverpeas.workflow.api.model.Item;
+import org.silverpeas.core.workflow.api.model.DataFolder;
+import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;

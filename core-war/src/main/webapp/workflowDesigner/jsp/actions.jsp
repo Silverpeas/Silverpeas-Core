@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.core.workflow.api.model.Actions" %>
+<%@ page import="org.silverpeas.core.workflow.api.model.Action" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -68,7 +69,7 @@ column.setSortable(false);
 
 if ( actions != null )
 {
-    Action     action;
+    Action action;
     Iterator   iterAction = actions.iterateAction();
 
     while ( iterAction.hasNext() )

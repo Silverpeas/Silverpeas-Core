@@ -32,7 +32,7 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.silverpeas.workflow.api.model.RelatedUser;
+import org.silverpeas.core.workflow.api.model.RelatedUser;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;

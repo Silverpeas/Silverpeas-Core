@@ -51,7 +51,7 @@
       <name>designations</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>com.silverpeas.workflow.api.model.ContextualDesignations</type>
+      <type>org.silverpeas.core.workflow.api.model.ContextualDesignations</type>
     </attribute>
     <attribute>
       <description>
@@ -131,7 +131,7 @@
       <name>items</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>com.silverpeas.workflow.api.model.DataFolder</type>
+      <type>org.silverpeas.core.workflow.api.model.DataFolder</type>
     </attribute>
     <attribute>
       <description>

@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.workflow.engine.WorkflowHub"%>
+<%@page import="org.silverpeas.core.workflow.engine.WorkflowHub"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
