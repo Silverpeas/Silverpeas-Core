@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.webapi.base.mappers;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

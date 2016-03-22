@@ -25,7 +25,7 @@
 /*
  * Day.java
  * this object represent the day in the monthCalendar viewGenerator
- * @see org.silverpeas.core.web.util.viewGenerator.html.monthCalendar
+ * @see org.silverpeas.core.web.util.viewgenerator.html.monthcalendar
  * Created on 18 juin 2001, 10:26
  * @author Jean-Claude GROCCIA
  * jgroccia@silverpeas.com

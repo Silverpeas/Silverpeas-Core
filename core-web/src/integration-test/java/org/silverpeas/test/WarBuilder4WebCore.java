@@ -25,7 +25,6 @@
 package org.silverpeas.test;
 
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
-import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**

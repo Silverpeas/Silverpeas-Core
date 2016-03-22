@@ -48,7 +48,6 @@ import javax.ws.rs.core.Response.Status;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.uriOfUser;
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import static org.silverpeas.util.StringUtil.isDefined;

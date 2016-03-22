@@ -28,7 +28,6 @@ import org.silverpeas.core.sharing.model.DownloadDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

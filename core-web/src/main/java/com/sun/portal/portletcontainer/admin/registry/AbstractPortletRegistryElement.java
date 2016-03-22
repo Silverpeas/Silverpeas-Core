@@ -27,11 +27,9 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

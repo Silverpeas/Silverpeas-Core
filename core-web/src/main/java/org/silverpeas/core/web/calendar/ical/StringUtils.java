@@ -35,7 +35,6 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.util.Charsets;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;

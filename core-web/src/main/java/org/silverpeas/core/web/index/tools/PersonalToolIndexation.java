@@ -21,8 +21,6 @@
 
 package org.silverpeas.core.web.index.tools;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
 /**
  * Indexation of the data managed in a given personal tool.
  * @author mmoquillon

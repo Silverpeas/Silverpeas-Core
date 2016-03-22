@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import static org.silverpeas.core.webapi.admin.AdminResourceURIs.buildURI;
-
 import java.net.URI;
 
 import javax.validation.constraints.NotNull;

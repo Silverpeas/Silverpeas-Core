@@ -21,7 +21,7 @@
 
 package com.silverpeas.accesscontrol;
 
-import org.silverpeas.accesscontrol.NodeAccessController;
+import org.silverpeas.core.accesscontrol.NodeAccessController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.node.model.NodePK;

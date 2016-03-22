@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.mvc;
 
-import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.file.SilverpeasFile;

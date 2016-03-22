@@ -582,7 +582,7 @@ public class GraphicElementFactory {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination", null);
     Pagination pagination;
     if (paginationClassName == null) {
-      paginationClassName = "org.silverpeas.core.web.util.viewGenerator.html.pagination.PaginationSP";
+      paginationClassName = "org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationSP";
     }
     try {
       pagination = (Pagination) Class.forName(paginationClassName).newInstance();
@@ -599,7 +599,7 @@ public class GraphicElementFactory {
     ProgressMessage progress;
     if (progressClassName == null) {
       progressClassName =
-          "org.silverpeas.core.web.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
+          "org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessageSilverpeasV5";
     }
     try {
       progress = (ProgressMessage) Class.forName(progressClassName).newInstance();
