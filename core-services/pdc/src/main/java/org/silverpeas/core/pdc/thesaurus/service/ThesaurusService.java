@@ -93,7 +93,7 @@ public class ThesaurusService {
       IdPK pk = new IdPK();
       return getVocabularyDao().findByWhereClause(pk, null);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getListVocabulary",
+      throw new ThesaurusException("ThesaurusService.getListVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_LIST_VOCABULARIES", "", e);
     }
   }
@@ -112,7 +112,7 @@ public class ThesaurusService {
       pk.setIdAsLong(idVoca);
       vocab = getVocabularyDao().findByPrimaryKey(pk);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getVocabulary",
+      throw new ThesaurusException("ThesaurusService.getVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_VOCABULARY", "", e);
     }
     return vocab;
@@ -130,7 +130,7 @@ public class ThesaurusService {
       IdPK pkV = (IdPK) getVocabularyDao().add(voca);
       return pkV.getIdAsLong();
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.createVocabulary", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.createVocabulary", SilverpeasException.ERROR,
           "Thesaurus.EX_CREATE_VOCABULARY_FAILED", "", e);
     }
   }
@@ -150,7 +150,7 @@ public class ThesaurusService {
           " name= '" + encode(name) + "'");
       return !vocabs.isEmpty();
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.existVocabulary",
+      throw new ThesaurusException("ThesaurusService.existVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_VOCABULARY",
           "name = " + name, e);
     }
@@ -189,7 +189,7 @@ public class ThesaurusService {
     try {
       getVocabularyDao().update(voca);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.updateVocabulary",
+      throw new ThesaurusException("ThesaurusService.updateVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_VOCABULARY_FAILED",
           "", e);
     }
@@ -225,12 +225,12 @@ public class ThesaurusService {
       try {
         con.rollback();
       } catch (Exception e1) {
-        throw new ThesaurusException("ThesaurusBm.deleteVocabulary",
+        throw new ThesaurusException("ThesaurusService.deleteVocabulary",
             SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED",
             "Error in rollback", e1);
       }
 
-      throw new ThesaurusException("ThesaurusBm.deleteVocabulary",
+      throw new ThesaurusException("ThesaurusService.deleteVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED", "", e);
     } finally {
       DBUtil.close(con);
@@ -250,7 +250,7 @@ public class ThesaurusService {
       IdPK pk = new IdPK();
       getSynonymDao().removeWhere(con, pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteVocaSynonyms",
+      throw new ThesaurusException("ThesaurusService.deleteVocaSynonyms",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_VOCA_FAILED", "", e);
     }
   }
@@ -268,7 +268,7 @@ public class ThesaurusService {
       IdPK pk = new IdPK();
       getJargonDao().removeWhere(con, pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteVocaJargons",
+      throw new ThesaurusException("ThesaurusService.deleteVocaJargons",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_JARGONS_FAILED", "",
           e);
     }
@@ -287,7 +287,7 @@ public class ThesaurusService {
         deleteJargon(jargon.getPK().getId());
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteJargons",
+      throw new ThesaurusException("ThesaurusService.deleteJargons",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_JARGONS_FAILED", "", e);
     }
   }
@@ -306,7 +306,7 @@ public class ThesaurusService {
       pk.setId(idJargon);
       daoJ.remove(pk);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteJargon",
+      throw new ThesaurusException("ThesaurusService.deleteJargon",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_JARGON_FAILED", "", e);
     }
   }
@@ -324,7 +324,7 @@ public class ThesaurusService {
         createSynonym(con, synonyme);
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusBm.createSynonyms",
+      throw new ThesaurusException("ThesaurusService.createSynonyms",
           SilverpeasException.ERROR, "Thesaurus.EX_CREATE_SYNONYMS_FAILED", "",
           e);
     }
@@ -342,7 +342,7 @@ public class ThesaurusService {
     try {
       getSynonymDao().add(con, synonym);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.createSynonym",
+      throw new ThesaurusException("ThesaurusService.createSynonym",
           SilverpeasException.ERROR, "Thesaurus.EX_CREATE_SYNONYMS_FAILED", "",
           e);
     }
@@ -367,7 +367,7 @@ public class ThesaurusService {
           " AND idTree=" + idTree + " AND idTerm=" + idTerm);
     } catch (PersistenceException e) {
       throw new ThesaurusException(
-          "ThesaurusBm.getSynonyms(long idVoca, long idTree, long idTerm)",
+          "ThesaurusService.getSynonyms(long idVoca, long idTree, long idTerm)",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS", "", e);
     }
   }
@@ -402,10 +402,10 @@ public class ThesaurusService {
       try {
         con.rollback();
       } catch (Exception e1) {
-        throw new ThesaurusException("ThesaurusBm.updateSynonyms", SilverpeasException.ERROR,
+        throw new ThesaurusException("ThesaurusService.updateSynonyms", SilverpeasException.ERROR,
             "Thesaurus.EX_UPDATE_SYNONYMS_FAILED", "Error in rollback", e1);
       }
-      throw new ThesaurusException("ThesaurusBm.updateSynonyms",
+      throw new ThesaurusException("ThesaurusService.updateSynonyms",
           SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_SYNONYMS_FAILED", "", e);
     } finally {
       DBUtil.close(con);
@@ -428,7 +428,7 @@ public class ThesaurusService {
       con.setAutoCommit(true);
       deleteSynonyms(con, Long.parseLong(idVoca), Long.parseLong(idTree), Long.parseLong(idTerm));
     } catch (Exception e) {
-      throw new ThesaurusException("ThesaurusBm.deleteSynonyms",
+      throw new ThesaurusException("ThesaurusService.deleteSynonyms",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_FAILED", "", e);
     } finally {
       DBUtil.close(con);
@@ -444,7 +444,7 @@ public class ThesaurusService {
           " idVoca=" + idVoca + " AND idTree=" + idTree + " AND idTerm=" + idTerm);
     } catch (PersistenceException e) {
       throw new ThesaurusException(
-          "ThesaurusBm.deleteSynonyms(Connection con, long idVoca, long idTree, long idTerm)",
+          "ThesaurusService.deleteSynonyms(Connection con, long idVoca, long idTree, long idTerm)",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_TERM_FAILED", "", e);
     }
   }
@@ -461,7 +461,7 @@ public class ThesaurusService {
         deleteSynonym(idSynonym);
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteSynonyms(Collection idSynonyms)",
+      throw new ThesaurusException("ThesaurusService.deleteSynonyms(Collection idSynonyms)",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_FAILED", "", e);
     }
   }
@@ -480,7 +480,7 @@ public class ThesaurusService {
       pk.setIdAsLong(idSynonym);
       daoS.remove(pk);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteSynonym", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.deleteSynonym", SilverpeasException.ERROR,
           "Thesaurus.EX_DELETE_SYNONYM_FAILED", "", e);
     }
   }
@@ -560,7 +560,7 @@ public class ThesaurusService {
       IdPK pk = new IdPK();
       return getJargonDao().findByWhereClause(pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargons",
+      throw new ThesaurusException("ThesaurusService.getJargons",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_JARGONS", "", e);
     }
   }
@@ -589,7 +589,7 @@ public class ThesaurusService {
         }
       }
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargons", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.getJargons", SilverpeasException.ERROR,
           "Thesaurus.EX_CANT_GET_JARGONS_USERS", "", e);
     }
     return jargons;
@@ -619,7 +619,7 @@ public class ThesaurusService {
         }
       }
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargons", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.getJargons", SilverpeasException.ERROR,
           "Thesaurus.EX_CANT_GET_JARGONS_USERS", "", e);
     }
     return jargons;
@@ -656,7 +656,7 @@ public class ThesaurusService {
         }
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusBm.createJargons",
+      throw new ThesaurusException("ThesaurusService.createJargons",
           SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED", "", e);
     }
   }
@@ -692,7 +692,7 @@ public class ThesaurusService {
         }
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusBm.createJargons", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.createJargons", SilverpeasException.ERROR,
           "Thesaurus.EX_CREATE_JARGONS_FAILED", "", e);
     }
   }
@@ -718,10 +718,10 @@ public class ThesaurusService {
       try {
         con.rollback();
       } catch (Exception e1) {
-        throw new ThesaurusException("ThesaurusBm.createJargons", SilverpeasException.ERROR,
+        throw new ThesaurusException("ThesaurusService.createJargons", SilverpeasException.ERROR,
             "Thesaurus.EX_CREATE_JARGONS_FAILED", "Error in rollback", e1);
       }
-      throw new ThesaurusException("ThesaurusBm.createJargons", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.createJargons", SilverpeasException.ERROR,
           "Thesaurus.EX_CREATE_JARGONS_FAILED", "", e);
     } finally {
       DBUtil.close(con);
@@ -740,7 +740,7 @@ public class ThesaurusService {
       SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       daoJ.add(jargon);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.createJargon",
+      throw new ThesaurusException("ThesaurusService.createJargon",
           SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGON_FAILED", "", e);
     }
   }
@@ -762,7 +762,7 @@ public class ThesaurusService {
       jargonToModify.setIdVoca(newIdVoca);
       daoJ.update(jargonToModify);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.updateJargon",
+      throw new ThesaurusException("ThesaurusService.updateJargon",
           SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_JARGON_FAILED", "", e);
     }
   }
@@ -780,7 +780,7 @@ public class ThesaurusService {
       SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       daoJ.add(con, jargon);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.createJargon",
+      throw new ThesaurusException("ThesaurusService.createJargon",
           SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGON_FAILED", "", e);
     }
   }
@@ -804,7 +804,7 @@ public class ThesaurusService {
         jargon = i.next();
       }
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargon", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusService.getJargon", SilverpeasException.ERROR,
           "Thesaurus.EX_CANT_GET_JARGON", "", e);
     }
     return jargon;
@@ -830,7 +830,7 @@ public class ThesaurusService {
                                         "(LOWER(name) = LOWER('" + nameEncode + "') OR "+
                                         "LOWER(name) = LOWER('" + nameNoAccent + "'))");
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getSynonyms(long idVoca, String name)",
+      throw new ThesaurusException("ThesaurusService.getSynonyms(long idVoca, String name)",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_NAME", "", e);
     }
   }
@@ -852,7 +852,7 @@ public class ThesaurusService {
       return daoS.findByWhereClause(pk, " idVoca=" + idVoca + " AND idTree=" + idTree);
     } catch (PersistenceException e) {
       throw new ThesaurusException(
-          "ThesaurusBm.getSynonymsByTree(long idVoca, long idTree)",
+          "ThesaurusService.getSynonymsByTree(long idVoca, long idTree)",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_NAME",
           "idVoca = " + idVoca + ", idTree = " + idTree, e);
     }
