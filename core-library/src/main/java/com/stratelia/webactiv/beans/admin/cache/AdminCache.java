@@ -249,7 +249,8 @@ public class AdminCache {
         new ComponentInst[m_hComponentInstCache.size()]);
 
     for (ComponentInst theComponent : theComponents) {
-      if (spaceId == getLocalSpaceId(theComponent.getDomainFatherId())) {
+      final Integer localSpaceId = getLocalSpaceId(theComponent.getDomainFatherId());
+      if (localSpaceId != null && spaceId == localSpaceId) {
         removeComponentsProfilesInst(theComponent.getLocalId());
         removeComponentInst(theComponent);
       }
@@ -665,10 +666,11 @@ public class AdminCache {
   }
 
   protected Integer getLocalSpaceId(String spaceId) {
-    if ((spaceId != null) && (spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX))) {
+    boolean isSpaceIdDefined = StringUtil.isDefined(spaceId);
+    if (isSpaceIdDefined && (spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX))) {
       return Integer.parseInt(spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length()));
     } else {
-      return (spaceId == null) ? null : Integer.parseInt(spaceId);
+      return !isSpaceIdDefined ? null : Integer.parseInt(spaceId);
     }
   }
 }
