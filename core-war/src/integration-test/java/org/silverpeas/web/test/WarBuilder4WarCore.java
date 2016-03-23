@@ -22,9 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.test;
+package org.silverpeas.web.test;
 
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.test.WarBuilder;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
@@ -65,6 +66,7 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-importexport");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-sharing");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
     warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");

@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.accesscontrol;
+package org.silverpeas.web.accesscontrol;
 
 import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.core.accesscontrol.AccessControllerProvider;
@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
-import org.silverpeas.test.WarBuilder4WarCore;
+import org.silverpeas.web.test.WarBuilder4WarCore;
 import org.silverpeas.util.ServiceProvider;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

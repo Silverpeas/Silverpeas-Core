@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.silverStatisticsPeas.control;
+package org.silverpeas.web.silverstatistics.control;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -27,9 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4WarCore;
+import org.silverpeas.web.test.WarBuilder4WarCore;
 import org.silverpeas.test.rule.DbSetupRule;
-import org.silverpeas.web.silverstatistics.control.SilverStatisticsPeasDAOConnexion;
 
 import java.util.Calendar;
 import java.util.Collection;
