@@ -33,7 +33,7 @@ import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaService;
 import org.silverpeas.quota.service.QuotaService;
 import org.silverpeas.quota.service.TestDummyQuotaServiceWithAdditionalTools;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;

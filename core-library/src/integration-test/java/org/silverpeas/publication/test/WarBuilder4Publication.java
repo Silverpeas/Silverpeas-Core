@@ -6,8 +6,7 @@ import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ComponentHelper;
 
 /**

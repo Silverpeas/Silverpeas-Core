@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.publication.test.WarBuilder4Publication;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.List;

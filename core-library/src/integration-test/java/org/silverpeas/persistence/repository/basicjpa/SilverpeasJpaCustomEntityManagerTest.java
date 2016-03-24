@@ -38,8 +38,8 @@ import org.silverpeas.persistence.repository.basicjpa.model.AnimalTypeCustomEnti
 import org.silverpeas.persistence.repository.basicjpa.model.EquipmentCustomEntity;
 import org.silverpeas.persistence.repository.basicjpa.model.PersonCustomEntity;
 import org.silverpeas.persistence.repository.jpa.JpaCustomEntityServiceTest;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.List;

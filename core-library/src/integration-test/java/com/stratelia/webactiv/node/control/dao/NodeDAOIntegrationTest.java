@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.node.control.dao;
 
-import com.stratelia.webactiv.node.control.DefaultNodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -33,8 +32,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -42,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  *

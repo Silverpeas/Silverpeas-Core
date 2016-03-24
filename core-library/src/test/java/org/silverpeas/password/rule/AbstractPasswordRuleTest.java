@@ -24,7 +24,7 @@
 package org.silverpeas.password.rule;
 
 import org.junit.Rule;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ResourceLocator;
 import org.junit.After;
 

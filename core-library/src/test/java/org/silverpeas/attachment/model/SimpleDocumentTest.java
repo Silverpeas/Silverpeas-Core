@@ -30,8 +30,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.webdav.WebdavService;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.util.RandomGenerator;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.util.RandomGenerator;
 
 import java.io.File;
 import java.util.Set;

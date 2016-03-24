@@ -46,7 +46,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.repository.DocumentRepositoryIntegrationTest;
 import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
 

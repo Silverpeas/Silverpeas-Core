@@ -40,7 +40,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import java.util.Arrays;
 import java.util.Collection;

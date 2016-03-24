@@ -25,7 +25,7 @@
 package org.silverpeas.web.test;
 
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.test.WarBuilder;
+import org.silverpeas.core.test.WarBuilder;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the

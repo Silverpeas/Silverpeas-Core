@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.publication.test.WarBuilder4Publication;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,7 +41,7 @@ import java.sql.ResultSet;
 import static com.stratelia.webactiv.publication.control.QueryStringFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  * @author Yohann Chastagnier

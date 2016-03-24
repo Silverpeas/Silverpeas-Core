@@ -26,8 +26,8 @@ package com.silverpeas.converter;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 
 import java.io.File;
 import java.nio.file.Paths;

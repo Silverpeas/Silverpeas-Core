@@ -24,22 +24,14 @@
 
 package com.silverpeas.converter;
 
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.net.URL;
 
 import static com.silverpeas.converter.DocumentFormat.*;
 import static org.hamcrest.Matchers.is;

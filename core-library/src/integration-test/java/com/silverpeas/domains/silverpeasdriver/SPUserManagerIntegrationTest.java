@@ -35,8 +35,8 @@ import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;

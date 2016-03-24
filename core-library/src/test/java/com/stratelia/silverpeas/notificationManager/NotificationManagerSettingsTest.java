@@ -27,8 +27,8 @@ import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequ
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;

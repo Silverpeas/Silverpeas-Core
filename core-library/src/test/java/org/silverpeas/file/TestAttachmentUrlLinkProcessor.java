@@ -32,8 +32,8 @@ import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.test.TestBeanContainer;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.TestBeanContainer;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.FileUtil;
 
 import java.io.File;

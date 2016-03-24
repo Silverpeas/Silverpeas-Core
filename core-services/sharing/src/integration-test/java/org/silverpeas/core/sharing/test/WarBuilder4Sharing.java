@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.sharing.test;
 
-import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.WarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.test.WarBuilder;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the

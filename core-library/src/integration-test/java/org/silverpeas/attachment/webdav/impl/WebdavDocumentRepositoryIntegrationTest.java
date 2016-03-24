@@ -32,8 +32,8 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.repository.DocumentRepositoryIntegrationTest;
 import org.silverpeas.jcr.JcrSession;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.jcr.ItemExistsException;

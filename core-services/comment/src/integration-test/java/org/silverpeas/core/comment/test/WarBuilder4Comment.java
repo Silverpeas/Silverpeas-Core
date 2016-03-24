@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.comment.test;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * A ShrinkWrap War builder for the comment service dedicated to the integration tests.

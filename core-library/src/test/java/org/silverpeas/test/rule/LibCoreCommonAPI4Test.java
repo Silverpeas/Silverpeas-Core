@@ -1,6 +1,7 @@
-package org.silverpeas.test.rule;
+package org.silverpeas.core.test.rule;
 
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 /**
  * @author Yohann Chastagnier

@@ -30,7 +30,7 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.wysiwyg.control.TestWysiwygContentTransformer;

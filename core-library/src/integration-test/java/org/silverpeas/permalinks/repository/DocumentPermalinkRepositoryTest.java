@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.permalinks.model.DocumentPermalink;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;

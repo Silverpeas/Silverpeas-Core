@@ -39,8 +39,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -50,8 +50,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.*;
-import static org.silverpeas.test.rule.DbSetupRule.getActualDataSet;
-import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  *

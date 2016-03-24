@@ -33,8 +33,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.publication.test.WarBuilder4Publication;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
-import org.silverpeas.test.util.RandomGenerator;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.util.DateUtil;
 
 import java.sql.Connection;
@@ -46,7 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static junit.framework.TestCase.*;
-import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  *

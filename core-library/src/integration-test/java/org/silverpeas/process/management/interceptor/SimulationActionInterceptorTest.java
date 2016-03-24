@@ -31,8 +31,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.util.log.TestSilverpeasTrace;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ForeignPK;
 
 import javax.ejb.EJBException;

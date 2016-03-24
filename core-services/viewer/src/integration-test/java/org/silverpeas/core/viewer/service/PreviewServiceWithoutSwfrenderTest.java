@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.model.ViewerSettings;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ImageUtil;
 import org.silverpeas.util.SettingBundle;
 

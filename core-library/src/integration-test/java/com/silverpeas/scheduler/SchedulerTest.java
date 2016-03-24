@@ -37,7 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import java.text.ParseException;
 import java.util.Calendar;

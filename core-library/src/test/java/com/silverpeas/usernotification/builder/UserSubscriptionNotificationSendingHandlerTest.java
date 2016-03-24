@@ -31,7 +31,7 @@ import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.UnitTestResource;
 import org.silverpeas.notification.util.UnitTestResourceEvent;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;

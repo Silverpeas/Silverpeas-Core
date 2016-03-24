@@ -36,8 +36,8 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.file.SilverpeasFileProcessor;
 import org.silverpeas.file.SilverpeasFileProvider;
-import org.silverpeas.test.TestBeanContainer;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.TestBeanContainer;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.wysiwyg.control.TestWysiwygContentTransformer;
 

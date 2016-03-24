@@ -25,7 +25,7 @@ package org.silverpeas.upload;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
 

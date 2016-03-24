@@ -35,8 +35,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ComponentHelper;
 

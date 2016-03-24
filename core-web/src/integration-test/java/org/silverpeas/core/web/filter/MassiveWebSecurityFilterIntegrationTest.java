@@ -32,8 +32,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.test.WarBuilder4WebCore;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.web.test.WarBuilder4WebCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletResponse;

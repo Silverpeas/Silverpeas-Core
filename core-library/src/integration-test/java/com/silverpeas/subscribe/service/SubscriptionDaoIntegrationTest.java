@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;
 
@@ -46,7 +46,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
+import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  * @author ehugonnet

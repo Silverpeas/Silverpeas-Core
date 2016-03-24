@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.password.constant.PasswordRuleType;
 import org.silverpeas.password.rule.*;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;

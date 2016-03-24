@@ -38,8 +38,8 @@ import org.silverpeas.quota.exception.QuotaFullException;
 import org.silverpeas.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.quota.model.Quota;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;

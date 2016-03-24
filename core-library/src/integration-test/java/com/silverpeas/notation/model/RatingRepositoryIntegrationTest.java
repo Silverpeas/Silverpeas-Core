@@ -35,8 +35,8 @@ import org.silverpeas.persistence.Transaction;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRatingPK;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.List;

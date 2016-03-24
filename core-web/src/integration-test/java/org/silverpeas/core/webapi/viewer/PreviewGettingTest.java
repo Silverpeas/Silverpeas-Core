@@ -35,7 +35,7 @@ import org.silverpeas.attachment.SimpleDocumentService;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.test.WarBuilder4WebCore;
+import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.viewer.service.DefaultPreviewService;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.service.ViewerContext;

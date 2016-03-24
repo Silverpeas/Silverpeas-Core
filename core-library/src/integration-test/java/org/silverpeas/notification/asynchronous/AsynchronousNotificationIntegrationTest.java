@@ -33,7 +33,7 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
-import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;

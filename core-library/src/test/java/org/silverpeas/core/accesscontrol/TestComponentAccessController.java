@@ -34,8 +34,8 @@ import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ComponentHelper;
 
 import java.util.Set;

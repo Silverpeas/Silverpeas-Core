@@ -26,7 +26,7 @@ package org.silverpeas.dateReminder.persistent;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.dateReminder.exception.DateReminderException;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import static org.hamcrest.MatcherAssert.assertThat;

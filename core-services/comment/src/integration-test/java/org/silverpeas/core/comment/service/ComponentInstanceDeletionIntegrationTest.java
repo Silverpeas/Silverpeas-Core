@@ -31,7 +31,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.ForeignPK;
 
 import javax.inject.Inject;

@@ -27,8 +27,8 @@ package com.stratelia.silverpeas.notificationManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.util.SettingBundle;
 
 import java.util.Arrays;

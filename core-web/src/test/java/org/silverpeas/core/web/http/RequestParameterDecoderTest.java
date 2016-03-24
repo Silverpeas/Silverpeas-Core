@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.http;
 
 import org.junit.Rule;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.DateUtil;
 import org.apache.commons.fileupload.FileItem;

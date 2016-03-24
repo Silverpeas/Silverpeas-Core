@@ -6,8 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import java.util.HashMap;
 import java.util.Locale;

@@ -33,8 +33,8 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.image.imagemagick.Im4javaManager;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
-import org.silverpeas.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.test.util.SilverProperties;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.util.SilverProperties;
 import org.silverpeas.util.ServiceProvider;
 
 import java.io.File;

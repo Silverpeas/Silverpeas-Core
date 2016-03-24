@@ -8,9 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.mylinks.service.DefaultMyLinksService;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.util.pool.ConnectionPool;
 
 import java.sql.Connection;

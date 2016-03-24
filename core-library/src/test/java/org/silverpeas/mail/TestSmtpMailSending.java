@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.silverpeas.mail.engine.MailSender;
 import org.silverpeas.mail.engine.MailSenderProvider;
 import org.silverpeas.mail.engine.SmtpMailSender;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
 

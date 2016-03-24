@@ -30,7 +30,7 @@ import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.util.Date;
 

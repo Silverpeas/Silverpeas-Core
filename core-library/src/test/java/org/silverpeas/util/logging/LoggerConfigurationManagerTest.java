@@ -28,8 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 

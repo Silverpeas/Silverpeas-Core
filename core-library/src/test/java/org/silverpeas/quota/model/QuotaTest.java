@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.math.BigDecimal;

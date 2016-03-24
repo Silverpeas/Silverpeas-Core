@@ -33,7 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.sharing.test.WarBuilder4Sharing;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.List;

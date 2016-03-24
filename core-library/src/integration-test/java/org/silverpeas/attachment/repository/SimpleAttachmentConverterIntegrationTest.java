@@ -32,9 +32,9 @@ import org.junit.runner.RunWith;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.jcr.JcrSession;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.jcr.JcrIntegrationTest;
-import org.silverpeas.test.util.RandomGenerator;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.MimeTypes;
 

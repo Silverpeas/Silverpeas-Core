@@ -1,10 +1,9 @@
 package org.silverpeas.core.mylinks.test;
 
-import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.WarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
- * This builder extends the {@link WarBuilder} in order to centralize the definition of common
+ * This builder extends the {@link BasicWarBuilder} in order to centralize the definition of common
  * archive part definitions.
  * @author Yohann Chastagnier
  */

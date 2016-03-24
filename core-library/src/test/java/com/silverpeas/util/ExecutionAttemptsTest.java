@@ -24,7 +24,7 @@
 package com.silverpeas.util;
 
 import org.junit.Rule;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ExecutionAttempts.Job;
 import static org.silverpeas.util.ExecutionAttempts.retry;
 import static org.hamcrest.Matchers.is;

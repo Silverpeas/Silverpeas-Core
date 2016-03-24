@@ -41,10 +41,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
-import org.silverpeas.core.webapi.mylinks.MyLinkPosition;
-import org.silverpeas.core.webapi.mylinks.MyLinksResource;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.WebApplicationException;

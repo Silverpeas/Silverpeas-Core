@@ -45,7 +45,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.date.period.Period;
-import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;

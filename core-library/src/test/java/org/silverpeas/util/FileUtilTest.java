@@ -21,7 +21,7 @@
 package org.silverpeas.util;
 
 import org.junit.Rule;
-import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

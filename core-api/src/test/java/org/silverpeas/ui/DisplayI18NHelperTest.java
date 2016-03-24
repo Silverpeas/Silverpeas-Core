@@ -26,9 +26,8 @@ package org.silverpeas.ui;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import static org.silverpeas.ui.DisplayI18NHelper.getDefaultLanguage;
 import static org.silverpeas.ui.DisplayI18NHelper.verifyLanguage;

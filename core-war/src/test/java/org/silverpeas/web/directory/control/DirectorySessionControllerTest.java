@@ -33,8 +33,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.test.TestBeanContainer;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.TestBeanContainer;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ComponentHelper;
 
 import java.util.ArrayList;

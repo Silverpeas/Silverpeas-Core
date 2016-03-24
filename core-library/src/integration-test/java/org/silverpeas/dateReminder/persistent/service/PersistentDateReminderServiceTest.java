@@ -25,29 +25,22 @@ package org.silverpeas.dateReminder.persistent.service;
 
 import java.util.Date;
 import javax.inject.Inject;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.EntityReference;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.dateReminder.exception.DateReminderValidationException;
 import org.silverpeas.dateReminder.persistent.DateReminderDetail;
 import org.silverpeas.dateReminder.persistent.MyEntityReference;
 import org.silverpeas.dateReminder.persistent.MyUnknownEntityReference;
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
-import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.test.rule.DbSetupRule;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

@@ -32,7 +32,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.password.constant.PasswordRuleType;
-import org.silverpeas.test.WarBuilder4WebCore;
+import org.silverpeas.core.web.test.WarBuilder4WebCore;
 
 import javax.ws.rs.core.Response;
 

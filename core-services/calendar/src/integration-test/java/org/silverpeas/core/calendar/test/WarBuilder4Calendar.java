@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar.test;
 
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
  * A War archive builder for the integration tests on the Calendar service.

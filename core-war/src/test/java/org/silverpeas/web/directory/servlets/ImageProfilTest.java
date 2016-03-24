@@ -29,9 +29,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.web.directory.servlets.ImageProfil;
 
 import java.io.File;
 import java.io.IOException;

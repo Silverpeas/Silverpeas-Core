@@ -26,8 +26,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
@@ -39,7 +38,6 @@ import javax.json.JsonWriter;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.Object;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
