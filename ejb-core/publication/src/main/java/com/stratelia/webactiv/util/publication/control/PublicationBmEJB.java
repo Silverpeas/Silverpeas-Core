@@ -60,7 +60,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.SeeAlsoDAO;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -1137,7 +1136,7 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   @Override
-  public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
+  public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility) {
     Connection con = getConnection();
     try {

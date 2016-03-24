@@ -50,7 +50,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
@@ -332,10 +331,9 @@ public class PublicationDAO {
     }
   }
 
-  public static NodeTree getDistributionTree(Connection con, String instanceId,
+  public static Map<String, Integer> getDistributionTree(Connection con, String instanceId,
       String statusSubQuery, boolean checkVisibility) throws SQLException {
-    Map<String, NodeTree> nodes = new HashMap<String, NodeTree>();
-    NodeTree rootNode = null;
+    Map<String, Integer> nodes = new HashMap<String, Integer>();
     StringBuilder selectStatement = new StringBuilder(128);
 
     selectStatement
@@ -410,38 +408,9 @@ public class PublicationDAO {
       while (rs.next()) {
         int nodeId = rs.getInt("nodeId");
         String nodeIdentifier = String.valueOf(nodeId);
-        NodeTree nodeTree;
-        if (nodes.containsKey(nodeIdentifier)) {
-          nodeTree = nodes.get(nodeIdentifier);
-        } else {
-          nodeTree = new NodeTree(new NodePK(nodeIdentifier, instanceId));
-          nodes.put(nodeIdentifier, nodeTree);
-        }
-        nodeTree.setNbPublications(rs.getInt("nbPubli"));
-        String fatherId = rs.getString("nodefatherid");
-        NodeTree father;
-        if (nodes.containsKey(fatherId)) {
-          father = nodes.get(fatherId);
-        } else {
-          if (Integer.parseInt(fatherId) >= 0) { // Not a root node
-            father = new NodeTree(new NodePK(String.valueOf(fatherId), instanceId));
-            if (NodePK.ROOT_NODE_ID.equals(String.valueOf(fatherId))) {
-              rootNode = father;
-            }
-            nodes.put(fatherId, father);
-          } else {
-            father = null;
-            if (NodePK.ROOT_NODE_ID.equals(nodeIdentifier)) {
-              rootNode = nodeTree;
-            }
-          }
-        }
-        if (father != null) {
-          father.addChild(nodeTree);
-          nodeTree.setParent(father);
-        }
+        nodes.put(nodeIdentifier, rs.getInt("nbPubli"));
       }
-      return rootNode;
+      return nodes;
     } finally {
       DBUtil.close(rs, prepStmt);
     }
