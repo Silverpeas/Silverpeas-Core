@@ -166,8 +166,11 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     List<String> externalAddresses = new ArrayList<String>();
     String externalAddressesStr = this.fileSharingParam.getExternalEmails();
     if (StringUtil.isDefined(externalAddressesStr)) {
+      externalAddressesStr =
+          externalAddressesStr.replaceAll(" ", COMMA_CHARACTER).replaceAll(";", COMMA_CHARACTER);
       String[] externalAddressesArray = externalAddressesStr.split(COMMA_CHARACTER);
       for (String externalAddress : externalAddressesArray) {
+        externalAddress = externalAddress.trim();
         if (StringUtil.isValidEmailAddress(externalAddress)) {
           externalAddresses.add(externalAddress);
         }
