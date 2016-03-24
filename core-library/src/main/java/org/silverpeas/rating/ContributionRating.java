@@ -1,6 +1,6 @@
 package org.silverpeas.rating;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.io.Serializable;

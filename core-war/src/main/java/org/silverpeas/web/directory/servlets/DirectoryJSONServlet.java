@@ -24,7 +24,7 @@ import org.silverpeas.web.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.JSONCodec;
 

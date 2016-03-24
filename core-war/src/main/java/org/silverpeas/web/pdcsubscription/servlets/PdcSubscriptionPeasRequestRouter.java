@@ -23,12 +23,12 @@ package org.silverpeas.web.pdcsubscription.servlets;
 import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.ArrayList;

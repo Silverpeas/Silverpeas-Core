@@ -33,7 +33,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**

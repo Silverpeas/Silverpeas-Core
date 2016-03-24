@@ -4,9 +4,9 @@ import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequ
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
 import javax.persistence.TemporalType;

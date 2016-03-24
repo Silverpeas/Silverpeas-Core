@@ -30,7 +30,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 
 

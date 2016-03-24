@@ -35,7 +35,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import java.util.List;
 
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**

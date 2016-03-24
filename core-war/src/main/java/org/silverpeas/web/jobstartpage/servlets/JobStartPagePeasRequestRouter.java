@@ -42,13 +42,13 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
 import javax.servlet.http.HttpServletRequest;

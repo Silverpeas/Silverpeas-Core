@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

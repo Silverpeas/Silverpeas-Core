@@ -21,9 +21,9 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import java.io.Serializable;
 import java.util.Date;

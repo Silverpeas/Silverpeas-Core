@@ -29,10 +29,10 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponentParameter;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

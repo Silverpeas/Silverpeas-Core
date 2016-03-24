@@ -24,7 +24,7 @@
 package org.silverpeas.publication.dateReminder;
 
 import com.stratelia.webactiv.publication.control.PublicationService;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

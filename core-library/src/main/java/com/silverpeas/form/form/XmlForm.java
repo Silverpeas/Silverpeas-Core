@@ -27,8 +27,8 @@ import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.form.record.GenericFieldTemplate;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.jsp.JspWriter;

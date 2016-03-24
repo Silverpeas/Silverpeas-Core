@@ -25,8 +25,8 @@ package org.silverpeas.chart.period;
 
 import org.silverpeas.chart.AbstractAxisChart;
 import org.silverpeas.chart.ChartType;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.util.JSONCodec.JSONObject;
 
 import java.util.Date;

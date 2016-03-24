@@ -23,7 +23,7 @@
 */
 package com.stratelia.webactiv.organization;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.util.DBUtil;

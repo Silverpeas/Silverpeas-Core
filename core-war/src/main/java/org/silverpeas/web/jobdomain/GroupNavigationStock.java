@@ -29,7 +29,7 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
 

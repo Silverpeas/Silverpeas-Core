@@ -24,8 +24,8 @@
 
 package com.stratelia.webactiv.publication.control;
 
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;

@@ -22,9 +22,9 @@ package org.silverpeas.core.web.attachment;
 
 import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.cache.service.CacheService;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.cache.service.CacheService;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import java.text.MessageFormat;
 import java.util.UUID;

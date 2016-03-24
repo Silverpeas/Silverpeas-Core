@@ -24,7 +24,7 @@
 package org.silverpeas.attachment;
 
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;

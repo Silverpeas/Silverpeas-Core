@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 
 public class SearchGroupPanel extends BrowsePanelProvider {
   protected static final int FILTER_NAME = 0;

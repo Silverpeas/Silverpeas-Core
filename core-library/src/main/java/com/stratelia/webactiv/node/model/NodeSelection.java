@@ -30,8 +30,8 @@ import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 
 public class NodeSelection extends ClipboardSelection implements Serializable {
 

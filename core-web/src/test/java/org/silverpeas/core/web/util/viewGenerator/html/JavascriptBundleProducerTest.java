@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.junit.Test;
-import org.silverpeas.util.SilverpeasBundle;
+import org.silverpeas.core.util.SilverpeasBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

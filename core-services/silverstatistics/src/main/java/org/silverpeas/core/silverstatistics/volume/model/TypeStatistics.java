@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.silverstatistics.volume.model;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;

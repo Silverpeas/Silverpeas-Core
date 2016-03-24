@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 import java.io.FileFilter;

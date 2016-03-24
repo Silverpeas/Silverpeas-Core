@@ -26,9 +26,9 @@ package org.silverpeas.core.web.util;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.textarea;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

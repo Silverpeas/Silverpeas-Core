@@ -25,7 +25,7 @@
 package org.silverpeas.web.admin;
 
 import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

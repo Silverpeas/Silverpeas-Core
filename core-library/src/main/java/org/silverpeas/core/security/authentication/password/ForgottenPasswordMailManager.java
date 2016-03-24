@@ -26,9 +26,9 @@ package org.silverpeas.core.security.authentication.password;
 
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.mail.MailSending;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.mail.MessagingException;
 

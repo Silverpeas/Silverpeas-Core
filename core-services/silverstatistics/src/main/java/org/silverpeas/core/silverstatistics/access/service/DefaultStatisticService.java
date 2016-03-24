@@ -28,7 +28,7 @@ import org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;

@@ -31,13 +31,13 @@ import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.settings.SilverpeasSettings;
 import org.silverpeas.token.Token;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import javax.inject.Inject;

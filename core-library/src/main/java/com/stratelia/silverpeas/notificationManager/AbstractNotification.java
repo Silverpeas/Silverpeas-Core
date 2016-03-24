@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.notificationManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * Class declaration

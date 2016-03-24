@@ -24,8 +24,8 @@
 
 package com.stratelia.silverpeas.genericPanel;
 
-import org.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.LocalizationBundle;
 
 import java.util.Collections;
 import java.util.HashMap;

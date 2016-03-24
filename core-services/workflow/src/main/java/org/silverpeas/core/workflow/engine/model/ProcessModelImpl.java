@@ -51,7 +51,7 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.States;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRecordTemplate;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowTemplate;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Actions;

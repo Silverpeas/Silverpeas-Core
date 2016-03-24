@@ -24,9 +24,9 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.naming.InitialContext;

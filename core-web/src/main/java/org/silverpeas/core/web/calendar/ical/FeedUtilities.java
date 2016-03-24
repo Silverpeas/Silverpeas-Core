@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.web.calendar.ical;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;

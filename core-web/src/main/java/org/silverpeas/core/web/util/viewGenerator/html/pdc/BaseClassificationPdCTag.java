@@ -31,7 +31,7 @@ import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -40,8 +40,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.text.MessageFormat;
 
-import static org.silverpeas.util.StringUtil.getBooleanValue;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**

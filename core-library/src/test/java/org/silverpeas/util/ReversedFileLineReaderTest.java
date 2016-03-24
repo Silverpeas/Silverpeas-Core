@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;

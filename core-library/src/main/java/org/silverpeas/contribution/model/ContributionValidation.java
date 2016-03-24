@@ -23,7 +23,7 @@
  */
 package org.silverpeas.contribution.model;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.util.data;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.time.TimeUnit;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.time.TimeUnit;
 
 /**
  * All settings around the temporary data management services.

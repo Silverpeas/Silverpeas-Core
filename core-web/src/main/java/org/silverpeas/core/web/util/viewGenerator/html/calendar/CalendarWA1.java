@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.calendar;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 import java.util.Calendar;

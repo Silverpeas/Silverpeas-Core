@@ -38,7 +38,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 
 <%
 String			componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");

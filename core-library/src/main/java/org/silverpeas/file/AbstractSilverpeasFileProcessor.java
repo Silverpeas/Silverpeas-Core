@@ -23,7 +23,7 @@
  */
 package org.silverpeas.file;
 
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 /**
  * @author Yohann Chastagnier

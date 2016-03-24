@@ -25,7 +25,7 @@
 package org.silverpeas.web.selection.control;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

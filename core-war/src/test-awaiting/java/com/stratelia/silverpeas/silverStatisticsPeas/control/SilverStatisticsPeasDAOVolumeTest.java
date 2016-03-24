@@ -34,7 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.cache.service.InMemoryCacheService;
+import org.silverpeas.core.cache.service.InMemoryCacheService;
 import org.silverpeas.web.test.WarBuilder4WarCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 

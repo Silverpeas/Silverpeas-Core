@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;

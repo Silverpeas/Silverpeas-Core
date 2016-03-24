@@ -24,13 +24,13 @@
 package org.silverpeas.core.webapi.profile;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;
@@ -46,7 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.uriOfUser;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The profile of a user that is web entity in the WEB. It is a web entity representing the profile

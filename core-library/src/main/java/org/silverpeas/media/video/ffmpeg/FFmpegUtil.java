@@ -23,7 +23,6 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
-import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecutionException;

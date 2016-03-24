@@ -31,7 +31,7 @@ import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 import java.util.Collection;
 import java.util.HashSet;

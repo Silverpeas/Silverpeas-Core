@@ -26,8 +26,8 @@ import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.core.index.search.model.WAIndexSearcher;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.io.IOException;

@@ -30,8 +30,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.silverpeas.notification.message.MessageContainer;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageContainer;
+import org.silverpeas.core.notification.message.MessageManager;
 
 import javax.ws.rs.core.MediaType;
 

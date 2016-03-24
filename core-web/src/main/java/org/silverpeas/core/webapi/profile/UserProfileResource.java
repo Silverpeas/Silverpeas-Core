@@ -57,7 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a

@@ -29,14 +29,14 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.DummyHandledFile;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;

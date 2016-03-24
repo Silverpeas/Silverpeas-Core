@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.calendar.model;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import static org.silverpeas.util.DateUtil.*;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import static org.silverpeas.core.util.DateUtil.*;
 
 public class ToDoHeader extends Schedulable implements Cloneable {
 

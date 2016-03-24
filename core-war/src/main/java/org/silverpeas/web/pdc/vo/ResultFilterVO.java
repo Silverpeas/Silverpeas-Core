@@ -27,7 +27,7 @@ package org.silverpeas.web.pdc.vo;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 public class ResultFilterVO {
   private String authorId = null;

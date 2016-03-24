@@ -43,7 +43,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
 

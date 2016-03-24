@@ -24,7 +24,7 @@
 
 package com.silverpeas.scheduler.trigger;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.text.ParseException;
 

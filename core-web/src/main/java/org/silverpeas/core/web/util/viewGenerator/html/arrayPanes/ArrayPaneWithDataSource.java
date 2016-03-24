@@ -29,7 +29,7 @@ import java.util.Collections;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.datapaginator.WADataPage;
 import org.silverpeas.util.datapaginator.WADataPaginator;
 import org.silverpeas.util.datapaginator.WAItem;

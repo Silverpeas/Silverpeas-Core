@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.UserRoleRow;

@@ -42,8 +42,8 @@ import org.silverpeas.jcr.SilverpeasJcrSchemaRegistering;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

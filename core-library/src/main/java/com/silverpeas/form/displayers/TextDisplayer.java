@@ -32,10 +32,10 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

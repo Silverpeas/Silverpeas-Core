@@ -26,8 +26,8 @@ package org.silverpeas.core.index.search.model;
 
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import java.io.File;

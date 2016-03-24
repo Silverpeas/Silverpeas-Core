@@ -75,15 +75,17 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.CDIContainer;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.jcr.JcrRepositoryProvider;
-import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.service.QuotaService;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -96,8 +98,8 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.util.logging.LogAnnotationProcessor;
-import org.silverpeas.util.logging.LogsAccessor;
+import org.silverpeas.core.util.logging.LogAnnotationProcessor;
+import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.wysiwyg.control.WysiwygManager;
@@ -121,11 +123,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addBundleBaseFeatures();
     addClasses(EntityReference.class);
     addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
-    addPackages(true, "org.silverpeas.util.logging.sys");
+    addPackages(true, "org.silverpeas.core.util.logging.sys");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
-    addAsResource(
-        "META-INF/services/test-org.silverpeas.util.logging.SilverLoggerFactory",
-        "META-INF/services/org.silverpeas.util.logging.SilverLoggerFactory");
+    addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
+        "META-INF/services/org.silverpeas.core.util.logging.SilverLoggerFactory");
     addAsResource("maven.properties");
   }
 
@@ -358,8 +359,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(AbstractJpaEntity.class)) {
       addClasses(ResourceIdentifier.class);
       addPackages(true, "org.silverpeas.core.admin.user.constant");
-      addPackages(true, "org.silverpeas.persistence.model");
-      addPackages(true, "org.silverpeas.persistence.repository");
+      addPackages(true, "org.silverpeas.core.persistence.model");
+      addPackages(true, "org.silverpeas.core.persistence.repository");
       addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
     }
     return this;
@@ -483,7 +484,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(RightRecover.class, AdminException.class);
       addPackages(true, "org.silverpeas.util.i18n");
       // Exclusions
-      applyManually(war -> war.deleteClass("com.stratelia.webactiv.beans.admin.Admin"));
+      applyManually(war -> war.deleteClass("org.silverpeas.core.admin.service.Admin"));
     }
     return this;
   }
@@ -655,7 +656,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   private WarBuilder4LibCore addServiceProviderFeatures() {
-    addClasses(CDIContainer.class).addPackages(true, "org.silverpeas.initialization");
+    addClasses(CDIContainer.class).addPackages(true, "org.silverpeas.core.initialization");
     return this;
   }
 

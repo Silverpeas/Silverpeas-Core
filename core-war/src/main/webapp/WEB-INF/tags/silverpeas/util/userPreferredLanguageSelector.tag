@@ -1,4 +1,4 @@
-<%@ tag import="org.silverpeas.ui.DisplayI18NHelper" %>
+<%@ tag import="org.silverpeas.core.ui.DisplayI18NHelper" %>
 <%--
   Copyright (C) 2000 - 2015 Silverpeas
 

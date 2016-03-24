@@ -20,7 +20,7 @@
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       boolean getBooleanValue( java.lang.String )
     </function-signature>
@@ -36,7 +36,7 @@
   <function>
     <description>Function that replace regex text parts by a replacement text</description>
     <name>regexReplace</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       java.lang.String regexReplace(java.lang.String,java.lang.String,java.lang.String)
     </function-signature>
@@ -52,7 +52,7 @@
   <function>
     <description>Function that indicates if a String is defined.</description>
     <name>isDefined</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       boolean isDefined( java.lang.String )
     </function-signature>
@@ -60,7 +60,7 @@
   <function>
     <description>Function that indicates if a String is not defined.</description>
     <name>isNotDefined</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       boolean isNotDefined( java.lang.String )
     </function-signature>
@@ -68,7 +68,7 @@
   <function>
     <description>Use empty string if the one passed is not defined.</description>
     <name>defaultEmptyString</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       java.lang.String defaultStringIfNotDefined(java.lang.String)
     </function-signature>
@@ -76,7 +76,7 @@
   <function>
     <description>Use default string if the first passed is not defined.</description>
     <name>defaultString</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       java.lang.String defaultStringIfNotDefined(java.lang.String,java.lang.String))
     </function-signature>
@@ -84,7 +84,7 @@
   <function>
     <description>Truncate the specified text to the specified length if necessary.</description>
     <name>truncate</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       java.lang.String truncate(java.lang.String,int)
     </function-signature>
@@ -116,7 +116,7 @@
   <function>
     <description>Function that display the file size in a human readable format.</description>
     <name>humanReadableSize</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
     </function-signature>
@@ -147,7 +147,7 @@
   <function>
     <description>Function that formats as memory size the given byte value.</description>
     <name>formatMemSize</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
     </function-signature>
@@ -155,25 +155,25 @@
   <function>
     <description>Function that converts as a time data the given long time value.</description>
     <name>getTimeData</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
-      org.silverpeas.util.time.TimeData getTimeData(long)
+      org.silverpeas.core.util.time.TimeData getTimeData(long)
     </function-signature>
   </function>
   <function>
     <description>Function that converts as a memory data the given byte value.</description>
     <name>getMemData</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
-      org.silverpeas.util.memory.MemoryData getMemData(long)
+      org.silverpeas.core.util.memory.MemoryData getMemData(long)
     </function-signature>
   </function>
   <function>
     <description>Function that converts as a desired memory size the given byte value.</description>
     <name>getMemorySizeConvertedTo</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
-      java.math.BigDecimal convertAndRoundTo(org.silverpeas.util.memory.MemoryData,org.silverpeas.util.memory.MemoryUnit)
+      java.math.BigDecimal convertAndRoundTo(org.silverpeas.core.util.memory.MemoryData,org.silverpeas.core.util.memory.MemoryUnit)
     </function-signature>
   </function>
   <function>
@@ -209,7 +209,7 @@
   <function>
     <description>Function to format a date.</description>
     <name>formatDate</name>
-    <function-class>org.silverpeas.util.DateUtil</function-class>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
     <function-signature>java.lang.String getOutputDate(java.util.Date,java.lang.String)</function-signature>
     <example>
       &lt;c:out value="${silfn:formatDate(date, "fr")}">
@@ -218,7 +218,7 @@
   <function>
     <description>Function to format a date.</description>
     <name>formatDateAndHour</name>
-    <function-class>org.silverpeas.util.DateUtil</function-class>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
     <function-signature>java.lang.String getOutputDateAndHour(java.util.Date,java.lang.String)</function-signature>
     <example>
       &lt;c:out value="${silfn:formatDateAndHour(date, "fr")}">
@@ -227,7 +227,7 @@
   <function>
     <description>Function to format a date.</description>
     <name>formatStringDate</name>
-    <function-class>org.silverpeas.util.DateUtil</function-class>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
     <function-signature>java.lang.String getOutputDate(java.lang.String,java.lang.String)</function-signature>
     <example>
       &lt;c:out value="${silfn:formatStringDate("yyyy/MM/dd", "fr")}">
@@ -236,7 +236,7 @@
   <function>
     <description>Function to format a date.</description>
     <name>formatStringDateAndHour</name>
-    <function-class>org.silverpeas.util.DateUtil</function-class>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
     <function-signature>java.lang.String getOutputDateAndHour(java.lang.String,java.lang.String)</function-signature>
     <example>
       &lt;c:out value="${silfn:formatStringDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
@@ -315,7 +315,7 @@
     </function-signature>
   </function>
   <function>
-    <description>Function that returns the list of components kmelia (object com.stratelia.webactiv.beans.admin.ComponentInstLight) dedicated to file storage.</description>
+    <description>Function that returns the list of components kmelia (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to file storage.</description>
     <name>componentsFileStorage</name>
     <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
     <function-signature>
@@ -323,7 +323,7 @@
     </function-signature>
   </function>
   <function>
-    <description>Function that returns the list of components gallery (object com.stratelia.webactiv.beans.admin.ComponentInstLight) dedicated to image storage.</description>
+    <description>Function that returns the list of components gallery (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to image storage.</description>
     <name>componentsImageStorage</name>
     <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
     <function-signature>
@@ -351,7 +351,7 @@
     <name>getGreatestRoleOfCurrentUserOn</name>
     <function-class>org.silverpeas.core.admin.user.model.SilverpeasRole</function-class>
     <function-signature>
-      com.stratelia.webactiv.SilverpeasRole getGreatestOfCurrentUserOn(java.lang.String)
+      org.silverpeas.core.admin.user.model.SilverpeasRole getGreatestOfCurrentUserOn(java.lang.String)
     </function-signature>
   </function>
 </taglib>

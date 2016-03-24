@@ -27,7 +27,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 

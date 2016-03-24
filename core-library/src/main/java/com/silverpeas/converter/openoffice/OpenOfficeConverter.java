@@ -40,8 +40,8 @@ import com.silverpeas.converter.DocumentFormatConversionException;
 import com.silverpeas.converter.DocumentFormatException;
 import com.silverpeas.converter.option.FilterOption;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * A document format converter using the OpenOffice API to perform its task. This class is the

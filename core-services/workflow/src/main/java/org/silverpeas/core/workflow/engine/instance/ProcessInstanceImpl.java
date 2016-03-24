@@ -52,7 +52,7 @@ import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRec
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -62,7 +62,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

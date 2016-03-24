@@ -33,7 +33,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.web.servlet.RestRequest;
 
 import javax.inject.Inject;

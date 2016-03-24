@@ -34,7 +34,7 @@ import com.silverpeas.usernotification.repository.NotificationResourceDataManage
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.MapUtil;
 
 import javax.inject.Inject;

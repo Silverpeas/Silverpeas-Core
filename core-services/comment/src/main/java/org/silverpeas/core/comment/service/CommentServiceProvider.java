@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.comment.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and so

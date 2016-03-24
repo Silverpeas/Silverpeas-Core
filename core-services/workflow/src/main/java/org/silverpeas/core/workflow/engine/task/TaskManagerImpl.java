@@ -40,8 +40,8 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.TodoDetail;
 import org.silverpeas.core.calendar.model.Attendee;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util.exception;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * SilverpeasRuntimeException est la racine de la hiérarchie des exception runtime silverpeas. Les

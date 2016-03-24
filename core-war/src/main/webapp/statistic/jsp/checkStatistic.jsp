@@ -37,12 +37,12 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser "%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
-<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="org.silverpeas.core.util.DateUtil"%>
 <%@ page import="org.silverpeas.util.ForeignPK"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.ServiceProvider"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ServiceProvider"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>

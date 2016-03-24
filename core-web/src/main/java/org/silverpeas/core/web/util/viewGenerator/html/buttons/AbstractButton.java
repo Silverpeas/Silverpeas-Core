@@ -34,7 +34,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.text.MessageFormat;

@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAIL
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 

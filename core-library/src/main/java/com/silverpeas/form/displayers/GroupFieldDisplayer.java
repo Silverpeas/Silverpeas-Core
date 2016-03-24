@@ -40,7 +40,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.GroupField;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.servlet.FileUploadUtil;

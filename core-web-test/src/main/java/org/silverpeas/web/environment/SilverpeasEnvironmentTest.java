@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.persistent.PersistentResourceToken;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

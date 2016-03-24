@@ -23,8 +23,8 @@
  */
 package org.silverpeas.process.annotation;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.util.ActionType;

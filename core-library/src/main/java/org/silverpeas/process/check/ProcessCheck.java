@@ -23,7 +23,7 @@
  */
 package org.silverpeas.process.check;
 
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.process.management.ProcessExecutionContext;
 
 /**

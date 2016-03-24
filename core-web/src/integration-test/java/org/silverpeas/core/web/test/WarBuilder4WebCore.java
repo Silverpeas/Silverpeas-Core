@@ -50,6 +50,7 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addPackages(true, "org.silverpeas.core.web.http");
     addPackages(true, "org.silverpeas.core.web.mvc");
     addPackages(true, "org.silverpeas.core.web.subscription");
+    addPackages(true, "org.silverpeas.core.web.util.security");
     addPackages(true, "org.silverpeas.core.web.util.servlet");
     // Bundles & Settings
     addAsResource("org/silverpeas/publication/publicationSettings.properties");

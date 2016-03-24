@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.dao.ComponentDAO;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;

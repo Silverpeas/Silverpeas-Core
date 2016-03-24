@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.exception.SilverpeasException;

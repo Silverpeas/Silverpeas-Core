@@ -27,7 +27,7 @@
 
 package org.silverpeas.core.web.mvc.util;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.FromModule;
 import org.silverpeas.util.exception.SilverpeasException;
 

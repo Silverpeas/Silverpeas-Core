@@ -35,7 +35,7 @@ import org.silverpeas.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.test.util.RandomGenerator;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.MimeTypes;
 
 import javax.jcr.Node;

@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Map;
 

@@ -29,9 +29,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 

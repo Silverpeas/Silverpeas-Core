@@ -21,7 +21,7 @@
 
 package org.silverpeas.notification;
 
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A resource event listener. This interface defines the common properties all listeners should

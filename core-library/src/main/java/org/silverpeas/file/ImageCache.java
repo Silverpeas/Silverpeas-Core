@@ -1,7 +1,7 @@
 package org.silverpeas.file;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;

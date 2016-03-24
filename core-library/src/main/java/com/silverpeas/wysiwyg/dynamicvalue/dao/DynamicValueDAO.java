@@ -27,9 +27,9 @@ package com.silverpeas.wysiwyg.dynamicvalue.dao;
 import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;

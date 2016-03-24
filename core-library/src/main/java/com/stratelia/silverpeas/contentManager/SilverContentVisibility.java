@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.Date;
 

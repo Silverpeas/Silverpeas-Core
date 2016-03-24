@@ -31,7 +31,7 @@ import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHe
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;

@@ -33,7 +33,7 @@ import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRating;
 import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

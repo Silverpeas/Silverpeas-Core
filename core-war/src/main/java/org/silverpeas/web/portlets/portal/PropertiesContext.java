@@ -20,8 +20,8 @@
  */
 package org.silverpeas.web.portlets.portal;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.io.IOException;
 import java.io.InputStream;

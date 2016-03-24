@@ -20,8 +20,8 @@
  */
 package com.silverpeas;
 
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * A service providing the transverse operations related to a given Silverpeas application. A

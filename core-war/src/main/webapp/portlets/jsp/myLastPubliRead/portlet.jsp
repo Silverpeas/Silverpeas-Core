@@ -29,6 +29,8 @@
 
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>

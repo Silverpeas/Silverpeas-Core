@@ -28,7 +28,7 @@ import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import java.io.IOException;
 import javax.inject.Inject;

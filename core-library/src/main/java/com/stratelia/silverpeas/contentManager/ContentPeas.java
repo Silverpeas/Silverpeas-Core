@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;

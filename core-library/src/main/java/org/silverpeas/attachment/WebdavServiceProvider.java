@@ -24,7 +24,7 @@
 package org.silverpeas.attachment;
 
 import org.silverpeas.attachment.webdav.WebdavService;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  *

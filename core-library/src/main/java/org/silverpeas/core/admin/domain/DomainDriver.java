@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.List;
 import java.util.Map;

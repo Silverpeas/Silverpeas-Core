@@ -25,6 +25,11 @@
 package org.silverpeas.util;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import java.text.ParseException;
 import java.util.Date;

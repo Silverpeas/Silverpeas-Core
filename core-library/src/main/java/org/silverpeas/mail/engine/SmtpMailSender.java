@@ -23,14 +23,14 @@
  */
 package org.silverpeas.mail.engine;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailToSend;
 import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.util.Charsets;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;

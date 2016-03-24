@@ -2,7 +2,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.apache.ecs.xhtml.span;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class UserNameGenerator {

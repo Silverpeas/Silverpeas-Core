@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.notification;
 
-import org.silverpeas.notification.message.Message;
-import org.silverpeas.notification.message.MessageContainer;
+import org.silverpeas.core.notification.message.Message;
+import org.silverpeas.core.notification.message.MessageContainer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

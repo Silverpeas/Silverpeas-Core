@@ -36,13 +36,13 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.ClientBrowserUtil;
 
 /**
@@ -53,7 +53,7 @@ import org.silverpeas.util.ClientBrowserUtil;
 public class SimpleDocumentServer extends GoTo {
 
   private static final long serialVersionUID = 1L;
-  public static final String KMELIA_SECURITY_CLASS = "org.silverpeas.components.kmelia.KmeliaSecurity";
+  public static final String KMELIA_SECURITY_CLASS = "org.silverpeas.components.kmelia.KmeliaAuthorization";
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
@@ -85,7 +85,7 @@ public class SimpleDocumentServer extends GoTo {
           isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
         } catch (Exception e) {
           SilverTrace.error("util", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
-              "org.silverpeas.components.kmelia.KmeliaSecurity", e);
+              "org.silverpeas.components.kmelia.KmeliaAuthorization", e);
           return null;
         }
       }

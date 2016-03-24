@@ -65,15 +65,15 @@ public class HtmlExportGeneratorTest {
 //        ResourceLocator.class, ResourceBundleWrapper.class, SystemWrapper.class);
 //    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
 //        TransactionRuntimeException.class);
-//    war.addPackages(false, "org.silverpeas.persistence.jdbc");
+//    war.addPackages(false, "org.silverpeas.core.persistence.jdbc");
 //    war.addPackages(true, "com.silverpeas.scheduler");
 
 //    war.addPackages(true, "com.silverpeas.importExport.report");
 //    war.addPackages(true, "com.silverpeas.importExport.control");
 //    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
-//        .addPackages(true, "org.silverpeas.initialization")
-//        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-//            "META-INF/services/org.silverpeas.util.BeanContainer")
+//        .addPackages(true, "org.silverpeas.core.initialization")
+//        .addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
+//            "META-INF/services/org.silverpeas.core.util.BeanContainer")
 //        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
     return war;

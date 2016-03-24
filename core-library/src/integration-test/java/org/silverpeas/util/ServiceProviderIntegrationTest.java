@@ -31,6 +31,9 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.util.BeanContainer;
+import org.silverpeas.core.util.CDIContainer;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.enterprise.util.AnnotationLiteral;
 
@@ -56,8 +59,8 @@ public class ServiceProviderIntegrationTest {
         .addClass(TestManagedBean.class)
         .addClass(TestManagedAndQualifiedBean.class)
         .addClasses(AnotherTest.class, TestAnotherManagedBean1.class, TestAnotherManagedBean2.class)
-        .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "services/org.silverpeas.util.BeanContainer")
+        .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
+            "services/org.silverpeas.core.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
   }
 

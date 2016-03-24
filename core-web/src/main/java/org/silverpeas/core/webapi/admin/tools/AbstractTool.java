@@ -25,8 +25,8 @@ package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier

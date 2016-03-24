@@ -29,9 +29,9 @@
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
-<%@page import="org.silverpeas.util.DateUtil"%>
+<%@page import="org.silverpeas.core.util.DateUtil"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 <%@page import="org.silverpeas.core.web.look.DefaultSpaceHomePage"%>

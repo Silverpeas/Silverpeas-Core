@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.look;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class TopItem {

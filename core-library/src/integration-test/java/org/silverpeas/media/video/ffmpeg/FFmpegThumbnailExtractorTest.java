@@ -17,10 +17,10 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.time.TimeConversionBoardKey;
-import org.silverpeas.util.time.TimeData;
-import org.silverpeas.util.time.TimeUnit;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.time.TimeConversionBoardKey;
+import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.TimeUnit;
 
 import javax.inject.Inject;
 import java.io.File;

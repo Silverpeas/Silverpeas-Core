@@ -39,7 +39,7 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;

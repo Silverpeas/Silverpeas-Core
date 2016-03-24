@@ -36,9 +36,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

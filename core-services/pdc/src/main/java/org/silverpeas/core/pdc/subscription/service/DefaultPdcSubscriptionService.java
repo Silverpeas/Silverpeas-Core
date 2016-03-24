@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.transaction.Transactional;
 import java.sql.Connection;

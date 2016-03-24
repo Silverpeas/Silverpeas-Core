@@ -32,8 +32,8 @@ import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
 
 import org.silverpeas.core.web.index.tools.FileFilterAgenda;
 import org.silverpeas.core.web.index.tools.FileFilterTodo;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Executes a partial or full reindexing of spelling indexes

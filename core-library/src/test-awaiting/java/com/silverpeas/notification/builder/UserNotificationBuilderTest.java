@@ -27,7 +27,7 @@ import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.usernotification.builder.mock.OrganizationControllerMock;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;

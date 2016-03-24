@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;

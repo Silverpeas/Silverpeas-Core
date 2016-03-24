@@ -24,7 +24,7 @@
 
 package com.silverpeas.scheduler;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * The factory of Scheduler objects. The <code>SchedulerFactory</code> class wraps the actual

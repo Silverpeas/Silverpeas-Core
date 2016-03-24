@@ -34,7 +34,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class QuestionContainerSelection extends ClipboardSelection implements Serializable {
 

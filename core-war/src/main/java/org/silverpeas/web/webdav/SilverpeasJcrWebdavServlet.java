@@ -23,7 +23,7 @@ package org.silverpeas.web.webdav;
 
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.webdav.JcrResourceLocatorFactory;
 
 import javax.inject.Inject;

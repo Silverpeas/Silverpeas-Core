@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 
-import static org.silverpeas.util.StringUtil.getBooleanValue;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A tag for displaying an edition form for creating a new comment.

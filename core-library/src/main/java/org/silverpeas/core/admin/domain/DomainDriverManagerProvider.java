@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.domain;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
 

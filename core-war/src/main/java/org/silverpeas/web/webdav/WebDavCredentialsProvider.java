@@ -24,7 +24,7 @@ package org.silverpeas.web.webdav;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;

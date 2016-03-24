@@ -26,7 +26,7 @@ package org.silverpeas.util.data;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.silverpeas.util.SerializationUtil.deserializeFromString;
-import static org.silverpeas.util.SerializationUtil.serializeAsString;
+import static org.silverpeas.core.util.SerializationUtil.deserializeFromString;
+import static org.silverpeas.core.util.SerializationUtil.serializeAsString;
 
 /**
  * If a treatment uses a real resource identifier for a temporary resource, it is possible

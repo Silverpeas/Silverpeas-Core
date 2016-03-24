@@ -36,9 +36,9 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 import org.apache.ecs.xhtml.span;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;

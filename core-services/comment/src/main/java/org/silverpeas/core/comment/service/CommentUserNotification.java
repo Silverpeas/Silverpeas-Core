@@ -29,9 +29,8 @@ import org.silverpeas.core.comment.model.Comment;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
@@ -39,7 +38,7 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

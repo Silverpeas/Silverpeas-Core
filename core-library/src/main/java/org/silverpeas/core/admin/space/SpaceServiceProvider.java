@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.space;
 
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaService;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaService;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier

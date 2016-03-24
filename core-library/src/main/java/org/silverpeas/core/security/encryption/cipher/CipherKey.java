@@ -1,7 +1,7 @@
 package org.silverpeas.core.security.encryption.cipher;
 
 import org.silverpeas.util.EncodingUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 import java.text.ParseException;

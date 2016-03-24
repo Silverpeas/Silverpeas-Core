@@ -28,12 +28,11 @@ import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.silverpeas.cache.service.CacheServiceProvider.getApplicationCacheService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.getWebdavContext;
 

@@ -32,8 +32,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.MissingResourceException;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * User notification from "My Diary" application.

@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.domain.driver;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

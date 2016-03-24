@@ -32,7 +32,7 @@ import org.silverpeas.core.workflow.api.TimeoutManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowEngine;
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * The workflowHub manages all the workflow components implementations. This singleton builds the

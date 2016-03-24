@@ -34,7 +34,7 @@
 --%>
 
 <%@ page isErrorPage="true" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="javax.ejb.CreateException"%>
 <%@ page import="javax.ejb.FinderException"%>
 <%@ page import="javax.ejb.RemoveException"%>

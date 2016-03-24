@@ -24,7 +24,7 @@
 
 package com.silverpeas.personalization.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class PersonalizationServiceProvider {
 

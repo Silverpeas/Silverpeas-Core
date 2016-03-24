@@ -23,8 +23,8 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.control;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.AbstractNavigationContextListener;

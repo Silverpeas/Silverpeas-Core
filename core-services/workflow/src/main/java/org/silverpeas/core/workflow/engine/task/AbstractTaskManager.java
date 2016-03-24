@@ -35,7 +35,7 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * The AbstractTaskManager implements all the silverpeas internal TaskManager methods. This Class

@@ -45,8 +45,8 @@ import java.util.Collection;
  * near futur.
  * @param <T> the SilverpeasBeanIntf type
  * @Deprecated Replaced it with the new persistence layer
- * {@link org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager}
- * or {@link org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager}
+ * {@link org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager}
+ * or {@link org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager}
  */
 @Deprecated
 public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {

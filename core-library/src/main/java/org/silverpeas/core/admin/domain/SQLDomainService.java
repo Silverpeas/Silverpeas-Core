@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.DomainConflictException;
@@ -36,9 +36,9 @@ import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsE
 import org.silverpeas.core.admin.domain.repository.SQLDomainRepository;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 

@@ -33,7 +33,7 @@ import org.silverpeas.mail.engine.MailSender;
 import org.silverpeas.mail.engine.MailSenderProvider;
 import org.silverpeas.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;

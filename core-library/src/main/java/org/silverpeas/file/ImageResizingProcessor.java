@@ -4,8 +4,8 @@ import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.option.DimensionOption;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;

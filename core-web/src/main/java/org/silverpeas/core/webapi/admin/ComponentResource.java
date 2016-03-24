@@ -33,9 +33,9 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

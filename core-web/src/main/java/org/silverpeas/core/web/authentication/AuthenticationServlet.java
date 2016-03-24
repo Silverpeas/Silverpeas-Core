@@ -35,9 +35,9 @@ import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswo
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;

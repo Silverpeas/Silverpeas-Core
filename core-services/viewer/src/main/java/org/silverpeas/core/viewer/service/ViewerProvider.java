@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
 

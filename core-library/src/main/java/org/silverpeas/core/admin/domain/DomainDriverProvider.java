@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.DomainDriver;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author ehugonnet

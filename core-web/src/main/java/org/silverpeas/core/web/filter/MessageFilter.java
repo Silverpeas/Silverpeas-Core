@@ -24,10 +24,10 @@
 package org.silverpeas.core.web.filter;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.notification.message.Message;
-import org.silverpeas.notification.message.MessageContainer;
-import org.silverpeas.notification.message.MessageListener;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.Message;
+import org.silverpeas.core.notification.message.MessageContainer;
+import org.silverpeas.core.notification.message.MessageListener;
+import org.silverpeas.core.notification.message.MessageManager;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

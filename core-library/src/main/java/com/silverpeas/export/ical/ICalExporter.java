@@ -28,7 +28,7 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.NoDataToExportException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -28,8 +28,8 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.util.logging.LogsAccessor;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.LogsAccessor;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

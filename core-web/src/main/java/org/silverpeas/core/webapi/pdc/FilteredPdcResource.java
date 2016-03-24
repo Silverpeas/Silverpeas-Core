@@ -38,7 +38,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
-import static org.silverpeas.util.logging.SilverLogger.*;
+import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC) filtered by some

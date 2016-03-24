@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;

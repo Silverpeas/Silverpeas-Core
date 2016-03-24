@@ -27,9 +27,9 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.persistence.Transaction;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.util.LongText;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class POPUPPersistence {

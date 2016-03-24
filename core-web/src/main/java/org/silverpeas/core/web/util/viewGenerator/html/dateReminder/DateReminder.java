@@ -25,9 +25,9 @@
 package org.silverpeas.core.web.util.viewgenerator.html.datereminder;
 
 import java.util.Date;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.EntityReference;
 import org.silverpeas.dateReminder.persistent.service.DateReminderServiceProvider;

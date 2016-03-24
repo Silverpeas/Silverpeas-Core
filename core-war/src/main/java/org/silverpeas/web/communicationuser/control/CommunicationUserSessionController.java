@@ -35,7 +35,7 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.apache.commons.io.FileUtils;
 
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.web.communicationuser.CommunicationUserException;
 import org.silverpeas.core.security.session.SessionInfo;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;

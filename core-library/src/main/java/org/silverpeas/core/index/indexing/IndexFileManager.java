@@ -21,7 +21,7 @@
 package org.silverpeas.core.index.indexing;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
 

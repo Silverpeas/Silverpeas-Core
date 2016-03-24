@@ -31,7 +31,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.web.mylinks.control.MyLinksPeasSessionController;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;

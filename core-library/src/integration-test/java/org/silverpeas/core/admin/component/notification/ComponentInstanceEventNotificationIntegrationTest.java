@@ -33,9 +33,9 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.notification.ResourceEventNotifier;
-import org.silverpeas.util.BeanContainer;
-import org.silverpeas.util.CDIContainer;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.BeanContainer;
+import org.silverpeas.core.util.CDIContainer;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.StateTransition;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NBean;
@@ -69,8 +69,8 @@ public class ComponentInstanceEventNotificationIntegrationTest {
             ComponentI18N.class, AbstractI18NBean.class, I18NBean.class, ComponentInst.class,
             ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
             TestComponentInstanceEventObserver.class).addPackage("org.silverpeas.notification")
-        .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "services/org.silverpeas.util.BeanContainer")
+        .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
+            "services/org.silverpeas.core.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
   }
 

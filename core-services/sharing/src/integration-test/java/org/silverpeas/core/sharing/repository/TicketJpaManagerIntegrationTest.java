@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.sharing.repository;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.sharing.model.NodeTicket;
 import org.silverpeas.core.sharing.model.PublicationTicket;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.VersionFileTicket;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,9 +37,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.sharing.test.WarBuilder4Sharing;
-import org.silverpeas.persistence.Transaction;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
 import java.util.List;

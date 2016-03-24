@@ -42,7 +42,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The default implementation of the PdcClassificationService by using both the JPA-based repository

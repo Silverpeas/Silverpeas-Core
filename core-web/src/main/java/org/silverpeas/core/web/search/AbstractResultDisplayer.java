@@ -27,10 +27,10 @@ package org.silverpeas.core.web.search;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
 /**

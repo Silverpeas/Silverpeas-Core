@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Classe de gestion des components dans le moteur d'importExport de silverpeas.

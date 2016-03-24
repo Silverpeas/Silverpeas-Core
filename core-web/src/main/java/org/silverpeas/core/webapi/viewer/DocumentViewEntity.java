@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.viewer;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 
 import javax.xml.bind.annotation.XmlAccessType;

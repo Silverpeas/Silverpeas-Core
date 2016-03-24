@@ -39,7 +39,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.silverpeas.util.logging.SilverLogger.*;
+import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 @Service
 @RequestScoped

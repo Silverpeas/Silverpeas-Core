@@ -26,7 +26,7 @@
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.chart.pie.PieChart" %>
 <%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
-<%@ page import="org.silverpeas.util.memory.MemoryUnit" %>
+<%@ page import="org.silverpeas.core.util.memory.MemoryUnit" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

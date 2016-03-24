@@ -21,8 +21,8 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.persistence.CascadeType;
@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A classification of a content in Silverpeas on the classification plan (named PdC). A

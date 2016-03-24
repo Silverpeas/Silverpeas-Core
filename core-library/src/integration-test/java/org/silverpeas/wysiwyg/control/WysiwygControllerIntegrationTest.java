@@ -39,7 +39,7 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.ByteArrayInputStream;

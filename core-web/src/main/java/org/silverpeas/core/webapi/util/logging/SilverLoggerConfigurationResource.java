@@ -28,9 +28,9 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.util.logging.LoggerConfigurationManager;
-import org.silverpeas.util.logging.LoggerConfigurationManager.LoggerConfiguration;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;

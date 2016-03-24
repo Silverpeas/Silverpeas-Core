@@ -24,7 +24,7 @@
 
 package org.silverpeas.util.i18n;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Collection;

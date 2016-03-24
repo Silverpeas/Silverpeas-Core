@@ -23,9 +23,13 @@ package org.silverpeas.util;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +38,7 @@ import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 
 import static java.io.File.separatorChar;
-import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Norbert CHAIX

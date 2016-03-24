@@ -33,7 +33,7 @@ import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConfigE
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsRuntimeException;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
 import org.apache.commons.lang3.text.StrTokenizer;

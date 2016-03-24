@@ -24,7 +24,7 @@
 package org.silverpeas.mail;
 
 import org.silverpeas.util.Charsets;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;

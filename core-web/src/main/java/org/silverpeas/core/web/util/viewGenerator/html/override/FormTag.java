@@ -28,7 +28,7 @@ import org.apache.ecs.xhtml.form;
 import org.apache.ecs.xhtml.input;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.Charsets;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 

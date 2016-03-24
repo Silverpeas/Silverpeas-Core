@@ -45,7 +45,7 @@ import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
 import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
-import org.silverpeas.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.ManagedThreadPool;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;

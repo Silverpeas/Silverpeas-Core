@@ -27,7 +27,7 @@ import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.core.viewer.util.DocumentInfo;

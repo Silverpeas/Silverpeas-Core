@@ -41,8 +41,8 @@ import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseExc
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,7 +54,7 @@ import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.createCountFor;
+import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.createCountFor;
 
 /**
  * @author lbertin

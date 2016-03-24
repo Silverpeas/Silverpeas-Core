@@ -25,7 +25,7 @@ package org.silverpeas.web.attachment;
 
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -33,7 +33,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.UploadSession;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.servlet.ServletException;
@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import static org.silverpeas.core.importexport.control.RepositoriesTypeManager.handleFileToAttach;
-import static org.silverpeas.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 import static org.silverpeas.util.i18n.I18NHelper.checkLanguage;
 
 /**

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * This class embeds a logic of reattempting the execution of jobs when an exception is thrown

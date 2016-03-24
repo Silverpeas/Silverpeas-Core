@@ -26,9 +26,9 @@ package org.silverpeas.core.webapi.bundle;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.enterprise.context.RequestScoped;

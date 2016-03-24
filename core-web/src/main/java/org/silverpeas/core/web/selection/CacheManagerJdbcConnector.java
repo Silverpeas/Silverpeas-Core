@@ -37,8 +37,8 @@ import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.selection.jdbc.JdbcConnectorDAO;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 public class CacheManagerJdbcConnector extends CacheManager {
 

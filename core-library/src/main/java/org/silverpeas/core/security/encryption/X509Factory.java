@@ -26,8 +26,8 @@ package org.silverpeas.core.security.encryption;
 
 import net.sourceforge.jcetaglib.lib.X509Cert;
 import org.silverpeas.core.security.authentication.password.encryption.UnixDESEncryption;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 

@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.LdapConfiguration;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**

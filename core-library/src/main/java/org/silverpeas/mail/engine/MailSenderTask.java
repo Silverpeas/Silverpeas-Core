@@ -24,9 +24,9 @@
 
 package org.silverpeas.mail.engine;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.mail.MailToSend;
-import org.silverpeas.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.ManagedThreadPool;
 
 import java.util.ArrayList;
 import java.util.List;

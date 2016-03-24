@@ -25,10 +25,10 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +39,7 @@ import java.io.UnsupportedEncodingException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
-import static org.silverpeas.util.StringUtil.newline;
+import static org.silverpeas.core.util.StringUtil.newline;
 
 /**
  * @author ehugonnet

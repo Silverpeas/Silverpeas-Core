@@ -30,8 +30,11 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.RelativeFileAccessException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.util.mail.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -48,7 +51,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 
-import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
 public class FileUtil implements MimeTypes {
 

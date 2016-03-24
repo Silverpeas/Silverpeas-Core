@@ -30,7 +30,7 @@
 <%@page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.pdc.interests.model.Interests" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>

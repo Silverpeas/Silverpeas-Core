@@ -28,8 +28,8 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;

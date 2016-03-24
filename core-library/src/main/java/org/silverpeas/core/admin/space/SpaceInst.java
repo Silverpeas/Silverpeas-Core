@@ -31,13 +31,13 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 

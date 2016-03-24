@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.webdav;
 
 import org.apache.jackrabbit.webdav.util.EncodeUtil;
-import org.silverpeas.cache.service.CacheService;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheService;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

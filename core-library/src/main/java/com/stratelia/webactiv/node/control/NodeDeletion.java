@@ -33,7 +33,7 @@ import com.stratelia.webactiv.node.model.NodeRuntimeException;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;

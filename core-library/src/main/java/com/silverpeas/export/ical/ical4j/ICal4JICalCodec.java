@@ -22,11 +22,11 @@ package com.silverpeas.export.ical.ical4j;
 
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.CalendarEventRecurrence;
-import org.silverpeas.date.Datable;
+import org.silverpeas.core.date.Datable;
 import com.silverpeas.export.EncodingException;
 import com.silverpeas.export.ical.ICalCodec;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.html.HtmlCleaner;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;

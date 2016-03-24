@@ -40,7 +40,7 @@ import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.*;

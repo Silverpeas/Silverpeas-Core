@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.comparator;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;

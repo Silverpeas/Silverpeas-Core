@@ -24,8 +24,8 @@
 package org.silverpeas.chart.period;
 
 import org.junit.Test;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
 
 import java.util.Date;
 

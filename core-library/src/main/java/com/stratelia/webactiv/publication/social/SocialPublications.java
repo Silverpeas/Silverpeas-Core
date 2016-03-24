@@ -22,7 +22,7 @@ package com.stratelia.webactiv.publication.social;
 
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
 import com.stratelia.webactiv.publication.control.PublicationService;

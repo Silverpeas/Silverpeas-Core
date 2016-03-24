@@ -25,7 +25,7 @@ package org.silverpeas.util.mail;
 
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.io.ByteArrayInputStream;

@@ -39,7 +39,7 @@ import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

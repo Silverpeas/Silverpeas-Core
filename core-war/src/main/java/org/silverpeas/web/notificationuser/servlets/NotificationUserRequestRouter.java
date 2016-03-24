@@ -26,7 +26,7 @@ import org.silverpeas.web.notificationuser.control.NotificationUserSessionContro
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * Class declaration

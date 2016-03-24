@@ -36,7 +36,7 @@
 <%@ page import="org.silverpeas.components.kmelia.KmeliaAuthorization" %>
 <%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 
 <%
@@ -74,7 +74,7 @@
           String objectId = KmeliaHelper.extractObjectIdFromURL(redirection);
           String objectType = KmeliaHelper.extractObjectTypeFromURL(redirection);
           if ("Publication".equals(objectType)) {
-            KmeliaSecurity security = new KmeliaSecurity(organization);
+            KmeliaAuthorization security = new KmeliaAuthorization(organization);
             isAnonymousAccessAuthorized =
                 security.isAccessAuthorized(componentId, anonymousUser.getId(), objectId);
           }

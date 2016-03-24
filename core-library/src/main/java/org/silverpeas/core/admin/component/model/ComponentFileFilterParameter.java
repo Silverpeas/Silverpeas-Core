@@ -27,7 +27,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
@@ -35,7 +35,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * This class handles component file filters (authorized or forbidden files).

@@ -25,9 +25,9 @@
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.*;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * This class permits to specify the context of a right assignation operations (copy or replace for

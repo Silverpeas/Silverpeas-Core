@@ -21,7 +21,7 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.pdc.interests.model.Interests;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
@@ -32,9 +32,9 @@ import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;

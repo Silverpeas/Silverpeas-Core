@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.admin.domain.repository;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
-import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQueries;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.io.FileInputStream;

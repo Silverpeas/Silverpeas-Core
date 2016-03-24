@@ -38,10 +38,10 @@ import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.calendar.model.ParticipationStatus;
 import org.silverpeas.core.calendar.model.SchedulableCount;
 import org.silverpeas.core.calendar.socialnetwork.SocialInformationEvent;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 

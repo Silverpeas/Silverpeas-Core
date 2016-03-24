@@ -20,9 +20,9 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.index.search.model.QueryDescription;
 
 import java.text.ParseException;

@@ -24,7 +24,7 @@
 package org.silverpeas.attachment.util;
 
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.attachment.model.SimpleDocument;

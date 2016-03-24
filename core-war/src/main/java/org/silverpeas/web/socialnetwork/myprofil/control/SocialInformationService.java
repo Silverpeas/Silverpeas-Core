@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.provider.ProviderSwitchInterface;

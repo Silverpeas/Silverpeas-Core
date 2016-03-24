@@ -1,9 +1,9 @@
 package org.silverpeas.core.test;
 
-import org.silverpeas.util.logging.Level;
-import org.silverpeas.util.logging.LoggerConfigurationManager;
-import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.logging.SilverLoggerFactory;
+import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLoggerFactory;
 
 /**
  * @author Yohann Chastagnier

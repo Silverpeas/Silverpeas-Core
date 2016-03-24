@@ -361,321 +361,321 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 [0m[0m17:05:35,685 INFO  [org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet] (ServerService Thread Pool -- 103) resource-path-prefix = '/repository'
 [0m[0m17:05:35,699 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 103) WFLYUT0021: Registered web context: /silverpeas
 [0m[0m17:05:35,756 INFO  [org.jboss.as.server] (management-handler-thread - 5) WFLYSRV0010: Deployed "silverpeas.war" (runtime-name : "silverpeas.war")
-[0m[31m17:06:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:06:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:07:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:07:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
 [0m[0m17:07:44,827 INFO  [org.jboss.as.repository] (ServerService Thread Pool -- 91) WFLYDR0009: Content /home/miguel/Applications/wildfly/standalone/data/content/c6/ad0579387af475af5c668ceb4129f8bc032ec9 is obsolete and will be removed
 [0m[0m17:07:44,851 INFO  [org.jboss.as.repository] (ServerService Thread Pool -- 91) WFLYDR0002: Content removed from location /home/miguel/Applications/wildfly/standalone/data/content/c6/ad0579387af475af5c668ceb4129f8bc032ec9/content
-[0m[31m17:08:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:08:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:09:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:09:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:10:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:10:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:11:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:11:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:12:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:12:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:13:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:13:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:14:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:14:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:15:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:15:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:16:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:16:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:17:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:17:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:18:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:18:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:19:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:19:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:20:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:20:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:21:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:21:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:22:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:22:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:23:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:23:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:24:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:24:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:25:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:25:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:26:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:26:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:27:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:27:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:28:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:28:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:29:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:29:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:30:00,001 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.AdminSynchroGroupJob threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:30:00,001 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.AdminSynchroGroupJob threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:30:00,003 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.TemporayDataCleanerJob threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:30:00,003 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.TemporayDataCleanerJob threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at org.silverpeas.util.ResourceLocator.loadResourceBundle(ResourceLocator.java:188)
-	at org.silverpeas.util.ResourceLocator.loadResourceBundle(ResourceLocator.java:168)
-	at org.silverpeas.util.SettingBundle.getWrappedBundle(SettingBundle.java:201)
-	at org.silverpeas.util.SettingBundle.getString(SettingBundle.java:98)
-	at org.silverpeas.util.SettingBundle.getLong(SettingBundle.java:149)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.ResourceLocator.loadResourceBundle(ResourceLocator.java:188)
+	at org.silverpeas.core.util.ResourceLocator.loadResourceBundle(ResourceLocator.java:168)
+	at org.silverpeas.core.util.SettingBundle.getWrappedBundle(SettingBundle.java:201)
+	at org.silverpeas.core.util.SettingBundle.getString(SettingBundle.java:98)
+	at org.silverpeas.core.util.SettingBundle.getLong(SettingBundle.java:149)
 	at org.silverpeas.util.data.TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted(TemporaryDataManagementSetting.java:54)
 	at org.silverpeas.util.data.TemporaryDataCleanerSchedulerInitializer$TemporaryDataCleanerJob.execute(TemporaryDataCleanerSchedulerInitializer.java:99)
 	at com.silverpeas.scheduler.quartz.QuartzSchedulerJob.execute(QuartzSchedulerJob.java:105)
@@ -683,338 +683,338 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:30:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:30:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:31:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:31:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:32:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:32:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:33:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:33:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:34:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:34:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:35:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:35:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:36:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:36:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:37:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:37:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:38:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:38:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:39:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:39:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:40:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:40:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:41:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:41:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:42:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:42:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:43:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:43:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:44:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:44:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:45:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:45:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:46:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:46:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:47:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:47:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:48:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:48:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:49:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:49:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:50:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:50:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:51:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:51:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:52:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:52:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:53:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:53:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:54:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:54:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:55:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:55:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:56:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:56:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
-[0m[31m17:57:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.util.logging.SilverLoggerFactory: Provider org.silverpeas.util.logging.sys.SysLoggerFactory not a subtype
+[0m[31m17:57:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
 	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
 	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
 	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
 	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
-	at org.silverpeas.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
 	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)

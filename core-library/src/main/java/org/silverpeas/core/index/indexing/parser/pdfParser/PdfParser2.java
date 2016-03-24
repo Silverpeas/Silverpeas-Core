@@ -32,7 +32,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * the pdfParser parse a pdf file

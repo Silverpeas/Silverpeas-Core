@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Rule;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
 import org.silverpeas.web.environment.SilverpeasEnvironmentTestRule;
 

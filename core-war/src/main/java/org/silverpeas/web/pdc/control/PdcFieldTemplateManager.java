@@ -30,7 +30,7 @@ import java.util.StringTokenizer;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.Parameter;
 import com.silverpeas.form.record.ParameterValue;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxisPK;
 

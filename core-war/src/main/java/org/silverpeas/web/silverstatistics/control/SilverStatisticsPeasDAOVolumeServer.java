@@ -31,11 +31,11 @@ import java.util.Map;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.core.util.UnitUtil;
 
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.memory.MemoryUnit;
 
 /**
  * Class declaration Get stat size directory data from database

@@ -25,9 +25,9 @@
 package org.silverpeas.core.sharing.repository;
 
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
 
 import java.util.List;
 

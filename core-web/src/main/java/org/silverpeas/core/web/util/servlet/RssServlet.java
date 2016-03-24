@@ -38,7 +38,7 @@ import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;

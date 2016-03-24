@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletRequest;

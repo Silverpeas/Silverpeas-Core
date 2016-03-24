@@ -23,8 +23,8 @@
  */
 package org.silverpeas.attachment.util;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * Handled the settings around the attachments.

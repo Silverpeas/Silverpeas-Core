@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.upload;
 
 import org.silverpeas.util.Charsets;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;

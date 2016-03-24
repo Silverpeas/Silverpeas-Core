@@ -45,7 +45,7 @@ import org.apache.ecs.AlignType;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.*;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.IOException;
 import java.io.PrintWriter;

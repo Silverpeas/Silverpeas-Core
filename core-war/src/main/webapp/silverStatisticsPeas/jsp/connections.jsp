@@ -26,7 +26,7 @@
 
 <%@page import="org.silverpeas.core.security.session.SessionInfo"%>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

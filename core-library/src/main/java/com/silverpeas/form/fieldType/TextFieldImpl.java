@@ -24,10 +24,10 @@
 package com.silverpeas.form.fieldType;
 
 import com.silverpeas.form.PagesContext;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

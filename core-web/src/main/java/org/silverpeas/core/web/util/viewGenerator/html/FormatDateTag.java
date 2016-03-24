@@ -22,13 +22,13 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import java.util.Date;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import static org.silverpeas.util.StringUtil.*;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * A tag to print out a localized date and time according to the language of the user.

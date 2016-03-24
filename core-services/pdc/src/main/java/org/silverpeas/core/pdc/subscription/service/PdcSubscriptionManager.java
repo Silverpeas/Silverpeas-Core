@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.subscription.service;
 
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.classification.Value;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

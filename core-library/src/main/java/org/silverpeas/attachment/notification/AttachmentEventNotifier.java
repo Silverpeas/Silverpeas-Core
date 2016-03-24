@@ -23,7 +23,7 @@ package org.silverpeas.attachment.notification;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.notification.JMSResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
 import javax.jms.Destination;

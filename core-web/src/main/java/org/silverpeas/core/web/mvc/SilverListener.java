@@ -29,10 +29,10 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.cache.service.InMemoryCacheService;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.InMemoryCacheService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

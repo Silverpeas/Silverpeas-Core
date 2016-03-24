@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 
 import java.io.Serializable;

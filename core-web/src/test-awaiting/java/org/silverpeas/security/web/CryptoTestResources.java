@@ -1,11 +1,11 @@
 package org.silverpeas.security.web;
 
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.StringUtil;
 import com.silverpeas.web.TestResources;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 import java.io.File;
 import java.io.StringReader;
 import javax.crypto.KeyGenerator;

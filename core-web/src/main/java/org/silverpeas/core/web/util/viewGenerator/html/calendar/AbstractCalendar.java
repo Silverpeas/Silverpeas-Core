@@ -42,8 +42,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
 /**

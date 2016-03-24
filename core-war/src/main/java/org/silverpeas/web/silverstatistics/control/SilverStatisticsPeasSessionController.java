@@ -47,7 +47,7 @@ import org.silverpeas.web.silverstatistics.vo.CrossAxisStatsFilter;
 import org.silverpeas.web.silverstatistics.vo.CrossStatisticVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticAxisVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticVO;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
@@ -58,14 +58,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.chart.period.PeriodChart;
 import org.silverpeas.chart.pie.PieChart;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -77,7 +77,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Vector;
 
-import static org.silverpeas.util.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
 
 /**
  * Class declaration

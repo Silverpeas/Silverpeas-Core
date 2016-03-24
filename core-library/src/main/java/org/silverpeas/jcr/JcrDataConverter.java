@@ -31,8 +31,8 @@ import java.util.StringTokenizer;
 import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
 
 /**
  * A converter of some data handled in the JCR, such as node paths and dates.

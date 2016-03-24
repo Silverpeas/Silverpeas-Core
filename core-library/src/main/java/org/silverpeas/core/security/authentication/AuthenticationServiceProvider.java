@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A provider of the authentication service.

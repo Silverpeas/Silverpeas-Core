@@ -29,7 +29,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -41,7 +41,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;

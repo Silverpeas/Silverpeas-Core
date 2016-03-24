@@ -29,7 +29,7 @@ package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
 

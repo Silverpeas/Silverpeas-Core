@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.base.aspect;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import org.silverpeas.core.webapi.base.WebResource;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;

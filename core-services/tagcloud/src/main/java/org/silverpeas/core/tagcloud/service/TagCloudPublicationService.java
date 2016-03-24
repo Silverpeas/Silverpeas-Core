@@ -29,8 +29,8 @@ import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import com.stratelia.webactiv.publication.control.DefaultPublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.annotation.PostConstruct;

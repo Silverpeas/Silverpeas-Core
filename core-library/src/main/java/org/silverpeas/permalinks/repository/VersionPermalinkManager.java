@@ -25,8 +25,8 @@
 package org.silverpeas.permalinks.repository;
 
 import org.silverpeas.permalinks.model.VersionPermalink;
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.repository.BasicEntityRepository;
 
 public interface VersionPermalinkManager extends
     BasicEntityRepository<VersionPermalink, UniqueIntegerIdentifier> {

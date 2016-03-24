@@ -51,11 +51,11 @@ import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
@@ -2204,7 +2204,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
                 if (instanceId.startsWith("kmelia")) {
                   if (componentAuthorization == null) {
                     componentAuthorization = (ComponentAuthorization) Class
-                        .forName("org.silverpeas.components.kmelia.KmeliaSecurity").newInstance();
+                        .forName("org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
                     componentAuthorization.enableCache();
                   }
 

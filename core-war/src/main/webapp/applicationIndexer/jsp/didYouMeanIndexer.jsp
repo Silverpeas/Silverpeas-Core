@@ -40,11 +40,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
 
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

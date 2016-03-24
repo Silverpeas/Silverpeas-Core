@@ -28,9 +28,9 @@ import java.util.Collection;
 import javax.inject.Singleton;
 
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
-import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager;
 
 /**
  * @author Cécile Bonin

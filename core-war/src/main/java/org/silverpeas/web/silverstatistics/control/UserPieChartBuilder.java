@@ -24,14 +24,14 @@
 
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.chart.pie.PieChart;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.SQLException;
 import java.util.Hashtable;

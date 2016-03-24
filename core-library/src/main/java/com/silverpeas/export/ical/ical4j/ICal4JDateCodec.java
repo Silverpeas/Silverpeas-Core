@@ -25,9 +25,9 @@
 package com.silverpeas.export.ical.ical4j;
 
 import com.silverpeas.export.EncodingException;
-import org.silverpeas.date.Datable;
-import org.silverpeas.date.Date;
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Date;
+import org.silverpeas.core.date.DateTime;
 import java.text.ParseException;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;

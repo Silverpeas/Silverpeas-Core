@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.admin.service.OrganizationController;

@@ -24,6 +24,8 @@
 
 package org.silverpeas.util;
 
+import org.silverpeas.core.util.StringUtil;
+
 /**
  * AssertArgument gathers all of the assertion operations that can be used for for checking the
  * arguments specified in method call are correct. If an assertion failed, then an

@@ -44,8 +44,8 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.web.subscription.SubscriptionComparator;
 import org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean;
 import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

@@ -40,8 +40,8 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 <view:timeout />
 <%

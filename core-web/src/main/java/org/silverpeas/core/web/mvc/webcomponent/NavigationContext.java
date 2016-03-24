@@ -25,7 +25,7 @@ package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag;
 
 import javax.ws.rs.core.UriBuilder;

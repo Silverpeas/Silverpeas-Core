@@ -1,7 +1,7 @@
 package org.silverpeas.core.web.util;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
 

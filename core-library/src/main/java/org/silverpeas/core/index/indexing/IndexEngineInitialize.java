@@ -20,10 +20,10 @@
  */
 package org.silverpeas.core.index.indexing;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.initialization.Initialization;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 

@@ -33,10 +33,10 @@
 <%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
 <%@ page import="org.silverpeas.web.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>

@@ -24,8 +24,8 @@
 package org.silverpeas.permalinks.repository;
 
 import org.silverpeas.permalinks.model.VersionPermalink;
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
 
 /**
  * @author: ebonnet

@@ -29,7 +29,7 @@ import com.silverpeas.usernotification.delayed.DelayedNotificationProvider;
 import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationUserSetting;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 
 /**

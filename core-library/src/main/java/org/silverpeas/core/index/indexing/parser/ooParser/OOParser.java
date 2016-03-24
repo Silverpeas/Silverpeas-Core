@@ -48,7 +48,7 @@ import org.jdom.input.SAXBuilder;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 
 public class OOParser implements Parser {

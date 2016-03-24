@@ -23,8 +23,8 @@
  */
 package org.silverpeas.quota.service;
 
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionRuntimeException;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;

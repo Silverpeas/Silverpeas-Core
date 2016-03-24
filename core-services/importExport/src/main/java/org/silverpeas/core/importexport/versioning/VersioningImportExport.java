@@ -22,7 +22,7 @@ package org.silverpeas.core.importexport.versioning;
 
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -38,9 +38,9 @@ import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.File;

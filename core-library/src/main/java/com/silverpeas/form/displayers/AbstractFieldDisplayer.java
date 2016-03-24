@@ -33,7 +33,7 @@ import com.silverpeas.form.Util;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

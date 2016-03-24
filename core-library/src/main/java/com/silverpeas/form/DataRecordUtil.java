@@ -25,8 +25,8 @@
 package com.silverpeas.form;
 
 import com.silverpeas.form.fieldType.DateField;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -26,7 +26,7 @@ package org.silverpeas.web.directory.servlets;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.control.DirectorySessionController;
 import org.silverpeas.web.directory.model.DirectoryItemList;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

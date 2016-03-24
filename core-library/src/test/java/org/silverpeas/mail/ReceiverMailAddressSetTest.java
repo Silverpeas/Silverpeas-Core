@@ -24,7 +24,7 @@
 package org.silverpeas.mail;
 
 import org.junit.Test;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

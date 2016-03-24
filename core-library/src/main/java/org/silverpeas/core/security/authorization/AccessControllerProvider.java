@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A provider of the different access controllers available in Silverpeas.

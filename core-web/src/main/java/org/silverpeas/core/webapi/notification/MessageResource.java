@@ -27,7 +27,7 @@ import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageManager;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

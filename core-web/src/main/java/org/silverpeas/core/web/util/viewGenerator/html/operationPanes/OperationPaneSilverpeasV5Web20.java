@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Vector;
 

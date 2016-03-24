@@ -41,9 +41,9 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 
 public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_USER_LASTNAME = 0;

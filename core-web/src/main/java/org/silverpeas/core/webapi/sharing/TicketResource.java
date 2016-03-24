@@ -51,7 +51,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.silverpeas.util.logging.SilverLogger.*;
+import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 @Service
 @RequestScoped

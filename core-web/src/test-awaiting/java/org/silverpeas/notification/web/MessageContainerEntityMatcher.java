@@ -26,8 +26,8 @@ package org.silverpeas.notification.web;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.silverpeas.notification.message.Message;
-import org.silverpeas.notification.message.MessageContainer;
+import org.silverpeas.core.notification.message.Message;
+import org.silverpeas.core.notification.message.MessageContainer;
 
 import java.util.Iterator;
 

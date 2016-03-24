@@ -26,8 +26,8 @@ package com.sun.portal.portletcontainer.invoker;
 import com.sun.portal.container.*;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import com.sun.portal.portletcontainer.invoker.util.PortletWindowRules;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;

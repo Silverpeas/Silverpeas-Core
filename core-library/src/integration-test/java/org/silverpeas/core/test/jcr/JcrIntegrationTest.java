@@ -7,7 +7,7 @@ import org.silverpeas.attachment.process.SimpleDocumentDummyHandledFileConverter
 import org.silverpeas.attachment.repository.JcrContext;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier

@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

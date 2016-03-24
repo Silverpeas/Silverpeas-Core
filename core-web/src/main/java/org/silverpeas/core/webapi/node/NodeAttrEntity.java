@@ -24,7 +24,7 @@ import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import org.owasp.encoder.Encode;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,7 +33,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Date;
 
-import static org.silverpeas.util.logging.SilverLogger.getLogger;
+import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
 
 @XmlRootElement
 public class NodeAttrEntity {

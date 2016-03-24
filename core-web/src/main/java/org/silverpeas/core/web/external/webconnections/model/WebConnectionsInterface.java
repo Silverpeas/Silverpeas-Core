@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.external.webconnections.model;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.rmi.RemoteException;
 import java.util.List;

@@ -44,10 +44,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 
 import java.sql.Connection;
@@ -679,6 +679,6 @@ public class CommentRequesterIntegrationTest {
   }
 
   private Date aDate() {
-    return new org.silverpeas.date.Date(DUUMMY_DATE);
+    return new org.silverpeas.core.date.Date(DUUMMY_DATE);
   }
 }

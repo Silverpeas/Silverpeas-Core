@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.tools.agenda.model;
 
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public interface CalendarImportSettingsDao {
 

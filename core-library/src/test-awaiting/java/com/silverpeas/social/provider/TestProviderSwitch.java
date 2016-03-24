@@ -49,7 +49,7 @@ import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 import com.silverpeas.socialnetwork.status.SocialInformationStatus;
 import com.silverpeas.socialnetwork.status.Status;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import static org.junit.Assert.assertEquals;
@@ -157,11 +157,11 @@ public class TestProviderSwitch {
     switch1.setSocialStatusInterface(statusInterface);
     switch1.setSocialRelationShipsInterface(socialRelationShipsInterface);
 
-    org.silverpeas.date.Date begin = null;
-    org.silverpeas.date.Date end = null;
+    org.silverpeas.core.date.Date begin = null;
+    org.silverpeas.core.date.Date end = null;
     try {
-      begin = new org.silverpeas.date.Date(DateUtil.parse("2011/02/28"));
-      end = new org.silverpeas.date.Date(DateUtil.parse("2011/02/01"));
+      begin = new org.silverpeas.core.date.Date(DateUtil.parse("2011/02/28"));
+      end = new org.silverpeas.core.date.Date(DateUtil.parse("2011/02/01"));
     } catch (ParseException e) {
       e.printStackTrace();
     }

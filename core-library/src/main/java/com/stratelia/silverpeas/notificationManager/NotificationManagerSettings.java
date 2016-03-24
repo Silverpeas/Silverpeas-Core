@@ -25,8 +25,8 @@ package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;

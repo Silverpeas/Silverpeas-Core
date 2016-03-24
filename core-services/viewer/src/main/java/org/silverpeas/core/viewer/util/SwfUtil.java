@@ -33,7 +33,7 @@ import org.silverpeas.exec.ExternalExecutionException;
 import org.silverpeas.core.viewer.service.SwfToolManager;
 import org.silverpeas.core.viewer.service.ViewerException;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;

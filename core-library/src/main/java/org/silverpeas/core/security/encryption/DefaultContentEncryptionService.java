@@ -2,7 +2,7 @@ package org.silverpeas.core.security.encryption;
 
 import org.silverpeas.util.EncodingUtil;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,7 +19,7 @@ import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * It is the default implementation of the {@link ContentEncryptionService} interface in Silverpeas.

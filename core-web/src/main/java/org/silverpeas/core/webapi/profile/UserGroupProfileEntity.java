@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.profile;
 
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.admin.user.model.Group;
 import java.net.URI;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.Charsets;
 
 import javax.crypto.KeyGenerator;

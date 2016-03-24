@@ -23,8 +23,8 @@ package org.silverpeas.core.web.tools.agenda.control;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.calendar.model.ParticipationStatus;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.Collection;

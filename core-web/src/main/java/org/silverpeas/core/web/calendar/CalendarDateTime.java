@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.calendar;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.Calendar;
 import java.util.Date;

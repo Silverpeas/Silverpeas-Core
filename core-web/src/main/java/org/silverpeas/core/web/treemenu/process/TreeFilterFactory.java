@@ -27,9 +27,9 @@ package org.silverpeas.core.web.treemenu.process;
 import org.silverpeas.core.web.treemenu.model.MenuRuntimeException;
 import org.silverpeas.core.web.treemenu.model.TreeFilter;
 import org.silverpeas.core.web.treemenu.model.TreeFilterDefault;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**

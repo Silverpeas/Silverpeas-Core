@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.GROUPS_BASE_URI;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a

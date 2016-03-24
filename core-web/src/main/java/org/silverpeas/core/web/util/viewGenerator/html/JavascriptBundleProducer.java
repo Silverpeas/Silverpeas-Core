@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.SilverpeasBundle;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.SilverpeasBundle;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 

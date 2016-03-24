@@ -3,7 +3,7 @@ package org.silverpeas.core.security.encryption.cipher;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static org.silverpeas.util.logging.SilverLogger.*;
+import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 /**
  * A factory of the ciphers supported by Silverpeas.

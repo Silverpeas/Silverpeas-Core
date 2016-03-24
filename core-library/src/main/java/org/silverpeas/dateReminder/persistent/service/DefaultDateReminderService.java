@@ -29,7 +29,7 @@ import org.silverpeas.dateReminder.exception.DateReminderException;
 import org.silverpeas.dateReminder.persistent.DateReminderDetail;
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
 import org.silverpeas.dateReminder.persistent.repository.PersistentResourceDateReminderRepository;
-import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.repository.OperationContext;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

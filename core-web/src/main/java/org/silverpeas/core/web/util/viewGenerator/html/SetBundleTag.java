@@ -24,11 +24,11 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.SilverpeasBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;

@@ -29,4 +29,4 @@
 @Module("viewgenerator")
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.annotation.Module;
+import org.silverpeas.core.annotation.Module;

@@ -31,7 +31,7 @@ import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

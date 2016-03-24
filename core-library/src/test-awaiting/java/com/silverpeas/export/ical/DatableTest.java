@@ -24,8 +24,8 @@
 
 package com.silverpeas.export.ical;
 
-import org.silverpeas.date.DateTime;
-import org.silverpeas.date.Datable;
+import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.Datable;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 import org.junit.Test;

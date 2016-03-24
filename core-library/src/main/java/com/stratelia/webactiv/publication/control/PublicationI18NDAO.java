@@ -27,7 +27,7 @@ package com.stratelia.webactiv.publication.control;
 import com.stratelia.webactiv.publication.model.PublicationI18N;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

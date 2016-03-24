@@ -3,8 +3,8 @@ package org.silverpeas.core.web.look;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 public class TickerSettings {
 

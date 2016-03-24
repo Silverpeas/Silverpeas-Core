@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.security.encryption;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;

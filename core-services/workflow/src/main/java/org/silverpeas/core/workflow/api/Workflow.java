@@ -25,9 +25,9 @@
 package org.silverpeas.core.workflow.api;
 
 import org.silverpeas.core.workflow.engine.WorkflowHub;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.util.HashMap;
 

@@ -45,7 +45,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.Consumes;
@@ -63,7 +63,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 
-import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 /**

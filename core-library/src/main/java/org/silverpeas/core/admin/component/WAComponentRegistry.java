@@ -26,10 +26,10 @@ package org.silverpeas.core.admin.component;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.ObjectFactory;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;

@@ -26,8 +26,8 @@ package org.silverpeas.core.admin.domain.quota;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.service.AbstractQuotaService;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Singleton;
 

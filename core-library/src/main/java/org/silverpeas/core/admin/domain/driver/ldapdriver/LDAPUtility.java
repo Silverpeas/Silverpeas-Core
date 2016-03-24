@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.util.exception.SilverpeasException;

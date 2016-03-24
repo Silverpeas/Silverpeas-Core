@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.test.util.lang;
 
-import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;

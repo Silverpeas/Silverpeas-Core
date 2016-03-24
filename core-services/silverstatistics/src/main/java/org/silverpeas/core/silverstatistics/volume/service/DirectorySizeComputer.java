@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
 import org.apache.commons.io.FileUtils;
 
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * Compute the total size of a directory.

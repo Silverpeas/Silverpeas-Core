@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.component.notification;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A notifier of an event about the life-cycle of a component instance.

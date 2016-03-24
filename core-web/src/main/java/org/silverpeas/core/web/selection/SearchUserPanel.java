@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 
 public class SearchUserPanel extends BrowsePanelProvider {
   protected static final int FILTER_LASTNAME = 0;

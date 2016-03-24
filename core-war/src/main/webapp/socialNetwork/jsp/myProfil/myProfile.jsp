@@ -37,6 +37,8 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -46,7 +48,8 @@
 
     String language = request.getLocale().getLanguage();
     MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
-    org.silverpeas.util.LocalizationBundle multilang = ResourceLocator.getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
+    LocalizationBundle multilang = ResourceLocator
+        .getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
     String view = (String) request.getAttribute("View");
 

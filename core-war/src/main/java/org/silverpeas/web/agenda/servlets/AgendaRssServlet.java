@@ -31,8 +31,8 @@ import org.silverpeas.core.web.tools.agenda.control.AgendaAccess;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;

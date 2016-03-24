@@ -25,8 +25,8 @@
 package org.silverpeas.core.sharing.repository;
 
 import org.silverpeas.core.sharing.model.DownloadDetail;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
 
 /**
  * @author: ebonnet

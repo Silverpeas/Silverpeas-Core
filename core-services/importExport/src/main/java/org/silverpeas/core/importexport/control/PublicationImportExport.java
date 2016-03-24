@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -28,12 +28,12 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailExtractor;

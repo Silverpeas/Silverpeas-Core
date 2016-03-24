@@ -33,11 +33,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.DataSetTest;
-import org.silverpeas.persistence.Transaction;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -48,7 +48,7 @@ import java.sql.SQLException;
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.createCountFor;
+import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.createCountFor;
 
 /**
  * @author lbertin

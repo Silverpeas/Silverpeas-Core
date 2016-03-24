@@ -24,7 +24,7 @@
 
 package org.silverpeas.util.web;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**

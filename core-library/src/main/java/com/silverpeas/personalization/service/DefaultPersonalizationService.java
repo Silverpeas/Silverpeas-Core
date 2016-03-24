@@ -27,9 +27,9 @@ package com.silverpeas.personalization.service;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationManager;
-import org.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

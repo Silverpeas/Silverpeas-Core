@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.core.web.token.SynchronizerTokenService"%>
 <%@page import="org.silverpeas.web.jobstartpage.JobStartPagePeasSettings"%>
 <%@page import="org.silverpeas.quota.constant.QuotaLoad" %>
-<%@page import="org.silverpeas.util.UnitUtil" %>
+<%@page import="org.silverpeas.core.util.UnitUtil" %>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

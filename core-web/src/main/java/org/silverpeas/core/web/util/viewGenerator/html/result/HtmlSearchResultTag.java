@@ -33,13 +33,13 @@ import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 

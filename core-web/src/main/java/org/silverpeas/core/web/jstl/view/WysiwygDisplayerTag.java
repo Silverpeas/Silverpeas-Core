@@ -25,8 +25,8 @@ package org.silverpeas.core.web.jstl.view;
 
 import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 

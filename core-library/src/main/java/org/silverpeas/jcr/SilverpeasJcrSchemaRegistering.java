@@ -22,9 +22,9 @@
 package org.silverpeas.jcr;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.jcr.provider.JcrSystemCredentialsProvider;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.jcr.Repository;

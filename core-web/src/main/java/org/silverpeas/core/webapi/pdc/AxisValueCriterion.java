@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import java.util.ArrayList;
 import java.util.List;

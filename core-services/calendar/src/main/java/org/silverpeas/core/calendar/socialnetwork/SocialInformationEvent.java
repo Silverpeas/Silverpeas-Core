@@ -28,7 +28,7 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.calendar.model.Schedulable;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 /**
  * @author Bensalem Nabil

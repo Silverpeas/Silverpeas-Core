@@ -21,7 +21,7 @@
 package org.silverpeas.web.servlets;
 
 import org.silverpeas.permalinks.PermalinkServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;

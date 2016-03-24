@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Set;
 
-import static org.silverpeas.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
  * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be

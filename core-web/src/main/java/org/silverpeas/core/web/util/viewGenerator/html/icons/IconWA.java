@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.icons;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * Class declaration

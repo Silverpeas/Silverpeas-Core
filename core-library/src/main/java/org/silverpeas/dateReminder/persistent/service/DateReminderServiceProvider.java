@@ -23,7 +23,7 @@
  */
 package org.silverpeas.dateReminder.persistent.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of a {@link PersistentDateReminderService} objects.

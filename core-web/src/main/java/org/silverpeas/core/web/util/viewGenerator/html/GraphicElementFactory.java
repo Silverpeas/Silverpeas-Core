@@ -22,13 +22,13 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPaneSilverpeasV5;
 import org.silverpeas.core.web.util.viewgenerator.html.board.Board;

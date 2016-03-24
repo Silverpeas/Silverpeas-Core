@@ -21,9 +21,9 @@
 package org.silverpeas.web.bootstrap;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory;
 
 import javax.servlet.ServletContextEvent;

@@ -26,14 +26,14 @@
 <%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
+<%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%
   response.setHeader("Expires", "Tue, 21 Dec 1993 23:59:59 GMT");

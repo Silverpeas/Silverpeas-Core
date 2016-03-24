@@ -20,6 +20,9 @@
  */
 package org.silverpeas.util;
 
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+
 /**
  * This class is the central location to store the internal JNDI names of various entities. Any
  * change here should also be reflected in the deployment descriptors.

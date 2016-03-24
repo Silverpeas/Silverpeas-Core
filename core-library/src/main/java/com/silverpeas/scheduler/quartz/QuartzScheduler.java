@@ -39,7 +39,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.enterprise.inject.Default;
 

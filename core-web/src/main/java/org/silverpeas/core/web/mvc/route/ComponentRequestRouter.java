@@ -40,10 +40,10 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
@@ -60,8 +60,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController>
     extends SilverpeasAuthenticatedHttpServlet {

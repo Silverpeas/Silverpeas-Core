@@ -26,8 +26,8 @@ package com.silverpeas.usernotification.delayed.repository;
 import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.repository.BasicEntityRepository;
 
 import java.util.Collection;
 import java.util.List;

@@ -21,9 +21,9 @@
 package org.silverpeas.core.web.tools.agenda.view;
 
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
@@ -33,7 +33,7 @@ import org.silverpeas.core.calendar.model.Schedulable;
 import org.silverpeas.core.calendar.model.SchedulableCount;
 import org.silverpeas.core.calendar.model.SchedulableGroup;
 import org.silverpeas.core.calendar.model.SchedulableList;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;

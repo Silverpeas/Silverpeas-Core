@@ -25,7 +25,7 @@
 package org.silverpeas.core.index.indexing.parser.htmlParser;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import net.htmlparser.jericho.Source;
 
 import java.io.FileInputStream;

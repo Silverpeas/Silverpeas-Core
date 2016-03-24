@@ -25,10 +25,10 @@ package org.silverpeas.core.admin.user.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.cache.service.SimpleCacheService;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SimpleCacheService;
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.Collection;

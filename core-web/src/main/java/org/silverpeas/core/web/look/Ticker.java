@@ -1,7 +1,7 @@
 package org.silverpeas.core.web.look;
 
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -34,11 +34,11 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -114,9 +114,9 @@ public class NewsFeedJSONServlet extends HttpServlet {
         }
       }
 
-      org.silverpeas.date.Date[] period = getPeriod(session, settings);
-      org.silverpeas.date.Date begin = period[0];
-      org.silverpeas.date.Date end = period[1];
+      org.silverpeas.core.date.Date[] period = getPeriod(session, settings);
+      org.silverpeas.core.date.Date begin = period[0];
+      org.silverpeas.core.date.Date end = period[1];
 
       map = getInformations(view, userId, type, anotherUserId, begin, end);
 
@@ -137,23 +137,23 @@ public class NewsFeedJSONServlet extends HttpServlet {
     out.println(toJsonS(map, multilang));
   }
 
-  private org.silverpeas.date.Date[] getPeriod(HttpSession session, SettingBundle settings) {
+  private org.silverpeas.core.date.Date[] getPeriod(HttpSession session, SettingBundle settings) {
     int periodLength = settings.getInteger("newsFeed.period", 15);
 
     Date lastDate = (Date) session.getAttribute("Silverpeas_NewsFeed_LastDate");
 
     // process endDate
-    org.silverpeas.date.Date begin = new org.silverpeas.date.Date(lastDate);
+    org.silverpeas.core.date.Date begin = new org.silverpeas.core.date.Date(lastDate);
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(lastDate);
     calendar.add(Calendar.DAY_OF_MONTH, 0 - periodLength);
-    org.silverpeas.date.Date end = new org.silverpeas.date.Date(calendar.getTime());
+    org.silverpeas.core.date.Date end = new org.silverpeas.core.date.Date(calendar.getTime());
 
     // prepare next startDate
     calendar.add(Calendar.DAY_OF_MONTH, -1);
     session.setAttribute("Silverpeas_NewsFeed_LastDate", calendar.getTime());
 
-    org.silverpeas.date.Date[] dates = new org.silverpeas.date.Date[2];
+    org.silverpeas.core.date.Date[] dates = new org.silverpeas.core.date.Date[2];
     dates[0] = begin;
     dates[1] = end;
 

@@ -28,7 +28,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import java.util.function.Function;
 
-import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Class declaration

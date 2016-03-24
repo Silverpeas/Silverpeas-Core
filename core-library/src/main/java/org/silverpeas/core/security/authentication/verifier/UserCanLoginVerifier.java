@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -32,7 +32,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationBadCr
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 

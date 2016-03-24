@@ -25,11 +25,11 @@
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.LongText;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
 import java.util.Map;

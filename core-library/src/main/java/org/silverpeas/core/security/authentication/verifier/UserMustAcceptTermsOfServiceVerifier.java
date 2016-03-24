@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;

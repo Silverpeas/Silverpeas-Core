@@ -1,6 +1,6 @@
-<%@ page import="org.silverpeas.util.logging.Level" %>
-<%@ page import="org.silverpeas.util.logging.LoggerConfigurationManager" %>
-<%@ page import="org.silverpeas.util.logging.LogsAccessor" %>
+<%@ page import="org.silverpeas.core.util.logging.Level" %>
+<%@ page import="org.silverpeas.core.util.logging.LoggerConfigurationManager" %>
+<%@ page import="org.silverpeas.core.util.logging.LogsAccessor" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%--

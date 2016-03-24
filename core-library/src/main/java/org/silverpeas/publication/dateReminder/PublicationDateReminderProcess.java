@@ -23,7 +23,7 @@
  */
 package org.silverpeas.publication.dateReminder;
 
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -31,10 +31,10 @@ import org.silverpeas.EntityReference;
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
 import org.silverpeas.dateReminder.provider.DateReminderProcess;
 import org.silverpeas.dateReminder.provider.DateReminderProcessRegistration;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.publication.dateReminder.notification.PublicationDateReminderUserNotification;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 
 /**
  * An implementation of <code>DateReminderProcess</code>.

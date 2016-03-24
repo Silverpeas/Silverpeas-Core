@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Encryption of the user credentials before recording them into a given storage (cookies, ...)

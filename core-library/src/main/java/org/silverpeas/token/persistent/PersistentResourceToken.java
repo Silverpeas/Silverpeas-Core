@@ -24,16 +24,16 @@
 package org.silverpeas.token.persistent;
 
 import org.silverpeas.EntityReference;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.annotation.TokenGenerator;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.token.persistent.service.TokenServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

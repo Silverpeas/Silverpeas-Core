@@ -28,7 +28,7 @@ import org.silverpeas.core.workflow.api.event.ResponseEvent;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -29,7 +29,7 @@ import org.silverpeas.core.web.selection.CacheManagerJdbcConnector;
 import org.silverpeas.core.web.selection.CacheManagerUsersGroups;
 import org.silverpeas.core.web.selection.CacheType;
 import org.silverpeas.core.web.selection.SelectionPeasSettings;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;

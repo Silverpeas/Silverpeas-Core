@@ -33,7 +33,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.MultipleUserField;
 import com.silverpeas.form.fieldType.UserField;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 import java.io.PrintWriter;

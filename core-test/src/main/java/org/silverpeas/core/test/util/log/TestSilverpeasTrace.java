@@ -25,7 +25,7 @@
 
 package org.silverpeas.core.test.util.log;
 
-import org.silverpeas.silvertrace.SilverpeasTrace;
+import org.silverpeas.core.silvertrace.SilverpeasTrace;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

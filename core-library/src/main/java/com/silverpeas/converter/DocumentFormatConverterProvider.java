@@ -24,7 +24,7 @@
 
 package com.silverpeas.converter;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of document format converters available in Silverpeas. This factory is dedicated to

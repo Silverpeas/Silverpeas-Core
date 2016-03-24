@@ -34,8 +34,8 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.util.SerializationUtil;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SerializationUtil;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;

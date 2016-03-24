@@ -29,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
 import java.util.List;

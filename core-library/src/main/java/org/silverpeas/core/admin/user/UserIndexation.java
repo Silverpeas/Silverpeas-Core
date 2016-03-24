@@ -31,7 +31,7 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.WAIndexSearcher;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Date;

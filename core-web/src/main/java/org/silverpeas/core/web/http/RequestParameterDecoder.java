@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.http;
 
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;

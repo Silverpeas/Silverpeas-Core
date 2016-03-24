@@ -24,9 +24,7 @@
 
 package com.silverpeas.subscribe;
 
-import org.silverpeas.util.ServiceProvider;
-
-import javax.inject.Inject;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author ehugonnet

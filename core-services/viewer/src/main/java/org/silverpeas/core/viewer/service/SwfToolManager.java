@@ -26,7 +26,7 @@ package org.silverpeas.core.viewer.service;
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecution.Config;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 import java.util.Map;
 

@@ -23,7 +23,7 @@
  */
 package com.silverpeas.socialnetwork.model;
 
-import org.silverpeas.persistence.model.CompositeEntityIdentifier;
+import org.silverpeas.core.persistence.model.CompositeEntityIdentifier;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;

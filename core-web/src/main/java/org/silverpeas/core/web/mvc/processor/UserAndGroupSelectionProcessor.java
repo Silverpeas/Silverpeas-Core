@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.mvc.processor;
 
-import static org.silverpeas.util.StringUtil.getBooleanValue;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.selection.Selection;
 
 import javax.inject.Singleton;

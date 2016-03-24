@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.calendar.model;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.Vector;
 

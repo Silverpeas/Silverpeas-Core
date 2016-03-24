@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.user.dao;
 
 import com.stratelia.webactiv.organization.UserRoleRow;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

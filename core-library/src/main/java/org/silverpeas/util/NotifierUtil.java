@@ -23,8 +23,9 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.notification.message.Message;
-import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.Message;
+import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.util.LocalizationBundle;
 
 import java.text.MessageFormat;
 

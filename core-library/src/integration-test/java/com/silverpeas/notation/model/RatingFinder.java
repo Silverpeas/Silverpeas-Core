@@ -21,17 +21,13 @@
 
 package com.silverpeas.notation.model;
 
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean;
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author mmoquillon

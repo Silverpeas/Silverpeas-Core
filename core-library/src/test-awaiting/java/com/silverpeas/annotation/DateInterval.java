@@ -25,7 +25,7 @@
 package com.silverpeas.annotation;
 
 import com.silverpeas.annotation.constraint.DateRange;
-import org.silverpeas.date.Datable;
+import org.silverpeas.core.date.Datable;
 
 /**
  * Objects representing an interval of dates. It is aiming for tests on the DateRangeValidator

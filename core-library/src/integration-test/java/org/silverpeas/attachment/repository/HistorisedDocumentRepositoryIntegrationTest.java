@@ -44,7 +44,7 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.util.Charsets;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;

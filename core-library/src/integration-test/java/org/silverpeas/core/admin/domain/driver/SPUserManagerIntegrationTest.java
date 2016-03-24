@@ -33,8 +33,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 

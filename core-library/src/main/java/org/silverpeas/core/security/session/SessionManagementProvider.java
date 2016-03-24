@@ -23,7 +23,7 @@
 */
 package org.silverpeas.core.security.session;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
 * Factory of objects aiming to manage the user sessions with Silverpeas.

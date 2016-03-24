@@ -30,8 +30,8 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;

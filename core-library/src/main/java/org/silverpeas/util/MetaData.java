@@ -26,10 +26,13 @@ import org.apache.tika.metadata.OfficeOpenXMLCore;
 import org.apache.tika.metadata.Property;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.metadata.XMPDM;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.media.Definition;
-import org.silverpeas.util.memory.MemoryData;
-import org.silverpeas.util.time.TimeData;
-import org.silverpeas.util.time.TimeUnit;
+import org.silverpeas.core.util.memory.MemoryData;
+import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.TimeUnit;
 
 import java.io.File;
 import java.math.BigDecimal;

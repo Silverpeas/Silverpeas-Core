@@ -32,7 +32,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class Group implements Serializable, Comparable<Group> {
 

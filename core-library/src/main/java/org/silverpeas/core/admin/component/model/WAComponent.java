@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;

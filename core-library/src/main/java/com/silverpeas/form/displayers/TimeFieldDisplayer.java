@@ -32,7 +32,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Date;

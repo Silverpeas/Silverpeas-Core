@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.web.test.WarBuilder4WarCore;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;

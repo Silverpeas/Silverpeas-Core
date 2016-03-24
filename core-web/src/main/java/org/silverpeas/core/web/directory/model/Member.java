@@ -26,7 +26,7 @@ package org.silverpeas.core.web.directory.model;
 
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**

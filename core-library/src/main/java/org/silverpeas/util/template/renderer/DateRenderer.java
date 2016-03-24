@@ -28,7 +28,7 @@ import java.util.Date;
 
 import org.antlr.stringtemplate.AttributeRenderer;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 public class DateRenderer implements AttributeRenderer {
 

@@ -30,7 +30,7 @@ import java.io.PipedWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * A piped parser is a Parser which uses a pipe to output the result of his work.

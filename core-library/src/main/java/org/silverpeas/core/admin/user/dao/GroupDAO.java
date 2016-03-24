@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.util.DBUtil;

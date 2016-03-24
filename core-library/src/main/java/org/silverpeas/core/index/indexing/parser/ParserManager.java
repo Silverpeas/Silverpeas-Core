@@ -20,11 +20,11 @@
 */
 package org.silverpeas.core.index.indexing.parser;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.index.indexing.parser.tika.TikaParser;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

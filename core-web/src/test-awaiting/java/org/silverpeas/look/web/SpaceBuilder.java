@@ -23,7 +23,7 @@
  */
 package org.silverpeas.look.web;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 /**

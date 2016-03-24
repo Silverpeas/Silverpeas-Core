@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.persistent.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A provider of a {@link PersistentResourceTokenService} instance.

@@ -26,7 +26,7 @@ package com.sun.portal.portletcontainer.driver.admin;
 import org.silverpeas.web.portlets.portal.DesktopMessages;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
@@ -48,7 +48,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and

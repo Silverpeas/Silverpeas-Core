@@ -25,8 +25,8 @@
 package org.silverpeas.core.web.util.viewgenerator.html.glossary;
 
 import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyContent;

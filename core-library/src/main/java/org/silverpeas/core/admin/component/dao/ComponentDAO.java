@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.util.DBUtil;
 

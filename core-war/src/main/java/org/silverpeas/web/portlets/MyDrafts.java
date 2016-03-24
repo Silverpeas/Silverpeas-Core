@@ -23,8 +23,8 @@ package org.silverpeas.web.portlets;
 import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.control.PublicationService;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;

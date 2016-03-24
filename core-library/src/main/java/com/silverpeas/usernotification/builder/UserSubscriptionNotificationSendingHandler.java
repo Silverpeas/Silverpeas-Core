@@ -25,14 +25,14 @@ package com.silverpeas.usernotification.builder;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior
     .SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM;
-import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
-import static org.silverpeas.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 
 /**
  * This class handles the feature that permits to skip the user subscription notification sending.

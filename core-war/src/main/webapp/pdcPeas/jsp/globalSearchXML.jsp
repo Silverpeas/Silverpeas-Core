@@ -30,7 +30,7 @@
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%

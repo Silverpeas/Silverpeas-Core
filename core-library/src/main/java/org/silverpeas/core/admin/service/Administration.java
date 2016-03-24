@@ -47,7 +47,7 @@ import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ListSlice;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 import java.util.Map;

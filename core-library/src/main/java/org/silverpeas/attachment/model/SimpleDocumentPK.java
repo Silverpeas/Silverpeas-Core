@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment.model;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.util.WAPrimaryKey;
 

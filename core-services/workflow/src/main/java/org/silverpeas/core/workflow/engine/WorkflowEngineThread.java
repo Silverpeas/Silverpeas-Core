@@ -57,7 +57,7 @@ import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.core.workflow.external.ExternalAction;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
 import java.util.Hashtable;

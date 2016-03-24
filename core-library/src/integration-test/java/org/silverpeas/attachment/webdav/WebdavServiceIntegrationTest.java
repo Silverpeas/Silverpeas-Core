@@ -36,7 +36,7 @@ import org.silverpeas.attachment.webdav.impl.WebdavDocumentRepository;
 import org.silverpeas.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.jcr.Node;

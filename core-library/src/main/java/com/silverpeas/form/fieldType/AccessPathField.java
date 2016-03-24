@@ -32,9 +32,9 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.space.SpaceInst;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;

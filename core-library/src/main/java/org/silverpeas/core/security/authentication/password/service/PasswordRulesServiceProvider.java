@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.password.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier

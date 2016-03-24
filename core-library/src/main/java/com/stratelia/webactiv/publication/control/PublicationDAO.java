@@ -42,13 +42,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.NodeTree;

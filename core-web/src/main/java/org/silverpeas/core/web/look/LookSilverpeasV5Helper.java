@@ -39,11 +39,11 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -196,7 +196,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
    * (non-Javadoc)
    * @see
    * org.silverpeas.core.web.look.LookHelper#init(org.silverpeas.core.web.mvc.controller.MainSessionController,
-   * org.silverpeas.util.ResourceLocator, org.silverpeas.util.ResourceLocator)
+   * org.silverpeas.core.util.ResourceLocator, org.silverpeas.core.util.ResourceLocator)
    */
   @Override
   public final void init(MainSessionController mainSessionController, SettingBundle resources) {

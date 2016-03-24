@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.organization;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Provider of a <code>UserFavoriteSpaceService</code> instances.

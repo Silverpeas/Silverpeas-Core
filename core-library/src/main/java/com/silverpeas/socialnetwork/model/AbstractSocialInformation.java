@@ -24,7 +24,7 @@
 
 package com.silverpeas.socialnetwork.model;
 
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.DateTime;
 
 import java.util.Date;
 

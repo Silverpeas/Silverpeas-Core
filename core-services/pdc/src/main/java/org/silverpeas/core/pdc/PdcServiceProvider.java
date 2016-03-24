@@ -27,7 +27,7 @@ package org.silverpeas.core.pdc;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * The provider of services working on the PdC. It defines an entry point for no-managed object

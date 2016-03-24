@@ -39,7 +39,7 @@ import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
 import java.io.FileNotFoundException;

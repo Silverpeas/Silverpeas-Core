@@ -30,7 +30,7 @@ import java.util.Comparator;
 import java.util.Properties;
 
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

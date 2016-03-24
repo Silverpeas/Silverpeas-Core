@@ -24,10 +24,10 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import org.silverpeas.persistence.Transaction;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.util.LongText;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * @author neysseri

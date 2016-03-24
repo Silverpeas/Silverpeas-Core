@@ -24,7 +24,7 @@
 
 package org.silverpeas.permalinks;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * For compatibility issues after migration to JCR.

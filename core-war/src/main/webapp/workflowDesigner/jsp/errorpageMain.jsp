@@ -37,7 +37,7 @@
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.exception.SilverpeasException"%>
 
 <%@ include file="check.jsp" %>

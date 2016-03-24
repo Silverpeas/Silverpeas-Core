@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.model;
 
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 /**
  * Properties about the management of the domains in Silverpeas.

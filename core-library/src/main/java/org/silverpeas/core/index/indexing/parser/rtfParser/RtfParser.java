@@ -25,7 +25,7 @@
 package org.silverpeas.core.index.indexing.parser.rtfParser;
 
 import org.silverpeas.core.index.indexing.parser.PipedParser;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 
 import javax.swing.text.Document;

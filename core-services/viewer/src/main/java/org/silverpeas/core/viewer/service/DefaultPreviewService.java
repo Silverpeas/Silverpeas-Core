@@ -31,7 +31,7 @@ import org.silverpeas.core.viewer.model.TemporaryPreview;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.ImageToolDirective;
 import org.silverpeas.image.option.DimensionOption;
-import org.silverpeas.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.core.viewer.util.SwfUtil;

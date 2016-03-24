@@ -25,7 +25,7 @@ package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.viewer.model.ViewerSettings;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.data.TemporaryDataManagementSetting;
 import org.silverpeas.util.data.TemporaryWorkspaceTranslation;
 

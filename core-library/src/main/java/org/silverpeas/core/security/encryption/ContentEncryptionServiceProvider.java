@@ -1,6 +1,6 @@
 package org.silverpeas.core.security.encryption;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class ContentEncryptionServiceProvider {
 

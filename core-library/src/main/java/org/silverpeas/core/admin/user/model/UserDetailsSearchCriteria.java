@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A conjonction of criteria in the search of user details.

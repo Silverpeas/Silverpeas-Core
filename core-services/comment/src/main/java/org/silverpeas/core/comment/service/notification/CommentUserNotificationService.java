@@ -34,9 +34,9 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.LinkedHashSet;
@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A service dedicated to notify users about the adding of a comment to a contribution in

@@ -26,9 +26,9 @@ package org.silverpeas.core.web.filter;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.HttpMethod;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

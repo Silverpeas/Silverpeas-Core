@@ -26,7 +26,7 @@ import com.stratelia.webactiv.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

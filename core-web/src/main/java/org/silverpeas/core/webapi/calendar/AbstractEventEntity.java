@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.calendar;
 
-import org.silverpeas.date.Datable;
+import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

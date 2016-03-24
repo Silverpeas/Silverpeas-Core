@@ -1,6 +1,6 @@
 package org.silverpeas.file;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 

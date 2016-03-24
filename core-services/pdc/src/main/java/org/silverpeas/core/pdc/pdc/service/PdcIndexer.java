@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

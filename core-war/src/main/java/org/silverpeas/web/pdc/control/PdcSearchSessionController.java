@@ -58,6 +58,10 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.pdc.vo.ExternalSPConfigVO;
 import org.silverpeas.web.pdc.vo.Facet;
 import org.silverpeas.web.pdc.vo.FacetEntryVO;
@@ -90,7 +94,7 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -548,7 +552,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ComponentAuthorization getSecurityIntf() throws Exception {
     if (componentAuthorization == null) {
       componentAuthorization = (ComponentAuthorization) Class.forName(
-          "org.silverpeas.components.kmelia.KmeliaSecurity").newInstance();
+          "org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
     }
 
     return componentAuthorization;

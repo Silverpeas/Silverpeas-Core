@@ -31,7 +31,7 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import org.silverpeas.core.workflow.api.event.GenericEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;

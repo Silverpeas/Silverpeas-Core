@@ -32,7 +32,7 @@
 <%@ page import="org.silverpeas.web.pdc.vo.ResultGroupFilter"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
 <%@ page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 

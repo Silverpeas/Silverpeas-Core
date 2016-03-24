@@ -24,7 +24,7 @@
 
 package org.silverpeas.process.management.interceptor;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.util.ActionType;
 import org.silverpeas.util.ForeignPK;

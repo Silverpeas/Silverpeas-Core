@@ -1,6 +1,6 @@
 package org.silverpeas.exec;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.IOUtils;
 

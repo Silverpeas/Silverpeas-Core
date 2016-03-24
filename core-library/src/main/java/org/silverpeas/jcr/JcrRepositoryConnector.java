@@ -22,7 +22,7 @@
 package org.silverpeas.jcr;
 
 import org.silverpeas.jcr.provider.JcrSystemCredentialsProvider;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;

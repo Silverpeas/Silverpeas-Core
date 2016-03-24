@@ -28,8 +28,8 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationHostE
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.util.exception.SilverpeasException;
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import java.io.Serializable;
 import java.util.ArrayList;

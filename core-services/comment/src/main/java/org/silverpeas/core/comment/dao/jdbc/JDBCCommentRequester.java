@@ -27,13 +27,13 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.sql.Connection;
@@ -46,8 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.util.DateUtil.date2SQLDate;
-import static org.silverpeas.util.DateUtil.parseDate;
+import static org.silverpeas.core.util.DateUtil.date2SQLDate;
+import static org.silverpeas.core.util.DateUtil.parseDate;
 
 /**
  * A specific JDBC requester dedicated on the comments persisted in the underlying data source.

@@ -25,7 +25,7 @@
 // TODO : reporter dans CVS (done)
 package com.stratelia.silverpeas.containerManager;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.exception.SilverpeasException;

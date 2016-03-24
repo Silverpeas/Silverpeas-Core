@@ -31,12 +31,12 @@ import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.spnego.SpnegoPrincipal;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -188,7 +188,7 @@ public class AuthenticationParameters {
 
   /**
    * Internal server method of user authentication. This method consists to use {@link
-   * org.silverpeas.cache.service.CacheService}. The module that must authenticate a user by this
+   * org.silverpeas.core.cache.service.CacheService}. The module that must authenticate a user by this
    * way have to set a token value to the request attribute "internalAuthToken". The token has to be
    * a key of the common cache that references a {@link UserDetail}
    * @param request

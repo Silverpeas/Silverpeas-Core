@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.model.Profile;
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 
 /**
  * @author ehugonnet

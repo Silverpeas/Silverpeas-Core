@@ -29,7 +29,7 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.ScheduledJob;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import org.silverpeas.silvertrace.SilverTrace;
+
 import java.io.Serializable;
 import java.util.Date;
 

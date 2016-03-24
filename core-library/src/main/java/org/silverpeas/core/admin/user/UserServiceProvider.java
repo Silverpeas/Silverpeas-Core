@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 public class UserServiceProvider {
 

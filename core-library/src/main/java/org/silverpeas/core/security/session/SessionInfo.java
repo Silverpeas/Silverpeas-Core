@@ -21,9 +21,9 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.cache.service.InMemoryCacheService;
-import org.silverpeas.cache.service.SimpleCacheService;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.InMemoryCacheService;
+import org.silverpeas.core.cache.service.SimpleCacheService;
 
 import java.util.HashMap;
 import java.util.Map;

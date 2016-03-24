@@ -30,7 +30,7 @@
 
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * AdministrationServiceProvider provides the reference:

@@ -1,10 +1,10 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 import org.apache.ecs.xhtml.img;
 
 import javax.servlet.jsp.JspException;

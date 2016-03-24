@@ -37,9 +37,9 @@ import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.engine.WorkflowEngineTask;
 import org.silverpeas.core.workflow.engine.event.TimeoutEventImpl;
 import org.silverpeas.core.workflow.engine.instance.ActionAndState;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.Date;

@@ -32,7 +32,7 @@ import org.silverpeas.core.index.indexing.model.ExternalComponent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.SpaceComponentPair;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * A QueryDescription packs a query with the different spaces and components to be searched.

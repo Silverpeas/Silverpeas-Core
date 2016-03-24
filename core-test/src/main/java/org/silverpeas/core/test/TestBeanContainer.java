@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.test;
 
-import org.silverpeas.util.BeanContainer;
+import org.silverpeas.core.util.BeanContainer;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;

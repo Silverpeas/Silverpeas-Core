@@ -25,9 +25,9 @@
 package com.silverpeas.personalization;
 
 import com.silverpeas.personalization.service.PersonalizationService;
-import org.silverpeas.persistence.model.identifier.ExternalStringIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.persistence.model.identifier.ExternalStringIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

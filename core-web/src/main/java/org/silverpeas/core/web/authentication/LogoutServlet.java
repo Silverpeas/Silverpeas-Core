@@ -21,8 +21,8 @@
 package org.silverpeas.core.web.authentication;
 
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

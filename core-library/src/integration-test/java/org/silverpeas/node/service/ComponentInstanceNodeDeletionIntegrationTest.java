@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import java.util.List;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.dateReminder.persistent;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,10 +34,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.silverpeas.EntityReference;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.dateReminder.exception.DateReminderValidationException;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A persistent date reminder used to identify uniquely a resource.

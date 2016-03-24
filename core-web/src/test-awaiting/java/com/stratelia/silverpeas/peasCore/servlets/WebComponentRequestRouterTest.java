@@ -32,14 +32,14 @@ import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.cache.service.InMemoryCacheService;
+import org.silverpeas.core.cache.service.InMemoryCacheService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

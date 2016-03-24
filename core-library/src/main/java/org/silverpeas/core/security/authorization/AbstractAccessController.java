@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.EnumSet;

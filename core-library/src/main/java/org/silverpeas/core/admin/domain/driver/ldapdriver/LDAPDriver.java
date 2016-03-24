@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
@@ -41,7 +41,7 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)

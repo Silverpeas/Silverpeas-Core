@@ -21,9 +21,9 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
 
 /**
  * JPA repository of <code>ServerMessageBean</code> instances.

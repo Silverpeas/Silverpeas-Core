@@ -23,10 +23,10 @@ package org.silverpeas.core.calendar.model;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
-import static org.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.util.DateUtil.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.DateUtil.*;
 
 public abstract class Schedulable implements java.io.Serializable {
 

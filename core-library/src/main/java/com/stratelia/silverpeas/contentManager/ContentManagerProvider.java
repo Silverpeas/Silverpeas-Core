@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of content manager instances. This factory is managed by the underlying IoC container

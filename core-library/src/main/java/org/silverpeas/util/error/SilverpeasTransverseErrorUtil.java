@@ -28,7 +28,7 @@ import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.core.util.UnitUtil;
 
 import javax.ejb.EJBException;
 import java.rmi.RemoteException;

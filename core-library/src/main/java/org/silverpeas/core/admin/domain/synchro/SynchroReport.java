@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.domain.synchro;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
 import java.util.Collections;

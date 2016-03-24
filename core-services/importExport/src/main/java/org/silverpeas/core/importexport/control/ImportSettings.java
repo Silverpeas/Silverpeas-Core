@@ -23,9 +23,9 @@ package org.silverpeas.core.importexport.control;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 public class ImportSettings implements Cloneable {
 

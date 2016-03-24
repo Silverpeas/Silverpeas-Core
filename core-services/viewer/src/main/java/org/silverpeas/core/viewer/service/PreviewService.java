@@ -24,7 +24,7 @@
 package org.silverpeas.core.viewer.service;
 
 import org.silverpeas.core.viewer.model.Preview;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
 

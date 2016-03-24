@@ -24,8 +24,8 @@
 
 package org.silverpeas.quota.repository;
 
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.quota.model.Quota;
 
 import javax.inject.Singleton;

@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

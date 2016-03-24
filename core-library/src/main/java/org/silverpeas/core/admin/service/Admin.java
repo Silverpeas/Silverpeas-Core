@@ -61,7 +61,7 @@ import org.silverpeas.core.admin.user.ProfiledObjectManager;
 import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.domain.model.DomainCache;
 import org.silverpeas.core.admin.user.model.GroupCache;
@@ -86,16 +86,16 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ListSlice;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -106,7 +106,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
+import static org.silverpeas.core.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
  * The class Admin is the main class of the Administrator.

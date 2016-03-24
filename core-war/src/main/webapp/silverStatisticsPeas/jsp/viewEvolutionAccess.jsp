@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.date.DateTime" %>
+<%@ page import="org.silverpeas.core.date.DateTime" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.chart.period.PeriodChart" %>
 <%@ page import="static java.util.Calendar.getInstance" %>

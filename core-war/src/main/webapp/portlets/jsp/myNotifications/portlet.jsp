@@ -32,6 +32,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 

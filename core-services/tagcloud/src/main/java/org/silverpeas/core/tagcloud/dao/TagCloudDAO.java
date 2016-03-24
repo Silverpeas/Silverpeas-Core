@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.silverpeas.core.tagcloud.model.TagCloud;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
 public class TagCloudDAO {

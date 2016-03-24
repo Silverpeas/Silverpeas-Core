@@ -24,7 +24,7 @@ package org.silverpeas.core.webapi.base;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;

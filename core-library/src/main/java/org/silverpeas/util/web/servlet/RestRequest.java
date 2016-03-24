@@ -24,8 +24,6 @@
 
 package org.silverpeas.util.web.servlet;
 
-import org.silverpeas.silvertrace.SilverTrace;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;

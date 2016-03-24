@@ -26,7 +26,7 @@ package com.silverpeas.export;
 
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.export.ical.ICalExporter;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of exporters in Silverpeas. The factory hides the concrete implementation used in the

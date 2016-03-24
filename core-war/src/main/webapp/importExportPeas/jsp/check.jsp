@@ -38,11 +38,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.importexport.report.MassiveReport"%>
 <%@ page import="org.silverpeas.core.importexport.report.UnitReport"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.DateUtil"%>
+<%@ page import="org.silverpeas.core.util.DateUtil"%>
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator, org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory, org.silverpeas.core.web.util.viewgenerator.html.board.Board, org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar, org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator, org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory, org.silverpeas.core.web.util.viewgenerator.html.board.Board, org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar, org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>

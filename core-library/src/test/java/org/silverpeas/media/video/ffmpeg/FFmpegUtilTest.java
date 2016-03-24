@@ -8,7 +8,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import java.io.File;
 

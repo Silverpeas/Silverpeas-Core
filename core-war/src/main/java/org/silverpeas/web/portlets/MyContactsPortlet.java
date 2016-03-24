@@ -27,9 +27,9 @@ package org.silverpeas.web.portlets;
 import org.silverpeas.core.web.directory.model.Member;
 import org.silverpeas.core.web.portlets.FormNames;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;

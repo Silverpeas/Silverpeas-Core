@@ -26,7 +26,7 @@ package org.silverpeas.util.data;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.ManagedThreadPool;
 
 import java.io.File;
 import java.util.LinkedHashMap;

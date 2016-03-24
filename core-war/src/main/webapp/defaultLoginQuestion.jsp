@@ -29,9 +29,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.ui.DisplayI18NHelper" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.ui.DisplayI18NHelper" %>
 
 <%@ include file="headLog.jsp" %>
 <%

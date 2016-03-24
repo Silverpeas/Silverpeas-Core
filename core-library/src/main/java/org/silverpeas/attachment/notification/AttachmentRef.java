@@ -21,7 +21,7 @@
 package org.silverpeas.attachment.notification;
 
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

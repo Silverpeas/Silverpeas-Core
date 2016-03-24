@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GroupOfParametersType", propOrder = { "label", "description", "help", "order", "parameters" })

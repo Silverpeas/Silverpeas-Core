@@ -30,7 +30,7 @@ import org.silverpeas.core.questioncontainer.container.model.Comment;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerRuntimeException;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.answer.service.AnswerService;
 import org.silverpeas.core.questioncontainer.answer.dao.AnswerDAO;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;

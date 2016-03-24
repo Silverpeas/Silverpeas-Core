@@ -31,9 +31,9 @@ import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.mapping.MappingException;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
 /**
  * This class offers services about database persistence. It uses Castor library to read/write

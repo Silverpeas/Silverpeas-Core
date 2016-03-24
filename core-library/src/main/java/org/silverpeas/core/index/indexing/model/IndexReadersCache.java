@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

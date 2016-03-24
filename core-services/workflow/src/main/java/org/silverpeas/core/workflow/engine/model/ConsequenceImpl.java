@@ -32,7 +32,7 @@ import java.util.Vector;
 
 import org.silverpeas.core.workflow.api.model.QualifiedUsers;
 import org.silverpeas.core.workflow.api.model.Triggers;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Consequence;
 import org.silverpeas.core.workflow.api.model.State;

@@ -27,7 +27,7 @@ import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.notificationManager.AbstractNotification;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 import javax.inject.Inject;
 

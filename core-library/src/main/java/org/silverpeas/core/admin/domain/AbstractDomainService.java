@@ -25,12 +25,12 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.exception.DomainCreationException;
 import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 

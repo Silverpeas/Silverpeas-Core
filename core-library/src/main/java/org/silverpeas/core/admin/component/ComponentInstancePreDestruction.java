@@ -24,7 +24,7 @@
 package org.silverpeas.core.admin.component;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Optional;
 

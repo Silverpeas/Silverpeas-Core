@@ -22,7 +22,7 @@
 package org.silverpeas.notification;
 
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;

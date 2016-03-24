@@ -27,7 +27,7 @@ import java.io.Reader;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * A TextParser parse a text file without any processing.

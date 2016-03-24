@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import java.util.ArrayList;
 import java.util.Enumeration;

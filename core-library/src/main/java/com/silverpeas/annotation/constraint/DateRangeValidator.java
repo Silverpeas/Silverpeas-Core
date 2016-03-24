@@ -23,9 +23,9 @@
  */
 package com.silverpeas.annotation.constraint;
 
-import org.silverpeas.date.Datable;
-import org.silverpeas.date.Date;
-import org.silverpeas.date.DateTime;
+import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Date;
+import org.silverpeas.core.date.DateTime;
 import java.lang.reflect.Field;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

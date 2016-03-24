@@ -26,7 +26,7 @@ package com.silverpeas.usernotification.builder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.UnitTestResource;

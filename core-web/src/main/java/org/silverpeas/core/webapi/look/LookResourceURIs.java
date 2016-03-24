@@ -28,8 +28,8 @@ import java.net.URISyntaxException;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * Base URIs from which the REST-based ressources representing look entities are defined.

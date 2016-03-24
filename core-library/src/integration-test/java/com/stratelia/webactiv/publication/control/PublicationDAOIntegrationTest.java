@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.core.test.util.RandomGenerator;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Connection;
 import java.util.ArrayList;

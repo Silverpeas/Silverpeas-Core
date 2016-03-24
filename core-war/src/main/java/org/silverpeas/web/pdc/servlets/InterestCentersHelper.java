@@ -23,9 +23,9 @@ package org.silverpeas.web.pdc.servlets;
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 

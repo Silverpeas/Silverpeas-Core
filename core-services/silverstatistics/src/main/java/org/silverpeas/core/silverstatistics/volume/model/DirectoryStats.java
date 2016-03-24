@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.silverstatistics.volume.model;
 
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
 
 /**
  * Statistics of a directory.

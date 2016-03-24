@@ -38,9 +38,9 @@ import org.apache.ecs.xhtml.script;
 import org.apache.ecs.xhtml.title;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;
 import java.util.List;

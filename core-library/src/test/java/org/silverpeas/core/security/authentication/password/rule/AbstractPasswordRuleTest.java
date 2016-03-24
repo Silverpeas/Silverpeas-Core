@@ -25,7 +25,7 @@ package org.silverpeas.core.security.authentication.password.rule;
 
 import org.junit.Rule;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 import org.junit.After;
 
 import java.lang.reflect.ParameterizedType;

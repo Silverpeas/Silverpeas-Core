@@ -24,7 +24,7 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings

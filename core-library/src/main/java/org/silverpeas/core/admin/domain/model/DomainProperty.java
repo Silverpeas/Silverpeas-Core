@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.domain.model;
 
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 public class DomainProperty {
   final static public String PROPERTY_TYPE_STRING = "STRING";

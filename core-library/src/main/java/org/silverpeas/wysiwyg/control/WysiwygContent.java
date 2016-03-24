@@ -23,7 +23,7 @@ package org.silverpeas.wysiwyg.control;
 
 import org.silverpeas.contribution.model.ContributionContent;
 import org.silverpeas.contribution.model.ContributionIdentifier;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

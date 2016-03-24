@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.result.service;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;

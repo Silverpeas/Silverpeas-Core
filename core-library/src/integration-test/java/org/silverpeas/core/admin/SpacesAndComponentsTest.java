@@ -52,9 +52,9 @@ import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.memory.MemoryData;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.memory.MemoryData;
+import org.silverpeas.core.util.memory.MemoryUnit;
 
 import javax.inject.Inject;
 import java.io.File;

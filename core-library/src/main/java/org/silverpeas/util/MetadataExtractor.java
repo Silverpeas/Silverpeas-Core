@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.tika.Tika;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -28,8 +28,10 @@ import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp4.MP4Parser;
-import org.silverpeas.util.time.TimeData;
-import org.silverpeas.util.time.TimeUnit;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;

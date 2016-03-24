@@ -20,10 +20,10 @@
  */
 package org.silverpeas.web.portlets.portal;
 
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.text.MessageFormat;
 import java.util.Locale;

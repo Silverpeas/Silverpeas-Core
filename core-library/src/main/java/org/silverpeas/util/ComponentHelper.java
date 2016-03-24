@@ -25,6 +25,8 @@
 package org.silverpeas.util;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 

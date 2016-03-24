@@ -36,7 +36,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import java.util.List;
 
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.questioncontainer.container.dao;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.container.model.Comment;
 import org.silverpeas.core.questioncontainer.container.model.CommentPK;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
-import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**

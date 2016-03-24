@@ -23,8 +23,8 @@
  */
 package org.silverpeas.quota.repository;
 
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.repository.BasicEntityRepository;
 import org.silverpeas.quota.model.Quota;
 
 /**

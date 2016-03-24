@@ -23,7 +23,7 @@
  ---*/
 package org.silverpeas.util.csv;
 
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import java.text.ParseException;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.selection;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 public enum CacheType {
   CM_SET(0), CM_ELEMENT(1), CM_NBTOT(2);

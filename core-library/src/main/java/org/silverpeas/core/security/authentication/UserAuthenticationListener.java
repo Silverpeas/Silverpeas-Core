@@ -21,7 +21,7 @@
 package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.EventListener;

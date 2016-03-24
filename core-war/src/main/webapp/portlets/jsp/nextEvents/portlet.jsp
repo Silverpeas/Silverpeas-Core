@@ -26,6 +26,10 @@
 
 <%@page import="org.silverpeas.core.calendar.model.Schedulable"%>
 <%@page import="org.owasp.encoder.Encode"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="../portletImport.jsp"%>

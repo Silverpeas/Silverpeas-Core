@@ -32,10 +32,10 @@ import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.silverpeas.initialization.Initialization;
-import org.silverpeas.thread.ManagedThreadPool;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import java.io.File;

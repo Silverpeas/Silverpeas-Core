@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.alertuser.servlets;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.alertuser.control.AlertUserPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

@@ -33,6 +33,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.WebdavServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.*;
 import org.silverpeas.util.i18n.I18NHelper;
 

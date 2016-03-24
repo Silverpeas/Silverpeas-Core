@@ -26,7 +26,7 @@ package com.silverpeas.socialnetwork.status;
 
 import java.util.List;
 
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 

@@ -44,7 +44,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.TD;
 import org.apache.ecs.html.TR;
 import org.apache.ecs.html.Table;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

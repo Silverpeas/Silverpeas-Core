@@ -24,11 +24,11 @@
 package org.silverpeas.core.web.calendar;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.util.Calendar;
 import java.util.Date;

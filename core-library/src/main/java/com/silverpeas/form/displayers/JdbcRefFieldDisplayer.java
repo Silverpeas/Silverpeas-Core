@@ -41,7 +41,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.IMG;
 import org.apache.ecs.html.Input;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> {
 

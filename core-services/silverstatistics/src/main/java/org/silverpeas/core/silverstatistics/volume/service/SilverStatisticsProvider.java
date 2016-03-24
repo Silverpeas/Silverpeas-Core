@@ -24,8 +24,7 @@
 
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import org.silverpeas.core.silverstatistics.volume.service.SilverStatistics;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author ehugonnet

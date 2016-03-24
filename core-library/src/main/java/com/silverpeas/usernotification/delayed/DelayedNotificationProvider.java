@@ -23,7 +23,7 @@
  */
 package com.silverpeas.usernotification.delayed;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier

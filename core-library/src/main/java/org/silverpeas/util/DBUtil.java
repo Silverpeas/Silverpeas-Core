@@ -20,9 +20,10 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.pool.ConnectionPool;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.pool.ConnectionPool;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

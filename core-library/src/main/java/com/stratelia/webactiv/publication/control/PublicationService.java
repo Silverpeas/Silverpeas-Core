@@ -31,7 +31,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.ValidationStep;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.Collection;

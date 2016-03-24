@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import java.io.IOException;
 import java.util.HashMap;

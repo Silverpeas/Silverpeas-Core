@@ -27,8 +27,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 /**

@@ -26,12 +26,12 @@ package com.silverpeas.calendar;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.annotation.constraint.DateRange;
-import org.silverpeas.date.Datable;
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Date;
 
 import java.io.Serializable;
 import java.net.URL;
-import static org.silverpeas.util.StringUtil.*;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * The event in a calendar. An event in the calendar is described by a starting and an ending date

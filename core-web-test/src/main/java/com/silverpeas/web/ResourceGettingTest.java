@@ -24,7 +24,7 @@
 package com.silverpeas.web;
 
 import org.junit.Test;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Invocation;

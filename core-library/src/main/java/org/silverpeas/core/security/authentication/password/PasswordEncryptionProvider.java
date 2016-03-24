@@ -24,7 +24,7 @@
 package org.silverpeas.core.security.authentication.password;
 
 import org.silverpeas.core.security.authentication.password.encryption.UnixSHA512Encryption;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Set;
 

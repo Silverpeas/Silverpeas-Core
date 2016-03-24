@@ -26,12 +26,12 @@ package com.silverpeas.socialnetwork.connectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.util.SettingBundle;
+import org.silverpeas.core.util.SettingBundle;
 import org.springframework.social.connect.UserProfile;
 
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 public abstract class AbstractSocialNetworkConnector implements SocialNetworkConnector {
 

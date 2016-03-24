@@ -23,10 +23,10 @@
  */
 package org.silverpeas.termsOfService.constant;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.date.period.Period;
-import org.silverpeas.date.period.PeriodType;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
 
 import java.util.Date;
 

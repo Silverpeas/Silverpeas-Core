@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mail;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * @author Yohann Chastagnier

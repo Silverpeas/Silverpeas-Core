@@ -23,8 +23,7 @@
 */
 package org.silverpeas.core.index.search;
 
-import org.silverpeas.core.index.search.SearchEngine;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Factory to obtain a search engine.

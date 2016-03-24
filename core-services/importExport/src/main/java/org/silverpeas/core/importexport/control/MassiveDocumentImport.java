@@ -25,7 +25,7 @@ import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import javax.inject.Inject;

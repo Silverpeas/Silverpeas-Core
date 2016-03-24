@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import java.io.IOException;

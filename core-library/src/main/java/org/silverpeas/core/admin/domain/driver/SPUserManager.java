@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.domain.driver;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.repository.BasicEntityRepository;
+import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.repository.BasicEntityRepository;
 
 import java.util.List;
 

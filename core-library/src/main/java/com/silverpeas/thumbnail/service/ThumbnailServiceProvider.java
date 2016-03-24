@@ -23,7 +23,7 @@
  */
 package com.silverpeas.thumbnail.service;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier

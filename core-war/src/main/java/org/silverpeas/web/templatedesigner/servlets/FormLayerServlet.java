@@ -6,7 +6,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.core.util.ResourceLocator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

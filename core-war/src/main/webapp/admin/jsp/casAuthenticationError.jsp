@@ -26,10 +26,10 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"
+<%@ page import="org.silverpeas.core.util.ResourceLocator"
 %>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%
 	SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 	LocalizationBundle generalMultilang = ResourceLocator.getGeneralLocalizationBundle(

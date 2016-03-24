@@ -24,7 +24,7 @@
 package org.silverpeas.process;
 
 import org.silverpeas.process.management.ProcessManagement;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * Process API provider which offers an access to the <code>ProcessManagement</code> services.

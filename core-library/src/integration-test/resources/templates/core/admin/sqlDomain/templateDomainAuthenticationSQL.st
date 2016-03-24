@@ -7,11 +7,11 @@ allowPasswordChange  = $allowPasswordChange$
 
 # Authentication servers
 # Available types are :
-#       org.silverpeas.authentication.AuthenticationNT
-#       org.silverpeas.authentication.AuthenticationSQL
-#       org.silverpeas.authentication.AuthenticationLDAP
+#       org.silverpeas.core.security.authentication.AuthenticationCAS
+#       org.silverpeas.core.security.authentication.AuthenticationSQL
+#       org.silverpeas.core.security.authentication.AuthenticationLDAP
 autServersCount = 1
-autServer0.type    								= org.silverpeas.authentication.AuthenticationSQL
+autServer0.type    								= org.silverpeas.core.security.authentication.AuthenticationSQL
 autServer0.enabled 								= true
 autServer0.SQLDataSourceJNDIName			= $SQLDataSourceJNDIName$
 autServer0.SQLUserTableName 					= $SQLUserTableName$

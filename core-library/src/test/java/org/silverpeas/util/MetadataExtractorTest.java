@@ -27,6 +27,7 @@ import org.apache.tika.Tika;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.media.Definition;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;

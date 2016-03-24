@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.webapi.comment;
 
-import org.silverpeas.date.Date;
+import org.silverpeas.core.date.Date;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.owasp.encoder.Encode;
@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity). As

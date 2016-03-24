@@ -1338,7 +1338,7 @@
       <name>bundle</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>org.silverpeas.util.SilverpeasBundle</type>
+      <type>org.silverpeas.core.util.SilverpeasBundle</type>
     </attribute>
     <attribute>
       <description>Basename of the bundle.</description>
@@ -2231,7 +2231,7 @@
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       boolean getBooleanValue( java.lang.String )
     </function-signature>
@@ -2239,7 +2239,7 @@
   <function>
     <description>Function that indicates if a String is defined.</description>
     <name>isDefined</name>
-    <function-class>org.silverpeas.util.StringUtil</function-class>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
     <function-signature>
       boolean isDefined( java.lang.String )
     </function-signature>
@@ -2255,7 +2255,7 @@
   <function>
     <description>Function that display the file size in a human readable format.</description>
     <name>humanReadableSize</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
     </function-signature>
@@ -2286,7 +2286,7 @@
   <function>
     <description>Function that formats as memory size the given value.</description>
     <name>formatMemSize</name>
-    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
     </function-signature>

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

@@ -49,8 +49,8 @@ import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.GenericRecordTemplate;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 
 /**

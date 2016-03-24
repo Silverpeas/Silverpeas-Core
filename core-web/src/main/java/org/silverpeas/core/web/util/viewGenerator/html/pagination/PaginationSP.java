@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
 

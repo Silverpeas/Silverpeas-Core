@@ -41,15 +41,15 @@
   <import resource="spring-jpa.xml" />
 
   <context:annotation-config />
-  <context:component-scan base-package="org.silverpeas.persistence" />
+  <context:component-scan base-package="org.silverpeas.core.persistence" />
 
-  <jpa:repositories base-package="org.silverpeas.persistence" transaction-manager-ref="jpaTransactionManager" />
+  <jpa:repositories base-package="org.silverpeas.core.persistence" transaction-manager-ref="jpaTransactionManager" />
 
-  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"-->
+  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.core.persistence.TransactionFactory"-->
         <!--factory-method="getFactory"/>-->
 
   <util:list id="entities">
-    <value>org.silverpeas.persistence.repository</value>
+    <value>org.silverpeas.core.persistence.repository</value>
   </util:list>
 
 </beans>

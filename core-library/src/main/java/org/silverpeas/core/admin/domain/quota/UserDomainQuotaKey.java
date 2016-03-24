@@ -27,7 +27,7 @@ import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.model.Quota;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
 

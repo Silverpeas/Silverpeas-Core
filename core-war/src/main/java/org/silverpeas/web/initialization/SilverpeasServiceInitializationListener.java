@@ -23,14 +23,14 @@
  */
 package org.silverpeas.web.initialization;
 
-import org.silverpeas.initialization.SilverpeasServiceInitialization;
+import org.silverpeas.core.initialization.SilverpeasServiceInitialization;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
  * A listener of servlet context to initialize all the services that implement the
- * {@code org.silverpeas.initialization.Initialization} interface when the application is starting.
+ * {@code org.silverpeas.core.initialization.Initialization} interface when the application is starting.
  * @author mmoquillon
  */
 public class SilverpeasServiceInitializationListener implements ServletContextListener {

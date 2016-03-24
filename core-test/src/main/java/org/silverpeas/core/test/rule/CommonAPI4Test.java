@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.test.rule;
 
-import org.silverpeas.silvertrace.SilverpeasTrace;
+import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.rules.TestRule;
@@ -34,9 +34,9 @@ import org.mockito.internal.util.MockUtil;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.util.lang.TestSystemWrapper;
 import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
-import org.silverpeas.thread.ManagedThreadPool;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.logging.LoggerConfigurationManager;
+import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.io.File;

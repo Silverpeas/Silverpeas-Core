@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * @author Yohann Chastagnier

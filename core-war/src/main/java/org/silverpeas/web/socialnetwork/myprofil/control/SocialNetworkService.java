@@ -37,10 +37,10 @@ import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.Status;
 import com.silverpeas.socialnetwork.status.StatusService;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
 
 /**
  * @author Bensalem Nabil
@@ -63,8 +63,8 @@ public class SocialNetworkService {
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
       Date begin, Date end) {
 
-    org.silverpeas.date.Date dBegin = new org.silverpeas.date.Date(begin);
-    org.silverpeas.date.Date dEnd = new org.silverpeas.date.Date(end);
+    org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
+    org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
 
     List<SocialInformation> socialInformationsFull =
         socialInformationService().getSocialInformationsList(type, myId,
@@ -120,8 +120,8 @@ public class SocialNetworkService {
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
       SocialInformationType type, Date begin, Date end) {
 
-    org.silverpeas.date.Date dBegin = new org.silverpeas.date.Date(begin);
-    org.silverpeas.date.Date dEnd = new org.silverpeas.date.Date(end);
+    org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
+    org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
 
     List<String> myContactIds = getMyContactsIds(); // my contacts
     myContactIds.add(myId); // add myself
@@ -146,8 +146,8 @@ public class SocialNetworkService {
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
       SocialInformationType type, Date begin, Date end) {
 
-    org.silverpeas.date.Date dBegin = new org.silverpeas.date.Date(begin);
-    org.silverpeas.date.Date dEnd = new org.silverpeas.date.Date(end);
+    org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
+    org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
 
     List<String> myContactIds = getTheContactsIds(myContactId); // the contacts
 

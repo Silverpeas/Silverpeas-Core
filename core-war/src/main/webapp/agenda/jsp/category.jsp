@@ -32,9 +32,11 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.calendar.model.JournalHeader" %>
 <%@ page import="org.silverpeas.core.calendar.model.Category" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%@ include file="checkAgenda.jsp" %>
 

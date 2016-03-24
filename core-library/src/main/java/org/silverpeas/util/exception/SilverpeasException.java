@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util.exception;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.ejb.EJBException;
 import java.rmi.RemoteException;

@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import java.util.*;
 
-import org.silverpeas.silvertrace.*;
+import org.silverpeas.core.silvertrace.*;
 import com.stratelia.silverpeas.containerManager.*;
 
 /**

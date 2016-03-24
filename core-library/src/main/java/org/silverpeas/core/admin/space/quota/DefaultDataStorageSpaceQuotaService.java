@@ -28,10 +28,10 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
 
 import javax.inject.Singleton;
 import java.io.File;

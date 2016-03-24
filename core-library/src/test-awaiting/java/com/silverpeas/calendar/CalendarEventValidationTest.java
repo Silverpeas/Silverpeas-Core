@@ -39,8 +39,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.calendar.CalendarEvent.*;
-import static org.silverpeas.date.Date.*;
-import static org.silverpeas.date.DateTime.*;
+import static org.silverpeas.core.date.Date.*;
+import static org.silverpeas.core.date.DateTime.*;
 
 /**
  *

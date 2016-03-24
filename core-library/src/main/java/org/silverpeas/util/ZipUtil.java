@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.apache.commons.compress.archivers.ArchiveEntry;

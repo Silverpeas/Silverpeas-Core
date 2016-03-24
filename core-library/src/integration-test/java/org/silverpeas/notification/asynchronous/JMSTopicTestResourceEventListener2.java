@@ -24,7 +24,7 @@ package org.silverpeas.notification.asynchronous;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

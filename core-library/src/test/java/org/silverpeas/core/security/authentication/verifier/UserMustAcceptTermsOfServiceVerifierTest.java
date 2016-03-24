@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authentication.verifier;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Rule;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.junit.Test;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 

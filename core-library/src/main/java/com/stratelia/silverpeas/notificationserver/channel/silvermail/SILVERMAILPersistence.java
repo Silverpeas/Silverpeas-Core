@@ -27,10 +27,10 @@ package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.LongText;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

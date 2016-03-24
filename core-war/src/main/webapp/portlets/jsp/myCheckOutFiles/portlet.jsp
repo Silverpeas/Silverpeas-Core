@@ -26,6 +26,10 @@
 
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

@@ -67,11 +67,11 @@ import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.WAAttributeValuePair;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;

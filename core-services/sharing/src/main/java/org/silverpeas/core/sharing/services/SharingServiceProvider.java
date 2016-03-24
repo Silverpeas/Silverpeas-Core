@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.sharing.services;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of SharingTicketService instances.

@@ -24,7 +24,7 @@
 
 --%>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.util.DateUtil" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

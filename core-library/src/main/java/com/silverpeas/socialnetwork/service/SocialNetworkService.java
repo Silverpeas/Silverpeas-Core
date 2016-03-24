@@ -32,7 +32,7 @@ import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.qualifiers.Facebook;
 import com.silverpeas.socialnetwork.qualifiers.LinkedIn;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

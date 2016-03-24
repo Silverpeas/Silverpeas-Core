@@ -27,7 +27,7 @@
 
 package org.silverpeas.core.workflow.api;
 
-import org.silverpeas.initialization.Initialization;
+import org.silverpeas.core.initialization.Initialization;
 
 /**
  * Initializes the workflow engine.

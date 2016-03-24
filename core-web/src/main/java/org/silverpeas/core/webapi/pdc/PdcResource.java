@@ -39,7 +39,7 @@ import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
 import javax.ws.rs.*;
 
 import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC).

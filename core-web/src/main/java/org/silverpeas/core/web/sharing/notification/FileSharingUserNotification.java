@@ -36,10 +36,10 @@ import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationB
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class FileSharingUserNotification extends AbstractTemplateUserNotificationBuilder<Ticket> {
 

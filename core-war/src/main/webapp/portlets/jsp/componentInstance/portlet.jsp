@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.StringUtil" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

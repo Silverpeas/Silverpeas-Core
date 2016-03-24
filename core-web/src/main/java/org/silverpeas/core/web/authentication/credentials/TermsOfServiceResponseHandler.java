@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;

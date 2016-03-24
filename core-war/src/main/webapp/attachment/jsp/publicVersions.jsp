@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="org.silverpeas.util.FileUtil" %>
-<%@page import="org.silverpeas.util.StringUtil" %>
+<%@page import="org.silverpeas.core.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page isELIgnored="false" %>
 
@@ -52,9 +52,9 @@
 <%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%
   GraphicElementFactory gef =

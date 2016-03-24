@@ -29,14 +29,14 @@
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
-<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
-<%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
+<%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
+<%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 
-<%@ page import="org.silverpeas.util.SettingBundle" %>
-<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="java.util.List" %>

@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.test;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;

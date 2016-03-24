@@ -32,7 +32,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.SequenceField;
 import org.apache.ecs.html.Input;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;

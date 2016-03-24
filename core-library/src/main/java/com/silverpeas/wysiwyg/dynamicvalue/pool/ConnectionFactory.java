@@ -24,7 +24,7 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
 import java.sql.SQLException;

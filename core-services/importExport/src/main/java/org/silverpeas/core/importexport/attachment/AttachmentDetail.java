@@ -23,7 +23,7 @@ package org.silverpeas.core.importexport.attachment;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAPrimaryKey;

@@ -34,11 +34,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="org.silverpeas.web.communicationuser.control.CommunicationUserSessionController"%>
 <%@ page import="org.silverpeas.core.security.session.SessionInfo"%>
-<%@ page import="org.silverpeas.util.LocalizationBundle"%>
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.SettingBundle"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.util.SettingBundle"%>
 
 <%//____/ VIEW GENERATOR \_________________________________________________________________________%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>

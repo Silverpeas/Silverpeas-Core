@@ -33,12 +33,12 @@ import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
 import org.silverpeas.web.sharing.control.FileSharingSessionController;
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.DateUtil;
+import org.silverpeas.core.util.DateUtil;
 
 
 public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharingSessionController> {

@@ -28,7 +28,7 @@ import org.silverpeas.util.JoinStatement;
 
 import java.util.List;
 
-import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 class SQLStatement {
 

@@ -30,9 +30,9 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
 import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.thread.ManagedThreadPool;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.logging.LoggerConfigurationManager;
+import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.util.Enumeration;

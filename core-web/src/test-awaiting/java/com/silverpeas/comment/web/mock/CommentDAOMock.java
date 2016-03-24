@@ -32,7 +32,7 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.date.period.Period;
+import org.silverpeas.core.date.period.Period;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Named;
-import static org.silverpeas.util.StringUtil.*;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * A mock on a Comment

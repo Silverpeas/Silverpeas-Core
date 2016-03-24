@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.search;
 
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This class represents a ResultDisplayer object factory. It gives a main point to access each

@@ -28,8 +28,8 @@ import org.silverpeas.core.web.treemenu.model.MenuItem;
 import org.silverpeas.core.web.treemenu.model.NodeType;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
