@@ -37,7 +37,7 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.util.AttachmentSettings;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentsType;

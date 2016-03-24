@@ -37,7 +37,7 @@ import javax.servlet.http.HttpSession;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 public class JobDomainPeasGroupPathServlet extends HttpServlet {
 

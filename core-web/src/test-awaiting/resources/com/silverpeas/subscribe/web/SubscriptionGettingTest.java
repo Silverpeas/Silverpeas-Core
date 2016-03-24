@@ -48,7 +48,7 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserState;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

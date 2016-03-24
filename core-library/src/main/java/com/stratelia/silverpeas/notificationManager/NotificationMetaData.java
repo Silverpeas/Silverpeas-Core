@@ -51,7 +51,7 @@ import static com.stratelia.silverpeas.notificationManager.NotificationTemplateK
     .notification_receiver_groups;
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
     .notification_receiver_users;
-import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 public class NotificationMetaData implements java.io.Serializable {
   private static final long serialVersionUID = 6004274748540324759L;

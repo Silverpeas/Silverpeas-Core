@@ -22,8 +22,8 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
 
-import org.silverpeas.admin.domain.DomainServiceProvider;
-import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.core.admin.domain.DomainServiceProvider;
+import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;

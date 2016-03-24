@@ -25,7 +25,7 @@ import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.UnitReport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;

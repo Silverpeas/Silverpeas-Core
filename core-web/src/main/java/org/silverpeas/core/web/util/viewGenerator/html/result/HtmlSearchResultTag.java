@@ -31,7 +31,7 @@ import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;

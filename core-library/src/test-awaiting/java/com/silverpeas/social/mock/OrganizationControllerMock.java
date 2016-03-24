@@ -27,7 +27,7 @@ package com.silverpeas.social.mock;
 import javax.inject.Named;
 
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 

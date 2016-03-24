@@ -27,7 +27,7 @@ import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceI18NRow;
 import com.stratelia.webactiv.organization.SpaceRow;
-import org.silverpeas.admin.space.notification.SpaceEventNotifier;
+import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;

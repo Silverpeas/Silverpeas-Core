@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.jstl;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.jstl.util.AbstractSetVarTagSupport;
 import org.silverpeas.util.StringUtil;
 

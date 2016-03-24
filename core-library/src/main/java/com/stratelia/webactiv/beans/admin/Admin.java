@@ -48,12 +48,12 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
-import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.admin.space.notification.SpaceEventNotifier;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
+import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
@@ -146,7 +146,7 @@ class Admin implements Administration {
 
   private void setup() {
     // Load silverpeas admin resources
-    SettingBundle resources = ResourceLocator.getSettingBundle("org.silverpeas.beans.admin.admin");
+    SettingBundle resources = ResourceLocator.getSettingBundle("org.silverpeas.admin.admin");
     roleMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
     m_nEntrepriseClientSpaceId = resources.getInteger("EntrepriseClientSpaceId", 0);

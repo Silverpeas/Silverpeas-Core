@@ -35,8 +35,9 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%@ page import="org.silverpeas.components.kmelia.KmeliaSecurity" %>
 <%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper" %>
-<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 
 <%
   HttpSession httpSession = request.getSession();
@@ -60,7 +61,7 @@
   if (redirection == null && componentId == null && spaceId == null) {
     isAnonymousAccessAuthorized = true;
   } else {
-    org.silverpeas.core.admin.OrganizationController organization =
+    OrganizationController organization =
         OrganizationControllerProvider.getOrganisationController();
     if (organization.isAnonymousAccessActivated()) {
       if (componentId != null) {

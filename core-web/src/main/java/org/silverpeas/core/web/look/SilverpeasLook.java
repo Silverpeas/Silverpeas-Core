@@ -28,7 +28,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;

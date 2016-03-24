@@ -27,7 +27,7 @@ package com.silverpeas.form.fieldType;
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;

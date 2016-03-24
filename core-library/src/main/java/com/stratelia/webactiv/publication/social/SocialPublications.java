@@ -28,8 +28,8 @@ import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.accesscontrol.PublicationAccessControl;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;

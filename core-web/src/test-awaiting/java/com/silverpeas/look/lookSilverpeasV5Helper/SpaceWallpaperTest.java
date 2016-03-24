@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.util.SettingBundle;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.mockito.Mockito.*;

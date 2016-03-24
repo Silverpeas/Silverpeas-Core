@@ -32,9 +32,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.ComponentHelper;
 
 import java.util.ArrayList;

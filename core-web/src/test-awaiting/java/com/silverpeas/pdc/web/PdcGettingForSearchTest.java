@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;

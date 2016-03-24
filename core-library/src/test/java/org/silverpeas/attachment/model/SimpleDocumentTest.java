@@ -28,7 +28,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.attachment.webdav.WebdavService;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.util.RandomGenerator;

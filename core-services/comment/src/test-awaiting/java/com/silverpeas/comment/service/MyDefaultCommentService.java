@@ -31,7 +31,7 @@ import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.ArrayList;
 import javax.inject.Named;

@@ -37,7 +37,7 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;

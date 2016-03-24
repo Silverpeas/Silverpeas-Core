@@ -31,7 +31,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceService;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

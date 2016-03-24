@@ -35,8 +35,8 @@ import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 

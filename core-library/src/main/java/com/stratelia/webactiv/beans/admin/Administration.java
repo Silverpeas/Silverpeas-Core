@@ -28,7 +28,6 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ServiceProvider;

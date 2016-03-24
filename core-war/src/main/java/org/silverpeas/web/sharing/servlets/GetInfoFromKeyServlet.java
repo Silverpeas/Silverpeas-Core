@@ -34,7 +34,7 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.attachment.model.SimpleDocument;

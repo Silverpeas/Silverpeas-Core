@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.admin.space.mock;
+package org.silverpeas.core.admin.space.mock;
 
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaService;
+import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaService;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
@@ -114,8 +114,8 @@ public class DefaultDataStorageSpaceQuotaService implements DataStorageSpaceQuot
   /*
    * (non-Javadoc)
    * @see
-   * org.silverpeas.admin.space.quota.DataStorageSpaceQuotaService#getQuotaReachedFromSpacePath(
-   * org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey)
+   * org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaService#getQuotaReachedFromSpacePath(
+   * org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey)
    */
   @Override
   public Quota getQuotaReachedFromSpacePath(final DataStorageSpaceQuotaKey key) {

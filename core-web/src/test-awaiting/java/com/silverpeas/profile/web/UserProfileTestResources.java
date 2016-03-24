@@ -37,8 +37,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.ListSlice;
 
 import static org.mockito.Matchers.any;

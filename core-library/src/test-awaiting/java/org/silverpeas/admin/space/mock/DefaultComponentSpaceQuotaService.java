@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.admin.space.mock;
+package org.silverpeas.core.admin.space.mock;
 
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaService;
+import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaService;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
@@ -114,7 +114,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
   /*
    * (non-Javadoc)
    * @see
-   * org.silverpeas.admin.space.quota.ComponentSpaceQuotaService#getQuotaReachedFromSpacePath(org.
+   * org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaService#getQuotaReachedFromSpacePath(org.
    * silverpeas.admin.space.quota.ComponentSpaceQuotaKey)
    */
   @Override

@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 /**
  * This service provides several common operations for the REST-based resources representing admin

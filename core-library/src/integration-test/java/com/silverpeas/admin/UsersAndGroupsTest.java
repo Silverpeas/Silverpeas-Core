@@ -33,9 +33,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.SearchEngineException;
@@ -82,7 +82,7 @@ public class UsersAndGroupsTest {
         .addAsResource("com/silverpeas/domains/silverpeasdriver")
         .addMavenDependencies("org.apache.lucene:lucene-core")
         .addMavenDependencies("org.apache.lucene:lucene-analyzers")
-        .addPackages(false, "org.silverpeas.admin.space.quota")
+        .addPackages(false, "org.silverpeas.core.admin.space.quota")
         .addPackages(false, "com.stratelia.silverpeas.peasCore")
         .addPackages(false, "com.stratelia.silverpeas.containerManager")
         .addPackages(false, "com.stratelia.silverpeas.contentManager")

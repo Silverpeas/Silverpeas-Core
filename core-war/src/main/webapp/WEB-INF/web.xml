@@ -1079,11 +1079,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <location>/Error500.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException</exception-type>
+    <exception-type>org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException</exception-type>
     <location>/admin/jsp/errorpageDataStorageQuota.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.silverpeas.admin.component.exception.ComponentFileFilterException</exception-type>
+    <exception-type>org.silverpeas.core.admin.component.exception.ComponentFileFilterException</exception-type>
     <location>/admin/jsp/errorpageForbiddenFile.jsp</location>
   </error-page>
 

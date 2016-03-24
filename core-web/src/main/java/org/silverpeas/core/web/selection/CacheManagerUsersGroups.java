@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.selection;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;

@@ -48,7 +48,7 @@ public abstract class Schema {
   public Schema() throws UtilException {
     createConnection();
     SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.beans.admin.admin");
+        ResourceLocator.getSettingBundle("org.silverpeas.admin.admin");
     String m_sHaveToTestConnections = settings.getString("HaveToTestConnections");
     if ("false".equalsIgnoreCase(m_sHaveToTestConnections)) {
       haveToTestConnections = false;

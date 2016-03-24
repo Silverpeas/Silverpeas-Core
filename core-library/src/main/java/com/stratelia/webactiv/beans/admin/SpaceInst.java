@@ -21,10 +21,10 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;

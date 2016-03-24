@@ -36,7 +36,7 @@ import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
 import org.apache.ecs.xhtml.title;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;

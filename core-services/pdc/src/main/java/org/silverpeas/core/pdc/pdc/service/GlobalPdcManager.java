@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
 import org.silverpeas.core.pdc.classification.PertinentAxis;

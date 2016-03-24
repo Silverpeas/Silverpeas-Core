@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;

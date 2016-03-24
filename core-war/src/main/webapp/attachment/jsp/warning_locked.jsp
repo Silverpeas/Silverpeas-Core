@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

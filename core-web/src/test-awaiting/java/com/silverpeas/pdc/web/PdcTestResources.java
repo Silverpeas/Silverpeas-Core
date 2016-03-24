@@ -40,7 +40,7 @@ import java.net.URI;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.TestConstants.*;

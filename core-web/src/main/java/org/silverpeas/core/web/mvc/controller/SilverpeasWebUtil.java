@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import org.silverpeas.util.ArrayUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

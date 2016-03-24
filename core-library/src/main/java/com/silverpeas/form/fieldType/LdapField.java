@@ -31,7 +31,7 @@ import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;

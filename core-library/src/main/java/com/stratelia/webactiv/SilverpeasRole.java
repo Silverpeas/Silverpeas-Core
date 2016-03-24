@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 public enum SilverpeasRole {
   admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor;

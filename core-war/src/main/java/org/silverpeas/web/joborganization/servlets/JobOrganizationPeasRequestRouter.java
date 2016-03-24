@@ -29,7 +29,7 @@ import org.silverpeas.web.joborganization.control.JobOrganizationPeasSessionCont
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**

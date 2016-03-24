@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.silverstatistics.servlets;
 
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 import java.util.Collections;
 import java.util.HashMap;

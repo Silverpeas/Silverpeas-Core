@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
@@ -66,7 +66,7 @@ public class SpacesManagersTest {
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
         .addMavenDependencies("org.apache.lucene:lucene-core")
         .addMavenDependencies("org.apache.lucene:lucene-analyzers")
-        .addPackages(false, "org.silverpeas.admin.space.quota")
+        .addPackages(false, "org.silverpeas.core.admin.space.quota")
         .addPackages(false, "com.stratelia.silverpeas.peasCore")
         .addPackages(false, "com.stratelia.silverpeas.containerManager")
         .addPackages(false, "com.stratelia.silverpeas.contentManager")

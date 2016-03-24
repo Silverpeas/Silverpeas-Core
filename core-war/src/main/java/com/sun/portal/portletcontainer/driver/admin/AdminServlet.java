@@ -32,7 +32,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;

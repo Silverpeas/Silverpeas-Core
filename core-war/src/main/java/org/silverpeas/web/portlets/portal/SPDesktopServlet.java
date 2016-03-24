@@ -38,8 +38,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
 import org.silverpeas.core.webapi.admin.tools.ToolDelegate;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;

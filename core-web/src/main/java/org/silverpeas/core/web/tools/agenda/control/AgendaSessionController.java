@@ -48,7 +48,7 @@ import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.calendar.model.ParticipationStatus;
 import org.silverpeas.core.calendar.model.Schedulable;
 import org.silverpeas.core.calendar.model.SchedulableCount;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.Pair;

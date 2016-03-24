@@ -23,8 +23,8 @@
   --%>
 <%@tag import="java.util.ArrayList"%>
 <%@tag import="org.silverpeas.util.StringUtil"%>
-<%@tag import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
-<%@tag import="org.silverpeas.core.admin.OrganizationController"%>
+<%@tag import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
+<%@tag import="org.silverpeas.core.admin.service.OrganizationController"%>
 <%@tag import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@tag import="java.util.List"%>
 <%@ tag import="com.stratelia.webactiv.beans.admin.UserDetail" %>

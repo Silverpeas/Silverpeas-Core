@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 

@@ -33,7 +33,7 @@ import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 

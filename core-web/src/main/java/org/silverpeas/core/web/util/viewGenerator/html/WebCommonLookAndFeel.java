@@ -30,7 +30,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;

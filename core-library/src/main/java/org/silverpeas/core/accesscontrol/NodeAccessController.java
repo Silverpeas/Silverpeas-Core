@@ -30,7 +30,7 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;

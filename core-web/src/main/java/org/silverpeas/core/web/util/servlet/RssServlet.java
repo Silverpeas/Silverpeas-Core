@@ -36,7 +36,7 @@ import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
 

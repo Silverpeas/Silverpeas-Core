@@ -26,7 +26,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 

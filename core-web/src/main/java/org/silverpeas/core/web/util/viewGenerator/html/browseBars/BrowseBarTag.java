@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
 import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;

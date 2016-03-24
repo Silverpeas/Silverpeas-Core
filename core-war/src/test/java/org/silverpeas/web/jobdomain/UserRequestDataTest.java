@@ -30,7 +30,7 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.test.rule.CommonAPI4Test;

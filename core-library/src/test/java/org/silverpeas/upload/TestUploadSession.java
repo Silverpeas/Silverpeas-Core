@@ -32,9 +32,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.accesscontrol.ComponentAccessControl;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

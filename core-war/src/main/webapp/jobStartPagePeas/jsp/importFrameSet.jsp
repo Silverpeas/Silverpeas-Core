@@ -26,14 +26,15 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController, org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController, org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  org.silverpeas.core.admin.OrganizationController organizationCtrl =
+  OrganizationController organizationCtrl =
       OrganizationControllerProvider.getOrganisationController();
   GraphicElementFactory gef =
       (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");

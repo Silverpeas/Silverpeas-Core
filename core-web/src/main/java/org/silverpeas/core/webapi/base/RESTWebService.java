@@ -30,7 +30,7 @@ import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.settings.SilverpeasSettings;

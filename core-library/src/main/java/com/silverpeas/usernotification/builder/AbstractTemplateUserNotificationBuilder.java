@@ -26,7 +26,7 @@ package com.silverpeas.usernotification.builder;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.Link;
 import org.apache.commons.lang3.StringUtils;
 

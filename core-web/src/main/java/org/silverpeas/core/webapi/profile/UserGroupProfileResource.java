@@ -30,7 +30,7 @@ import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ListSlice;
 

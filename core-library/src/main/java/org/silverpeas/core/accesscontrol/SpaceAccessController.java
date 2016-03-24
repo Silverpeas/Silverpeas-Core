@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.accesscontrol;
 
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -26,7 +26,7 @@ package com.silverpeas.admin.service;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 public interface UserService {
   UserDetail findUser(String userId) throws AdminException;

@@ -25,8 +25,8 @@ package com.stratelia.webactiv.beans.admin.dao;
 
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
 
 import java.text.MessageFormat;
 import java.util.Collections;

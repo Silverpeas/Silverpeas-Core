@@ -32,7 +32,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.spnego.SpnegoPrincipal;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

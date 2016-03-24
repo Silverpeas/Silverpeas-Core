@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="org.apache.commons.lang3.tuple.Pair"%>
-<%@ page import="org.silverpeas.admin.user.constant.UserState" %>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

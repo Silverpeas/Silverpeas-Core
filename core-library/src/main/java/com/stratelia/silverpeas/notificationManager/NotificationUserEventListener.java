@@ -23,7 +23,7 @@ package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.silverpeas.notificationManager.model.NotifSchema;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.admin.user.notification.UserEvent;
+import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.logging.SilverLogger;
 

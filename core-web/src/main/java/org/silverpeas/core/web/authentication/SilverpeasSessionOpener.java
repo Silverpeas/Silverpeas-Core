@@ -35,7 +35,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.LocalizationBundle;

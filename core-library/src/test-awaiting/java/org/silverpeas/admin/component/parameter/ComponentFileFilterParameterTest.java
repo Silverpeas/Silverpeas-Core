@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.admin.component.parameter;
+package org.silverpeas.core.admin.component.parameter;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
-import org.silverpeas.admin.component.exception.ComponentFileFilterException;
+import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 
 import java.io.File;
 import java.net.URL;

@@ -55,7 +55,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.chart.period.PeriodChart;
 import org.silverpeas.chart.pie.PieChart;
 import org.silverpeas.date.period.PeriodType;

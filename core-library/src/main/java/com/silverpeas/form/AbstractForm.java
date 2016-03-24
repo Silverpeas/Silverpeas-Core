@@ -27,7 +27,7 @@ package com.silverpeas.form;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.logging.SilverLogger;
 

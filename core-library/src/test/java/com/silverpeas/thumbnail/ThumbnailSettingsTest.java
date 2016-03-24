@@ -26,8 +26,8 @@ package com.silverpeas.thumbnail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import static com.silverpeas.thumbnail.ThumbnailSettings.*;
 import static org.hamcrest.MatcherAssert.assertThat;

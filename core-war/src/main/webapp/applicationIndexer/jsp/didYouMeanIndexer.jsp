@@ -36,8 +36,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.web.index.ApplicationDYMIndexer"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
-<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
-<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
 
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
@@ -45,11 +45,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%!
   private String printSpaceAndSubSpaces(String spaceId, int depth,
-      org.silverpeas.core.admin.OrganizationController m_OrganizationController,
+      OrganizationController m_OrganizationController,
       String m_sContext) {
     ComponentInst 	compoInst 	= null;
     String 			compoName 	= null;
@@ -112,7 +113,7 @@ if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSes
     return;
 }
 
-  org.silverpeas.core.admin.OrganizationController m_OrganizationController =
+  OrganizationController m_OrganizationController =
       OrganizationControllerProvider.getOrganisationController();
 
 LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());

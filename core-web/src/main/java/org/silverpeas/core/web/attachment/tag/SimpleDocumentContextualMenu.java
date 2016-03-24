@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
-import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.util.StringUtil.newline;
 
 /**

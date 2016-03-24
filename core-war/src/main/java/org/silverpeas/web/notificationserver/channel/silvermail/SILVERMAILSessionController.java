@@ -26,7 +26,7 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -44,7 +44,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 /**
  * Class declaration

@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
 <%@ page import="org.silverpeas.chart.pie.PieChart" %>
 <%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>

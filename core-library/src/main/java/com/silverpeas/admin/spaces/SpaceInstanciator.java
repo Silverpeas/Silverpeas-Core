@@ -54,7 +54,7 @@ import javax.xml.stream.XMLStreamException;
 public class SpaceInstanciator {
 
   protected static SettingBundle configuration =
-      ResourceLocator.getSettingBundle("org.silverpeas.beans.admin.admin");
+      ResourceLocator.getSettingBundle("org.silverpeas.admin.admin");
   private Map<String, SpaceTemplate> spaceTemplates = new HashMap<String, SpaceTemplate>();
   private final Map<String, WAComponent> allComponentsModels;
 

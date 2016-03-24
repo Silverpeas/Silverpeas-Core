@@ -27,8 +27,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.span;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;

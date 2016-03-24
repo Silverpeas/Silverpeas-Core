@@ -26,7 +26,7 @@ package com.silverpeas.comment.mock;
 
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import javax.inject.Named;
 import static org.mockito.Mockito.*;

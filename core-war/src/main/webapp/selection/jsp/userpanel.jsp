@@ -16,7 +16,7 @@
 <view:setBundle basename="org.silverpeas.selection.multilang.selectionBundle" />
 <view:setBundle basename="org.silverpeas.notificationManager.multilang.notificationManagerBundle" var="notificationBundle" />
 
-<view:setConstant var="DEACTIVATED_USER_STATE" constant="org.silverpeas.admin.user.constant.UserState.DEACTIVATED"/>
+<view:setConstant var="DEACTIVATED_USER_STATE" constant="org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED"/>
 <fmt:message var="DEACTIVATED_SHORT_LABEL" key="GML.user.account.state.DEACTIVATED.short"/>
 <c:set var="DEACTIVATED_SHORT_LABEL" value="${fn:toLowerCase(DEACTIVATED_SHORT_LABEL)}"/>
 

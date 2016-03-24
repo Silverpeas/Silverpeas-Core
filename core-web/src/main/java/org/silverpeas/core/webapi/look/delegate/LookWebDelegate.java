@@ -34,13 +34,13 @@ import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceService;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 /**
  * @author Yohann Chastagnier

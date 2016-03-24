@@ -26,7 +26,7 @@ import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.SpaceRow;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
+import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;

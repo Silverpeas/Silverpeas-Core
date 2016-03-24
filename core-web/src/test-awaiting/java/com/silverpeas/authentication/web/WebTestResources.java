@@ -26,7 +26,7 @@ package com.silverpeas.authentication.web;
 import com.silverpeas.web.TestResources;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Named;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserState;
 
 import static com.silverpeas.web.TestResources.TEST_RESOURCES_NAME;
 

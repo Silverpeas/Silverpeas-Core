@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.mvc.processor.UserAndGroupSelectionProcessor;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.MultiSilverpeasBundle;

@@ -23,6 +23,7 @@
   --%>
 <%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
 <%@ page import="org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean" %>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
@@ -35,7 +36,7 @@
   String userId = (String) request.getAttribute("userId");
   String action = (String) request.getAttribute("action");
 
-  org.silverpeas.core.admin.OrganizationController organizationCtrl = sessionController.getOrganisationController();
+  OrganizationController organizationCtrl = sessionController.getOrganisationController();
   final String rootPath = resource.getString("Path");
 
   boolean isReadOnly = false;

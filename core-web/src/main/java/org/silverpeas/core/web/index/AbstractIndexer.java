@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.index;
 
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;

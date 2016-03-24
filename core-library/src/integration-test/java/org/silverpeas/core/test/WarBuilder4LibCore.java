@@ -47,8 +47,8 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import org.silverpeas.EntityReference;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.JcrContext;
 import org.silverpeas.contribution.model.Contribution;
@@ -56,8 +56,8 @@ import org.silverpeas.contribution.model.ContributionContent;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.jcr.JcrRepositoryProvider;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.profile.UserReference;
@@ -341,7 +341,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addCommonUserBeans();
     if (!contains(AbstractJpaEntity.class)) {
       addClasses(ResourceIdentifier.class);
-      addPackages(true, "org.silverpeas.admin.user.constant");
+      addPackages(true, "org.silverpeas.core.admin.user.constant");
       addPackages(true, "org.silverpeas.persistence.model");
       addPackages(true, "org.silverpeas.persistence.repository");
       addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
@@ -595,14 +595,13 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "com.stratelia.silverpeas.domains.sqldriver");
       addPackages(true, "com.stratelia.webactiv.beans.admin");
       addPackages(false, "org.silverpeas.notification");
-      addPackages(true, "org.silverpeas.admin.component.notification");
-      addPackages(true, "org.silverpeas.admin.space.notification");
-      addPackages(true, "org.silverpeas.admin.user.constant");
-      addPackages(true, "org.silverpeas.admin.user.notification");
+      addPackages(true, "org.silverpeas.core.admin.component.notification");
+      addPackages(true, "org.silverpeas.core.admin.space.notification");
+      addPackages(true, "org.silverpeas.core.admin.user.constant");
+      addPackages(true, "org.silverpeas.core.admin.user.notification");
       addPackages(true, "org.silverpeas.core.clipboard");
       addAsResource("xmlcomponents");
-      addAsResource("org/silverpeas/admin/roleMapping.properties");
-      addAsResource("org/silverpeas/beans/admin/admin.properties");
+      addAsResource("org/silverpeas/admin");
       // Exclusions
       applyManually(war -> war.deleteClass(StubbedAdministration.class));
       // Centralized features

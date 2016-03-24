@@ -25,7 +25,7 @@
 package com.silverpeas.comment.web.mock;
 
 import com.silverpeas.comment.service.DefaultCommentService;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Named;

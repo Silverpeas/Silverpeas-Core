@@ -24,7 +24,7 @@
 
 --%>
 <%@ page import="org.silverpeas.date.DateTime" %>
-<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.chart.period.PeriodChart" %>
 <%@ page import="static java.util.Calendar.getInstance" %>
 <%@ page import="org.silverpeas.chart.period.PeriodChartItem" %>

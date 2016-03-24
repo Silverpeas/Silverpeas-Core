@@ -41,7 +41,7 @@ import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.UserSessionReference;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.silverpeas.util.Charsets;

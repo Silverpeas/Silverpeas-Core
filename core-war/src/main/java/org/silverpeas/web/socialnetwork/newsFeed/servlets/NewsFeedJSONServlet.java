@@ -31,7 +31,7 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.LocalizationBundle;

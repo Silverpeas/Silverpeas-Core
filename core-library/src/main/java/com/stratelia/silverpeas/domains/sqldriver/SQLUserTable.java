@@ -24,13 +24,12 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

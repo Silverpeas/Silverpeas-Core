@@ -29,8 +29,8 @@
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.core.admin.OrganizationController"%>
-<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationController"%>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.SettingBundle"%>
@@ -42,7 +42,7 @@
 <%
   MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
       MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  org.silverpeas.core.admin.OrganizationController organizationCtrl = null;
+  OrganizationController organizationCtrl = null;
   GraphicElementFactory gef = null;
   String language = null;
   LocalizationBundle message = null;

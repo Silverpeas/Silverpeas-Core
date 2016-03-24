@@ -43,7 +43,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.silverpeas.core.accesscontrol.AccessControllerProvider.getAccessController;
-import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 /**
  * Manage a session of file & folder upload. Each file is saved in a temporary folder the server.

@@ -29,7 +29,7 @@ import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.owasp.encoder.Encode;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.servlet.ServletContext;

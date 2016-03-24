@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.util;
 
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.admin.component.exception.ComponentFileFilterException;
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
+import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.servlet.ServletRequest;

@@ -23,8 +23,8 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
 
 /**
  * Criteria to use in a search of resources managed and exposed in Silverpeas (like user profiles or
