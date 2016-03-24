@@ -51,7 +51,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.NodeTree;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -1133,7 +1132,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
+  public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility) {
     Connection con = getConnection();
     try {
