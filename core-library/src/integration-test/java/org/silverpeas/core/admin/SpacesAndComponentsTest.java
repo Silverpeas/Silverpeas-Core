@@ -21,7 +21,7 @@
  * program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.admin;
+package org.silverpeas.core.admin;
 
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponentRegistry;

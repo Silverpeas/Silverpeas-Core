@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.service;
+package org.silverpeas.core.admin.user;
 
 import org.silverpeas.util.ServiceProvider;
 

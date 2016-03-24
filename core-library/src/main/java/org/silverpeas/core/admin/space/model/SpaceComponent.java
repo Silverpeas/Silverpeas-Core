@@ -28,8 +28,9 @@
 // Any modifications to this file will be lost upon recompilation of the source schema.
 // Generated on: 2011.02.14 at 03:42:33 PM CET
 //
-package com.silverpeas.admin.spaces;
+package org.silverpeas.core.admin.space.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,30 +40,19 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
- * Java class for SpaceTemplateType complex type.
+ * Java class for ComponentType complex type.
  * <p>
  * The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType name=&quot;SpaceTemplateType&quot;&gt;
+ * &lt;complexType name=&quot;ComponentType&quot;&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
  *       &lt;sequence&gt;
- *         &lt;element name=&quot;template&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *         &lt;element name=&quot;defaultName&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *         &lt;element name=&quot;type&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *         &lt;element name=&quot;label&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
  *         &lt;element name=&quot;description&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *         &lt;element name=&quot;readonly&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
- *         &lt;element name=&quot;components&quot;&gt;
- *           &lt;complexType&gt;
- *             &lt;complexContent&gt;
- *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *                 &lt;sequence&gt;
- *                   &lt;element name=&quot;component&quot; type=&quot;{http://silverpeas.org/xml/ns/space}ComponentType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
- *                 &lt;/sequence&gt;
- *               &lt;/restriction&gt;
- *             &lt;/complexContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
+ *         &lt;element name=&quot;parameter&quot; type=&quot;{http://silverpeas.org/xml/ns/space}ParameterType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -70,51 +60,49 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SpaceTemplateType", propOrder = { "template", "defaultName", "description",
-    "readonly", "components" })
-public class SpaceTemplate {
+@XmlType(name = "ComponentType", propOrder = { "type", "label", "description", "parameters" })
+public class SpaceComponent {
 
   @XmlElement(required = true)
-  protected String template;
+  protected String type;
   @XmlElement(required = true)
-  protected String defaultName;
+  protected String label;
   @XmlElement(required = true)
   protected String description;
-  protected boolean readonly;
-  @XmlElementWrapper(name = "components")
-  @XmlElement(name = "component")
-  protected List<SpaceComponent> components;
+  @XmlElementWrapper(name = "parameters")
+  @XmlElement(name = "parameter")
+  protected List<SpaceComponentParameter> parameters;
 
   /**
-   * Gets the value of the template property.
+   * Gets the value of the type property.
    * @return possible object is {@link String }
    */
-  public String getTemplate() {
-    return template;
+  public String getType() {
+    return type;
   }
 
   /**
-   * Sets the value of the template property.
+   * Sets the value of the type property.
    * @param value allowed object is {@link String }
    */
-  public void setTemplate(String value) {
-    this.template = value;
+  public void setType(String value) {
+    this.type = value;
   }
 
   /**
-   * Gets the value of the defaultName property.
+   * Gets the value of the label property.
    * @return possible object is {@link String }
    */
-  public String getDefaultName() {
-    return defaultName;
+  public String getLabel() {
+    return label;
   }
 
   /**
-   * Sets the value of the defaultName property.
+   * Sets the value of the label property.
    * @param value allowed object is {@link String }
    */
-  public void setDefaultName(String value) {
-    this.defaultName = value;
+  public void setLabel(String value) {
+    this.label = value;
   }
 
   /**
@@ -134,32 +122,28 @@ public class SpaceTemplate {
   }
 
   /**
-   * Gets the value of the readonly property.
+   * Gets the value of the parameters property.
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * modification you make to the returned list will be present inside the JAXB object. This is why
+   * there is not a <CODE>set</CODE> method for the parameters property.
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getParameters().add(newItem);
+   * </pre>
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link SpaceComponentParameter }
    */
-  public boolean isReadonly() {
-    return readonly;
+  public List<SpaceComponentParameter> getParameters() {
+    if (parameters == null) {
+      parameters = new ArrayList<SpaceComponentParameter>();
+    }
+    return this.parameters;
   }
 
-  /**
-   * Sets the value of the readonly property.
-   */
-  public void setReadonly(boolean value) {
-    this.readonly = value;
-  }
-
-  /**
-   * Gets the value of the components property.
-   * @return possible object is {@link SpaceComponent }
-   */
-  public List<SpaceComponent> getComponents() {
-    return components;
-  }
-
-  /**
-   * Sets the value of the components property.
-   * @param value allowed object is {@link SpaceComponent }
-   */
-  public void setComponents(List<SpaceComponent> value) {
-    this.components = value;
+  public void setParameters(List<SpaceComponentParameter> value) {
+    this.parameters = value;
   }
 }

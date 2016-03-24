@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.socialnetwork.authentication;
 
-import com.silverpeas.admin.service.UserService;
+import org.silverpeas.core.admin.user.UserService;
 import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;

@@ -29,7 +29,7 @@
 // Generated on: 2011.02.14 at 03:42:33 PM CET
 //
 
-package com.silverpeas.admin.spaces;
+package org.silverpeas.core.admin.space.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

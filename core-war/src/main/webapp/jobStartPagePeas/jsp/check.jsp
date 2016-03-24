@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.admin.components.LocalizedOption"%>
 <%@ page import="com.silverpeas.admin.components.LocalizedParameter"%>
 <%@ page import="com.silverpeas.admin.components.WAComponent"%>
-<%@ page import="com.silverpeas.admin.spaces.SpaceTemplate"%>
+<%@ page import="org.silverpeas.core.admin.space.model.SpaceTemplate"%>
 <%@ page import="org.silverpeas.web.jobstartpage.AllComponentParameters"%>
 
 <%// En fonction de ce dont vous avez besoin %>

@@ -22,10 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.spaces;
+package org.silverpeas.core.admin.space;
 
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.space.model.SpaceComponent;
+import org.silverpeas.core.admin.space.model.SpaceComponentParameter;
+import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;

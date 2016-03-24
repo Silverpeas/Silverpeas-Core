@@ -20,8 +20,8 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import com.silverpeas.admin.service.UserService;
-import com.silverpeas.admin.service.UserServiceProvider;
+import org.silverpeas.core.admin.user.UserService;
+import org.silverpeas.core.admin.user.UserServiceProvider;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import org.silverpeas.util.logging.SilverLogger;
 

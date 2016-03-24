@@ -21,7 +21,7 @@
 package org.silverpeas.web.jobstartpage.control;
 
 import com.silverpeas.admin.components.*;
-import com.silverpeas.admin.spaces.SpaceTemplate;
+import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.web.jobstartpage.AllComponentParameters;
 import org.silverpeas.web.jobstartpage.DisplaySorted;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasException;

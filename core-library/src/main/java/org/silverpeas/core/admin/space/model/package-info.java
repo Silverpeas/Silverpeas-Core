@@ -30,4 +30,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://silverpeas.org/xml/ns/space", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package com.silverpeas.admin.spaces;
+package org.silverpeas.core.admin.space.model;
