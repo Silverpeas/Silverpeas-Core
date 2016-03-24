@@ -31,7 +31,7 @@ import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.qualifiers.Facebook;
 import com.silverpeas.socialnetwork.qualifiers.LinkedIn;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;

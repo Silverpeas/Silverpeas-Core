@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment;
 
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.CharEncoding;

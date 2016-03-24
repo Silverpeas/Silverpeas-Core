@@ -36,11 +36,11 @@ import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.space.PersonalSpaceController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**

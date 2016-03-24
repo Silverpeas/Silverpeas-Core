@@ -38,7 +38,7 @@
               type="java.lang.String"
               description="The identifier of the resource which attachments are linked to" %>
 <%@ attribute name="greatestUserRole" required="true"
-              type="com.stratelia.webactiv.SilverpeasRole"
+              type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The greatest role the user has" %>
 
 <%@ attribute name="hasToBeIndexed" required="false"

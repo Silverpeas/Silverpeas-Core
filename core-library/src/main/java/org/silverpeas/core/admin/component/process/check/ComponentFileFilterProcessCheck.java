@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.component.process.check;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;

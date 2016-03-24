@@ -34,8 +34,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="org.silverpeas.core.web.index.ApplicationDYMIndexer"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInst" %>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInst"%>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.authentication.verifier;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Rule;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.DateUtil;

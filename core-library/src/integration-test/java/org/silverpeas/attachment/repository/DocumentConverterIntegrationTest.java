@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.lang3.CharEncoding;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

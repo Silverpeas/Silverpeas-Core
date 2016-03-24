@@ -25,7 +25,7 @@ package org.silverpeas.authentication.verifier;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;

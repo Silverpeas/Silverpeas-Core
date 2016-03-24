@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.window;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;

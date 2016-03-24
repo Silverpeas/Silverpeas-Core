@@ -30,7 +30,7 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.StringUtil;
 

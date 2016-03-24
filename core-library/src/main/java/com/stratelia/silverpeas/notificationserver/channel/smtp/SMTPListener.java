@@ -25,7 +25,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import com.stratelia.webactiv.beans.admin.Administration;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.util.EncodeHelper;

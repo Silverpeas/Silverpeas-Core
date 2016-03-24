@@ -27,7 +27,7 @@ package org.silverpeas.core.web.directory.model;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * A user as a member of something (silverpeas?).

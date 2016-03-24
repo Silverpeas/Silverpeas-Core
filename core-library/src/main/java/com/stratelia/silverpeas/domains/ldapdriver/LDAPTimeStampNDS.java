@@ -25,8 +25,7 @@
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
-import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.core.admin.service.AdminException;
 
 public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
   public LDAPTimeStampNDS(LDAPSettings ds, String theValue) {

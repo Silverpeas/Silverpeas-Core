@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 public class JobDomainPeasComponentPathServlet extends HttpServlet {

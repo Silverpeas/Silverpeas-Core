@@ -26,7 +26,7 @@ package org.silverpeas.core.web.look;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.util.SettingBundle;

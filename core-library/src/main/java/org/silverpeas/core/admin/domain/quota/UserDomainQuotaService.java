@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.quota;
 
-import com.stratelia.webactiv.beans.admin.DomainDriverManagerProvider;
+import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.service.AbstractQuotaService;
 import org.silverpeas.util.ResourceLocator;

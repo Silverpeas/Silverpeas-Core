@@ -25,8 +25,8 @@
 package org.silverpeas.core.admin.domain.repository;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.DomainProperty;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
 import org.silverpeas.persistence.jdbc.JdbcSqlQueries;

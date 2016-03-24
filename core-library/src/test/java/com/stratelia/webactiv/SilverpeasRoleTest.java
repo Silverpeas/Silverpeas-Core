@@ -24,6 +24,7 @@
 package com.stratelia.webactiv;
 
 import org.junit.Test;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
 import java.util.EnumSet;
 

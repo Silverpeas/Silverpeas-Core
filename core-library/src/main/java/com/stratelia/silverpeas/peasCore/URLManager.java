@@ -22,7 +22,7 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.ResourceLocator;

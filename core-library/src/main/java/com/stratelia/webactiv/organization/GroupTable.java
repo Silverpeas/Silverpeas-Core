@@ -23,9 +23,9 @@
  */
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.beans.admin.cache.GroupCache;
+import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

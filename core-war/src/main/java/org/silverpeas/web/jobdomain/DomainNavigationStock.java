@@ -30,9 +30,9 @@ package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.user.model.Group;
 
 import java.util.ArrayList;
 import java.util.Arrays;

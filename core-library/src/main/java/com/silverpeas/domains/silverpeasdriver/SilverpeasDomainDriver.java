@@ -24,7 +24,7 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import com.stratelia.webactiv.beans.admin.DomainDriver;
+import org.silverpeas.core.admin.domain.DomainDriver;
 
 public interface SilverpeasDomainDriver extends DomainDriver {
 

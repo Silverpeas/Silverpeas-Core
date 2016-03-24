@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 
 /**
  * The personal component entity.

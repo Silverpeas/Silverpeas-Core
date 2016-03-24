@@ -1,9 +1,24 @@
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.component.model.CompoSpace;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.stratelia.webactiv.beans.admin.*;
+
 import java.util.List;
 import java.util.Map;
+
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ServiceProvider;
 
@@ -176,7 +191,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @param criteria the criteria in searching of user details.
    * @return a slice of the list of user details matching the criteria or an empty list of no ones
    * are found.
-   * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while getting the
+   * @throws AdminException if an error occurs while getting the
    * user details.
    */
   ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria criteria);
@@ -205,7 +220,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @param criteria the criteria in searching of user groups.
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones
    * are found.
-   * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while getting the
+   * @throws AdminException if an error occurs while getting the
    * user groups.
    */
   ListSlice<Group> searchGroups(GroupsSearchCriteria criteria);

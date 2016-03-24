@@ -20,8 +20,8 @@
  */
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.util.StringUtil;

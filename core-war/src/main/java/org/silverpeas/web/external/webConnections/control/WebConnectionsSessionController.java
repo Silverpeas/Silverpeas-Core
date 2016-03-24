@@ -29,7 +29,7 @@ import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInter
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.util.StringUtil;
 
 import java.rmi.RemoteException;

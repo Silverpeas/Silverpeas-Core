@@ -24,7 +24,7 @@
 package org.silverpeas.core.accesscontrol;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.Alias;

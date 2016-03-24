@@ -26,7 +26,7 @@ package com.stratelia.webactiv.organization;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.core.admin.service.AdminException;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

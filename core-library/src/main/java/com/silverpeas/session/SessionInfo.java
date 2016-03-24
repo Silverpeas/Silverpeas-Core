@@ -20,7 +20,7 @@
  */
 package com.silverpeas.session;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.cache.service.SimpleCacheService;

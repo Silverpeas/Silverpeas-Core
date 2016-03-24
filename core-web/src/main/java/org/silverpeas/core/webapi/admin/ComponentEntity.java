@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**
  * The component instance light entity is a ComponentInstLight object that is exposed in the web as

@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class BrowseUserPanel extends BrowsePanelProvider {
   protected static final int FILTER_LASTNAME = 1;

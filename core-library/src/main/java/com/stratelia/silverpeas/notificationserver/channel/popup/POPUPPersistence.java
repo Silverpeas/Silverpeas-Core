@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;

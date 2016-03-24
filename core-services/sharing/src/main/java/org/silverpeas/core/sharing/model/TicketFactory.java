@@ -27,7 +27,7 @@ import org.silverpeas.core.accesscontrol.AccessControlContext;
 import org.silverpeas.core.accesscontrol.AccessControlOperation;
 import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.core.accesscontrol.AccessControllerProvider;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.accesscontrol.NodeAccessControl;

@@ -25,12 +25,6 @@
 package org.silverpeas.core.test;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.core.admin.component.model.PasteDetail;
-import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -42,13 +36,11 @@ import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.*;
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import org.silverpeas.EntityReference;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.JcrContext;
 import org.silverpeas.contribution.model.Contribution;
@@ -56,8 +48,33 @@ import org.silverpeas.contribution.model.ContributionContent;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.admin.StubbedAdministration;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.model.CompoSpace;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.RightRecover;
+import org.silverpeas.core.admin.space.SpaceAndChildren;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.space.model.SpaceTemplate;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.jcr.JcrRepositoryProvider;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.profile.UserReference;
@@ -65,9 +82,8 @@ import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.service.QuotaService;
-import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -465,7 +481,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           QuotaException.class, ProfileInst.class, SpaceAndChildren.class, SpaceProfileInst.class,
           Group.class, GroupProfileInst.class, AdminGroupInst.class, SearchCriteria.class,
           UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
-      addClasses(Recover.class, AdminException.class);
+      addClasses(RightRecover.class, AdminException.class);
       addPackages(true, "org.silverpeas.util.i18n");
       // Exclusions
       applyManually(war -> war.deleteClass("com.stratelia.webactiv.beans.admin.Admin"));
@@ -586,17 +602,20 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addAdministrationFeatures() {
     if (!contains(Administration.class)) {
       addClasses(Administration.class, ScheduledDBReset.class, PublicationTemplateException.class);
-      addClasses(Recover.class);
+      addClasses(RightRecover.class);
       addClasses(DriverSettings.class);
+      addClasses(ObjectType.class);
+      addClasses(PaginationPage.class);
       addPackages(true, "org.silverpeas.util.i18n");
       addPackages(true, "org.silverpeas.core.admin.component");
       addPackages(true, "org.silverpeas.core.admin.space");
+      addPackages(true, "org.silverpeas.core.admin.service");
+      addPackages(true, "org.silverpeas.core.admin.user");
+      addPackages(true, "org.silverpeas.core.admin.domain");
       addPackages(true, "com.silverpeas.domains");
       addPackages(true, "com.stratelia.silverpeas.domains.sqldriver");
-      addPackages(true, "com.stratelia.webactiv.beans.admin");
       addPackages(false, "org.silverpeas.notification");
       addPackages(true, "org.silverpeas.core.admin.component.notification");
-      addPackages(true, "org.silverpeas.core.admin.user");
       addPackages(true, "org.silverpeas.core.clipboard");
       addAsResource("xmlcomponents");
       addAsResource("org/silverpeas/admin");
@@ -624,14 +643,12 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addOrganisationFeatures() {
-    if (!contains(OrganizationController.class)) {
-      addClasses(OrganizationController.class, OrganizationControllerProvider.class);
-      addPackages(true, "com.stratelia.webactiv.organization");
-      addPackages(true, "com.stratelia.webactiv.persistence");
-      addClasses(Schema.class, SchemaPool.class);
-      // Centralized features
-      addAdministrationFeatures();
-    }
+    addClasses(OrganizationController.class, OrganizationControllerProvider.class);
+    addPackages(true, "com.stratelia.webactiv.organization");
+    addPackages(true, "com.stratelia.webactiv.persistence");
+    addClasses(Schema.class, SchemaPool.class);
+    // Centralized features
+    addAdministrationFeatures();
     return this;
   }
 

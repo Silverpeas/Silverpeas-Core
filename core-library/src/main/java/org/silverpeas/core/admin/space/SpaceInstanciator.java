@@ -30,8 +30,7 @@ import org.silverpeas.core.admin.space.model.SpaceComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponentParameter;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 

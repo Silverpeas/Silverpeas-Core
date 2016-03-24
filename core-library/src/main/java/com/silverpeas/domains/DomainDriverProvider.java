@@ -24,7 +24,7 @@
 
 package com.silverpeas.domains;
 
-import com.stratelia.webactiv.beans.admin.DomainDriver;
+import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.util.ServiceProvider;
 
 /**

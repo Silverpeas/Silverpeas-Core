@@ -24,7 +24,7 @@
 
 package org.silverpeas.util.csv;
 
-import com.stratelia.webactiv.beans.admin.DomainProperty;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;

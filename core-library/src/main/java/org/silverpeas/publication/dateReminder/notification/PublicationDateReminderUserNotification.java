@@ -33,7 +33,7 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
 import org.silverpeas.publication.dateReminder.PublicationNoteReference;

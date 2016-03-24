@@ -22,8 +22,8 @@ package org.silverpeas.core.webapi.pdc;
 
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.webactiv.beans.admin.ComponentSearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;

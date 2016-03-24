@@ -32,7 +32,7 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
+import org.silverpeas.core.admin.service.AdminController;
 
 public class ScheduledDBReset implements SchedulerEventListener {
 

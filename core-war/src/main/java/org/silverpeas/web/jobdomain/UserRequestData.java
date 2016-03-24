@@ -24,8 +24,8 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;

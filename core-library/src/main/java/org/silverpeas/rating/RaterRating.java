@@ -23,7 +23,7 @@
  */
 package org.silverpeas.rating;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * Represents the rating data associated to a rater.

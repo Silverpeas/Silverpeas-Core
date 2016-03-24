@@ -47,7 +47,7 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.accesscontrol.PublicationAccessControl;

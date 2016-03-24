@@ -21,9 +21,9 @@
 package com.stratelia.webactiv.node.control;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.control.dao.NodeI18NDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;

@@ -22,7 +22,7 @@
 package org.silverpeas.core.webapi.base;
 
 import com.silverpeas.session.SessionInfo;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ServiceProvider;
 

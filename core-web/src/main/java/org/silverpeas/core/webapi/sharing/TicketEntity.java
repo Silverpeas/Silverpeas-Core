@@ -38,7 +38,7 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.TicketFactory;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.DateUtil;
 
 public class TicketEntity implements WebEntity {

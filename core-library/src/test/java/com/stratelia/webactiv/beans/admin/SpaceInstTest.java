@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.junit.Test;
+import org.silverpeas.core.admin.space.SpaceInst;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;

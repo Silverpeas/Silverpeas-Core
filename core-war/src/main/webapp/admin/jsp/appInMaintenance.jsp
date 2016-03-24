@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%
 String userId = m_MainSessionCtrl.getUserId();
 

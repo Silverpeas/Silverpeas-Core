@@ -28,8 +28,8 @@ import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.model.Quota;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * @author Yohann Chastagnier

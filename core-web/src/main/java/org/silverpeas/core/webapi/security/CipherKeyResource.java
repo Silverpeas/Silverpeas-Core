@@ -4,7 +4,7 @@ import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Administration;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.crypto.CryptoException;

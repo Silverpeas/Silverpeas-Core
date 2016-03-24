@@ -24,7 +24,7 @@
 package com.sun.portal.portletcontainer.driver.admin;
 
 import org.silverpeas.web.portlets.portal.DesktopMessages;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;

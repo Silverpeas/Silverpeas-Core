@@ -31,8 +31,8 @@
       response.setHeader("Pragma", "no-cache"); //HTTP 1.0
       response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
 <%@ page import="org.silverpeas.util.Pair" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>

@@ -26,7 +26,7 @@ package org.silverpeas.authentication.verifier;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.termsOfService.constant.TermsOfServiceAcceptanceFrequency;
 

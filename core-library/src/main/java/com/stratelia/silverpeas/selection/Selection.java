@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.selection;
 
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.Pair;

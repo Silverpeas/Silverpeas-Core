@@ -27,8 +27,8 @@ package org.silverpeas.core.importexport.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.util.ServiceProvider;
 
 /**

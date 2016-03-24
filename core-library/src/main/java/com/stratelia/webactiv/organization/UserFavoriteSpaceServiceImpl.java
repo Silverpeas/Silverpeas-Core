@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;

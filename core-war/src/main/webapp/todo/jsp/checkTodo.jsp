@@ -32,9 +32,9 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.calendar.model.Attendee"%>
 <%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
 <%@ page import="org.silverpeas.web.todo.control.ToDoSessionController"%>

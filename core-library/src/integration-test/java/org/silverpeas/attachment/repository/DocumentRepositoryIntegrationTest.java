@@ -23,7 +23,7 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;

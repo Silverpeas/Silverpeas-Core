@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

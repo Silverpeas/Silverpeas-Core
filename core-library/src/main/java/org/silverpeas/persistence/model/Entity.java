@@ -23,9 +23,8 @@
  */
 package org.silverpeas.persistence.model;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**

@@ -22,7 +22,7 @@ package org.silverpeas.core.web.attachment.tag;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.LocalizationBundle;
@@ -37,7 +37,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.util.StringUtil.newline;
 

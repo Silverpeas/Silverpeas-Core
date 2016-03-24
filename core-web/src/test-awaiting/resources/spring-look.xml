@@ -39,7 +39,7 @@
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"
-        class="com.stratelia.webactiv.beans.admin.DefaultOrganizationController"
+        class="org.silverpeas.core.admin.service.DefaultOrganizationController"
         factory-bean="organizationControllerProvider"
         factory-method="getOrganisationController" />
 

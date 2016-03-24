@@ -24,8 +24,8 @@
 package org.silverpeas.core.admin.space.quota.process.check.exception;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.quota.model.Quota;
 
 import static org.silverpeas.util.StringUtil.isDefined;

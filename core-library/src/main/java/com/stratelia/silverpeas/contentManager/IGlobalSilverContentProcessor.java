@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public interface IGlobalSilverContentProcessor {
 

@@ -34,8 +34,8 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />

@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.DomainProperty;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;

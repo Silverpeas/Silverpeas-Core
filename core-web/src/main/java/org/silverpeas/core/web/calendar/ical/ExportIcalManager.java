@@ -30,7 +30,7 @@ import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.Category;

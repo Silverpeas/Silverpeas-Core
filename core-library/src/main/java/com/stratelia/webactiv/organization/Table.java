@@ -25,7 +25,7 @@ package com.stratelia.webactiv.organization;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
-import com.stratelia.webactiv.beans.admin.SynchroReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.Schema;
 import org.silverpeas.util.exception.SilverpeasException;

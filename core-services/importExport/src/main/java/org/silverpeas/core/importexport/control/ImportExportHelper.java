@@ -24,8 +24,8 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;

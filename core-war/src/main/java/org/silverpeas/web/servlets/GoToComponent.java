@@ -25,7 +25,7 @@
 package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.servlet.http.HttpServletRequest;

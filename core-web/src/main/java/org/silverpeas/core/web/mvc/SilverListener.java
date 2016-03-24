@@ -30,7 +30,7 @@ import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.InMemoryCacheService;
 

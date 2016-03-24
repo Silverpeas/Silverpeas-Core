@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.index.components;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 
 /**
  * Indexation of the data managed by a given component instance. Each Application in Silverpeas

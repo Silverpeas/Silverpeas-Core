@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.space.quota.process.check;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 

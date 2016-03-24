@@ -24,9 +24,9 @@
 package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.ws.rs.core.UriInfo;

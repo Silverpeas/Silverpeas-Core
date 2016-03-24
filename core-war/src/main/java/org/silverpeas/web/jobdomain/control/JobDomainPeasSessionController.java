@@ -20,6 +20,17 @@
  */
 package org.silverpeas.web.jobdomain.control;
 
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.web.jobdomain.DomainNavigationStock;
 import org.silverpeas.web.jobdomain.GroupNavigationStock;
 import org.silverpeas.web.jobdomain.JobDomainPeasDAO;
@@ -43,7 +54,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.*;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.DomainType;

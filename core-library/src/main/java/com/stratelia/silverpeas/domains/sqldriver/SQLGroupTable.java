@@ -32,9 +32,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

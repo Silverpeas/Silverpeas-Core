@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.accesscontrol;
 
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 

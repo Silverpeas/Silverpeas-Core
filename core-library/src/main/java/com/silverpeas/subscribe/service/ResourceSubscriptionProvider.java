@@ -27,7 +27,7 @@ import com.silverpeas.subscribe.ResourceSubscriptionService;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import java.util.HashMap;

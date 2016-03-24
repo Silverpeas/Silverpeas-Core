@@ -20,11 +20,11 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 
 import java.util.HashMap;
 import java.util.Map;

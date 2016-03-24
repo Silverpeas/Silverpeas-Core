@@ -389,11 +389,11 @@
   </castor:class>
   <castor:class name="org.silverpeas.core.importexport.admin.ComponentsType">
     <castor:map-to xml="components" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listComponentInst" type="com.stratelia.webactiv.beans.admin.ComponentInst" collection="arraylist">
+    <castor:field name="listComponentInst" type="org.silverpeas.core.admin.component.model.ComponentInst" collection="arraylist">
       <castor:bind-xml name="sp:component" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.stratelia.webactiv.beans.admin.ComponentInst">
+  <castor:class name="org.silverpeas.core.admin.component.model.ComponentInst">
     <castor:map-to xml="component" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="id" type="string">
       <castor:bind-xml name="id" node="attribute"/>

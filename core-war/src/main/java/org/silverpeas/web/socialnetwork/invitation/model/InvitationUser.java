@@ -25,7 +25,7 @@
 package org.silverpeas.web.socialnetwork.invitation.model;
 
 import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * @author Bensalem Nabil

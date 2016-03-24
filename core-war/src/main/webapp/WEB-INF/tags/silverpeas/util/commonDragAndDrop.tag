@@ -53,7 +53,7 @@
               description="Indicates if folders will be ignored (after upload)" %>
 
 <%@ attribute name="greatestUserRole" required="false"
-              type="com.stratelia.webactiv.SilverpeasRole"
+              type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The greatest role the user has" %>
 <c:if test="${empty greatestUserRole}">
   <c:set var="greatestUserRole" value="${silfn:getGreatestRoleOfCurrentUserOn(componentInstanceId)}"/>
@@ -70,8 +70,8 @@
               type="java.lang.String"
               description="Specify a class to change display of help access icon" %>
 
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <view:includePlugin name="dragAndDropUpload"/>

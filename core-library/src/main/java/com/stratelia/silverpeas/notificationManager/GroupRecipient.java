@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.user.model.Group;
 
 /**
  * Copyright (C) 2000 - 2013 Silverpeas This program is free software: you can redistribute it

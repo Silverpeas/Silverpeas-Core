@@ -24,7 +24,7 @@
 package org.silverpeas.upload;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

@@ -25,7 +25,7 @@
 package org.silverpeas.core.webapi.base.aspect;
 
 import org.silverpeas.core.webapi.base.WebResource;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;

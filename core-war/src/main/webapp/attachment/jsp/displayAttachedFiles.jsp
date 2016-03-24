@@ -40,7 +40,7 @@
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
-<%@ page import="com.stratelia.webactiv.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 
 <%@ include file="checkAttachment.jsp"%>
 

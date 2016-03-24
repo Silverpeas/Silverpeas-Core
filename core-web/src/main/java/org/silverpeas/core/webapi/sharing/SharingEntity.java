@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class SharingEntity implements WebEntity {
 

@@ -28,7 +28,7 @@ import org.silverpeas.core.web.directory.model.Member;
 import org.silverpeas.core.web.portlets.FormNames;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;

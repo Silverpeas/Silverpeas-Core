@@ -24,7 +24,7 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.stratelia.silverpeas.domains.DriverSettings;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.LdapConfiguration;

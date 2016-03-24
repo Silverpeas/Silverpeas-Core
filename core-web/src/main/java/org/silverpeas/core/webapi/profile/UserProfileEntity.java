@@ -27,7 +27,7 @@ import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ServiceProvider;

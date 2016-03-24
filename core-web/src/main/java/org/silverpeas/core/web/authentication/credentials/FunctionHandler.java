@@ -21,10 +21,10 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Administration;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;

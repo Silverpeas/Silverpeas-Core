@@ -22,7 +22,7 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;

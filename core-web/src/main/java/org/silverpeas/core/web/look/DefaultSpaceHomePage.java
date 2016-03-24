@@ -20,9 +20,9 @@
  */
 package org.silverpeas.core.web.look;
 
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import java.util.Collections;

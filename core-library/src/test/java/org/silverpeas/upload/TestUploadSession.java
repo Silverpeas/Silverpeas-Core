@@ -25,7 +25,7 @@ package org.silverpeas.upload;
 
 import org.silverpeas.core.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;

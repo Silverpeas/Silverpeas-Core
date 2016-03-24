@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight" %>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

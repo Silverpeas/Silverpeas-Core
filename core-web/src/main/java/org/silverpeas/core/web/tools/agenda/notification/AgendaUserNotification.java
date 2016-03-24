@@ -28,7 +28,7 @@ import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.JournalHeader;

@@ -32,7 +32,7 @@
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
 <%@ include file="headLog.jsp" %>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.components.kmelia.KmeliaSecurity" %>
 <%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>

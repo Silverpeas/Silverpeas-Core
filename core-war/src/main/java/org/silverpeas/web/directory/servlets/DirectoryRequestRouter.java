@@ -30,10 +30,10 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

@@ -31,7 +31,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;

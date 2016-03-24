@@ -25,8 +25,8 @@ package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * Utility class shared by other classes of the same package.

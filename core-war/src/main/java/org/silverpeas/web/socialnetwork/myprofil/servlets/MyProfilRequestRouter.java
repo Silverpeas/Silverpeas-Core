@@ -31,7 +31,7 @@ import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.servlet.FileUploadUtil;

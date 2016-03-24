@@ -28,7 +28,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

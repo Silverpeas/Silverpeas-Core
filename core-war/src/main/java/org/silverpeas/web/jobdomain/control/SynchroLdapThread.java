@@ -27,7 +27,7 @@
 
 package org.silverpeas.web.jobdomain.control;
 
-import com.stratelia.webactiv.beans.admin.AdminController;
+import org.silverpeas.core.admin.service.AdminController;
 
 public class SynchroLdapThread extends SynchroThread {
   protected AdminController m_AdminCtrl = null;

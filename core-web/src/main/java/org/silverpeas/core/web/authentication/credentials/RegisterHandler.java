@@ -22,7 +22,7 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.user.UserService;
 import org.silverpeas.core.admin.user.UserServiceProvider;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;

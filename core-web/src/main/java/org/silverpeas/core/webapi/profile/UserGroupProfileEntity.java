@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.profile;
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
 import static org.silverpeas.util.StringUtil.isDefined;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.user.model.Group;
 import java.net.URI;
 import java.util.List;
 import javax.validation.constraints.NotNull;

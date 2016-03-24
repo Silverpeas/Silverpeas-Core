@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.security;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

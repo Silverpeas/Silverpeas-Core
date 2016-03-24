@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.admin.component.notification;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.notification.ResourceEvent;
 

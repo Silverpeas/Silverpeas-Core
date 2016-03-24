@@ -25,7 +25,7 @@
 package org.silverpeas.core.comment.service.notification;
 
 import com.silverpeas.SilverpeasContent;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.ArrayList;
 import java.util.Date;

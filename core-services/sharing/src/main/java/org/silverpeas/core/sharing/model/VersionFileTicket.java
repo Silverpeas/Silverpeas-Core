@@ -24,7 +24,7 @@ import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.sharing.security.ShareableVersionDocument;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;

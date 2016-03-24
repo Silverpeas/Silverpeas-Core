@@ -24,8 +24,8 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.logging.SilverLogger;
 
 /**

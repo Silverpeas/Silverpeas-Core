@@ -25,8 +25,8 @@ package org.silverpeas.core.webapi.admin;
 
 import javax.inject.Inject;
 
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 /**

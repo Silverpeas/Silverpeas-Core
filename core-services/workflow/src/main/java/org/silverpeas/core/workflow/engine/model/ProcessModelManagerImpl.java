@@ -34,7 +34,7 @@ import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Forms;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;

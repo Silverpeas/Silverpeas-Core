@@ -24,7 +24,7 @@ import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 

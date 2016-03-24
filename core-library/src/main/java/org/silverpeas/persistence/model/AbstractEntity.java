@@ -25,7 +25,7 @@ package org.silverpeas.persistence.model;
 
 import org.silverpeas.util.AssertArgument;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.persistence.repository.OperationContext;

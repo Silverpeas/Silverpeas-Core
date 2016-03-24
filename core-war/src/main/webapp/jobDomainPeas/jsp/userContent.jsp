@@ -42,7 +42,7 @@
 <fmt:message key="JDP.userManualNotifReceiverLimitValue" var="userManualNotifReceiverLimitValueLabel"><fmt:param value="${USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE}"/></fmt:message>
 
 <c:set var="userInfos" value="${requestScope.userObject}" />
-<jsp:useBean id="userInfos" type="com.stratelia.webactiv.beans.admin.UserFull"/>
+<jsp:useBean id="userInfos" type="org.silverpeas.core.admin.user.model.UserFull"/>
 
 <c:set var="lastName" value="${userInfos.lastName}" />
 <c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>

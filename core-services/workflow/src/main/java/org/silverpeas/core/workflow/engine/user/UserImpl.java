@@ -25,10 +25,10 @@
 package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.workflow.api.user.User;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 
 import java.util.List;
 

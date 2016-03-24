@@ -53,7 +53,7 @@
               description="Indicates the type of attachment (attachment, wysiwyg, image, ...)" %>
 
 <%@ attribute name="greatestUserRole" required="false"
-              type="com.stratelia.webactiv.SilverpeasRole"
+              type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The greatest role the user has" %>
 <c:if test="${empty greatestUserRole}">
   <c:set var="greatestUserRole" value="${silfn:getGreatestRoleOfCurrentUserOn(componentInstanceId)}"/>
@@ -73,8 +73,8 @@
 <c:set var="isHandledSubscriptionConfirmation"
        value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <c:set var="domIdSuffix" value="${fn:replace(resourceId, '-', '_')}"/>

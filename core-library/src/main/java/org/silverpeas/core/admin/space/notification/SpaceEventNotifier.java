@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.admin.space.notification;
 
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 

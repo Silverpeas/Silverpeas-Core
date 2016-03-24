@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.look;
 
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;

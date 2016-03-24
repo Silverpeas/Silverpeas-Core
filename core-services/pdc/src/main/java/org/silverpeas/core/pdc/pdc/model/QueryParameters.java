@@ -21,7 +21,7 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.core.index.search.model.QueryDescription;
 

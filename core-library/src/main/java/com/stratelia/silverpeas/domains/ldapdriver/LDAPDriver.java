@@ -29,12 +29,12 @@ import org.silverpeas.authentication.exception.AuthenticationBadCredentialExcept
 
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.DomainProperty;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.domain.AbstractDomainDriver;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import com.novell.ldap.LDAPAttribute;
@@ -377,7 +377,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve user information from database
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
-   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   * @throws AdminException
    */
   @Override
   public UserFull getUserFull(String userId) throws AdminException {
@@ -393,7 +393,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve user information from database
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
-   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   * @throws AdminException
    */
   @Override
   public UserDetail getUser(String userId) throws AdminException {
@@ -409,7 +409,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Retrieve all users from the database
    * @return User[] An array of User Objects that contain users information
-   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   * @throws AdminException
    */
   @Override
   public UserDetail[] getAllUsers() throws AdminException {

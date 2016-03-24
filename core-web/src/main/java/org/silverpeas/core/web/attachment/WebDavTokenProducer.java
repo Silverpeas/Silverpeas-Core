@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.attachment;
 
 import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.cache.service.CacheService;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;

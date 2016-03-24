@@ -27,8 +27,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkPdc.jsp" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

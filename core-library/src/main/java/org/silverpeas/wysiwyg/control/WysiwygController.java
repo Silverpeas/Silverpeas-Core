@@ -20,7 +20,7 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;

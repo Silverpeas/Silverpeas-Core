@@ -1,4 +1,4 @@
-<%@ tag import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -44,7 +44,7 @@
 <%-- Creator --%>
 <%@ attribute name="createDate" required="false" type="java.util.Date"
               description="The date of create" %>
-<%@ attribute name="createdBy" required="false" type="com.stratelia.webactiv.beans.admin.UserDetail"
+<%@ attribute name="createdBy" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
               description="The user responsible of the create" %>
 <%@ attribute name="createdById" required="false" type="java.lang.String"
               description="The user id responsible of the create" %>
@@ -55,7 +55,7 @@
 <%-- Updater --%>
 <%@ attribute name="updateDate" required="false" type="java.util.Date"
               description="The date of update" %>
-<%@ attribute name="updatedBy" required="false" type="com.stratelia.webactiv.beans.admin.UserDetail"
+<%@ attribute name="updatedBy" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
               description="The user responsible of the update" %>
 <%@ attribute name="updatedById" required="false" type="java.lang.String"
               description="The user id responsible of the update" %>
@@ -66,7 +66,7 @@
 <%-- Publisher --%>
 <%@ attribute name="publishDate" required="false" type="java.util.Date"
               description="The date of publishing" %>
-<%@ attribute name="publishedBy" required="false" type="com.stratelia.webactiv.beans.admin.UserDetail"
+<%@ attribute name="publishedBy" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
               description="The user who have published " %>
 <%@ attribute name="publishedById" required="false" type="java.lang.String"
               description="The user id who have published" %>

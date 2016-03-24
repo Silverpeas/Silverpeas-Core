@@ -23,8 +23,8 @@
  */
 package org.silverpeas.attachment.model;
 
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Rule;
 import org.junit.Test;

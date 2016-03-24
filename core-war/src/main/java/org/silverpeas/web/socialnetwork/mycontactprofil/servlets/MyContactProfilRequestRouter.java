@@ -29,7 +29,7 @@ import org.silverpeas.web.socialnetwork.mycontactprofil.control.MyContactProfilS
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.ArrayList;

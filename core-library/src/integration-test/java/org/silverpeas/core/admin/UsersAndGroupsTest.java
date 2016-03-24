@@ -20,11 +20,11 @@
  */
 package org.silverpeas.core.admin;
 
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Administration;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

@@ -37,7 +37,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;

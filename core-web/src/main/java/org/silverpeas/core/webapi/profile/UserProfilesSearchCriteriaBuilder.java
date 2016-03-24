@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 

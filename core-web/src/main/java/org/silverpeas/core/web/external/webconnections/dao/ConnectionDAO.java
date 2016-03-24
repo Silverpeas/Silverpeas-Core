@@ -26,7 +26,7 @@ package org.silverpeas.core.web.external.webconnections.dao;
 
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;

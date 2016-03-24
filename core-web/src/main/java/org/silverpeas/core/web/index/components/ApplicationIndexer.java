@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.index.components;
 
 import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.index.AbstractIndexer;
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;

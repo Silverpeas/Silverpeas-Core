@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkSilverStatistics.jsp" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%
     String action = (String)request.getAttribute("action");

@@ -21,7 +21,19 @@
 package org.silverpeas.web.jobstartpage.control;
 
 import org.silverpeas.core.admin.component.model.*;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.RightRecover;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.space.SpaceSelection;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.web.jobstartpage.AllComponentParameters;
 import org.silverpeas.web.jobstartpage.DisplaySorted;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasException;
@@ -39,7 +51,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
@@ -724,11 +735,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void recoverSpaceRights(String spaceId) throws AdminException {
-    Recover recover = AdministrationServiceProvider.getRightRecoveringService();
+    RightRecover rightRecover = AdministrationServiceProvider.getRightRecoveringService();
     if (spaceId == null) {
-      recover.recoverRights();
+      rightRecover.recoverRights();
     } else if (StringUtil.isDefined(spaceId)) {
-      recover.recoverSpaceRights(spaceId);
+      rightRecover.recoverSpaceRights(spaceId);
     }
   }
 

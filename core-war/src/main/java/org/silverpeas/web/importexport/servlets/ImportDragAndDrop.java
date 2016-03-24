@@ -35,7 +35,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.UploadSession;

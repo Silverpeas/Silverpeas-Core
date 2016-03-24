@@ -22,7 +22,7 @@ package org.silverpeas.web.attachment;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;

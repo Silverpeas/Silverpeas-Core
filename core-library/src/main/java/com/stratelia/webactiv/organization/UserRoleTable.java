@@ -26,7 +26,7 @@ package com.stratelia.webactiv.organization;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;

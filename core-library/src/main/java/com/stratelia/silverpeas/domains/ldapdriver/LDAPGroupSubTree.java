@@ -29,7 +29,7 @@ import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.TreeMap;

@@ -1,4 +1,4 @@
-<%@ tag import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -43,7 +43,7 @@
 <fmt:message key="GML.eMail" bundle="${generalBundle}" var="labelEmail"/>
 
 <%-- Creator --%>
-<%@ attribute name="user" required="true" type="com.stratelia.webactiv.beans.admin.UserFull"
+<%@ attribute name="user" required="true" type="org.silverpeas.core.admin.user.model.UserFull"
               description="The user to display" %>
 
 <%@ attribute name="allFieldsUpdatable" required="false" type="java.lang.Boolean"
@@ -60,9 +60,9 @@
 
 <c:set var="isCurrentUserAdmin" value="<%=UserDetail.getCurrentRequester().isAccessAdmin() %>"/>
 
-<view:setConstant var="propertyTypeUser" constant="com.stratelia.webactiv.beans.admin.DomainProperty.PROPERTY_TYPE_USERID"/>
-<view:setConstant var="propertyTypeString" constant="com.stratelia.webactiv.beans.admin.DomainProperty.PROPERTY_TYPE_STRING"/>
-<view:setConstant var="propertyTypeBoolean" constant="com.stratelia.webactiv.beans.admin.DomainProperty.PROPERTY_TYPE_BOOLEAN"/>
+<view:setConstant var="propertyTypeUser" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_USERID"/>
+<view:setConstant var="propertyTypeString" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_STRING"/>
+<view:setConstant var="propertyTypeBoolean" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_BOOLEAN"/>
 
 <c:set var="passwordPrefix" value="password"/>
 

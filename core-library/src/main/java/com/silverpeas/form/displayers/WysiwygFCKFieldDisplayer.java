@@ -35,7 +35,7 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;

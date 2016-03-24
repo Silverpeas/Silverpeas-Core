@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.validation;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;

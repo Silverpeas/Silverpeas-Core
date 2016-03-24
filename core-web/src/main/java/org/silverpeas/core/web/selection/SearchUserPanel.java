@@ -28,7 +28,7 @@ import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.LocalizationBundle;
 
 public class SearchUserPanel extends BrowsePanelProvider {

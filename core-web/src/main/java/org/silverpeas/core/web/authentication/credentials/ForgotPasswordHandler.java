@@ -30,8 +30,8 @@ import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.domain.model.Domain;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;

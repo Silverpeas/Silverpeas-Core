@@ -24,7 +24,7 @@
 package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.Subscription;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.ArrayList;
 import java.util.Iterator;

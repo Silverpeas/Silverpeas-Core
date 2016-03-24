@@ -26,9 +26,9 @@ package org.silverpeas.web.agenda.servlets;
 
 import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.apache.commons.io.IOUtils;
 
 import javax.inject.Inject;

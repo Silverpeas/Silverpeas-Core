@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.beans.admin.ComponentI18N;
+import org.silverpeas.core.admin.component.model.ComponentI18N;
 
 public class ComponentInstanceI18NRow {
   public int id = -1;

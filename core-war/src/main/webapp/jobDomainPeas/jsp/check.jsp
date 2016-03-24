@@ -34,12 +34,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="org.silverpeas.web.jobdomain.JobDomainSettings"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.DomainProperty"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SynchroReport"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
+<%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
+<%@ page import="org.silverpeas.core.admin.domain.model.DomainProperty"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
+<%@ page import="org.silverpeas.core.admin.domain.synchro.SynchroReport"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>

@@ -45,15 +45,15 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.web.jobstartpage.SpaceLookHelper"%>
 <%@ page import="org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceProfileInst"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInst"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
+<%@ page import="org.silverpeas.core.admin.user.model.ProfileInst"%>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInst"%>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
+<%@ page import="org.silverpeas.core.admin.space.SpaceProfileInst"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

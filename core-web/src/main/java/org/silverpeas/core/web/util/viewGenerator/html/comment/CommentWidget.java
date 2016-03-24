@@ -23,8 +23,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.comment;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;

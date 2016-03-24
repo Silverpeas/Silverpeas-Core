@@ -22,7 +22,7 @@
 package com.silverpeas.personalization.notification;
 
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.notification.SpaceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
 

@@ -24,12 +24,12 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.DomainProperty;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.domain.AbstractDomainDriver;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.util.DBUtil;

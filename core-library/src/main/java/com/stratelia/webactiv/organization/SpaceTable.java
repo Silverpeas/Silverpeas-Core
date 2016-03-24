@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 

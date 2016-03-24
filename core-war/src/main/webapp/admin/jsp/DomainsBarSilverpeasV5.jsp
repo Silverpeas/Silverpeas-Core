@@ -28,7 +28,7 @@
 
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
+<%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>

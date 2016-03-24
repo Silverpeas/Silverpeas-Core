@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.comment;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;

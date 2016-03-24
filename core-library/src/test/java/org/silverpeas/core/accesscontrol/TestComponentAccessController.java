@@ -25,9 +25,9 @@
 package org.silverpeas.core.accesscontrol;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -27,7 +27,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
@@ -37,7 +37,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.DateUtil;
 
 

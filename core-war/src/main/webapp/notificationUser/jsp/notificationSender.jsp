@@ -38,8 +38,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>

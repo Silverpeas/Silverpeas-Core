@@ -26,7 +26,7 @@ package org.silverpeas.core.web.authentication.credentials;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.core.admin.service.AdminException;
 import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;

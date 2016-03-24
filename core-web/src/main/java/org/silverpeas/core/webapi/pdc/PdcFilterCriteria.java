@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

@@ -30,7 +30,7 @@ import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;

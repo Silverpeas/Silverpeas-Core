@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;

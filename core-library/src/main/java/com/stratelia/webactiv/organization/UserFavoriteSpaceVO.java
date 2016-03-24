@@ -26,8 +26,8 @@ package com.stratelia.webactiv.organization;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class UserFavoriteSpaceVO implements Serializable {
 

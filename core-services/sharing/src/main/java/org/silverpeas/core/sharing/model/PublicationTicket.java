@@ -26,7 +26,7 @@ package org.silverpeas.core.sharing.model;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareablePublication;
 import org.silverpeas.core.sharing.security.ShareableResource;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;

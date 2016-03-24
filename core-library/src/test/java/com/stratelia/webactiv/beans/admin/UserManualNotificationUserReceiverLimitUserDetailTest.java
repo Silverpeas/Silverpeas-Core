@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;

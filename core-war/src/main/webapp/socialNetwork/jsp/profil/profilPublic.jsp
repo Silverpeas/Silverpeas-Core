@@ -31,7 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.core.web.directory.model.Member"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>

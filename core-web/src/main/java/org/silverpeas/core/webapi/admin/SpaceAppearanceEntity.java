@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 
 /**
  * The space instance light entity is a SpaceInstLight object that is exposed in the web as

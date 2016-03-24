@@ -24,7 +24,7 @@
 
 package org.silverpeas.authentication;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * This bean is used by the mechanism in charge of user session management.

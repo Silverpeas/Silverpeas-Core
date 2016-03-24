@@ -28,7 +28,7 @@ import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
 import org.silverpeas.cache.service.CacheServiceProvider;

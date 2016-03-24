@@ -31,7 +31,7 @@ import org.silverpeas.web.pdc.control.Keys;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.logging.SilverLogger;

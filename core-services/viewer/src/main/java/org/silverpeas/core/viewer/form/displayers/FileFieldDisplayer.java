@@ -33,7 +33,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.displayers.AbstractFileFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;

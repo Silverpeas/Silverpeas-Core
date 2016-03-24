@@ -26,7 +26,7 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.web.todo.control.ToDoAccess;
 import org.silverpeas.web.todo.control.TodoException;
 import org.silverpeas.util.StringUtil;

@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.authentication;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

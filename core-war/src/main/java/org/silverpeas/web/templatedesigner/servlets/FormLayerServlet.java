@@ -3,7 +3,7 @@ package org.silverpeas.web.templatedesigner.servlets;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ResourceLocator;

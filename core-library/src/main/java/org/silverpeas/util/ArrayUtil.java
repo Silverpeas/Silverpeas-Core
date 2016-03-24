@@ -26,9 +26,9 @@ package org.silverpeas.util;
 
 import com.novell.ldap.LDAPEntry;
 import com.silverpeas.form.FieldTemplate;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class ArrayUtil extends ArrayUtils {

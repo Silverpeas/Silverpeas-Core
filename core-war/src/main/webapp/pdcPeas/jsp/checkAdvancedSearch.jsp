@@ -44,9 +44,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Value"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.GlobalSilverResult"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.QueryParameters"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <!-- import PDC -->
 <%@ page import="org.silverpeas.util.DateUtil"%>

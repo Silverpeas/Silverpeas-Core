@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.admin.domain;
 
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.exception.DomainCreationException;
 import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 import org.silverpeas.util.StringUtil;
 
-import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
 public abstract class AbstractDomainService implements DomainService {
 

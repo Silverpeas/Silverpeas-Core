@@ -24,10 +24,23 @@
 package com.silverpeas.social.mock;
 
 
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.component.model.CompoSpace;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.stratelia.webactiv.beans.admin.*;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Named;

@@ -51,7 +51,7 @@
 <%@page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.SettingBundle" %>

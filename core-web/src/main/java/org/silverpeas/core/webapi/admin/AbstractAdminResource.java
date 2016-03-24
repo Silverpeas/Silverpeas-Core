@@ -25,9 +25,9 @@ package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.accesscontrol.SpaceAccessControl;
 import org.silverpeas.core.webapi.admin.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;

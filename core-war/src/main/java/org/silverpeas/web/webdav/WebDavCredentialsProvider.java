@@ -21,7 +21,7 @@
 
 package org.silverpeas.web.webdav;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.silverpeas.cache.service.CacheServiceProvider;

@@ -23,7 +23,7 @@ package org.silverpeas.core.web.mvc.controller;
 import com.silverpeas.SilverpeasServiceProvider;
 import org.silverpeas.core.admin.component.model.Parameter;
 import com.silverpeas.personalization.UserPreferences;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.clipboard.service.MainClipboard;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.ServiceProvider;
@@ -40,9 +40,9 @@ import org.silverpeas.core.pdc.pdc.service.PdcSettings;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.service.Clipboard;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import javax.enterprise.util.AnnotationLiteral;
 
-import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
 /*
  This object is used by all the components jsp that have access to the session.

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin;
 
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;

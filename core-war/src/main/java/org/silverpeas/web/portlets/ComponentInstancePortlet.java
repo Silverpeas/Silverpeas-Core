@@ -22,7 +22,7 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 

@@ -30,7 +30,7 @@ package org.silverpeas.core.silverstatistics.access.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * Class declaration

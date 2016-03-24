@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent.annotation;
 
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.authentication;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.EntityReference;
 
 /**

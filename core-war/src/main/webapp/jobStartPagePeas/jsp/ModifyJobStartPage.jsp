@@ -1,4 +1,5 @@
-<%@ page import="org.silverpeas.web.jobstartpage.DisplaySorted" %><%--
+<%@ page import="org.silverpeas.web.jobstartpage.DisplaySorted" %>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInst" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

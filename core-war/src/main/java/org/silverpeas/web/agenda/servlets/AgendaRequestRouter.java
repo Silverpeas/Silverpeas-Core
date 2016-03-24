@@ -29,7 +29,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.Category;
 import org.apache.commons.fileupload.FileItem;

@@ -35,8 +35,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.genericPanel.PanelLine"%>
 <%@ page import="com.stratelia.silverpeas.genericPanel.PanelOperation"%>
 <%@ page import="org.silverpeas.core.web.selection.SelectionPeasSettings"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 <%// En fonction de ce dont vous avez besoin %>

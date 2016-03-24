@@ -25,11 +25,11 @@ package org.silverpeas.web.jobstartpage;
 
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;

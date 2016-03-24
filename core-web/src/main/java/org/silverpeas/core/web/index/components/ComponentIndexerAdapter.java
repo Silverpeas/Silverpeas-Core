@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.index.components;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;

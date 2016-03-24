@@ -25,7 +25,7 @@ package org.silverpeas.process.management;
 
 import org.silverpeas.process.io.file.FileHandler;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * This is an Silverpeas process execution context container.

@@ -26,7 +26,7 @@ package org.silverpeas.core.importexport.admin;
 
 import java.util.List;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 
 /**
  * Classe utilisee pour le (un)marshalling Castor

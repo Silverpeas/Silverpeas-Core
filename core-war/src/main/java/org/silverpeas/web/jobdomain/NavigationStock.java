@@ -31,9 +31,9 @@
 
 package org.silverpeas.web.jobdomain;
 
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the

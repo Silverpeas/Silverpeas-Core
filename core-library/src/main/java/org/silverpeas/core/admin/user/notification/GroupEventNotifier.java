@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.admin.user.notification;
 
-import com.stratelia.webactiv.beans.admin.Group;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 

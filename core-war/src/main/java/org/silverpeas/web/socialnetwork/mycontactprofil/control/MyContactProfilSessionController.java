@@ -27,7 +27,7 @@ package org.silverpeas.web.socialnetwork.mycontactprofil.control;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.user.model.UserFull;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -33,8 +33,8 @@ import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardSelection;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.service.OrganizationController;
 

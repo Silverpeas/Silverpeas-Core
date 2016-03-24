@@ -21,7 +21,7 @@
 package org.silverpeas.core.webapi.node;
 
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.DateUtil;

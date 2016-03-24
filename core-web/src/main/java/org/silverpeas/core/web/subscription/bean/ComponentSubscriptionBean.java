@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.subscription.bean;
 
 import com.silverpeas.subscribe.Subscription;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**
  * User: Yohann Chastagnier

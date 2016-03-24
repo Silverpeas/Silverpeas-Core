@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.user.model.UserFull;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;

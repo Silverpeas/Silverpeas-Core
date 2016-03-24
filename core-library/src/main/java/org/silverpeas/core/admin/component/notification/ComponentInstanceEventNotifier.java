@@ -22,7 +22,7 @@
 package org.silverpeas.core.admin.component.notification;
 
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ServiceProvider;

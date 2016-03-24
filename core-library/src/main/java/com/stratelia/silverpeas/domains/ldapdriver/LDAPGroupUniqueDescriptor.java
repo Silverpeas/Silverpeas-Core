@@ -26,8 +26,8 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.Vector;

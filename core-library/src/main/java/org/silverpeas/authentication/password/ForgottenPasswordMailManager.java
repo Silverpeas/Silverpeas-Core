@@ -24,7 +24,7 @@
 
 package org.silverpeas.authentication.password;
 
-import com.stratelia.webactiv.beans.admin.Administration;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;

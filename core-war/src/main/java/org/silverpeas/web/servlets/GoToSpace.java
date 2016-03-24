@@ -26,7 +26,7 @@ package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 

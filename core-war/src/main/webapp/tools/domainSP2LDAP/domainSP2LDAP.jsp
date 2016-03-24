@@ -31,8 +31,8 @@
 %>
 
 <%@page import="org.silverpeas.core.web.admin.migration.DomainSP2LDAPBatch"%>
-<%@page import="com.stratelia.webactiv.beans.admin.Domain"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="org.silverpeas.core.admin.domain.model.Domain"%>
+<%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Iterator"%>

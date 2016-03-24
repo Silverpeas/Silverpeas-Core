@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.webactiv.beans.admin.SpaceI18N;
+import org.silverpeas.core.admin.space.SpaceI18N;
 
 public class SpaceI18NRow {
   public int id = -1;

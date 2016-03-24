@@ -22,7 +22,7 @@ package org.silverpeas.core.admin.domain.repository;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

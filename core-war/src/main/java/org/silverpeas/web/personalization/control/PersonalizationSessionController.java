@@ -39,7 +39,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.web.personalization.bean.DelayedNotificationBean;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**

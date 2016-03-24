@@ -47,7 +47,7 @@ public class DefaultProcessManagement implements ProcessManagement {
   /*
    * (non-Javadoc)
    * @see
-   * org.silverpeas.io.ProcessManagement#execute(com.stratelia.webactiv.beans.admin.UserDetail,
+   * org.silverpeas.io.ProcessManagement#execute(org.silverpeas.core.admin.user.model.UserDetail,
    * java.lang.String, org.silverpeas.io.process.SilverpeasProcess)
    */
   @SuppressWarnings("unchecked")

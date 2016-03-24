@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.Domain" %>
+<%@ page import="org.silverpeas.core.admin.domain.model.Domain" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.List" %>

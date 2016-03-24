@@ -349,7 +349,7 @@
   <function>
     <description>Gets the greatest role on the component represented by the given identifier the current user has.</description>
     <name>getGreatestRoleOfCurrentUserOn</name>
-    <function-class>com.stratelia.webactiv.SilverpeasRole</function-class>
+    <function-class>org.silverpeas.core.admin.user.model.SilverpeasRole</function-class>
     <function-signature>
       com.stratelia.webactiv.SilverpeasRole getGreatestOfCurrentUserOn(java.lang.String)
     </function-signature>

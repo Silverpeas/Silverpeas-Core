@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.quota.constant.QuotaType;
 
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInst;
 
 /**
  * @author Yohann Chastagnier

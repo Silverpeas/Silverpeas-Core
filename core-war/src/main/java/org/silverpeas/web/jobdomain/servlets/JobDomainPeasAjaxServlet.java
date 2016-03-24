@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class JobDomainPeasAjaxServlet extends HttpServlet {
 

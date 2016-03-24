@@ -23,9 +23,9 @@
  */
 package com.silverpeas.subscribe.stub;
 
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;

@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;

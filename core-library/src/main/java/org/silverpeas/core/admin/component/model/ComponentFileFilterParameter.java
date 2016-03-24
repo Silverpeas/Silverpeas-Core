@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.attachment.model.DocumentType;

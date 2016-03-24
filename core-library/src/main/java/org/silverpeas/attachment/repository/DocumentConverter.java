@@ -26,7 +26,7 @@ package org.silverpeas.attachment.repository;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;

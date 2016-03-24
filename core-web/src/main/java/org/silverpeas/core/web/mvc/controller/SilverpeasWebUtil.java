@@ -34,7 +34,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import org.silverpeas.util.ArrayUtil;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**
  * @author ehugonnet

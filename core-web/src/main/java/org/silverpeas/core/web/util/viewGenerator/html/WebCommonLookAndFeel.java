@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;

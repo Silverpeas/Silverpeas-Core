@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.constant.UserState;
 
 import static org.silverpeas.util.StringUtil.isDefined;

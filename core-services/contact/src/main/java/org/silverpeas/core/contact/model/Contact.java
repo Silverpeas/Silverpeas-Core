@@ -2,8 +2,7 @@ package org.silverpeas.core.contact.model;
 
 import java.util.Date;
 
-import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.core.contact.model.ContactPK;
+import org.silverpeas.core.admin.user.model.UserFull;
 
 public interface Contact {
 

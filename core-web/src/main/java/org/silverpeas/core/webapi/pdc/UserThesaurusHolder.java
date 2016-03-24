@@ -27,7 +27,7 @@ package org.silverpeas.core.webapi.pdc;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.ArrayList;
 import java.util.Collection;

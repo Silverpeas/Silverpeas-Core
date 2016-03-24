@@ -23,8 +23,8 @@
  */
 package com.silverpeas.subscribe.util;
 
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Test;
 
 import static com.silverpeas.subscribe.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;

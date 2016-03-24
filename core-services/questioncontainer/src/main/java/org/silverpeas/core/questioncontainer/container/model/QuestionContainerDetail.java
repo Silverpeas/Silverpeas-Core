@@ -28,7 +28,7 @@ import com.silverpeas.SilverpeasContent;
 import org.silverpeas.core.accesscontrol.AccessController;
 import org.silverpeas.core.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerContentManager;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;

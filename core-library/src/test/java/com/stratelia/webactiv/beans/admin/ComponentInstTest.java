@@ -25,6 +25,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import static org.hamcrest.Matchers.is;
 

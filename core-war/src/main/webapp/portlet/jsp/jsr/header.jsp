@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
+<%@ page import="org.silverpeas.core.admin.space.SpaceInst"%>
 <%@ page import="org.silverpeas.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>

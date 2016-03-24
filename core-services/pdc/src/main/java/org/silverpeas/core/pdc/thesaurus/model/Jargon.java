@@ -25,8 +25,8 @@
 package org.silverpeas.core.pdc.thesaurus.model;
 
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;

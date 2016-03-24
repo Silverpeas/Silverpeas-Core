@@ -3,7 +3,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.apache.ecs.xhtml.span;
 
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class UserNameGenerator {
 

@@ -30,8 +30,8 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import com.novell.ldap.LDAPAttribute;

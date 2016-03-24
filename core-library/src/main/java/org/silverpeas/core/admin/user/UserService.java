@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.user;
 
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 public interface UserService {

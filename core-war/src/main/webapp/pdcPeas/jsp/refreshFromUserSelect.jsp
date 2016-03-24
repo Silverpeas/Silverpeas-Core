@@ -28,7 +28,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%
 UserDetail user = (UserDetail) request.getAttribute("UserDetail");

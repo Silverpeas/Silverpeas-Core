@@ -23,8 +23,8 @@
  */
 package com.silverpeas.web;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Rule;
 import org.silverpeas.util.StringUtil;

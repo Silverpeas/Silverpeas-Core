@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.rating;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.rating.Rateable;
 import org.silverpeas.rating.RaterRating;

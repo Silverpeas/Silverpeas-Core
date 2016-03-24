@@ -23,7 +23,7 @@
  */
 package org.silverpeas.rating;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**
  * This class represents a technical primary key of a rater rating.

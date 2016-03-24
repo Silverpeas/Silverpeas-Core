@@ -27,8 +27,7 @@ package org.silverpeas.core.admin.domain;
 import org.silverpeas.core.admin.domain.exception.DomainConflictException;
 import org.silverpeas.core.admin.domain.exception.DomainCreationException;
 import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
-
-import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.domain.model.Domain;
 
 public interface DomainService {
 

@@ -24,15 +24,15 @@
 package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.service.AbstractQuotaService;
 
-import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
 /**
  * @author Yohann Chastagnier
