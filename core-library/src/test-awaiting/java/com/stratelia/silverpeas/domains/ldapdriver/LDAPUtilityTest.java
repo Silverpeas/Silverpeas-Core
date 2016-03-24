@@ -26,7 +26,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.stratelia.silverpeas.domains.ldapdriver;
+package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;

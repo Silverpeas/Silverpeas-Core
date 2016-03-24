@@ -21,7 +21,7 @@ VALUES (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '
 INSERT INTO st_domain (id, name, description, propFileName, className, authenticationServer)
 VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
         'org.silverpeas.domains.domainSP',
-        'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP');
+        'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP');
 
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, state, stateSaveDate)
 VALUES (0, 0, '0', '', 'Administrateur', 'cecile.bonin@silverpeas.com', 'SilverAdmin', '', 'A', 'VALID',

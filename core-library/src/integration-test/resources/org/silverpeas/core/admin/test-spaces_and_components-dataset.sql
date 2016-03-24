@@ -3,7 +3,7 @@
  */
 INSERT INTO st_domain (id, name, propFilename, className, authenticationServer, silverpeasServerURL)
     VALUES (0, 'Silverpeas', 'org.silverpeas.domains.domainSP',
-            'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP', '');
+            'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP', '');
 
 /**
  * users

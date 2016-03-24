@@ -27,7 +27,7 @@
 <migration module="busCore" order="1"
            xmlns="http://www.silverpeas.org/schema/migration">
 
-  <current version="034">
+  <current version="035">
     <script name="create_table.sql" type="sql"/>
     <script name="create_table_production.sql" type="sql" />
     <script name="create_constraint.sql" type="sql" />
@@ -44,6 +44,10 @@
   <upgrade fromVersion="033">
     <script name="update_table.sql" type="sql"/>
     <script name="domainPropFilePathUpdate.groovy" type="groovy"/>
+  </upgrade>
+
+  <upgrade fromVersion="034">
+    <script name="update_table.sql" type="sql"/>
   </upgrade>
 
 </migration>

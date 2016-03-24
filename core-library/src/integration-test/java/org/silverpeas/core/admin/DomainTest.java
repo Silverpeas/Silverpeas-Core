@@ -71,7 +71,7 @@ public class DomainTest {
     Domain domain = new Domain();
     domain.setName("Silverpeas");
     domain.setPropFileName("org.silverpeas.domains.domainSP");
-    domain.setDriverClassName("com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver");
+    domain.setDriverClassName("org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver");
     domain.setAuthenticationServer("autDomainSP");
     domain.setId(domainId);
     Domain savedDomain = adminController.getDomain(domainId);
@@ -82,7 +82,7 @@ public class DomainTest {
   public void testAddDomain() {
     Domain domain = new Domain();
     domain.setName("Test new");
-    domain.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
+    domain.setDriverClassName("org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver");
     domain.setPropFileName("org.silverpeas.domains.domainSQL");
     domain.setAuthenticationServer("autDomainSQL");
     domain.setSilverpeasServerURL("http://localhost:8000");

@@ -374,7 +374,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (!"-1".equals(getTargetDomain().getId())
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
-            "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
+            "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver")) {
 
       SettingBundle specificRs =
           ResourceLocator.getSettingBundle(getTargetDomain().getPropFileName());
@@ -810,7 +810,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (!"-1".equals(getTargetDomain().getId())
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
-            "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
+            "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver")) {
       SettingBundle specificRs =
           ResourceLocator.getSettingBundle(getTargetDomain().getPropFileName());
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);

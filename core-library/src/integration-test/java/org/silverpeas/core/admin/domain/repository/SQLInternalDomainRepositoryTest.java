@@ -84,7 +84,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
           " authenticationserver", " thetimestamp", " silverpeasserverurl")
       .values(1, "domainSilverpeas", "Domain interne à Silverpeas",
           "org.silverpeas.domains.domainSP",
-          "com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver", "autDomainSP", "0",
+          "org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver", "autDomainSP", "0",
           "autDomainSP").build();
   public static final Operation TEST_DELETION_TABLES = Operations.sequenceOf(
       Operations.insertInto("domainTestDeletion_user").columns("id", "firstname", "lastname")

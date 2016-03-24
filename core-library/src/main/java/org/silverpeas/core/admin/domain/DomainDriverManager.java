@@ -20,7 +20,6 @@
 */
 package org.silverpeas.core.admin.domain;
 
-import com.silverpeas.domains.DomainDriverProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;

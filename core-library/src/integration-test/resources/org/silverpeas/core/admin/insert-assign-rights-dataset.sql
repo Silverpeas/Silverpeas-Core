@@ -12,7 +12,7 @@ VALUES (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '
 INSERT INTO st_domain (id, name, description, propFileName, className, authenticationServer)
 VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
         'org.silverpeas.domains.domainSP',
-        'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP');
+        'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP');
 INSERT INTO st_domain (id, name, description, propFileName, className, authenticationServer)
 VALUES (1, 'SILVERPEAS', 'Zimbra Silverpeas', 'org.silverpeas.domains.domainSILVERPEAS',
         'org.silverpeas.domains.ldapdriver.LDAPDriver', 'autDomainSILVERPEAS');

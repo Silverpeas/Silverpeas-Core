@@ -31,7 +31,7 @@
 		name="domainSilverpeas"
 		description="Domain interne à Silverpeas"
 		propfilename="com.stratelia.silverpeas.domains.domainSP"
-		classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver"
+		classname="org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver"
 		authenticationserver="autDomainSP"
 		thetimestamp="0"
 		silverpeasserverurl="autDomainSP"/>

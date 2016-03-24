@@ -32,7 +32,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.domains.DriverSettings;
+import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -612,8 +612,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.admin.service");
       addPackages(true, "org.silverpeas.core.admin.user");
       addPackages(true, "org.silverpeas.core.admin.domain");
-      addPackages(true, "com.silverpeas.domains");
-      addPackages(true, "com.stratelia.silverpeas.domains.sqldriver");
+      addPackages(true, "org.silverpeas.core.admin.domain.driver.sqldriver");
       addPackages(false, "org.silverpeas.notification");
       addPackages(true, "org.silverpeas.core.admin.component.notification");
       addPackages(true, "org.silverpeas.core.clipboard");

@@ -27,9 +27,9 @@
 
 <dataset>
   <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propFileName="-" className="-" authenticationServer="-" />
-  <st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas" propFileName="com.stratelia.silverpeas.domains.domainSP" className="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationServer="autDomainSP"  />
-  <st_domain id="1" name="SILVERPEAS" description="Zimbra Silverpeas" propFileName="com.stratelia.silverpeas.domains.domainSILVERPEAS" className="com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver" authenticationServer="autDomainSILVERPEAS"  />
-  <st_domain id="2" name="Customer" description="Domaine spécifique du client" propFileName="com.stratelia.silverpeas.domains.domainCustomer" className="com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver" authenticationServer="autDomainCustomer"  />
+  <st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas" propFileName="com.stratelia.silverpeas.domains.domainSP" className="org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver" authenticationServer="autDomainSP"  />
+  <st_domain id="1" name="SILVERPEAS" description="Zimbra Silverpeas" propFileName="com.stratelia.silverpeas.domains.domainSILVERPEAS" className="org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver" authenticationServer="autDomainSILVERPEAS"  />
+  <st_domain id="2" name="Customer" description="Domaine spécifique du client" propFileName="com.stratelia.silverpeas.domains.domainCustomer" className="org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver" authenticationServer="autDomainCustomer"  />
   <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="ehu@silverpeas.com" login="bsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson" email="homer@simpson.com" login="homer@simpson.com" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>

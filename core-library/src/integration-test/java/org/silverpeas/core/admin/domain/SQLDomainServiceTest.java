@@ -22,7 +22,7 @@ package org.silverpeas.core.admin.domain;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
+import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -115,10 +115,10 @@ public class SQLDomainServiceTest extends DataSetTest {
           " authenticationserver", " thetimestamp", " silverpeasserverurl")
       .values(1, "domainSilverpeas", "default domain for Silverpeas",
           "org.silverpeas.domains.domainSP",
-          "com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver", "autDomainSP", "0",
+          "org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver", "autDomainSP", "0",
           "autDomainSP").values(2, "Customers", "Customers active directory",
           "org.silverpeas.domains.domainSP",
-          "com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver", "autDomainCustomers",
+          "org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver", "autDomainCustomers",
           "0", "autDomainCustomers").build();
 
   @Override

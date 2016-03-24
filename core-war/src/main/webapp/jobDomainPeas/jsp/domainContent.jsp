@@ -50,7 +50,7 @@
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
-  boolean isDomainSql = "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
+  boolean isDomainSql = "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
   boolean mixedDomain = domObject.isMixedOne();
 
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());

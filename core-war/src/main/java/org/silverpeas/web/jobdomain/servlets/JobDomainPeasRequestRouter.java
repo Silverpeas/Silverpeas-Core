@@ -614,7 +614,7 @@ public class JobDomainPeasRequestRouter extends
           destination = "userImport.jsp";
         } else if (function.startsWith("displayDomainCreate")) {
           Domain theNewDomain = new Domain();
-          theNewDomain.setDriverClassName("com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver");
+          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domain");
           theNewDomain.setAuthenticationServer("autDomain");
           request.setAttribute("domainObject", theNewDomain);

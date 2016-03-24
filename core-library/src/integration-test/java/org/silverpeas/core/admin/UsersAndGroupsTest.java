@@ -68,7 +68,7 @@ public class UsersAndGroupsTest {
 
   @Rule
   public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("/com/silverpeas/domains/silverpeasdriver/create_table.sql")
+      DbSetupRule.createTablesFrom("/org/silverpeas/core/admin/domain/driver/create_table.sql")
           .loadInitialDataSetFrom("test-usersandgroups-dataset.sql");
 
   @Deployment
@@ -79,7 +79,7 @@ public class UsersAndGroupsTest {
         .addSynchAndAsynchResourceEventFeatures()
         .addIndexEngineFeatures()
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
-        .addAsResource("com/silverpeas/domains/silverpeasdriver")
+        .addAsResource("org/silverpeas/core/admin/domain/driver")
         .addMavenDependencies("org.apache.lucene:lucene-core")
         .addMavenDependencies("org.apache.lucene:lucene-analyzers")
         .addPackages(false, "org.silverpeas.core.admin.space.quota")

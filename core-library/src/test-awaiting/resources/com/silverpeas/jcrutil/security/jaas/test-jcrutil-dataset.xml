@@ -27,8 +27,8 @@
 
 <dataset>
   <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP"
-    classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
-    thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
+             classname="org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
+             thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
 
   <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
     classname="-" authenticationserver="-" thetimestamp="0" silverpeasserverurl="''" />

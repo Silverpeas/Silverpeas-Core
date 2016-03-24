@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.domain;
 
-import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
+import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
@@ -167,7 +167,7 @@ public class SQLDomainService extends AbstractDomainService {
 
       // SQL Driver might be override for some purpose
       if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
-        domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
+        domainToCreate.setDriverClassName("org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver");
       }
       domainToCreate.setPropFileName("org.silverpeas.domains.domain" + technicalDomainName);
       domainToCreate.setAuthenticationServer("autDomain" + technicalDomainName);

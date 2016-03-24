@@ -55,7 +55,7 @@ public class DomainManagerTest {
 
   @Rule
   public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("/com/silverpeas/domains/silverpeasdriver/create_table.sql")
+      DbSetupRule.createTablesFrom("/org/silverpeas/core/admin/domain/driver/create_table.sql")
           .loadInitialDataSetFrom("test-domainmanager-dataset.sql");
 
   @Deployment
@@ -63,7 +63,7 @@ public class DomainManagerTest {
     return WarBuilder4LibCore.onWarForTestClass(DomainManagerTest.class)
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
-        .addAsResource("com/silverpeas/domains/silverpeasdriver")
+        .addAsResource("org/silverpeas/core/admin/domain/driver")
         .build();
   }
 

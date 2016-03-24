@@ -53,7 +53,7 @@ import org.silverpeas.core.admin.space.SpaceProfileInstManager;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
+import org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPSynchroUserItf;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.ProfileInstManager;
