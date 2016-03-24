@@ -23,14 +23,15 @@
 */
 package org.silverpeas.web.workflowdesigner.control;
 
-import com.silverpeas.admin.components.Profile;
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.components.WAComponentRegistry;
+import org.silverpeas.core.admin.component.model.Profile;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import com.silverpeas.form.TypeManager;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.*;
+import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.model.ProcessModelManagerImpl;
 import org.silverpeas.core.workflow.engine.model.SpecificLabel;
@@ -2784,10 +2785,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public void generateComponentDescriptor()
       throws WorkflowDesignerException {
     List<Profile> listSPProfile = new ArrayList<Profile>();
-    List<com.silverpeas.admin.components.Parameter> spParameters =
-        new ArrayList<com.silverpeas.admin.components.Parameter>();
-    com.silverpeas.admin.components.Parameter spParameter =
-        new com.silverpeas.admin.components.Parameter();
+    List<org.silverpeas.core.admin.component.model.Parameter> spParameters =
+        new ArrayList<org.silverpeas.core.admin.component.model.Parameter>();
+    org.silverpeas.core.admin.component.model.Parameter spParameter =
+        new org.silverpeas.core.admin.component.model.Parameter();
     spParameter.setName(ProcessModelManager.PROCESS_XML_FILE_NAME);
     spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
         "componentDescriptor.parameterLabel"));
@@ -2894,7 +2895,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // Look for the descriptor in the cache, return the key if found.
       for (WAComponent waComponent : waComponents) {
         if (waComponent.getParameters() != null) {
-          for (com.silverpeas.admin.components.Parameter spParameter : waComponent
+          for (org.silverpeas.core.admin.component.model.Parameter spParameter : waComponent
               .getParameters()) {
             if (ProcessModelManager.PROCESS_XML_FILE_NAME.equals(spParameter.getName())
                 && strProcessModelFileName.equals(spParameter.getValue())) {

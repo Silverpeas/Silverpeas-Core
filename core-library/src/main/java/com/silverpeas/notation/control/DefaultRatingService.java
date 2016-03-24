@@ -21,7 +21,7 @@
 package com.silverpeas.notation.control;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.silverpeas.notation.model.Rating;
 import com.silverpeas.notation.model.RatingRepository;
 import org.silverpeas.rating.ContributionRating;

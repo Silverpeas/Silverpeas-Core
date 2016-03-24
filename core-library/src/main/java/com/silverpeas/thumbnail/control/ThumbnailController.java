@@ -24,7 +24,7 @@
 
 package com.silverpeas.thumbnail.control;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;

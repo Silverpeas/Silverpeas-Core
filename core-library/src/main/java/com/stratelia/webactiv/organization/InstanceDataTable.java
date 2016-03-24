@@ -29,9 +29,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.silverpeas.admin.components.Parameter;
+import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.silvertrace.SilverTrace;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 

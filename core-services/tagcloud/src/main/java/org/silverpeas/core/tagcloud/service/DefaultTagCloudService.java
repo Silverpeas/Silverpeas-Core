@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.tagcloud.service;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudDAO;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;

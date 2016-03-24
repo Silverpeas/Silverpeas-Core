@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ListSlice;

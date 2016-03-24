@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.contact.service;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.contact.info.InfoDAO;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactDetail;

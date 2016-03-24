@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.look;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.core.web.look.LookHelper;

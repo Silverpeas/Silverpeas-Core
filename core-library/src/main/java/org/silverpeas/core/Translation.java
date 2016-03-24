@@ -41,6 +41,6 @@ package org.silverpeas.core;
  */
 public interface Translation {
 
-  public String getLanguage();
+  String getLanguage();
 
 }

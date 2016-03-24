@@ -20,10 +20,10 @@
  */
 package org.silverpeas.web.jobstartpage.servlets;
 
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.ParameterList;
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.ParameterList;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

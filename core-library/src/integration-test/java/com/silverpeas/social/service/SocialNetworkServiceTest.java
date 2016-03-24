@@ -2,7 +2,7 @@ package com.silverpeas.social.service;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.silverpeas.social.mock.OrganizationControllerMock;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;

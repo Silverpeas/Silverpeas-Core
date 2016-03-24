@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.silverstatistics.control;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;

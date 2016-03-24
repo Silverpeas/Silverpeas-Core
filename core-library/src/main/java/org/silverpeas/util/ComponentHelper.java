@@ -24,7 +24,7 @@
 
 package org.silverpeas.util;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 
 import javax.inject.Singleton;
 

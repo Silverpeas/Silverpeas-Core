@@ -33,7 +33,7 @@ import org.silverpeas.core.webapi.admin.tools.ToolDelegate;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminException;

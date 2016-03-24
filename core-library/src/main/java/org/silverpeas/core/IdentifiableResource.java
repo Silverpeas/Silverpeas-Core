@@ -34,5 +34,5 @@ public interface IdentifiableResource {
    * Gets the unique identifier of this resource.
    * @return the unique identifier of the resource.
    */
-  public ResourceIdentifier getId();
+  ResourceIdentifier getId();
 }

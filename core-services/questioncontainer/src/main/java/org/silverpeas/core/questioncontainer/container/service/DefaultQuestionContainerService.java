@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.questioncontainer.container.service;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.questioncontainer.container.dao.QuestionContainerDAO;
 import org.silverpeas.core.questioncontainer.container.model.Comment;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;

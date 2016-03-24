@@ -20,15 +20,15 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.ApplicationResourcePasting;
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.silverpeas.admin.components.ComponentInstancePostConstruction;
-import com.silverpeas.admin.components.ComponentInstancePreDestruction;
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.Profile;
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.components.WAComponentRegistry;
+import org.silverpeas.core.admin.component.ApplicationResourcePasting;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.Profile;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.space.SpaceInstanciator;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import com.stratelia.silverpeas.containerManager.ContainerManager;

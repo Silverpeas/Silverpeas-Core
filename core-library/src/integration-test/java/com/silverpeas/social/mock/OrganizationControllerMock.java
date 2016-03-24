@@ -24,7 +24,7 @@
 package com.silverpeas.social.mock;
 
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.service.OrganizationController;

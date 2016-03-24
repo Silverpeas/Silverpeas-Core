@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.jobstartpage.control;
 
-import com.silverpeas.admin.components.*;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.web.jobstartpage.AllComponentParameters;
 import org.silverpeas.web.jobstartpage.DisplaySorted;

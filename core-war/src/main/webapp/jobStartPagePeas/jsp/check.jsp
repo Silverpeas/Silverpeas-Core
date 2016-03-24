@@ -32,10 +32,10 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.silverpeas.admin.components.LocalizedGroupOfParameters"%>
-<%@ page import="com.silverpeas.admin.components.LocalizedOption"%>
-<%@ page import="com.silverpeas.admin.components.LocalizedParameter"%>
-<%@ page import="com.silverpeas.admin.components.WAComponent"%>
+<%@ page import="org.silverpeas.core.admin.component.model.LocalizedGroupOfParameters"%>
+<%@ page import="org.silverpeas.core.admin.component.model.LocalizedOption"%>
+<%@ page import="org.silverpeas.core.admin.component.model.LocalizedParameter"%>
+<%@ page import="org.silverpeas.core.admin.component.model.WAComponent"%>
 <%@ page import="org.silverpeas.core.admin.space.model.SpaceTemplate"%>
 <%@ page import="org.silverpeas.web.jobstartpage.AllComponentParameters"%>
 

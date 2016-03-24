@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.external.webconnections.dao;
 
 import org.silverpeas.core.accesscontrol.ForbiddenRuntimeException;
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;

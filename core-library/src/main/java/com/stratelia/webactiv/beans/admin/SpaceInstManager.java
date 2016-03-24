@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;

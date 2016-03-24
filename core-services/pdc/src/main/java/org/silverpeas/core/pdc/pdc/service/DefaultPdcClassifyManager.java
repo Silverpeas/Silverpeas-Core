@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ClassifyEngineException;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;

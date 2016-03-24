@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.joborganization.control;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.web.joborganization.JobOrganizationPeasException;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

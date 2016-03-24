@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin;
 
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponentRegistry;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;

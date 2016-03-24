@@ -27,7 +27,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
-import org.silverpeas.core.admin.component.parameter.ComponentFileFilterParameter;
+import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.process.io.IOAccess;

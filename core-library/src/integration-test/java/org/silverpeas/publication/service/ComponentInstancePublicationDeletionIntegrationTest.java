@@ -1,6 +1,6 @@
 package org.silverpeas.publication.service;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.stratelia.webactiv.publication.control.DefaultPublicationService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

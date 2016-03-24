@@ -20,8 +20,8 @@
  */
 package org.silverpeas.web.templatedesigner.control;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.components.LocalizedComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;

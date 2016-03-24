@@ -29,8 +29,8 @@ date 14/09/2000
 */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.exception.QuotaException;

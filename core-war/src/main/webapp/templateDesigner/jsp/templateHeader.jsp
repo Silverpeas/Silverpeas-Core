@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.admin.components.LocalizedComponent"%>
+<%@page import="org.silverpeas.core.admin.component.model.LocalizedComponent"%>
 <%@page import="org.apache.commons.io.FilenameUtils"%>
 <%@page import="org.silverpeas.util.crypto.CryptoException"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

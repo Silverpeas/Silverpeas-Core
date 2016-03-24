@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.admin.components.Parameter;
+import org.silverpeas.core.admin.component.model.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.clipboard.service.MainClipboard;

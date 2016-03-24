@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import org.silverpeas.util.StringUtil;

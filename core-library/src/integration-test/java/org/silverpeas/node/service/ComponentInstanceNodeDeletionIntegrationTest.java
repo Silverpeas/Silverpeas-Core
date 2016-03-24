@@ -1,6 +1,6 @@
 package org.silverpeas.node.service;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.stratelia.webactiv.node.control.DefaultNodeService;
 import com.stratelia.webactiv.node.control.NodeService;
 import org.jboss.arquillian.container.test.api.Deployment;

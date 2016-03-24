@@ -1,6 +1,6 @@
 package org.silverpeas.core.admin.service;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;

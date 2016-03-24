@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.space;
 
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponentParameter;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
@@ -72,7 +72,7 @@ public class SpaceInstanciator {
     String[] list = file.list();
     if (list != null) {
       try {
-        JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.spaces");
+        JAXBContext context = JAXBContext.newInstance("org.silverpeas.core.admin.space.model");
         XMLInputFactory factory = XMLInputFactory.newFactory();
         Unmarshaller unmarshaller = context.createUnmarshaller();
         for (String fileName : list) {

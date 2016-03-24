@@ -26,7 +26,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.ArrayUtil;

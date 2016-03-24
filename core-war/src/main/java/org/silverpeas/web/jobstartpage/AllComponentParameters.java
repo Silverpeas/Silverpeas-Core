@@ -20,9 +20,9 @@
  */
 package org.silverpeas.web.jobstartpage;
 
-import com.silverpeas.admin.components.LocalizedGroupOfParameters;
-import com.silverpeas.admin.components.LocalizedParameter;
-import com.silverpeas.admin.components.LocalizedParameterList;
+import org.silverpeas.core.admin.component.model.LocalizedGroupOfParameters;
+import org.silverpeas.core.admin.component.model.LocalizedParameter;
+import org.silverpeas.core.admin.component.model.LocalizedParameterList;
 
 import java.util.List;
 

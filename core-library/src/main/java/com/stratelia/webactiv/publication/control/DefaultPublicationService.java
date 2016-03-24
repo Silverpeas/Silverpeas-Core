@@ -20,8 +20,8 @@
  */
 package com.stratelia.webactiv.publication.control;
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;

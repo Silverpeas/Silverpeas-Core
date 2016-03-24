@@ -21,7 +21,7 @@
 package org.silverpeas.core.silverstatistics.access.service;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO;

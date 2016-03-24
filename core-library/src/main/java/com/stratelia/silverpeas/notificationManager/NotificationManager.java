@@ -30,7 +30,7 @@ package com.stratelia.silverpeas.notificationManager;
  * @version 1.0
  */
 
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.silverpeas.usernotification.model.NotificationResourceData;

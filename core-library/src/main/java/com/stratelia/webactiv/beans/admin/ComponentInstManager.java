@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.Parameter;
+import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;

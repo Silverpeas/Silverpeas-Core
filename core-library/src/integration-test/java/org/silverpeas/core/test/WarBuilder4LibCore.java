@@ -25,11 +25,11 @@
 package org.silverpeas.core.test;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.admin.components.ComponentInstanceDeletion;
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.PasteDetailFromToPK;
-import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.form.FormException;
@@ -589,7 +589,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(Recover.class);
       addClasses(DriverSettings.class);
       addPackages(true, "org.silverpeas.util.i18n");
-      addPackages(true, "com.silverpeas.admin.components");
+      addPackages(true, "org.silverpeas.core.admin.component");
       addPackages(true, "org.silverpeas.core.admin.space");
       addPackages(true, "com.silverpeas.domains");
       addPackages(true, "com.stratelia.silverpeas.domains.sqldriver");
