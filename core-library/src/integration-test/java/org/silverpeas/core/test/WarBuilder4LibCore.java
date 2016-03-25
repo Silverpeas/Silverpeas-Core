@@ -38,8 +38,13 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
+import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
+import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import com.stratelia.webactiv.organization.ScheduledDBReset;
+import org.silverpeas.core.admin.persistence.ScheduledDBReset;
 import org.silverpeas.EntityReference;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.JcrContext;
@@ -642,8 +647,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addOrganisationFeatures() {
-    addClasses(OrganizationController.class, OrganizationControllerProvider.class);
-    addPackages(true, "com.stratelia.webactiv.organization");
+    addClasses(OrganizationController.class, OrganizationControllerProvider.class,
+        UserFavoriteSpaceBean.class, UserFavoriteSpaceVO.class, UserFavoriteSpaceService.class,
+        UserFavoriteSpaceServiceImpl.class, UserFavoriteSpaceServiceProvider.class);
+    addPackages(true, "org.silverpeas.core.admin.persistence");
     addPackages(true, "com.stratelia.webactiv.persistence");
     addClasses(Schema.class, SchemaPool.class);
     // Centralized features

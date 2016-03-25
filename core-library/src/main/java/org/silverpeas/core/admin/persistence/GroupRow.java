@@ -22,20 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
-
-public class ComponentI18N extends Translation {
-
-  private static final long serialVersionUID = 6602701543647924879L;
-
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
-  }
-
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
-  }
+public class GroupRow {
+  public int id = -1;
+  public String specificId = null;
+  public int domainId = -1;
+  public int superGroupId = -1;
+  public String name = null;
+  public String description = null;
+  public String rule = null;
 }

@@ -23,7 +23,7 @@ package org.silverpeas.core.admin.component.notification;
 
 import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
+import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;

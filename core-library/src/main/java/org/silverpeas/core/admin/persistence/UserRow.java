@@ -22,20 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
+import java.util.Date;
 
-public class ComponentI18N extends Translation {
-
-  private static final long serialVersionUID = 6602701543647924879L;
-
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
-  }
-
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
-  }
+public class UserRow {
+  public int id = -1;
+  public String specificId = "";
+  public int domainId = -1;
+  public String login = "";
+  public String firstName = "";
+  public String lastName = "";
+  public String loginMail = "";
+  public String eMail = "";
+  public String accessLevel = "";
+  public String loginQuestion = "";
+  public String loginAnswer = "";
+  public Date creationDate = null;
+  public Date saveDate = null;
+  public int version = 0;
+  public Date tosAcceptanceDate = null;
+  public Date lastLoginDate = null;
+  public int nbSuccessfulLoginAttempts = 0;
+  public Date lastLoginCredentialUpdateDate = null;
+  public Date expirationDate = null;
+  public String state = "";
+  public Date stateSaveDate  = null;
+  public Integer notifManualReceiverLimit  = null;
 }

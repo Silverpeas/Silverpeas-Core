@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.user.dao.RoleDAO;
-import com.stratelia.webactiv.organization.UserRoleRow;
+import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.ProfileInst;

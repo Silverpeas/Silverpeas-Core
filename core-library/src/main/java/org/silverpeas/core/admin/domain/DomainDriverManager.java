@@ -29,13 +29,13 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.UserIndexation;
-import com.stratelia.webactiv.organization.AdminPersistenceException;
-import com.stratelia.webactiv.organization.DomainRow;
-import com.stratelia.webactiv.organization.GroupRow;
-import com.stratelia.webactiv.organization.KeyStoreRow;
-import com.stratelia.webactiv.organization.OrganizationSchema;
-import com.stratelia.webactiv.organization.OrganizationSchemaPool;
-import com.stratelia.webactiv.organization.UserRow;
+import org.silverpeas.core.admin.persistence.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.DomainRow;
+import org.silverpeas.core.admin.persistence.GroupRow;
+import org.silverpeas.core.admin.persistence.KeyStoreRow;
+import org.silverpeas.core.admin.persistence.OrganizationSchema;
+import org.silverpeas.core.admin.persistence.OrganizationSchemaPool;
+import org.silverpeas.core.admin.persistence.UserRow;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -88,7 +88,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     synchronized (this) {
       nbConnected--;
       if (getOrganization() != null && !inTransaction && nbConnected <= 0) {
-        com.stratelia.webactiv.organization.OrganizationSchemaPool.releaseOrganizationSchema(
+        OrganizationSchemaPool.releaseOrganizationSchema(
                 getOrganization());
         getOrganization().close();
         organization = null;

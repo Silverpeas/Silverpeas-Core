@@ -22,20 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
+/**
+ * All graphic elements from the viewgenerator package have to implement this interface. It will
+ * enable an object (button, tab ...) to be printed in an html format.
+ * @author neysseri
+ * @version 1.0
+ */
+public interface SimpleGraphicElement {
 
-public class ComponentI18N extends Translation {
+  /**
+   * Print an html representation for this object.
+   * @return The html representation for this object.
+   */
+  public String print();
 
-  private static final long serialVersionUID = 6602701543647924879L;
-
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
-  }
-
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
-  }
 }

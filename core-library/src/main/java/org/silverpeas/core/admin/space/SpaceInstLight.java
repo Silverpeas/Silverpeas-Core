@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.admin.space;
 
-import com.stratelia.webactiv.organization.SpaceRow;
+import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.util.i18n.AbstractI18NBean;

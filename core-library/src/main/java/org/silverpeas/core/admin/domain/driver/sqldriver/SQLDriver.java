@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import com.stratelia.webactiv.organization.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.AdminPersistenceException;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;

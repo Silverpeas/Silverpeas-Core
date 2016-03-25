@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.user.dao;
 
-import com.stratelia.webactiv.organization.UserRoleRow;
+import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 

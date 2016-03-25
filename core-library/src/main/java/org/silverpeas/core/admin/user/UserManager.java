@@ -24,7 +24,7 @@ import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDeleg
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
-import com.stratelia.webactiv.organization.UserRow;
+import org.silverpeas.core.admin.persistence.UserRow;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroReport;

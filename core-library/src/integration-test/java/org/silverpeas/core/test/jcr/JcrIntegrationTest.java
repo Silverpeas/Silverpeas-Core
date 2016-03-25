@@ -34,7 +34,7 @@ public abstract class JcrIntegrationTest {
   }
 
   @Rule
-  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table.sql");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table_favorit_space.sql");
 
   @Before
   public void setup() throws Exception {

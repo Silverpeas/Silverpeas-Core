@@ -22,20 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.admin.space;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
+import org.silverpeas.core.util.ServiceProvider;
 
-public class ComponentI18N extends Translation {
+/**
+ * Provider of a <code>UserFavoriteSpaceService</code> instances.
+ */
+public class UserFavoriteSpaceServiceProvider {
 
-  private static final long serialVersionUID = 6602701543647924879L;
-
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
+  private UserFavoriteSpaceServiceProvider() {
   }
 
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
+  /**
+   * @return a <code>UserFavoriteSpaceService</code> instance
+   */
+  public static synchronized UserFavoriteSpaceService getUserFavoriteSpaceService() {
+    return ServiceProvider.getService(UserFavoriteSpaceService.class);
   }
+
 }

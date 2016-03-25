@@ -22,20 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
+public class ComponentInstanceRow {
+  public int id = -1;
+  public int spaceId = -1;
+  public String name = null;
+  public String componentName = null;
+  public String description = null;
+  public int createdBy = -1;
+  public int orderNum = -1;
 
-public class ComponentI18N extends Translation {
+  public String createTime = null;
+  public String updateTime = null;
+  public String removeTime = null;
+  public String status = null;
+  public int updatedBy = -1;
+  public int removedBy = -1;
 
-  private static final long serialVersionUID = 6602701543647924879L;
+  public int publicAccess = -1;
+  public int hidden = -1;
 
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
-  }
+  public String lang = null;
 
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
-  }
+  public int inheritanceBlocked = -1;
 }

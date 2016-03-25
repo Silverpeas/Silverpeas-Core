@@ -22,20 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
+import org.silverpeas.core.admin.space.SpaceI18N;
 
-public class ComponentI18N extends Translation {
+public class SpaceI18NRow {
+  public int id = -1;
+  public int spaceId = -1;
+  public String lang = null;
+  public String name = null;
+  public String description = null;
 
-  private static final long serialVersionUID = 6602701543647924879L;
-
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
+  public SpaceI18NRow() {
   }
 
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
+  public SpaceI18NRow(SpaceI18N spaceI18N) {
+    id = spaceI18N.getId();
+    spaceId = Integer.parseInt(spaceI18N.getSpaceId());
+    lang = spaceI18N.getLanguage();
+    name = spaceI18N.getName();
+    description = spaceI18N.getDescription();
+  }
+
+  public SpaceI18NRow(SpaceRow space) {
+    spaceId = space.id;
+    lang = space.lang;
+    name = space.name;
+    description = space.description;
+  }
+
+  public SpaceI18NRow(int spaceId, String lang, String name, String description) {
+    this.spaceId = spaceId;
+    this.lang = lang;
+    this.name = name;
+    this.description = description;
   }
 }

@@ -22,20 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.component.model;
+package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.util.i18n.Translation;
-import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
+import org.silverpeas.core.admin.component.model.ComponentI18N;
 
-public class ComponentI18N extends Translation {
+public class ComponentInstanceI18NRow {
+  public int id = -1;
+  public int componentId = -1;
+  public String lang = null;
+  public String name = null;
+  public String description = null;
 
-  private static final long serialVersionUID = 6602701543647924879L;
-
-  public ComponentI18N(String lang, String name, String description) {
-    super(lang, name, description);
+  public ComponentInstanceI18NRow() {
   }
 
-  public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
+  public ComponentInstanceI18NRow(ComponentI18N componentI18N) {
+    id = componentI18N.getId();
+    componentId = Integer.parseInt(componentI18N.getObjectId());
+    lang = componentI18N.getLanguage();
+    name = componentI18N.getName();
+    description = componentI18N.getDescription();
+  }
+
+  public ComponentInstanceI18NRow(ComponentInstanceRow component) {
+    componentId = component.id;
+    lang = component.lang;
+    name = component.name;
+    description = component.description;
+  }
+
+  public ComponentInstanceI18NRow(int componentId, String lang, String name, String description) {
+    this.componentId = componentId;
+    this.lang = lang;
+    this.name = name;
+    this.description = description;
   }
 }

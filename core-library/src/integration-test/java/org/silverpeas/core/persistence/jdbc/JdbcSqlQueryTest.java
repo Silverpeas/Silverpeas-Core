@@ -69,7 +69,7 @@ public class JdbcSqlQueryTest {
   }
 
   @Rule
-  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table.sql")
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table_favorit_space.sql")
       .loadInitialDataSetFrom(TABLES_CREATION, TABLE_SET_UP);
 
   @Deployment

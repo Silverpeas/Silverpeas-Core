@@ -23,9 +23,9 @@ package org.silverpeas.core.admin.space;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stratelia.webactiv.organization.AdminPersistenceException;
-import com.stratelia.webactiv.organization.SpaceRow;
-import com.stratelia.webactiv.organization.SpaceUserRoleRow;
+import org.silverpeas.core.admin.persistence.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.SpaceRow;
+import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.util.exception.SilverpeasException;
