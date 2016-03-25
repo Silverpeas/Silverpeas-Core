@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.authentication.Authentication;
+import org.silverpeas.core.security.authentication.Authentication;
 
 /**
  * Information on the HTTP session opened by a Silverpeas user to access the Silverpeas Web pages.
@@ -38,7 +38,7 @@ import org.silverpeas.authentication.Authentication;
  * The HTTPSessionInfo objects are mainly used for the users accessing Silverpeas with their WEB
  * browser. It is not yet used in the management of sessions for REST-based web service clients.
  */
-public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
+public class HTTPSessionInfo extends org.silverpeas.core.security.session.SessionInfo {
 
   private final HttpSession httpSession;
 

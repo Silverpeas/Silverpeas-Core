@@ -25,14 +25,14 @@
 package org.silverpeas.core.questioncontainer.container.model;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerContentManager;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Collection;
 import java.util.Date;

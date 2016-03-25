@@ -28,7 +28,7 @@ import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.accesscontrol.SpaceAccessControl;
+import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.webapi.admin.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;

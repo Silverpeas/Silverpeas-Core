@@ -22,8 +22,8 @@ package org.silverpeas.core.web.look;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;

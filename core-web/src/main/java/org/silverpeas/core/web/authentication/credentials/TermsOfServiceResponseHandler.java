@@ -28,8 +28,8 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import javax.servlet.http.HttpServletRequest;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
+import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**

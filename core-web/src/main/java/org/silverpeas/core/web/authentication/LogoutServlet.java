@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 

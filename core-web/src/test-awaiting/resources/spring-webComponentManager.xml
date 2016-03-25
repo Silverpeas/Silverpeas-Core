@@ -40,7 +40,7 @@
         factory-method="getFactory" /> -->
 
   <bean id="sessionManagementFactory"
-        class="com.silverpeas.session.SessionManagementProvider"
+        class="org.silverpeas.core.security.session.SessionManagementProvider"
         factory-method="getFactory" />
 
   <!-- YCH <bean name="tokenServiceFactory"-->

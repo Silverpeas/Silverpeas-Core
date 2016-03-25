@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.authentication.password.ForgottenPasswordException;
-import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
+import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 

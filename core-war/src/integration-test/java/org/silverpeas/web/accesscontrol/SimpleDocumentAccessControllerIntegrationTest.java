@@ -24,15 +24,15 @@
 
 package org.silverpeas.web.accesscontrol;
 
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.web.test.WarBuilder4WarCore;
 import org.silverpeas.util.ServiceProvider;
 

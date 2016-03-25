@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
@@ -44,7 +44,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.SilverpeasTransverseWebErrorUtil;

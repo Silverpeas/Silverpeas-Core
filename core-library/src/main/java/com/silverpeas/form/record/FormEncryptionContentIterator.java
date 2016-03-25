@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.FormRuntimeException;
@@ -42,7 +42,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.security.EncryptionContentIterator;
+import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;

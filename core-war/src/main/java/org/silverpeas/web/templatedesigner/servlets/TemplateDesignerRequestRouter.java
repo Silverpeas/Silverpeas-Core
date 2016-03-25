@@ -33,7 +33,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;

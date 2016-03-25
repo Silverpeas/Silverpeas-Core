@@ -7,10 +7,10 @@ import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.crypto.CryptoException;
-import org.silverpeas.util.security.CipherKeyUpdateException;
-import org.silverpeas.util.security.ContentEncryptionService;
-import org.silverpeas.util.security.DefaultContentEncryptionService;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.security.encryption.CipherKeyUpdateException;
+import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.encryption.DefaultContentEncryptionService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

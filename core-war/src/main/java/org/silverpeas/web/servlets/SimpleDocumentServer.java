@@ -38,7 +38,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.security.ComponentSecurity;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -80,7 +80,8 @@ public class SimpleDocumentServer extends GoTo {
       boolean isAccessAuthorized = true;
       if (componentId.startsWith("kmelia")) {
         try {
-          ComponentSecurity security = (ComponentSecurity) Class.forName(KMELIA_SECURITY_CLASS).newInstance();
+          ComponentAuthorization
+              security = (ComponentAuthorization) Class.forName(KMELIA_SECURITY_CLASS).newInstance();
           isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
         } catch (Exception e) {
           SilverTrace.error("util", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",

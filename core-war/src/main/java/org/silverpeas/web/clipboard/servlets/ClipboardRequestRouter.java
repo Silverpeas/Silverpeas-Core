@@ -20,9 +20,9 @@
  */
 package org.silverpeas.web.clipboard.servlets;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.web.clipboard.control.ClipboardSessionController;

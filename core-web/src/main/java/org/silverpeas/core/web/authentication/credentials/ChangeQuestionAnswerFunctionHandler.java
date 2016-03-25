@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import javax.servlet.http.HttpServletRequest;
 

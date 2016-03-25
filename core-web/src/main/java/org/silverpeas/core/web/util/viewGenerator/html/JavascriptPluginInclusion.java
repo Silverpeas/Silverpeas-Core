@@ -33,7 +33,7 @@ import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 
 import java.text.MessageFormat;

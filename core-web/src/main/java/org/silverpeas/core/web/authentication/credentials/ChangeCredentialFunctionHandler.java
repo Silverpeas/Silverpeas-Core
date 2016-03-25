@@ -25,8 +25,8 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
-import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
+import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 
 /**
  * User: Yohann Chastagnier

@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import org.silverpeas.core.accesscontrol.AccessControlContext;
-import org.silverpeas.core.accesscontrol.AccessControlOperation;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionValidationContext;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
-import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceProvider;
-import org.silverpeas.authentication.UserSessionReference;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.AuthenticationService;
+import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.security.authentication.UserSessionReference;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;

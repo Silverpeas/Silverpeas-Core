@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;

@@ -1,4 +1,4 @@
-package org.silverpeas.authentication.encryption;
+package org.silverpeas.core.security.authentication.encryption;
 
 import org.junit.Before;
 import org.junit.Test;

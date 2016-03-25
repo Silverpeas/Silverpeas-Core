@@ -23,11 +23,11 @@
  */
 package com.stratelia.webactiv.node.model;
 
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.accesscontrol.NodeAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 
 import java.io.Serializable;

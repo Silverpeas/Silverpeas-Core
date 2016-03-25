@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import org.silverpeas.password.rule.PasswordRule;
-import org.silverpeas.password.service.PasswordCheck;
+import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
+import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

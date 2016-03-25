@@ -34,8 +34,8 @@
 %>
 
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
-<%@ page import="com.silverpeas.session.SessionManagement" %>
-<%@ page import="com.silverpeas.session.SessionManagementProvider" %>
+<%@ page import="org.silverpeas.core.security.session.SessionManagement" %>
+<%@ page import="org.silverpeas.core.security.session.SessionManagementProvider" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>

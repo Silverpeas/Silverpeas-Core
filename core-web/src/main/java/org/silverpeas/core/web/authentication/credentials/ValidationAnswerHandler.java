@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.util.crypto.CryptMD5;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;

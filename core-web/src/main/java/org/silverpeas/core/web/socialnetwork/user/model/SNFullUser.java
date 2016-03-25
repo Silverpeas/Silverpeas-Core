@@ -28,9 +28,9 @@
  */
 package org.silverpeas.core.web.socialnetwork.user.model;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;

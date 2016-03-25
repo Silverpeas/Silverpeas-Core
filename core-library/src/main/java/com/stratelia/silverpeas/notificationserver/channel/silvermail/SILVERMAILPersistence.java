@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
-import org.silverpeas.core.accesscontrol.ForbiddenRuntimeException;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;

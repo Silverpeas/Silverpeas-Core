@@ -31,13 +31,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.apache.commons.io.FileUtils;
 
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.web.communicationuser.CommunicationUserException;
-import com.silverpeas.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionInfo;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;

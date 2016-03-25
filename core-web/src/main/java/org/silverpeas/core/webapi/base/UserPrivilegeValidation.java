@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.webapi.base;
 
-import com.silverpeas.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ServiceProvider;

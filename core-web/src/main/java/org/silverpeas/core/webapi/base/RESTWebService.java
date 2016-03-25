@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.base;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;

@@ -57,6 +57,7 @@ import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.web.pdc.vo.ExternalSPConfigVO;
 import org.silverpeas.web.pdc.vo.Facet;
 import org.silverpeas.web.pdc.vo.FacetEntryVO;
@@ -90,7 +91,6 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.ComponentSecurity;
 import org.silverpeas.core.viewer.service.ViewerProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -148,7 +148,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private PublicationTemplateImpl xmlTemplate = null;
   private DataRecord xmlData = null;
   private int searchScope = SEARCH_FULLTEXT;
-  private ComponentSecurity componentSecurity = null;
+  private ComponentAuthorization componentAuthorization = null;
   // field value of XML form used to sort results
   private String xmlFormSortValue = null;
   // keyword used to retrieve the implementation to realize sorting or filtering
@@ -545,13 +545,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return true;
   }
 
-  private ComponentSecurity getSecurityIntf() throws Exception {
-    if (componentSecurity == null) {
-      componentSecurity = (ComponentSecurity) Class.forName(
+  private ComponentAuthorization getSecurityIntf() throws Exception {
+    if (componentAuthorization == null) {
+      componentAuthorization = (ComponentAuthorization) Class.forName(
           "org.silverpeas.components.kmelia.KmeliaSecurity").newInstance();
     }
 
-    return componentSecurity;
+    return componentAuthorization;
   }
 
   public List<GlobalSilverResult> getResultsToDisplay() throws Exception {

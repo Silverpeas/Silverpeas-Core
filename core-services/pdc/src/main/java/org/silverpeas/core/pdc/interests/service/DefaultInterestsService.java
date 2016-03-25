@@ -32,7 +32,7 @@ import java.util.List;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
-import org.silverpeas.core.accesscontrol.ForbiddenRuntimeException;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.pdc.interests.model.Interests;
 
 import org.silverpeas.util.DBUtil;

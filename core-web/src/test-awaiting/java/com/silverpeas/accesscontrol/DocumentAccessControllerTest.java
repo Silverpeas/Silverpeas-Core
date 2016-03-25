@@ -19,9 +19,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.accesscontrol.NodeAccessController;
+import org.silverpeas.core.security.authorization.NodeAccessController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.node.model.NodePK;

@@ -20,9 +20,9 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -32,9 +32,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.authentication.Authentication;
-import org.silverpeas.authentication.UserAuthenticationListener;
-import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
+import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.authentication.UserAuthenticationListener;
+import org.silverpeas.core.security.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.DateUtil;

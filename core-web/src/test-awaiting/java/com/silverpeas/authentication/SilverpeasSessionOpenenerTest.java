@@ -21,7 +21,7 @@
 package com.silverpeas.authentication;
 
 import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.authentication.Authentication;
+import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

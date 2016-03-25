@@ -22,8 +22,8 @@ package org.silverpeas.core.admin.user.model;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.StatusService;

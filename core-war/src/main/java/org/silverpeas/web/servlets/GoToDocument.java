@@ -23,13 +23,13 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.accesscontrol.AccessControlContext;
-import org.silverpeas.core.accesscontrol.AccessControlOperation;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.web.util.servlet.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.accesscontrol.SimpleDocumentAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;

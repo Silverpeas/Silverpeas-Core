@@ -28,7 +28,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.accesscontrol.NodeAccessController;
+import org.silverpeas.core.security.authorization.NodeAccessController;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

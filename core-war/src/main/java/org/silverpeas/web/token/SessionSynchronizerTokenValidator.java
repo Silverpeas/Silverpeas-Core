@@ -23,15 +23,15 @@
  */
 package org.silverpeas.web.token;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.core.web.util.security.SecuritySettings;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;

@@ -24,7 +24,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
+import org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -69,17 +69,17 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
   void registerSSLSocketFactory() throws GeneralSecurityException {
     SystemWrapper.get().setProperty("mail.imap.ssl.enable", "true");
     SystemWrapper.get().setProperty("mail.imap.ssl.socketFactory.class",
-        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory");
     SystemWrapper.get().setProperty("mail.smtp.ssl.socketFactory.class",
-        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory");
     SystemWrapper.get().setProperty("mail.smtps.ssl.socketFactory.class",
-        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory");
     SystemWrapper.get().setProperty("mail.pop3.ssl.socketFactory.class",
-        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory");
     SystemWrapper.get().setProperty("mail.pop3s.ssl.socketFactory.class",
-        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory");
     SystemWrapper.get().setProperty("mail.imaps.ssl.socketFactory.class",
-        "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
+        "org.silverpeas.core.security.encryption.SilverpeasSSLSocketFactory");
     SystemWrapper.get().setProperty("mail.imap.ssl.socketFactory.fallback", "false");
   }
 }

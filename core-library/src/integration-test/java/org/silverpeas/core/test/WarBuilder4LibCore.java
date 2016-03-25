@@ -461,8 +461,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addSecurityFeatures() {
     if (!contains(PublicationTemplate.class)) {
-      addPackages(true, "org.silverpeas.util.security");
-      addPackages(true, "org.silverpeas.util.crypto");
+      addPackages(true, "org.silverpeas.core.security");
     }
     return this;
   }

@@ -23,15 +23,15 @@
  */
 package org.silverpeas.upload;
 
-import org.silverpeas.core.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.admin.service.OrganizationController;

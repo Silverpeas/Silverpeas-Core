@@ -32,8 +32,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
 import org.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.security.ContentEncryptionService;
-import org.silverpeas.util.security.ContentEncryptionServiceProvider;
+import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -55,7 +55,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 public class TemplateDesignerSessionController extends AbstractComponentSessionController {
 

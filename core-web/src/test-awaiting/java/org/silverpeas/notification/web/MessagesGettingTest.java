@@ -23,8 +23,8 @@
  */
 package org.silverpeas.notification.web;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.After;
 import org.junit.Before;

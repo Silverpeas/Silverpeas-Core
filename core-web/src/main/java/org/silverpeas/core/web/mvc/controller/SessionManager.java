@@ -25,9 +25,9 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionValidationContext;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -63,7 +63,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Implementation of the {@code com.silverpeas.session.SessionManagement} interface.
+ * Implementation of the {@code org.silverpeas.core.security.session.SessionManagement} interface.
  * It extends the session management performed by the underlying application service by adding
  * useful session-related features like statistics about the connection time of each user or like
  * the actual number of connected users.
@@ -271,10 +271,10 @@ public class SessionManager implements SessionManagement {
    * @author dlesimple
    */
   @Override
-  public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList(
+  public Collection<org.silverpeas.core.security.session.SessionInfo> getDistinctConnectedUsersList(
       UserDetail user) {
-    Map<String, com.silverpeas.session.SessionInfo> distinctConnectedUsersList
-        = new HashMap<String, com.silverpeas.session.SessionInfo>();
+    Map<String, org.silverpeas.core.security.session.SessionInfo> distinctConnectedUsersList
+        = new HashMap<String, org.silverpeas.core.security.session.SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
       UserDetail sessionUser = si.getUserDetail();

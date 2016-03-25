@@ -23,9 +23,9 @@
  */
 package org.silverpeas.web.token;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;

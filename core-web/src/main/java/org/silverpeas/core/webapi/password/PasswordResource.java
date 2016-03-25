@@ -28,7 +28,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.util.SettingBundle;
 
 import javax.ws.rs.Consumes;
@@ -41,7 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import static org.silverpeas.password.service.PasswordServiceProvider.getPasswordService;
+import static org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider.getPasswordRulesService;
 
 /**
  * A REST Web resource giving gallery data.
@@ -89,11 +89,11 @@ public class PasswordResource extends AbstractPasswordResource {
     try {
       final PasswordPolicyEntity passwordPolicy = PasswordPolicyEntity
           .createFrom(nbMatchingCombinedRules,
-              getPasswordService().getExtraRuleMessage(getLanguage()));
-      for (final PasswordRule rule : getPasswordService().getRequiredRules()) {
+              getPasswordRulesService().getExtraRuleMessage(getLanguage()));
+      for (final PasswordRule rule : getPasswordRulesService().getRequiredRules()) {
         passwordPolicy.addRule(asWebEntity(rule));
       }
-      for (final PasswordRule rule : getPasswordService().getCombinedRules()) {
+      for (final PasswordRule rule : getPasswordRulesService().getCombinedRules()) {
         passwordPolicy.addCombinedRule(asWebEntity(rule));
       }
       return passwordPolicy;
@@ -118,6 +118,6 @@ public class PasswordResource extends AbstractPasswordResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public PasswordCheckEntity checking(final PasswordEntity password) {
-    return asWebEntity(getPasswordService().check(password.getValue()));
+    return asWebEntity(getPasswordRulesService().check(password.getValue()));
   }
 }

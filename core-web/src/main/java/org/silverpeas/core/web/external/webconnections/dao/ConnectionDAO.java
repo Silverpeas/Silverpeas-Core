@@ -32,11 +32,11 @@ import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.crypto.Cipher;
-import org.silverpeas.util.crypto.CipherFactory;
-import org.silverpeas.util.crypto.CipherKey;
-import org.silverpeas.util.crypto.CryptoException;
-import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+import org.silverpeas.core.security.encryption.cipher.Cipher;
+import org.silverpeas.core.security.encryption.cipher.CipherFactory;
+import org.silverpeas.core.security.encryption.cipher.CipherKey;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -270,7 +270,7 @@ public class ConnectionDAO {
    * return the encrypt String corresponding to the string cryptedString
    * @param text : String
    * @return the encrypt string : byte[]
-   * @throws org.silverpeas.util.crypto.CryptoException
+   * @throws CryptoException
    */
   private static byte[] getCryptString(String text) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
@@ -286,7 +286,7 @@ public class ConnectionDAO {
    * return the uncrypt string corresponding to the encrypt string cipherText
    * @param cipherText : byte[]
    * @return the uncrypt string : String
-   * @throws org.silverpeas.util.crypto.CryptoException
+   * @throws CryptoException
    */
   private static String getUncryptString(byte[] cipherText) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();

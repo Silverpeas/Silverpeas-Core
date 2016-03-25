@@ -29,7 +29,7 @@ import com.silverpeas.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.upload.UploadSession;

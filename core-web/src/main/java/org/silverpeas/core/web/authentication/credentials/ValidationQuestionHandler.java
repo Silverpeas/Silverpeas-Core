@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.util.crypto.CryptMD5;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**

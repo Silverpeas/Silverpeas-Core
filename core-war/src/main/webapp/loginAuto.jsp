@@ -33,7 +33,7 @@
 <%@ include file="headLog.jsp" %>
 
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
-<%@ page import="org.silverpeas.components.kmelia.KmeliaSecurity" %>
+<%@ page import="org.silverpeas.components.kmelia.KmeliaAuthorization" %>
 <%@ page import="org.silverpeas.components.kmelia.service.KmeliaHelper" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>

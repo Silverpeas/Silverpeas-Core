@@ -32,7 +32,7 @@ import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import com.silverpeas.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;

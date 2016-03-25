@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.accesscontrol.AccessControlContext;
-import org.silverpeas.core.accesscontrol.AccessControlOperation;
-import org.silverpeas.core.accesscontrol.AccessController;
-import org.silverpeas.core.accesscontrol.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.core.accesscontrol.NodeAccessControl;
-import org.silverpeas.core.accesscontrol.PublicationAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;

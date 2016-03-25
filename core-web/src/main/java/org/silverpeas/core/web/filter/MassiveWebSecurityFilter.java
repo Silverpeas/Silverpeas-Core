@@ -30,7 +30,7 @@ import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;

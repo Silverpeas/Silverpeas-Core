@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.password.constant.PasswordRuleType;
+import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 
 import javax.ws.rs.core.MediaType;

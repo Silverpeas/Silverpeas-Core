@@ -40,7 +40,7 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.security.X509Factory;
+import org.silverpeas.core.security.encryption.X509Factory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

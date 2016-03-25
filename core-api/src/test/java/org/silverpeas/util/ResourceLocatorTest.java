@@ -166,7 +166,7 @@ public class ResourceLocatorTest {
   }
 
   @Test
-  public void testExistenceOfAnExistingLocalizationBundleShouldReturnTue() {
+  public void testExistenceOfAnExistingLocalizationBundleShouldReturnTrue() {
     LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.authentication.multilang.authentication");
     assertThat(bundle, is(notNullValue()));

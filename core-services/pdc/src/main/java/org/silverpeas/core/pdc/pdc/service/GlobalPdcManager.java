@@ -48,6 +48,7 @@ import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 import org.silverpeas.core.pdc.tree.service.TreeService;
 import org.silverpeas.core.index.search.model.AxisFilter;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.ServiceProvider;
@@ -55,7 +56,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.ComponentSecurity;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
@@ -2119,7 +2119,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
 
 
-    ComponentSecurity componentSecurity = null;
+    ComponentAuthorization componentAuthorization = null;
 
     try {
       // Get all the values for this treeService
@@ -2202,13 +2202,13 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
                   !countedObjects.contains(objectId)) {
                 // check if object is available for user
                 if (instanceId.startsWith("kmelia")) {
-                  if (componentSecurity == null) {
-                    componentSecurity = (ComponentSecurity) Class
+                  if (componentAuthorization == null) {
+                    componentAuthorization = (ComponentAuthorization) Class
                         .forName("org.silverpeas.components.kmelia.KmeliaSecurity").newInstance();
-                    componentSecurity.enableCache();
+                    componentAuthorization.enableCache();
                   }
 
-                  if (componentSecurity
+                  if (componentAuthorization
                       .isObjectAvailable(instanceId, searchContext.getUserId(), objectId.toString(),
                           "Publication")) {
                     nbObjects++;
@@ -2240,8 +2240,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       throw new PdcException("GlobalPdcManager.getPertinentDaughterValues",
           SilverpeasException.ERROR, "Pdc.CANNOT_FILTER_VALUES", e);
     } finally {
-      if (componentSecurity != null) {
-        componentSecurity.disableCache();
+      if (componentAuthorization != null) {
+        componentAuthorization.disableCache();
       }
     }
   }

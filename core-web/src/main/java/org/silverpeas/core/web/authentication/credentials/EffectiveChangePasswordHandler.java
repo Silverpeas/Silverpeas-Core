@@ -23,10 +23,10 @@ package org.silverpeas.core.web.authentication.credentials;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceProvider;
-import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.AuthenticationService;
+import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

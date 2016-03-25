@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -53,9 +53,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.security.ContentEncryptionService;
-import org.silverpeas.util.security.ContentEncryptionServiceProvider;
-import org.silverpeas.util.security.EncryptionContentIterator;
+import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
+import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 

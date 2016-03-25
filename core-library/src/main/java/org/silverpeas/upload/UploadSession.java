@@ -23,10 +23,10 @@
  */
 package org.silverpeas.upload;
 
-import com.silverpeas.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.StringUtil;
@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.silverpeas.core.accesscontrol.AccessControllerProvider.getAccessController;
+import static org.silverpeas.core.security.authorization.AccessControllerProvider.getAccessController;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 /**

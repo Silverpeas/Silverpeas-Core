@@ -24,12 +24,12 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 

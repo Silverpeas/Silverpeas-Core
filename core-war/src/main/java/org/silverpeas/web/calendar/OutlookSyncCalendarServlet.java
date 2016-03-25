@@ -20,8 +20,8 @@
  */
 package org.silverpeas.web.calendar;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 import org.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;

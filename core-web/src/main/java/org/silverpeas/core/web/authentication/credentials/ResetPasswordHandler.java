@@ -24,13 +24,13 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserFull;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceProvider;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.password.ForgottenPasswordException;
-import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
-import org.silverpeas.password.service.PasswordServiceProvider;
+import org.silverpeas.core.security.authentication.AuthenticationCredential;
+import org.silverpeas.core.security.authentication.AuthenticationService;
+import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
+import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 
 public class ResetPasswordHandler extends FunctionHandler {
 
@@ -45,7 +45,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         return getGeneral().getString("forgottenPasswordResetError");
       }
       if (userId != null) {
-        String password = PasswordServiceProvider.getPasswordService().generate();
+        String password = PasswordRulesServiceProvider.getPasswordRulesService().generate();
         ForgottenPasswordMailParameters parameters = null;
         try {
           parameters = getMailParameters(userId);

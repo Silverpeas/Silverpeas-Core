@@ -24,9 +24,9 @@
 package org.silverpeas.core.web.token;
 
 import org.silverpeas.date.DateTime;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
@@ -37,7 +37,7 @@ import org.silverpeas.token.TokenGeneratorProvider;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.synchronizer.SynchronizerToken;
 import org.silverpeas.util.logging.SilverLogger;
-import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.core.web.util.security.SecuritySettings;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
