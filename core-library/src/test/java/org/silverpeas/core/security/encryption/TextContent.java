@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class TextContent implements SilverpeasContent {
 
-  public static enum Properties {
+  public enum Properties {
     Title,
     Description,
     Text;

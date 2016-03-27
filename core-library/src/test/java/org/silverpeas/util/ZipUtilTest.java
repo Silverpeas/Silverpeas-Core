@@ -54,7 +54,7 @@ public class ZipUtilTest {
 
   @Before
   public void setUpClass() throws Exception {
-    tempDir = new File(mavenTargetDirectoryRule.getBuildDirFile(), "temp");
+    tempDir = new File(mavenTargetDirectoryRule.getBuildDirFile(), "zipdir");
     tempDir.mkdirs();
   }
 

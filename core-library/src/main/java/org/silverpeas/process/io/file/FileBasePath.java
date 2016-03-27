@@ -41,7 +41,7 @@ public enum FileBasePath {
   private String path;
   private String handledNodeName;
 
-  private FileBasePath(final String path, final String handledNodeName) {
+  FileBasePath(final String path, final String handledNodeName) {
     this.path = new File(path).getPath();
     this.handledNodeName = handledNodeName;
   }

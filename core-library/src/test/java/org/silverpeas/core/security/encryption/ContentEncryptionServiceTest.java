@@ -32,7 +32,7 @@ import java.util.Random;
  * It creates the security directory to receive the key file, but the key file and it constructs
  * a DefaultContentEncryptionService instance ready to be tested.
  */
-public class ContentEncryptionServiceTest {
+public abstract class ContentEncryptionServiceTest {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
@@ -141,6 +141,8 @@ public class ContentEncryptionServiceTest {
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     if (keyFile.exists()) {
       keyFile.setWritable(true);
+    } else {
+      System.out.println("WARNIIIINNNNNG: the key file " + ACTUAL_KEY_FILE_PATH + " DOESN'T EXIST!");
     }
     String encryptedKey = encryptKey(key);
     String encryptedContent = StringUtil.asBase64(CIPHER_KEY.getRawKey()) + " " + encryptedKey;

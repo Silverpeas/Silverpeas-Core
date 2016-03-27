@@ -43,7 +43,7 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/07/13
  */
-public class PdfUtilTest {
+public class TestPdfUtil {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();

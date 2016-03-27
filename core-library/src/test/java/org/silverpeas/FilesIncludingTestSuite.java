@@ -25,11 +25,13 @@ package org.silverpeas;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.silverpeas.attachment.model.TestSimpleDocument;
 import org.silverpeas.process.io.file.TestAbstractFileHandler;
 import org.silverpeas.process.io.file.TestFileHandler;
 import org.silverpeas.process.io.file.TestHandledFile;
 import org.silverpeas.upload.TestUploadSession;
 import org.silverpeas.upload.TestUploadSessionFile;
+import org.silverpeas.util.TestPdfUtil;
 import org.silverpeas.util.data.TestLastModifiedDateFileTask;
 import org.silverpeas.util.data.TestTemporaryWorkspaceTranslation;
 
@@ -41,6 +43,8 @@ import org.silverpeas.util.data.TestTemporaryWorkspaceTranslation;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    TestSimpleDocument.class,
+    TestPdfUtil.class,
     TestUploadSession.class,
     TestUploadSessionFile.class,
     TestAbstractFileHandler.class,
@@ -48,7 +52,6 @@ import org.silverpeas.util.data.TestTemporaryWorkspaceTranslation;
     TestFileHandler.class,
     TestLastModifiedDateFileTask.class,
     TestTemporaryWorkspaceTranslation.class
-
 })
 public class FilesIncludingTestSuite {
 }

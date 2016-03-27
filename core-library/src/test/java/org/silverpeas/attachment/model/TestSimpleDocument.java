@@ -47,7 +47,7 @@ import static org.silverpeas.util.FileRepositoryManager.getUploadPath;
 /**
  * @author ehugonnet
  */
-public class SimpleDocumentTest {
+public class TestSimpleDocument {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
