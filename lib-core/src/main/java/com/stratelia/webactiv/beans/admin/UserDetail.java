@@ -715,10 +715,21 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   @Override
-  public int compareTo(UserDetail o) {
-    UserDetail other = o;
-    return ((getLastName() + getFirstName()).toLowerCase(I18NHelper.defaultLocale)).compareTo(
-        (other.getLastName() + other.getFirstName()).toLowerCase(I18NHelper.defaultLocale));
+  public int compareTo(UserDetail other) {
+    String myLastName = getLastName().toLowerCase(I18NHelper.defaultLocale);
+    String otherLastName = other.getLastName().toLowerCase(I18NHelper.defaultLocale);
+    int result = myLastName.compareTo(otherLastName);
+    if (result == 0) {
+      String myFirstName = getFirstName().toLowerCase(I18NHelper.defaultLocale);
+      String otherFirstName = other.getFirstName().toLowerCase(I18NHelper.defaultLocale);
+      result = myFirstName.compareTo(otherFirstName);
+      if (result == 0) {
+        String myId = getId();
+        String otherId = other.getId();
+        result = myId.compareTo(otherId);
+      }
+    }
+    return result;
   }
 
   public String getAvatar() {
