@@ -28,13 +28,13 @@ import java.util.Date;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.EntityReference;
 import org.silverpeas.dateReminder.persistent.service.DateReminderServiceProvider;
 import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
 import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
 import org.silverpeas.dateReminder.persistent.DateReminderDetail;
-import org.silverpeas.publication.dateReminder.PublicationNoteReference;
+import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 
 /**
  * The widget date reminder

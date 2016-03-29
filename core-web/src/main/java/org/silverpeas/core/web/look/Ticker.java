@@ -1,6 +1,6 @@
 package org.silverpeas.core.web.look;
 
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;

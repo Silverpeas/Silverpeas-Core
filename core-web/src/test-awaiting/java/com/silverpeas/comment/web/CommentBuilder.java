@@ -27,7 +27,7 @@ package com.silverpeas.comment.web;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import java.util.Date;
 
 /**

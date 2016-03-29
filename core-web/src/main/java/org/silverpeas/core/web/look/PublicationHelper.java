@@ -29,7 +29,7 @@
 package org.silverpeas.core.web.look;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.List;
 

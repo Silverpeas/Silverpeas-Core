@@ -22,7 +22,7 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.publication.control.PublicationService;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 

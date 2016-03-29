@@ -27,7 +27,7 @@ package com.silverpeas.importExport.report;
 import org.hamcrest.Matchers;
 import java.util.Calendar;
 import com.silverpeas.importExport.model.PublicationType;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

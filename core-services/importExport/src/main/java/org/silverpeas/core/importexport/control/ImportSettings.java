@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.util.ResourceLocator;

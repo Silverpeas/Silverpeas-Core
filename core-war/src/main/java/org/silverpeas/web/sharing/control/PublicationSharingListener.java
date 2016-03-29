@@ -27,7 +27,7 @@ package org.silverpeas.web.sharing.control;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.notification.CDIResourceEventListener;
-import org.silverpeas.publication.notification.PublicationEvent;
+import org.silverpeas.core.contribution.publication.notification.PublicationEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
 /**
  * This interface extends access controller for a Publication resource.

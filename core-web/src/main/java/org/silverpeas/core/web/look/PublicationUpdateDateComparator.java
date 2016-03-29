@@ -22,7 +22,7 @@ package org.silverpeas.core.web.look;
 
 import java.util.Comparator;
 
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 public class PublicationUpdateDateComparator implements Comparator<PublicationDetail> {
 

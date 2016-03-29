@@ -26,9 +26,9 @@ package org.silverpeas.core.tagcloud.service;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
-import com.stratelia.webactiv.publication.control.DefaultPublicationService;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.DefaultPublicationService;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -47,7 +47,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * This service extends the default implementation of the
- * {@©ode com.stratelia.webactiv.publication.control.PublicationService} interface by adding
+ * {@©ode org.silverpeas.core.contribution.publication.service.PublicationService} interface by adding
  * tag cloud capabilities.
  * @author mmoquillon
  */
