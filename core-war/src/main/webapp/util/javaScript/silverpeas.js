@@ -65,7 +65,7 @@ if (!String.prototype.unescapeHTML) {
   String.prototype.unescapeHTML = function() {
     var div = document.createElement("div");
     div.innerHTML = this;
-    return div.innerText;
+    return div.innerText || div.textContent || '';
   };
 }
 
