@@ -21,23 +21,49 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.contribution;
+package org.silverpeas.core.contribution;
 
-import com.silverpeas.SilverpeasContent;
-import org.silverpeas.contribution.model.ContributionValidation;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * A validable contribution is an object that represents a contribution which can be validated.
- * This interface defines all methods that must be implemented in order to obtain differents
- * contribution types that can be handled by a same mechanism.
+ * Defines the different possible status in which a contribution must be.
  * @author: Yohann Chastagnier
  */
-public interface ValidableContribution extends SilverpeasContent {
+public enum ContributionStatus {
+  UNKNOWN,
+  DRAFT,
+  PENDING_VALIDATION,
+  REFUSED,
+  VALIDATED;
 
-  /**
-   * Gets the contribution validation instance.
-   * @return a contribution validation object.
-   * @see ContributionValidation
-   */
-  ContributionValidation getValidation();
+  @JsonValue
+  public String getName() {
+    return name();
+  }
+
+  @JsonCreator
+  public static ContributionStatus from(String name) {
+    try {
+      return valueOf(name.toUpperCase());
+    } catch (Exception e) {
+      return UNKNOWN;
+    }
+  }
+
+  public boolean isInDraft() {
+    return this == ContributionStatus.DRAFT;
+  }
+
+  public boolean isRefused() {
+    return this == ContributionStatus.REFUSED;
+  }
+
+  public boolean isPendingValidation() {
+    return this == ContributionStatus.PENDING_VALIDATION;
+  }
+
+  public boolean isValidated() {
+    return this == ContributionStatus.VALIDATED;
+  }
 }

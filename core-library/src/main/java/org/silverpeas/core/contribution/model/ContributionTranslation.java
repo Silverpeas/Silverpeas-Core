@@ -19,28 +19,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core;
+package org.silverpeas.core.contribution.model;
+
+import org.silverpeas.core.Translation;
 
 /**
- * A translation of the properties of a bean supporting the i18n features. A such bean can be
- * a user's contribution or a contribution's content or a transverse business entity in Silverpeas.
- * All objects that represent a translation of a given i18n bean in different languages
- * must implement either this interface or one of its more-typed children interfaces:
- * <ul>
- *   <li>{@code org.silverpeas.contribution.ContributionTranslation} for the contributions,</li>
- *   <li>{@¢ode org.silverpeas.contribution.model.ContributionContentTranslation} for the
- *   contribution content.</li>
- * </ul>
- * <p>
- *   For example, as the <code>Publication</code> is a i18n contribution, it must be able to
- *   return a <code>PublicationTranslation</code> instance for each translation asked in a given
- *   language. Another example, as the PdC's axis is a i18n entity, it must be able to return
- *   a <code>AxisTranslation</code> instance for each translation asked in a given language.
- * </p>
+ * A translation of a i18n contribution. Any classes representing the translation of a i18n
+ * contribution should implement this interface.
  * @author mmoquillon
  */
-public interface Translation {
-
-  String getLanguage();
-
+public interface ContributionTranslation extends Contribution, Translation {
 }

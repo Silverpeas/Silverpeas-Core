@@ -37,7 +37,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.notification.ResourceEvent;

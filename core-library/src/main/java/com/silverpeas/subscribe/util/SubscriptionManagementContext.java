@@ -24,7 +24,7 @@
 package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.SubscriptionResource;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.util.ActionType;
 
 /**

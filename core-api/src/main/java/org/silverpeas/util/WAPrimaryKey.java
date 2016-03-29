@@ -27,14 +27,17 @@ package org.silverpeas.util;
 import java.io.Serializable;
 
 /**
- * The webactiv primary key for a entity bean defines :
+ * The primary key for a entity bean defines:
  * <ul>
  * <li>the row id in the database</li>
  * <li>the space</li>
  * <li>the component name</li>
  * </ul>
+ * It is now replaced by {@code {@link org.silverpeas.core.ResourceIdentifier} but it is still
+ * used in old code.
  * @author Nicolas Eysseric
  * @version 1.0
+ * @deprecated
  */
 @Deprecated
 public abstract class WAPrimaryKey implements Serializable, Cloneable {

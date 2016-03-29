@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.contribution.model;
+package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.ContributionStatus;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

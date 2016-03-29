@@ -19,31 +19,28 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.contribution.model;
-
-import java.io.Serializable;
+package org.silverpeas.core;
 
 /**
- * The content of a contribution in Silverpeas. It is the more generic representation of a content
- * embedded into a user contribution. All conceptual representation of a content supported in
- * Silverpeas should implement this interface.
- * @param <T> the type the content's data.
+ * A translation of the properties of a bean supporting the i18n features. A such bean can be
+ * a user's contribution or a contribution's content or a transverse business entity in Silverpeas.
+ * All objects that represent a translation of a given i18n bean in different languages
+ * must implement either this interface or one of its more-typed children interfaces:
+ * <ul>
+ *   <li>{@code org.silverpeas.core.contribution.ContributionTranslation} for the contributions,</li>
+ *   <li>{@¢ode org.silverpeas.core.contribution.model.ContributionContentTranslation} for the
+ *   contribution content.</li>
+ * </ul>
+ * <p>
+ *   For example, as the <code>Publication</code> is a i18n contribution, it must be able to
+ *   return a <code>PublicationTranslation</code> instance for each translation asked in a given
+ *   language. Another example, as the PdC's axis is a i18n entity, it must be able to return
+ *   a <code>AxisTranslation</code> instance for each translation asked in a given language.
+ * </p>
  * @author mmoquillon
  */
-public interface ContributionContent<T> extends Serializable {
+public interface Translation {
 
-  /**
-   * Gets the data of a content. A data can be a text, a structure, a binary stream, and so on. The
-   * type of the data should be represented by a Java type.
-   * @return the data of the content.
-   */
-  T getData();
+  String getLanguage();
 
-  /**
-   * Does the content is empty?
-   * @return true if this content doesn't contain any data, false otherwise.
-   */
-  default boolean isEmpty() {
-    return getData() != null;
-  }
 }

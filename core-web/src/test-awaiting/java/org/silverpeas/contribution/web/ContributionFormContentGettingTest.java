@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.contribution.web;
+package org.silverpeas.core.contribution.web;
 
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -32,8 +32,8 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.silverpeas.contribution.web.ContributionTestResources.JAVA_PACKAGE;
-import static org.silverpeas.contribution.web.ContributionTestResources.SPRING_CONTEXT;
+import static org.silverpeas.core.contribution.web.ContributionTestResources.JAVA_PACKAGE;
+import static org.silverpeas.core.contribution.web.ContributionTestResources.SPRING_CONTEXT;
 
 /**
  * User: Yohann Chastagnier

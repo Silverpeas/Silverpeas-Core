@@ -30,7 +30,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="org.silverpeas.contribution.web">
+  <ctx:component-scan base-package="org.silverpeas.core.contribution.web">
     <ctx:exclude-filter type="regex" expression="org.silverpeas.contribution.web.ContributionContentResource*"/>
   </ctx:component-scan>
   <import resource="spring-webservice.xml"/>

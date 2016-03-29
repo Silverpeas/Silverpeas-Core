@@ -19,15 +19,31 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.contribution.model;
+package org.silverpeas.core.contribution.model;
+
+import java.io.Serializable;
 
 /**
- * An internationalized contribution's content. It supports different languages and regional
- * specificities (i18n). Any content supporting the translation of its data in different
- * language should implements this interface.
+ * The content of a contribution in Silverpeas. It is the more generic representation of a content
+ * embedded into a user contribution. All conceptual representation of a content supported in
+ * Silverpeas should implement this interface.
+ * @param <T> the type the content's data.
  * @author mmoquillon
  */
-public interface I18nContributionContent {
+public interface ContributionContent<T> extends Serializable {
 
-  <T extends ContributionContentTranslation> T getTranslation(String language);
+  /**
+   * Gets the data of a content. A data can be a text, a structure, a binary stream, and so on. The
+   * type of the data should be represented by a Java type.
+   * @return the data of the content.
+   */
+  T getData();
+
+  /**
+   * Does the content is empty?
+   * @return true if this content doesn't contain any data, false otherwise.
+   */
+  default boolean isEmpty() {
+    return getData() != null;
+  }
 }

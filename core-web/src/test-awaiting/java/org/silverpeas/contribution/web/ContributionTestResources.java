@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.contribution.web;
+package org.silverpeas.core.contribution.web;
 
 import com.silverpeas.web.TestResources;
 
@@ -33,6 +33,6 @@ import javax.inject.Named;
 @Named(TestResources.TEST_RESOURCES_NAME)
 public class ContributionTestResources extends TestResources {
 
-  public static final String JAVA_PACKAGE = "org.silverpeas.contribution.web";
+  public static final String JAVA_PACKAGE = "org.silverpeas.core.contribution.web";
   public static final String SPRING_CONTEXT = "spring-contribution-webservice.xml";
 }

@@ -19,14 +19,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.contribution.model;
-
-import org.silverpeas.core.Translation;
+package org.silverpeas.core.contribution.model;
 
 /**
- * A translation of a i18n contribution. Any classes representing the translation of a i18n
- * contribution should implement this interface.
+ * An internationalized contribution. It supports different languages and regional specificities
+ * (i18n). Any contribution supporting the translation of some of its properties in different
+ * language should implements this interface.
+ *
  * @author mmoquillon
  */
-public interface ContributionTranslation extends Contribution, Translation {
+public interface I18nContribution extends Contribution {
+
+  /**
+   * Gets a translation of this contribution in the specified language.
+   * @param language the ISO 639-1 code of the language.
+   * @return a translation of the contribution in the specified language.
+   */
+  <T extends ContributionTranslation> T getTranslation(String language);
+
 }

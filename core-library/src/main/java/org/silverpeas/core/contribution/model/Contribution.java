@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.contribution.model;
+package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.IdentifiableResource;
