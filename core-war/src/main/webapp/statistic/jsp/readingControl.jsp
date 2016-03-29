@@ -73,7 +73,7 @@
       ArrayLine ligne = arrayPane.addArrayLine();
       UserDetail user = historyByUser.getUser();
       ArrayCellText cell0 = ligne.addArrayCellText(UserNameGenerator.toString(user, currentUserId));
-      cell0.setCompareOn(user.getLastName() + user.getFirstName());
+      cell0.setCompareOn(user);
       Date haveRead = historyByUser.getLastAccess();
       String readingDate = "";
         if (haveRead == null) {
