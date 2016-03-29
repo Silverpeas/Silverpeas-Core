@@ -113,13 +113,15 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
           areKeywordsHandled(uploadSession) ? request.getParameter("PublicationKeywords") : "";
       boolean onePublicationForAll = StringUtil.isDefined(publicationName);
       String versionType = request.getParameter("VersionType");
+      String validatorIds = request.getParameter("ValidatorIds");
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId + " topicId = " + topicId + " userId = " +
               currentUser.getId() + " ignoreFolders = " + ignoreFolders + ", draftUsed = " +
               draftUsed + ", contentLanguage = " + contentLanguage + ", publicationName = " +
               publicationName + ", publicationDescription= " + publicationDescription +
-              ", publicationKeywords = " + publicationKeywords + ", versionType = " + versionType);
+              ", publicationKeywords = " + publicationKeywords + ", versionType = " + versionType +
+              ", validatorIds = " + validatorIds);
 
       if (isDescriptionMandatory(uploadSession) &&
           StringUtil.isNotDefined(publicationDescription)) {
@@ -149,6 +151,7 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
         if (settings.isVersioningUsed()) {
           settings.setVersionType(Integer.valueOf(versionType));
         }
+        settings.setTargetValidatorIds(validatorIds);
         settings.setContentLanguage(contentLanguage);
         if (onePublicationForAll) {
           settings.getPublicationForAllFiles().setName(publicationName);
