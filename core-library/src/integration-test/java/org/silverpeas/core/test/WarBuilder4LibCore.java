@@ -107,7 +107,7 @@ import org.silverpeas.core.util.logging.LogAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.wysiwyg.control.WysiwygManager;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -437,7 +437,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addWysiwygFeatures() {
     if (!contains(WysiwygManager.class)) {
       addClasses(ContributionIdentifier.class, ContributionContent.class);
-      addPackages(true, "org.silverpeas.wysiwyg");
+      addPackages(true, "org.silverpeas.core.contribution.content.wysiwyg");
       addMavenDependencies("net.htmlparser.jericho:jericho-html");
     }
     return this;

@@ -301,7 +301,7 @@
   <function>
     <description>Function that returns the images attached to the path for the website application.</description>
     <name>webSiteImages</name>
-    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
     <function-signature>
       java.lang.String[][] getWebsiteImages(java.lang.String, java.lang.String)
     </function-signature>
@@ -309,7 +309,7 @@
   <function>
     <description>Function that returns the images attached to an object in an application.</description>
     <name>attachmentImages</name>
-    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
     <function-signature>
       java.util.List getImages(java.lang.String, java.lang.String)
     </function-signature>
@@ -317,7 +317,7 @@
   <function>
     <description>Function that returns the list of components kmelia (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to file storage.</description>
     <name>componentsFileStorage</name>
-    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
     <function-signature>
       java.util.List getStorageFile()
     </function-signature>
@@ -325,7 +325,7 @@
   <function>
     <description>Function that returns the list of components gallery (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to image storage.</description>
     <name>componentsImageStorage</name>
-    <function-class>org.silverpeas.wysiwyg.control.WysiwygController</function-class>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
     <function-signature>
       java.util.List getGalleries()
     </function-signature>
@@ -333,7 +333,7 @@
   <function>
     <description>Function that indicates if the dynamic value functionality in wysiwyg is active.</description>
     <name>isDynamicValueActivate</name>
-    <function-class>com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
     <function-signature>
       boolean isActivate()
     </function-signature>
@@ -341,7 +341,7 @@
   <function>
     <description>Function that returns the html code of the list of dynamic value in wysiwyg.</description>
     <name>buildHtmlListDynamicValue</name>
-    <function-class>com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
     <function-signature>
       java.lang.String buildHTMLSelect(java.lang.String, java.lang.String, java.lang.String)
     </function-signature>

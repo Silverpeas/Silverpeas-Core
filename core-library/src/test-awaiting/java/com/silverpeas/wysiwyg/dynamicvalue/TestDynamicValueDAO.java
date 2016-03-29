@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.wysiwyg.dynamicvalue;
+package org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,18 +26,18 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
-import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
-import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionFactory;
+import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
+import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.model.DynamicValue;
+import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.pool.ConnectionFactory;
 
 /**
- * class test for com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO
+ * class test for org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.DynamicValueDAO
  */
 public class TestDynamicValueDAO extends AbstractBaseDynamicValue {
 
   /**
    * Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO#getValidDynamicValue(java.sql.Connection, java.lang.String)}.
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.DynamicValueDAO#getValidDynamicValue(java.sql.Connection, java.lang.String)}.
    *
    * @throws Exception
    */
@@ -50,7 +50,7 @@ public class TestDynamicValueDAO extends AbstractBaseDynamicValue {
 
   /**
    * Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO#getAllValidDynamicValue(java.sql.Connection)}.
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.DynamicValueDAO#getAllValidDynamicValue(java.sql.Connection)}.
    *
    * @throws SQLException
    */
@@ -73,7 +73,7 @@ public class TestDynamicValueDAO extends AbstractBaseDynamicValue {
 
   /**
    * Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO#searchValidDynamicValue(java.sql.Connection, java.lang.String)}
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.DynamicValueDAO#searchValidDynamicValue(java.sql.Connection, java.lang.String)}
    * .
    *
    * @throws SQLException

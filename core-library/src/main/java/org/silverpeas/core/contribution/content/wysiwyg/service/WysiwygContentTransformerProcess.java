@@ -21,24 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.silverpeas;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.silverpeas.file.TestAttachmentUrlLinkProcessor;
-import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
-import org.silverpeas.core.contribution.content.wysiwyg.service.process.TestMailContentProcess;
+package org.silverpeas.core.contribution.content.wysiwyg.service;
 
 /**
- * Test suite to sequence the unit tests on the file processing API.
- * As each unit tests works on the same file structure, it is required to sequence them so
- * that they work on the filesystem each of their turn.
- * @author mmoquillon
+ * Processes operation on WYSIWYG content and returning a typed result.
+ * Must be used with {@link WysiwygContentTransformer}.
+ * @param <TYPED_RESULT> the type of the result.
+ * @author Yohann Chastagnier
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestWysiwygContentTransformer.class,
-    TestMailContentProcess.class,
-    TestAttachmentUrlLinkProcessor.class})
-public class ImageResourceAndResizingTestSuite {}
+public interface WysiwygContentTransformerProcess<TYPED_RESULT> {
+
+  /**
+   * Executes the process on the given WYSIWYG content.
+   * @param wysiwygContent the WYSIWYG content source.
+   * @return the typed result of the WYSIWYG transformation process.
+   */
+  TYPED_RESULT execute(String wysiwygContent) throws Exception;
+}

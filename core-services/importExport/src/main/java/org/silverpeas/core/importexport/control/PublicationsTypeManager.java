@@ -72,7 +72,7 @@ import org.silverpeas.util.WAAttributeValuePair;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import java.io.File;

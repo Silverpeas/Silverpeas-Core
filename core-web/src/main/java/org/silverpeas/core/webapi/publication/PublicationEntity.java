@@ -37,7 +37,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.sharing.SharingContext;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

@@ -25,7 +25,7 @@
 <%@ tag language="java" pageEncoding="UTF-8" %>
 
 <%@ tag import="org.silverpeas.core.web.treemenu.model.NodeType" %>
-<%@ tag import="org.silverpeas.wysiwyg.control.WysiwygController" %>
+<%@ tag import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>

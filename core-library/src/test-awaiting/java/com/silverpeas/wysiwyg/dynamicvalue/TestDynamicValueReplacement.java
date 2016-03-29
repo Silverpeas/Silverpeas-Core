@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.wysiwyg.dynamicvalue;
+package org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue;
 
-import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,7 +39,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
 
   /**
    * Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement#buildHTMLSelect()}.
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement#buildHTMLSelect()}.
    */
   @Test
   public void testBuildHTMLSelect() {
@@ -49,7 +49,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
 
   /**
    * replaces all the key occurrences by their values Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement#replaceKeyByValue(java.lang.String)}
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement#replaceKeyByValue(java.lang.String)}
    * .
    * @throws IOException
    */
@@ -63,7 +63,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
 
   /**
    * calls replaceKeyByValue with a text without content to replace Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement#replaceKeyByValue(java.lang.String)}
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement#replaceKeyByValue(java.lang.String)}
    * .
    * @throws IOException
    */
@@ -97,7 +97,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
 
   /**
    * Test method for
-   * {@link com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement#isActivate()}.
+   * {@link org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement#isActivate()}.
    */
   @Test
   public void testIsActivate() {

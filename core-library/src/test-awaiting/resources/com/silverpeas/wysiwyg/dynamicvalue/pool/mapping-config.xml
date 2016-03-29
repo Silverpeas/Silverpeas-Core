@@ -55,7 +55,7 @@
 <mapping>
 <description>A mapping file for connection pool settings </description>
 
-<class name="com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolInformation">
+<class name="org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.pool.ConnectionPoolInformation">
  <map-to xml="ConnectionInformation" />
   <field name="connectionType" type="string" required="true"/>
   <field name="JndiName" type="string" />
