@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
 import com.stratelia.webactiv.publication.model.PublicationDetail;

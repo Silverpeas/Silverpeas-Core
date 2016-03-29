@@ -53,7 +53,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.publication.model.ValidationStep;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.publication.notification.PublicationEventNotifier;
 import org.silverpeas.rating.ContributionRatingPK;

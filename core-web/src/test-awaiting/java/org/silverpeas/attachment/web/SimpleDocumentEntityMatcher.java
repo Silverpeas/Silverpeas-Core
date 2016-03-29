@@ -21,12 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.web;
+package org.silverpeas.core.contribution.attachment.web;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  *

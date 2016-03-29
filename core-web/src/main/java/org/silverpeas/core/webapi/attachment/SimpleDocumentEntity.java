@@ -29,8 +29,8 @@ import java.net.URISyntaxException;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 

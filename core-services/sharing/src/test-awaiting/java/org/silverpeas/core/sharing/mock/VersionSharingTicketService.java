@@ -31,7 +31,7 @@ import org.silverpeas.core.sharing.services.SharingTicketService;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
 /**
  *

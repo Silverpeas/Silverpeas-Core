@@ -24,9 +24,9 @@
 
 package org.silverpeas.permalinks;
 
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.permalinks.model.DocumentPermalink;
 import org.silverpeas.permalinks.model.VersionPermalink;
 import org.silverpeas.permalinks.repository.DocumentPermalinkManager;

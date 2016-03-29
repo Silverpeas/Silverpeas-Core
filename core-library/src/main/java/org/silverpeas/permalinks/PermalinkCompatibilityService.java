@@ -23,7 +23,7 @@
  */
 package org.silverpeas.permalinks;
 
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  * @author: ebonnet

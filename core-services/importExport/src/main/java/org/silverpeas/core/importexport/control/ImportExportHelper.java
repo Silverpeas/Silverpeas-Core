@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 
 /**
  * @author neysseri

@@ -25,9 +25,9 @@ package org.silverpeas.file;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.File;

@@ -23,7 +23,7 @@
 */
 package org.silverpeas.core.sharing.security;
 
-import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**

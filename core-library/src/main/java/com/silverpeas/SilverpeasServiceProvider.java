@@ -25,8 +25,8 @@ import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerProvider;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 
 /**
  * Provides services to be used in Silverpeas

@@ -39,15 +39,15 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
-import org.silverpeas.attachment.ActifyDocumentProcessor;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.attachment.util.AttachmentSettings;
+import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.UnlockContext;
+import org.silverpeas.core.contribution.attachment.model.UnlockOption;
+import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
@@ -80,8 +80,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.attachment.AttachmentServiceProvider.getAttachmentService;
-import static org.silverpeas.attachment.model.DocumentType.attachment;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.contribution.attachment.model.DocumentType.attachment;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas

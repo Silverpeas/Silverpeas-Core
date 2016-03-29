@@ -21,7 +21,7 @@
 package org.silverpeas.wysiwyg.control;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.util.ForeignPK;

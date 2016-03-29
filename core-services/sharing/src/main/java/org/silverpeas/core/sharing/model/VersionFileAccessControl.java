@@ -24,7 +24,7 @@
 package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
-import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 
 /**
  * Access control to shared version documents.

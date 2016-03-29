@@ -40,7 +40,7 @@ import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;

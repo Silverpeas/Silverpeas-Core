@@ -23,8 +23,8 @@
  */
 package org.silverpeas.process.annotation;
 
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.process.SimpleDocumentSimulationElement;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.process.SimpleDocumentSimulationElement;
 
 /**
  * To be handled in a simulation action processing, an implementation of this interface must

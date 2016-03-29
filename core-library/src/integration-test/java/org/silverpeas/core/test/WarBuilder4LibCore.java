@@ -46,8 +46,8 @@ import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.persistence.ScheduledDBReset;
 import org.silverpeas.EntityReference;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.repository.JcrContext;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -405,11 +405,11 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(FormException.class, JcrIntegrationTest.class, JcrContext.class,
           FileServerUtils.class);
       addPackages(true, "org.silverpeas.jcr");
-      addPackages(true, "org.silverpeas.attachment");
+      addPackages(true, "org.silverpeas.core.contribution.attachment");
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       addAsResource("silverpeas-jcr.cnd");
       addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
-      applyManually(war -> war.deletePackages(true, "org.silverpeas.attachment.mock"));
+      applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }
     return this;
   }

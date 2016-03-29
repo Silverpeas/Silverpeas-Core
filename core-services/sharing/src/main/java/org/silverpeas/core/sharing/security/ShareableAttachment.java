@@ -24,7 +24,7 @@
 package org.silverpeas.core.sharing.security;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  * Attachement being accessed through some shared object.

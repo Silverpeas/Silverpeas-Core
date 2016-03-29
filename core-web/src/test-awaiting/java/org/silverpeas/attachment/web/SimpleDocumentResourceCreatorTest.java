@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.web;
+package org.silverpeas.core.contribution.attachment.web;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -44,10 +44,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.util.Charsets;
 
@@ -69,7 +69,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
+import static org.silverpeas.core.contribution.attachment.web.SimpleDocumentTestResource.*;
 import org.silverpeas.util.URLUtils;
 
 /**
@@ -83,7 +83,7 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
   private Date creationDate = RandomGenerator.getOutdatedCalendar().getTime();
 
   public SimpleDocumentResourceCreatorTest() {
-    super("org.silverpeas.attachment.web", "spring-jcr-webservice.xml");
+    super("org.silverpeas.core.contribution.attachment.web", "spring-jcr-webservice.xml");
   }
 
   @Before

@@ -24,9 +24,9 @@ import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableAttachment;
 import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

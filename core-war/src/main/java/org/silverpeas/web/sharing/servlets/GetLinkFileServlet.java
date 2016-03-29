@@ -28,7 +28,7 @@ import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.web.servlet.RestRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

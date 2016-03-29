@@ -31,9 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.CharEncoding;
 
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.core.util.StringUtil;

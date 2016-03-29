@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.sharing.SharingContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 

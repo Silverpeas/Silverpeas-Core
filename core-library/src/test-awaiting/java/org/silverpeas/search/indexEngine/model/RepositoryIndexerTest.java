@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.silverpeas.attachment.AttachmentServiceTest;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceTest;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;

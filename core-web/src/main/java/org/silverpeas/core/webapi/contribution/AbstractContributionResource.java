@@ -35,10 +35,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

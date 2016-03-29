@@ -43,7 +43,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.core.test.WarBuilder4LibCore;

@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.upload.UploadSession;
 import org.silverpeas.core.util.StringUtil;

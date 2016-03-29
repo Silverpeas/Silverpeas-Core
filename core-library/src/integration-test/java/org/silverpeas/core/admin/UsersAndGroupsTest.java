@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.WAIndexSearcher;

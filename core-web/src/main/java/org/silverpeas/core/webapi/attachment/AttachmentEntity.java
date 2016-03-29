@@ -28,8 +28,8 @@ import org.silverpeas.core.webapi.base.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlElement;

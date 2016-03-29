@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  * This interface extends access controller interface for SimpleDocument resource.

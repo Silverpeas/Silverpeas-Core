@@ -24,7 +24,7 @@
 package org.silverpeas.sharing;
 
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;

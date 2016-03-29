@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.web;
+package org.silverpeas.core.contribution.attachment.web;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.mock.SimpleDocumentServiceWrapper;
 
 import com.silverpeas.web.TestResources;
 

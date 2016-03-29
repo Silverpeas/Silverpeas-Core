@@ -25,7 +25,7 @@ package org.silverpeas;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.silverpeas.attachment.model.TestSimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.TestSimpleDocument;
 import org.silverpeas.process.io.file.TestAbstractFileHandler;
 import org.silverpeas.process.io.file.TestFileHandler;
 import org.silverpeas.process.io.file.TestHandledFile;

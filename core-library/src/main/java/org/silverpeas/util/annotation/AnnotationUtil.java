@@ -27,7 +27,7 @@ import com.silverpeas.SilverpeasContent;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.apache.commons.lang3.NotImplementedException;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MapUtil;
 import org.silverpeas.util.WAPrimaryKey;

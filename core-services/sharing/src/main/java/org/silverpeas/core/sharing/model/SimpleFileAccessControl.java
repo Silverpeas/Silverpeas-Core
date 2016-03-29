@@ -21,7 +21,7 @@
 package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
-import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  * Access control to shared attachments
