@@ -26,9 +26,9 @@ package org.silverpeas.core.workflow.api.model;
 
 import java.util.Iterator;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
 /**
@@ -385,11 +385,11 @@ public interface ProcessModel {
   Form getActionForm(String actionName) throws WorkflowException;
 
   /**
-   * Returns the com.silverpeas.form.Form which be used to publish the form associated to the named
+   * Returns the Form which be used to publish the form associated to the named
    * action. Returns null if the action has no form. Throws a WorkflowException if the action is
    * unknown.
    */
-  com.silverpeas.form.Form getPublicationForm(String actionName,
+  org.silverpeas.core.contribution.content.form.Form getPublicationForm(String actionName,
       String role, String language) throws WorkflowException;
 
   /**
@@ -399,11 +399,11 @@ public interface ProcessModel {
   Action getCreateAction(String role) throws WorkflowException;
 
   /**
-   * Returns the com.silverpeas.form.Form which be used to publish the named form. We can give an
+   * Returns the Form which be used to publish the named form. We can give an
    * action name too. Returns null if the action exists but has no form. Throws a WorkflowException
    * if the action/form is unknown.
    */
-  com.silverpeas.form.Form getPresentationForm(String name, String role,
+  org.silverpeas.core.contribution.content.form.Form getPresentationForm(String name, String role,
       String language) throws WorkflowException;
 
   /**
@@ -418,7 +418,7 @@ public interface ProcessModel {
   RecordTemplate getRowTemplate(String role, String lang);
 
   /**
-   * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to process the
+   * Returns an empty DataRecord which must be filled in order to process the
    * named action. Returns null if no form is required to process this action. Throws a
    * WorkflowException if the action is unknown.
    */
@@ -426,7 +426,7 @@ public interface ProcessModel {
       String lang, DataRecord data) throws WorkflowException;
 
   /**
-   * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to fill the user
+   * Returns an empty DataRecord which must be filled in order to fill the user
    * information Throws a WorkflowException if problem encountered.
    */
   DataRecord getNewUserInfosRecord(String roleName, String lang)

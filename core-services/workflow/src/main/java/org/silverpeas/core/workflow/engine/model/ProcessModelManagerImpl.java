@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.workflow.engine.model;
 
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.record.GenericRecordSetManager;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.DataFolder;

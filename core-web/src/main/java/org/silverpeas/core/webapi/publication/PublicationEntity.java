@@ -21,10 +21,10 @@
 package org.silverpeas.core.webapi.publication;
 
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

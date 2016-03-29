@@ -31,7 +31,7 @@ import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.State;
-import com.silverpeas.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecord;
 
 /**
  * A TaskDoneEvent object is the description of a done activity. Those descriptions are sent to the

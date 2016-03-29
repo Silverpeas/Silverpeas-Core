@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.workflow.engine;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.UserManager;

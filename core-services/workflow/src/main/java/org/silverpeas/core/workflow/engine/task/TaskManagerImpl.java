@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.workflow.engine.task;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;

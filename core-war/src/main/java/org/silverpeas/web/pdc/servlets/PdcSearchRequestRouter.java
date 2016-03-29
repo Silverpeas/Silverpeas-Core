@@ -20,11 +20,11 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.form.XmlSearchForm;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
 import com.silverpeas.publicationTemplate.PublicationTemplate;

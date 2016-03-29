@@ -22,9 +22,9 @@ package org.silverpeas.web.templatedesigner.control;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.model.LocalizedComponent;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;

@@ -25,11 +25,11 @@ package org.silverpeas.core.webapi.contribution;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import org.silverpeas.core.util.StringUtil;
 

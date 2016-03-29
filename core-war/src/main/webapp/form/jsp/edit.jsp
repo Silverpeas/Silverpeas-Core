@@ -28,9 +28,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
-<%@ page import="com.silverpeas.form.DataRecord"%>
-<%@ page import="com.silverpeas.form.Form"%>
-<%@ page import="com.silverpeas.form.PagesContext" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%

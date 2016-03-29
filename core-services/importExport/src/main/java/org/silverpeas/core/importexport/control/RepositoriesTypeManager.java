@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.model.RepositoriesType;
 import org.silverpeas.core.importexport.model.RepositoryType;

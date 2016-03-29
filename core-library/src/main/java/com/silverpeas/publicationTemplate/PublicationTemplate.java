@@ -26,10 +26,10 @@ package com.silverpeas.publicationTemplate;
 
 import java.util.List;
 
-import com.silverpeas.form.Form;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.form.XmlForm;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.form.XmlForm;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A

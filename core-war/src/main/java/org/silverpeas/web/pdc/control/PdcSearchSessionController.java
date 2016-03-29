@@ -20,14 +20,14 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.fieldType.TextFieldImpl;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.TypeManager;
+import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.pdc.interests.service.InterestsManager;
 import org.silverpeas.core.pdc.PdcServiceProvider;

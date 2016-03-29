@@ -30,19 +30,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.dummy.DummyRecordSet;
-import com.silverpeas.form.form.HtmlForm;
-import com.silverpeas.form.form.XmlForm;
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.GenericRecordSet;
-import com.silverpeas.form.record.GenericRecordSetManager;
-import com.silverpeas.form.record.GenericRecordTemplate;
-import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.dummy.DummyRecordSet;
+import org.silverpeas.core.contribution.content.form.form.HtmlForm;
+import org.silverpeas.core.contribution.content.form.form.XmlForm;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.IdentifiedRecordTemplate;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.Form;
@@ -675,11 +675,11 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   }
 
   /**
-   * Returns the com.silverpeas.form.Form which be used to publish the form associated to the named
+   * Returns the Form which be used to publish the form associated to the named
    * action. Returns null if the action has no form. Throws a WorkflowException if the action is
    * unknown.
    */
-  public com.silverpeas.form.Form getPublicationForm(String actionName, String roleName,
+  public org.silverpeas.core.contribution.content.form.Form getPublicationForm(String actionName, String roleName,
       String lang) throws WorkflowException {
     Action action = getAction(actionName);
     if (action == null || action.getForm() == null) {
@@ -707,10 +707,10 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   }
 
   /**
-   * Returns the com.silverpeas.form.Form which be used to publish the form associated to the named
+   * Returns the Form which be used to publish the form associated to the named
    * action or form. Returns null if the action has no form.
    */
-  public com.silverpeas.form.Form getPresentationForm(String name, String roleName, String lang)
+  public org.silverpeas.core.contribution.content.form.Form getPresentationForm(String name, String roleName, String lang)
       throws WorkflowException {
     Action action = null;
     Form form = null;
@@ -746,7 +746,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   }
 
   /**
-   * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to process the
+   * Returns an empty DataRecord which must be filled in order to process the
    * named action. Returns null if no form is required to process this action. Throws a
    * WorkflowException if the action is unknown.
    */
@@ -765,7 +765,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   }
 
   /**
-   * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to fill the user
+   * Returns an empty DataRecord which must be filled in order to fill the user
    * information Throws a WorkflowException if problem encountered.
    */
   public DataRecord getNewUserInfosRecord(String roleName, String lang) throws WorkflowException {

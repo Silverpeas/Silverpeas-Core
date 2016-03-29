@@ -27,7 +27,7 @@ package org.silverpeas.core.workflow.engine.datarecord;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.silverpeas.form.fieldType.DateField;
+import org.silverpeas.core.contribution.content.form.field.DateField;
 
 /**
  * A read only DateField

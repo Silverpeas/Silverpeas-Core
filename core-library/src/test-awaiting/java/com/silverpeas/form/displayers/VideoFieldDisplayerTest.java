@@ -18,14 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form.displayers;
+package org.silverpeas.core.contribution.content.form.displayers;
 
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.FormException;
 import java.util.Arrays;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.fieldType.FileField;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -118,7 +118,7 @@ public class VideoFieldDisplayerTest {
   /**
    * Test of getNbHtmlObjectsDisplayed method, of class VideoFieldDisplayer.
    *
-   * @throws com.silverpeas.form.FormException
+   * @throws org.silverpeas.core.contribution.content.form.FormException
    */
   @Test
   public void testGetNbHtmlObjectsDisplayed() throws FormException {

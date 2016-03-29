@@ -36,19 +36,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.dummy.DummyRecordSet;
-import com.silverpeas.form.dummy.DummyRecordTemplate;
-import com.silverpeas.form.form.HtmlForm;
-import com.silverpeas.form.form.XmlForm;
-import com.silverpeas.form.form.XmlSearchForm;
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.GenericRecordSetManager;
-import com.silverpeas.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.dummy.DummyRecordSet;
+import org.silverpeas.core.contribution.content.form.dummy.DummyRecordTemplate;
+import org.silverpeas.core.contribution.content.form.form.HtmlForm;
+import org.silverpeas.core.contribution.content.form.form.XmlForm;
+import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.Label;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
+import org.silverpeas.core.contribution.content.form.record.ParameterValue;
+import org.silverpeas.core.contribution.content.form.record.Repeatable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
@@ -123,11 +127,11 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   static {
     try {
       JAXB_CONTEXT =
-          JAXBContext.newInstance(com.silverpeas.form.record.GenericRecordTemplate.class,
-              com.silverpeas.form.record.GenericFieldTemplate.class,
-              com.silverpeas.form.record.Label.class, com.silverpeas.form.record.Parameter.class,
-              com.silverpeas.form.record.ParameterValue.class,
-              com.silverpeas.form.record.Repeatable.class);
+          JAXBContext.newInstance(GenericRecordTemplate.class,
+              GenericFieldTemplate.class,
+              Label.class, Parameter.class,
+              ParameterValue.class,
+              Repeatable.class);
     } catch (JAXBException e) {
       System.out.println("JAXB : "+e.getMessage());
       SilverTrace.fatal("form", "PublicationTemplateManager.init", "CANT_GET_JAXB_CONTEXT", e);

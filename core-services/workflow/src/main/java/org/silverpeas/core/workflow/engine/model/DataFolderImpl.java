@@ -27,10 +27,10 @@ package org.silverpeas.core.workflow.engine.model;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.DataFolder;
 import org.silverpeas.core.workflow.api.model.Item;

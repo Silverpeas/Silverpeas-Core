@@ -28,20 +28,20 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.TypeManager;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.TypeManager;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.FileUtil;

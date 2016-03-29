@@ -24,8 +24,8 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.viewer.form.displayers;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.Util;
-import com.silverpeas.form.displayers.AbstractFileFieldDisplayer;
-import com.silverpeas.form.fieldType.FileField;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.displayers.AbstractFileFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.field.FileField;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;

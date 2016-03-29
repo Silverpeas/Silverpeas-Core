@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import com.silverpeas.node.importexport.NodeImportExport;
 import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;

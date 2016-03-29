@@ -23,10 +23,10 @@
  */
 package com.silverpeas.publicationTemplate;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.Before;
@@ -73,7 +73,7 @@ public class PublicationTemplateImplTest {
   @Test
   public void testGetRecordTemplateSimple() throws Exception {
     String xmlFileName = "template" + SEPARATOR + "data.xml";
-    // Pay attention to not declare com.silverpeas.form.displayers.PdcPositionsFieldDisplayer
+    // Pay attention to not declare org.silverpeas.core.contribution.content.form.displayers.PdcPositionsFieldDisplayer
     // inside types.properties cause this class is not available inside silverpeas-core project
     RecordTemplate expectedTemplate = getExpectedRecordTemplate(xmlFileName);
     PublicationTemplateImpl instance = new PublicationTemplateImpl();

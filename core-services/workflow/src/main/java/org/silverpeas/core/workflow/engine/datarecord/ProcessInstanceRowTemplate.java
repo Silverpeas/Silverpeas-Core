@@ -27,11 +27,11 @@ package org.silverpeas.core.workflow.engine.datarecord;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Presentation;

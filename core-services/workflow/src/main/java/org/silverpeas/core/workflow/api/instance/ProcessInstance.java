@@ -28,8 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.QualifiedUsers;

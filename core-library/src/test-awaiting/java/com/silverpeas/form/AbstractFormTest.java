@@ -18,11 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form;
+package org.silverpeas.core.contribution.content.form;
 
 import java.util.Arrays;
 import java.util.List;
-import com.silverpeas.form.dummy.DummyRecordTemplate;
+import org.silverpeas.core.contribution.content.form.dummy.DummyRecordTemplate;
 import javax.servlet.jsp.JspWriter;
 import org.apache.commons.fileupload.FileItem;
 import org.junit.After;
@@ -31,8 +31,8 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
-import static com.silverpeas.form.AbstractForm.REPEATED_FIELD_CSS_HIDE;
-import static com.silverpeas.form.AbstractForm.REPEATED_FIELD_CSS_SHOW;
+import static org.silverpeas.core.contribution.content.form.AbstractForm.REPEATED_FIELD_CSS_HIDE;
+import static org.silverpeas.core.contribution.content.form.AbstractForm.REPEATED_FIELD_CSS_SHOW;
 
 /**
  * Unit tests on the AbstractForm implemented methods.

@@ -269,7 +269,7 @@
     <castor:field name="name">
       <castor:bind-xml name="name" node="attribute"/>
     </castor:field>
-    <castor:field name="fields" type="com.silverpeas.form.XMLField" collection="arraylist">
+    <castor:field name="fields" type="XMLField" collection="arraylist">
       <castor:bind-xml name="sp:xmlField" node="element"/>
     </castor:field>
   </castor:class>
@@ -278,11 +278,11 @@
     <castor:field name="name">
       <castor:bind-xml name="name" node="attribute"/>
     </castor:field>
-    <castor:field name="fields" type="com.silverpeas.form.XMLField" collection="arraylist">
+    <castor:field name="fields" type="XMLField" collection="arraylist">
       <castor:bind-xml name="sp:xmlField" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.silverpeas.form.XMLField">
+  <castor:class name="XMLField">
     <castor:map-to xml="xmlField" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="name" type="string">
       <castor:bind-xml name="sp:name" node="element"/>

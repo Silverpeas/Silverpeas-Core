@@ -23,13 +23,13 @@
  */
 package com.silverpeas.formTemplate.ejb;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.form.fieldType.FileField;
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

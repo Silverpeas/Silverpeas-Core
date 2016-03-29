@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import com.silverpeas.form.Field;
+import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;

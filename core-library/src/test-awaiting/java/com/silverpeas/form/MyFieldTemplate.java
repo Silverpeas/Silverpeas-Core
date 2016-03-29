@@ -18,15 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form;
+package org.silverpeas.core.contribution.content.form;
 
-import com.silverpeas.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.form.record.Parameter;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
 
 /**
  * A field template implementation for testing purpose.

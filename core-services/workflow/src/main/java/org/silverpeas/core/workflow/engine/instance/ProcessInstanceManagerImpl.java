@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.Actor;

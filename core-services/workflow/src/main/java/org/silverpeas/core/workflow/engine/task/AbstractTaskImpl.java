@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.task;
 
-import com.silverpeas.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.workflow.api.event.QuestionEvent;
 import org.silverpeas.core.workflow.api.event.ResponseEvent;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;

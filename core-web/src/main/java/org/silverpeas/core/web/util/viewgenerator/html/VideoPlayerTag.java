@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import com.silverpeas.form.displayers.VideoPlayer;
+import org.silverpeas.core.contribution.content.form.displayers.VideoPlayer;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

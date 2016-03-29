@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import com.silverpeas.form.fieldType.TextField;
+import org.silverpeas.core.contribution.content.form.field.TextField;
 
 /**
  * A read only TextField

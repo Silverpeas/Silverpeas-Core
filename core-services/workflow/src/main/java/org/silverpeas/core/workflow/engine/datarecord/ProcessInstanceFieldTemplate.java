@@ -29,10 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.record.Parameter;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 
 /**

@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.silverpeas.form.displayers.VideoFieldDisplayer"%>
+<%@page import="org.silverpeas.core.contribution.content.form.displayers.VideoFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp" %>

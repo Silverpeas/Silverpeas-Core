@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.form.fieldType.MultipleUserField;
-import com.silverpeas.form.fieldType.TextField;
-import com.silverpeas.form.fieldType.UserField;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
+import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.Workflow;

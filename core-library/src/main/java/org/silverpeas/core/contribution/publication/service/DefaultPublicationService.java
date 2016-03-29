@@ -22,9 +22,9 @@ package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;

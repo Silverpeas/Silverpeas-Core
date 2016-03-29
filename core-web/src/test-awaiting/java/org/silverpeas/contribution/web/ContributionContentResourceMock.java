@@ -26,10 +26,10 @@ package org.silverpeas.core.contribution.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 
 import javax.ws.rs.Path;

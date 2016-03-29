@@ -26,7 +26,7 @@ package org.silverpeas.web.workflowdesigner.control;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import com.silverpeas.form.TypeManager;
+import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;

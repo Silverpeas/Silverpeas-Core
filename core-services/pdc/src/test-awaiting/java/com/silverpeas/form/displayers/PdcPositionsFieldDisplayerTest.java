@@ -23,7 +23,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.silverpeas.form.displayers;
+package org.silverpeas.core.contribution.content.form.displayers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -34,9 +34,9 @@ import java.util.List;
 
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.fieldType.TextField;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.fieldType.TextField;
 
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcManager;

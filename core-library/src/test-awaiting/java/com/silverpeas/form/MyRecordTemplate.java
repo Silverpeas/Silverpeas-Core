@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.form;
+package org.silverpeas.core.contribution.content.form;
 
 import java.util.List;
 

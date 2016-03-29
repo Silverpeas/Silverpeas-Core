@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;

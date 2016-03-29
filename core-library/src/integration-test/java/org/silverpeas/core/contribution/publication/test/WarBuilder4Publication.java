@@ -1,7 +1,7 @@
 package org.silverpeas.core.contribution.publication.test;
 
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;

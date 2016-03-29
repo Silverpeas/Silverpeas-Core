@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import com.silverpeas.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 
 public final class IndexedFieldTemplate {
   public final int index;

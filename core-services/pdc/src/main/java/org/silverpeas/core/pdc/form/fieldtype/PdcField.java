@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.pdc.form.fieldtype;
 
-import com.silverpeas.form.AbstractField;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.AbstractField;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.pdc.form.displayers.PdcFieldDisplayer;
 
 /**

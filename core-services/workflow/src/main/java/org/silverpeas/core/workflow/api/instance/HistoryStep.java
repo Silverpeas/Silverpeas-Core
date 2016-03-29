@@ -26,7 +26,8 @@ package org.silverpeas.core.workflow.api.instance;
 
 import java.util.*;
 
-import com.silverpeas.form.*;
+import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.User;
 

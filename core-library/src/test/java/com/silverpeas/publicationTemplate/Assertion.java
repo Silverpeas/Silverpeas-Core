@@ -24,9 +24,9 @@
 
 package com.silverpeas.publicationTemplate;
 
-import com.silverpeas.form.FormException;
+import org.silverpeas.core.contribution.content.form.FormException;
 import java.util.Arrays;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.junit.Assert;
 
 /**

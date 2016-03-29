@@ -20,16 +20,16 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.fieldType.FileField;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.TypeManager;
+import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.model.PublicationType;

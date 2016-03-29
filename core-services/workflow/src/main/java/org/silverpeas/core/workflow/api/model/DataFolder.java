@@ -26,7 +26,7 @@ package org.silverpeas.core.workflow.api.model;
 
 import java.util.Iterator;
 
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
 /**

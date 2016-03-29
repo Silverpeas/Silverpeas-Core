@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.form;
+package org.silverpeas.core.contribution.content.form;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.form.displayers.AbstractFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.displayers.AbstractFieldDisplayer;
 import org.silverpeas.util.CollectionUtil;
 
 import org.apache.commons.fileupload.FileItem;

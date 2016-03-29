@@ -25,7 +25,7 @@
 package org.silverpeas.util;
 
 import com.novell.ldap.LDAPEntry;
-import com.silverpeas.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;

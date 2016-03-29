@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.workflow.api.user;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
 public interface UserSettings {

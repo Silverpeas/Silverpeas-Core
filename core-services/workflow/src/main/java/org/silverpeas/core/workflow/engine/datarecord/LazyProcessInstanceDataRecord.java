@@ -28,12 +28,12 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.FormFatalException;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.fieldType.TextFieldImpl;
-import com.silverpeas.form.record.GenericRecordSetManager;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.FormFatalException;
+import org.silverpeas.core.contribution.content.form.TypeManager;
+import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;

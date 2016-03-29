@@ -20,8 +20,8 @@
  */
 package com.silverpeas.formTemplate.ejb;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 
 import java.util.List;

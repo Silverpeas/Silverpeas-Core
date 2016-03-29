@@ -18,10 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form.form;
+package org.silverpeas.core.contribution.content.form.form;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

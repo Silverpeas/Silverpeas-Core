@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form.displayers;
+package org.silverpeas.core.contribution.content.form.displayers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -30,9 +30,9 @@ import java.util.Map;
 
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.fieldType.JdbcField;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.fieldType.JdbcField;
 import com.silverpeas.jcrutil.RandomGenerator;
 
 import org.junit.Test;
@@ -199,7 +199,7 @@ public class JdbcFieldDisplayerTest {
     verify(field).setValue("newValue", "fr");
   }
 
-  @Test(expected = com.silverpeas.form.FormException.class)
+  @Test(expected = org.silverpeas.core.contribution.content.form.FormException.class)
   public void testUpdateIncorrectField() throws Exception {
     String newValue = "";
     JdbcField field = mock(JdbcField.class);
@@ -208,7 +208,7 @@ public class JdbcFieldDisplayerTest {
     instance.update(newValue, field, null, null);
   }
 
-  @Test(expected = com.silverpeas.form.FormException.class)
+  @Test(expected = org.silverpeas.core.contribution.content.form.FormException.class)
   public void testUpdateIncorrectValue() throws Exception {
     String newValue = "";
     PagesContext pagesContext = new PagesContext();

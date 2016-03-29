@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.webapi.contribution;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.form.fieldType.UserField;
-import com.silverpeas.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.field.UserField;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;

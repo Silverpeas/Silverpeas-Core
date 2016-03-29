@@ -27,8 +27,8 @@
 
 package org.silverpeas.web.pdc.servlets;
 
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.web.templatedesigner.servlets.TemplateDesignerRequestRouter;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;

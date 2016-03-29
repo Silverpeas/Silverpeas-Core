@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.pdc.form.displayers;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.displayers.AbstractFieldDisplayer;
-import com.silverpeas.form.fieldType.TextField;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.displayers.AbstractFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.field.TextField;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;

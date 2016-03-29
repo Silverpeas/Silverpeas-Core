@@ -26,7 +26,7 @@ package org.silverpeas.core.workflow.engine.event;
 
 import java.util.Date;
 
-import com.silverpeas.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;

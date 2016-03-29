@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.importexport.publication;
 
-import com.silverpeas.form.XMLField;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

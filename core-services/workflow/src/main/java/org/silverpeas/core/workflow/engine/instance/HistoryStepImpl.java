@@ -27,9 +27,9 @@ package org.silverpeas.core.workflow.engine.instance;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;

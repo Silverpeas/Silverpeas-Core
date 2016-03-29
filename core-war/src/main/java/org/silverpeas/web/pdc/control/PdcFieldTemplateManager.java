@@ -27,9 +27,9 @@ package org.silverpeas.web.pdc.control;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.form.record.Parameter;
-import com.silverpeas.form.record.ParameterValue;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
+import org.silverpeas.core.contribution.content.form.record.ParameterValue;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxisPK;

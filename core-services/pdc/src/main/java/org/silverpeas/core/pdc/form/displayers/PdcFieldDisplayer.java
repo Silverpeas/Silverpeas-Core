@@ -24,11 +24,11 @@
 
 package org.silverpeas.core.pdc.form.displayers;
 
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.Util;
-import com.silverpeas.form.displayers.AbstractFieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.Util;
+import org.silverpeas.core.contribution.content.form.displayers.AbstractFieldDisplayer;
 import org.silverpeas.core.pdc.form.fieldtype.PdcField;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
