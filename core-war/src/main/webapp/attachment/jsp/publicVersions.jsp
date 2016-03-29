@@ -47,7 +47,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="org.apache.commons.lang3.CharEncoding" %>
-<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
 <%@page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>

@@ -73,8 +73,6 @@ public class TypeManager {
   public Class<?> getFieldImplementation(String typeName)
       throws FormException {
     if (!implementations.containsKey(typeName)) {
-      SilverTrace.fatal("form", "TypeManager.getFieldImplementation", "form.EXP_UNKNOWN_TYPE",
-          typeName);
       throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
     }
     return implementations.get(typeName);

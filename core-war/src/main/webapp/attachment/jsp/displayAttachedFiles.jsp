@@ -35,9 +35,9 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.ComponentContext" %>
-<%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
-<%@ page import="org.silverpeas.attachment.model.DocumentType" %>
-<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.AttachmentServiceProvider" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.DocumentType" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>

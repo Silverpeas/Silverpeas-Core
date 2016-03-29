@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="org.silverpeas.core.web.mvc.controller.ComponentContext"%>
-<%@page import="org.silverpeas.attachment.AttachmentServiceProvider"%>
+<%@page import="org.silverpeas.core.contribution.attachment.AttachmentServiceProvider"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -35,8 +35,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<%@ page import="org.silverpeas.attachment.model.DocumentType" %>
-<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.DocumentType" %>
+<%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ include file="checkAttachment.jsp"%>

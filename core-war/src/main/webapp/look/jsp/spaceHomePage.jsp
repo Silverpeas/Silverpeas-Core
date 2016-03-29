@@ -35,7 +35,7 @@
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 <%@page import="org.silverpeas.core.web.look.DefaultSpaceHomePage"%>
-<%@page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
+<%@page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@page import="java.util.List"%>
 <%@page import="org.silverpeas.core.web.look.LookHelper"%>
 

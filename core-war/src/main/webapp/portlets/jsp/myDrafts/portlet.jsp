@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
+<%@page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
