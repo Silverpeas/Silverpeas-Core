@@ -35,7 +35,7 @@ import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -188,7 +188,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
    * (non-Javadoc)
    * @see
    * com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#performTemplateData
-   * (java.lang.String, java.lang.Object, org.silverpeas.util.template.SilverpeasTemplate)
+   * (java.lang.String, java.lang.Object, SilverpeasTemplate)
    */
   @Override
   protected void performTemplateData(final String language, final JournalHeader resource,

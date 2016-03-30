@@ -230,22 +230,22 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
 
     if (logger != null) {
       switch (val) {
-        case TRACE_LEVEL_UNKNOWN:
+        case SilverTrace.TRACE_LEVEL_UNKNOWN:
           logger.setLevel(null);
           break;
-        case TRACE_LEVEL_DEBUG:
+        case SilverTrace.TRACE_LEVEL_DEBUG:
           logger.setLevel(Level.DEBUG);
           break;
-        case TRACE_LEVEL_INFO:
+        case SilverTrace.TRACE_LEVEL_INFO:
           logger.setLevel(Level.INFO);
           break;
-        case TRACE_LEVEL_WARN:
+        case SilverTrace.TRACE_LEVEL_WARN:
           logger.setLevel(Level.WARNING);
           break;
-        case TRACE_LEVEL_ERROR:
+        case SilverTrace.TRACE_LEVEL_ERROR:
           logger.setLevel(Level.ERROR);
           break;
-        case TRACE_LEVEL_FATAL:
+        case SilverTrace.TRACE_LEVEL_FATAL:
           logger.setLevel(Level.ERROR);
           break;
       }

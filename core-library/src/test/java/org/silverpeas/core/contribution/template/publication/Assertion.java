@@ -22,23 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.template;
+package org.silverpeas.core.contribution.template.publication;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.contribution.content.form.FormException;
+import java.util.Arrays;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.junit.Assert;
 
-public class SilverpeasStringTemplateUtil {
+/**
+ * Module gathering all of the assertion operation on the objects handled in publication template.
+ */
+public final class Assertion {
 
-  public final static String defaultComponentsDir;
-  public final static String customComponentsDir;
-  public final static String defaultCoreDir;
-  public final static String customCoreDir;
-
-  static {
-    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.stringtemplate");
-    defaultComponentsDir = settings.getString("template.dir.components.default");
-    customComponentsDir = settings.getString("template.dir.components.custom");
-    defaultCoreDir = settings.getString("template.dir.core.default");
-    customCoreDir = settings.getString("template.dir.core.custom");
+  public static void assertEquals(final RecordTemplate expected, final RecordTemplate actual) {
+    Assert.assertEquals(Arrays.asList(expected.getFieldNames()),
+            Arrays.asList(actual.getFieldNames()));
+    try {
+      Assert.assertEquals(Arrays.asList(expected.getFieldTemplates()),
+              Arrays.asList(actual.getFieldTemplates()));
+    } catch (FormException ex) {
+      Assert.fail(ex.getMessage());
+    }
   }
+
+
 }

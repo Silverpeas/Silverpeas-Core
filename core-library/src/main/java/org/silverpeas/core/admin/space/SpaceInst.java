@@ -38,8 +38,8 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.util.memory.MemoryUnit;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -25,8 +25,8 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.SilverpeasBundle;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

@@ -28,7 +28,7 @@
  */
 package org.silverpeas.core.admin.component;
 
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Before;
 import org.junit.Rule;

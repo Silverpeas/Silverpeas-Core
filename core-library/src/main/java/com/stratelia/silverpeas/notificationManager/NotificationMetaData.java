@@ -33,8 +33,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.Link;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;

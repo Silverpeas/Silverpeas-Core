@@ -49,8 +49,8 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.util.MapUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.*;
 

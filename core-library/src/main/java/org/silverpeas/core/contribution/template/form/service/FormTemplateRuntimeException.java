@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.templating.form.service;
+package org.silverpeas.core.contribution.template.form.service;
 
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 

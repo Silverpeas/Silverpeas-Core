@@ -22,28 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.publicationTemplate;
+package org.silverpeas.core.template.renderer;
 
-import org.silverpeas.core.contribution.content.form.FormException;
-import java.util.Arrays;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.junit.Assert;
+import java.util.Date;
 
-/**
- * Module gathering all of the assertion operation on the objects handled in publication templating.
- */
-public final class Assertion {
+import org.antlr.stringtemplate.AttributeRenderer;
 
-  public static void assertEquals(final RecordTemplate expected, final RecordTemplate actual) {
-    Assert.assertEquals(Arrays.asList(expected.getFieldNames()),
-            Arrays.asList(actual.getFieldNames()));
-    try {
-      Assert.assertEquals(Arrays.asList(expected.getFieldTemplates()),
-              Arrays.asList(actual.getFieldTemplates()));
-    } catch (FormException ex) {
-      Assert.fail(ex.getMessage());
-    }
+import org.silverpeas.core.util.DateUtil;
+
+public class DateRenderer implements AttributeRenderer {
+
+  @Override
+  public String toString(Object o) {
+    return DateUtil.formatDate((Date) o);
   }
 
+  @Override
+  public String toString(Object o, String formatName) {
+    return DateUtil.formatDate((Date) o, formatName);
+  }
 
 }

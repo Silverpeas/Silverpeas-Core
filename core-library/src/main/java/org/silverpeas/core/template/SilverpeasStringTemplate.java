@@ -18,15 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.template;
+package org.silverpeas.core.template;
 
 import org.antlr.stringtemplate.AutoIndentWriter;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.template.renderer.DateRenderer;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.template.renderer.DateRenderer;
 
 import java.io.File;
 import java.io.IOException;

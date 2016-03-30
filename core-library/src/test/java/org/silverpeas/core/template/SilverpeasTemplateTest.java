@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.template;
+package org.silverpeas.core.template;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,8 +34,8 @@ import java.util.Properties;
 
 import static java.io.File.separator;
 import static org.junit.Assert.assertEquals;
-import static org.silverpeas.util.template.SilverpeasTemplate.TEMPLATE_CUSTOM_DIR;
-import static org.silverpeas.util.template.SilverpeasTemplate.TEMPLATE_ROOT_DIR;
+import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_CUSTOM_DIR;
+import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_ROOT_DIR;
 
 public class SilverpeasTemplateTest {
 

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.token;
 
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.Arrays;
 import java.util.List;

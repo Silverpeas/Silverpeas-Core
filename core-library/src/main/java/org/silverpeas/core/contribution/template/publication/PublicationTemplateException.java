@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution.templating.publication;
+package org.silverpeas.core.contribution.template.publication;
 
 import org.silverpeas.core.exception.SilverpeasException;
 

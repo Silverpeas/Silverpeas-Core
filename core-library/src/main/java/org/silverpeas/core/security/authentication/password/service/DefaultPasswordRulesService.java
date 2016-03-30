@@ -37,7 +37,7 @@ import org.silverpeas.core.security.authentication.password.rule.SequentialForbi
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;

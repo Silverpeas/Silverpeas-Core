@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.publicationTemplate;
+package org.silverpeas.core.contribution.template.publication;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -33,8 +33,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
@@ -42,7 +40,7 @@ import org.xml.sax.InputSource;
 import java.io.File;
 import java.io.FileInputStream;
 
-import static com.silverpeas.publicationTemplate.Assertion.assertEquals;
+import static org.silverpeas.core.contribution.template.publication.Assertion.assertEquals;
 import static java.io.File.separatorChar;
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.is;

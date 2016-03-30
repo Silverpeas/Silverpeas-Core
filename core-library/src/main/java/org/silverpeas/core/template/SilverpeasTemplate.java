@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.template;
+package org.silverpeas.core.template;
 
 import java.util.Map;
 

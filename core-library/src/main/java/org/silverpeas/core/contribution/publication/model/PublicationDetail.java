@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.publication.model;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.templating.form.service.FormTemplateService;
+import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -38,8 +38,8 @@ import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldD
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import com.silverpeas.notation.control.RatingService;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.silverpeas.contentManager.ContentManager;

@@ -32,8 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 /**
  * @author Yohann Chastagnier

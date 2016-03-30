@@ -22,24 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.template.renderer;
+package org.silverpeas.core.template;
 
-import java.util.Date;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 
-import org.antlr.stringtemplate.AttributeRenderer;
+public class SilverpeasStringTemplateUtil {
 
-import org.silverpeas.core.util.DateUtil;
+  public final static String defaultComponentsDir;
+  public final static String customComponentsDir;
+  public final static String defaultCoreDir;
+  public final static String customCoreDir;
 
-public class DateRenderer implements AttributeRenderer {
-
-  @Override
-  public String toString(Object o) {
-    return DateUtil.formatDate((Date) o);
+  static {
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.stringtemplate");
+    defaultComponentsDir = settings.getString("template.dir.components.default");
+    customComponentsDir = settings.getString("template.dir.components.custom");
+    defaultCoreDir = settings.getString("template.dir.core.default");
+    customCoreDir = settings.getString("template.dir.core.custom");
   }
-
-  @Override
-  public String toString(Object o, String formatName) {
-    return DateUtil.formatDate((Date) o, formatName);
-  }
-
 }

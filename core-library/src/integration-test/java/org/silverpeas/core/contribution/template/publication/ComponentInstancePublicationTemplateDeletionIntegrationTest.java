@@ -1,4 +1,4 @@
-package org.silverpeas.core.contribution.templating.publication;
+package org.silverpeas.core.contribution.template.publication;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.jboss.arquillian.container.test.api.Deployment;
