@@ -35,7 +35,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.http.HttpServletRequest;

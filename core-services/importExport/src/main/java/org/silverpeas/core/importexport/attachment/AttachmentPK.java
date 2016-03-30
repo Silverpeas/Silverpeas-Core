@@ -35,7 +35,7 @@
  */
 package org.silverpeas.core.importexport.attachment;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.io.Serializable;
 

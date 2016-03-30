@@ -30,7 +30,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MapUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;

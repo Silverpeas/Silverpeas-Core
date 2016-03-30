@@ -24,7 +24,7 @@ import com.silverpeas.SilverpeasContent;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.Collection;
 import java.util.Date;

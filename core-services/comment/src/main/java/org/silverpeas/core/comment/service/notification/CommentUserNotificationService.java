@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;

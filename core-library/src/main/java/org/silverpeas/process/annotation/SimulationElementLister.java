@@ -25,7 +25,7 @@ package org.silverpeas.process.annotation;
 
 import org.silverpeas.util.ActionType;
 import org.silverpeas.util.MapUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.LinkedList;
 import java.util.List;

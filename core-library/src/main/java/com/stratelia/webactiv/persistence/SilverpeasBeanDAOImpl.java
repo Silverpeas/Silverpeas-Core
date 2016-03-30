@@ -27,7 +27,7 @@ package com.stratelia.webactiv.persistence;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.beans.BeanInfo;

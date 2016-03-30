@@ -28,7 +28,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.util.ActionType;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.annotation.Action;
 import org.silverpeas.util.annotation.AnnotationUtil;
 import org.silverpeas.util.annotation.Language;

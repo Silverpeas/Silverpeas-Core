@@ -50,7 +50,7 @@ import org.silverpeas.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import javax.inject.Inject;
 import javax.jcr.LoginException;

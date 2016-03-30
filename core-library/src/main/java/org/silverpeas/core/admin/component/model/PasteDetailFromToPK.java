@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.component.model;
 
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 public abstract class PasteDetailFromToPK<F extends WAPrimaryKey, T extends WAPrimaryKey>
     extends PasteDetail {

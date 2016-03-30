@@ -3,7 +3,7 @@ package org.silverpeas.process.annotation;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.process.io.file.DummyHandledFile;
 import org.silverpeas.util.ActionType;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.List;
 

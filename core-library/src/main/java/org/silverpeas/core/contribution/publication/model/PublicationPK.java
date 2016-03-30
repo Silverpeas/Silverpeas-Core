@@ -25,7 +25,7 @@
 /* $Id$ */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.io.Serializable;
 

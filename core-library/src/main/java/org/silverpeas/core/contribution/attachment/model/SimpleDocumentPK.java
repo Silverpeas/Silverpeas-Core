@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment.model;
 
 import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  *

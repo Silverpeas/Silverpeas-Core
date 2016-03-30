@@ -26,7 +26,7 @@ package com.stratelia.webactiv.persistence;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * SilverpeasBean represents an Entity in old silverpeas persistence layer

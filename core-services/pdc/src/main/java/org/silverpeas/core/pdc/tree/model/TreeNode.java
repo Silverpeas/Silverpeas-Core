@@ -31,7 +31,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.HashMap;
 import java.util.Map;

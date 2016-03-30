@@ -22,7 +22,7 @@
 package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;

@@ -25,7 +25,7 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import java.io.Serializable;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * It's the Value PrimaryKey object It identify values of the an axe

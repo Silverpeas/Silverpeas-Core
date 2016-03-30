@@ -24,6 +24,8 @@
 
 package org.silverpeas.util;
 
+import org.silverpeas.core.WAPrimaryKey;
+
 import java.io.Serializable;
 
 /**

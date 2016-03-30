@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.process;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.process.io.file.AbstractDummyHandledFile;

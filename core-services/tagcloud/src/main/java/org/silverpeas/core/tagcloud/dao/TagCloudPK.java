@@ -26,7 +26,7 @@ package org.silverpeas.core.tagcloud.dao;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * Primary key of a tagcloud.

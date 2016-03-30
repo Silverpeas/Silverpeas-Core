@@ -25,7 +25,7 @@ package org.silverpeas.core;
  * Interface of all identifiers of resources managed by Silverpeas. An identifier of a resource
  * qualifies uniquely a resource in Silverpeas whatever its type. This interface is the more
  * generic representation of an identifier in Silverpeas from which all conceptual or technical
- * identifiers should extend. It encapsulates the way the identifier is impemented.
+ * identifiers should extend. It encapsulates the way the identifier is implemented.
  * @author mmoquillon
  */
 public interface ResourceIdentifier {

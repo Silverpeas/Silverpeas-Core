@@ -26,7 +26,7 @@ import org.silverpeas.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

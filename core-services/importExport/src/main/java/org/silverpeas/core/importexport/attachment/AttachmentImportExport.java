@@ -38,7 +38,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import java.io.File;

@@ -3,7 +3,7 @@ package org.silverpeas.core.contribution.attachment.process;
 import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.process.io.file.DummyHandledFile;
 import org.silverpeas.util.ActionType;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.LinkedList;

@@ -30,7 +30,7 @@ import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.List;
 

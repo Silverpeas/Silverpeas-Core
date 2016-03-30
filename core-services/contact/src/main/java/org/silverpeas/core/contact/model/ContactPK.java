@@ -26,7 +26,7 @@ package org.silverpeas.core.contact.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * It's the Contact PrimaryKey object It identify a Contact

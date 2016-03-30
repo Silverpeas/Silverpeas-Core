@@ -26,7 +26,7 @@ package org.silverpeas.core.questioncontainer.answer.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication

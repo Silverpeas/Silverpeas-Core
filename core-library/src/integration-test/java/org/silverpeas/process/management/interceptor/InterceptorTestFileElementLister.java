@@ -26,7 +26,7 @@ package org.silverpeas.process.management.interceptor;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.silverpeas.process.annotation.SimulationElementLister;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * @author Yohann Chastagnier

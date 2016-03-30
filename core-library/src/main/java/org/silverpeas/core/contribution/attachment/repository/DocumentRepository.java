@@ -37,7 +37,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.jcr.util.NodeIterable;
 import org.silverpeas.jcr.util.PropertyIterable;

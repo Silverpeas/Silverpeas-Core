@@ -27,7 +27,7 @@ import java.util.Date;
 
 import org.silverpeas.util.ForeignPK;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 public class Document implements java.io.Serializable, Cloneable {
 

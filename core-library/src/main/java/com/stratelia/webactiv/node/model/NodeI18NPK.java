@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.node.model;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 import java.io.Serializable;
 
 /**

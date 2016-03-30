@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 import java.sql.Connection;
 import java.util.Arrays;

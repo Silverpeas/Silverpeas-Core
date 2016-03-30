@@ -26,7 +26,7 @@ package org.silverpeas.core.questioncontainer.score.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * ScorePK represents a score identifier

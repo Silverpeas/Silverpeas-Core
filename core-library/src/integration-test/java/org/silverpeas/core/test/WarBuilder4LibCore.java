@@ -80,6 +80,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.CDIContainer;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.jcr.JcrRepositoryProvider;
