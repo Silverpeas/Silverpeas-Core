@@ -23,7 +23,6 @@
  */
 
 /**
- * Provides Silverpeas custom annotations for adding semantic value to the objects and their
- * properties. Among theses annotations are thoses for Bean Validation (JSR-303).
+ * Provides Silverpeas custom annotations for adding Bean Validation constraints to objects.
  */
-package com.silverpeas.annotation;
+package org.silverpeas.core.annotation.constraint;

@@ -1,8 +1,8 @@
 package org.silverpeas.core.webapi.security;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.util.LocalizationBundle;

@@ -26,8 +26,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.security.ShareableNode;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;

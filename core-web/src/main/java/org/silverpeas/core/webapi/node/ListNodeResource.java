@@ -28,8 +28,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;

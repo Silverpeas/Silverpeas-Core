@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.language;
 
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.util.LocalizationBundle;

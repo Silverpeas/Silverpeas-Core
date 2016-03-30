@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.webapi.base.RESTWebService;

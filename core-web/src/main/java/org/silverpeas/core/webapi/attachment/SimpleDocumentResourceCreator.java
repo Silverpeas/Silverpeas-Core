@@ -25,8 +25,8 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;

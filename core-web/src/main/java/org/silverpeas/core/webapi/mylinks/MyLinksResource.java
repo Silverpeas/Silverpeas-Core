@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.mylinks;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.webapi.base.RESTWebService;

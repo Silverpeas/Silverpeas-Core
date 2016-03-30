@@ -25,7 +25,7 @@
 package com.silverpeas.calendar;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import com.silverpeas.annotation.constraint.DateRange;
+import org.silverpeas.core.annotation.constraint.DateRange;
 import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.date.Date;
 

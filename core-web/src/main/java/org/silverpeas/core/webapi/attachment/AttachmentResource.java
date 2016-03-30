@@ -30,8 +30,8 @@ import javax.ws.rs.core.Response;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 
 /**
  * A REST Web resource providing access to attachments through private mode.

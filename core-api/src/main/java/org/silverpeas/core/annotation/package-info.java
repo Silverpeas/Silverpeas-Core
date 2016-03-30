@@ -23,8 +23,8 @@
  * @author mmoquillon
  */
 /**
- * Provides the base annotations used in Silverpeas to semantically annotate the objects and for
- * which some processing can be performed.
+ * Provides Silverpeas custom annotations for adding semantic value to objects and to their
+ * properties. Among theses annotations are those for Bean Validation (JSR-303).
  * @author mmoquillon
  */
 package org.silverpeas.core.annotation;

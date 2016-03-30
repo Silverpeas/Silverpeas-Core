@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.service.AdminException;

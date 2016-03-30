@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.profile;
 
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.util.CollectionUtil;

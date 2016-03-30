@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.annotation.constraint;
+package org.silverpeas.core.annotation.constraint;
 
 import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.date.Date;
@@ -52,7 +52,7 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
 
   @Override
   public boolean isValid(Object object, ConstraintValidatorContext context) {
-    boolean isValid = false;
+    boolean isValid;
     try {
       Field startDateField = object.getClass().getDeclaredField(startDateFieldName);
       Field endDateField = object.getClass().getDeclaredField(endDateFieldName);

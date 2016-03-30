@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.annotation;
+package org.silverpeas.core.annotation;
 
 import java.lang.annotation.*;
 
@@ -42,5 +42,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface Service {
 
-  public String value() default "";
+  String value() default "";
 }

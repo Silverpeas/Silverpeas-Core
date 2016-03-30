@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.service.Administration;
