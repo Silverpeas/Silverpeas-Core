@@ -22,29 +22,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.formTemplate.ejb;
+package org.silverpeas.core.contribution.templating.form.service;
 
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-public class FormTemplateBmRuntimeException extends SilverpeasRuntimeException {
+public class FormTemplateRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = 7629673036810587018L;
 
-  public FormTemplateBmRuntimeException(String callingClass, int errorLevel, String message) {
+  public FormTemplateRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public FormTemplateBmRuntimeException(String callingClass, int errorLevel, String message,
+  public FormTemplateRuntimeException(String callingClass, int errorLevel, String message,
       String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public FormTemplateBmRuntimeException(String callingClass, int errorLevel, String message,
+  public FormTemplateRuntimeException(String callingClass, int errorLevel, String message,
       Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public FormTemplateBmRuntimeException(String callingClass, int errorLevel, String message,
+  public FormTemplateRuntimeException(String callingClass, int errorLevel, String message,
       String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }

@@ -35,9 +35,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.silvertrace.SilverTrace;
 

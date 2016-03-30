@@ -29,5 +29,4 @@
  * @deprecated
  * @author mmoquillon
  */
-@Deprecated
 package org.silverpeas.core.silvertrace;

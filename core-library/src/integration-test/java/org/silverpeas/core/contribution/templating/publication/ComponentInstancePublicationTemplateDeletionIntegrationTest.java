@@ -1,4 +1,4 @@
-package com.silverpeas.publicationTemplate;
+package org.silverpeas.core.contribution.templating.publication;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -24,8 +24,7 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class ComponentInstancePublicationTemplateDeletionIntegrationTest {
 
-  private static final String TABLE_CREATION_SCRIPT =
-      "/com/silverpeas/publicationTemplate/create-database.sql";
+  private static final String TABLE_CREATION_SCRIPT = "create-database.sql";
   private static final String DATASET_SCRIPT =
       "test-publicationTemplate-componentInstanceDeletion.sql";
 
@@ -45,7 +44,7 @@ public class ComponentInstancePublicationTemplateDeletionIntegrationTest {
         .addPublicationTemplateFeatures()
         .addComponentInstanceDeletionFeatures()
         .testFocusedOn(
-            war -> war.addAsResource("com/silverpeas/publicationTemplate/create-database.sql"))
+            war -> war.addAsResource("org/silverpeas/core/contribution/templating/publication"))
         .build();
   }
 

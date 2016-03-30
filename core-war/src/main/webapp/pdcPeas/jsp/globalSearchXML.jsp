@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
+<%@ page import="org.silverpeas.core.contribution.templating.publication.PublicationTemplate"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>

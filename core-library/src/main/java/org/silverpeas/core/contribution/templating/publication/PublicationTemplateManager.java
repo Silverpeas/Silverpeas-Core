@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.publicationTemplate;
+package org.silverpeas.core.contribution.templating.publication;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   private void setup() {
     try {
       JAXB_CONTEXT =
-          JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);
+          JAXBContext.newInstance(PublicationTemplateImpl.class);
     } catch (JAXBException e) {
       SilverLogger.getLogger(this).error("can not initialize JAXB_CONTEXT", e);
     }

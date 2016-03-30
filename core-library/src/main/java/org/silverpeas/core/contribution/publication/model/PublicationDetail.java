@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.publication.model;
 
 import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.templating.form.service.FormTemplateService;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -36,10 +37,9 @@ import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.notation.control.RatingService;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -905,9 +905,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return fieldValue;
   }
 
-  private FormTemplateBm getFormTemplateBm() {
+  private FormTemplateService getFormTemplateBm() {
     try {
-      return ServiceProvider.getService(FormTemplateBm.class);
+      return ServiceProvider.getService(FormTemplateService.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationDetail.getFormTemplateBm()",
           SilverpeasRuntimeException.ERROR,

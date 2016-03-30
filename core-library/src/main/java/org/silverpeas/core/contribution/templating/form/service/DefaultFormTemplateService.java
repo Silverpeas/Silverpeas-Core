@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.formTemplate.ejb;
+package org.silverpeas.core.contribution.templating.form.service;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -30,9 +30,9 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.form.XMLField;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
@@ -43,9 +43,9 @@ import java.util.List;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class FormTemplateBmEJB implements FormTemplateBm {
+public class DefaultFormTemplateService implements FormTemplateService {
 
-  public FormTemplateBmEJB() {
+  public DefaultFormTemplateService() {
   }
 
   @Override
@@ -60,7 +60,7 @@ public class FormTemplateBmEJB implements FormTemplateBm {
     try {
       return PublicationTemplateManager.getInstance().getPublicationTemplate(externalId);
     } catch (Exception e) {
-      throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getPublicationTemplate",
+      throw new FormTemplateRuntimeException("DefaultFormTemplateService.getPublicationTemplate",
           SilverpeasException.ERROR, "Getting template '" + externalId + "' failed !", e);
     }
   }
@@ -101,7 +101,7 @@ public class FormTemplateBmEJB implements FormTemplateBm {
           }
         }
       } catch (Exception e) {
-        throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getXMLFields",
+        throw new FormTemplateRuntimeException("DefaultFormTemplateService.getXMLFields",
             SilverpeasException.ERROR, "Getting fields for externalId = " + externalId
             + " and id = " + id + " failed !", e);
       }
@@ -116,7 +116,7 @@ public class FormTemplateBmEJB implements FormTemplateBm {
       return WysiwygFCKFieldDisplayer
           .getContentFromFile(componentId, objectId, fieldName, language);
     } catch (UtilException e) {
-      throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getWysiwygContent",
+      throw new FormTemplateRuntimeException("DefaultFormTemplateService.getWysiwygContent",
           SilverpeasException.ERROR,
           "Getting Wysiwyg content for componentId = " + componentId + " and id = " + objectId +
               " failed !", e);
@@ -128,7 +128,7 @@ public class FormTemplateBmEJB implements FormTemplateBm {
       RecordSet set = pub.getRecordSet();
       return set.getRecord(id, language);
     } catch (Exception e) {
-      throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getRecord",
+      throw new FormTemplateRuntimeException("DefaultFormTemplateService.getRecord",
           SilverpeasException.ERROR, "Getting record for id '" + id + " failed !", e);
     }
   }

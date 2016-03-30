@@ -18,11 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.formTemplate.ejb;
+package org.silverpeas.core.contribution.templating.form.service;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.XMLField;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
 
 import java.util.List;
 
@@ -31,16 +31,16 @@ import java.util.List;
  *
  * @author neysseri
  */
-public interface FormTemplateBm {
+public interface FormTemplateService {
 
-  public DataRecord getRecord(String externalId, String id);
+  DataRecord getRecord(String externalId, String id);
 
-  public PublicationTemplate getPublicationTemplate(String externalId);
+  PublicationTemplate getPublicationTemplate(String externalId);
 
-  public List<XMLField> getXMLFieldsForExport(String externalId, String id);
+  List<XMLField> getXMLFieldsForExport(String externalId, String id);
 
-  public List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) ;
+  List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) ;
 
-  public String getWysiwygContent(String componentId, String objectId, String fieldName,
+  String getWysiwygContent(String componentId, String objectId, String fieldName,
       String language);
 }

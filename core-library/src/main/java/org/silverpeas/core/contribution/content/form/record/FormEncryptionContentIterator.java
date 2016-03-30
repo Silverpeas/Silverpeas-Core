@@ -38,9 +38,9 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import org.silverpeas.core.contribution.content.form.FormRuntimeException;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.silvertrace.SilverTrace;

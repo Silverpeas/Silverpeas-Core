@@ -49,8 +49,8 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.importexport.model.PublicationType;
 import org.silverpeas.core.importexport.publication.XMLModelContentType;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.silvertrace.SilverTrace;

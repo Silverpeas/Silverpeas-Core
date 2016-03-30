@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.contribution.content.form.XMLField;
-import com.silverpeas.formTemplate.ejb.FormTemplateBm;
+import org.silverpeas.core.contribution.templating.form.service.FormTemplateService;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.model.PublicationType;
 import org.silverpeas.core.importexport.report.ImportReportManager;
@@ -39,8 +39,8 @@ import org.silverpeas.core.importexport.report.UnitReport;
 import com.silverpeas.node.importexport.NodePositionType;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
 import org.silverpeas.core.importexport.publication.XMLModelContentType;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
@@ -91,7 +91,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   // Variables
   private PublicationService publicationService = null;
-  private FormTemplateBm formTemplateBm = null;
+  private FormTemplateService formTemplateService = null;
   private NodeService nodeService = NodeService.get();
   private AttachmentImportExport attachmentIE;
 
@@ -122,16 +122,16 @@ public abstract class GEDImportExport extends ComponentImportExport {
     return publicationService;
   }
 
-  protected FormTemplateBm getFormTemplateBm() throws ImportExportException {
-    if (formTemplateBm == null) {
+  protected FormTemplateService getFormTemplateService() throws ImportExportException {
+    if (formTemplateService == null) {
       try {
-        formTemplateBm = ServiceProvider.getService(FormTemplateBm.class);
+        formTemplateService = ServiceProvider.getService(FormTemplateService.class);
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return formTemplateBm;
+    return formTemplateService;
   }
 
   /**
@@ -853,7 +853,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
         // la publication a un contenu de type XMLTemplate (formTemplate)
         pubContent = new PublicationContentType();
-        List<XMLField> xmlFields = getFormTemplateBm().getXMLFieldsForExport(publicationDetail.
+        List<XMLField> xmlFields = getFormTemplateService().getXMLFieldsForExport(publicationDetail.
             getPK().getInstanceId() + ":" + publicationDetail.getInfoId(), pubId);
 
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());

@@ -26,7 +26,7 @@
 -->
 
 <mapping>
-	<class name="com.silverpeas.publicationTemplate.PublicationTemplateImpl">
+	<class name="org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl">
 		<map-to xml="publicationTemplate"/>
 		<field name="name" type="string">
 			<bind-xml name="name" node="element"/>

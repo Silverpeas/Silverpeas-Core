@@ -45,8 +45,8 @@ import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate
 import org.silverpeas.core.contribution.content.form.record.Label;
 import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.content.form.record.ParameterValue;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl;
 import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;

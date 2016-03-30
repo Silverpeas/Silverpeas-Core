@@ -27,8 +27,8 @@ package org.silverpeas.core.test;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.content.form.FormException;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.templating.publication.PublicationTemplateException;
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -455,7 +455,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addPublicationTemplateFeatures() {
     addSecurityFeatures();
     if (!contains(PublicationTemplate.class)) {
-      addPackages(true, "com.silverpeas.publicationTemplate");
+      addPackages(true, "org.silverpeas.core.contribution.templating.publication");
       addPackages(true, "org.silverpeas.core.contribution.content.form");
       addAsResource("org/silverpeas/publicationTemplate/settings");
     }
