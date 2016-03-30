@@ -230,7 +230,7 @@ public class RoleDAO {
    * To get only groups roles, specify -1 for userId.
    * To get only user roles, specify null or empty list for groupIds.
    * @param con
-   * @param objectId
+   * @param objectId if -1 is given, then all the rows associated to the type are returned
    * @param objectType
    * @param instanceId
    * @param groupIds
@@ -312,6 +312,14 @@ public class RoleDAO {
       + " and r.instanceId = ? "
       + " and ur.userId = ? ";
 
+  /**
+   * Gets the roles associated to the given user about the object represented by an id and a
+   * type.<br/>
+   * When the value {@code -1} is given of the objectId parameter, all the object of given type are
+   * aimed.
+   * @return a list of user roles.
+   * @throws SQLException
+   */
   private static List<UserRoleRow> getRoles(Connection con, int objectId, String objectType,
       int instanceId, int userId) throws SQLException {
     List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
@@ -319,11 +327,20 @@ public class RoleDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      stmt = con.prepareStatement(queryAllUserRolesOnObject);
-      stmt.setInt(1, objectId);
-      stmt.setString(2, objectType);
-      stmt.setInt(3, instanceId);
-      stmt.setInt(4, userId);
+      final String sqlQuery;
+      if (objectId != -1) {
+        sqlQuery = queryAllUserRolesOnObject;
+      } else {
+        sqlQuery = queryAllUserRolesOnObject.replace(" and r.objectId = ?", "");
+      }
+      stmt = con.prepareStatement(sqlQuery);
+      int index = 0;
+      if (objectId != -1) {
+        stmt.setInt(++index, objectId);
+      }
+      stmt.setString(++index, objectType);
+      stmt.setInt(++index, instanceId);
+      stmt.setInt(++index, userId);
 
       rs = stmt.executeQuery();
 

@@ -245,6 +245,9 @@ public interface OrganisationController extends java.io.Serializable {
 
   String[] getUserProfiles(String userId, String componentId, int objectId, ObjectType objectType);
 
+  Map<Integer, List<String>> getUserObjectProfiles(String userId, String componentId,
+      ObjectType objectType);
+
   List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType);
 
   ProfileInst getUserProfile(String profileId);

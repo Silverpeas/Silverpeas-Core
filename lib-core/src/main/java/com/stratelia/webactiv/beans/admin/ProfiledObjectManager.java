@@ -32,7 +32,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProfiledObjectManager {
   static ProfileInstManager m_ProfileInstManager = new ProfileInstManager();
@@ -74,6 +78,10 @@ public class ProfiledObjectManager {
 
   public String[] getUserProfileNames(int objectId, String objectType, int componentId, int userId,
       List<String> groupIds) throws AdminException {
+    if (objectId == -1) {
+      return new String[0];
+    }
+
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
@@ -87,6 +95,44 @@ public class ProfiledObjectManager {
       }
 
       return roleNames.toArray(new String[roleNames.size()]);
+
+    } catch (Exception e) {
+      throw new AdminException("ProfiledObjectManager.getUserProfileNames",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  public Map<Integer, List<String>> getUserProfileNames(String objectType, int componentId,
+      int userId, List<String> groupIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserRoleRow> roles =
+          RoleDAO.getRoles(con, -1, objectType, componentId, groupIds, userId);
+      Map<Integer, List<String>> objectProfiles = new HashMap<Integer, List<String>>(roles.size());
+
+      Collections.sort(roles, new Comparator<UserRoleRow>() {
+        @Override
+        public int compare(final UserRoleRow o1, final UserRoleRow o2) {
+          return o1.objectId - o2.objectId;
+        }
+      });
+
+      int currentObjectId = -1;
+      List<String> roleNames = new ArrayList<String>();
+      for (UserRoleRow role : roles) {
+        if (currentObjectId != role.objectId) {
+          currentObjectId = role.objectId;
+          roleNames = new ArrayList<String>();
+          objectProfiles.put(currentObjectId, roleNames);
+        }
+        roleNames.add(role.roleName);
+      }
+
+      return objectProfiles;
 
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getUserProfileNames",
