@@ -24,8 +24,7 @@
 
 package org.silverpeas.core.comment.service.notification;
 
-import com.silverpeas.ApplicationService;
-import org.silverpeas.core.comment.service.notification.Classified;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;

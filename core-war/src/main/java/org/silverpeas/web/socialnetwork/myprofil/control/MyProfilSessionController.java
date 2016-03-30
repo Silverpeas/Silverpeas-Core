@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
-import com.silverpeas.SilverpeasServiceProvider;
+import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;

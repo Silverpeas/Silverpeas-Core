@@ -20,7 +20,7 @@
  */
 package com.silverpeas.notation.control;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import com.silverpeas.notation.model.Rating;
 import com.silverpeas.notation.model.RatingRepository;

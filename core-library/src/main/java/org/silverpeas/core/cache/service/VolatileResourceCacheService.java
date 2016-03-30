@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.cache.service;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;

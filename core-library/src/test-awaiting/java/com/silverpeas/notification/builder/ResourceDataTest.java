@@ -37,7 +37,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getId()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getId()
    */
   @Override
   public String getId() {
@@ -46,7 +46,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getComponentInstanceId()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getComponentInstanceId()
    */
   @Override
   public String getComponentInstanceId() {
@@ -55,7 +55,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getSilverpeasContentId()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getSilverpeasContentId()
    */
   @Override
   public String getSilverpeasContentId() {
@@ -64,7 +64,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getCreator()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getCreator()
    */
   @Override
   public UserDetail getCreator() {
@@ -75,7 +75,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getCreationDate()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getCreationDate()
    */
   @Override
   public Date getCreationDate() {
@@ -84,7 +84,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getTitle()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getTitle()
    */
   @Override
   public String getTitle() {
@@ -93,7 +93,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getDescription()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getDescription()
    */
   @Override
   public String getDescription() {
@@ -102,7 +102,7 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.SilverpeasContent#getContributionType()
+   * @see org.silverpeas.core.contribution.model.SilverpeasContent#getContributionType()
    */
   @Override
   public String getContributionType() {

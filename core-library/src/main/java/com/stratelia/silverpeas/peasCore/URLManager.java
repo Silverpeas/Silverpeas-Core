@@ -20,8 +20,8 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.SilverpeasToolContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.SilverpeasToolContent;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.util.ComponentHelper;

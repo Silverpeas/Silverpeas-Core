@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.SilverpeasServiceProvider;
+import org.silverpeas.core.SilverpeasServiceProvider;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterfaceImpl;

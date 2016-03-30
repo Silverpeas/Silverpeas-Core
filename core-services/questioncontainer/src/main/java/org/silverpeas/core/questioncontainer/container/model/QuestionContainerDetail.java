@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.questioncontainer.container.model;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;

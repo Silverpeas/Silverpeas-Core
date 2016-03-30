@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import com.silverpeas.SilverpeasServiceProvider;
+import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;

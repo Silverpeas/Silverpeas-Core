@@ -1,6 +1,6 @@
 package org.silverpeas.core.security.encryption;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.DateTime;
 

@@ -90,7 +90,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.silverpeas.SilverpeasServiceProvider.getPersonalizationService;
+import static org.silverpeas.core.SilverpeasServiceProvider.getPersonalizationService;
 
 /**
  * Class declaration

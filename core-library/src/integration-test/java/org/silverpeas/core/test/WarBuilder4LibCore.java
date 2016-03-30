@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.test;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import com.silverpeas.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;

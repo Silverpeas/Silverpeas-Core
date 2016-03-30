@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas;
+package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import java.io.Serializable;

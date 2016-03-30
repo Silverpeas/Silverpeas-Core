@@ -23,8 +23,8 @@
  */
 package com.silverpeas.usernotification.builder;
 
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.SilverpeasToolContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.SilverpeasToolContent;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;

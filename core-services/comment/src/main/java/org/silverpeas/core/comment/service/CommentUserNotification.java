@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.comment.service;
 
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.SilverpeasToolContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.SilverpeasToolContent;
 import org.silverpeas.core.comment.model.Comment;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.model.NotificationResourceData;

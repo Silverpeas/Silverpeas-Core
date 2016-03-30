@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import com.silverpeas.SilverpeasServiceProvider;
+import org.silverpeas.core.SilverpeasServiceProvider;
 import org.silverpeas.core.admin.component.model.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.admin.space.SpaceInst;

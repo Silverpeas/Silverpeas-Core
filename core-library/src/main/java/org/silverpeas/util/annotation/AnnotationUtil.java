@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.annotation;
 
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.apache.commons.lang3.NotImplementedException;

@@ -21,8 +21,8 @@
 
 package org.silverpeas.core.comment.service.notification;
 
-import com.silverpeas.ApplicationService;
-import com.silverpeas.SilverpeasContent;
+import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
