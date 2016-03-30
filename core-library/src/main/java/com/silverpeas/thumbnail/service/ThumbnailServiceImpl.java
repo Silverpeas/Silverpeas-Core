@@ -27,9 +27,9 @@ package com.silverpeas.thumbnail.service;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDAO;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;

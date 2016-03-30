@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

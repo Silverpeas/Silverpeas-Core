@@ -1,11 +1,11 @@
 package org.silverpeas.core.webapi.preferences;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -34,7 +34,7 @@ public class MyPreferencesResource extends RESTWebService {
   public UserPreferencesEntity setMyPreferences(final UserPreferencesEntity preferences) {
     UserPreferences userPref = getUserPreferences();
     userPref.setLanguage(preferences.getLanguage());
-    SilverpeasServiceProvider.getPersonalizationService().saveUserSettings(userPref);
+    PersonalizationServiceProvider.getPersonalizationService().saveUserSettings(userPref);
     preferences.setURI(getUriInfo().getRequestUri());
     return preferences;
   }

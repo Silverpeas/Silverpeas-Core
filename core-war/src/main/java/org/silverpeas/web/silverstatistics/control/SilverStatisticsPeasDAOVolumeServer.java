@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;
 import org.silverpeas.core.util.UnitUtil;
 
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.core.util.memory.MemoryUnit;
 

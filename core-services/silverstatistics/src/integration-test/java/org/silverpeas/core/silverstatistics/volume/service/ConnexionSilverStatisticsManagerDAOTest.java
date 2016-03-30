@@ -35,7 +35,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.DataSetTest;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.BasicWarBuilder;
 
 import java.sql.Connection;

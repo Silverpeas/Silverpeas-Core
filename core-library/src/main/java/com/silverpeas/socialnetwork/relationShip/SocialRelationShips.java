@@ -31,7 +31,7 @@ import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

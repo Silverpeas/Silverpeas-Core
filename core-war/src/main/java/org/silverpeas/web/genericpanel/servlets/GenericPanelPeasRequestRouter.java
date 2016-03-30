@@ -31,7 +31,7 @@ import org.silverpeas.web.genericpanel.control.GenericPanelPeasSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.util.exception.SilverpeasTrappedException;
+import org.silverpeas.core.exception.SilverpeasTrappedException;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

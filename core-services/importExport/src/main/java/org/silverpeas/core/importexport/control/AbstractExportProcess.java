@@ -35,7 +35,7 @@ import org.silverpeas.util.ZipUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 public abstract class AbstractExportProcess {

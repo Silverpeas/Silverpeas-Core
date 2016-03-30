@@ -27,10 +27,10 @@ package org.silverpeas.core.pdc.thesaurus.model;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a

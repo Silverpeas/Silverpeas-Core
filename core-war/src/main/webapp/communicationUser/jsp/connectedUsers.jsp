@@ -27,8 +27,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkCommunicationUser.jsp" %>
-<%@ page import="org.silverpeas.core.SilverpeasServiceProvider" %>
 <%@ page import="com.silverpeas.personalization.UserPreferences" %>
+<%@ page import="com.silverpeas.personalization.service.PersonalizationServiceProvider" %>
 
 <%
   ArrayLine arrayLine = null;
@@ -88,7 +88,8 @@
         if (!item.getUserDetail().getId().equals(communicationScc.getUserId())) {
           List userList = new ArrayList();
           userList.add(item.getUserDetail().getId());
-          UserPreferences preferences = SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
+          UserPreferences preferences =
+              PersonalizationServiceProvider.getPersonalizationService().getUserSettings(
               item.getUserDetail().getId());
 
           arrayLine = arrayPane.addArrayLine();

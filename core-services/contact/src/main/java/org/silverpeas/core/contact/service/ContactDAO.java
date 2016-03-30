@@ -27,9 +27,9 @@ import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.model.ContactRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.contact.model.Contact;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

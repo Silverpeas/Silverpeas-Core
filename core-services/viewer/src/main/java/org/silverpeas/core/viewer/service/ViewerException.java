@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier
@@ -50,7 +50,7 @@ public class ViewerException extends SilverpeasRuntimeException {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.util.exception.SilverpeasException#getModule()
+   * @see org.silverpeas.core.exception.SilverpeasException#getModule()
    */
   @Override
   public String getModule() {

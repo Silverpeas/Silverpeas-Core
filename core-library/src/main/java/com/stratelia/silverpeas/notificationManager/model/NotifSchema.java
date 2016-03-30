@@ -26,8 +26,8 @@ package com.stratelia.silverpeas.notificationManager.model;
 
 import java.sql.Connection;
 
-import org.silverpeas.util.Schema;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.Schema;
+import org.silverpeas.core.exception.UtilException;
 
 public class NotifSchema extends Schema {
   public NotifSchema(Connection co) throws UtilException {

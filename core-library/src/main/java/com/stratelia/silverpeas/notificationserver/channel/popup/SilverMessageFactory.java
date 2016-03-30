@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.LongText;
+import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 

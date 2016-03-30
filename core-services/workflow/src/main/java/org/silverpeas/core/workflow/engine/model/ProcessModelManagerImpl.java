@@ -42,12 +42,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.xml.sax.InputSource;
 

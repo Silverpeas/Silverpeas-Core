@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.sharing;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class FileSharingRuntimeException extends SilverpeasRuntimeException {
 

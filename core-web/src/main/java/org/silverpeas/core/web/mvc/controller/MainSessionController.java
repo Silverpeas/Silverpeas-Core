@@ -20,42 +20,42 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
-import org.silverpeas.core.admin.component.model.Parameter;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.clipboard.service.MainClipboard;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcSettings;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
 import com.stratelia.silverpeas.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.service.Clipboard;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.clipboard.service.MainClipboard;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcSettings;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
+
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.web.subscription.SubscriptionContext;
-
-import javax.enterprise.util.AnnotationLiteral;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
@@ -156,7 +156,7 @@ public class MainSessionController implements Clipboard {
       // Identify the user
       this.userId = getAdminService().identify(authenticationKey, sessionId, isAppInMaintenance());
       this.sessionId = sessionId;
-      this.userPreferences = SilverpeasServiceProvider.getPersonalizationService()
+      this.userPreferences = PersonalizationServiceProvider.getPersonalizationService()
           .getUserSettings(userId);
 
       // Get the user language

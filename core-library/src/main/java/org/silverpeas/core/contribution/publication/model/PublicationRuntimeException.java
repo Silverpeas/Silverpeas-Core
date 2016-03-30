@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class PublicationRuntimeException extends SilverpeasRuntimeException {
 

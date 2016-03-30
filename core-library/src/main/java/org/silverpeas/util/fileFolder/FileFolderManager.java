@@ -32,7 +32,7 @@ package org.silverpeas.util.fileFolder;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ImageUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.comparator.NameFileComparator;

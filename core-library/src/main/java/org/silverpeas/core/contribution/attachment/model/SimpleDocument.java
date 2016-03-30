@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;

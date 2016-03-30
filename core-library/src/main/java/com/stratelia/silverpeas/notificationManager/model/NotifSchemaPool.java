@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import org.silverpeas.util.Schema;
-import org.silverpeas.util.SchemaPool;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.Schema;
+import org.silverpeas.core.persistence.jdbc.SchemaPool;
+import org.silverpeas.core.exception.UtilException;
 
 /**
  * The NotifSchemaPool class manages a pool of NotifSchema shared by all the client (admin classes).

@@ -33,7 +33,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

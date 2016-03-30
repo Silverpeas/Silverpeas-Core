@@ -37,7 +37,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

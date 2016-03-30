@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.domain.exception;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class DomainDeletionException extends SilverpeasException {
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.workflowdesigner.model;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class WorkflowDesignerException extends SilverpeasException {
 

@@ -41,8 +41,8 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import java.io.FileWriter;

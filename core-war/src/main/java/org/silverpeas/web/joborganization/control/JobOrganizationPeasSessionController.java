@@ -43,7 +43,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.List;

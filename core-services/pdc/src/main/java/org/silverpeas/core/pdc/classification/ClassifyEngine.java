@@ -25,14 +25,14 @@
 package org.silverpeas.core.pdc.classification;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;

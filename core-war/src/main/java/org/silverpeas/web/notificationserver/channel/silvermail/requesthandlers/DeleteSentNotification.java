@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAIL
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

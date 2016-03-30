@@ -38,8 +38,8 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
 import org.apache.commons.fileupload.FileItem;

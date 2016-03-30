@@ -28,8 +28,8 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

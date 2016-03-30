@@ -27,8 +27,8 @@ import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import org.silverpeas.core.tagcloud.model.comparator.TagCloudByCountComparator;
 import org.silverpeas.core.tagcloud.model.comparator.TagCloudByNameComparator;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;

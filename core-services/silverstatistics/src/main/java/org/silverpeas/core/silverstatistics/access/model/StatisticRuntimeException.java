@@ -27,10 +27,10 @@
 
 package org.silverpeas.core.silverstatistics.access.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
- * @see org.silverpeas.util.exception.SilverpeasRuntimeException
+ * @see SilverpeasRuntimeException
  */
 public class StatisticRuntimeException extends SilverpeasRuntimeException {
 

@@ -27,7 +27,7 @@
 
 package com.silverpeas.subscribe.service;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /*
  * CVS Informations

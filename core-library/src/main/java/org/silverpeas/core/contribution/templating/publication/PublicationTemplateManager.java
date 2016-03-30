@@ -63,7 +63,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 

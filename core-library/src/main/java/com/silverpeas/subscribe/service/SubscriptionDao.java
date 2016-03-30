@@ -35,7 +35,7 @@ import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import com.stratelia.webactiv.node.model.NodePK;
 

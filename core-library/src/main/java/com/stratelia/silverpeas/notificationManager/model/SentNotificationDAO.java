@@ -34,8 +34,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.LongText;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.LongText;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 public class SentNotificationDAO {
 

@@ -27,7 +27,7 @@
 
 package org.silverpeas.web.alertuser;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration

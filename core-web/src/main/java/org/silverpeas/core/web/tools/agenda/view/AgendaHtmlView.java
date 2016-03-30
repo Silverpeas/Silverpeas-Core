@@ -34,7 +34,7 @@ import org.silverpeas.core.calendar.model.SchedulableCount;
 import org.silverpeas.core.calendar.model.SchedulableGroup;
 import org.silverpeas.core.calendar.model.SchedulableList;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.questioncontainer.score.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

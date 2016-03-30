@@ -33,7 +33,7 @@
 
 package org.silverpeas.web.todo.control;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * @author mmarengo

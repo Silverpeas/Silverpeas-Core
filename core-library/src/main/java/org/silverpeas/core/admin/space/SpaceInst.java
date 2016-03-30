@@ -34,7 +34,7 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.util.memory.MemoryUnit;

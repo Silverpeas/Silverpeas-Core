@@ -23,30 +23,24 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
-import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -54,13 +48,19 @@ import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.util.Link;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.util.Link;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -183,7 +183,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void savePreferences(UserPreferences preferences) {
-    SilverpeasServiceProvider.getPersonalizationService().saveUserSettings(preferences);
+    PersonalizationServiceProvider.getPersonalizationService().saveUserSettings(preferences);
   }
 
   public List<SpaceInstLight> getSpaceTreeview() {

@@ -25,7 +25,7 @@ package org.silverpeas.util.mail;
 
 import java.io.File;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import org.apache.commons.io.FilenameUtils;
 

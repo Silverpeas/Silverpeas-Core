@@ -54,7 +54,7 @@ import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.createCountFor;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createCountFor;
 
 /**
  * @author lbertin

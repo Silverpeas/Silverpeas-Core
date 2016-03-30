@@ -31,8 +31,8 @@ import java.sql.SQLException;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Singleton;
 

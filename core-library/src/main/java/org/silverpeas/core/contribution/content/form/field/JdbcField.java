@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content.form.field;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;

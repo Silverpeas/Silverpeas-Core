@@ -23,7 +23,7 @@ package org.silverpeas.core.admin.user.dao;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -37,8 +37,8 @@ import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.inject.Inject;

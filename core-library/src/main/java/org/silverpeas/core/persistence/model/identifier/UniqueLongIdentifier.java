@@ -26,7 +26,7 @@ package org.silverpeas.core.persistence.model.identifier;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.model.EntityIdentifier;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

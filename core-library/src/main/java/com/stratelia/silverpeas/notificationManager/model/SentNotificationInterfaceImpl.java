@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.silverpeas.core.SilverpeasServiceProvider;
-import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * Interface declaration
@@ -57,8 +57,7 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
       for (UserRecipient user : usersSet) {
         users.add(user.getUserId());
       }
-      String language =
-          SilverpeasServiceProvider.getPersonalizationService()
+      String language = PersonalizationServiceProvider.getPersonalizationService()
               .getUserSettings(metaData.getSender()).getLanguage();
       SentNotificationDetail notif =
           new SentNotificationDetail(Integer.parseInt(metaData.getSender()), metaData.

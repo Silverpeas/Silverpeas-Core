@@ -28,7 +28,7 @@ import org.silverpeas.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Thrown by the form components.

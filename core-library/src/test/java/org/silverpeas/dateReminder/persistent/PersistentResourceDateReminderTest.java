@@ -27,7 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.dateReminder.exception.DateReminderException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

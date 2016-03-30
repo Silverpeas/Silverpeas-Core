@@ -27,7 +27,7 @@
 
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration

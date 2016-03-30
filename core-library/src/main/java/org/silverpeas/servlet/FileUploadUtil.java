@@ -37,7 +37,7 @@ import org.apache.commons.lang3.CharEncoding;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 
 /**
  * Utility class for file uploading.

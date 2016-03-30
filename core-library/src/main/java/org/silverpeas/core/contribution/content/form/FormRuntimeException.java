@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class FormRuntimeException extends SilverpeasRuntimeException {
 

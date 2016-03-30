@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAIL
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.HashMap;

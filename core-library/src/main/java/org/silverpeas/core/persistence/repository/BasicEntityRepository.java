@@ -129,5 +129,5 @@ public interface BasicEntityRepository<ENTITY extends IdentifiableEntity, ENTITY
    * @return true if the specified entity exists in the persistence context backed by this
    * repository, false otherwise.
    */
-  public boolean contains(ENTITY entity);
+  boolean contains(ENTITY entity);
 }

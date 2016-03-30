@@ -25,7 +25,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.domain.synchro.SynchroReport;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

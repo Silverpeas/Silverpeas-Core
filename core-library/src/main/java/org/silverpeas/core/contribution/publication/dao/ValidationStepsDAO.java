@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 

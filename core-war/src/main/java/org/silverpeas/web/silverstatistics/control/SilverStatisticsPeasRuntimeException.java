@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Specific StatisticsPeasRuntime Exception

@@ -29,10 +29,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.LongText;
+import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.util.ArrayList;
 import java.util.Collection;

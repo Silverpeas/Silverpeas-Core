@@ -29,7 +29,7 @@ import java.util.List;
 import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * @author Bensalem Nabil

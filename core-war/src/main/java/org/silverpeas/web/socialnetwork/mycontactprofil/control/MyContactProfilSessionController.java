@@ -35,7 +35,7 @@ import java.util.List;
 import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 

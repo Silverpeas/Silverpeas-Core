@@ -40,7 +40,7 @@ import org.silverpeas.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import java.util.Date;

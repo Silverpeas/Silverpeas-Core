@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

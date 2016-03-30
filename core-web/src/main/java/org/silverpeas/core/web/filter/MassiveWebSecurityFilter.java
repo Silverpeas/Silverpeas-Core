@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;

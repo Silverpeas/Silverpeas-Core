@@ -20,28 +20,28 @@
  */
 package org.silverpeas.core.admin.user.model;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionManagementProvider;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.StatusService;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -740,7 +740,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the user preferences.
    */
   public final UserPreferences getUserPreferences() {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getId());
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getId());
   }
 
   /**

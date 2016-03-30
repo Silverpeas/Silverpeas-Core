@@ -28,8 +28,8 @@ package org.silverpeas.core.pdc.subscription.service;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
 import org.silverpeas.core.pdc.classification.Criteria;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

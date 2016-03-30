@@ -23,8 +23,8 @@
  */
 package org.silverpeas.exec;
 
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class ExternalExecutionException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 5204285099061189996L;
@@ -47,7 +47,7 @@ public class ExternalExecutionException extends SilverpeasRuntimeException {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.util.exception.SilverpeasRuntimeException#getModule()
+   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
    */
   @Override
   public String getModule() {

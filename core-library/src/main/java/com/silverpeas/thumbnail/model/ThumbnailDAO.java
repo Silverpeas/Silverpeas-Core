@@ -24,7 +24,7 @@
 
 package com.silverpeas.thumbnail.model;
 
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

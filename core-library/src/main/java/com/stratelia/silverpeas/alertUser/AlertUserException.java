@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.alertUser;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration

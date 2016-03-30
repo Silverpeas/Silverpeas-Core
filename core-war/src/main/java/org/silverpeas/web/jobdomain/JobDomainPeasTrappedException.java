@@ -31,7 +31,7 @@
 
 package org.silverpeas.web.jobdomain;
 
-import org.silverpeas.util.exception.SilverpeasTrappedException;
+import org.silverpeas.core.exception.SilverpeasTrappedException;
 
 /**
  * Class declaration

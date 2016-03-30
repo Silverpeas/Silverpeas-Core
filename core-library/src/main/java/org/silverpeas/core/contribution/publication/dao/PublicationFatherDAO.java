@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.contribution.publication.dao;
 
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.Alias;

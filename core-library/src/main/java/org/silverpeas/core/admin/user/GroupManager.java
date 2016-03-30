@@ -37,10 +37,10 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

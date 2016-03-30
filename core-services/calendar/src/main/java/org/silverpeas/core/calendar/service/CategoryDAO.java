@@ -26,7 +26,7 @@
 package org.silverpeas.core.calendar.service;
 
 import org.silverpeas.core.calendar.model.Category;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -26,11 +26,11 @@ package org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao;
 
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.model.DynamicValue;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.sql.Date;

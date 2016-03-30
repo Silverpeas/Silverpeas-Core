@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.templating.form.service;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class FormTemplateRuntimeException extends SilverpeasRuntimeException {
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -26,9 +26,9 @@ package org.silverpeas.core.calendar.service;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.model.ToDoHeader;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

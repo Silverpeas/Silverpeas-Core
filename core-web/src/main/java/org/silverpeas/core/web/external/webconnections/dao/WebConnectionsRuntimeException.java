@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.external.webconnections.dao;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class WebConnectionsRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -5698912998591946797L;

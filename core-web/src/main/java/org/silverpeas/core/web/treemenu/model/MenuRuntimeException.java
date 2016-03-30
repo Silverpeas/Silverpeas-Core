@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.treemenu.model;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  *
@@ -81,7 +81,7 @@ public class MenuRuntimeException extends SilverpeasRuntimeException {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.util.exception.SilverpeasRuntimeException#getModule()
+   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
    */
   @Override
   public String getModule() {

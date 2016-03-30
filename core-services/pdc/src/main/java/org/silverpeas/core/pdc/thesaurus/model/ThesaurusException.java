@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.thesaurus.model;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class ThesaurusException extends SilverpeasException {
 

@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;
 
 import java.sql.Connection;

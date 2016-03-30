@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * A GroupTable object manages the DomainSQL_Group table.

@@ -25,8 +25,8 @@
 package org.silverpeas.core.mylinks.dao;
 
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;

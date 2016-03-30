@@ -23,8 +23,8 @@
  */
 package org.silverpeas.media.video;
 
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class VideoThumbnailExtractorException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -1010169458973310498L;
@@ -47,7 +47,7 @@ public class VideoThumbnailExtractorException extends SilverpeasRuntimeException
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.util.exception.SilverpeasRuntimeException#getModule()
+   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
    */
   @Override
   public String getModule() {

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.workflow.api;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Thrown when a fatal error occured in a workflow engine component.

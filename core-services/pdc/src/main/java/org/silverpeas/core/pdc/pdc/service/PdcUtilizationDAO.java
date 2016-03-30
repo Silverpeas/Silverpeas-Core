@@ -28,7 +28,7 @@ import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.index.search.model.AxisFilterNode;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

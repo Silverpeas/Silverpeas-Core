@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationserver;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class NotificationServerException extends SilverpeasException {
 

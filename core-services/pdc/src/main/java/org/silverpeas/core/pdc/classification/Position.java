@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.List;
 

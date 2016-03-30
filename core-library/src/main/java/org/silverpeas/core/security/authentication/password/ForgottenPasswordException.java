@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.security.authentication.password;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class ForgottenPasswordException extends SilverpeasException {
 

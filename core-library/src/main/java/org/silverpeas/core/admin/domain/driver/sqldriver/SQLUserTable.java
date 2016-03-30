@@ -27,8 +27,8 @@ package org.silverpeas.core.admin.domain.driver.sqldriver;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 import java.sql.Connection;

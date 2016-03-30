@@ -20,21 +20,20 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.comment;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -181,7 +180,7 @@ public abstract class CommentWidget extends TagSupport {
   }
 
   private UserPreferences getUserPreferences() {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
   private MultiSilverpeasBundle getResources() {

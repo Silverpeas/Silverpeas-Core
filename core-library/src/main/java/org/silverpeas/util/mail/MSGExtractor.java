@@ -27,7 +27,7 @@ import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

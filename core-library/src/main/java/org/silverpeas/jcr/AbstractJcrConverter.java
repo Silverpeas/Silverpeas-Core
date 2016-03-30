@@ -58,8 +58,8 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.FileUtil;
 
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.UtilException;
 
 import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
 import static org.silverpeas.jcr.util.JcrConstants.SLV_PROPERTY_NAME;

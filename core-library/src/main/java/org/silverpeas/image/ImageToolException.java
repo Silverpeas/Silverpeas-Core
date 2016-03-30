@@ -23,8 +23,8 @@
  */
 package org.silverpeas.image;
 
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier
@@ -50,7 +50,7 @@ public class ImageToolException extends SilverpeasRuntimeException {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.util.exception.SilverpeasRuntimeException#getModule()
+   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
    */
   @Override
   public String getModule() {

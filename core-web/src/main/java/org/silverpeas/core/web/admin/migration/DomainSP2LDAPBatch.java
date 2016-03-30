@@ -31,9 +31,9 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.ArrayList;

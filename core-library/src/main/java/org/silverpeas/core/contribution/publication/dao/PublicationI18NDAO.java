@@ -27,9 +27,9 @@ package org.silverpeas.core.contribution.publication.dao;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

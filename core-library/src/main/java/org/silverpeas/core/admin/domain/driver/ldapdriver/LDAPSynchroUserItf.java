@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 import java.util.Collection;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Interface de définition des méthodes pour la synchronisation des utilisateurs d'un domaine LDAP

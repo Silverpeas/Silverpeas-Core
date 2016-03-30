@@ -42,7 +42,7 @@
 
 package org.silverpeas.web.joborganization;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration

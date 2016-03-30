@@ -44,7 +44,7 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.File;

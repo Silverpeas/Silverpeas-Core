@@ -30,7 +30,7 @@ import org.silverpeas.core.web.treemenu.model.TreeFilterDefault;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Allows getting a TreeFilter implementation

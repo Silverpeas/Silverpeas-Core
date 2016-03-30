@@ -27,7 +27,7 @@ package com.silverpeas.socialnetwork.provider;
 import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.List;
 

@@ -30,7 +30,7 @@ import org.silverpeas.util.Charsets;
 import org.silverpeas.util.LdapConfiguration;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions

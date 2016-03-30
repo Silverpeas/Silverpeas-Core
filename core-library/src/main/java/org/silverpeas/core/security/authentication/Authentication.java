@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authentication.exception
     .AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * A set of security-related operations about a user authentication.

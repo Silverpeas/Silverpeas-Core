@@ -24,7 +24,7 @@
 
 package com.silverpeas.socialnetwork.invitation;
 
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

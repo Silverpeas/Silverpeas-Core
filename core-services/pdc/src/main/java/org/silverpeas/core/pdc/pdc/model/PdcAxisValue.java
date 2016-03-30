@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;

@@ -62,8 +62,8 @@ import org.silverpeas.util.annotation.Action;
 import org.silverpeas.util.annotation.SourceObject;
 import org.silverpeas.util.annotation.SourcePK;
 import org.silverpeas.util.annotation.TargetPK;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 

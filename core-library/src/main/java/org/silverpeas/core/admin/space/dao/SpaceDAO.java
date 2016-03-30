@@ -37,7 +37,7 @@ import java.util.Set;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 public class SpaceDAO {
 

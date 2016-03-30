@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.stratelia.webactiv.node.control.NodeService;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;

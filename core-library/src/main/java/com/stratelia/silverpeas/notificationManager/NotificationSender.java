@@ -20,15 +20,15 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterfaceImpl;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.util.ArrayList;
@@ -98,7 +98,8 @@ public class NotificationSender implements java.io.Serializable {
     Set<String> languages = metaData.getLanguages();
     Map<String, String> usersLanguage = new HashMap<>(usersSet.size());
     for (UserRecipient user : usersSet) {
-      usersLanguage.put(user.getUserId(), SilverpeasServiceProvider.getPersonalizationService().
+      usersLanguage.put(user.getUserId(),
+          PersonalizationServiceProvider.getPersonalizationService().
           getUserSettings(user.getUserId()).getLanguage());
     }
 

@@ -27,7 +27,7 @@ package org.silverpeas.core.contact.info;
 
 import org.silverpeas.core.contact.info.model.InfoPK;
 import org.silverpeas.core.contact.model.ContactPK;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

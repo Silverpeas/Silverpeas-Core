@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:

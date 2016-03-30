@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.util.Schema;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.Schema;
+import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 

@@ -25,23 +25,23 @@
 package org.silverpeas.core.web.util.viewgenerator.html.result;
 
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -421,7 +421,7 @@ public class HtmlSearchResultTag extends TagSupport {
    * @throws JspTagException
    */
   private UserPreferences getUserPreferences() {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
   /**

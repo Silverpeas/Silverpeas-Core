@@ -23,7 +23,7 @@ package org.silverpeas.web.todo.control;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.ToDoHeader;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.Collection;
 

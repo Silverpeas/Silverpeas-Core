@@ -33,8 +33,8 @@ import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.templating.publication.PublicationTemplateManager;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

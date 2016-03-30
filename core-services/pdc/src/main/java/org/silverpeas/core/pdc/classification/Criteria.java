@@ -24,8 +24,7 @@
 
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.core.pdc.classification.ClassifyEngineException;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class Criteria implements java.io.Serializable {
 

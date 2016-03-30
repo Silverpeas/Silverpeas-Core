@@ -30,7 +30,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.net.URI;
 import javax.inject.Inject;

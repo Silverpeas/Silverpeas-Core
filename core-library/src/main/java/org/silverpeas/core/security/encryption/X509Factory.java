@@ -28,8 +28,8 @@ import net.sourceforge.jcetaglib.lib.X509Cert;
 import org.silverpeas.core.security.authentication.password.encryption.UnixDESEncryption;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

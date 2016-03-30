@@ -28,8 +28,8 @@ import org.silverpeas.core.calendar.service.CalendarException;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

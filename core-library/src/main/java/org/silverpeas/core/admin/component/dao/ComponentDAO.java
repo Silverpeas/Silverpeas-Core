@@ -38,7 +38,7 @@ import java.util.Set;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 public class ComponentDAO {
 

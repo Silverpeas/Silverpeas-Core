@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.web.search;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
 /**
@@ -125,7 +125,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
    * @return a UserPreferences object from Personalization service.
    */
   protected UserPreferences getUserPreferences(String userId) {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(userId);
   }
 
 }

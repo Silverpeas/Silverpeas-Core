@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import com.silverpeas.usernotification.builder.AbstractResourceUserNotificationBuilder;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.util.StringUtil;
@@ -61,7 +61,7 @@ public abstract class AbstractPdcSubscriptionUserNotification<T>
   protected String getUserLanguage(int userID) {
     String userLanguage = userLanguages.get(userID);
     if (StringUtil.isNotDefined(userLanguage)) {
-      userLanguage = SilverpeasServiceProvider.getPersonalizationService()
+      userLanguage = PersonalizationServiceProvider.getPersonalizationService()
           .getUserSettings(String.valueOf(userID)).getLanguage();
       userLanguages.put(userID, userLanguage);
     }

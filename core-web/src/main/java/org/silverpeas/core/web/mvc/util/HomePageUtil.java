@@ -28,8 +28,8 @@
 package org.silverpeas.core.web.mvc.util;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.exception.FromModule;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.FromModule;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

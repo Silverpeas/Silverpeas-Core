@@ -32,8 +32,8 @@ import java.util.List;
 import org.silverpeas.core.date.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -25,9 +25,9 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.communicationuser;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class CommunicationUserException extends SilverpeasException {
 

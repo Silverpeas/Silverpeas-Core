@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.mylinks;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 public class MyLinksRuntimeException extends SilverpeasRuntimeException {
   /**

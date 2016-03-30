@@ -25,7 +25,7 @@ import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.calendar.model.ParticipationStatus;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.Collection;
 import java.util.Date;

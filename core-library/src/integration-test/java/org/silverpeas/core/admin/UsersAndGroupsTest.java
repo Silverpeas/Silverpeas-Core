@@ -45,7 +45,7 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
-import org.silverpeas.util.AbstractTable;
+import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.fileFolder.FileFolderManager;

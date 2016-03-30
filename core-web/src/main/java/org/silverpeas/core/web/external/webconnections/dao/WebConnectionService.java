@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -38,7 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.silverpeas.util.DBUtil.openConnection;
+import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
 /**
  * @author

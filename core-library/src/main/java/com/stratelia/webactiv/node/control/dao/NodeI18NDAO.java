@@ -23,8 +23,8 @@ package com.stratelia.webactiv.node.control.dao;
 
 import com.stratelia.webactiv.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.node.model.NodeI18NPK;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;

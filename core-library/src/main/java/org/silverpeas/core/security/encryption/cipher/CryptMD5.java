@@ -20,8 +20,8 @@
  */
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import java.io.File;
 import java.io.FileInputStream;

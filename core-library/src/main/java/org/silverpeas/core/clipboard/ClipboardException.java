@@ -31,7 +31,7 @@
 
 package org.silverpeas.core.clipboard;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration

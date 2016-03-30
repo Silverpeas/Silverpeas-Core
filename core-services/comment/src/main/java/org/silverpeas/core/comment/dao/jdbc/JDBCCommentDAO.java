@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.silverpeas.util.DBUtil.openConnection;
+import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
 @Named("commentDAO")
 public class JDBCCommentDAO implements CommentDAO {

@@ -26,7 +26,7 @@ package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.web.silverstatistics.vo.AccessPublicationVO;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ForeignPK;
 
 import java.sql.Connection;

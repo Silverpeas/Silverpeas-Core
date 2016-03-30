@@ -29,13 +29,13 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import com.stratelia.webactiv.coordinates.persistence.CoordinatesDAO;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.coordinates.model.CoordinateRuntimeException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

@@ -32,7 +32,7 @@
  */
 package org.silverpeas.core.comment;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

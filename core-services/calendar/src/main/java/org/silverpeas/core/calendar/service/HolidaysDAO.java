@@ -29,9 +29,9 @@
 package org.silverpeas.core.calendar.service;
 
 import org.silverpeas.core.calendar.model.HolidayDetail;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.persistence.UserRoleRow;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;

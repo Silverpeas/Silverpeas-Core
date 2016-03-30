@@ -29,8 +29,8 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQueries;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
 

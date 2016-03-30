@@ -33,7 +33,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 
 /**

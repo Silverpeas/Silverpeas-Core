@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import org.silverpeas.core.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
-import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
+import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.settings.SilverpeasSettings;
-import org.silverpeas.token.Token;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
+import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
+import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
+import org.silverpeas.settings.SilverpeasSettings;
+import org.silverpeas.token.Token;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -179,7 +179,7 @@ public abstract class RESTWebService implements WebResource {
    * @return the user preference or null if its preferences can be retrieved.
    */
   protected UserPreferences getUserPreferences() {
-    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
+    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(
         getUserDetail().getId());
   }
 

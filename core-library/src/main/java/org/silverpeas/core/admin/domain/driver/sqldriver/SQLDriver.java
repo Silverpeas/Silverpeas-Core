@@ -38,8 +38,8 @@ import org.silverpeas.core.security.authentication.password.PasswordEncryptionPr
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;

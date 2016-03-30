@@ -35,6 +35,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
+import org.silverpeas.core.persistence.jdbc.sql.SelectResultRowProcess;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
@@ -49,7 +53,7 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.*;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
 
 @RunWith(Arquillian.class)
 public class JdbcSqlQueryTest {

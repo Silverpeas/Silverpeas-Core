@@ -27,7 +27,7 @@ package org.silverpeas.core.pdc.interests.service;
 
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.pdc.classification.Criteria;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

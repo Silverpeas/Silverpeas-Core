@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.space.model;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class UserFavoriteSpaceBean extends SilverpeasBean {
 

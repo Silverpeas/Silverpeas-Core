@@ -25,7 +25,7 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class AdminException extends SilverpeasException {
 

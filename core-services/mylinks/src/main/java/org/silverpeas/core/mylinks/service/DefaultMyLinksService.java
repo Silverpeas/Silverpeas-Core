@@ -25,7 +25,7 @@ import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.silverpeas.core.mylinks.dao.LinkDAO.getLinkDao;
-import static org.silverpeas.util.DBUtil.openConnection;
+import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content.wysiwyg;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class WysiwygException extends SilverpeasException {
 

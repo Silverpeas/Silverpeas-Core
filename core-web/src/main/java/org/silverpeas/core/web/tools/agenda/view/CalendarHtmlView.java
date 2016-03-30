@@ -30,7 +30,7 @@ import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.calendar.model.SchedulableCount;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;

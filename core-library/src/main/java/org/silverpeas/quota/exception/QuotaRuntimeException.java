@@ -32,7 +32,7 @@
  */
 package org.silverpeas.quota.exception;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier

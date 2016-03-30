@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.persistence.GroupRow;
 import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 

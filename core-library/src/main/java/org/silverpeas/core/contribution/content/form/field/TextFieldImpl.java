@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.content.form.field;
 
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 

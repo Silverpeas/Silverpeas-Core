@@ -24,8 +24,8 @@
 package org.silverpeas.util.csv;
 
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 import java.text.ParseException;
 import java.util.Date;
 

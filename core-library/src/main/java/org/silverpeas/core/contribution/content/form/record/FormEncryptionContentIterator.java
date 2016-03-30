@@ -44,8 +44,8 @@ import org.silverpeas.core.contribution.templating.publication.PublicationTempla
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class FormEncryptionContentIterator implements EncryptionContentIterator {
 

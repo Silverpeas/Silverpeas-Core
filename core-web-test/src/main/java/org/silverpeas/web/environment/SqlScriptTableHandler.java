@@ -26,8 +26,8 @@ package org.silverpeas.web.environment;
 
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQueries;
-import org.silverpeas.core.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 import java.io.InputStream;
 import java.util.LinkedHashSet;

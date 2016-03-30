@@ -26,9 +26,9 @@ package org.silverpeas.core.admin.persistence;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroReport;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.Schema;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.Schema;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.*;
 import java.util.*;

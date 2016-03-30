@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.exception;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 /**
  * Throws when properties loading from a properties files failed
@@ -81,7 +81,7 @@ public class PropertyNotFoundRuntimeException extends SilverpeasRuntimeException
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.util.exception.SilverpeasRuntimeException#getModule()
+   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
    */
   @Override
   public String getModule() {

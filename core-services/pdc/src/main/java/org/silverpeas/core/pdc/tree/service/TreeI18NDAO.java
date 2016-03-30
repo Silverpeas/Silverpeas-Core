@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.UtilException;
 
 import javax.inject.Singleton;
 

@@ -36,7 +36,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 /**
  * This is the alimentation statistics DAO Object

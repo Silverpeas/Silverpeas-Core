@@ -30,7 +30,7 @@ import com.novell.ldap.LDAPEntry;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.TreeMap;
 import java.util.Vector;

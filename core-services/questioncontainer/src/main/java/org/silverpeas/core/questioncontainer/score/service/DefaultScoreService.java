@@ -27,8 +27,8 @@ import org.silverpeas.core.questioncontainer.score.dao.ScoreDAO;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.model.ScoreRuntimeException;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

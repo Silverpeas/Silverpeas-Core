@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.admin.component.exception;
 
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasException;
 
 public class InstanciationException extends SilverpeasException {
 

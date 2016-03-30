@@ -32,7 +32,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

@@ -48,7 +48,7 @@ import java.sql.SQLException;
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.silverpeas.core.persistence.jdbc.JdbcSqlQuery.createCountFor;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createCountFor;
 
 /**
  * @author lbertin
