@@ -388,6 +388,9 @@ public interface Administration {
   String[] getProfilesByObjectAndUserId(int objectId, String objectType, String componentId,
       String userId) throws AdminException;
 
+  Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(String objectType,
+      String componentId, String userId) throws AdminException;
+
   boolean isObjectAvailable(String componentId, int objectId, String objectType, String userId)
       throws AdminException;
 

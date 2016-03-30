@@ -547,6 +547,18 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
+  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
+      final String componentId, final ObjectType objectType) {
+    try {
+      return getAdminService().getProfilesByObjectTypeAndUserId(objectType.getCode(),
+          componentId, userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return null;
+    }
+  }
+
+  @Override
   public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
     try {
       return getAdminService().getProfilesByObject(objectId, objectType, componentId);
