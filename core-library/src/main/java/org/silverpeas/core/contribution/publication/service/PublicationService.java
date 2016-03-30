@@ -21,8 +21,8 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.NodeTree;

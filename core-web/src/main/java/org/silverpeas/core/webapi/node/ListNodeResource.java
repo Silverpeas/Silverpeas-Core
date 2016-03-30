@@ -33,8 +33,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodePK;
 
 /**
  * A REST Web resource representing a list of node. It is a web service that provides an access to a

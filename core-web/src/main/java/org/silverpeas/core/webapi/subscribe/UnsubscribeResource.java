@@ -37,7 +37,7 @@ import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.POST;

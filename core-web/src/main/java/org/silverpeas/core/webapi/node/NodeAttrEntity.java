@@ -22,7 +22,7 @@ package org.silverpeas.core.webapi.node;
 
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.util.DateUtil;
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.publication.model;
 
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import java.util.ArrayList;
 import java.util.List;
 

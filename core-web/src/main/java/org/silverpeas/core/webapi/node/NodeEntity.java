@@ -21,9 +21,9 @@
 package org.silverpeas.core.webapi.node;
 
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodeI18NDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeI18NDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.util.i18n.Translation;
 import org.silverpeas.core.util.logging.SilverLogger;

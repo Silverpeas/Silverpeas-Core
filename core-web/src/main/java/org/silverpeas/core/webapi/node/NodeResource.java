@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 
 /**
  * A REST Web resource providing access to a node through private mode.

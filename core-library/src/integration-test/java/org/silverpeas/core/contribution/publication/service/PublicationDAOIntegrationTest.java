@@ -21,7 +21,7 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;

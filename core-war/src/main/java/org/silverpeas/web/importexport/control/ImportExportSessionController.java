@@ -35,7 +35,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.util.WAAttributeValuePair;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 import java.util.List;
 

@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAAttributeValuePair;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;

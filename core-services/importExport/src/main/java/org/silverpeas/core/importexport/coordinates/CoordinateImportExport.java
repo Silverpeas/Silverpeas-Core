@@ -20,13 +20,13 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
-import com.stratelia.webactiv.coordinates.control.CoordinatesService;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.coordinates.model.CoordinateRuntimeException;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.coordinates.service.CoordinatesService;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.coordinates.model.CoordinateRuntimeException;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;

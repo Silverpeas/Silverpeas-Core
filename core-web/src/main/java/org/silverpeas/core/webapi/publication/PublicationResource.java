@@ -27,7 +27,7 @@ import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.NodeAccessController;
 
 import javax.inject.Inject;

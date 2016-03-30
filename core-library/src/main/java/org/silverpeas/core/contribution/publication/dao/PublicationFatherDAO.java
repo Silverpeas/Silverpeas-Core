@@ -28,7 +28,7 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.WAPrimaryKey;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
@@ -78,7 +78,7 @@ public class PublicationFatherDAO {
    * @param con Connection to database
    * @param pubPK the publication PublicationPK
    * @param fatherPK the father NodePK to add
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -216,7 +216,7 @@ public class PublicationFatherDAO {
    * @param con Connection to database
    * @param pubPK the publication PublicationPK
    * @param fatherPK the father NodePK to delete
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -319,7 +319,7 @@ public class PublicationFatherDAO {
    * descendant of a node
    * @param con Connection to database
    * @param pubPK the publication PublicationPK
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException
    * @since 1.0

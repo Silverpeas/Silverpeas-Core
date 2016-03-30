@@ -21,7 +21,7 @@
 package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;

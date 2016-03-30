@@ -26,7 +26,7 @@ package com.silverpeas.subscribe.service;
 import com.silverpeas.subscribe.AbstractCommonSubscriptionIntegrationTest;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;

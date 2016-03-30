@@ -21,9 +21,8 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import com.silverpeas.node.notification.NodeEvent;
-import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.node.notification.NodeEvent;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.notification.CDIResourceEventListener;
 
 import javax.inject.Inject;

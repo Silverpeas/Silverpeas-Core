@@ -35,7 +35,7 @@ public class WarBuilder4Publication extends WarBuilder4LibCore {
         AbstractSocialInformation.class, SocialInformation.class, SocialInformationType.class,
         ComponentHelper.class, FormException.class);
     addPackages(true, "org.silverpeas.rating", "com.silverpeas.notation",
-        "com.stratelia.webactiv.node", "com.stratelia.webactiv.coordinates",
+        "org.silverpeas.core.node",
         "org.silverpeas.core.contribution.publication.model",
         "org.silverpeas.core.contribution.publication.dao",
         "org.silverpeas.core.contribution.publication.service",

@@ -31,7 +31,7 @@
 package org.silverpeas.core.importexport.model;
 
 import org.silverpeas.core.importexport.admin.ComponentsType;
-import com.silverpeas.node.importexport.NodeTreesType;
+import org.silverpeas.core.node.importexport.NodeTreesType;
 import org.silverpeas.core.pdc.pdc.importexport.PdcType;
 
 /**

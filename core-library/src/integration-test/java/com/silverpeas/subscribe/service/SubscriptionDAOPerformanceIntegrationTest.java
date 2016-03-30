@@ -22,7 +22,7 @@ package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.AbstractCommonSubscriptionIntegrationTest;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.junit.Arquillian;

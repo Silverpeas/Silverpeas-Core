@@ -65,9 +65,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
         .addWysiwygFeatures()
         .addAsResource(DATASET_XML_SCRIPT.substring(1))
         .testFocusedOn(war -> war
-            .addPackages(true, "com.stratelia.webactiv.node", "com.silverpeas.node",
-                "com.silverpeas.coordinates", "com.stratelia.webactiv.coordinates",
-                "com.silverpeas.subscribe")
+            .addPackages(true, "org.silverpeas.core.node", "com.silverpeas.subscribe")
             .addAsResource("node-create-database.sql"))
         .build();
   }

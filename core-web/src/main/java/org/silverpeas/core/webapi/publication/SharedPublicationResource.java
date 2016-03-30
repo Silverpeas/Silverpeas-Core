@@ -39,8 +39,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.security.ShareableNode;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 

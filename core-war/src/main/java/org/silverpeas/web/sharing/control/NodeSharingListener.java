@@ -24,10 +24,10 @@
  */
 package org.silverpeas.web.sharing.control;
 
-import com.silverpeas.node.notification.NodeEvent;
+import org.silverpeas.core.node.notification.NodeEvent;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingTicketService;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.notification.CDIResourceEventListener;
 
 import javax.inject.Inject;

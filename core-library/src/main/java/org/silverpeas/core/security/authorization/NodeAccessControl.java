@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.security.authorization;
 
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 /**
  * This interface extends access controller for a Node resource.

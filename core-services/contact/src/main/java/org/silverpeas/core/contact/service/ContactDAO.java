@@ -25,7 +25,7 @@ import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.model.ContactRuntimeException;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
@@ -60,7 +60,7 @@ public class ContactDAO {
    * @param contactPK the contact ContactPK
    * @param fatherPK the father NodePK to add
    * @throws java.sql.SQLException
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see ContactPK
    * @since 1.0
    */
@@ -83,7 +83,7 @@ public class ContactDAO {
    * @param contactPK the contact ContactPK
    * @param fatherPK the father NodePK to delete
    * @throws java.sql.SQLException
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see ContactPK
    * @since 1.0
    */
@@ -132,7 +132,7 @@ public class ContactDAO {
    * @param contactPK the contact ContactPK
    * @param originPK the node which is deleted
    * @throws java.sql.SQLException
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see ContactPK
    * @since 1.0
    */
@@ -180,7 +180,7 @@ public class ContactDAO {
    * @param con Connection to database
    * @param contactPK the contact ContactPK
    * @throws java.sql.SQLException
-   * @see com.stratelia.webactiv.node.model.NodePK
+   * @see NodePK
    * @see ContactPK
    * @since 1.0
    */

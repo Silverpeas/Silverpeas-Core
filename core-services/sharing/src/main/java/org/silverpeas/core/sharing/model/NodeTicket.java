@@ -33,9 +33,9 @@ import org.silverpeas.core.sharing.security.ShareableNode;
 import org.silverpeas.core.sharing.security.ShareableResource;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 
 /**
  *

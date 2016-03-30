@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.publication.model;
 
 import java.util.Date;
 
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePK;
 
 public class Alias extends NodePK {
 

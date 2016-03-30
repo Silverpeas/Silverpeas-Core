@@ -21,15 +21,15 @@
 package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.contribution.content.form.XMLField;
-import com.silverpeas.node.importexport.NodeImportExport;
-import com.silverpeas.node.importexport.NodePositionType;
-import com.silverpeas.node.importexport.NodePositionsType;
+import org.silverpeas.core.node.importexport.NodeImportExport;
+import org.silverpeas.core.node.importexport.NodePositionType;
+import org.silverpeas.core.node.importexport.NodePositionsType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.io.FileUtils;

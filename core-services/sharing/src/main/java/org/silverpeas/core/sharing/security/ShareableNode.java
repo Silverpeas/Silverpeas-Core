@@ -24,7 +24,7 @@
 package org.silverpeas.core.sharing.security;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 
 /**
 * Node being accessed through some shared object.
