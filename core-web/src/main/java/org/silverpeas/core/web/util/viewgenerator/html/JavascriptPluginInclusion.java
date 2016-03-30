@@ -39,8 +39,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.Operations
 import java.text.MessageFormat;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
-import static org.silverpeas.chart.ChartSettings.getDefaultPieChartColorsAsJson;
-import static org.silverpeas.chart.ChartSettings.getThresholdOfPieCombination;
+import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
+import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.

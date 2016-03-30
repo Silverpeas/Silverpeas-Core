@@ -1,9 +1,9 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="org.apache.commons.lang3.time.DateUtils" %>
-<%@ page import="org.silverpeas.chart.period.PeriodChart" %>
+<%@ page import="org.silverpeas.core.chart.period.PeriodChart" %>
 <%@ page import="org.silverpeas.core.date.period.Period" %>
 <%@ page import="org.silverpeas.core.date.period.PeriodType" %>
-<%@ page import="org.silverpeas.chart.pie.PieChart" %>
+<%@ page import="org.silverpeas.core.chart.pie.PieChart" %>
 <%--
   Copyright (C) 2000 - 2015 Silverpeas
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
@@ -47,7 +47,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.silverpeas.converter.DocumentFormat.*;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -73,7 +73,7 @@ public class MsgMailExtractorIntegrationTest {
         .addSilverpeasExceptionBases()
         .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
             "org.apache.commons:commons-exec", "com.artofsolving:jodconverter")
-        .addPackages(true, "com.silverpeas.converter")
+        .addPackages(true, "org.silverpeas.core.contribution.converter")
         .addAsResource("org/silverpeas/converter")
         .testFocusedOn(warBuilder -> {
           warBuilder

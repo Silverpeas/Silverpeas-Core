@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.mail;
 
-import com.silverpeas.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
@@ -53,7 +53,7 @@ import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.silverpeas.util.Charsets;
 
-import static com.silverpeas.converter.DocumentFormat.*;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 
 public class MSGExtractor implements MailExtractor {
 

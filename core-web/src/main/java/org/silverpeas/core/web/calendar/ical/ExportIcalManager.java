@@ -20,12 +20,12 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
-import com.silverpeas.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.Datable;
-import com.silverpeas.export.ExportDescriptor;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterProvider;
-import com.silverpeas.export.ical.ExportableCalendar;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
@@ -52,7 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.silverpeas.calendar.CalendarEvent.anEventAt;
+import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
 
 /**
  * @author dle

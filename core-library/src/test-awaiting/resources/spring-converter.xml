@@ -38,7 +38,7 @@
 
   <!-- the factory of the document format converters available in Silverpeas.
         It wraps and provides an access to the actual converter implementations -->
-  <!-- ebo <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterProvider"
+  <!-- ebo <bean id="converterFactory" class="DocumentFormatConverterProvider"
         factory-method="getFactory"/> -->
 
 </beans>

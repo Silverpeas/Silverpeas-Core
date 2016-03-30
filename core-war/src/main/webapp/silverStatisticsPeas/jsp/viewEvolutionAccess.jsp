@@ -25,9 +25,9 @@
 --%>
 <%@ page import="org.silverpeas.core.date.DateTime" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
-<%@ page import="org.silverpeas.chart.period.PeriodChart" %>
+<%@ page import="org.silverpeas.core.chart.period.PeriodChart" %>
 <%@ page import="static java.util.Calendar.getInstance" %>
-<%@ page import="org.silverpeas.chart.period.PeriodChartItem" %>
+<%@ page import="org.silverpeas.core.chart.period.PeriodChartItem" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

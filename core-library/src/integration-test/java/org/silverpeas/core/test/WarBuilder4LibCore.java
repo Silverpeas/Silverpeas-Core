@@ -25,7 +25,7 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import com.silverpeas.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -182,7 +182,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(EncodeHelper.class);
     }
     if (!contains(CalendarEvent.class)) {
-      addPackages(true, "com.silverpeas.calendar");
+      addPackages(true, "org.silverpeas.core.calendar");
     }
     if (!contains(Charsets.class)) {
       addClasses(Charsets.class);
@@ -523,7 +523,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addStringTemplateFeatures() {
     if (!contains(SilverpeasTemplate.class)) {
       addMavenDependencies("org.antlr:stringtemplate");
-      addPackages(true, "org.silverpeas.util.template");
+      addPackages(true, "org.silverpeas.core.template");
       addAsResource("org/silverpeas/util/stringtemplate.properties");
     }
     return this;

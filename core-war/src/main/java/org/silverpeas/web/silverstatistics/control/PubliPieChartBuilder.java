@@ -27,7 +27,7 @@ package org.silverpeas.web.silverstatistics.control;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.chart.pie.PieChart;
+import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.LocalizationBundle;

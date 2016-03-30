@@ -29,7 +29,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ attribute name="chart" required="true"
-              type="org.silverpeas.chart.Chart"
+              type="org.silverpeas.core.chart.Chart"
               description="The chart to display" %>
 
 <%@ attribute name="colors" required="false"

@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.chart.pie.PieChart;
+import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;

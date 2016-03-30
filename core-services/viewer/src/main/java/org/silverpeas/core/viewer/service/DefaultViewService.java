@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.thread.ManagedThreadPool;

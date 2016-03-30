@@ -35,8 +35,8 @@ import org.silverpeas.web.silverstatistics.vo.CrossStatisticVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticVO;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.chart.period.PeriodChart;
-import org.silverpeas.chart.pie.PieChart;
+import org.silverpeas.core.chart.period.PeriodChart;
+import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;

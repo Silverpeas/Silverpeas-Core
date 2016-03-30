@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.DocumentFormatConverterProvider;
-import com.silverpeas.converter.option.PageRangeFilterOption;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.option.PageRangeFilterOption;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.model.TemporaryPreview;
 import org.silverpeas.image.ImageTool;
