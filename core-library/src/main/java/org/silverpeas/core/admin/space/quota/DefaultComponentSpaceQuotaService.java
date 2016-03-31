@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -55,7 +55,7 @@ public class DefaultComponentSpaceQuotaService
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
+   * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
   public long getCurrentCount(final ComponentSpaceQuotaKey key) throws QuotaException {

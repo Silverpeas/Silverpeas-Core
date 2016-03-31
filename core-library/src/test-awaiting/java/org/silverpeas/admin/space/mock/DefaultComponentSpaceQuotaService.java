@@ -40,7 +40,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
+   * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
   public long getCurrentCount(final ComponentSpaceQuotaKey key) throws QuotaException {
@@ -49,7 +49,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, long)
+   * @see QuotaService#initialize(QuotaKey, long)
    */
   @Override
   public Quota initialize(final ComponentSpaceQuotaKey key, final long maxCount)
@@ -59,7 +59,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, long,
+   * @see QuotaService#initialize(QuotaKey, long,
    * long)
    */
   @Override
@@ -76,7 +76,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
      * (non-Javadoc)
-     * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
+     * @see QuotaService#get(QuotaKey)
      */
   @Override
   public Quota get(final ComponentSpaceQuotaKey key) throws QuotaException {
@@ -85,7 +85,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#verify(org.silverpeas.quota.QuotaKey)
+   * @see QuotaService#verify(QuotaKey)
    */
   @Override
   public Quota verify(final ComponentSpaceQuotaKey key) throws QuotaException {
@@ -94,8 +94,8 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#verify(org.silverpeas.quota.QuotaKey,
-   * org.silverpeas.quota.offset.AbstractQuotaCountingOffset)
+   * @see QuotaService#verify(QuotaKey,
+   * AbstractQuotaCountingOffset)
    */
   @Override
   public Quota verify(final ComponentSpaceQuotaKey key,
@@ -105,7 +105,7 @@ public class DefaultComponentSpaceQuotaService implements ComponentSpaceQuotaSer
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#remove(org.silverpeas.quota.QuotaKey)
+   * @see QuotaService#remove(QuotaKey)
    */
   @Override
   public void remove(final ComponentSpaceQuotaKey key) {

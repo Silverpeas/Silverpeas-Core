@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.space.quota.process.check;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
+import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 
 /**
  * @author Yohann Chastagnier
@@ -60,7 +60,7 @@ public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOf
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.offset.AbstractQuotaCountingOffset#getOffset()
+   * @see AbstractQuotaCountingOffset#getOffset()
    */
   @Override
   public long getOffset() {

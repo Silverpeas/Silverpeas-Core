@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.admin.domain.quota;
 
-import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.quota.constant.QuotaType;
-import org.silverpeas.quota.model.Quota;
+import org.silverpeas.core.admin.quota.QuotaKey;
+import org.silverpeas.core.admin.quota.constant.QuotaType;
+import org.silverpeas.core.admin.quota.model.Quota;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -91,7 +91,7 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#isValid()
+   * @see QuotaKey#isValid()
    */
   @Override
   public boolean isValid() {
@@ -100,7 +100,7 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getQuotaType()
+   * @see QuotaKey#getQuotaType()
    */
   @Override
   public QuotaType getQuotaType() {
@@ -109,7 +109,7 @@ public class UserDomainQuotaKey implements QuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getResourceId()
+   * @see QuotaKey#getResourceId()
    */
   @Override
   public String getResourceId() {

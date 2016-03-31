@@ -24,7 +24,7 @@
 package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.quota.constant.QuotaType;
+import org.silverpeas.core.admin.quota.constant.QuotaType;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.space.PersonalSpaceController;
@@ -70,7 +70,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#isValid()
+   * @see QuotaKey#isValid()
    */
   @Override
   public boolean isValid() {
@@ -79,7 +79,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getQuotaType()
+   * @see QuotaKey#getQuotaType()
    */
   @Override
   public QuotaType getQuotaType() {
@@ -88,7 +88,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getResourceId()
+   * @see QuotaKey#getResourceId()
    */
   @Override
   public String getResourceId() {

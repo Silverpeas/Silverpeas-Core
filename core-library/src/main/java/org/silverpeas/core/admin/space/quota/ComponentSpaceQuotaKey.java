@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
-import org.silverpeas.quota.constant.QuotaType;
+import org.silverpeas.core.admin.quota.constant.QuotaType;
 
 import org.silverpeas.core.admin.space.SpaceInst;
 
@@ -51,7 +51,7 @@ public class ComponentSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getQuotaType()
+   * @see QuotaKey#getQuotaType()
    */
   @Override
   public QuotaType getQuotaType() {

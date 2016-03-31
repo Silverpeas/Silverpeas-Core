@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.space.quota.process.check.exception;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.quota.model.Quota;
+import org.silverpeas.core.admin.quota.model.Quota;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 

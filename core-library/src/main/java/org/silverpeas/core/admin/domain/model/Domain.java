@@ -24,9 +24,9 @@ import java.io.Serializable;
 
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.quota.model.Quota;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
+import org.silverpeas.core.admin.quota.model.Quota;
 
 import org.silverpeas.core.exception.SilverpeasException;
 

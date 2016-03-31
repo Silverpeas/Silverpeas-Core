@@ -27,10 +27,10 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
-import org.silverpeas.quota.service.AbstractQuotaService;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
+import org.silverpeas.core.admin.quota.service.AbstractQuotaService;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
@@ -88,8 +88,8 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.AbstractQuotaService#verify(org.silverpeas.quota.QuotaKey,
-   * org.silverpeas.quota.offset.AbstractQuotaCountingOffset)
+   * @see AbstractQuotaService#verify(QuotaKey,
+   * AbstractQuotaCountingOffset)
    */
   @Override
   public Quota verify(T key, final AbstractQuotaCountingOffset countingOffset)

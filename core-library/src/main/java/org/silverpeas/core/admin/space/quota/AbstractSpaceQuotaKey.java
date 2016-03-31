@@ -24,7 +24,7 @@
 package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.quota.QuotaKey;
+import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -44,7 +44,7 @@ abstract public class AbstractSpaceQuotaKey implements QuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#isValid()
+   * @see QuotaKey#isValid()
    */
   @Override
   public boolean isValid() {
@@ -53,7 +53,7 @@ abstract public class AbstractSpaceQuotaKey implements QuotaKey {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getResourceId()
+   * @see QuotaKey#getResourceId()
    */
   @Override
   public String getResourceId() {

@@ -92,10 +92,10 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.quota.service.QuotaService;
+import org.silverpeas.core.admin.quota.QuotaKey;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
+import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.*;
@@ -542,7 +542,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addQuotaBasesFeatures() {
     if (!contains(QuotaService.class)) {
       addClasses(QuotaService.class);
-      addPackages(true, "org.silverpeas.quota");
+      addPackages(true, "org.silverpeas.core.admin.quota");
       // Centralized features
       addJpaPersistenceFeatures();
     }

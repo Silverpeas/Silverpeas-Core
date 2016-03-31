@@ -1,4 +1,4 @@
-<%@ tag import="org.silverpeas.quota.constant.QuotaType" %>
+<%@ tag import="org.silverpeas.core.admin.quota.constant.QuotaType" %>
 <%@ tag import="java.util.UUID" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
@@ -59,7 +59,7 @@
 <%@ attribute name="containerHeight" required="false" type="java.lang.Integer" description="The height of the HTML container (div)" %>
 
 <%-- A quota bean --%>
-<%@ attribute name="quotaBean" required="false" type="org.silverpeas.quota.model.Quota"
+<%@ attribute name="quotaBean" required="false" type="org.silverpeas.core.admin.quota.model.Quota"
               description="A quota bean (Quota.java). The label of the current value is handled (but it is possible to overwrite it by filling the currentValueLabel attribute parameter of the tag)." %>
 
 <c:choose>

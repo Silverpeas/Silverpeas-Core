@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
-import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;

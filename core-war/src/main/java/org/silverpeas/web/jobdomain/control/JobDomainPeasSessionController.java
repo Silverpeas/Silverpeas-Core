@@ -65,7 +65,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.Pair;

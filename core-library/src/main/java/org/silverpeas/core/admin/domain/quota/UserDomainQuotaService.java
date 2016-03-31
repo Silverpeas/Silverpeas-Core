@@ -24,8 +24,8 @@
 package org.silverpeas.core.admin.domain.quota;
 
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.service.AbstractQuotaService;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.service.AbstractQuotaService;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -42,7 +42,7 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
+   * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
   public long getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {

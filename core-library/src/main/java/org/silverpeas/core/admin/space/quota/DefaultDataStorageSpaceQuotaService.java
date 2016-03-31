@@ -25,9 +25,9 @@ package org.silverpeas.core.admin.space.quota;
 
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
@@ -96,7 +96,7 @@ public class DefaultDataStorageSpaceQuotaService
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
+   * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
   public long getCurrentCount(final DataStorageSpaceQuotaKey key) throws QuotaException {
@@ -124,7 +124,7 @@ public class DefaultDataStorageSpaceQuotaService
    * (non-Javadoc)
    * @see
    * org.silverpeas.core.admin.space.quota.AbstractSpaceQuotaService#verify(org.silverpeas.core.admin.space
-   * .quota.AbstractSpaceQuotaKey, org.silverpeas.quota.offset.AbstractQuotaCountingOffset)
+   * .quota.AbstractSpaceQuotaKey, AbstractQuotaCountingOffset)
    */
   @Override
   public Quota verify(final DataStorageSpaceQuotaKey key,

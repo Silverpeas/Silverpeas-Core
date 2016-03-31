@@ -48,7 +48,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Singleton;

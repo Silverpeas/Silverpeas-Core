@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaService;
-import org.silverpeas.quota.service.QuotaService;
-import org.silverpeas.quota.service.TestDummyQuotaServiceWithAdditionalTools;
+import org.silverpeas.core.admin.quota.service.QuotaService;
+import org.silverpeas.core.admin.quota.service.TestDummyQuotaServiceWithAdditionalTools;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.util.ServiceProvider;
 

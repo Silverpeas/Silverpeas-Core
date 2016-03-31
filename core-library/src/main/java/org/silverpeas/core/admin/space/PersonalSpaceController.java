@@ -26,7 +26,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;

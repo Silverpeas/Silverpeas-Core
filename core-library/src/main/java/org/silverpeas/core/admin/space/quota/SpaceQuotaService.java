@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.quota.service.QuotaService;
+import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.quota.service.QuotaService;
 
 /**
  * @author Yohann Chastagnier
