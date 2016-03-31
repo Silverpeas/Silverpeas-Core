@@ -27,10 +27,10 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
-import org.silverpeas.dateReminder.provider.DateReminderProcess;
-import org.silverpeas.dateReminder.provider.DateReminderProcessRegistration;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.provider.DateReminderProcess;
+import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -41,7 +41,7 @@ import org.silverpeas.core.util.ResourceLocator;
  * represented by a
  * <code>PublicationDetail</code> instance.
  * @author Cécile Bonin
- * @see org.silverpeas.dateReminder.provider.DateReminderProcessRegistration
+ * @see DateReminderProcessRegistration
  * @see PublicationDateReminderUserNotification
  */
 public class PublicationDateReminderProcess implements DateReminderProcess, Initialization {

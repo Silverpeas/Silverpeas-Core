@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.provider;
+package org.silverpeas.core.datereminder.provider;
 
 import org.silverpeas.util.MapUtil;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import java.util.Map;
  * <code>DateReminderProcess</code> are used by
  * <code>DateReminderScheduler</code>.
  * @author Cécile Bonin
- * @see org.silverpeas.dateReminder.provider.DateReminderProcess
+ * @see DateReminderProcess
  */
 public class DateReminderProcessRegistration {
 
@@ -75,6 +75,6 @@ public class DateReminderProcessRegistration {
   public static List<DateReminderProcess> getProcesses(
       PersistentResourceDateReminder dateReminder) {
     List<DateReminderProcess> processesOfType = processes.get(dateReminder.getResourceType());
-    return processesOfType != null ? processesOfType : new ArrayList<DateReminderProcess>(0);
+    return processesOfType != null ? processesOfType : new ArrayList<>(0);
   }
 }

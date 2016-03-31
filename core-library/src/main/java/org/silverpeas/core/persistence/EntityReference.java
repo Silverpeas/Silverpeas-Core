@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas;
+package org.silverpeas.core.persistence;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -30,7 +30,7 @@ import java.lang.reflect.Type;
  * A reference to an entity in Silverpeas.
  *
  * An entity is a business object in Silverpeas that is persisted in a data source. Some times,
- * instead of refering a peculiar entity, an object can refer an entity whatever its type; this is
+ * instead of referring a peculiar entity, an object can refer an entity whatever its type; this is
  * why it refers such objects with an <code>EntityReference</code> instance.
  *
  * The type of the entity referred by a such reference is defined by the type of the reference

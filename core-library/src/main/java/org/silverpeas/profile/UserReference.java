@@ -24,7 +24,7 @@
 package org.silverpeas.profile;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
  * A reference to a given user in Silverpeas, such user being represented by a

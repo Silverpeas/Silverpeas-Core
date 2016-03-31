@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,23 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.datereminder.persistence.service;
 
-package org.silverpeas.dateReminder.provider;
-
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
+ * A factory of a {@link PersistentDateReminderService} objects.
+ *
  * @author Cécile Bonin
  */
-public interface DateReminderProcess {
-  /**
-   * Perform the date reminder
-   * @param dateReminder
-   * @return the resource
-   */
-  public EntityReference perform(PersistentResourceDateReminder dateReminder)
-      throws NotificationManagerException;
+public class DateReminderServiceProvider {
 
+  /**
+   * @return an instance of {@link PersistentDateReminderService}.
+   */
+  public static PersistentDateReminderService getDateReminderService() {
+    return ServiceProvider.getService(PersistentDateReminderService.class);
+  }
 }

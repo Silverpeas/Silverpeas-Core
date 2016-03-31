@@ -29,11 +29,11 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.persistent.service.DateReminderServiceProvider;
-import org.silverpeas.dateReminder.persistent.service.PersistentDateReminderService;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
-import org.silverpeas.dateReminder.persistent.DateReminderDetail;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
+import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 
 /**

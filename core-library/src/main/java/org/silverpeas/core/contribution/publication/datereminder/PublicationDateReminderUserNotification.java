@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 
 /**
  * Set parameters for user notifications sended automatically for date reminder.

@@ -21,21 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.persistent.service;
-
-import org.silverpeas.core.util.ServiceProvider;
+package org.silverpeas.core.datereminder.exception;
 
 /**
- * A factory of a {@link PersistentDateReminderService} objects.
+ * The exception for all normal errors occuring with the DateReminder API and for which the client requires
+ * to perform a dedicated action.
  *
  * @author Cécile Bonin
  */
-public class DateReminderServiceProvider {
+public class DateReminderException extends Exception {
+
+  private static final long serialVersionUID = 815728200596150161L;
 
   /**
-   * @return an instance of {@link PersistentDateReminderService}.
+   * Creates a new instance of <code>DateReminderException</code> without detail message.
    */
-  public static PersistentDateReminderService getDateReminderService() {
-    return ServiceProvider.getService(PersistentDateReminderService.class);
+  public DateReminderException() {
+  }
+
+  /**
+   * Constructs an instance of <code>DateReminderException</code> with the specified detail message.
+   *
+   * @param msg the detail message.
+   */
+  public DateReminderException(String msg) {
+    super(msg);
+  }
+
+  /**
+   * Constructs an instance of <code>DateReminderException</code> with the specified detail message and
+   * with the specified cause.
+   *
+   * @param message the detail message.
+   * @param cause the cause of this exception.
+   */
+  public DateReminderException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

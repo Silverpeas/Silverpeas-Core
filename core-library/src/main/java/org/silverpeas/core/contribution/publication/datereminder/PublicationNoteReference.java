@@ -29,7 +29,7 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
  * An entity, which references a publication in Silverpeas, such publication being represented by a

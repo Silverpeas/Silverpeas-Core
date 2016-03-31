@@ -21,42 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.exception;
+package org.silverpeas.core.datereminder.persistence;
+
+import java.util.Date;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
- * An exception that is thrown when a date reminder validation fails.
  *
  * @author Cécile Bonin
  */
-public class DateReminderValidationException extends DateReminderException {
+public class MyUnknownEntityReference extends EntityReference<Date> {
 
-  private static final long serialVersionUID = -6824029730156116372L;
-
-  /**
-   * Creates a new instance of <code>DateReminderValidationException</code> without detail message.
-   */
-  public DateReminderValidationException() {
+  public MyUnknownEntityReference(String id) {
+    super(id);
   }
 
-  /**
-   * Constructs an instance of <code>DateReminderValidationException</code> with the specified detail
-   * message.
-   *
-   * @param msg the detail message.
-   */
-  public DateReminderValidationException(String msg) {
-    super(msg);
-  }
-
-  /**
-   * Constructs an instance of <code>DateReminderValidationException</code> with the specified detail
-   * message and with the specified cause.
-   *
-   * @param message the detail message.
-   * @param cause the cause of this exception.
-   */
-  public DateReminderValidationException(String message, Throwable cause) {
-    super(message, cause);
+  @Override
+  public Date getEntity() {
+    return new Date();
   }
 
 }

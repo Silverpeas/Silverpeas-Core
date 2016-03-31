@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2015 Silverpeas
+/**
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,28 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+package org.silverpeas.core.datereminder.provider;
+
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.persistence.EntityReference;
 
 /**
- * A reference to a given user session in Silverpeas, such user session being represented by a
- * <code>UserSession</code> instance.
- * @author Yohann Chastagnier
+ * @author Cécile Bonin
  */
-public class UserSessionReference extends EntityReference<UserSession> {
+public interface DateReminderProcess {
+  /**
+   * Perform the date reminder
+   * @param dateReminder
+   * @return the resource
+   */
+  EntityReference perform(PersistentResourceDateReminder dateReminder)
+      throws NotificationManagerException;
 
-  public static UserSessionReference fromUser(final UserDetail user) {
-    return new UserSessionReference(user.getId());
-  }
-
-  public UserSessionReference(String id) {
-    super(id);
-  }
-
-  @Override
-  public UserSession getEntity() {
-    return UserSession.forUserId(getId());
-  }
 }

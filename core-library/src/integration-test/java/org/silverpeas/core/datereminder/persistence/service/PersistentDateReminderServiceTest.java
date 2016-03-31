@@ -21,10 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.persistent.service;
-
-import java.util.Date;
-import javax.inject.Inject;
+package org.silverpeas.core.datereminder.persistence.service;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -32,15 +29,18 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.exception.DateReminderValidationException;
-import org.silverpeas.dateReminder.persistent.DateReminderDetail;
-import org.silverpeas.dateReminder.persistent.MyEntityReference;
-import org.silverpeas.dateReminder.persistent.MyUnknownEntityReference;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.exception.DateReminderValidationException;
+import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
+import org.silverpeas.core.datereminder.persistence.MyEntityReference;
+import org.silverpeas.core.datereminder.persistence.MyUnknownEntityReference;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
+
+import javax.inject.Inject;
+import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -51,9 +51,9 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class PersistentDateReminderServiceTest {
 
-  private static final String TABLES_CREATION = "/org/silverpeas/dateReminder/persistent/service/create_dateReminder_table.sql";
+  private static final String TABLES_CREATION = "create_dateReminder_table.sql";
 
-  private static final String DATASET_CREATION = "/org/silverpeas/dateReminder/persistent/service/dateReminder_dataset.sql";
+  private static final String DATASET_CREATION = "dateReminder_dataset.sql";
 
   private final EntityReference dummyRef = new MyEntityReference("dummy");
   private final EntityReference existingRef = new MyEntityReference("38");
@@ -72,7 +72,8 @@ public class PersistentDateReminderServiceTest {
         .addSilverpeasExceptionBases()
         .addJpaPersistenceFeatures()
         .addAdministrationFeatures()
-        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.dateReminder"))
+        .testFocusedOn(
+            (warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.datereminder"))
         .build();
   }
 

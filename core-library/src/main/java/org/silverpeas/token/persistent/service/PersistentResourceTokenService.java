@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.persistent.service;
 
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 

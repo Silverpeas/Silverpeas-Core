@@ -21,41 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.exception;
+package org.silverpeas.core.datereminder.persistence.repository;
+
+import java.util.Date;
+import java.util.Collection;
+import javax.inject.Singleton;
+
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.repository.jpa.SilverpeasJpaEntityManager;
 
 /**
- * The exception for all normal errors occuring with the DateReminder API and for which the client requires
- * to perform a dedicated action.
- *
  * @author Cécile Bonin
  */
-public class DateReminderException extends Exception {
+@Singleton
+public class PersistentResourceDateReminderRepository extends
+    SilverpeasJpaEntityManager<PersistentResourceDateReminder, UuidIdentifier> {
 
-  private static final long serialVersionUID = 815728200596150161L;
-
-  /**
-   * Creates a new instance of <code>DateReminderException</code> without detail message.
-   */
-  public DateReminderException() {
+  public PersistentResourceDateReminder getByTypeAndResourceId(String type,
+      String resourceId) {
+    NamedParameters namedParameters = newNamedParameters().add("type", type).add("resourceId", resourceId);
+    return findOneByNamedQuery("getResource", namedParameters);
   }
 
-  /**
-   * Constructs an instance of <code>DateReminderException</code> with the specified detail message.
-   *
-   * @param msg the detail message.
-   */
-  public DateReminderException(String msg) {
-    super(msg);
-  }
-
-  /**
-   * Constructs an instance of <code>DateReminderException</code> with the specified detail message and
-   * with the specified cause.
-   *
-   * @param message the detail message.
-   * @param cause the cause of this exception.
-   */
-  public DateReminderException(String message, Throwable cause) {
-    super(message, cause);
+  public Collection<PersistentResourceDateReminder> getByDeadLine(Date deadLine) {
+    NamedParameters namedParameters = newNamedParameters().add("dateReminder", deadLine);
+    return findByNamedQuery("getListResourceByDeadLine", namedParameters);
   }
 }

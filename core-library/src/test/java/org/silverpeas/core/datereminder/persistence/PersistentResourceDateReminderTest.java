@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.persistent;
+package org.silverpeas.core.datereminder.persistence;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.dateReminder.exception.DateReminderException;
+import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.exception.SilverpeasException;
 

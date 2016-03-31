@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.persistent.service;
 
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.token.TokenGenerationParameter;
 import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;
@@ -51,7 +51,7 @@ public class DefaultTokenService implements PersistentResourceTokenService {
 
   /**
    * @throws TokenException if an error occurs while initializing a token.
-   * @see PersistentResourceTokenService#initialize(org.silverpeas.EntityReference)
+   * @see PersistentResourceTokenService#initialize(EntityReference)
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -79,7 +79,7 @@ public class DefaultTokenService implements PersistentResourceTokenService {
   }
 
   /**
-   * @see PersistentResourceTokenService#get(org.silverpeas.EntityReference)
+   * @see PersistentResourceTokenService#get(EntityReference)
    */
   @Override
   public PersistentResourceToken get(final EntityReference resource) {
@@ -95,7 +95,7 @@ public class DefaultTokenService implements PersistentResourceTokenService {
   }
 
   /**
-   * @see PersistentResourceTokenService#remove(org.silverpeas.EntityReference)
+   * @see PersistentResourceTokenService#remove(EntityReference)
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)

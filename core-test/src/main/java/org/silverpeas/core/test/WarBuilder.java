@@ -233,7 +233,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
         File persistenceXml = FileUtils
             .getFile(classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(),
                 "META-INF", "dynamic-test-persistence.xml");
-        logInfo("Setting persistent xml descriptor: " + persistenceXml.getPath());
+        logInfo("Setting persistence xml descriptor: " + persistenceXml.getPath());
         persistenceXmlContent = persistenceXmlContent
             .replace("<!-- @JAR_FILES@ -->", String.join("\n", jarLibForPersistence));
         FileUtils.writeStringToFile(persistenceXml, persistenceXmlContent);

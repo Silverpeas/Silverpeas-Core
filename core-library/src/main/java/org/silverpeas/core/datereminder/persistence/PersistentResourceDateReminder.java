@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.persistent;
+package org.silverpeas.core.datereminder.persistence;
 
 import org.silverpeas.core.util.StringUtil;
 import java.util.Date;
@@ -33,10 +33,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
-import org.silverpeas.dateReminder.exception.DateReminderValidationException;
+import org.silverpeas.core.datereminder.exception.DateReminderValidationException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 /**

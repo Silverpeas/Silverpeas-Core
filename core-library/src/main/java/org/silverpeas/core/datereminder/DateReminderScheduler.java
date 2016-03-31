@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder;
+package org.silverpeas.core.datereminder;
 
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
@@ -26,15 +26,15 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import org.silverpeas.core.datereminder.exception.DateReminderException;
+import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
+import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.exception.DateReminderException;
-import org.silverpeas.dateReminder.persistent.DateReminderDetail;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
-import org.silverpeas.dateReminder.persistent.service.DateReminderServiceProvider;
-import org.silverpeas.dateReminder.provider.DateReminderProcess;
-import org.silverpeas.dateReminder.provider.DateReminderProcessRegistration;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
+import org.silverpeas.core.datereminder.provider.DateReminderProcess;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -46,8 +46,8 @@ import java.util.Locale;
 /**
  * Scheduler for processing <code>DateReminderProcess</code> instances.
  * @author Cécile Bonin
- * @see org.silverpeas.dateReminder.provider.DateReminderProcess
- * @see org.silverpeas.dateReminder.provider.DateReminderProcessRegistration
+ * @see DateReminderProcess
+ * @see DateReminderProcessRegistration
  */
 public class DateReminderScheduler implements SchedulerEventListener, Initialization {
 
@@ -83,12 +83,8 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
     boolean performed = false;
     EntityReference entityReference = null;
     for (PersistentResourceDateReminder resourceDateReminder : listResourceDateReminder) {
-      performed = false;
-
       for (DateReminderProcess dateReminderProcess : DateReminderProcessRegistration
           .getProcesses(resourceDateReminder)) {
-
-        performed = false;
         try {
           entityReference = dateReminderProcess.perform(resourceDateReminder);
           performed = true;

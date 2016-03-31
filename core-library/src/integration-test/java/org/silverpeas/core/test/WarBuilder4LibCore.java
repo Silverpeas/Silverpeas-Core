@@ -45,7 +45,7 @@ import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.persistence.ScheduledDBReset;
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.model.Contribution;

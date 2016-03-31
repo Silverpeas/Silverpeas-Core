@@ -24,7 +24,7 @@
 package org.silverpeas.token.persistent;
 
 import java.util.UUID;
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.TokenGenerationParameter;
 import org.silverpeas.token.TokenGenerator;

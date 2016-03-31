@@ -21,17 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.persistent;
+package org.silverpeas.core.datereminder.persistence;
 
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
  *
  * @author Cécile Bonin
  */
-public class MyEntityReferenceForUnitTest extends EntityReference<String> {
+public class MyEntityReference extends EntityReference<String> {
 
-  public MyEntityReferenceForUnitTest(String id) {
+  public MyEntityReference(String id) {
     super(id);
   }
 

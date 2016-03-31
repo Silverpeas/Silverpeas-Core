@@ -23,7 +23,7 @@
  */
 package org.silverpeas.token.persistent;
 
-import org.silverpeas.EntityReference;
+import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.token.Token;

@@ -21,14 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.dateReminder.persistent.service;
+package org.silverpeas.core.datereminder.persistence.service;
 
 import java.util.Date;
 import java.util.Collection;
-import org.silverpeas.EntityReference;
-import org.silverpeas.dateReminder.exception.DateReminderException;
-import org.silverpeas.dateReminder.persistent.DateReminderDetail;
-import org.silverpeas.dateReminder.persistent.PersistentResourceDateReminder;
+
+import org.silverpeas.core.datereminder.exception.DateReminderException;
+import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
  * A service on the persistent date reminder for Silverpeas entities. It wraps the mechanism to compute and
