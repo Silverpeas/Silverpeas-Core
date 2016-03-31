@@ -484,15 +484,21 @@
               }).then(setGroupsFilter);
               $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
               if(preselectedUsers.length) {
-                __getUsers({"id":preselectedUsers}).then(function(users) {
+                var component = context.component;
+                context.component = '';
+                User.get({"id":preselectedUsers}).then(function(users) {
                   $scope.selectedUsers.add(users);
                 });
+                context.component = component;
               }
               $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
               if(preselectedUserGroups.length) {
-                __getUserGroups({"ids":preselectedUserGroups}).then(function(groups) {
+                var component = context.component;
+                context.component = '';
+                UserGroup.get({"ids":preselectedUserGroups}).then(function(groups) {
                   $scope.selectedGroups.add(groups);
                 });
+                context.component = component;
               }
               resetSearchQueries();
             }
