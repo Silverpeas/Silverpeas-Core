@@ -28,9 +28,9 @@ import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvide
 import org.silverpeas.core.contribution.converter.option.PageRangeFilterOption;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.model.TemporaryPreview;
-import org.silverpeas.image.ImageTool;
-import org.silverpeas.image.ImageToolDirective;
-import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.core.io.media.image.ImageTool;
+import org.silverpeas.core.io.media.image.ImageToolDirective;
+import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;

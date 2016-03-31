@@ -25,7 +25,7 @@ package org.silverpeas.core.web.mvc;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 

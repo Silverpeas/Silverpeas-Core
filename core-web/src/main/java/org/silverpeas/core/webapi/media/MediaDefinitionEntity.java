@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.media;
 
-import org.silverpeas.media.Definition;
+import org.silverpeas.core.io.media.Definition;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

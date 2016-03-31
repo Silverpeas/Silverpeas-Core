@@ -43,8 +43,8 @@ import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MetaData;
-import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.core.io.media.MetaData;
+import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 

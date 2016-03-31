@@ -26,7 +26,7 @@ package org.silverpeas;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.silverpeas.file.TestAttachmentUrlLinkProcessor;
+import org.silverpeas.core.io.file.TestAttachmentUrlLinkProcessor;
 import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.TestMailContentProcess;
 

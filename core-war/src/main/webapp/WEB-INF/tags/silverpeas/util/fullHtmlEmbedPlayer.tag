@@ -48,7 +48,7 @@
               description="Indicates here the poster URL of the media." %>
 
 <%@ attribute name="definition" required="true"
-              type="org.silverpeas.media.Definition"
+              type="org.silverpeas.core.io.media.Definition"
               description="Indicates here the definition of the media." %>
 <c:set var="definitionRatio" value="${definition.height / definition.width}"/>
 

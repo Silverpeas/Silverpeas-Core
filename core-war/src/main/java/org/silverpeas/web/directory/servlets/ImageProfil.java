@@ -26,8 +26,8 @@ package org.silverpeas.web.directory.servlets;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;

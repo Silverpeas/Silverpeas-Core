@@ -25,8 +25,8 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
-import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;

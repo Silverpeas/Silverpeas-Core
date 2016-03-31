@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.image.imagemagick.Im4javaManager;
+import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;

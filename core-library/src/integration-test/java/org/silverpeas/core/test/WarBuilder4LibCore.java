@@ -45,6 +45,7 @@ import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.persistence.ScheduledDBReset;
+import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
@@ -727,7 +728,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addImageToolFeatures() {
     addMavenDependencies("org.im4java:im4java", "org.apache.tika:tika-core",
         "org.apache.tika:tika-parsers");
-    addPackages(true, "org.silverpeas.image");
+    addPackages(true, "org.silverpeas.core.io.media.image");
     return this;
   }
 
