@@ -46,6 +46,7 @@
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="java.util.Enumeration" %>
+<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
@@ -155,7 +156,7 @@
        String messageId = (String) request.getAttribute("MessageID");
 
        if(messageId != null) {
-         com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(messageId);
+         SilverMessageFactory.del(messageId);
        }
       %>
     }

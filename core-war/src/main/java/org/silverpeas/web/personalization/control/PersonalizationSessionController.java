@@ -31,8 +31,8 @@ import java.util.Properties;
 
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.notificationManager.NotificationManager;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationManager;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

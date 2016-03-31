@@ -8,8 +8,8 @@ import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificatio
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationUserSetting;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

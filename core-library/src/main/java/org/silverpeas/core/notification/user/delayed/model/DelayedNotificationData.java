@@ -24,10 +24,10 @@
 package org.silverpeas.core.notification.user.delayed.model;
 
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import com.stratelia.silverpeas.notificationserver.NotificationData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.i18n.I18NHelper;

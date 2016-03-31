@@ -24,7 +24,7 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.junit.Before;

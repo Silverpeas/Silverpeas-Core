@@ -31,8 +31,8 @@ import org.silverpeas.core.notification.user.delayed.repository.DelayedNotificat
 import org.silverpeas.core.notification.user.delayed.repository.DelayedNotificationUserSettingJpaManager;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.repository.NotificationResourceDataManager;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.MapUtil;

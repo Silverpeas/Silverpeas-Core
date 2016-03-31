@@ -315,9 +315,9 @@ public class JNDINames {
         "java:comp/env/sendConfirmationMail");
     JMS_FACTORY =
         rs.getString("JMS_FACTORY",
-        "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
+        "org.silverpeas.core.notification.user.server.jms.QueueConnectionFactory");
     NOTIF_API_JMS = rs.getString("NOTIF_API_JMS", JMS_FACTORY);
-    JMS_QUEUE = rs.getString("JMS_QUEUE", "com.stratelia.silverpeas.notificationserver.jms.Queue");
+    JMS_QUEUE = rs.getString("JMS_QUEUE", "org.silverpeas.core.notification.user.server.jms.Queue");
     JMS_HEADER_CHANNEL = rs.getString("JMS_HEADER_CHANNEL", "CHANNEL");
   }
 }

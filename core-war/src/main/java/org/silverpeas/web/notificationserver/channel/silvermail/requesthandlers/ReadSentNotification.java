@@ -29,9 +29,9 @@ package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;

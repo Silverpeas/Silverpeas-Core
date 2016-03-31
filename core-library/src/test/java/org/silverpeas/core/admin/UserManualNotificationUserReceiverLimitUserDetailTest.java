@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin;
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

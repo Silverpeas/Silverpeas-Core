@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.datereminder.provider;
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.persistence.EntityReference;
 

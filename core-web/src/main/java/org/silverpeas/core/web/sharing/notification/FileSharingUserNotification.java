@@ -38,7 +38,7 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class FileSharingUserNotification extends AbstractTemplateUserNotificationBuilder<Ticket> {

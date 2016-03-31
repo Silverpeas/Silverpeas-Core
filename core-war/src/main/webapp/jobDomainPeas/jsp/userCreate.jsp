@@ -1,4 +1,4 @@
-<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationManagerSettings" %>
+<%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%--
 

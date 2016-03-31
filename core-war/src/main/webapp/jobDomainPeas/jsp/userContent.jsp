@@ -23,7 +23,7 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationManagerSettings" %>
+<%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>

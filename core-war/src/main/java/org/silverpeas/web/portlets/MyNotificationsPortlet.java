@@ -25,8 +25,8 @@
 package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;

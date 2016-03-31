@@ -87,9 +87,9 @@ public class UsersAndGroupsTest {
         .addPackages(false, "com.stratelia.silverpeas.containerManager")
         .addPackages(false, "com.stratelia.silverpeas.contentManager")
         .addPackages(true, "com.silverpeas.usernotification")
-        .addPackages(true, "com.stratelia.silverpeas.notificationManager.constant")
-        .addPackages(true, "com.stratelia.silverpeas.notificationserver")
-        .addPackages(true, "com.stratelia.silverpeas.notificationManager")
+        .addPackages(true, "org.silverpeas.core.notification.user.client.constant")
+        .addPackages(true, "org.silverpeas.core.notification.user.server")
+        .addPackages(true, "org.silverpeas.core.notification.user.client")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
             AttachmentServiceProvider.class, ParseException.class,

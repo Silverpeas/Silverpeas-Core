@@ -25,15 +25,16 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -247,11 +248,11 @@ public class SessionManager implements SessionManagement {
    */
   private void removeInQueueMessages(String userId, String sessionId) {
     if (StringUtil.isDefined(sessionId)) {
-      com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
+      SilverMessageFactory
           .delAll(userId, sessionId);
     }
     // Remove "end of session" messages
-    com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.delAll(userId);
+    org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory.delAll(userId);
   }
 
   /**

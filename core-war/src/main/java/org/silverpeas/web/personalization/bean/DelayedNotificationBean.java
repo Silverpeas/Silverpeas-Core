@@ -30,7 +30,7 @@ import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificatio
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationUserSetting;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 
 /**
  * @author Yohann Chastagnier

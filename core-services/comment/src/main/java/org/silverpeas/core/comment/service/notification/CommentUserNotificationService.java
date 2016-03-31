@@ -28,9 +28,9 @@ import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentUserNotification;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.util.ForeignPK;
@@ -163,7 +163,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    * Notifies the specified users, identified by their identifier, with the specified notification
    * information.
    * @param notification the notification information.
-   * @throws com.stratelia.silverpeas.notificationManager.NotificationManagerException if the
+   * @throws NotificationManagerException if the
    * notification of the recipients fail.
    */
   protected void notifyUsers(final NotificationMetaData notification)

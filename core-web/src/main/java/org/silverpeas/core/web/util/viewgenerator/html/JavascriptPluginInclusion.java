@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;

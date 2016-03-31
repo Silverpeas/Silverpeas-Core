@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
-import com.stratelia.silverpeas.notificationManager.ExternalRecipient;
-import com.stratelia.silverpeas.notificationManager.GroupRecipient;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
+import org.silverpeas.core.notification.user.client.ExternalRecipient;
+import org.silverpeas.core.notification.user.client.GroupRecipient;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;

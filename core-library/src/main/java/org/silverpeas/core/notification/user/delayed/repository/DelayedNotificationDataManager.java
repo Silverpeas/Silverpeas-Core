@@ -25,7 +25,7 @@ package org.silverpeas.core.notification.user.delayed.repository;
 
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 

@@ -24,8 +24,8 @@
 package org.silverpeas.core.notification.user.builder.helper;
 
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;

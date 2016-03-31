@@ -33,8 +33,8 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationSending
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
@@ -559,8 +559,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addNotificationFeatures() {
     if (!contains(NotifChannel.class)) {
-      addPackages(true, "com.stratelia.silverpeas.notificationManager");
-      addPackages(true, "com.stratelia.silverpeas.notificationserver");
+      addPackages(true, "org.silverpeas.core.notification.user.client");
+      addPackages(true, "org.silverpeas.core.notification.user.server");
       addAsResource("org/silverpeas/notificationManager");
       addClasses(JNDINames.class, AbstractTable.class,
           UserSubscriptionNotificationSendingHandler.class);

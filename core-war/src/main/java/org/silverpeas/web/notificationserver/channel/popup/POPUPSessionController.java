@@ -24,13 +24,13 @@
 
 package org.silverpeas.web.notificationserver.channel.popup;
 
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPException;
-import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessage;
-import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPPersistence;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.server.channel.popup.POPUPException;
+import org.silverpeas.core.notification.user.server.channel.popup.POPUPMessage;
+import org.silverpeas.core.notification.user.server.channel.popup.POPUPPersistence;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

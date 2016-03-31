@@ -29,7 +29,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 

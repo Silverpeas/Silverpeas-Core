@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user;
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.util.StringUtil;
 

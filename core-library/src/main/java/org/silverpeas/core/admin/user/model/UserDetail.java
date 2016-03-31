@@ -53,9 +53,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
     .getUserManualNotificationRecipientLimit;
-import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
     .isUserManualNotificationRecipientLimitEnabled;
 import static org.silverpeas.core.util.StringUtil.areStringEquals;
 import static org.silverpeas.core.util.StringUtil.isDefined;

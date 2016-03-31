@@ -25,8 +25,8 @@ import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInter
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;

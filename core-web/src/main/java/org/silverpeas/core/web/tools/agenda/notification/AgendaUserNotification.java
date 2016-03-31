@@ -25,7 +25,7 @@ package org.silverpeas.core.web.tools.agenda.notification;
 
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;

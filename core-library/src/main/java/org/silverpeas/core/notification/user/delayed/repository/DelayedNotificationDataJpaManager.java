@@ -2,7 +2,7 @@ package org.silverpeas.core.notification.user.delayed.repository;
 
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency.toCodes;
-import static com.stratelia.silverpeas.notificationManager.constant.NotifChannel.toIds;
+import static org.silverpeas.core.notification.user.client.constant.NotifChannel.toIds;
 import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 
 @Singleton

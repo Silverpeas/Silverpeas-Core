@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+<%@page import="org.silverpeas.core.notification.user.client.NotificationParameters"%>
 <%@page import="org.silverpeas.web.notificationuser.Notification"%>
 <%@page import="org.silverpeas.web.notificationuser.control.NotificationUserSessionController"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

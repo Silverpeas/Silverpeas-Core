@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;

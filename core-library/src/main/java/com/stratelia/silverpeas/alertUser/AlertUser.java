@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.alertUser;
 
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.util.Pair;
 

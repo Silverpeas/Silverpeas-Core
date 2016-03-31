@@ -25,7 +25,7 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;

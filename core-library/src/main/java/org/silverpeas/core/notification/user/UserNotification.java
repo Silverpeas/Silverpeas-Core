@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.notification.user;
 
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 
 /**
  * @author Yohann Chastagnier

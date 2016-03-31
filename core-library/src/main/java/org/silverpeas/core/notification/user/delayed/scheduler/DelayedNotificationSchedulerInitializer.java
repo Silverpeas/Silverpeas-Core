@@ -25,13 +25,13 @@ package org.silverpeas.core.notification.user.delayed.scheduler;
 
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.stratelia.silverpeas.notificationManager.AbstractNotification;
+import org.silverpeas.core.notification.user.client.AbstractNotification;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.initialization.Initialization;
 
 import javax.inject.Inject;
 
-import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
     .getCronOfDelayedNotificationSending;
 
 /**

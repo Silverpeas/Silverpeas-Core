@@ -44,6 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="java.util.Enumeration" %>
+<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -154,7 +155,7 @@ function OpenDiscussion(page,nom,largeur,hauteur,options) {
 		String messageId = (String) request.getAttribute("MessageID");
 
 		if(messageId != null) {
-			com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(messageId);
+			SilverMessageFactory.del(messageId);
 		}
 	 %>
 }

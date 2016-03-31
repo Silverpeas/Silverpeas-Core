@@ -27,7 +27,7 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
  * Titre : SILVERMAILRequestRouter.java
  * @author eDurand
  */
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

@@ -23,16 +23,16 @@
  ---*/
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
-import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
-import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterfaceImpl;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
+import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
+import org.silverpeas.core.notification.user.client.model.SentNotificationInterfaceImpl;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

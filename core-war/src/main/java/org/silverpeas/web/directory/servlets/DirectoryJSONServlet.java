@@ -21,8 +21,8 @@
 package org.silverpeas.web.directory.servlets;
 
 import org.silverpeas.web.directory.control.DirectorySessionController;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.owasp.encoder.Encode;

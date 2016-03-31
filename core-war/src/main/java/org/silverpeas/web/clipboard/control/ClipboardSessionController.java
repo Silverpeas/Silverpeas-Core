@@ -35,13 +35,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 
-import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessage;
-import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -149,8 +149,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         str.append("document.refreshform.target = '").append(TargetFrame).append("';");
         str.append("document.refreshform.submit();");
       } else if (message.equals("IDLE")) {
-        com.stratelia.silverpeas.notificationserver.channel.server.SilverMessage serverMessage =
-            com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory.read(
+        SilverMessage serverMessage =
+            SilverMessageFactory.read(
             getUserId(), sessionId);
 
         if (serverMessage != null) {
@@ -167,7 +167,9 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
             str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
           }
         } else {
-          SilverMessage popupMessage = SilverMessageFactory.read(getUserId());
+          org.silverpeas.core.notification.user.server.channel.popup.SilverMessage popupMessage =
+              org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory
+              .read(getUserId());
 
           if (popupMessage != null) {
             if (popupMessage.getWhat().equals("ALERT")) {
@@ -194,10 +196,10 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         String messageId = request.getParameter("messageID");
         String messageType = request.getParameter("messageTYPE");
         if ("SERVER".equals(messageType)) {
-          com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory.del(
+          SilverMessageFactory.del(
               messageId);
         } else if ("POPUP".equals(messageType)) {
-          com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(
+          org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory.del(
               messageId);
         }
       }

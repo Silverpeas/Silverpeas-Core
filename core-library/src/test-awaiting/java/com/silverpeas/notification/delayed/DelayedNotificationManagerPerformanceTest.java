@@ -30,8 +30,8 @@ package com.silverpeas.usernotification.delayed;
 
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;

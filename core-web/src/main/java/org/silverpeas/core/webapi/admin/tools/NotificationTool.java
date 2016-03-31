@@ -26,8 +26,8 @@ package org.silverpeas.core.webapi.admin.tools;
 import java.util.Collection;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 

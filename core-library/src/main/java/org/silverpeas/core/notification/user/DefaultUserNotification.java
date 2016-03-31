@@ -24,11 +24,11 @@
 package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
 
