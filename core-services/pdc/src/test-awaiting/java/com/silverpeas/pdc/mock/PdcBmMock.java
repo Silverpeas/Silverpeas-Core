@@ -24,8 +24,8 @@
 
 package com.silverpeas.pdc.mock;
 
-import com.stratelia.silverpeas.containerManager.ContainerManagerException;
-import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;

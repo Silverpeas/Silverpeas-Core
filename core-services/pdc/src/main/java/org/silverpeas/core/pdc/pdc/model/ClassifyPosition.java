@@ -27,7 +27,7 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.core.pdc.classification.Position;
 import java.util.List;
 
-import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 
 /**
  * @author Nicolas EYSSERIC

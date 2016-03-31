@@ -25,7 +25,7 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.util.FileServerUtils;
 

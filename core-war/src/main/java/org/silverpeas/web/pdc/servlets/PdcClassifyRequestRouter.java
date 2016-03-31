@@ -25,7 +25,7 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
-import com.stratelia.silverpeas.contentManager.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.web.pdc.control.PdcClassifySessionController;

@@ -98,8 +98,8 @@ public class SpacesAndComponentsTest {
         .addMavenDependencies("org.apache.lucene:lucene-analyzers")
         .addPackages(false, "org.silverpeas.core.admin.space.quota")
         .addPackages(false, "com.stratelia.silverpeas.peasCore")
-        .addPackages(false, "com.stratelia.silverpeas.containerManager")
-        .addPackages(false, "com.stratelia.silverpeas.contentManager")
+        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
+        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
             AttachmentServiceProvider.class)

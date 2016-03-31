@@ -32,10 +32,10 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.containerManager.ContainerContext"%>
-<%@ page import="com.stratelia.silverpeas.containerManager.ContainerWorkspace"%>
-<%@ page import="com.stratelia.silverpeas.containerManager.URLIcone"%>
-<%@ page import="com.stratelia.silverpeas.contentManager.SilverContentInterface"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerWorkspace"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.URLIcone"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Axis"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.AxisHeader"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.ClassifyPosition"%>

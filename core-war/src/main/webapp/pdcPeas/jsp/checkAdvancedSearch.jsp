@@ -37,7 +37,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
 <%@ page import="org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager"%>
 <%@ page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
-<%@ page import="com.stratelia.silverpeas.contentManager.GlobalSilverContent"%>
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.SearchContext"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.SearchCriteria"%>

@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

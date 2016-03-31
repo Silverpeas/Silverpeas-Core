@@ -32,7 +32,7 @@ import org.silverpeas.core.pdc.classification.PertinentAxis;
 import org.silverpeas.core.pdc.classification.PertinentValue;
 import org.silverpeas.core.pdc.classification.Position;
 import org.silverpeas.core.pdc.classification.Value;
-import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;

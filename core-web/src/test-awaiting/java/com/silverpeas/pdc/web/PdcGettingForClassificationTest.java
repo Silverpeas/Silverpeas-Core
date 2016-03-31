@@ -22,7 +22,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.web.ResourceGettingTest;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.webactiv.beans.admin.UserDetail;

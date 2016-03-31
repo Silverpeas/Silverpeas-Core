@@ -25,8 +25,8 @@
 package com.silverpeas.pdc.web.mock;
 
 import javax.inject.Named;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import static com.silverpeas.pdc.web.TestConstants.*;
 

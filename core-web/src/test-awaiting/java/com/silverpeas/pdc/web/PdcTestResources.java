@@ -31,7 +31,7 @@ import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
-import com.stratelia.silverpeas.contentManager.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;

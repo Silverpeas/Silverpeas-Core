@@ -68,7 +68,8 @@ public class ComponentInstanceEventNotificationIntegrationTest {
             Translation.class, ComponentInstanceI18NRow.class, StateTransition.class,
             ComponentI18N.class, AbstractI18NBean.class, I18NBean.class, ComponentInst.class,
             ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
-            TestComponentInstanceEventObserver.class).addPackage("org.silverpeas.notification")
+            TestComponentInstanceEventObserver.class)
+        .addPackage("org.silverpeas.core.notification.system")
         .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
             "services/org.silverpeas.core.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");

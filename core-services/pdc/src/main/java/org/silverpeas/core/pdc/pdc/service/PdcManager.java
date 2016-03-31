@@ -20,9 +20,9 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import com.stratelia.silverpeas.containerManager.ContainerManagerException;
-import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;

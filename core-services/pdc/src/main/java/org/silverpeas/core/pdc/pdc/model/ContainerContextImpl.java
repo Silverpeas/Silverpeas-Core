@@ -26,8 +26,13 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import java.util.*;
 
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerContext;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPeas;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.URLIcone;
 import org.silverpeas.core.silvertrace.*;
-import com.stratelia.silverpeas.containerManager.*;
+import org.silverpeas.core.contribution.contentcontainer.container.*;
 
 /**
  * This is the data structure that the content JSP is going to use (built by the container router)

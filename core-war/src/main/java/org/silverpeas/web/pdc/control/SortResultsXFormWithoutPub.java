@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import com.stratelia.silverpeas.contentManager.XMLFormFieldComparator;
+import org.silverpeas.core.contribution.contentcontainer.content.XMLFormFieldComparator;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.WAIndexSearcher;

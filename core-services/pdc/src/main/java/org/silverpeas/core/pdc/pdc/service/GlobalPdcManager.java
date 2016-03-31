@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import com.stratelia.silverpeas.containerManager.ContainerInterface;
-import com.stratelia.silverpeas.containerManager.ContainerManagerException;
-import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentPeas;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;

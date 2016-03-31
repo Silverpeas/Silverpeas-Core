@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.fieldType.TextField;
 
-import com.stratelia.silverpeas.contentManager.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;

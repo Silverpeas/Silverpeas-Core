@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
-import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 
 import java.util.ArrayList;
 import java.util.List;

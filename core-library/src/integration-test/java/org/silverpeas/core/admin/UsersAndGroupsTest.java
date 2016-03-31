@@ -84,12 +84,9 @@ public class UsersAndGroupsTest {
         .addMavenDependencies("org.apache.lucene:lucene-analyzers")
         .addPackages(false, "org.silverpeas.core.admin.space.quota")
         .addPackages(false, "com.stratelia.silverpeas.peasCore")
-        .addPackages(false, "com.stratelia.silverpeas.containerManager")
-        .addPackages(false, "com.stratelia.silverpeas.contentManager")
-        .addPackages(true, "com.silverpeas.usernotification")
-        .addPackages(true, "org.silverpeas.core.notification.user.client.constant")
-        .addPackages(true, "org.silverpeas.core.notification.user.server")
-        .addPackages(true, "org.silverpeas.core.notification.user.client")
+        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
+        .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
+        .addPackages(true, "org.silverpeas.core.notification.user")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
             AttachmentServiceProvider.class, ParseException.class,

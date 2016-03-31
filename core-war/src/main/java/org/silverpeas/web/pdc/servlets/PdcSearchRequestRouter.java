@@ -30,19 +30,19 @@ import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import com.stratelia.silverpeas.containerManager.ContainerInterface;
-import com.stratelia.silverpeas.containerManager.ContainerManager;
-import com.stratelia.silverpeas.containerManager.ContainerManagerException;
-import com.stratelia.silverpeas.containerManager.ContainerPeas;
-import com.stratelia.silverpeas.containerManager.ContainerWorkspace;
-import com.stratelia.silverpeas.containerManager.URLIcone;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentPeas;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerInterface;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerPeas;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerWorkspace;
+import org.silverpeas.core.contribution.contentcontainer.container.URLIcone;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -85,7 +85,7 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import static com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor
+import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor
     .PROCESSOR_NAME_SUFFIX;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
