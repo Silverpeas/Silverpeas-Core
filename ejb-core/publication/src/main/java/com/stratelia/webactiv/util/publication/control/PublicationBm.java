@@ -23,6 +23,7 @@ package com.stratelia.webactiv.util.publication.control;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
@@ -33,7 +34,6 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
@@ -288,7 +288,7 @@ public interface PublicationBm {
    * @return the tree of nodes with the number of publication per node
    * @
    */
-  public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
+  public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility);
 
   /**

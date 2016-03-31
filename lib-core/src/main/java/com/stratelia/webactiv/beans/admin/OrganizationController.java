@@ -604,6 +604,20 @@ public class OrganizationController implements OrganisationController {
   }
 
   @Override
+  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
+      final String componentId, final ObjectType objectType) {
+    try {
+      return getAdminService().getProfilesByObjectTypeAndUserId(objectType.getCode(),
+          componentId, userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getUserProfiles",
+          "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId = " + userId
+              + ", componentId = " + componentId + ", objectType = " + objectType, e);
+      return null;
+    }
+  }
+
+  @Override
   public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
     try {
       return getAdminService().getProfilesByObject(objectId, objectType, componentId);

@@ -185,14 +185,28 @@ function SP_openWindow(page, name, width, height, options) {
     var form = document.querySelector(selector);
     if (!form) {
       form = document.createElement('form');
-      form.setAttribute('action', pageOptions.url);
-      form.setAttribute('method', 'post');
-      form.setAttribute('target', name);
       var formContainer = document.createElement('div');
       formContainer.style.display = 'none';
       formContainer.appendChild(form);
       document.body.appendChild(formContainer);
     }
+    var actionUrl = pageOptions.url;
+    var pivotIndex = actionUrl.indexOf("?");
+    if (pivotIndex > 0) {
+      var splitParams = actionUrl.substring(pivotIndex + 1).split("&");
+      actionUrl = actionUrl.substring(0, pivotIndex);
+      splitParams.forEach(function(param) {
+        var splitParam = param.split("=");
+        if (splitParam.length === 2) {
+          var key = splitParam[0];
+          var value = splitParam[1];
+          pageOptions.params[key] = value;
+        }
+      });
+    }
+    form.setAttribute('action', actionUrl);
+    form.setAttribute('method', 'post');
+    form.setAttribute('target', name);
     form.innerHTML = '';
     applyTokenSecurity(form.parentNode);
     for (var paramKey in pageOptions.params) {
