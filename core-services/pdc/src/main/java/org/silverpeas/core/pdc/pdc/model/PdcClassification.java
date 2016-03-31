@@ -21,8 +21,8 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.persistence.CascadeType;

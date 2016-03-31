@@ -42,7 +42,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepositoryIntegrationTest;
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
-import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.test.util.RandomGenerator;
@@ -70,8 +70,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
-import static org.silverpeas.jcr.util.JcrConstants.NT_FOLDER;
+import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 /**
  *

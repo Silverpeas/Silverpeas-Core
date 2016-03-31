@@ -24,12 +24,12 @@
 package org.silverpeas.core.contribution.attachment.repository;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.jcr.AbstractJcrConverter;
+import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import static org.silverpeas.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
  *

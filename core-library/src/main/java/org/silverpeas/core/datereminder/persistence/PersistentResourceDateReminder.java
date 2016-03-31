@@ -34,8 +34,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.datereminder.exception.DateReminderValidationException;
 import org.silverpeas.core.util.logging.SilverLogger;
 

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.util.annotation;
 
-import org.silverpeas.core.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Inheritance;

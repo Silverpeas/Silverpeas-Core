@@ -31,16 +31,16 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.jcr.JcrRepositoryConnector;
-import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.JcrRepositoryConnector;
+import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.jcr.util.NodeIterable;
-import org.silverpeas.jcr.util.PropertyIterable;
+import org.silverpeas.core.persistence.jcr.util.NodeIterable;
+import org.silverpeas.core.persistence.jcr.util.PropertyIterable;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -73,7 +73,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
 /**

@@ -30,7 +30,7 @@ import org.silverpeas.core.WAPrimaryKey;
 
 /**
  * SilverpeasBean represents an Entity in old silverpeas persistence layer
- * @Deprecated Replaced with a model Entity from org.silverpeas.core.persistence.model package.
+ * @Deprecated Replaced with a model Entity from org.silverpeas.core.persistence.datasource.model package.
  */
 @Deprecated
 public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {

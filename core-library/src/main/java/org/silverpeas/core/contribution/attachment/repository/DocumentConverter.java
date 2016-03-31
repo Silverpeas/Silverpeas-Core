@@ -36,7 +36,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
-import org.silverpeas.jcr.AbstractJcrConverter;
+import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;

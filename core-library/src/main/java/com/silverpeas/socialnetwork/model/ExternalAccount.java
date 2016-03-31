@@ -24,7 +24,7 @@
 
 package com.silverpeas.socialnetwork.model;
 
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

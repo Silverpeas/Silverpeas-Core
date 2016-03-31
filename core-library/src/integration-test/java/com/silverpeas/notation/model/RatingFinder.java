@@ -21,7 +21,7 @@
 
 package com.silverpeas.notation.model;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;

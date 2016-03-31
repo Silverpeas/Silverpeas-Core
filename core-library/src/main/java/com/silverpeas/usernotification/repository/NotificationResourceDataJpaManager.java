@@ -1,9 +1,9 @@
 package com.silverpeas.usernotification.repository;
 
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
 import java.util.List;

@@ -36,9 +36,9 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.jcr.JcrRepositoryProvider;
-import org.silverpeas.jcr.JcrSession;
-import org.silverpeas.jcr.SilverpeasJcrSchemaRegistering;
+import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
+import org.silverpeas.core.persistence.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.SilverpeasJcrSchemaRegistering;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
@@ -72,7 +72,7 @@ import java.util.Set;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
 /**
  * This class handle a JCR test.<br/>

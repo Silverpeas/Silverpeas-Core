@@ -24,8 +24,8 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

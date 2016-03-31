@@ -1,7 +1,7 @@
 package org.silverpeas.core.admin.domain.driver;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 
 import java.util.List;
 

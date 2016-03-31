@@ -21,7 +21,7 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;

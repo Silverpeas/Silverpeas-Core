@@ -1,8 +1,8 @@
 package com.silverpeas.usernotification.delayed.repository;
 
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationUserSetting;
-import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 
 import javax.inject.Singleton;
 import java.util.List;

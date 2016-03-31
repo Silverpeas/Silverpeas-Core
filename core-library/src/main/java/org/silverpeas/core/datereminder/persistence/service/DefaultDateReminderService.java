@@ -30,7 +30,7 @@ import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.datereminder.persistence.repository.PersistentResourceDateReminderRepository;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
-import org.silverpeas.core.persistence.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

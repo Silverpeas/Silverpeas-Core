@@ -25,8 +25,8 @@
 package com.silverpeas.personalization.dao;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.persistence.model.identifier.ExternalStringIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 
 import javax.inject.Singleton;
 import java.util.List;

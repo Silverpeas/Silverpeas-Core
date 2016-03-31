@@ -35,9 +35,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.persistence.repository.OperationContext;
-import org.silverpeas.core.persistence.repository.jpa.JpaEntityServiceTest;
-import org.silverpeas.core.persistence.repository.jpa.model.Person;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaEntityServiceTest;
+import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -58,7 +58,8 @@ public class TransactionTest {
 
   private JpaEntityServiceTest jpaEntityServiceTest;
 
-  public static final String TABLES_CREATION = "/org/silverpeas/core/persistence/create_table.sql";
+  public static final String TABLES_CREATION =
+      "/org/silverpeas/core/persistence/datasource/create_table.sql";
   public static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
       .columns("id", "firstName", "lastName", "createDate", "createdBy", "lastUpdateDate",
           "lastUpdatedBy", "version")
@@ -108,7 +109,7 @@ public class TransactionTest {
     return WarBuilder4LibCore.onWarForTestClass(TransactionTest.class)
         .addJpaPersistenceFeatures()
         .testFocusedOn((warBuilder) -> warBuilder
-            .addPackages(true, "org.silverpeas.core.persistence.repository.jpa"))
+            .addPackages(true, "org.silverpeas.core.persistence.datasource.repository.jpa"))
         .build();
   }
 

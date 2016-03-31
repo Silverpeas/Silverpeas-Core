@@ -26,8 +26,8 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValuePk;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.core.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
 import java.util.List;

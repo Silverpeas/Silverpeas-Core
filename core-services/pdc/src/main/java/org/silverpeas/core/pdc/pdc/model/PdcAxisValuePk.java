@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.persistence.model.CompositeEntityIdentifier;
+import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 
 /**
  * The composite primary key used to store values of PdC's axis.

@@ -49,7 +49,7 @@
         <!--factory-method="getFactory"/>-->
 
   <util:list id="entities">
-    <value>org.silverpeas.core.persistence.repository</value>
+    <value>org.silverpeas.core.persistence.datasource.repository</value>
   </util:list>
 
 </beans>

@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepositoryIntegrationTest;
 import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavDocumentRepository;
-import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.util.ServiceProvider;
@@ -44,9 +44,9 @@ import javax.jcr.Node;
 import static javax.jcr.Property.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
-import static org.silverpeas.jcr.util.JcrConstants.SLV_OWNABLE_MIXIN;
-import static org.silverpeas.jcr.util.JcrConstants.SLV_PROPERTY_OWNER;
+import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_OWNABLE_MIXIN;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_PROPERTY_OWNER;
 
 @RunWith(Arquillian.class)
 public class WebdavServiceIntegrationTest extends JcrIntegrationTest {

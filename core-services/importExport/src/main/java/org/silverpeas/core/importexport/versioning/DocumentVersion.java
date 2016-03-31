@@ -28,7 +28,7 @@ package org.silverpeas.core.importexport.versioning;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
-import org.silverpeas.jcr.JcrDataConverter;
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;

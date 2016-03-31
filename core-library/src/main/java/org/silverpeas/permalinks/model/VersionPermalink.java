@@ -24,8 +24,8 @@
 
 package org.silverpeas.permalinks.model;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;

@@ -43,7 +43,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 public class WebdavDocumentRepository implements WebdavRepository {
 

@@ -87,8 +87,8 @@ import org.silverpeas.core.persistence.jdbc.Schema;
 import org.silverpeas.core.persistence.jdbc.SchemaPool;
 import org.silverpeas.core.util.CDIContainer;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.jcr.JcrRepositoryProvider;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
@@ -369,8 +369,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(AbstractJpaEntity.class)) {
       addClasses(ResourceIdentifier.class);
       addPackages(true, "org.silverpeas.core.admin.user.constant");
-      addPackages(true, "org.silverpeas.core.persistence.model");
-      addPackages(true, "org.silverpeas.core.persistence.repository");
+      addPackages(true, "org.silverpeas.core.persistence.datasource.model");
+      addPackages(true, "org.silverpeas.core.persistence.datasource.repository");
       addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
     }
     return this;
@@ -409,7 +409,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(JcrRepositoryProvider.class)) {
       addClasses(FormException.class, JcrIntegrationTest.class, JcrContext.class,
           FileServerUtils.class);
-      addPackages(true, "org.silverpeas.jcr");
+      addPackages(true, "org.silverpeas.core.persistence.jcr");
       addPackages(true, "org.silverpeas.core.contribution.attachment");
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       addAsResource("silverpeas-jcr.cnd");

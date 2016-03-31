@@ -25,7 +25,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 import org.junit.Test;
-import org.silverpeas.jcr.JcrDataConverter;
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

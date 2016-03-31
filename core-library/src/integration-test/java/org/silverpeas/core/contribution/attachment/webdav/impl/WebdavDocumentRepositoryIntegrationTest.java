@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepositoryIntegrationTest;
-import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.util.ServiceProvider;
@@ -51,8 +51,8 @@ import static javax.jcr.Property.JCR_LAST_MODIFIED;
 import static javax.jcr.Property.JCR_MIMETYPE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
-import static org.silverpeas.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
 public class WebdavDocumentRepositoryIntegrationTest extends JcrIntegrationTest {

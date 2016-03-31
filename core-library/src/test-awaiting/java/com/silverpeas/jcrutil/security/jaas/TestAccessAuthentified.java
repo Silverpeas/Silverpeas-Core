@@ -36,7 +36,7 @@ import javax.naming.InitialContext;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import org.silverpeas.jcr.util.JcrConstants;
+import org.silverpeas.core.persistence.jcr.util.JcrConstants;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import org.silverpeas.util.MimeTypes;

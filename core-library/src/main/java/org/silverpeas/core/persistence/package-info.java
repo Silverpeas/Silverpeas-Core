@@ -23,7 +23,7 @@
  * @author mmoquillon
  */
 /**
- * Defines the Persistence API used in Silverpeas to store and to retrieve all the resources that
+ * Defines a Persistence API used in Silverpeas to store and to retrieve all the resources that
  * were created into Silverpeas. These resources can be organizational objects (users, groups,
  * workspaces, ...) as well as the user's contributions with their content(s).
  * @author mmoquillon

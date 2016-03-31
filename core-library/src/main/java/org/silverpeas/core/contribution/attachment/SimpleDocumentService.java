@@ -44,7 +44,7 @@ import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationE
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
-import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -86,7 +86,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
 /**
  * @author ehugonnet

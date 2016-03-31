@@ -24,8 +24,8 @@
 
 package org.silverpeas.token.persistent.repository;
 
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 
 import javax.inject.Singleton;

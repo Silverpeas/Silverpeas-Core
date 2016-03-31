@@ -25,14 +25,14 @@ import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
-import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import java.io.IOException;
 
-import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
 public class WebDavDocumentService implements WebdavService {
 

@@ -24,8 +24,8 @@
 package org.silverpeas.token.persistent;
 
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.annotation.TokenGenerator;
 import org.silverpeas.token.exception.TokenException;
