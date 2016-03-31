@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
+import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;

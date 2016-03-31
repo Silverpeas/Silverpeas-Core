@@ -26,7 +26,7 @@ package org.silverpeas.core.web.mvc.route;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

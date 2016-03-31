@@ -25,7 +25,7 @@ import org.silverpeas.core.web.attachment.WebDavTokenProducer;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;

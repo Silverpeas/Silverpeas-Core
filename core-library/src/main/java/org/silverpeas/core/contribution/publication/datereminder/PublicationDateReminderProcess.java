@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.publication.datereminder;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.persistence.EntityReference;

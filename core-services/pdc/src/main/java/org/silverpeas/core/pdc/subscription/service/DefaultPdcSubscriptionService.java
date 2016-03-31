@@ -27,7 +27,7 @@ package org.silverpeas.core.pdc.subscription.service;
 
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.classification.Value;
 import com.stratelia.silverpeas.contentManager.ContentInterface;

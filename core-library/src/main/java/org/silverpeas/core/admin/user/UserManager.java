@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.admin.user;
 
-import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
+import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;

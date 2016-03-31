@@ -26,8 +26,8 @@ package org.silverpeas.core.contribution.publication.datereminder;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;

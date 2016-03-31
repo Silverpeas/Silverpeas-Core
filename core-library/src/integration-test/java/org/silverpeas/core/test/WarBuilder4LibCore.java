@@ -29,7 +29,7 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
@@ -625,7 +625,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.admin.user");
       addPackages(true, "org.silverpeas.core.admin.domain");
       addPackages(true, "org.silverpeas.core.admin.domain.driver.sqldriver");
-      addPackages(false, "org.silverpeas.notification");
+      addPackages(false, "org.silverpeas.core.notification.system");
       addPackages(true, "org.silverpeas.core.admin.component.notification");
       addPackages(true, "org.silverpeas.core.clipboard");
       addAsResource("xmlcomponents");

@@ -32,9 +32,9 @@ import java.util.MissingResourceException;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -147,7 +147,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
 
   /**
    * Core service, component instance identifier is useless
-   * @see com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder
+   * @see AbstractTemplateUserNotificationBuilder
    * #getComponentInstanceId()
    */
   @Override

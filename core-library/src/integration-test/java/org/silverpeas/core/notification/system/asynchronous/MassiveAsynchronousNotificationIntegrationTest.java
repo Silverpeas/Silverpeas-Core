@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.notification.system.asynchronous;
 
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;

@@ -21,7 +21,7 @@
 
 package org.silverpeas.core.notification.system;
 
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.jms.Message;

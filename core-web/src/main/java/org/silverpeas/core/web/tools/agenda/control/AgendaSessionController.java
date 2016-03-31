@@ -23,7 +23,7 @@ package org.silverpeas.core.web.tools.agenda.control;
 import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
 import org.silverpeas.core.web.calendar.ical.ImportIcalManager;
 import org.silverpeas.core.web.calendar.ical.SynchroIcalManager;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

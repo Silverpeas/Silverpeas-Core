@@ -32,7 +32,7 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler" %>
+<%@ page import="org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>

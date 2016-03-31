@@ -31,9 +31,9 @@ package com.stratelia.silverpeas.notificationManager;
  */
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
-import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
-import com.silverpeas.usernotification.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
+import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressTable;
