@@ -42,7 +42,7 @@ import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;

@@ -45,7 +45,7 @@ import org.silverpeas.core.contribution.attachment.repository.DocumentRepository
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
 import org.silverpeas.core.persistence.jcr.JcrSession;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;

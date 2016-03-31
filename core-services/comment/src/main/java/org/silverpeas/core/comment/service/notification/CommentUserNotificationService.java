@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;

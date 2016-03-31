@@ -30,7 +30,7 @@ import org.silverpeas.core.node.dao.NodeI18NDAO;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.util.ServiceProvider;

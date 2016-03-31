@@ -22,7 +22,7 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.admin.user.notification.GroupEvent;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
 

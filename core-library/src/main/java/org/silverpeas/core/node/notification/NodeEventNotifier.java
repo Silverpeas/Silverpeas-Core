@@ -22,8 +22,8 @@
 package org.silverpeas.core.node.notification;
 
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.notification.CDIResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * @author mmoquillon

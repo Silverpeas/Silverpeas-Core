@@ -27,10 +27,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.util.UnitTestResource;
-import org.silverpeas.notification.util.UnitTestResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.notification.system.UnitTestResource;
+import org.silverpeas.core.notification.system.UnitTestResourceEvent;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import javax.servlet.http.HttpServletRequest;

@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEventNotifier;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;

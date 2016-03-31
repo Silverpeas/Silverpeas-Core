@@ -46,7 +46,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.notification.ResourceEvent.Type.UPDATE;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
 @Singleton
 public class ComponentInstManager {

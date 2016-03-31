@@ -21,7 +21,8 @@
 
 package org.silverpeas.core.contribution.content.wysiwyg.notification;
 
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,7 +40,7 @@ public class WysiwygEvent extends AbstractResourceEvent<WysiwygContent> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent ( ResourceEvent.Type, Object[])
    */
   public WysiwygEvent(final Type type, final WysiwygContent... wysiwyg) {
     super(type, wysiwyg);

@@ -22,8 +22,8 @@
 package org.silverpeas.core.contribution.content.wysiwyg.notification;
 
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
-import org.silverpeas.notification.JMSResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.JMSResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 import javax.annotation.Resource;
 import javax.jms.Destination;

@@ -25,7 +25,7 @@
 package org.silverpeas.core.comment.test;
 
 import org.silverpeas.core.comment.service.notification.CommentEvent;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

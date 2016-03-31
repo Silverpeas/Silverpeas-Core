@@ -22,8 +22,8 @@
 package org.silverpeas.core.admin.space.notification;
 
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.notification.CDIResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * @author mmoquillon

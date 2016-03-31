@@ -22,7 +22,8 @@
 package org.silverpeas.core.admin.user.notification;
 
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * An event about the creation, an update or a deletion of a user group in Silverpeas.
@@ -35,7 +36,7 @@ public class GroupEvent extends AbstractResourceEvent<Group> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, Object[])
    */
   public GroupEvent(Type type, Group... group) {
     super(type, group);

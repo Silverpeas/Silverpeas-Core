@@ -21,8 +21,8 @@
 package org.silverpeas.core.contribution.attachment.notification;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.notification.JMSResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.JMSResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;

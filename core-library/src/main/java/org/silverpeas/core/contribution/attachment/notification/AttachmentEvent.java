@@ -22,7 +22,8 @@
 package org.silverpeas.core.contribution.attachment.notification;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -42,7 +43,7 @@ public class AttachmentEvent extends AbstractResourceEvent<AttachmentRef> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, java.io.Serializable[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, java.io.Serializable[])
    */
   public AttachmentEvent(final Type type, final SimpleDocument... document) {
     super(type, toAttachmentRefs(document));

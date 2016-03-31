@@ -22,7 +22,8 @@
 package org.silverpeas.core.contribution.publication.notification;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 /**
  * Event about a publication. This event can be about a creation, an update or a deletion of a
@@ -36,7 +37,7 @@ public class PublicationEvent extends AbstractResourceEvent<PublicationDetail> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, Object[])
    */
   public PublicationEvent(Type type, PublicationDetail... publication) {
     super(type, publication);

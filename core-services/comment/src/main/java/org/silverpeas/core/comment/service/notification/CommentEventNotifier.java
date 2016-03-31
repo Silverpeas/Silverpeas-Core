@@ -22,8 +22,8 @@
 package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.notification.CDIResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * A notifier of events about the comments. The notifications are sent synchronously by using

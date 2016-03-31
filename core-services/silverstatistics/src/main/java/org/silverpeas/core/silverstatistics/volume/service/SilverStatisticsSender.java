@@ -27,7 +27,7 @@ package org.silverpeas.core.silverstatistics.volume.service;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.notification.JMSOperation;
+import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;

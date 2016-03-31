@@ -22,7 +22,7 @@
 package org.silverpeas.core.node.notification;
 
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import javax.validation.constraints.NotNull;
 

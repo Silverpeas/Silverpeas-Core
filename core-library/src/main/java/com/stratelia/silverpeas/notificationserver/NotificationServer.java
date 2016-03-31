@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.notificationserver;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.notification.JMSOperation;
+import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 

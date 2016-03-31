@@ -23,7 +23,7 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.node.notification.NodeEvent;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
 

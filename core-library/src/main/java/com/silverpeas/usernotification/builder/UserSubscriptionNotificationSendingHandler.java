@@ -24,7 +24,7 @@
 package com.silverpeas.usernotification.builder;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;

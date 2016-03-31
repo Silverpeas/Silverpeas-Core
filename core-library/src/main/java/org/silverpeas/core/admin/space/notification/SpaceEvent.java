@@ -22,7 +22,8 @@
 package org.silverpeas.core.admin.space.notification;
 
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * @author mmoquillon
@@ -34,7 +35,7 @@ public class SpaceEvent extends AbstractResourceEvent<SpaceInst> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, Object[])
    */
   public SpaceEvent(final Type type, final SpaceInst... resource) {
     super(type, resource);

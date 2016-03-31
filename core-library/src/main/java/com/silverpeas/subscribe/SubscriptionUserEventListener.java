@@ -23,7 +23,7 @@ package com.silverpeas.subscribe;
 
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.admin.user.notification.UserEvent;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
 

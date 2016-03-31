@@ -58,7 +58,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationRuntimeExce
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;

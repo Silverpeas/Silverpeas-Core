@@ -22,8 +22,8 @@
 package org.silverpeas.core.admin.component.notification;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 import java.io.Serializable;
 

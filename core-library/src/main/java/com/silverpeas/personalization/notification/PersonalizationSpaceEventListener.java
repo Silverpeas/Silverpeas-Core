@@ -24,7 +24,7 @@ package com.silverpeas.personalization.notification;
 import com.silverpeas.personalization.service.PersonalizationService;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.notification.SpaceEvent;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
 

@@ -22,7 +22,7 @@
 package org.silverpeas.core.admin.component.notification;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.notification.jsondiff;
+package org.silverpeas.core.notification.system.jsondiff;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;

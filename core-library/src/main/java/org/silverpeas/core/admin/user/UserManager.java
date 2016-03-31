@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.notification.UserEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.ListSlice;

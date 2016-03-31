@@ -32,11 +32,11 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.notification.ResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEventNotifier;
 import org.silverpeas.core.util.BeanContainer;
 import org.silverpeas.core.util.CDIContainer;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.StateTransition;
+import org.silverpeas.core.notification.system.StateTransition;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NBean;
 import org.silverpeas.util.i18n.Translation;
@@ -45,7 +45,7 @@ import javax.inject.Inject;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.silverpeas.notification.ResourceEvent.Type.CREATION;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.CREATION;
 
 /**
  * Integration test validating a notification about a life-cycle event of a component instance is

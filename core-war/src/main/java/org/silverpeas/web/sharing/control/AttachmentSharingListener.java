@@ -28,7 +28,7 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.notification.JMSResourceEventListener;
+import org.silverpeas.core.notification.system.JMSResourceEventListener;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

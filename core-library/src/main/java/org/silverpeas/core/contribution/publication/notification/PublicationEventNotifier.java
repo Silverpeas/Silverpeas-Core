@@ -22,8 +22,8 @@
 package org.silverpeas.core.contribution.publication.notification;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.notification.CDIResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * An synchronous notifier of change on a publication in Silverpeas.

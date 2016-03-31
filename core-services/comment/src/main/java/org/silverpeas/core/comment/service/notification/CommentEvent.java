@@ -22,8 +22,8 @@
 package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 import java.io.Serializable;
 
