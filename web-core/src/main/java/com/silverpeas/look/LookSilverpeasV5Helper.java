@@ -85,7 +85,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   // Attribute used to manage user favorite space look
   private UserMenuDisplay displayUserMenu = UserMenuDisplay.DISABLE;
   private boolean enableUFSContainsState = false;
-  private HttpSession session = null; 
+  private HttpSession session = null;
+  private String currentLookName = null;
 
   /*
    * (non-Javadoc)
@@ -106,6 +107,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
       this.spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
     }
+    reloadProperties(spaceId);
   }
 
   /*
@@ -127,6 +129,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (!subSpaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
       this.subSpaceId = Admin.SPACE_KEY_PREFIX + subSpaceId;
     }
+    reloadProperties(subSpaceId);
   }
 
   /*
@@ -201,8 +204,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   
   public LookSilverpeasV5Helper(HttpSession session) {
     this.session = session;
-    GraphicElementFactory gef =
-        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    GraphicElementFactory gef = getGraphicElementFactory();
     init(gef.getFavoriteLookSettings());
   }
 
@@ -251,6 +253,20 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
+  private void reloadProperties(String spaceId) {
+    String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
+    if (!StringUtil.isDefined(spaceLook)) {
+      // no look defined for this space (or its parent),
+      // use user's favorite look or look by default
+      spaceLook = getMainSessionController().getFavoriteLook();
+    }
+    if (spaceLook != null && !spaceLook.equals(currentLookName)) {
+      getGraphicElementFactory().setLook(spaceLook);
+      init(getGraphicElementFactory().getFavoriteLookSettings());
+      currentLookName = spaceLook;
+    }
+  }
+
   @Override
   public boolean isMenuPersonalisationEnabled() {
     return UserMenuDisplay.DISABLE != UserMenuDisplay.valueOf(resources.getString(
@@ -268,6 +284,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   protected OrganisationController getOrganisationController() {
     return orga;
+  }
+
+  protected GraphicElementFactory getGraphicElementFactory() {
+    if (session != null) {
+      GraphicElementFactory gef = (GraphicElementFactory) session
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      return gef;
+    }
+    return null;
   }
 
   /*
