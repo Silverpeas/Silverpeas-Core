@@ -89,7 +89,7 @@ import org.silverpeas.core.util.CDIContainer;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
-import org.silverpeas.profile.UserReference;
+import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;

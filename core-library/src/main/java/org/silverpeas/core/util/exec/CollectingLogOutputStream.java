@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,36 +21,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.exec;
+package org.silverpeas.core.util.exec;
 
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-public class ExternalExecutionException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = 5204285099061189996L;
+import org.apache.commons.exec.LogOutputStream;
 
-  /**
-   * Default constructor
-   * @param e
-   */
-  public ExternalExecutionException(final Exception e) {
-    super("ExternalExecution", SilverpeasException.ERROR, e.getMessage(), e);
+import static org.silverpeas.core.util.StringUtil.newline;
+
+/**
+ * Helper class to collectect the output of a command execution.
+ */
+public class CollectingLogOutputStream extends LogOutputStream {
+
+  private final List<String> lines;
+
+  public CollectingLogOutputStream() {
+    this(new LinkedList<>());
   }
 
-  /**
-   * Default constructor
-   * @param message the exception message
-   */
-  public ExternalExecutionException(final String message) {
-    super("ExternalExecution", SilverpeasException.ERROR, message);
+  public CollectingLogOutputStream(List<String> lines) {
+    this.lines = lines;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.exception.SilverpeasRuntimeException#getModule()
-   */
   @Override
-  public String getModule() {
-    return "external";
+  protected void processLine(String line, int level) {
+    lines.add(line);
+  }
+
+  public List<String> getLines() {
+    return Collections.unmodifiableList(lines);
+  }
+
+  public String getMessage() {
+    StringBuilder builder = new StringBuilder(512 * lines.size());
+    for (String line : lines) {
+      builder.append(line);
+      builder.append(newline);
+    }
+    return builder.toString();
   }
 }

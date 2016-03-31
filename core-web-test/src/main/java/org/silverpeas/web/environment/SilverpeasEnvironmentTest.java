@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.profile.UserReference;
+import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;

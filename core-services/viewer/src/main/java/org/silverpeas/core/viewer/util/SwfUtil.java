@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.exec.ExternalExecution;
-import org.silverpeas.exec.ExternalExecutionException;
+import org.silverpeas.core.util.exec.ExternalExecution;
+import org.silverpeas.core.util.exec.ExternalExecutionException;
 import org.silverpeas.core.viewer.service.SwfToolManager;
 import org.silverpeas.core.viewer.service.ViewerException;
 

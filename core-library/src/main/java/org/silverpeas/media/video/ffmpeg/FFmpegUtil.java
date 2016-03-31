@@ -24,8 +24,8 @@
 package org.silverpeas.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
-import org.silverpeas.exec.ExternalExecution;
-import org.silverpeas.exec.ExternalExecutionException;
+import org.silverpeas.core.util.exec.ExternalExecution;
+import org.silverpeas.core.util.exec.ExternalExecutionException;
 import org.silverpeas.media.video.VideoThumbnailExtractorException;
 
 import java.io.File;

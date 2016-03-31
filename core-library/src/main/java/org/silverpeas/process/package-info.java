@@ -25,7 +25,7 @@
 /**
  * Provides an API for executing one or several processes that implement <code>SilverpeasProcess</code> @see {@link org.silverpeas.process.SilverpeasProcess}.
  * This API has been created for chaining within a single applicative transaction different processes (processes
- * dealing with database and file systems together for example) and applying global validations (@see {@link org.silverpeas.process.check.Checker})
+ * dealing with database and file systems together for example) and applying global validations (@see {@link org.silverpeas.process.check.ProcessCheck})
  * on output (if any) of processes (Quota disk for example).
  * <code>SilverpeasProcess</code> is an interface which has to be implemented by each process (or task in other words)
  * that has to be taken in charge by this API. It offers methods whose the following three :

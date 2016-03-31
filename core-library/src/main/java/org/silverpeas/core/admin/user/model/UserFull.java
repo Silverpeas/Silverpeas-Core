@@ -27,7 +27,7 @@ import org.silverpeas.util.ArrayUtil;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.silverpeas.profile.UserReference;
+import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
 import org.silverpeas.token.persistent.PersistentResourceToken;

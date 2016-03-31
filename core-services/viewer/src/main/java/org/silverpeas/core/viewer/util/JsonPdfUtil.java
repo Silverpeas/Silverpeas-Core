@@ -24,8 +24,8 @@
 package org.silverpeas.core.viewer.util;
 
 import org.apache.commons.exec.CommandLine;
-import org.silverpeas.exec.ExternalExecution;
-import org.silverpeas.exec.ExternalExecutionException;
+import org.silverpeas.core.util.exec.ExternalExecution;
+import org.silverpeas.core.util.exec.ExternalExecutionException;
 import org.silverpeas.core.viewer.service.JsonPdfToolManager;
 import org.silverpeas.core.viewer.service.ViewerException;
 

@@ -1,4 +1,4 @@
-package org.silverpeas.exec;
+package org.silverpeas.core.util.exec;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
