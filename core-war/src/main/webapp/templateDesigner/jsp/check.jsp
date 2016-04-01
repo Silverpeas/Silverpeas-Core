@@ -37,7 +37,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>

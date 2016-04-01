@@ -26,7 +26,7 @@ package org.silverpeas.core.web.tools.agenda.notification;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
@@ -233,7 +233,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected String getResourceURL(final JournalHeader resource) {
     final StringBuilder sb =
-        new StringBuilder(URLManager.getURL(URLManager.CMP_AGENDA, null, null));
+        new StringBuilder(URLUtil.getURL(URLUtil.CMP_AGENDA, null, null));
     sb.append("journal.jsp?JournalId=");
     sb.append(resource.getId());
     sb.append("&Action=");

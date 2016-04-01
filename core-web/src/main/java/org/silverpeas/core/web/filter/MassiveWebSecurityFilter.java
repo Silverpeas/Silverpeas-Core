@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.filter;
 
 import org.silverpeas.core.webapi.base.RESTWebService;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -61,11 +61,11 @@ public class MassiveWebSecurityFilter implements Filter {
   private static final SilverLogger logger = SilverLogger.getLogger("security");
 
   private final static String WEB_SERVICES_URI_PREFIX =
-      UriBuilder.fromUri(URLManager.getApplicationURL())
+      UriBuilder.fromUri(URLUtil.getApplicationURL())
           .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).build().toString();
 
   private final static String WEB_PAGES_URI_PREFIX =
-      UriBuilder.fromUri(URLManager.getApplicationURL()).path("RwebPages").build().toString();
+      UriBuilder.fromUri(URLUtil.getApplicationURL()).path("RwebPages").build().toString();
 
   private final static List<Pattern> SKIPPED_PARAMETER_PATTERNS;
 

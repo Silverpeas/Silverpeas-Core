@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * This class represents one version in the history of a versioned simple document.
@@ -138,7 +138,7 @@ public class SimpleDocumentVersion extends SimpleDocument {
 
   @Override
   public String getUniversalURL() {
-    return URLManager.getSimpleURL(URLManager.URL_VERSION, getId()) + "?ContentLanguage=" +
+    return URLUtil.getSimpleURL(URLUtil.URL_VERSION, getId()) + "?ContentLanguage=" +
         getLanguage();
   }
 }

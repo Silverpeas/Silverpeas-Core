@@ -34,7 +34,7 @@
 
 <%@ page import="org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
@@ -67,7 +67,7 @@
   String specificURL = "";    //For Websites only
 
   String wysiwygTextValue = "";
-  String context = URLManager.getApplicationURL();
+  String context = URLUtil.getApplicationURL();
   String userId = "";
   String indexIt = "";
 

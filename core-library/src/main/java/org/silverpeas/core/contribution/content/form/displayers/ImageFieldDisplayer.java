@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.FileField;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -100,7 +100,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
           } else if (pageContext.isSharingContext()) {
             imageURL = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
           } else {
-            imageURL = URLManager.getApplicationURL() + attachment.getAttachmentURL();
+            imageURL = URLUtil.getApplicationURL() + attachment.getAttachmentURL();
           }
         }
       }

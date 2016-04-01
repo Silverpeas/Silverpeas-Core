@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.Pair;
 
 /**
@@ -61,7 +61,7 @@ public class GenericPanelPeasSessionController extends AbstractComponentSessionC
         componentContext,
         "org.silverpeas.genericPanelPeas.multilang.genericPanelPeasBundle",
         "org.silverpeas.genericPanelPeas.settings.genericPanelPeasIcons");
-    setComponentRootName(URLManager.CMP_GENERICPANELPEAS);
+    setComponentRootName(URLUtil.CMP_GENERICPANELPEAS);
   }
 
   public void initSC(String panelKey) {

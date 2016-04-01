@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.owasp.encoder.Encode;
@@ -137,7 +137,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
             result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
                 .append(getComponentId()).append("')");
           } else {
-            result.append(URLManager.getApplicationURL()).append(URLManager.getURL(getSpaceId(),
+            result.append(URLUtil.getApplicationURL()).append(URLUtil.getURL(getSpaceId(),
                 getComponentId()));
             if (ignoreComponentLink()) {
               result.append("Main");
@@ -215,7 +215,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
   }
 
   private String printScript() {
-    String context = URLManager.getApplicationURL();
+    String context = URLUtil.getApplicationURL();
     StringBuilder script = new StringBuilder();
     script.append("<script type=\"text/javascript\">");
     script.append("function goSpace(spaceId) {");

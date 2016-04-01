@@ -101,7 +101,7 @@
 <c:if test="${view:booleanValue(isComponentVersioned)}">
   <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
+  VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLUtil.CMP_VERSIONINGPEAS);
   if(versioningSC == null) {
       String componentId = request.getParameter("ComponentId");
       ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);

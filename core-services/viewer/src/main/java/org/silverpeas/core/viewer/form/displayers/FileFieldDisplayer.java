@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.displayers.AbstractFileFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.FileField;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -73,7 +73,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
     String attachmentId = field.getAttachmentId();
     String componentId = pageContext.getComponentId();
-    String webContext = URLManager.getApplicationURL();
+    String webContext = URLUtil.getApplicationURL();
 
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {

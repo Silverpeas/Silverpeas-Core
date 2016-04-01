@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
@@ -37,7 +37,7 @@ public class WebConnectionTool extends AbstractTool {
 
   public WebConnectionTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "webconnectionsVisible", "webConnections", "WebConnections",
-        URLManager.CMP_WEBCONNECTIONS);
+        URLUtil.CMP_WEBCONNECTIONS);
   }
 
   /*

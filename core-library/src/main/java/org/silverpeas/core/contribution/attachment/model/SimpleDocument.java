@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
@@ -686,7 +686,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getUniversalURL() {
-    return URLManager.getSimpleURL(URLManager.URL_FILE, getId()) + "?ContentLanguage=" +
+    return URLUtil.getSimpleURL(URLUtil.URL_FILE, getId()) + "?ContentLanguage=" +
         getLanguage();
   }
 
@@ -715,7 +715,7 @@ public class SimpleDocument implements Serializable {
 
   public String getWebdavUrl() {
     StringBuilder url = new StringBuilder(500);
-    String webAppContext = URLManager.getApplicationURL();
+    String webAppContext = URLUtil.getApplicationURL();
     url.append(webAppContext);
     if (!webAppContext.endsWith("/")) {
       url.append('/');

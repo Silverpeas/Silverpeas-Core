@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.contribution.content.form;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.sharing.SharingContext;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.contribution.attachment.util.SharingContext;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -330,7 +330,7 @@ public class PagesContext {
   }
 
   public void setRequest(HttpServletRequest request) {
-    this.serverURL = URLManager.getServerURL(request);
+    this.serverURL = URLUtil.getServerURL(request);
   }
 
   public boolean isDesignMode() {

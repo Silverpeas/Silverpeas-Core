@@ -28,7 +28,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
-import org.silverpeas.termsOfService.constant.TermsOfServiceAcceptanceFrequency;
+
 
 import javax.servlet.http.HttpServletRequest;
 

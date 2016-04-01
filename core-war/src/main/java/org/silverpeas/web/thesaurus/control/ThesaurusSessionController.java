@@ -35,10 +35,10 @@ import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
@@ -445,7 +445,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @throws ThesaurusException
    */
   public String initSelectedUserPanel() throws ThesaurusException {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(
         getString("thesaurus.componentName"), m_context
@@ -502,7 +502,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @see
    */
   public String initUserPanel() throws ThesaurusException {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostSpaceName = "";
     Pair<String, String> hostComponentName =
         new Pair<>(getString("thesaurus.componentName"), m_context

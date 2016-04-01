@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**
@@ -96,7 +96,7 @@ public class ComponentEntity extends StructureElementEntity<ComponentEntity> {
         component.getDescription(language), component.getStatus(), component.getOrderNum(),
         component.isInheritanceBlocked());
     name = component.getName() == null ? "" : component.getName();
-    url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
+    url = URLUtil.getURL(component.getName(), null, component.getId()) + "Main";
   }
 
   protected ComponentEntity() {

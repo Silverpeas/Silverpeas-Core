@@ -41,7 +41,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.GroupField;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.util.FileUploadUtil;
 
@@ -144,7 +144,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
         groupsOfInstanceOnly = true;
       }
       html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
-          .append(URLManager.getApplicationURL())
+          .append(URLUtil.getApplicationURL())
           .append("/RselectionPeasWrapper/jsp/open" + "?formName=")
           .append(pageContext.getFormName())
           .append("&elementId=").append(fieldName)

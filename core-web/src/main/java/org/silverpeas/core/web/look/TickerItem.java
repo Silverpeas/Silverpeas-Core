@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.look;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 public class TickerItem {
@@ -50,7 +50,7 @@ public class TickerItem {
   }
 
   public String getPermalink() {
-    return URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getId());
+    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getId());
   }
 
 }

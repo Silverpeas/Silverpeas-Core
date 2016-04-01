@@ -26,10 +26,10 @@ package org.silverpeas.web.socialnetwork.newsfeed.servlets;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
@@ -212,7 +212,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
         } else {
           jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
         }
-        jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
+        jsonSocialInfo.put("url", URLUtil.getApplicationURL() + information.getUrl());
 
         if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
           UserDetail contactUser2 = UserDetail.getById(information.getTitle());
@@ -281,7 +281,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     return jsonUser -> {
         jsonUser.put("id", user.getId());
         jsonUser.put("displayedName", user.getDisplayedName());
-        jsonUser.put("profilPhoto", URLManager.getApplicationURL() + user.getSmallAvatar());
+        jsonUser.put("profilPhoto", URLUtil.getApplicationURL() + user.getSmallAvatar());
         return jsonUser;
       };
   }

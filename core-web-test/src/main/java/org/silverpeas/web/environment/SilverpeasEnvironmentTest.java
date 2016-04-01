@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.token.exception.TokenException;
-import org.silverpeas.token.persistent.PersistentResourceToken;
+import org.silverpeas.core.security.token.exception.TokenException;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.PostConstruct;

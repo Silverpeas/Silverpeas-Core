@@ -25,6 +25,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -58,7 +59,6 @@ import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import org.silverpeas.web.pdc.vo.ResultFilterVO;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
@@ -219,13 +219,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         destination = request.getParameter("contentURL");
 
         // Compute the URL to forward to the content
-        String sURLContent = URLManager.getURL(contentPeasPDC.getSessionControlBeanName(), pdcSC
+        String sURLContent = URLUtil.getURL(contentPeasPDC.getSessionControlBeanName(), pdcSC
             .getSpaceId(), pdcSC.getComponentId());
         destination = sURLContent + destination;
 
 
         // Put the containerContext in the request
-        String sURLContainer = URLManager.getURL(containerPeasPDC.getSessionControlBeanName(), pdcSC
+        String sURLContainer = URLUtil.getURL(containerPeasPDC.getSessionControlBeanName(), pdcSC
             .getSpaceId(), pdcSC.getComponentId());
         ContainerContextImpl containerContext = new ContainerContextImpl();
         containerContext.setContainerInstanceId(containerManager.getContainerInstanceId(pdcSC.
@@ -249,10 +249,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         String sURLContent = null;
         if (contentP == null) {
-          sURLContent = URLManager.getURL(spaceId, componentId);
+          sURLContent = URLUtil.getURL(spaceId, componentId);
         } else {
           sURLContent =
-              URLManager.getURL(contentP.getSessionControlBeanName(), spaceId, componentId);
+              URLUtil.getURL(contentP.getSessionControlBeanName(), spaceId, componentId);
         }
 
         request.setAttribute("ToURL", sURLContent + destination);
@@ -264,7 +264,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         // Put the containerContext in the request
         String sURLContainer =
-            URLManager.
+            URLUtil.
             getURL(containerPeasPDC.getSessionControlBeanName(), spaceId, componentId);
         ContainerContextImpl containerContext = new ContainerContextImpl();
         containerContext.

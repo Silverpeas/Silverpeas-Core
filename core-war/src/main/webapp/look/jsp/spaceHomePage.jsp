@@ -32,7 +32,7 @@
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@page import="org.silverpeas.core.util.DateUtil"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 <%@page import="org.silverpeas.core.web.look.DefaultSpaceHomePage"%>
 <%@page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
@@ -275,8 +275,8 @@ $(document).ready(function() {
                             <div class="portlet-content slideshow" data-transition="crossfade" data-loop="true" data-skip="false">
 								<ul class="carousel">
 									<% for (PublicationDetail aNews : news) { %>
-										<li class="slide" onclick="javascript:location.href='<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, aNews.getId())%>'">
-							<h4 class="title-quickInfo"><a href="<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, aNews.getId())%>"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></a></h4>
+										<li class="slide" onclick="javascript:location.href='<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, aNews.getId())%>'">
+							<h4 class="title-quickInfo"><a href="<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, aNews.getId())%>"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></a></h4>
 							<% if (aNews.getThumbnail() != null) { %>
 											<img src="<%=aNews.getThumbnail().getURL()%>" alt=""/>
 										<% } %>
@@ -317,9 +317,9 @@ $(document).ready(function() {
                           <div class="spaceNavigation">
 							<ul>
 								<% for (SpaceInstLight subspace : subspaces) { %>
-								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getId())%>')">
+								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLUtil.getSimpleURL(URLUtil.URL_SPACE, subspace.getId())%>')">
 									<div>
-										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getId())%>"><%=Encode.forHtml(subspace.getName(helper.getLanguage())) %></a>
+										<a href="<%=URLUtil.getSimpleURL(URLUtil.URL_SPACE, subspace.getId())%>"><%=Encode.forHtml(subspace.getName(helper.getLanguage())) %></a>
 										<% if (StringUtil.isDefined(subspace.getDescription(helper.getLanguage()))) { %>
 											<p><%=Encode.forHtml(subspace.getDescription(helper.getLanguage())) %></p>
 										<% } %>
@@ -327,10 +327,10 @@ $(document).ready(function() {
 								</li>
 								<% } %>
 								<% for (ComponentInstLight app : apps) { %>
-								<li class="browse-component bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>')">
+								<li class="browse-component bgDegradeGris" onclick="goToSpaceItem('<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, app.getId())%>')">
 									<div>
 										<img src="<%=app.getIcon(true) %>" />
-										<a href="<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, app.getId())%>"><%=Encode.forHtml(app.getLabel(helper.getLanguage())) %></a>
+										<a href="<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, app.getId())%>"><%=Encode.forHtml(app.getLabel(helper.getLanguage())) %></a>
 										<% if (StringUtil.isDefined(app.getDescription(helper.getLanguage()))) { %>
 											<p><%=Encode.forHtml(app.getDescription(helper.getLanguage())) %></p>
 										<% } %>
@@ -350,7 +350,7 @@ $(document).ready(function() {
 							<ul id="publicationList">
 								<% for (PublicationDetail publication : publications) { %>
 								<li>
-									<a href="<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getId())%>"><b><%=Encode.forHtml(publication.getName(helper.getLanguage())) %></b></a>
+									<a href="<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getId())%>"><b><%=Encode.forHtml(publication.getName(helper.getLanguage())) %></b></a>
 									<view:username userId="<%=publication.getUpdaterId() %>" /> - <%=DateUtil.getOutputDate(publication.getUpdateDate(), helper.getLanguage()) %> <br/>
 									<%= Encode.forHtml(publication.getDescription(helper.getLanguage())) %>
 								</li>

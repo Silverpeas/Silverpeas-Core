@@ -27,7 +27,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.result;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationServiceProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -287,7 +287,7 @@ public class HtmlSearchResultTag extends TagSupport {
     if (StringUtil.isDefined(gsr.getThumbnailURL())) {
       result.append("<div class=\"thumb\">");
       if ("UserFull".equals(gsr.getType())) {
-        result.append("<img class=\"avatar\" src=\"").append(URLManager.getApplicationURL())
+        result.append("<img class=\"avatar\" src=\"").append(URLUtil.getApplicationURL())
             .append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
       } else {
         ImageTag image = new ImageTag();

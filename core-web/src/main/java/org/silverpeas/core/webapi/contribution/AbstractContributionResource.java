@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -105,7 +105,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
       URI attachmentUri = null;
       if (StringUtil.isDefined(fieldValue)) {
         String serverApplicationURL =
-            URLManager.getServerURL(getHttpServletRequest()) + URLManager.getApplicationURL();
+            URLUtil.getServerURL(getHttpServletRequest()) + URLUtil.getApplicationURL();
         if (fieldValue.startsWith("/")) {
           // case of an image provided by a gallery
           attachmentUrl = fieldValue;
@@ -117,8 +117,8 @@ public abstract class AbstractContributionResource extends RESTWebService {
             attachmentId = fieldValue;
             fieldValue = attachment.getTitle();
             attachmentUrl = serverApplicationURL + attachment.getAttachmentURL();
-            attachmentUri = new URI(URLManager.getServerURL(getHttpServletRequest()) +
-                URLManager.getSimpleURL(URLManager.URL_FILE, attachmentId));
+            attachmentUri = new URI(URLUtil.getServerURL(getHttpServletRequest()) +
+                URLUtil.getSimpleURL(URLUtil.URL_FILE, attachmentId));
           }
         }
       }

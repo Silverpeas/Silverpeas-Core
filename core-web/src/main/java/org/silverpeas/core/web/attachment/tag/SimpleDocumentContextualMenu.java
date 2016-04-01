@@ -20,8 +20,8 @@
  */
 package org.silverpeas.core.web.attachment.tag;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -89,7 +89,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
       String httpServerBase =
-          URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
+          URLUtil.getServerURL((HttpServletRequest) pageContext.getRequest());
       pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
           mainSessionController.getUserId(), favoriteLanguage, messages,
           httpServerBase, showMenuNotif, useContextualMenu, settings));

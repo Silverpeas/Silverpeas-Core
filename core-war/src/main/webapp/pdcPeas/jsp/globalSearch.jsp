@@ -25,7 +25,7 @@
 --%>
 
 
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.apache.lucene.queryParser.QueryParser"%>
 <%@page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -171,7 +171,7 @@ function saveAsInterestCenter() {
 	} else {
 		icName = "";
 	}
-	url			= "<%=m_context%><%=URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)%>newICenter.jsp?icName="+icName;
+	url			= "<%=m_context%><%=URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS)%>newICenter.jsp?icName="+icName;
 	windowName = "createICenter";
 	width		= "600";
 	height		= "200";
@@ -369,7 +369,7 @@ function deleteUser()
 
 function showExplorer() {
 	var componentId = $("#componentSearch").val();
-	SP_openWindow('<%=URLManager.getApplicationURL()%>/explorer/jsp/explorer.jsp?elementHidden=<%=QueryParameters.PARAM_FOLDER %>&elementVisible=pathAsString&resultType=path&scope='+componentId,'explorer',400,600,'scrollbars=yes');
+	SP_openWindow('<%=URLUtil.getApplicationURL()%>/explorer/jsp/explorer.jsp?elementHidden=<%=QueryParameters.PARAM_FOLDER %>&elementVisible=pathAsString&resultType=path&scope='+componentId,'explorer',400,600,'scrollbars=yes');
 }
 
  $(document).ready(function(){

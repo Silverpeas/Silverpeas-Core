@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,14 +64,14 @@ public class TestAttachmentUrlLinkProcessor {
 
   @Before
   public void variableInit() throws Exception {
-    originalImageNotAnAttachmentUrlLink = "dummy_begin" + URLManager.getApplicationURL() +
+    originalImageNotAnAttachmentUrlLink = "dummy_begin" + URLUtil.getApplicationURL() +
         "uriPart/notAnAttachmentId/09-ab-89/lang/en/whaou";
-    originalImageAttachmentUrlLink = "dummy_begin" + URLManager.getApplicationURL() +
+    originalImageAttachmentUrlLink = "dummy_begin" + URLUtil.getApplicationURL() +
         "uriPart/attachmentId/09-ab-89/lang/en/whaou";
-    originalImageAttachmentUrlLinkWithoutLang = "dummy_begin" + URLManager.getApplicationURL() +
+    originalImageAttachmentUrlLinkWithoutLang = "dummy_begin" + URLUtil.getApplicationURL() +
         "uriPart/attachmentId/09-ab-89/whaou";
     originalImageAttachmentUrlLinkWithResizeDirective =
-        "dummy_begin" + URLManager.getApplicationURL() +
+        "dummy_begin" + URLUtil.getApplicationURL() +
             "uriPart/attachmentId/09-ab-89/lang/en/size/250x150/whaou";
   }
 

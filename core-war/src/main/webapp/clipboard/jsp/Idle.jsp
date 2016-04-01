@@ -38,7 +38,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController"%>
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
@@ -49,7 +49,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
     String javascripTask = "";

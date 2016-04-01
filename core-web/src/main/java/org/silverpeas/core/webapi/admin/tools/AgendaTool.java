@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -32,6 +32,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 public class AgendaTool extends AbstractTool {
 
   public AgendaTool(final String language, final LookHelper lookHelper) {
-    super(language, lookHelper, "agendaVisible", "agenda", "Diary", URLManager.CMP_AGENDA);
+    super(language, lookHelper, "agendaVisible", "agenda", "Diary", URLUtil.CMP_AGENDA);
   }
 }

@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
@@ -53,7 +53,7 @@
 <view:setBundle basename="org.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
 
 <%
-String          m_sContext      = URLManager.getApplicationURL();
+String          m_sContext      = URLUtil.getApplicationURL();
 
 GraphicElementFactory   gef         = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 LookHelper  helper        = LookHelper.getLookHelper(session);
@@ -427,7 +427,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
         </form>
     </div>
 </div>
-<form name="clipboardForm" action="<%=m_sContext+URLManager.getURL(URLManager.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
+<form name="clipboardForm" action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
 <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
 </form>
 <!-- Form below is used only to refresh this page according to external link (ie search engine, homepage,...) -->

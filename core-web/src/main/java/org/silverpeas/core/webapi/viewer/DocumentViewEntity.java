@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 
@@ -93,7 +93,7 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
     if (StringUtil.isDefined(displayLicenseKey)) {
       displayViewerPath = "/weblib/flexpaper/flash";
     } else {
-      displayViewerPath = URLManager.getApplicationURL() + "/util/flash/flexpaper";
+      displayViewerPath = URLUtil.getApplicationURL() + "/util/flash/flexpaper";
     }
     url = documentView.getURLAsString();
     originalFileName = documentView.getOriginalFileName();

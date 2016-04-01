@@ -32,9 +32,9 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -153,7 +153,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     if (!template.isHidden() && !template.isDisabled()
         && !template.isReadOnly()) {
       html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
-          .append(URLManager.getApplicationURL())
+          .append(URLUtil.getApplicationURL())
           .append("/RselectionPeasWrapper/jsp/open?formName=").append(pageContext.getFormName())
           .append("&elementId=").append(fieldName)
           .append("&elementName=").append(fieldName).append("$$name")

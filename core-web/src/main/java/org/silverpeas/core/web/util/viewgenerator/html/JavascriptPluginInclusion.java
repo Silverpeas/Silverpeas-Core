@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
@@ -51,9 +51,9 @@ import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombinati
  */
 public class JavascriptPluginInclusion {
 
-  private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
+  private static final String javascriptPath = URLUtil.getApplicationURL() + "/util/javaScript/";
   private static final String stylesheetPath =
-      URLManager.getApplicationURL() + "/util/styleSheets/";
+      URLUtil.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
@@ -109,7 +109,7 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_TAGS = "tagit/tagit-stylish-yellow.css";
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
-  private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
+  private static final String wysiwygPath = URLUtil.getApplicationURL() + "/wysiwyg/jsp/";
   private static String JAVASCRIPT_CKEDITOR;
   private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -592,6 +592,6 @@ public class JavascriptPluginInclusion {
   }
 
   private static String appendVersion(String url) {
-    return URLManager.appendVersion(url);
+    return URLUtil.appendVersion(url);
   }
 }

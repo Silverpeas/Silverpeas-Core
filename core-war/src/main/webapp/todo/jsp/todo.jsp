@@ -28,7 +28,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkTodo.jsp" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
 
@@ -281,7 +281,7 @@ function deleteSelectedToDo() {
 				}
 				//Trick for workflow
 				String externalId = todoHeader.getExternalId().replace('#', '_');
-				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLManager.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','TodoDetail','"+todoHeader.getComponentId()+"')");
+				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLUtil.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','TodoDetail','"+todoHeader.getComponentId()+"')");
 			}
 
             ArrayCellText cellText = arrayLine.addArrayCellText(todo.getString("priorite"+todoHeader.getPriority().getValue()));

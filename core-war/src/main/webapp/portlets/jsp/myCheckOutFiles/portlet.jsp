@@ -86,7 +86,7 @@ LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle
 		// traitement des liens vers les fichiers joints
 		while (attachments.hasNext()) {
 			SimpleDocument att =  attachments.next();
-			String url 	= m_sContext+URLManager.getURL(null,null,att.getInstanceId())+"GoToFilesTab?Id="+att.getForeignId();
+			String url 	= m_sContext+URLUtil.getURL(null,null,att.getInstanceId())+"GoToFilesTab?Id="+att.getForeignId();
 			String name = EncodeHelper.convertHTMLEntities(att.getTitle());
 			if (StringUtil.isDefined(att.getFilename())) {
 				name = EncodeHelper.convertHTMLEntities(att.getFilename());

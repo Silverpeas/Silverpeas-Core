@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.container;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * This class represents one container descriptor in memory (read from the xml)
@@ -67,7 +67,7 @@ public class ContainerPeas {
 
       URLIcone urlIcone = new URLIcone();
       urlIcone.setIconePath(
-          URLManager.getApplicationURL() + "/pdcPeas/jsp/icons/pdcPeas_classify_in_pdc.gif");
+          URLUtil.getApplicationURL() + "/pdcPeas/jsp/icons/pdcPeas_classify_in_pdc.gif");
       urlIcone.setActionURL("/RpdcClassify/jsp/Main");
       this.setClassifyURLIcone(urlIcone);
     }

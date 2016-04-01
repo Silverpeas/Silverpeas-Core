@@ -46,7 +46,7 @@
   String notDisplayMyActivity = (String) pReq.getAttribute("notDisplayMyActivity");
 
   String urlServlet =
-      URLManager.getApplicationURL() + "/RnewsFeedJSONServlet?userId=" + currentUserId;
+      URLUtil.getApplicationURL() + "/RnewsFeedJSONServlet?userId=" + currentUserId;
   if ("true".equals(notDisplayMyActivity)) {
     urlServlet += "&View=MyContactWall";
   } else {

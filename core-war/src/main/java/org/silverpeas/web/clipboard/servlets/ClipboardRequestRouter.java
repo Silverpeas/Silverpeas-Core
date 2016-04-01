@@ -25,10 +25,10 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.clipboard.control.ClipboardSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import javax.servlet.http.HttpSession;
@@ -93,10 +93,10 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
       if (StringUtil.isDefined(clipboardSC.getComponentRooterName())) {
 
         if (StringUtil.isDefined(clipboardSC.getComponentId())) {
-          destination = URLManager.getURL(null, request.getParameter("SpaceFrom"),
+          destination = URLUtil.getURL(null, request.getParameter("SpaceFrom"),
               clipboardSC.getComponentId()) + "paste.jsp";
         } else {
-          destination = URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS) + "paste.jsp";
+          destination = URLUtil.getURL(URLUtil.CMP_JOBSTARTPAGEPEAS) + "paste.jsp";
         }
       } else {
 
@@ -156,7 +156,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
       String componentName = clipboardSC.getComponentRooterName();
       if (componentName != null) {
 
-        destination = URLManager.getURL(null, request.getParameter("SpaceFrom"),
+        destination = URLUtil.getURL(null, request.getParameter("SpaceFrom"),
             request.getParameter("ComponentFrom")) + "paste.jsp";
       } else {
 

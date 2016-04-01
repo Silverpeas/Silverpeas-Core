@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.map;
 
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -79,9 +79,9 @@ public class MapTag extends TagSupport {
         result.append("<tr><td>&nbsp;</td></tr>\n");
       }
       result.append("<tr>\n");
-      if (URLManager.displayUniversalLinks()) {
+      if (URLUtil.displayUniversalLinks()) {
         result.append("<td class=\"txttitrecol\">&#8226; <a href=\"");
-        result.append(URLManager.getSimpleURL(URLManager.URL_SPACE, spaceInst.getId()));
+        result.append(URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()));
         result.append("\" target=\"_top\">").append(spaceInst.getName(language));
         result.append("</a></td></tr>\n");
       } else {
@@ -110,15 +110,15 @@ public class MapTag extends TagSupport {
             result.append("Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;");
 
             // display component link
-            if (URLManager.displayUniversalLinks()) {
+            if (URLUtil.displayUniversalLinks()) {
               result.append("<a href=\"");
               result
-                  .append(URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentInst.getId()));
+                  .append(URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentInst.getId()));
               result.append("\" target=\"_top\">").append(label).append("</a>\n");
             } else {
               result.append("<a href=\"");
               result.append(contextPath).append(
-                  URLManager.getURL(componentInst.getName(), spaceId, componentInst.getId()));
+                  URLUtil.getURL(componentInst.getName(), spaceId, componentInst.getId()));
               result.append("Main\" target=\"MyMain\" title=\"").append(
                   componentInst.getDescription()).append("\">").append(label).append("</a>\n");
             }

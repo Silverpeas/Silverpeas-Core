@@ -22,7 +22,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.comment;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationServiceProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
@@ -89,7 +89,7 @@ public abstract class CommentWidget extends TagSupport {
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
   public ElementContainer initWidget() throws JspException {
-    String context = URLManager.getApplicationURL();
+    String context = URLUtil.getApplicationURL();
     ElementContainer xhtmlcontainer = new ElementContainer();
     div comments = new div();
     comments.setID(COMMENT_WIDGET_DIV_ID);
@@ -196,15 +196,15 @@ public abstract class CommentWidget extends TagSupport {
   }
 
   private String getUpdateIconURL() {
-    return URLManager.getApplicationURL() + "/util/icons/update.gif";
+    return URLUtil.getApplicationURL() + "/util/icons/update.gif";
   }
 
   private String getDeletionIconURL() {
-    return URLManager.getApplicationURL() + "/util/icons/delete.gif";
+    return URLUtil.getApplicationURL() + "/util/icons/delete.gif";
   }
 
   private String getMandatoryFieldSymbolURL() {
-    return URLManager.getApplicationURL() + "/util/icons/mandatoryField.gif";
+    return URLUtil.getApplicationURL() + "/util/icons/mandatoryField.gif";
   }
 
   /**
@@ -215,7 +215,7 @@ public abstract class CommentWidget extends TagSupport {
    * @return the javascript code to handle a list of comments on a given resource.
    */
   private String setUpJQueryCommentPlugin() {
-    String context = URLManager.getApplicationURL();
+    String context = URLUtil.getApplicationURL();
 
     OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     MultiSilverpeasBundle resources = getResources();
@@ -231,7 +231,7 @@ public abstract class CommentWidget extends TagSupport {
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
         + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
-        + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getSmallAvatar()
+        + "', author: { avatar: '" + URLUtil.getApplicationURL() + currentUser.getSmallAvatar()
         + "', id: '" + getUserId() + "', anonymous: " + currentUser.isAnonymous() + "}, "
         + "update: { activated: function( comment ) {"
         + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"

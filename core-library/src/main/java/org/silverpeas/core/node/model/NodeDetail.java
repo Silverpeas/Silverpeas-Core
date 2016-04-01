@@ -25,7 +25,7 @@ package org.silverpeas.core.node.model;
 
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.util.i18n.AbstractI18NBean;
@@ -470,7 +470,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   }
 
   public String getDefaultUrl(String componentName) {
-    return URLManager.getURL(null, getNodePK().getInstanceId()) + getURL();
+    return URLUtil.getURL(null, getNodePK().getInstanceId()) + getURL();
   }
 
   public String getURL() {
@@ -478,13 +478,13 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   }
 
   public String getLink() {
-    return URLManager.getSimpleURL(URLManager.URL_TOPIC, getNodePK().getId(),
+    return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, getNodePK().getId(),
         getNodePK().getInstanceId());
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks()) {
-      return URLManager.getSimpleURL(URLManager.URL_TOPIC, this.nodePK.getId(), this.nodePK.
+    if (URLUtil.displayUniversalLinks()) {
+      return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, this.nodePK.getId(), this.nodePK.
           getInstanceId());
     }
     return null;

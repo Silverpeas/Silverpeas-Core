@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -33,6 +33,6 @@ public class FavoriteRequestTool extends AbstractTool {
 
   public FavoriteRequestTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "favRequestVisible", "requests", "FavRequests",
-        URLManager.CMP_INTERESTCENTERPEAS, "iCenterList.jsp");
+        URLUtil.CMP_INTERESTCENTERPEAS, "iCenterList.jsp");
   }
 }

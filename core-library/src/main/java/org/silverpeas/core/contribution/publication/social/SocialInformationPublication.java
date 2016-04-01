@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.publication.social;
 
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 
@@ -59,7 +59,7 @@ public class SocialInformationPublication extends AbstractSocialInformation {
       type = SocialInformationType.SITE;
     }
     setType(type.toString());
-    setUrl(URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getPublication().getId(),
+    setUrl(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getPublication().getId(),
         instanceId, false));
     setUpdated(publication.isUpdate());
     setTitle(publication.getPublication().getTitle());

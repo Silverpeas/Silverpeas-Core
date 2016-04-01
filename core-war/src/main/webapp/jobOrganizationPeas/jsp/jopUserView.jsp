@@ -103,7 +103,7 @@
           location.reload();
       }
       function showPDCSubscription() {
-        chemin = '<%=(m_context + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION))%>showUserSubscriptions.jsp?userId=${userId}';
+        chemin = '<%=(m_context + URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION))%>showUserSubscriptions.jsp?userId=${userId}';
         largeur = "600";
         hauteur = "440";
         SP_openWindow(chemin, "pdcWindow", largeur, hauteur, "resizable=yes,scrollbars=yes");

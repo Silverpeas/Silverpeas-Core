@@ -31,7 +31,7 @@
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
@@ -53,7 +53,7 @@ if (mainSessionCtrl == null) {
   return;
 }
 LocalizationBundle message = ResourceLocator.getGeneralLocalizationBundle(mainSessionCtrl.getFavoriteLanguage());
-String m_context = URLManager.getApplicationURL();
+String m_context = URLUtil.getApplicationURL();
 
 Button btn = gef.getFormButton(message.getString("GML.validate"), "javascript:setPath()", false);
 
@@ -109,9 +109,9 @@ $(function () {
 	                "type": 'GET',
 	                "url": function (node) {
 	                    var nodeId = "";
-	                    var url = "<%=URLManager.getFullApplicationURL(request)%>/Explorer/scope/<%=scope%>";
+	                    var url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer/scope/<%=scope%>";
 	                    if (node != -1) {
-				url = "<%=URLManager.getFullApplicationURL(request)%>/Explorer";
+				url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer";
 	                        nodeId = node.attr('id');
 	                        url += "/componentid/"+node.attr('instanceId')+"/id/" + nodeId;
 	                    }
@@ -132,7 +132,7 @@ $(function () {
 						"valid_children": "all",
 
 						"icon" : {
-							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/javaScript/jquery/themes/default/d.png",
+							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/javaScript/jquery/themes/default/d.png",
 							"position" : "-56px -37px"
 						},
 
@@ -147,7 +147,7 @@ $(function () {
 						"valid_children": "all",
 
 						"icon" : {
-							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/icons/folder.gif"
+							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
 						},
 
 						// Bound functions - you can bind any other function here (using boolean or function)
@@ -156,17 +156,17 @@ $(function () {
 					},
 					"admin-root" : {
 						"icon" : {
-							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/icons/folder.gif"
+							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
 						}
 					},
 					"publisher-root" : {
 						"icon" : {
-							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/icons/folder.gif"
+							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
 						}
 					},
 					"writer-root" : {
 						"icon" : {
-							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/icons/folder.gif"
+							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
 						}
 					}
 				}

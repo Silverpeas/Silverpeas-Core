@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.rating;
 
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.contribution.rating.model.Rateable;
@@ -205,7 +205,7 @@ public class RaterRatingEntity implements WebEntity {
     if (raterRating == null) {
       return null;
     }
-    return UriBuilder.fromUri(URLManager.getApplicationURL())
+    return UriBuilder.fromUri(URLUtil.getApplicationURL())
         .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(
             RatingResourceURIs.RATER_RATING_BASE_URI)
         .path(raterRating.getRating().getInstanceId())

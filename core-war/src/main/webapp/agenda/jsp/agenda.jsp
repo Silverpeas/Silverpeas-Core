@@ -32,15 +32,11 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.calendar.model.ParticipationStatus" %>
 <%@ page import="org.silverpeas.core.calendar.model.Category" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.*" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkAgenda.jsp" %>
@@ -88,7 +84,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   }
   String		rssURL		= (String) request.getAttribute("RSSUrl");
   String iconLink = m_context + "/util/icons/link.gif";
-  String link = URLManager.getApplicationURL() + "/Agenda/" + agenda.getAgendaUserDetail().getId();
+  String link = URLUtil.getApplicationURL() + "/Agenda/" + agenda.getAgendaUserDetail().getId();
   String subscribeAgendaUrl = (String) request.getAttribute("MyAgendaUrl");
 %>
 

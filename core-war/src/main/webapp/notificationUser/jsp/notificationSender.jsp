@@ -37,7 +37,7 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.admin.user.model.Group"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
@@ -55,7 +55,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 	// Ze graffik factory
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-	String m_context        = URLManager.getApplicationURL();
+	String m_context        = URLUtil.getApplicationURL();
 	String mandatoryField    = m_context + "/util/icons/mandatoryField.gif";
 
    Notification notification = (Notification) request.getAttribute("Notification");

@@ -167,7 +167,7 @@ function MM_swapImage() { //v3.0
   out.println(button.print());
 %>
 </center>
-<form name="calendarForm" action="<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp" method="post">
+<form name="calendarForm" action="<%=m_context+URLUtil.getURL(URLUtil.CMP_AGENDA)%>calendar.jsp" method="post">
   <input type="hidden" name="Action"/>
   <input type="hidden" name="indiceForm" value="<%=form%>"/>
   <input type="hidden" name="indiceElem" value="<%=elem%>"/>

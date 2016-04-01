@@ -69,7 +69,7 @@ public abstract class AbstractCalendar implements Calendar {
   // selectionnables
 
   public AbstractCalendar(String context, String language, Date date) {
-    // this.context = context+URLManager.getURL(URLManager.CMP_AGENDA);
+    // this.context = context+URLUtil.getURL(URLUtil.CMP_AGENDA);
     this.context = context;
     this.language = language;
     this.currentDate = date;

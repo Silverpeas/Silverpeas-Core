@@ -37,7 +37,7 @@
 
 <%@ page import="
 				 org.silverpeas.core.web.mvc.controller.MainSessionController,
-                 com.stratelia.silverpeas.peasCore.URLManager,
+                 org.silverpeas.core.util.URLUtil,
                  org.silverpeas.util.MultiSilverpeasBundle,
                  org.silverpeas.util.FileRepositoryManager,
                  org.silverpeas.util.FileServerUtils,
@@ -65,7 +65,7 @@
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   VersioningSessionController versioningSC =
-      (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);%>
+      (VersioningSessionController) request.getAttribute(URLUtil.CMP_VERSIONINGPEAS);%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
@@ -127,7 +127,7 @@
           publicVersion.isDownloadAllowedForRolesFrom(mainSessionCtrl.getCurrentUserDetail());
 
       arrayLine = arrayPane.addArrayLine(); // set a new line
-      String url = URLManager.getApplicationURL() + publicVersion.getAttachmentURL();
+      String url = URLUtil.getApplicationURL() + publicVersion.getAttachmentURL();
       if (fromAlias) {
         url = publicVersion.getAliasURL();
       }
@@ -151,7 +151,7 @@
       if (canUserDownloadFile) {
         permalink =
             " <a href=\"" + publicVersion.getUniversalURL() + "\">" +
-                "<img src=\"" + URLManager.getApplicationURL() + "/util/icons/link.gif\"" +
+                "<img src=\"" + URLUtil.getApplicationURL() + "/util/icons/link.gif\"" +
                 "border=\"0\" valign=\"absmiddle\" alt=\"" +
                 messages.getString("versioning.CopyLink") + "\" title=\"" +
                 messages.getString("versioning.CopyLink") + "\" target=\"_blank\"></a> ";
@@ -202,14 +202,14 @@
 
       String xtraData = "";
       if (StringUtil.isDefined(publicVersion.getXmlFormId())) {
-        String xmlURL = URLManager.getApplicationURL() + "/RformTemplate/jsp/View?ObjectId=" +
+        String xmlURL = URLUtil.getApplicationURL() + "/RformTemplate/jsp/View?ObjectId=" +
             publicVersion.getId() + "&ComponentId=" + componentId +
             "&ObjectType=Attachment&XMLFormName=" +
             URLEncoder.encode(publicVersion.getXmlFormId(), CharEncoding.UTF_8) +
             "&ObjectLanguage=" + contentLanguage;
         xtraData = "<a rel=\"" + xmlURL + "\" href=\"#\" title=\"" + document.getFilename() + " " +
             publicVersion.getMajorVersion() + "." + publicVersion.getMinorVersion() +
-            "\"><img src=\"" + URLManager.getApplicationURL() +
+            "\"><img src=\"" + URLUtil.getApplicationURL() +
             "/util/icons/info.gif\" border=\"0\"></a> ";
       }
       if (StringUtil.isDefined(publicVersion.getComment())) {

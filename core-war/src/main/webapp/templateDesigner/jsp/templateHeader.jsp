@@ -246,7 +246,7 @@ out.println(tabbedPane.print());
 			  checked = "checked=\"checked\"";
 			}
 		%>
-			<li><input type="checkbox" name="Visibility_Applications" value="<%=component.getName() %>" <%=checked %>/><img src="<%=URLManager.getApplicationURL() %>/util/icons/component/<%=component.getName() %>Small.gif" alt=""/><%= component.getLabel() %></li>
+			<li><input type="checkbox" name="Visibility_Applications" value="<%=component.getName() %>" <%=checked %>/><img src="<%=URLUtil.getApplicationURL() %>/util/icons/component/<%=component.getName() %>Small.gif" alt=""/><%= component.getLabel() %></li>
 		<% } %>
 		</ul>
 	</td>
@@ -281,7 +281,7 @@ out.println(tabbedPane.print());
 <td>
 	<% if (template != null && template.isViewLayerExist()) { %>
 		<div id="ExistingViewLayer">
-			<a href="<%=URLManager.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=view.html" target="_blank">view.html</a>
+			<a href="<%=URLUtil.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=view.html" target="_blank">view.html</a>
 			<a href="javascript:deleteLayer('ViewLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
 		</div>
 	<% } %>
@@ -293,7 +293,7 @@ out.println(tabbedPane.print());
 <td>
 	<% if (template != null && template.isUpdateLayerExist()) { %>
 		<div id="ExistingUpdateLayer">
-			<a href="<%=URLManager.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=update.html" target="_blank">update.html</a>
+			<a href="<%=URLUtil.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=update.html" target="_blank">update.html</a>
 			<a href="javascript:deleteLayer('UpdateLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
 		</div>
 	<% } %>

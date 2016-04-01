@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.override;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ElementContainer;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
@@ -34,7 +34,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class LinkTag extends TagSupport {
   private static final long serialVersionUID = -302801539118908018L;
 
-  private String webContext = URLManager.getApplicationURL();
+  private String webContext = URLUtil.getApplicationURL();
   private String href;
 
   public void setWebContext(final String webContext) {

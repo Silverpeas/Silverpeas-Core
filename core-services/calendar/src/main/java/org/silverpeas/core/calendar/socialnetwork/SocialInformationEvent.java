@@ -26,7 +26,7 @@ import java.util.Date;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.calendar.model.Schedulable;
 import org.silverpeas.core.util.DateUtil;
 
@@ -122,10 +122,10 @@ public class SocialInformationEvent extends AbstractSocialInformation {
   @Override
   public String getUrl() {
     if (isUpdated()) {
-      return URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "SelectDay?Day=" + DateUtil
+      return URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "SelectDay?Day=" + DateUtil
           .getInputDate(getDate(), "FR");
     }
-    return URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "ViewOtherAgenda?Id="
+    return URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "ViewOtherAgenda?Id="
         + getAuthor();
   }
 

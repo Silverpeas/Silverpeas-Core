@@ -22,7 +22,7 @@ package org.silverpeas.core.web.mvc.controller;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationServiceProvider;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;

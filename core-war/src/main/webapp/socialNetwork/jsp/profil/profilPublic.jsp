@@ -35,7 +35,7 @@
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.core.web.directory.model.Member"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
@@ -46,7 +46,7 @@
     UserFull userFull = (UserFull) request.getAttribute("userFull");
     Member member = (Member) request.getAttribute("Member");
 
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
 %>
 
 <html>

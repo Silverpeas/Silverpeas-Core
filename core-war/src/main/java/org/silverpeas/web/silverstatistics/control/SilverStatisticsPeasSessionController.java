@@ -35,10 +35,10 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.web.silverstatistics.vo.AccessPublicationVO;
 import org.silverpeas.web.silverstatistics.vo.AxisStatsFilter;
@@ -164,7 +164,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.silverStatisticsPeas.multilang.silverStatisticsBundle",
         "org.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
-    setComponentRootName(URLManager.CMP_SILVERSTATISTICSPEAS);
+    setComponentRootName(URLUtil.CMP_SILVERSTATISTICSPEAS);
     initYears();
   }
 
@@ -502,7 +502,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   protected Selection communInitUserPanel(String compoName, String operation) {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostSpaceName = getString("silverStatisticsPeas.statistics");// getSpaceLabel();
     Pair<String, String> hostComponentName =
         new Pair<>(getComponentLabel(), m_context + getComponentUrl() + compoName);

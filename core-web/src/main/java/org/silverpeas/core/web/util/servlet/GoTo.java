@@ -24,7 +24,7 @@ package org.silverpeas.core.web.util.servlet;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
@@ -74,7 +74,7 @@ public abstract class GoTo extends HttpServlet {
         if (!res.isCommitted()) {
           // The response was not previously sent
           if (redirect == null || !redirect.startsWith("http")) {
-            redirect = URLManager.getApplicationURL() + "/autoRedirect.jsp?" + redirect;
+            redirect = URLUtil.getApplicationURL() + "/autoRedirect.jsp?" + redirect;
           }
           res.sendRedirect(res.encodeRedirectURL(redirect));
         }
@@ -95,13 +95,13 @@ public abstract class GoTo extends HttpServlet {
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {
-      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 
   private void accessForbidden(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
-    res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+    res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
   }
 
   public String getObjectId(HttpServletRequest request) {

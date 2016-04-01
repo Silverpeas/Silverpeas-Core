@@ -48,7 +48,7 @@
 	<ul>
 	<%
 	for (PublicationDetail pub : publications) {
-	    String url = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getId());
+	    String url = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getId());
 	%>
 	<li><a href="<%=url%>" target="_top"><%=EncodeHelper.convertHTMLEntities(pub.getName(language))%></a></li>
 	<% } %>

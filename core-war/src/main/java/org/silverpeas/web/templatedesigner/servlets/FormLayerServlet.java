@@ -2,7 +2,7 @@ package org.silverpeas.web.templatedesigner.servlets;
 
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.util.FileUtil;
@@ -26,7 +26,7 @@ public class FormLayerServlet extends HttpServlet {
     HttpSession session = request.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
     if (mainSessionCtrl == null) {
-      response.sendRedirect(URLManager.getApplicationURL() +
+      response.sendRedirect(URLUtil.getApplicationURL() +
           ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
     }
 
@@ -43,7 +43,7 @@ public class FormLayerServlet extends HttpServlet {
       FileUtils.copyFile(file, response.getOutputStream());
       response.getOutputStream().flush();
     } else {
-      response.sendRedirect(URLManager.getApplicationURL() +
+      response.sendRedirect(URLUtil.getApplicationURL() +
           ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
     }
   }

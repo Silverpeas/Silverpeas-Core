@@ -24,7 +24,7 @@
 package org.silverpeas.core.sharing.security;
 
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
 * Versioned document being accessed through some shared object.
@@ -41,6 +41,6 @@ public class ShareableVersionDocument extends ShareableResource<HistorisedDocume
 
   @Override
   public String getURL() {
-    return URLManager.getSimpleURL(URLManager.URL_DOCUMENT, accessedObject.getPk().getId());
+    return URLUtil.getSimpleURL(URLUtil.URL_DOCUMENT, accessedObject.getPk().getId());
   }
 }

@@ -21,7 +21,8 @@
 package org.silverpeas.web.alertuser.control;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -30,7 +31,6 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.Group;
@@ -51,7 +51,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   protected AlertUser m_AlertUser = null;
   protected Selection m_Selection = null;
   protected NotificationSender notificationSender = null;
-  protected String m_Context = URLManager.getApplicationURL();
+  protected String m_Context = URLUtil.getApplicationURL();
   protected UserDetail[] m_userRecipients;
   protected Group[] m_groupRecipients;
 
@@ -67,7 +67,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
         "org.silverpeas.alertUserPeas.settings.alertUserPeasIcons");
-    setComponentRootName(URLManager.CMP_ALERTUSERPEAS);
+    setComponentRootName(URLUtil.CMP_ALERTUSERPEAS);
     m_AlertUser = getAlertUser();
     m_Selection = getSelection();
     notificationSender = new NotificationSender(null);
@@ -108,7 +108,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
 
   // initialisation de Selection pour nav vers SelectionPeas
   public String initSelection() {
-    String url = m_Context + URLManager.getURL(getComponentRootName(), null, null);
+    String url = m_Context + URLUtil.getURL(getComponentRootName(), null, null);
     String goUrl = url + "FromSelection";
     String cancelUrl = url + "Close";
 

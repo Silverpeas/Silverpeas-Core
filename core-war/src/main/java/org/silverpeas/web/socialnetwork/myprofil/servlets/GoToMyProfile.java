@@ -5,8 +5,8 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class GoToMyProfile extends GoTo {
 
@@ -17,7 +17,7 @@ public class GoToMyProfile extends GoTo {
       throws Exception {
 
     StringBuilder gotoURL = new StringBuilder();
-    gotoURL.append(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null));
+    gotoURL.append(URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null));
     gotoURL.append(objectId);
 
     return "goto=" + URLEncoder.encode(gotoURL.toString(), "UTF-8");

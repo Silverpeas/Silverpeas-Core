@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.util.i18n.AbstractI18NBean;
@@ -298,7 +298,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
       app = "processManager";
     }
     String size = bigOne ? "Big.png" : "Small.gif";
-    return URLManager.getApplicationURL() + "/util/icons/component/" + app + size;
+    return URLUtil.getApplicationURL() + "/util/icons/component/" + app + size;
   }
 
   @Override

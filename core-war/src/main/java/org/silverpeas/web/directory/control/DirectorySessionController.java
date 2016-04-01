@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.directory.control;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.model.ContactItem;
 import org.silverpeas.web.directory.model.DirectoryItem;
@@ -42,7 +43,6 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
@@ -541,7 +541,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("phone", item.getPhone());
       template.setAttribute("fax", item.getFax());
       template.setAttribute("avatar", getAvatarFragment(item));
-      template.setAttribute("context", URLManager.getApplicationURL());
+      template.setAttribute("context", URLUtil.getApplicationURL());
       if (item instanceof UserItem) {
         UserItem user = (UserItem) item;
         fragments.add(getUserFragment(user, template));
@@ -561,7 +561,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("status", null);
     }
     template.setAttribute("type", getString("GML.user.type." + user.getAccessLevel()));
-    template.setAttribute("context", URLManager.getApplicationURL());
+    template.setAttribute("context", URLUtil.getApplicationURL());
     template.setAttribute("notMyself", !user.getOriginalId().equals(getUserId()));
     template.setAttribute("notAContact", !user.getUserDetail().isInRelationWithOrInvitedBy(
         getUserId()));
@@ -587,9 +587,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private UserFragmentVO getContactFragment(ContactItem contact, SilverpeasTemplate template) {
     ContactPK contactPK = contact.getContact().getPK();
     template.setAttribute("contact", contact.getContact());
-    template.setAttribute("context", URLManager.getApplicationURL());
+    template.setAttribute("context", URLUtil.getApplicationURL());
     template.setAttribute("url",
-        URLManager.getComponentInstanceURL(contactPK.getInstanceId()) + "ContactExternalView?Id=" +
+        URLUtil.getComponentInstanceURL(contactPK.getInstanceId()) + "ContactExternalView?Id=" +
             contactPK.getId());
 
     CompleteContact completeContact = (CompleteContact) contact.getContact();

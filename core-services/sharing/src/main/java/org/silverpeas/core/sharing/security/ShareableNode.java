@@ -23,7 +23,7 @@
 */
 package org.silverpeas.core.sharing.security;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.node.model.NodeDetail;
 
 /**
@@ -46,7 +46,7 @@ public class ShareableNode extends ShareableResource<NodeDetail> {
   @Override
   public String getURL() {
     if (accessedObject != null) {
-      return URLManager.getSimpleURL(URLManager.URL_TOPIC, String.valueOf(accessedObject.getId()),
+      return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, String.valueOf(accessedObject.getId()),
           accessedObject.getNodePK().getInstanceId(), true);
     }
     return "";

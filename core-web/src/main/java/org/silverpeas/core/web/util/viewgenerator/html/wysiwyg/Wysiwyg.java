@@ -1,6 +1,6 @@
 package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -30,12 +30,12 @@ public class Wysiwyg {
   public String print() {
     String baseDir = wysiwygSettings.getString("baseDir", "ckeditor");
     String configFile = wysiwygSettings.getString("configFile",
-        URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
+        URLUtil.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
 
     //special case of infoLetter application : special configFile
     if(INFO_LETTER_APPLICATION.equals(getToolbar())) {
       configFile = wysiwygSettings.getString("infoLetterConfigFile",
-          URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/infoLetterConfig.js");
+          URLUtil.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/infoLetterConfig.js");
     }
 
     StringBuilder builder = new StringBuilder(100);
@@ -63,7 +63,7 @@ public class Wysiwyg {
     //special case of infoLetter application : no CSS
     if(!INFO_LETTER_APPLICATION.equals(getToolbar())) {
       builder.append(",\n");
-      String standardCSS = URLManager.getApplicationURL() + GraphicElementFactory.STANDARD_CSS;
+      String standardCSS = URLUtil.getApplicationURL() + GraphicElementFactory.STANDARD_CSS;
       if (StringUtil.isDefined(css)) {
         builder.append("contentsCss : ['").append(standardCSS).append("', '").append(css)
             .append("']\n");

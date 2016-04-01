@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.space.quota.process.check.exception;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.quota.model.Quota;
@@ -93,7 +93,7 @@ public class DataStorageQuotaException extends RuntimeException {
    */
   @SuppressWarnings("UnusedDeclaration")
   public String getFromComponentUrl() {
-    return (isDefined(fromComponent.getId())) ? URLManager.getApplicationURL() +
-        URLManager.getURL(fromComponent.getName(), null, fromComponent.getId()) + "Main" : "";
+    return (isDefined(fromComponent.getId())) ? URLUtil.getApplicationURL() +
+        URLUtil.getURL(fromComponent.getName(), null, fromComponent.getId()) + "Main" : "";
   }
 }

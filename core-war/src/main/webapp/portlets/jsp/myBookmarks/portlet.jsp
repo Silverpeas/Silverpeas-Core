@@ -59,7 +59,7 @@ if (!links.hasNext()) {
 
       // Add context before link if needed
 			if (lien.indexOf("://") == -1 && !lien.startsWith("/website")) {
-				lien = URLManager.getApplicationURL() + lien;
+				lien = URLUtil.getApplicationURL() + lien;
 			}
 
 			String target = "_self";

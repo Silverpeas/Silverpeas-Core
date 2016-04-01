@@ -30,7 +30,7 @@
 <%@page import="org.silverpeas.web.socialnetwork.invitation.model.InvitationUser"%>
 <%@page import="org.silverpeas.web.socialnetwork.invitation.servlets.InvitationJSONActions"%>
 <%@page import="org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="java.util.List"%>
@@ -201,7 +201,7 @@ function showEmptyListMessage() {
 			int id = invitation.getInvitation().getId();
 		%>
 			<div class="a_invitation" id="invitation-<%=id%>">
-	                 <div class="profilPhoto"><a href="<%=URLManager.getApplicationURL() %>/Rprofil/jsp/Main?userId=<%=senderId%>"><view:image css="defaultAvatar" alt="" src="<%=invitation.getUserDetail().getAvatar() %>" type="avatar" /></a></div>
+	                 <div class="profilPhoto"><a href="<%=URLUtil.getApplicationURL() %>/Rprofil/jsp/Main?userId=<%=senderId%>"><view:image css="defaultAvatar" alt="" src="<%=invitation.getUserDetail().getAvatar() %>" type="avatar" /></a></div>
 	                 <div class="action">
 					<% if (outbox) { %>
 						<a class="link notification" href="#" onclick="confirmCancel(<%=id %>)"><fmt:message key="myProfile.invitations.cancel" /></a>

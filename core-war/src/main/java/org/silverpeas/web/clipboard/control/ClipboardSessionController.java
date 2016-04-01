@@ -37,6 +37,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
 import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardException;
@@ -45,7 +46,6 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -143,7 +143,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         String JSPPage = request.getParameter("JSPPage");
 
         str.append("document.refreshform.action = '../..").
-            append(URLManager.getURL(null, Space, Component)).append(JSPPage).append("';");
+            append(URLUtil.getURL(null, Space, Component)).append(JSPPage).append("';");
         str.append("document.refreshform.Space.value = '").append(Space).append("';");
         str.append("document.refreshform.Component.value = '").append(Component).append("';");
         str.append("document.refreshform.target = '").append(TargetFrame).append("';");
@@ -174,7 +174,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
           if (popupMessage != null) {
             if (popupMessage.getWhat().equals("ALERT")) {
               str.append("msgPopup = SP_openWindow('../..").
-                  append(URLManager.getURL(URLManager.CMP_POPUP)).
+                  append(URLUtil.getURL(URLUtil.CMP_POPUP)).
                   append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
                   append("','popupmsg").
                   append(new Long(new Date().getTime()).toString()).append(
@@ -184,7 +184,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
             } else if (popupMessage.getWhat().equals("COMMUNICATION")) {
               request.setAttribute("MessageID", popupMessage.getID());
               str.append("OpenDiscussion('../..").
-                  append(URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER)).
+                  append(URLUtil.getURL(URLUtil.CMP_COMMUNICATIONUSER)).
                   append("OpenDiscussion?userId=").append(popupMessage.getSenderId()).
                   append("&MessageID=").append(popupMessage.getID()).append("','popupDiscussion").
                   append(popupMessage.getSenderId()).append(

@@ -26,7 +26,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
@@ -132,7 +132,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle",
         "org.silverpeas.jobDomainPeas.settings.jobDomainPeasIcons",
         "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
-    setComponentRootName(URLManager.CMP_JOBDOMAINPEAS);
+    setComponentRootName(URLUtil.CMP_JOBDOMAINPEAS);
     m_AdminCtrl = ServiceProvider.getService(AdminController.class);
     sel = getSelection();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
@@ -338,7 +338,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         loginPage += "?DomainId=" + domainId;
       }
     }
-    return URLManager.getFullApplicationURL(req) + loginPage;
+    return URLUtil.getFullApplicationURL(req) + loginPage;
   }
 
   /**

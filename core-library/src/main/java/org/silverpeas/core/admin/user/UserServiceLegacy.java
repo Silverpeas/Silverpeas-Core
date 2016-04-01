@@ -30,7 +30,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -172,10 +172,10 @@ public class UserServiceLegacy implements UserService {
       StringBuilder url = new StringBuilder();
       if (!loginPage.startsWith("http")) {
         url.append(silverpeasServerURL);
-        if (!URLManager.getApplicationURL().startsWith("/")) {
+        if (!URLUtil.getApplicationURL().startsWith("/")) {
           url.append("/");
         }
-        url.append(URLManager.getApplicationURL());
+        url.append(URLUtil.getApplicationURL());
         if (!loginPage.startsWith("/")) {
           url.append("/");
         }

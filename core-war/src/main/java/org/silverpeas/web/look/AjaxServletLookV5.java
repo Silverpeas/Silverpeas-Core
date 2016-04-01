@@ -24,6 +24,7 @@
 package org.silverpeas.web.look;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.core.web.look.LookHelper;
@@ -38,7 +39,6 @@ import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.PersonalSpaceController;
@@ -523,7 +523,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         if (component != null && WAComponent.get(component.getName()).isPresent() &&
             !component.isHidden()) {
           boolean open = (targetComponentId != null && component.getId().equals(targetComponentId));
-          String url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
+          String url = URLUtil.getURL(component.getName(), null, component.getId()) + "Main";
 
           String kind = component.getName();
           if (component.isWorkflow()) {
@@ -679,33 +679,33 @@ public class AjaxServletLookV5 extends HttpServlet {
             "<item id=\"agenda\" name=\"" + EncodeHelper.escapeXml(message.getString("Diary")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"" +
-                URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main\"/>");
+                URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("todoVisible", true)) {
         writer
             .write("<item id=\"todo\" name=\"" + EncodeHelper.escapeXml(message.getString("ToDo")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"" +
-                URLManager.getURL(URLManager.CMP_TODO, null, null) + "todo.jsp\"/>");
+                URLUtil.getURL(URLUtil.CMP_TODO, null, null) + "todo.jsp\"/>");
       }
       if (settings.getBoolean("notificationVisible", true)) {
         writer.write("<item id=\"notification\" name=\"" +
             EncodeHelper.escapeXml(message.getString("Mail")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLManager.getURL(URLManager.CMP_SILVERMAIL, null, null) + "Main\"/>");
+            URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("interestVisible", true)) {
         writer.write("<item id=\"subscriptions\" name=\"" +
             EncodeHelper.escapeXml(message.getString("MyInterestCenters")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null) +
+            URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION, null, null) +
             "subscriptionList.jsp\"/>");
       }
       if (settings.getBoolean("favRequestVisible", true)) {
         writer.write("<item id=\"requests\" name=\"" +
             EncodeHelper.escapeXml(message.getString("FavRequests")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS, null, null) +
+            URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS, null, null) +
             "iCenterList.jsp\"/>");
       }
       if (settings.getBoolean("linksVisible", true)) {
@@ -713,14 +713,14 @@ public class AjaxServletLookV5 extends HttpServlet {
             "<item id=\"links\" name=\"" + EncodeHelper.escapeXml(message.getString("FavLinks")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"" +
-                URLManager.getURL(URLManager.CMP_MYLINKSPEAS, null, null) + "Main\"/>");
+                URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("fileSharingVisible", true)) {
         if (!SharingServiceProvider.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"sharingTicket\" name=\"" +
               EncodeHelper.escapeXml(message.getString("FileSharing")) +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-              URLManager.getURL(URLManager.CMP_FILESHARING, null, null) + "Main\"/>");
+              URLUtil.getURL(URLUtil.CMP_FILESHARING, null, null) + "Main\"/>");
         }
       }
       // mes connexions
@@ -730,7 +730,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           writer.write("<item id=\"webConnections\" name=\"" +
               EncodeHelper.escapeXml(message.getString("WebConnections")) +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-              URLManager.getURL(URLManager.CMP_WEBCONNECTIONS, null, null) + "Main\"/>");
+              URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS, null, null) + "Main\"/>");
         }
       }
 
@@ -739,14 +739,14 @@ public class AjaxServletLookV5 extends HttpServlet {
         writer.write("<item id=\"scheduleevent\" name=\"" +
             EncodeHelper.escapeXml(message.getString("ScheduleEvent")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + "Main\"/>");
+            URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + "Main\"/>");
       }
 
       if (settings.getBoolean("customVisible", true)) {
         writer.write("<item id=\"personalize\" name=\"" +
             EncodeHelper.escapeXml(message.getString("Personalization")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "Main\"/>");
+            URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("mailVisible", true)) {
         writer.write("<item id=\"notifAdmins\" name=\"" +
@@ -770,7 +770,7 @@ public class AjaxServletLookV5 extends HttpServlet {
             if (!StringUtil.isDefined(label)) {
               label = component.getName();
             }
-            String url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
+            String url = URLUtil.getURL(component.getName(), null, component.getId()) + "Main";
             writer.write("<item id=\"" +
                 component.getId() +
                 "\" name=\"" +

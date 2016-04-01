@@ -24,9 +24,9 @@
 
 package org.silverpeas.web.agenda.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.RssServlet;
 import com.silverpeas.personalization.UserPreferences;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.tools.agenda.control.AgendaAccess;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -108,7 +108,7 @@ public class AgendaRssServlet extends RssServlet {
    */
   public String getElementLink(Object element, String currentUserId) {
     JournalHeader event = (JournalHeader) element;
-    String eventUrl = URLManager.getApplicationURL()
+    String eventUrl = URLUtil.getApplicationURL()
         + "/Ragenda/jsp/journal.jsp?Action=Update&JournalId=" + event.getId(); // par
     // défaut,
     // lien
@@ -117,11 +117,11 @@ public class AgendaRssServlet extends RssServlet {
     // en
     // lui-meme
     // URL eventUrl = new
-    // URL(getServerURL()+URLManager.getApplicationURL()+"/Journal/"+event.getId());
+    // URL(getServerURL()+URLUtil.getApplicationURL()+"/Journal/"+event.getId());
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
       // lien sur le calendrier à la date de l'événement
-      eventUrl = URLManager.getApplicationURL() + "/Agenda/"
+      eventUrl = URLUtil.getApplicationURL() + "/Agenda/"
           + event.getDelegatorId();
     }
 

@@ -28,7 +28,7 @@ import java.util.Collection;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
@@ -40,7 +40,7 @@ public class NotificationTool extends AbstractTool {
 
   public NotificationTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "notificationVisible", "notification", "Mail",
-        URLManager.CMP_SILVERMAIL);
+        URLUtil.CMP_SILVERMAIL);
   }
 
   /*

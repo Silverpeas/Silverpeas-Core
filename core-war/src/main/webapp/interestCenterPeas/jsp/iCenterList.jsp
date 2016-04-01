@@ -99,7 +99,7 @@ function deleteICenter() {
       IconPane iconPane;
       Icon updateIcon;
       String link = m_context+"/RpdcSearch/jsp/AdvancedSearch?urlToRedirect=" +
-              URLEncoder.encode(m_context + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)+ "iCenterList.jsp") + "&icId=";
+              URLEncoder.encode(m_context + URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS)+ "iCenterList.jsp") + "&icId=";
 
 	  for (Interests ic : iCentersList) {
          ligne	= arrayPane.addArrayLine();

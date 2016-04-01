@@ -91,7 +91,7 @@ Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "jav
 		out.println(board.printBefore());
     %>
 	<TABLE>
-	<FORM NAME="icForm" action="<%=m_context%><%=URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)%>newICenter.jsp">
+	<FORM NAME="icForm" action="<%=m_context%><%=URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS)%>newICenter.jsp">
 	 <tr>
 		<td nowrap align="left" class="txtlibform"><%=resource.getString("RequestName")%> :</td>
     <td align="left"><input type="text" name="icName" size="60" value="<%=EncodeHelper.javaStringToHtmlString(icName)%>"><input type="hidden" name="action"></td>

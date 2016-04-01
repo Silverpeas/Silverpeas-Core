@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentIn
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
@@ -285,8 +285,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSilverpeasUrlFeatures() {
-    if (!contains(URLManager.class)) {
-      addClasses(URLManager.class);
+    if (!contains(URLUtil.class)) {
+      addClasses(URLUtil.class);
     }
     if (!contains(URLUtils.class)) {
       addClasses(URLUtils.class);
@@ -718,7 +718,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder with process features
    */
   public WarBuilder4LibCore addProcessFeatures() {
-    addPackages(true, "org.silverpeas.process");
+    addPackages(true, "org.silverpeas.core.process");
     return this;
   }
 

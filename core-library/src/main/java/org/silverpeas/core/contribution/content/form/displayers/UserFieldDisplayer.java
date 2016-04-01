@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.UserField;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
@@ -143,7 +143,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
-          + URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
+          + URLUtil.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + pageContext.getFormName()
           + "&elementId=" + fieldName
           + "&elementName=" + fieldName + "_name"

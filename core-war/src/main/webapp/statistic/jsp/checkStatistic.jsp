@@ -33,7 +33,7 @@ response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser "%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
@@ -63,7 +63,7 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%
 
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-String m_context = URLManager.getApplicationURL();
+String m_context = URLUtil.getApplicationURL();
 
 Window window = gef.getWindow();
 Frame frame = gef.getFrame();

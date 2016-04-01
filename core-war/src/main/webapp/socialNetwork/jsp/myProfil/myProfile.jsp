@@ -55,7 +55,7 @@
 
     List<UserDetail> contacts = (List<UserDetail>) request.getAttribute("Contacts");
 
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
 %>
 <c:set var="nbContacts" value="${requestScope.ContactsNumber}" />
 <c:set var="contacts" value="${requestScope.Contacts}" />

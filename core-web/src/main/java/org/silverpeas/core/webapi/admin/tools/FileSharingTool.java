@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
@@ -37,7 +37,7 @@ public class FileSharingTool extends AbstractTool {
 
   public FileSharingTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "fileSharingVisible", "sharingTicket", "FileSharing",
-        URLManager.CMP_FILESHARING);
+        URLUtil.CMP_FILESHARING);
   }
 
   /*

@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.ExplorerField;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.FileUploadUtil;
@@ -144,7 +144,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
       String scope = parameters.get("scope");
 
       html += "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
-          URLManager.getApplicationURL() + "/explorer/jsp/explorer.jsp" + "?elementHidden=" +
+          URLUtil.getApplicationURL() + "/explorer/jsp/explorer.jsp" + "?elementHidden=" +
           fieldName + "&elementVisible=" + fieldName + "_path" + "&dedicatedToWriters=true" +
           "&scope=" + scope;
       html += "','explorer',400,600,'scrollbars=yes');\" >";

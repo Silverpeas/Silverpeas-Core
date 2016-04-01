@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -49,7 +49,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
 	String language = request.getParameter("Language");
 	String thePath = request.getParameter("Path");
     LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle",

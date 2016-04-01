@@ -2,7 +2,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.core.util.ResourceLocator;
 import org.apache.ecs.xhtml.img;
@@ -124,6 +124,6 @@ public class ImageTag extends SimpleTagSupport {
   }
 
   protected String getWebContext() {
-    return URLManager.getApplicationURL();
+    return URLUtil.getApplicationURL();
   }
 }

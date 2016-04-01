@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.JdbcRefField;
 import org.silverpeas.util.EncodeHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
     link.setHref("#");
 
     StringBuilder onclick = new StringBuilder(200).append("javascript:SP_openWindow('")
-        .append(URLManager.getApplicationURL()).append("/RselectionPeas/jsp/Main")
+        .append(URLUtil.getApplicationURL()).append("/RselectionPeas/jsp/Main")
         .append("?SelectionType=JdbcConnector")
         .append("&formIndex=").append(pagesContext.getFormIndex());
     final String[] parametersKeys = {"beanName", "componentId", "method", "tableName"};

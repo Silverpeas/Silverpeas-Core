@@ -54,7 +54,7 @@ import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPSynchroUserItf;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.ProfiledObjectManager;
@@ -6178,7 +6178,7 @@ class Admin implements Administration {
     // Execute specific paste by the component
     try {
       pasteDetail.setToComponentId(sComponentId);
-      String componentRootName = URLManager.getComponentNameFromComponentId(pasteDetail.
+      String componentRootName = URLUtil.getComponentNameFromComponentId(pasteDetail.
           getFromComponentId());
       String className = componentRootName + ApplicationResourcePasting.NAME_SUFFIX;
       ApplicationResourcePasting componentPaste = ServiceProvider.getService(className);

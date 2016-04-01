@@ -25,7 +25,7 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -77,7 +77,7 @@ public class AttachmentEntity implements WebEntity {
   public static AttachmentEntity fromAttachment(SimpleDocument detail) {
     AttachmentEntity entity = new AttachmentEntity();
     try {
-      entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getId()));
+      entity.uri = new URI(URLUtil.getSimpleURL(URLUtil.URL_FILE, detail.getId()));
     } catch (URISyntaxException e) {
       throw new AttachmentException("AttachmentEntity.fromAttachment(",
           AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
@@ -92,7 +92,7 @@ public class AttachmentEntity implements WebEntity {
     entity.title = detail.getTitle();
     entity.type = detail.getContentType();
     entity.icon = detail.getDisplayIcon();
-    entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getId());
+    entity.permalink = URLUtil.getSimpleURL(URLUtil.URL_FILE, detail.getId());
 
     return entity;
   }

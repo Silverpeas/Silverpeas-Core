@@ -27,7 +27,7 @@ import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionControll
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +58,7 @@ public class SocialNetworkHelper {
   private String getRedirectURL(SocialNetworkID networkId, HttpServletRequest request,
       MyProfileRoutes route) {
     StringBuilder redirectURL = new StringBuilder();
-    redirectURL.append(URLManager.getFullApplicationURL(request));
+    redirectURL.append(URLUtil.getFullApplicationURL(request));
 
     switch (route) {
       case LinkToSVP:

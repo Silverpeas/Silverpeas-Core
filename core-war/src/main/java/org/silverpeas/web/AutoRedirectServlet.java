@@ -24,8 +24,8 @@
 
 package org.silverpeas.web;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.StringUtil;
@@ -104,7 +104,7 @@ public class AutoRedirectServlet extends HttpServlet {
           String type = request.getParameter("Mapping");
           // Contruit l'url vers l'objet du composant contenant le fichier
           strGoTo =
-              URLManager.getURL(null, componentId) + "searchResult?Type=Publication&Id=" +
+              URLUtil.getURL(null, componentId) + "searchResult?Type=Publication&Id=" +
                   foreignId;
           session.setAttribute("gotoNew", strGoTo);
           // Ajoute l'id de l'attachment pour ouverture automatique
@@ -126,7 +126,7 @@ public class AutoRedirectServlet extends HttpServlet {
       if (mainController == null || (gef != null && UserDetail.isAnonymousUser(mainController.
           getUserId()) && (strGoTo == null && componentGoTo == null && spaceGoTo == null))) {
         String strDomainId = request.getParameter("domainId");
-        String loginUrl = URLManager.getApplicationURL() + "/Login.jsp";
+        String loginUrl = URLUtil.getApplicationURL() + "/Login.jsp";
         if (StringUtil.isInteger(strDomainId)) {
           loginUrl += "?DomainId=" + strDomainId;
         }
@@ -138,7 +138,7 @@ public class AutoRedirectServlet extends HttpServlet {
       } else {
         if (isAccessComponentForbidden(componentId, mainController) ||
             isAccessSpaceForbidden(spaceId, mainController)) {
-          response.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+          response.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
         } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
             isAccessAdmin()) {
           out.println("<script>");
@@ -149,8 +149,8 @@ public class AutoRedirectServlet extends HttpServlet {
           String mainFrame = gef.getLookFrame();
           if (!mainFrame.startsWith("/")) {
             mainFrame = "admin/jsp/" + mainFrame;
-          } else if (!mainFrame.startsWith(URLManager.getApplicationURL())) {
-            mainFrame = URLManager.getApplicationURL() + mainFrame;
+          } else if (!mainFrame.startsWith(URLUtil.getApplicationURL())) {
+            mainFrame = URLUtil.getApplicationURL() + mainFrame;
           }
           out.print("top.location=\"");
           out.print(mainFrame);

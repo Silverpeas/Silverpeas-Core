@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
@@ -142,7 +142,7 @@ public class TestMailContentProcess {
     when(mockHttpServletRequest.getScheme()).thenReturn("http");
     when(mockHttpServletRequest.getServerName()).thenReturn("www.unit-test-silverpeas.org");
     when(mockHttpServletRequest.getServerPort()).thenReturn(80);
-    URLManager.setCurrentServerUrl(mockHttpServletRequest);
+    URLUtil.setCurrentServerUrl(mockHttpServletRequest);
   }
 
   @SuppressWarnings("unchecked")

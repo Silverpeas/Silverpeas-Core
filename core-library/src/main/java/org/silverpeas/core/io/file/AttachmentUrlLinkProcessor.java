@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -61,7 +61,7 @@ public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor 
   @Override
   public String processBefore(final String attachmentLink, final ProcessingContext context) {
     if (context == ProcessingContext.GETTING &&
-        attachmentLink.contains(URLManager.getApplicationURL())) {
+        attachmentLink.contains(URLUtil.getApplicationURL())) {
 
       // Identify the id of the attachment
       String attachmentId =

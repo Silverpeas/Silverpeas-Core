@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
@@ -245,7 +245,7 @@ public class AuthenticationServlet extends HttpServlet {
       }
     }
     servletResponse.sendRedirect(
-        servletResponse.encodeRedirectURL(URLManager.getFullApplicationURL(request) + url));
+        servletResponse.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));
   }
 
   /**

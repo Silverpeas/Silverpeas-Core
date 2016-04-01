@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.personalization.bean.DelayedNotificationBean;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -62,7 +62,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         "org.silverpeas.personalizationPeas.multilang.personalizationBundle",
         "org.silverpeas.personalizationPeas.settings.personalizationPeasIcons",
         "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
-    setComponentRootName(URLManager.CMP_PERSONALIZATION);
+    setComponentRootName(URLUtil.CMP_PERSONALIZATION);
     notificationManager = new NotificationManager(getLanguage());
   }
 

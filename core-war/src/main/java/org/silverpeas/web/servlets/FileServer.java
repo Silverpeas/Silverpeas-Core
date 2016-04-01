@@ -21,7 +21,7 @@
 package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
@@ -78,9 +78,9 @@ public class FileServer extends AbstractFileSender {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("util", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
+          "NewSessionId=" + session.getId() + URLUtil.getApplicationURL() +
               ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
-      res.sendRedirect(URLManager.getApplicationURL() +
+      res.sendRedirect(URLUtil.getApplicationURL() +
           ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
       return;
     }

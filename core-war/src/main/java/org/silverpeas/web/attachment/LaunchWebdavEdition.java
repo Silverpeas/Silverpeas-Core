@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.attachment;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
@@ -71,7 +71,7 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
       throwHttpForbiddenError();
     }
 
-    String documentUrl = URLManager.getServerURL(request) + document.getWebdavUrl();
+    String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();
     String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
     SilverpeasJcrWebdavContext silverpeasJcrWebdavContext = createWebdavContext(documentUrl, token);
     if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
@@ -92,7 +92,7 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
       String documentUrl) throws UnsupportedEncodingException {
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     out.print("<jnlp spec=\"1.0+\" codebase=\"");
-    out.print(URLManager.getServerURL(request));
+    out.print(URLUtil.getServerURL(request));
     out.print(request.getContextPath());
     out.println("/attachment/webdav\" >");
     out.println("\t<information>");

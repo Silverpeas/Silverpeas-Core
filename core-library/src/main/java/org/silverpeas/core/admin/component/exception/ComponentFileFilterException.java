@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.component.exception;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -82,8 +82,8 @@ public class ComponentFileFilterException extends RuntimeException {
   @SuppressWarnings("UnusedDeclaration")
   public String getFromComponentUrl() {
     return (isDefined(getComponentFileFilterParameter().getComponent().getId())) ?
-        URLManager.getApplicationURL() +
-            URLManager.getURL(getComponentFileFilterParameter().getComponent().getName(), null,
+        URLUtil.getApplicationURL() +
+            URLUtil.getURL(getComponentFileFilterParameter().getComponent().getName(), null,
                 getComponentFileFilterParameter().getComponent().getId()) + "Main" : "";
   }
 }

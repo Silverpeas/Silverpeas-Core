@@ -32,13 +32,13 @@ import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.mvc.processor.UserAndGroupSelectionProcessor;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.token.Token;
+import org.silverpeas.core.security.token.Token;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -207,7 +207,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     String[] browseContext = new String[]{component.getSpaceLabel(), component.getComponentLabel(),
         component.getSpaceId(), component.getComponentId(), component.getComponentUrl()};
     request.setAttribute("browseContext", browseContext);
-    request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.
+    request.setAttribute("myComponentURL", URLUtil.getApplicationURL() + component.
         getComponentUrl());
 
     HttpRequest httpRequest = HttpRequest.decorate(request);

@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ include file="import.jsp" %>
 
 <HTML>
@@ -41,7 +41,7 @@ function forwardToComponent()
 
         if ((component != null) && (component.length() > 0))
         {
-            out.println("window.location = \"" + m_context + URLManager.getURL(space, component) + "Main\"");
+            out.println("window.location = \"" + m_context + URLUtil.getURL(space, component) + "Main\"");
         }
     %>
 }

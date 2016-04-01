@@ -28,6 +28,7 @@
 
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 
@@ -64,18 +65,18 @@ if (displayLoginHomepage) {
 	frameURL = loginHomepage;
 } else if (strGoToNew == null) {
 	if (StringUtil.isDefined(componentId)) {
-		frameURL = URLManager.getApplicationURL()+URLManager.getURL(null, componentId)+"Main";
+		frameURL = URLUtil.getApplicationURL()+ URLUtil.getURL(null, componentId)+"Main";
 	} else {
 		String homePage = helper.getSettings("defaultHomepage", "/dt");
 		String param = "";
 		if (StringUtil.isDefined(spaceId)) {
 		    param = "?SpaceId=" + spaceId;
 		}
-		frameURL = URLManager.getApplicationURL()+homePage+param;
+		frameURL = URLUtil.getApplicationURL()+homePage+param;
 	}
 } else {
-    frameURL = URLManager.getApplicationURL()+strGoToNew;
-    if(strGoToNew.startsWith(URLManager.getApplicationURL())) {
+    frameURL = URLUtil.getApplicationURL()+strGoToNew;
+    if(strGoToNew.startsWith(URLUtil.getApplicationURL())) {
       frameURL = strGoToNew;
     }
 }

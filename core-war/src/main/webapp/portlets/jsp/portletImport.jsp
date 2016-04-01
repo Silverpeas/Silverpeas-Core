@@ -28,7 +28,7 @@
 
 <%@ page import="org.silverpeas.core.web.portlets.FormNames"%>
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.util.DateUtil"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>

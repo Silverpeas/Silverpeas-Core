@@ -25,7 +25,7 @@
 package org.silverpeas.web.agenda.servlets;
 
 import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -120,7 +120,7 @@ public class SubscribeAgenda extends HttpServlet {
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {
-      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 

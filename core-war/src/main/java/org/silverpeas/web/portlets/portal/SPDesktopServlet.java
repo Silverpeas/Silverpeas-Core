@@ -20,10 +20,10 @@
  */
 package org.silverpeas.web.portlets.portal;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
 import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -107,7 +107,7 @@ public class SPDesktopServlet extends HttpServlet {
           ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", m_sAbsolute);
       if (spaceHomePage.startsWith("/")) {
         // case of forward inside application /silverpeas
-        String applicationContext = URLManager.getApplicationURL();
+        String applicationContext = URLUtil.getApplicationURL();
         if (spaceHomePage.startsWith(applicationContext)) {
           spaceHomePage = baseURL + spaceHomePage;
         } else {
@@ -630,13 +630,13 @@ public class SPDesktopServlet extends HttpServlet {
       UserDetail currentUser = UserDetail.getCurrentRequester();
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
           (currentUser.isAccessUser() || currentUser.isAccessGuest())) {
-        return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
+        return URLUtil.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
 
       String defaultSpaceHomepageURL = getDefaultSpaceHomepageURL(request);
       if (StringUtil.isDefined(defaultSpaceHomepageURL)) {
         defaultSpaceHomepageURL =
-            addSpaceIdToURL(URLManager.getApplicationURL() + defaultSpaceHomepageURL, spaceId);
+            addSpaceIdToURL(URLUtil.getApplicationURL() + defaultSpaceHomepageURL, spaceId);
       }
 
       // Default home page
@@ -649,7 +649,7 @@ public class SPDesktopServlet extends HttpServlet {
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailable(componentId, userId)) {
-          return URLManager.getApplicationURL() + URLManager.getURL("useless", componentId) + "Main";
+          return URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main";
         } else {
           // component does not exist anymore or component is not available to current user
           // so default page is used

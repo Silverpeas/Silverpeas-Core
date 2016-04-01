@@ -33,7 +33,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import java.util.List;
 
 import org.silverpeas.core.util.LocalizationBundle;
@@ -57,7 +57,7 @@ public abstract class AbstractProgressMessage implements ProgressMessage {
   public void init(List<String> messages) {
     this.messages = messages;
     script progressMessage = new script().setType("text/javascript").
-        setSrc(URLManager.getApplicationURL() + "/util/javaScript/progressMessage.js");
+        setSrc(URLUtil.getApplicationURL() + "/util/javaScript/progressMessage.js");
     xhtmlRenderer.addElement(progressMessage);
   }
 

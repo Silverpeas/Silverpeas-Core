@@ -22,10 +22,10 @@ package org.silverpeas.web.jobsearch;
 
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -79,7 +79,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.jobSearchPeas.multilang.jobSearchPeasBundle");
-    setComponentRootName(URLManager.CMP_JOBSEARCHPEAS);
+    setComponentRootName(URLUtil.CMP_JOBSEARCHPEAS);
   }
 
   /**
@@ -468,7 +468,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       searchResult.setCreaName(nomCrea);
       searchResult.setPath(listEmplacement);
       searchResult.setUrl(
-          "openPublication('" + URLManager.getSimpleURL(URLManager.URL_PUBLI, pubPK.getId())
+          "openPublication('" + URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubPK.getId())
           + "')");
       result.add(searchResult);
     }

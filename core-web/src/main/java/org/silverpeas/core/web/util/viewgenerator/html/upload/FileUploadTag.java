@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.upload;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
@@ -155,7 +155,7 @@ public class FileUploadTag extends TagSupport {
       fileUploadContext.jsPluginLoaded = true;
       JavascriptPluginInclusion.includeIFrameAjaxTransport(xhtmlcontainer);
       script jsPlugin = new script().setType("text/javascript").
-          setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
+          setSrc(URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
       xhtmlcontainer.addElement(jsPlugin);
       StringBuilder jQueryStart = new StringBuilder();
       jQueryStart.append("jQuery(document).ready(function(){jQuery('.fileUpload').fileUpload({");

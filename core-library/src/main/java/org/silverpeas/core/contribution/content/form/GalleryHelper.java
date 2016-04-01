@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content.form;
 
 import java.io.PrintWriter;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 public class GalleryHelper {
 
@@ -40,7 +40,7 @@ public class GalleryHelper {
         "\").options[index].value;");
     out.println("if (index != 0){  ");
     out.println("url = \"" +
-        URLManager.getApplicationURL() +
+        URLUtil.getApplicationURL() +
         "/gallery/jsp/wysiwygBrowser.jsp?ComponentId=\"+componentId+\"&Language=" +
         language + "&FieldName=" + fieldNameFunction + "\";");
     out.println("windowName = \"GalleryFileWindow\";");

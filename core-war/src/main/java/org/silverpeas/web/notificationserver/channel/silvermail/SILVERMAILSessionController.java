@@ -33,10 +33,10 @@ import org.silverpeas.core.notification.user.client.NotificationManagerException
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterfaceImpl;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.util.ResourceLocator;
@@ -69,11 +69,11 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
         context,
         "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         "org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
-    setComponentRootName(URLManager.CMP_SILVERMAIL);
+    setComponentRootName(URLUtil.CMP_SILVERMAIL);
   }
 
   protected String getComponentInstName() {
-    return URLManager.CMP_SILVERMAIL;
+    return URLUtil.CMP_SILVERMAIL;
   }
 
   /**

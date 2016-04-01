@@ -31,11 +31,11 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.token.Token;
-import org.silverpeas.token.TokenGenerator;
-import org.silverpeas.token.TokenGeneratorProvider;
-import org.silverpeas.token.exception.TokenValidationException;
-import org.silverpeas.token.synchronizer.SynchronizerToken;
+import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.security.token.TokenGenerator;
+import org.silverpeas.core.security.token.TokenGeneratorProvider;
+import org.silverpeas.core.security.token.exception.TokenValidationException;
+import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 

@@ -32,7 +32,7 @@ import org.silverpeas.core.sharing.model.VersionFileTicket;
 import org.silverpeas.core.sharing.security.ShareableAttachment;
 import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
@@ -112,7 +112,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
       url = settings.getString("sharing.publication.webapp");
     }
     if (!url.startsWith("http")) {
-      url = URLManager.getServerURL(request) + url;
+      url = URLUtil.getServerURL(request) + url;
     }
     return url + "?" + ticket.getToken();
   }

@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
@@ -101,7 +101,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   public AgendaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.agenda.multilang.agenda");
-    setComponentRootName(URLManager.CMP_AGENDA);
+    setComponentRootName(URLUtil.CMP_AGENDA);
     initEJB();
     AdminController admin = ServiceProvider.getService(AdminController.class);
     Domain defaultDomain = admin.getDomain(getUserDetail().getDomainId());
@@ -150,7 +150,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   protected String getComponentInstName() {
-    return URLManager.CMP_AGENDA;
+    return URLUtil.CMP_AGENDA;
   }
 
   /**
@@ -1203,7 +1203,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return
    */
   public String initSelectionPeas() {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName =
         new Pair<>(getString("agenda"), m_context + "/Ragenda/jsp/Main");
     Pair<String, String>[] hostPath = new Pair[1];
@@ -1328,15 +1328,15 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public String initUserPanelOtherAgenda() {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName =
         new Pair<>(getString("agenda"), m_context + "/Ragenda/jsp/Main");
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("viewOtherAgenda"),
-        m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main");
+        m_context + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main");
     String hostUrl =
-        m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "ViewOtherAgenda";
-    String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main";
+        m_context + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "ViewOtherAgenda";
+    String cancelUrl = m_context + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main";
 
     Selection sel = getSelection();
     sel.resetAll();

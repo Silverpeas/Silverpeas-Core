@@ -21,7 +21,7 @@
 package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.codec.CharEncoding;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -57,7 +57,7 @@ public class GoToFile extends GoTo {
         res.setContentType("text/html; charset=utf-8");
         String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
         res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-        return URLManager.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
+        return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }
     }
 

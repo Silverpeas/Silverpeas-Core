@@ -32,7 +32,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
@@ -102,7 +102,7 @@ public class PublicationDateReminderUserNotification
 
   @Override
   protected String getResourceURL(final PersistentResourceDateReminder resource) {
-    return URLManager.getSearchResultURL(this.pubDetail);
+    return URLUtil.getSearchResultURL(this.pubDetail);
   }
 
   @Override

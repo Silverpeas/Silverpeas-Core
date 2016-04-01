@@ -39,7 +39,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.index.indexing.model.IndexEntry"%>
 <%@ page import="org.silverpeas.core.clipboard.ClipboardSelection"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
@@ -165,15 +165,15 @@ function view(url)
         if ("node".equalsIgnoreCase(indexEntry.getObjectType()))
         {
 		icon = resources.getIcon("node");
-		link = URLManager.getSimpleURL(URLManager.URL_TOPIC, indexEntry.getObjectId(), indexEntry.getComponent(), true);
+		link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, indexEntry.getObjectId(), indexEntry.getComponent(), true);
         } else if ("component".equalsIgnoreCase(indexEntry.getObjectType()))
         {
 		icon = resources.getIcon("component");
-		iconComponent = m_context + "/util/icons/component/" + URLManager.getComponentNameFromComponentId(indexEntry.getComponent()) +"Small.gif";
-		link = URLManager.getSimpleURL(URLManager.URL_COMPONENT, indexEntry.getObjectId(), indexEntry.getComponent(), true);
+		iconComponent = m_context + "/util/icons/component/" + URLUtil.getComponentNameFromComponentId(indexEntry.getComponent()) +"Small.gif";
+		link = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, indexEntry.getObjectId(), indexEntry.getComponent(), true);
         } else {
 		icon = resources.getIcon("publi");
-		link = URLManager.getSimpleURL(URLManager.URL_PUBLI, indexEntry.getObjectId(), indexEntry.getComponent(), true);
+		link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, indexEntry.getObjectId(), indexEntry.getComponent(), true);
         }
         line.addArrayCellText("<img src=\""+ icon+"\" border=\"0\"/>");
         if ("component".equalsIgnoreCase(indexEntry.getObjectType()))

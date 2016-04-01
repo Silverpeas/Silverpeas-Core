@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
@@ -111,7 +111,7 @@ public class CacheManagerJdbcConnector extends CacheManager {
       case CM_SET: {
         PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
         theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
-            URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
+            URLUtil.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
             messages.getString("selectionPeas.filter"), messages
             .getString("selectionPeas.filter"));
         return theArray;
@@ -119,7 +119,7 @@ public class CacheManagerJdbcConnector extends CacheManager {
       case CM_ELEMENT: {
         PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
         theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
-            URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
+            URLUtil.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
             messages.getString("selectionPeas.filter"), messages
             .getString("selectionPeas.filter"));
         return theArray;
@@ -134,15 +134,15 @@ public class CacheManagerJdbcConnector extends CacheManager {
     switch (operation) {
       case "DisplayBrowse":
         return new PanelOperation(messages.getString("selectionPeas.helpBrowse"),
-            URLManager.getApplicationURL() +
+            URLUtil.getApplicationURL() +
                 iconSettings.getString("selectionPeas.browseArb"), operation);
       case "DisplaySearchElement":
         return new PanelOperation(messages.getString("selectionPeas.helpSearchElement"),
-            URLManager.getApplicationURL() +
+            URLUtil.getApplicationURL() +
                 iconSettings.getString("selectionPeas.userSearc"), operation);
       case "DisplaySearchSet":
         return new PanelOperation(messages.getString("selectionPeas.helpSearchSet"),
-            URLManager.getApplicationURL() +
+            URLUtil.getApplicationURL() +
                 iconSettings.getString("selectionPeas.groupSearc"), operation);
       default:
         return null;
@@ -157,9 +157,9 @@ public class CacheManagerJdbcConnector extends CacheManager {
     switch (what) {
       case CM_SET: {
         return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "set",
-            URLManager.getApplicationURL() + iconSettings.getString(
+            URLUtil.getApplicationURL() + iconSettings.getString(
             "selectionPeas.selectAll"),
-            URLManager.getApplicationURL()
+            URLUtil.getApplicationURL()
             + iconSettings.getString("selectionPeas.unSelectAll"), messages
             .getString("selectionPeas.selectAll"), messages
             .getString("selectionPeas.unSelectAll"), messages
@@ -168,9 +168,9 @@ public class CacheManagerJdbcConnector extends CacheManager {
       }
       case CM_ELEMENT: {
         return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "element",
-            URLManager.getApplicationURL() + iconSettings.getString(
+            URLUtil.getApplicationURL() + iconSettings.getString(
             "selectionPeas.selectAll"),
-            URLManager.getApplicationURL()
+            URLUtil.getApplicationURL()
             + iconSettings.getString("selectionPeas.unSelectAll"), messages
             .getString("selectionPeas.selectAll"), messages
             .getString("selectionPeas.unSelectAll"), messages

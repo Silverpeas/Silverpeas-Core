@@ -26,6 +26,7 @@ package org.silverpeas.web.mylinks.servlets;
 
 import java.util.Collection;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
 import org.silverpeas.core.web.http.HttpRequest;
 
@@ -34,7 +35,6 @@ import org.silverpeas.web.mylinks.control.MyLinksPeasSessionController;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.util.NotifierUtil;
@@ -91,7 +91,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         String instanceId = request.getParameter("InstanceId");
         String url = request.getParameter("UrlReturn");
         if (!StringUtil.isDefined(url)) {
-          url = URLManager.getApplicationURL() + URLManager.getURL(null, instanceId) + "Main";
+          url = URLUtil.getApplicationURL() + URLUtil.getURL(null, instanceId) + "Main";
         }
         myLinksSC.setInstanceId(instanceId);
         myLinksSC.setUrl(url);

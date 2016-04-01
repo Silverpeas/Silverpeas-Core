@@ -31,7 +31,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.util.Link;
@@ -184,7 +184,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
   private void createMessage(String date,
       NotificationMetaData notifMetaData, SimpleDocument document,
       boolean alert, boolean lib) throws AttachmentException {
-    String url = URLManager.getURL(null, null, document.getInstanceId()) + "GoToFilesTab?Id=" +
+    String url = URLUtil.getURL(null, null, document.getInstanceId()) + "GoToFilesTab?Id=" +
         document.getForeignId();
 
     createMessageByLanguage(date, url, document, notifMetaData, alert, lib);

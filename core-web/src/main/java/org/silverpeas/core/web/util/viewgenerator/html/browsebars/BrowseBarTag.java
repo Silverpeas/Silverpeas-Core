@@ -27,7 +27,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
@@ -112,7 +112,7 @@ public class BrowseBarTag extends NeedWindowTag {
         if (StringUtil.isDefined(currentNavigationStep.getLabel())) {
           String link = "#";
           if (currentNavigationStep.isUriMustBeUsedByBrowseBar()) {
-            link = URLManager.getApplicationURL() +
+            link = URLUtil.getApplicationURL() +
                 currentNavigationStep.getUri().toString().replaceAll("[&]ArrayPaneAction.*", "");
           }
           BrowseBarElement element =

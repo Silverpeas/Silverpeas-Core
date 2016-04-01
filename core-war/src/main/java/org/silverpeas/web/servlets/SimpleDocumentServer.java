@@ -41,7 +41,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.ClientBrowserUtil;
 
@@ -94,7 +94,7 @@ public class SimpleDocumentServer extends GoTo {
         res.setContentType("text/html; charset=utf-8");
         String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
         res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-        return URLManager.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
+        return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }
     }
     return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="

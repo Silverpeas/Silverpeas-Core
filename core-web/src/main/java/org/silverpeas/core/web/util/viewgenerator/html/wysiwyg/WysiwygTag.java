@@ -1,6 +1,6 @@
 package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
@@ -132,7 +132,7 @@ public class WysiwygTag extends TagSupport {
     wysiwyg.setHeight(getHeight());
     wysiwyg.setLanguage(getLanguage());
     wysiwyg.setToolbar(getToolbar());
-    wysiwyg.setServerURL(URLManager.getServerURL((HttpServletRequest) pageContext.getRequest()));
+    wysiwyg.setServerURL(URLUtil.getServerURL((HttpServletRequest) pageContext.getRequest()));
 
     HttpSession session = pageContext.getSession();
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);

@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.peasCore.servlets.control.AbstractTestWebComponentGenericController;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -128,7 +128,7 @@ public class WebComponentRequestRouterTest {
 
     when(request.getPathInfo()).thenReturn(uriPart);
     when(request.getRequestURI()).thenReturn(
-        UriBuilder.fromPath(URLManager.getApplicationURL()).path(uriPart).build().toString());
+        UriBuilder.fromPath(URLUtil.getApplicationURL()).path(uriPart).build().toString());
     when(organisationController.isComponentAvailable(anyString(), anyString()))
         .then(new Returns(true));
     when(organisationController.getComponentInstLight(anyString()))

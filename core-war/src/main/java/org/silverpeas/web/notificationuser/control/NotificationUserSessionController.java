@@ -25,11 +25,11 @@ import org.silverpeas.core.notification.user.client.NotificationManagerException
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.notificationuser.Notification;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.StringUtil;
@@ -59,7 +59,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.notificationUser.multilang.notificationUserBundle");
-    setComponentRootName(URLManager.CMP_NOTIFICATIONUSER);
+    setComponentRootName(URLUtil.CMP_NOTIFICATIONUSER);
     sel = getSelection();
   }
 
@@ -126,9 +126,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   }
 
   public String initSelectionPeas(String paramValues) {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostUrl = m_context
-        + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
+        + URLUtil.getURL(URLUtil.CMP_NOTIFICATIONUSER) + "GetTarget"
         + paramValues;
     String cancelUrl = hostUrl;
     Pair<String, String> hostComponentName = new Pair<>("", "");

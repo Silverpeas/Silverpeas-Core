@@ -32,12 +32,12 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 
 <html>
 <head>
-<script>
-window.location.href = "<%=URLManager.getApplicationURL()%>/dt?SpaceId=<%=request.getParameter("SpaceId")%>";
+  <script>
+    window.location.href = "<%=URLUtil.getApplicationURL()%>/dt?SpaceId=<%=request.getParameter("SpaceId")%>";
 </script>
 </head>
 <body>

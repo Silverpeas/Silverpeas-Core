@@ -43,7 +43,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.token.persistent.PersistentResourceToken;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.util.Charsets;
 
 import javax.inject.Inject;

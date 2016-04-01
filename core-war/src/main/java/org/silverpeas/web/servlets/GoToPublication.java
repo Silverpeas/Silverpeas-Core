@@ -21,7 +21,7 @@
 package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -51,7 +51,7 @@ public class GoToPublication extends GoTo {
     // Set GEF and look helper space identifier
     setGefSpaceId(req, componentId);
 
-    String gotoURL = URLManager.getURL(null, componentId) + pub.getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + pub.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
   }
 

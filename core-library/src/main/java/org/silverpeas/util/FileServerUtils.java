@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -294,7 +294,7 @@ public class FileServerUtils {
   }
 
   public static String getApplicationContext() {
-    String applicationContext = URLManager.getApplicationURL();
+    String applicationContext = URLUtil.getApplicationURL();
     if (applicationContext.endsWith("/")) {
       applicationContext = applicationContext.substring(0, applicationContext.length() - 1);
     }

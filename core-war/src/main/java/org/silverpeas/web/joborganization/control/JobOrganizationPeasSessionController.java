@@ -25,11 +25,11 @@
 package org.silverpeas.web.joborganization.control;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.joborganization.JobOrganizationPeasException;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
@@ -83,7 +83,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         "org.silverpeas.jobOrganizationPeas.multilang.jobOrganizationPeasBundle",
         "org.silverpeas.jobOrganizationPeas.settings.jobOrganizationPeasIcons",
         "org.silverpeas.jobOrganizationPeas.settings.jobOrganizationPeasSettings");
-    setComponentRootName(URLManager.CMP_JOBORGANIZATIONPEAS);
+    setComponentRootName(URLUtil.CMP_JOBORGANIZATIONPEAS);
   }
 
   public boolean isRightCopyReplaceActivated() {
@@ -322,7 +322,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    * UserPanel initialization : a user or (exclusive) a group
    */
   public String initSelectionUserOrGroup() {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
         + Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

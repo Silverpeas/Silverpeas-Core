@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -92,7 +92,7 @@ public class GraphicElementFactory {
       GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
   private final static String defaultLook = "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static String iconsPath =
-      (URLManager.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
+      (URLUtil.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
   private LocalizationBundle multilang = null;
   private String currentLookName = null;
   private MainSessionController mainSessionController = null;

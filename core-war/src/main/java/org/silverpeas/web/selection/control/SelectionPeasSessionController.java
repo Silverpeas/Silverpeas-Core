@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
@@ -72,7 +72,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.selectionPeas.multilang.selectionPeasBundle",
         "org.silverpeas.selectionPeas.settings.selectionPeasIcons");
-    setComponentRootName(URLManager.CMP_SELECTIONPEAS);
+    setComponentRootName(URLUtil.CMP_SELECTIONPEAS);
   }
 
   public String getSelectionType() {
@@ -119,11 +119,11 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   }
 
   public String getZoomToSetURL() {
-    return URLManager.getApplicationURL() + getComponentUrl() + "ZoomToSetInfos";
+    return URLUtil.getApplicationURL() + getComponentUrl() + "ZoomToSetInfos";
   }
 
   public String getZoomToElementURL() {
-    return URLManager.getApplicationURL() + getComponentUrl() + "ZoomToElementInfos";
+    return URLUtil.getApplicationURL() + getComponentUrl() + "ZoomToElementInfos";
   }
 
   public String getStartingFunction() {
@@ -169,8 +169,8 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   public String getSearchSet() {
     if (searchSetPanel == null) {
       searchSetPanel = new GenericPanel();
-      searchSetPanel.setCancelURL(URLManager.getApplicationURL() + getComponentUrl() + "Cancel");
-      searchSetPanel.setGoBackURL(URLManager.getApplicationURL() + getComponentUrl()
+      searchSetPanel.setCancelURL(URLUtil.getApplicationURL() + getComponentUrl() + "Cancel");
+      searchSetPanel.setGoBackURL(URLUtil.getApplicationURL() + getComponentUrl()
           + "ReturnSearchSet");
       searchSetPanel.setZoomToItemURL(getZoomToSetURL());
       searchSetPanel.setPopupMode(false);
@@ -222,9 +222,9 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   public String getSearchElement() {
     if (searchElementPanel == null) {
       searchElementPanel = new GenericPanel();
-      searchElementPanel.setCancelURL(URLManager.getApplicationURL() + getComponentUrl()
+      searchElementPanel.setCancelURL(URLUtil.getApplicationURL() + getComponentUrl()
           + "Cancel");
-      searchElementPanel.setGoBackURL(URLManager.getApplicationURL() + getComponentUrl()
+      searchElementPanel.setGoBackURL(URLUtil.getApplicationURL() + getComponentUrl()
           + "ReturnSearchElement");
       searchElementPanel.setZoomToItemURL(getZoomToElementURL());
       searchElementPanel.setPopupMode(false);
@@ -338,17 +338,17 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     }
     if (selection.isMultiSelect()) {
       panelOperationList.add(new PanelOperation(getString("selectionPeas.helpCart"),
-          URLManager.getApplicationURL() + getIcon().getString("selectionPeas.showPanier"),
+          URLUtil.getApplicationURL() + getIcon().getString("selectionPeas.showPanier"),
           "DisplayCart"));
     }
     if ("DisplayCart".equals(currentFunction)) {
       panelOperationList.add(new PanelOperation("", "", ""));
       panelOperationList.add(new PanelOperation(getString("selectionPeas.removeFromCart"),
-          URLManager.getApplicationURL() + getIcon().getString("selectionPeas.selectDelete"),
+          URLUtil.getApplicationURL() + getIcon().getString("selectionPeas.selectDelete"),
           "RemoveSelectedFromCart",
           getString("selectionPeas.confirmRemoveFromCart")));
       panelOperationList.add(new PanelOperation(getString("selectionPeas.removeAllFromCart"),
-          URLManager.getApplicationURL() + getIcon().getString("selectionPeas.allDelete"),
+          URLUtil.getApplicationURL() + getIcon().getString("selectionPeas.allDelete"),
           "RemoveAllFromCart",
           getString("selectionPeas.confirmRemoveFromCart")));
     }

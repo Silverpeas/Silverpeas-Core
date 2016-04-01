@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.Authentication;
@@ -234,7 +234,7 @@ public class SilverpeasSessionOpener {
     } else if (StringUtil.isDefined(redirectURL)) {
       absoluteUrl.append(redirectURL);
     } else if (StringUtil.isDefined(sDirectAccessSpace) && StringUtil.isDefined(sDirectAccessCompo)) {
-      absoluteUrl.append(URLManager.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
+      absoluteUrl.append(URLUtil.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
     } else {
       absoluteUrl.append("/Main/").append(favoriteFrame);
     }
@@ -267,7 +267,7 @@ public class SilverpeasSessionOpener {
     }
     absoluteUrl.append(request.getServerName()).append(':');
     absoluteUrl.append(request.getServerPort());
-    absoluteUrl.append(URLManager.getApplicationURL());
+    absoluteUrl.append(URLUtil.getApplicationURL());
     return absoluteUrl.toString();
   }
 

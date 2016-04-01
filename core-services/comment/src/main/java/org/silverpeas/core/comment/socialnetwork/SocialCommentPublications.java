@@ -30,7 +30,7 @@ import org.silverpeas.core.date.Date;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentPublicationsInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -72,8 +72,8 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
       PublicationDetail pubDetail = getService().getDetail(pubPk);
 
       //set URL, title and description of the publication
-      socialInformation.setUrl(URLManager
-          .getSimpleURL(URLManager.URL_PUBLI, pubDetail.getId(), pubDetail.getComponentInstanceId(),
+      socialInformation.setUrl(URLUtil
+          .getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getId(), pubDetail.getComponentInstanceId(),
               false));
       socialInformation.setTitle(pubDetail.getTitle());
     }

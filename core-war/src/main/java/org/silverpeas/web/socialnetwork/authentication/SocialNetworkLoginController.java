@@ -27,7 +27,7 @@ import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import java.io.IOException;
@@ -119,7 +119,7 @@ public class SocialNetworkLoginController extends HttpServlet {
           userStateVerifier.verify();
         } catch (AuthenticationException e) {
           SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
-          resp.sendRedirect(URLManager.getFullApplicationURL(req) + userStateVerifier
+          resp.sendRedirect(URLUtil.getFullApplicationURL(req) + userStateVerifier
               .getErrorDestination());
           return;
         }
@@ -141,7 +141,7 @@ public class SocialNetworkLoginController extends HttpServlet {
         } // new registration is disabled : redirect user to Login
         else {
           SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
-          resp.sendRedirect(URLManager.getFullApplicationURL(req) + "/Login.jsp?ErrorCode=5");
+          resp.sendRedirect(URLUtil.getFullApplicationURL(req) + "/Login.jsp?ErrorCode=5");
         }
       } // Silverpeas account found, log user
       else {
@@ -182,7 +182,7 @@ public class SocialNetworkLoginController extends HttpServlet {
 
   private String getRedirectURL(SocialNetworkID networkId, HttpServletRequest request) {
     StringBuilder redirectURL = new StringBuilder();
-    redirectURL.append(URLManager.getFullApplicationURL(request));
+    redirectURL.append(URLUtil.getFullApplicationURL(request));
     redirectURL.append("/SocialNetworkLogin?command=backFromSocialNetworkAuthentication&networkId=");
     redirectURL.append(networkId);
     return redirectURL.toString();

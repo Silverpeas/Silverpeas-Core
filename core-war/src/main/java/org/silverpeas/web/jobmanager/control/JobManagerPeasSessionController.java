@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.web.jobmanager.JobManagerService.*;
-import static com.stratelia.silverpeas.peasCore.URLManager.*;
+import static org.silverpeas.core.util.URLUtil.*;
 
 /**
  * Class declaration

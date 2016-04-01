@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.search;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * Class used to avoid and remove JSP scriptlet
@@ -35,7 +35,7 @@ public class ResultSearchRendererUtil {
    * @return an HTML empty star icon img element
    */
   private static String getEmptyStarIcon() {
-    return "<img src=\"" + URLManager.getApplicationURL() +
+    return "<img src=\"" + URLUtil.getApplicationURL() +
     "/pdcPeas/jsp/icons/pdcPeas_emptyStar.gif\"/>";
   }
 
@@ -43,7 +43,7 @@ public class ResultSearchRendererUtil {
    * @return an HTML full star icon img element
    */
   private static String getFullStarIcon() {
-    return "<img src=\"" + URLManager.getApplicationURL() + "/pdcPeas/jsp/icons/starGreen.gif\"/>";
+    return "<img src=\"" + URLUtil.getApplicationURL() + "/pdcPeas/jsp/icons/starGreen.gif\"/>";
   }
 
   /**

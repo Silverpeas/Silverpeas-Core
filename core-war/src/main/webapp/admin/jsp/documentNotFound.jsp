@@ -31,7 +31,7 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ include file="import.jsp" %>
 
@@ -40,7 +40,7 @@ String componentId = (String) request.getAttribute("ComponentId");
 
 String url = null;
 if (componentId != null)
-	url = m_context+URLManager.getURL(null, componentId)+"Main";
+	url = m_context+ URLUtil.getURL(null, componentId)+"Main";
 
 String buttonAction = "javaScript:history.back();";
 if (url != null)

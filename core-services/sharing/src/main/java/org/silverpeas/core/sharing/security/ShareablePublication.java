@@ -23,7 +23,7 @@
 */
 package org.silverpeas.core.sharing.security;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 /**
@@ -46,7 +46,7 @@ public class ShareablePublication extends ShareableResource<PublicationDetail> {
   @Override
   public String getURL() {
     if (accessedObject != null) {
-      return URLManager.getSimpleURL(URLManager.URL_PUBLI, String.valueOf(accessedObject.getId()),
+      return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, String.valueOf(accessedObject.getId()),
           accessedObject.getInstanceId(), true);
     }
     return "";

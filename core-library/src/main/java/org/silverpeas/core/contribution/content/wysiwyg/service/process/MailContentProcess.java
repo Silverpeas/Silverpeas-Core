@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
@@ -83,8 +83,8 @@ public class MailContentProcess
       MimeBodyPart mbp = new MimeBodyPart();
       String linkForDataSource = link;
       if (!linkForDataSource.toLowerCase()
-          .startsWith(URLManager.getCurrentServerURL().toLowerCase())) {
-        linkForDataSource = (URLManager.getCurrentServerURL() + link);
+          .startsWith(URLUtil.getCurrentServerURL().toLowerCase())) {
+        linkForDataSource = (URLUtil.getCurrentServerURL() + link);
       }
       linkForDataSource = linkForDataSource.replace("&amp;", "&");
 

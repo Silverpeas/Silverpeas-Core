@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -36,7 +36,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 public class AbstractNotification {
 
   public String getApplicationURL() {
-    return URLManager.getApplicationURL();
+    return URLUtil.getApplicationURL();
   }
 
   public String computeURL(final Integer userId, final String urlBase) {
@@ -48,12 +48,12 @@ public class AbstractNotification {
   }
 
   public String getUserAutoRedirectURL(final String userId, final String target) {
-    String encodedTarget = URLManager.encodeURL(target);
+    String encodedTarget = URLUtil.encodeURL(target);
     try {
       final UserDetail ud = UserDetail.getById(userId);
       final Domain dom = ud.getDomain();
       String url;
-      if (URLManager.isPermalink(target)) {
+      if (URLUtil.isPermalink(target)) {
         url = dom.getSilverpeasServerURL() + getApplicationURL() + target;
       } else {
         url = getUserAutoRedirectURL(dom) + encodedTarget;

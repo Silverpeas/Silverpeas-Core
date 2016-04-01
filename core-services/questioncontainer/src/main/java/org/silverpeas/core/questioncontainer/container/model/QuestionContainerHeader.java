@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.questioncontainer.container.model;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 
 import java.util.Collection;
@@ -289,8 +289,8 @@ public class QuestionContainerHeader extends AbstractBean
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks()) {
-      return URLManager.getSimpleURL(URLManager.URL_SURVEY, getId(), getInstanceId());
+    if (URLUtil.displayUniversalLinks()) {
+      return URLUtil.getSimpleURL(URLUtil.URL_SURVEY, getId(), getInstanceId());
     }
     return null;
   }

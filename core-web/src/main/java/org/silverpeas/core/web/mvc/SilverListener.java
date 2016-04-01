@@ -28,7 +28,7 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -83,7 +83,7 @@ public class SilverListener
     ServletRequest request = sre.getServletRequest();
     if (request instanceof HttpServletRequest) {
       HttpServletRequest httpRequest = (HttpServletRequest) request;
-      URLManager.setCurrentServerUrl(httpRequest);
+      URLUtil.setCurrentServerUrl(httpRequest);
       HttpSession httpSession = httpRequest.getSession(false);
       if (httpSession != null) {
         SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()

@@ -28,23 +28,23 @@
 
 <%@page import="com.silverpeas.socialnetwork.model.SocialInformationType"%>
 <%@page import="org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes"%>
-<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="java.util.List"%>
 
 <%
 	boolean wall = view.equals(MyProfileRoutes.MyWall.toString());
-	String urlServlet = URLManager.getApplicationURL()+"/RnewsFeedJSONServlet?userId="+userFull.getId();
+	String urlServlet = URLUtil.getApplicationURL()+"/RnewsFeedJSONServlet?userId="+userFull.getId();
 	if (!wall) {
 	  urlServlet += "&View=MyFeed";
 	}
 	MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 %>
-<script type="text/javascript" src="<%=URLManager.getApplicationURL() %>/socialNetwork/jsp/js/newsfeed.js"></script>
+<script type="text/javascript" src="<%=URLUtil.getApplicationURL() %>/socialNetwork/jsp/js/newsfeed.js"></script>
 <script type="text/javascript">
 function getApplicationContext() {
-	return '<%=URLManager.getApplicationURL()%>';
+	return '<%=URLUtil.getApplicationURL()%>';
 }
 
 function getFeedURL() {

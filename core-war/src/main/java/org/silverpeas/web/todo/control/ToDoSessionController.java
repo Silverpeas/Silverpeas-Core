@@ -24,10 +24,10 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -79,12 +79,12 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public ToDoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.todo.multilang.todo");
-    setComponentRootName(URLManager.CMP_TODO);
+    setComponentRootName(URLUtil.CMP_TODO);
     calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
   }
 
   protected String getComponentInstName() {
-    return URLManager.CMP_TODO;
+    return URLUtil.CMP_TODO;
   }
 
   /**
@@ -491,7 +491,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public String initSelectionPeas() {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName = new Pair<>(getString("todo"), m_context
         + "/Rtodo/jsp/Main");
     Pair<String, String>[] hostPath = new Pair[1];

@@ -37,7 +37,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
@@ -267,7 +267,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         }
         notifMetaData.addLanguage(language, translation, "");
 
-        String url = URLManager.getURL(URLManager.CMP_MYPROFILE, null, null)
+        String url = URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null)
             + "MyInvitations";
         Link link = new Link(url, localizedMessage.getString("myProfile.invitations.notification.notifLinkLabel"));
         notifMetaData.setLink(link, language);

@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.user.builder;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
 
@@ -124,7 +124,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   protected String getResourceURL(final T resource) {
     String resourceUrl = null;
     if (resource instanceof SilverpeasContent) {
-      resourceUrl = URLManager.getSearchResultURL((SilverpeasContent) resource);
+      resourceUrl = URLUtil.getSearchResultURL((SilverpeasContent) resource);
     }
     if (StringUtils.isBlank(resourceUrl)) {
       resourceUrl = "";

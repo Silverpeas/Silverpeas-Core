@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 
@@ -81,7 +81,7 @@ public abstract class AbstractTool {
    * @return the url
    */
   public String getUrl() {
-    return URLManager.getURL(urlComponentName, null, "") + urlSuffix;
+    return URLUtil.getURL(urlComponentName, null, "") + urlSuffix;
   }
 
   /**

@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -33,6 +33,6 @@ public class MyProfileTool extends AbstractTool {
 
   public MyProfileTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "customVisible", "personalize", "Personalization",
-        URLManager.CMP_MYPROFILE, "MyInfos");
+        URLUtil.CMP_MYPROFILE, "MyInfos");
   }
 }

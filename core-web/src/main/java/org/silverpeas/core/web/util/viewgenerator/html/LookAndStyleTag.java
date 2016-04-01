@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ElementContainer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,11 +57,11 @@ public class LookAndStyleTag extends TagSupport {
       ElementContainer elements = new ElementContainer();
       if (withFieldsetStyle) {
         elements.addElement(JavascriptPluginInclusion
-            .link(URLManager.getApplicationURL() + "/util/styleSheets/fieldset.css"));
+            .link(URLUtil.getApplicationURL() + "/util/styleSheets/fieldset.css"));
       }
       if (withCheckFormScript) {
         elements.addElement(JavascriptPluginInclusion
-            .script(URLManager.getApplicationURL() + "/util/javaScript/checkForm.js"));
+            .script(URLUtil.getApplicationURL() + "/util/javaScript/checkForm.js"));
       }
       elements.output(pageContext.getOut());
     } catch (IOException e) {

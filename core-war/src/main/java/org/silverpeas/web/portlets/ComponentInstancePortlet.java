@@ -21,7 +21,7 @@
 package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.portlets.FormNames;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -39,7 +39,7 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
 
     if (OrganizationControllerProvider.getOrganisationController().isComponentAvailable(instanceId,
         UserDetail.getCurrentRequester().getId())) {
-      request.setAttribute("URL", URLManager.getURL(null, null, instanceId) + "portlet");
+      request.setAttribute("URL", URLUtil.getURL(null, null, instanceId) + "portlet");
     }
     include(request, response, "portlet.jsp");
   }

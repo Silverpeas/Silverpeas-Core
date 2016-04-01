@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationController"%>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
@@ -61,6 +61,6 @@
     message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
     homePageSettings = ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
 
-    m_sContext = URLManager.getApplicationURL();
+    m_sContext = URLUtil.getApplicationURL();
   }
 %>

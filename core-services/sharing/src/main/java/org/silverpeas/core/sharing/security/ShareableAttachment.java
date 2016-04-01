@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.sharing.security;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
@@ -41,6 +41,6 @@ public class ShareableAttachment extends ShareableResource<SimpleDocument> {
 
   @Override
   public String getURL() {
-    return URLManager.getSimpleURL(URLManager.URL_FILE, accessedObject.getId());
+    return URLUtil.getSimpleURL(URLUtil.URL_FILE, accessedObject.getId());
   }
 }

@@ -24,7 +24,7 @@
 package org.silverpeas.web.jobstartpage;
 
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -151,7 +151,7 @@ public class NavBarManager {
     String sUserId = user.getId();
 
 
-    m_sContext = URLManager.getApplicationURL();
+    m_sContext = URLUtil.getApplicationURL();
     m_administrationCtrl = ServiceProvider.getService(AdminController.class);
     m_SessionCtrl = msc;
     m_user = user;

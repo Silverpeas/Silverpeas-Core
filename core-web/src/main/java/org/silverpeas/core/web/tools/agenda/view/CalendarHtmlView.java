@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.tools.agenda.view;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.calendar.model.JournalHeader;
@@ -62,7 +62,7 @@ public class CalendarHtmlView {
   }
 
   public CalendarHtmlView(String context) {
-    this.context = context + URLManager.getURL(URLManager.CMP_AGENDA);
+    this.context = context + URLUtil.getURL(URLUtil.CMP_AGENDA);
   }
 
   /**

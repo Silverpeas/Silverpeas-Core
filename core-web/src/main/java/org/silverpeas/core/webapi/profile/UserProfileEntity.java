@@ -26,7 +26,7 @@ package org.silverpeas.core.webapi.profile;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -376,7 +376,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     if (context != null) {
       pageUri = context.getContextPath() + pageUri;
     } else {
-      pageUri = URLManager.getApplicationURL() + pageUri;
+      pageUri = URLUtil.getApplicationURL() + pageUri;
     }
     return pageUri;
   }
@@ -386,7 +386,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     if (context != null) {
       pageUri = context.getContextPath() + pageUri;
     } else {
-      pageUri = URLManager.getApplicationURL() + pageUri;
+      pageUri = URLUtil.getApplicationURL() + pageUri;
     }
     return pageUri;
   }

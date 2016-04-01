@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.PdcUserField;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
@@ -146,7 +146,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
     if (!template.isHidden() && !template.isDisabled()
         && !template.isReadOnly()) {
       html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" + URLManager.
+          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" + URLUtil.
           getApplicationURL() + "/RpdcSearchUserWrapper/jsp/Open"
           + "?formName=" + PagesContext.getFormName()
           + "&elementId=" + fieldName + "$$id"

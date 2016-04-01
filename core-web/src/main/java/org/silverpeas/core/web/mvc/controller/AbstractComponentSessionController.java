@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.mvc.controller;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.admin.component.model.Parameter;
 import com.silverpeas.personalization.UserPreferences;
@@ -35,7 +35,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
-import com.stratelia.silverpeas.alertUser.AlertUser;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
@@ -86,7 +86,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       String spaceId, String componentId) {
     this.controller = controller;
     this.context = controller.createComponentContext(spaceId, componentId);
-    setComponentRootName(URLManager.getComponentNameFromComponentId(componentId));
+    setComponentRootName(URLUtil.getComponentNameFromComponentId(componentId));
   }
 
   /**
@@ -111,7 +111,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       ComponentContext context, String resourceFileName) {
     this.controller = controller;
     this.context = context;
-    setComponentRootName(URLManager.getComponentNameFromComponentId(getComponentId()));
+    setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
     setResourceFileName(resourceFileName);
   }
 
@@ -119,7 +119,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       ComponentContext context, String multilangFileName, String iconFileName) {
     this.controller = controller;
     this.context = context;
-    setComponentRootName(URLManager.getComponentNameFromComponentId(getComponentId()));
+    setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
     setMultilangFileName(multilangFileName);
     setIconFileName(iconFileName);
   }
@@ -129,7 +129,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       String settingsFileName) {
     this.controller = controller;
     this.context = context;
-    setComponentRootName(URLManager.getComponentNameFromComponentId(getComponentId()));
+    setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
     setMultilangFileName(multilangFileName);
     setIconFileName(iconFileName);
     this.settingsFile = settingsFileName;
@@ -352,7 +352,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public final String getComponentUrl() {
-    return URLManager.getURL(rootName, getSpaceId(), getComponentId());
+    return URLUtil.getURL(rootName, getSpaceId(), getComponentId());
   }
 
   /**

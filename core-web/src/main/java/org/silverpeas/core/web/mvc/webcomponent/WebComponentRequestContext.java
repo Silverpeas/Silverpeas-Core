@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import com.silverpeas.subscribe.util.SubscriptionManagementContext;
-import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
@@ -345,8 +345,8 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
           URLEncoder.encode(getComponentInstanceLabel(), CharEncoding.UTF_8));
       getRequest().setAttribute("ObjectId", objectId);
       getRequest().setAttribute("Language", controller.getLanguage());
-      getRequest().setAttribute("ReturnUrl", URLManager.getApplicationURL() +
-          URLManager.getURL(getComponentName(), "useless", getComponentInstanceId()) +
+      getRequest().setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
+          URLUtil.getURL(getComponentName(), "useless", getComponentInstanceId()) +
           returnPath);
       getRequest().setAttribute("UserId", String.valueOf(indexIt));
       return redirectTo("/wysiwyg/jsp/htmlEditor.jsp");

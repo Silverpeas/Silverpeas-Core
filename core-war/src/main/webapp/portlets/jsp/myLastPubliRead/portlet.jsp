@@ -72,7 +72,7 @@ if (publications.isEmpty()) { %>
     if (StringUtil.isDefined(pub.getUpdaterId())) {
       pubUpdater = UserDetail.getById(pub.getUpdaterId());
     }
-		String url = m_sContext + URLManager.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.getURL();
+		String url = m_sContext + URLUtil.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.getURL();
 		if (!first) {
 %>
 <br/><br/>

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content.form;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -35,7 +35,7 @@ import org.silverpeas.core.util.StringUtil;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import static com.stratelia.silverpeas.peasCore.URLManager.appendVersion;
+import static org.silverpeas.core.util.URLUtil.appendVersion;
 
 public class Util {
 
@@ -43,7 +43,7 @@ public class Util {
       "org.silverpeas.form.settings.formIcons");
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.form.settings.form");
-  private static final String path = URLManager.getApplicationURL();
+  private static final String path = URLUtil.getApplicationURL();
   private static LocalizationBundle message;
   private static String language;
 

@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
 import org.silverpeas.core.contribution.contentcontainer.container.URLIcone;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.util.JoinStatement;
@@ -309,13 +309,13 @@ public class ContentManager implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/publicationAdd.gif");
+        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publicationAdd.gif");
         uiCreation.setAlternateText("fileBoxPlus.CreateNewDocument");
         uiCreation.setActionURL("CreateQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/publish.gif");
+        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
         uiCreation.setAlternateText("fileBoxPlus.AllDocuments");
         uiCreation.setActionURL("Main");
         auURLIcones.add(uiCreation);
@@ -337,13 +337,13 @@ public class ContentManager implements Serializable {
 
         uiCreation = new URLIcone();
         uiCreation
-            .setIconePath(URLManager.getApplicationURL() + "/util/icons/whitePages_to_add.gif");
+            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/whitePages_to_add.gif");
         uiCreation.setAlternateText("whitePages.CreateAUsercard");
         uiCreation.setActionURL("createQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/publish.gif");
+        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
         uiCreation.setAlternateText("whitePages.AllCards");
         uiCreation.setActionURL("Main");
         auURLIcones.add(uiCreation);
@@ -365,13 +365,13 @@ public class ContentManager implements Serializable {
 
         uiCreation = new URLIcone();
         uiCreation
-            .setIconePath(URLManager.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
+            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
         uiCreation.setAlternateText("expertLocator.CreateAUsercard");
         uiCreation.setActionURL("createQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/publish.gif");
+        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
         uiCreation.setAlternateText("expertLocator.AllCards");
         uiCreation.setActionURL("Main");
         auURLIcones.add(uiCreation);
@@ -396,21 +396,21 @@ public class ContentManager implements Serializable {
 
         uiCreation = new URLIcone();
         uiCreation
-            .setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
+            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
         uiCreation.setAlternateText("questionReply.AriseAQuestion");
         uiCreation.setActionURL("CreateQQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
         uiCreation
-            .setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
+            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
         uiCreation.setAlternateText("questionReply.AddAFAQ");
         uiCreation.setActionURL("CreateQueryQR");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
         uiCreation.setIconePath(
-            URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
+            URLUtil.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
         uiCreation.setAlternateText("questionReply.AllQuestions");
         uiCreation.setActionURL("ConsultReceiveQuestions");
         auURLIcones.add(uiCreation);
@@ -419,14 +419,14 @@ public class ContentManager implements Serializable {
 
         uiCreation = new URLIcone();
         uiCreation
-            .setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
+            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
         uiCreation.setAlternateText("questionReply.AriseAQuestion");
         uiCreation.setActionURL("CreateQQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
         uiCreation.setIconePath(
-            URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
+            URLUtil.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
         uiCreation.setAlternateText("questionReply.AllQuestions");
         uiCreation.setActionURL("ConsultReceiveQuestions");
         auURLIcones.add(uiCreation);

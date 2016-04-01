@@ -28,7 +28,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -107,8 +107,8 @@ public abstract class AbstractSubscriptionBean implements Subscription {
    * @return
    */
   public String getLink() {
-    return URLManager
-        .getSimpleURL(URLManager.URL_COMPONENT, subscription.getResource().getInstanceId());
+    return URLUtil
+        .getSimpleURL(URLUtil.URL_COMPONENT, subscription.getResource().getInstanceId());
   }
 
   /**

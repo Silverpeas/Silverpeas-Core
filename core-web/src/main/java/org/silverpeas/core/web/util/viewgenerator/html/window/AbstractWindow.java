@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.window;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -158,7 +158,7 @@ public abstract class AbstractWindow implements Window {
       String label = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage())
               .getString("GML.operations.setupComponent");
-      String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
+      String url = URLUtil.getApplicationURL() + "/R" + URLUtil.CMP_JOBSTARTPAGEPEAS +
           "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentIdOfCurrentRequest();
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();

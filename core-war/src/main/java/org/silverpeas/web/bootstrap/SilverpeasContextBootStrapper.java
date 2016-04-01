@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.bootstrap;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -53,7 +53,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
       SilverLogger.getLogger("silverpeas").error("Unable to configure the keystore/truststore.");
     }
 
-    URLManager.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));
+    URLUtil.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));
   }
 
   boolean isTrustoreConfigured() {

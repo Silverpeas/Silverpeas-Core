@@ -20,8 +20,8 @@
  */
 package org.silverpeas.web.servlets;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -49,7 +49,7 @@ public class GoToTopic extends GoTo {
     NodeDetail node = getNodeBm().getHeader(pk);
 
     setGefSpaceId(req, componentId);
-    String gotoURL = URLManager.getURL(null, componentId) + node.getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + node.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
   }
 

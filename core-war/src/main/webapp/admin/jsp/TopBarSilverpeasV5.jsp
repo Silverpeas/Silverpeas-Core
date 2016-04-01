@@ -30,6 +30,7 @@
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.core.web.look.TopItem"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -217,7 +218,7 @@ function getFooterHeight() {
        <table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 		<td>
-                <a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_JOBMANAGERPEAS, null, null)%>Main" target="_top"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
+                <a href="<%=m_sContext + URLUtil.getURL(URLUtil.CMP_JOBMANAGERPEAS, null, null)%>Main" target="_top"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
                 </td>
             </tr>
         </table>

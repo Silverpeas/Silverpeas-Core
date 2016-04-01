@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.filter;
 
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.util.HttpMethod;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -97,7 +97,7 @@ public class WebCORSFilter implements Filter {
       if (StringUtil.isDefined(serverOrigin) && allowedDomainList.contains(serverOrigin)) {
         allowedDomain = serverOrigin;
       } else {
-        allowedDomain = URLManager.getServerURL(httpRequest);
+        allowedDomain = URLUtil.getServerURL(httpRequest);
       }
     }
     return allowedDomain;

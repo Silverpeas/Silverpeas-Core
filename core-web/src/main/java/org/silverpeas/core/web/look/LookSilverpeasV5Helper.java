@@ -25,7 +25,7 @@ import com.silverpeas.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -554,7 +554,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     if (!StringUtil.isDefined(function)) {
       currentFunction = "Main";
     }
-    return URLManager.getApplicationURL() + URLManager.getURL("useless", currentComponentId)
+    return URLUtil.getApplicationURL() + URLUtil.getURL("useless", currentComponentId)
         + currentFunction;
   }
 
@@ -635,7 +635,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
         && spaceStruct.getFirstPageExtraParam().length() > 0) {
       if (getOrganisationController().isComponentAvailable(
           spaceStruct.getFirstPageExtraParam(), getUserId())) {
-        return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
+        return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT,
             spaceStruct.getFirstPageExtraParam());
       }
     }
@@ -783,7 +783,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
         }
         if (displayEvents && app.getName().equals("almanach") &&
             !StringUtil.isDefined(homepage.getNextEventsURL())) {
-          homepage.setNextEventsURL(URLManager.getApplicationURL()+URLManager.getURL(null, appId)+"portlet");
+          homepage.setNextEventsURL(URLUtil.getApplicationURL()+URLUtil.getURL(null, appId)+"portlet");
         }
       }
       homepage.setApps(apps);
@@ -870,7 +870,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
       spaceId = getSubSpaceId();
     }
     if (StringUtil.isDefined(spaceId)) {
-      return URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId);
+      return URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId);
     }
     return null;
   }

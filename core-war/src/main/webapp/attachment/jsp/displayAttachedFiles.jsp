@@ -57,7 +57,7 @@
 <c:if test="${isVersionActive}">
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
+  VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLUtil.CMP_VERSIONINGPEAS);
   if(versioningSC == null) {
       String componentId = request.getParameter("ComponentId");
       ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
@@ -165,7 +165,7 @@
   <c:set var="useXMLForm" value="${silfn:isDefined(xmlForm)}" />
   <c:set var="indexIt" value="${silfn:booleanValue(param.IndexIt)}" />
   <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
-  <c:set var="displayUniversalLinks"><%=URLManager.displayUniversalLinks()%></c:set>
+  <c:set var="displayUniversalLinks"><%=URLUtil.displayUniversalLinks()%></c:set>
 
   <c:set var="Silverpeas_Attachment_ObjectId" value="${param.Id}" scope="session" />
   <c:set var="Silverpeas_Attachment_ComponentId" value="${param.ComponentId}" scope="session" />
@@ -1256,7 +1256,7 @@
   }
 
   function getOnlineEditionLauncherURL(docId, lang) {
-    return "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?id="+docId+"&lang="+lang;
+    return "<%=URLUtil.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?id="+docId+"&lang="+lang;
   }
 
   function openDocViaCustomProtocol(docId, lang) {

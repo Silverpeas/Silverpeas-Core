@@ -35,6 +35,7 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.apache.commons.io.FileUtils;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.web.communicationuser.CommunicationUserException;
 import org.silverpeas.core.security.session.SessionInfo;
@@ -45,7 +46,6 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
@@ -72,7 +72,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
         "org.silverpeas.communicationUser.multilang.communicationUserBundle",
         "org.silverpeas.communicationUser.settings.communicationUserIcons",
         "org.silverpeas.communicationUser.settings.communicationUserSettings");
-    setComponentRootName(URLManager.CMP_COMMUNICATIONUSER);
+    setComponentRootName(URLUtil.CMP_COMMUNICATIONUSER);
   }
 
   /**

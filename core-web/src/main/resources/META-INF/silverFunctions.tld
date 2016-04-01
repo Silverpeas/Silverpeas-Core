@@ -275,7 +275,7 @@
   <function>
     <description>Function that returns the Full URL of the application.</description>
     <name>fullApplicationURL</name>
-    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
     <function-signature>
       java.lang.String getFullApplicationURL(javax.servlet.http.HttpServletRequest)()
     </function-signature>
@@ -283,7 +283,7 @@
   <function>
     <description>Function that returns the URL of the application.</description>
     <name>applicationURL</name>
-    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
     <function-signature>
       java.lang.String getApplicationURL()
     </function-signature>
@@ -293,7 +293,7 @@
       identifier.
     </description>
     <name>componentURL</name>
-    <function-class>com.stratelia.silverpeas.peasCore.URLManager</function-class>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
     <function-signature>
       java.lang.String getComponentInstanceURL(java.lang.String)
     </function-signature>

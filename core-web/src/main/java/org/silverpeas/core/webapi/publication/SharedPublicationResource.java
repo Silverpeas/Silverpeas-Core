@@ -32,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.sharing.SharingContext;
+import org.silverpeas.core.contribution.attachment.util.SharingContext;
 
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;

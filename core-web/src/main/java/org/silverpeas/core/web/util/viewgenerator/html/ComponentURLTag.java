@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -41,11 +41,11 @@ public class ComponentURLTag extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
-    String url = URLManager.getApplicationURL();
+    String url = URLUtil.getApplicationURL();
     if (isDefined(componentName)) {
-      url += URLManager.getURL(componentName, null, componentId);
+      url += URLUtil.getURL(componentName, null, componentId);
     } else {
-      url += URLManager.getURL(null, componentId);
+      url += URLUtil.getURL(null, componentId);
     }
     try {
       pageContext.getOut().print(url);

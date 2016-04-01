@@ -29,8 +29,8 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class GoToAgenda extends GoTo {
 
@@ -42,7 +42,7 @@ public class GoToAgenda extends GoTo {
 
 
 
-    String gotoURL = URLManager.getURL(URLManager.CMP_AGENDA) + url;
+    String gotoURL = URLUtil.getURL(URLUtil.CMP_AGENDA) + url;
 
 
 

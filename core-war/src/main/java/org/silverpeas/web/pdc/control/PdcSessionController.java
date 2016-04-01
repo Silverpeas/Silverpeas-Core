@@ -39,7 +39,7 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -402,7 +402,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
    */
   public String initUserPanelForPdcManager() throws RemoteException,
       PdcException, SQLException {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     Pair<String, String>[] hostPath = new Pair[1];
 
     String name = getCurrentAxis().getAxisHeader()

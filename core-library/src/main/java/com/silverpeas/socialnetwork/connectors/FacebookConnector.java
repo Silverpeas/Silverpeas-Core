@@ -23,11 +23,12 @@ package com.silverpeas.socialnetwork.connectors;
 import com.silverpeas.socialnetwork.qualifiers.Facebook;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
@@ -156,7 +157,7 @@ public class FacebookConnector extends AbstractSocialNetworkConnector {
   }
 
   private String getChannelURL(HttpServletRequest request) {
-    String fullURL = URLManager.getFullApplicationURL(request);
+    String fullURL = URLUtil.getFullApplicationURL(request);
     fullURL = fullURL.substring(fullURL.indexOf("//"));
 
     return fullURL + "/socialNetwork/jsp/channelFB.html";

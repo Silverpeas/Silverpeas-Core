@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import net.htmlparser.jericho.Source;
@@ -245,7 +245,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           stringBuilder.append("<option value=\"\">").append(
               resources.getString("Image")).append("</option>");
           for (SimpleDocument image : listImages) {
-            stringBuilder.append("<option value=\"").append(URLManager.getApplicationURL()+image.getAttachmentURL()).append("\">")
+            stringBuilder.append("<option value=\"").append(URLUtil.getApplicationURL()+image.getAttachmentURL()).append("\">")
                 .append(image.getFilename()).append("</option>");
           }
           stringBuilder.append("</select>");
@@ -307,7 +307,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("<script type=\"text/javascript\">");
 
       stringBuilder = new StringBuilder();
-      String configFile = settings.getString("configFile", URLManager.getApplicationURL()
+      String configFile = settings.getString("configFile", URLUtil.getApplicationURL()
           + "/wysiwyg/jsp/ckeditor/silverconfig.js");
 
       stringBuilder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
@@ -364,7 +364,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
             + "\").options[index].value;");
         out.println("if (index != 0){ ");
         out.println("url = \""
-            + URLManager.getApplicationURL()
+            + URLUtil.getApplicationURL()
             +
             "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
             + fieldNameFunction + "\";");

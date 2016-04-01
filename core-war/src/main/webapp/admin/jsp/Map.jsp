@@ -37,7 +37,7 @@
 %>
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
@@ -198,7 +198,7 @@
   </view:frame>
 </view:window>
 <form name="clipboardForm"
-      action="<%=m_sContext+URLManager.getURL(URLManager.CMP_CLIPBOARD)%>Idle.jsp" method="post"
+      action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post"
       target="IdleFrame">
   <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
 </form>

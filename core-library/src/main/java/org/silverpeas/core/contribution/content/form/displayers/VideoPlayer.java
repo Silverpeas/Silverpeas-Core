@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ConcreteElement;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
@@ -39,7 +39,7 @@ import java.util.Random;
  */
 public class VideoPlayer {
 
-  private static final String webContext = URLManager.getApplicationURL();
+  private static final String webContext = URLUtil.getApplicationURL();
   private static final String playerUrl =
       webContext + "/util/flash/flowplayer/flowplayer-3.2.7.swf";
   private static final Random randomGenerator = new Random();

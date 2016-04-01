@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
@@ -335,7 +335,7 @@ public class AbstractArrayPane implements ArrayPane {
       return getExportDataURL();
     }
     StringBuilder exportUrl = new StringBuilder();
-    String contextPath = URLManager.getApplicationURL();
+    String contextPath = URLUtil.getApplicationURL();
     exportUrl.append(contextPath).append(EXPORT_URL_SERVLET_MAPPING);
     exportUrl.append("?type=ArrayPane&name=");
     // Change the name parameter if you want to export 2 arrays which are displayed in the same page

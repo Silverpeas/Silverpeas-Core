@@ -38,6 +38,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.web.jobstartpage.AllComponentParameters;
 import org.silverpeas.web.jobstartpage.DisplaySorted;
@@ -52,7 +53,6 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -126,7 +126,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
         "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasIcons");
-    setComponentRootName(URLManager.CMP_JOBSTARTPAGEPEAS);
+    setComponentRootName(URLUtil.CMP_JOBSTARTPAGEPEAS);
     selection = getSelection();
     adminController = ServiceProvider.getService(AdminController.class);
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,

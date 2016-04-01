@@ -26,7 +26,7 @@ package org.silverpeas.web.token;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.token.TokenSettingTemplate;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
-import org.silverpeas.token.Token;
+import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.web.token.TokenSettingTemplate.Parameter;
 
 import javax.inject.Inject;

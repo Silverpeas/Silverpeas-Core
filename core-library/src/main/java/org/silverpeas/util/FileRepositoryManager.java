@@ -20,7 +20,7 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.util.ResourceLocator;
@@ -194,7 +194,7 @@ public class FileRepositoryManager {
   }
 
   public static String getFileIcon(boolean small, String filename) {
-    String path = URLManager.getApplicationURL() + uploadSettings.getString("FileIconsPath");
+    String path = URLUtil.getApplicationURL() + uploadSettings.getString("FileIconsPath");
     String extension = defaultStringIfNotDefined(FilenameUtils.getExtension(filename), filename);
     extension = defaultStringIfNotDefined(extension);
     String fileIcon;

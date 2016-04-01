@@ -22,7 +22,7 @@ package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareableResource;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
@@ -194,7 +194,7 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
   }
 
   public String getUrl(HttpServletRequest request) {
-    return URLManager.getFullApplicationURL(request) + getRelativeUrl();
+    return URLUtil.getFullApplicationURL(request) + getRelativeUrl();
   }
 
   /**

@@ -23,7 +23,7 @@ package org.silverpeas.web.attachment;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -91,7 +91,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.versioningPeas.multilang.versioning",
         null);
-    setComponentRootName(URLManager.CMP_VERSIONINGPEAS);
+    setComponentRootName(URLUtil.CMP_VERSIONINGPEAS);
   }
 
   /**

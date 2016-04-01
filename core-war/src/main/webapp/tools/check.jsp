@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
@@ -52,7 +52,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
-String m_context = URLManager.getApplicationURL();
+String m_context = URLUtil.getApplicationURL();
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.admin.tools;
 
 import org.silverpeas.core.web.look.LookHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -33,6 +33,6 @@ public class SubscriptionTool extends AbstractTool {
 
   public SubscriptionTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "interestVisible", "subscriptions", "MyInterestCenters",
-        URLManager.CMP_PDCSUBSCRIPTION, "subscriptionList.jsp");
+        URLUtil.CMP_PDCSUBSCRIPTION, "subscriptionList.jsp");
   }
 }

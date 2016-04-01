@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -190,9 +190,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
       classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " skinFieldset");
     }
     script pluginDependency1 = new script().setType("text/javascript").
-        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
+        setSrc(URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
     script pluginDependency2 = new script().setType("text/javascript").
-        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-classification.js");
+        setSrc(URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-pdc-classification.js");
     script pluginExecution = new script().setType("text/javascript").
         addElement(executePlugin(operation));
     xhtmlcontainer.addElement(pluginDependency1).
@@ -211,7 +211,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @throws JspTagException if an error occurs during the processing of the plugin.
    */
   private String executePlugin(PdcClassificationTagOperation operation) throws JspTagException {
-    String context = URLManager.getApplicationURL();
+    String context = URLUtil.getApplicationURL();
     MultiSilverpeasBundle resources = getResources();
     String function = operation.getPluginFunction();
     String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)

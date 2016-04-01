@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -79,11 +79,11 @@ public class GoToDocument extends GoTo {
           isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), lastPublicVersion,
               AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
           if (isAccessAuthorized) {
-            return URLManager.getServerURL(req) + lastPublicVersion.getUniversalURL();
+            return URLUtil.getServerURL(req) + lastPublicVersion.getUniversalURL();
           }
         }
       } else {
-        return URLManager.getServerURL(req) + version.getUniversalURL();
+        return URLUtil.getServerURL(req) + version.getUniversalURL();
       }
     }
     return null;

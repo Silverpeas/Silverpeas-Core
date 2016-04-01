@@ -31,10 +31,10 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.server.channel.popup.POPUPException;
 import org.silverpeas.core.notification.user.server.channel.popup.POPUPMessage;
 import org.silverpeas.core.notification.user.server.channel.popup.POPUPPersistence;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -56,11 +56,11 @@ public class POPUPSessionController extends AbstractComponentSessionController {
     super(mainSessionCtrl, context,
         "org.silverpeas.notificationserver.channel.popup.multilang.popup",
         "org.silverpeas.notificationserver.channel.popup.settings.popupIcons");
-    setComponentRootName(URLManager.CMP_POPUP);
+    setComponentRootName(URLUtil.CMP_POPUP);
   }
 
   protected String getComponentInstName() {
-    return URLManager.CMP_POPUP;
+    return URLUtil.CMP_POPUP;
   }
 
   /**

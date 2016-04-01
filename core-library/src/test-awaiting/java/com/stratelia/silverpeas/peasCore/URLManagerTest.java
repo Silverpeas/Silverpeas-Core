@@ -56,72 +56,72 @@ public class URLManagerTest {
   }
 
   /**
-   * Test of getURL method, of class URLManager.
+   * Test of getURL method, of class URLUtil.
    */
   @Test
   public void testGetURLWithComponentNameSpaceIdAndComponentId() {
     String sSpace = "WA12";
     String sComponentId = "kmelia158";
     String sComponentName = "kmelia";
-    String result = URLManager.getURL(sComponentName, sSpace, sComponentId);
+    String result = URLUtil.getURL(sComponentName, sSpace, sComponentId);
     assertThat(result, is("/Rkmelia/kmelia158/"));
   }
 
   /**
-   * Test of getURL method, of class URLManager.
+   * Test of getURL method, of class URLUtil.
    */
   @Test
   public void testGetURLWithComponentName() {
     String sComponentName = "kmelia";
-    String result = URLManager.getURL(sComponentName);
+    String result = URLUtil.getURL(sComponentName);
     assertThat(result, is("/Rkmelia/null/"));
   }
 
   /**
-   * Test of getURL method, of class URLManager.
+   * Test of getURL method, of class URLUtil.
    */
   @Test
   public void testGetURLWithSpaceIdAndComponentId() {
     String sSpace = "WA12";
     String sComponentId = "kmelia158";
-    String result = URLManager.getURL(sSpace, sComponentId);
+    String result = URLUtil.getURL(sSpace, sComponentId);
     assertThat(result, is("/Rkmelia/kmelia158/"));
   }
 
   /**
-   * Test of getNewComponentURL method, of class URLManager.
+   * Test of getNewComponentURL method, of class URLUtil.
    */
   @Test
   public void testGetNewComponentURL() {
     String spaceId = "WA21";
     String componentId = "kmelia128";
-    String result = URLManager.getNewComponentURL(spaceId, componentId);
+    String result = URLUtil.getNewComponentURL(spaceId, componentId);
     assertThat(result, is("/Rkmelia/kmelia128/"));
   }
 
   /**
-   * Test of getComponentNameFromComponentId method, of class URLManager.
+   * Test of getComponentNameFromComponentId method, of class URLUtil.
    */
   @Test
   public void testGetComponentNameFromComponentId() {
-    String result = URLManager.getComponentNameFromComponentId("kmelia125");
+    String result = URLUtil.getComponentNameFromComponentId("kmelia125");
     assertThat(result, is("kmelia"));
-    result = URLManager.getComponentNameFromComponentId("kmelia125");
+    result = URLUtil.getComponentNameFromComponentId("kmelia125");
     assertThat(result, is("kmelia"));
 
   }
 
   /**
-   * Test of getApplicationURL method, of class URLManager.
+   * Test of getApplicationURL method, of class URLUtil.
    */
   @Test
   public void testGetApplicationURL() {
-    String result = URLManager.getApplicationURL();
+    String result = URLUtil.getApplicationURL();
     assertThat(result, is("/silverpeas/"));
   }
 
   /**
-   * Test of getFullApplicationURL method, of class URLManager.
+   * Test of getFullApplicationURL method, of class URLUtil.
    */
   @Test
   public void testGetFullApplicationURL() {
@@ -129,20 +129,20 @@ public class URLManagerTest {
     when(request.getScheme()).thenReturn("https");
     when(request.getServerName()).thenReturn("www.silverpeas.org");
     when(request.getServerPort()).thenReturn(8443);
-    String result = URLManager.getFullApplicationURL(request);
+    String result = URLUtil.getFullApplicationURL(request);
     assertThat(result, is("https://www.silverpeas.org:8443/silverpeas/"));
     verify(request, times(2)).getServerPort();
     reset(request);
     when(request.getScheme()).thenReturn("http");
     when(request.getServerName()).thenReturn("www.silverpeas.org");
     when(request.getServerPort()).thenReturn(80);
-    result = URLManager.getFullApplicationURL(request);
+    result = URLUtil.getFullApplicationURL(request);
     assertThat(result, is("http://www.silverpeas.org/silverpeas/"));
     verify(request, times(1)).getServerPort();
   }
 
   /**
-   * Test of getServerURL method, of class URLManager.
+   * Test of getServerURL method, of class URLUtil.
    */
   @Test
   public void testGetServerURL() {
@@ -150,53 +150,53 @@ public class URLManagerTest {
     when(request.getScheme()).thenReturn("https");
     when(request.getServerName()).thenReturn("www.silverpeas.org");
     when(request.getServerPort()).thenReturn(8443);
-    String result = URLManager.getServerURL(request);
+    String result = URLUtil.getServerURL(request);
     assertThat(result, is("https://www.silverpeas.org:8443"));
     verify(request, times(2)).getServerPort();
     reset(request);
     when(request.getScheme()).thenReturn("http");
     when(request.getServerName()).thenReturn("www.silverpeas.org");
     when(request.getServerPort()).thenReturn(80);
-    result = URLManager.getServerURL(request);
+    result = URLUtil.getServerURL(request);
     assertThat(result, is("http://www.silverpeas.org"));
     verify(request, times(1)).getServerPort();
   }
 
   /**
-   * Test of getHttpMode method, of class URLManager.
+   * Test of getHttpMode method, of class URLUtil.
    */
   @Test
   public void testGetHttpMode() {
-    String result = URLManager.getHttpMode();
+    String result = URLUtil.getHttpMode();
     assertThat(result, is("http://"));
   }
 
   /**
-   * Test of displayUniversalLinks method, of class URLManager.
+   * Test of displayUniversalLinks method, of class URLUtil.
    */
   @Test
   public void testDisplayUniversalLinks() {
-    boolean result = URLManager.displayUniversalLinks();
+    boolean result = URLUtil.displayUniversalLinks();
     assertThat(result, is(true));
   }
 
   /**
-   * Test of getSimpleURL method, of class URLManager.
+   * Test of getSimpleURL method, of class URLUtil.
    */
   @Test
   public void testGetSimpleURLByTypeIdAndComponentid() {
-    int type = URLManager.URL_SPACE;
+    int type = URLUtil.URL_SPACE;
     String id = "WA21";
     String componentId = "kmelia518";
-    String result = URLManager.getSimpleURL(URLManager.URL_SPACE, id, componentId);
+    String result = URLUtil.getSimpleURL(URLUtil.URL_SPACE, id, componentId);
     assertThat(result, is("/silverpeas/Space/WA21"));
     id = "kmelia518";
-    result = URLManager.getSimpleURL(URLManager.URL_COMPONENT, id, componentId);
+    result = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, id, componentId);
     assertThat(result, is("/silverpeas/Component/kmelia518"));
   }
 
   /**
-   * Test of getSimpleURL method, of class URLManager.
+   * Test of getSimpleURL method, of class URLUtil.
    */
   @Test
   public void testGetSimpleURLToForum() {
@@ -204,49 +204,49 @@ public class URLManagerTest {
     String componentId = "kmelia518";
     String forumId = "forum38";
     boolean appendContext = false;
-    String result = URLManager.getSimpleURL(URLManager.URL_SPACE, id, componentId, appendContext,
+    String result = URLUtil.getSimpleURL(URLUtil.URL_SPACE, id, componentId, appendContext,
             forumId);
     assertThat(result, is(""));
-    result = URLManager.getSimpleURL(URLManager.URL_MESSAGE, id, componentId, appendContext, forumId);
+    result = URLUtil.getSimpleURL(URLUtil.URL_MESSAGE, id, componentId, appendContext, forumId);
     assertThat(result, is("/ForumsMessage/59?ForumId=forum38"));
   }
 
   /**
-   * Test of getSimpleURL method, of class URLManager.
+   * Test of getSimpleURL method, of class URLUtil.
    */
   @Test
   public void testGetSimpleURByTypeIdAndComponentidWithContexteAppended() {
-    int type = URLManager.URL_SPACE;
+    int type = URLUtil.URL_SPACE;
     String id = "WA21";
     String componentId = "kmelia518";
     boolean appendContext = true;
-    String result = URLManager.getSimpleURL(type, id, componentId, appendContext);
+    String result = URLUtil.getSimpleURL(type, id, componentId, appendContext);
     assertThat(result, is("/silverpeas/Space/WA21"));
     id = "1978";
-    result = URLManager.getSimpleURL(URLManager.URL_PUBLI, id, componentId, appendContext);
+    result = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, id, componentId, appendContext);
     assertThat(result, is("/silverpeas/Publication/1978?ComponentId=kmelia518"));
   }
 
   /**
-   * Test of getSimpleURL method, of class URLManager.
+   * Test of getSimpleURL method, of class URLUtil.
    */
   @Test
   public void testGetSimpleURLByTypeAndId() {
-    int type = URLManager.URL_COMPONENT;
+    int type = URLUtil.URL_COMPONENT;
     String id = "kmelia518";
-    String result = URLManager.getSimpleURL(type, id);
+    String result = URLUtil.getSimpleURL(type, id);
     assertThat(result, is("/silverpeas/Component/kmelia518"));
   }
 
   /**
-   * Test of getSimpleURL method, of class URLManager.
+   * Test of getSimpleURL method, of class URLUtil.
    */
   @Test
   public void testGetSimpleURLByTypeAndIdWithContexteNotAppended() {
-    int type = URLManager.URL_COMPONENT;
+    int type = URLUtil.URL_COMPONENT;
     String id = "kmelia518";
     boolean appendContext = false;
-    String result = URLManager.getSimpleURL(type, id, appendContext);
+    String result = URLUtil.getSimpleURL(type, id, appendContext);
     assertThat(result, is("/Component/kmelia518"));
   }
 }

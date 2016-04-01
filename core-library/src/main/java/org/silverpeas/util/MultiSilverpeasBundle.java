@@ -24,7 +24,7 @@
 
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
@@ -140,7 +140,7 @@ public class MultiSilverpeasBundle {
   }
 
   public String getIcon(String key) {
-    return URLManager.getApplicationURL() + getValue(key, specificIcons);
+    return URLUtil.getApplicationURL() + getValue(key, specificIcons);
   }
 
   public String getLanguage() {

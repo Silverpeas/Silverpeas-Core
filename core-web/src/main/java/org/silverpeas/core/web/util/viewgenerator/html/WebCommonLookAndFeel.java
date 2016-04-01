@@ -25,7 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
@@ -227,7 +227,7 @@ public class WebCommonLookAndFeel {
   }
 
   private String getCSSLinkTagWithVersion(String href) {
-    return getCSSLinkTag(URLManager.appendVersion(href));
+    return getCSSLinkTag(URLUtil.appendVersion(href));
   }
 
   private String getJavaScriptTag(String src) {
@@ -235,7 +235,7 @@ public class WebCommonLookAndFeel {
   }
 
   private String getJavaScriptTagWithVersion(String src) {
-    return getJavaScriptTag(URLManager.appendVersion(src));
+    return getJavaScriptTag(URLUtil.appendVersion(src));
   }
 
   /**

@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.util.servlet;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -120,8 +120,8 @@ public abstract class RssServlet<T> extends HttpServlet {
 
           // construction de l'objet Channel
           channel.setTitle(getChannelTitle(instanceId));
-          URL componentUrl = new URL(serverURL + URLManager.getApplicationURL()
-              + URLManager.getURL("useless", instanceId));
+          URL componentUrl = new URL(serverURL + URLUtil.getApplicationURL()
+              + URLUtil.getURL("useless", instanceId));
           channel.setLocation(componentUrl);
 
           // exportation du channel
@@ -220,7 +220,7 @@ public abstract class RssServlet<T> extends HttpServlet {
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {
-      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 }

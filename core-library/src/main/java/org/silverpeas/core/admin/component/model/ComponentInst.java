@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -404,6 +404,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public String getPermalink() {
-    return URLManager.getSimpleURL(URLManager.URL_COMPONENT, getId());
+    return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, getId());
   }
 }

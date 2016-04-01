@@ -30,7 +30,7 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 <%@ page import="org.silverpeas.web.thumbnail.ThumbnailSessionController"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
@@ -62,7 +62,7 @@ MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("re
 
 String language = scc.getLanguage();
 
-String m_context = URLManager.getApplicationURL();
+String m_context = URLUtil.getApplicationURL();
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

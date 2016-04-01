@@ -62,6 +62,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.pdc.vo.ExternalSPConfigVO;
 import org.silverpeas.web.pdc.vo.Facet;
 import org.silverpeas.web.pdc.vo.FacetEntryVO;
@@ -71,7 +72,6 @@ import org.silverpeas.web.pdc.vo.SearchTypeConfigurationVO;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -1060,7 +1060,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             } catch (Exception e) {
               SilverLogger.getLogger(this).error(e.getMessage(), e);
             }
-            underLink = getUrl(URLManager.getApplicationURL(), indexEntry);
+            underLink = getUrl(URLUtil.getApplicationURL(), indexEntry);
             int iStart = underLink.indexOf("Attachment");
             int iEnd = underLink.indexOf('&', iStart);
             underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
@@ -1079,7 +1079,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               String title = componentInst.getLabel(getLanguage());
               result.setTitle(title);
               result.setType("Wysiwyg");
-              underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId);
+              underLink = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId);
               titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
                   + "');document.location.href='" + underLink + "';";
             }
@@ -1090,7 +1090,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           } catch (Exception e) {
             SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
-          underLink = getUrl(URLManager.getApplicationURL(), indexEntry);
+          underLink = getUrl(URLUtil.getApplicationURL(), indexEntry);
           int iStart = underLink.indexOf("Versioning");
           int iEnd = underLink.indexOf('&', iStart);
           underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
@@ -1102,7 +1102,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
               FileUtil.getMimeType(indexEntry.getTitle()));
           // window opener is reloaded on the main page of the component
-          underLink = URLManager.getApplicationURL() + URLManager.getURL("useless", componentId)
+          underLink = URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId)
               + "Main";
           titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, false);
         } else if (resultType.equals("TreeNode")) {
@@ -1119,16 +1119,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           String spaceId = indexEntry.getObjectId();
           titleLink = "javascript:" + markAsReadJS + " goToSpace('" + spaceId
               + "');document.location.href='"
-              + URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId) + "';";
+              + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId) + "';";
         } else if (resultType.equals("Component")) {
           // retour sur le composant
           componentId = indexEntry.getObjectId();
-          underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
+          underLink = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT,
               componentId);
           titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
               + "');document.location.href='" + underLink + "';";
         } else if (componentId.startsWith("user@")) {
-          titleLink = URLManager.getApplicationURL() + URLManager.getURL(resultType) + indexEntry
+          titleLink = URLUtil.getApplicationURL() + URLUtil.getURL(resultType) + indexEntry
               .getPageAndParams();
         } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
@@ -1141,12 +1141,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
               + "');";
           if (indexEntry != null) {
-            titleLink += "document.location.href='" + getUrl(URLManager.getApplicationURL(),
+            titleLink += "document.location.href='" + getUrl(URLUtil.getApplicationURL(),
                 indexEntry) + "';";
           } else {
             titleLink +=
                 "document.location.href='"
-                + getUrl(URLManager.getApplicationURL(), componentId, result.getURL())
+                + getUrl(URLUtil.getApplicationURL(), componentId, result.getURL())
                 + "';";
           }
         }
@@ -1170,7 +1170,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
    * permalink
    *
-   * @see URLManager#getSimpleURL
+   * @see URLUtil#getSimpleURL
    * @param resultType the result type
    * @param markAsReadJS javascript string to mark this result as read
    * @param indexEntry the current indexEntry
@@ -1184,24 +1184,24 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (serverName.equalsIgnoreCase(extSrv.getName())) {
         extURLSB.append("javascript:").append(markAsReadJS).append(" ");
         extURLSB.append("window.open('").append(extSrv.getUrl());
-        // Retrieve the URLManager type
+        // Retrieve the URLUtil type
         int type = 0;
         String objectId = "";
         String compId = indexEntry.getComponent();
         if ("Publication".equals(resultType)) {
           // exemple http://server/silverpeas/Publication/ID_PUBLI
-          type = URLManager.URL_PUBLI;
+          type = URLUtil.URL_PUBLI;
           objectId = indexEntry.getObjectId();
         } else if ("Node".equals(resultType)) {
           // exemple http://server/silverpeas/Topic/ID_TOPIC?ComponentId=ID_COMPONENT
-          type = URLManager.URL_TOPIC;
+          type = URLUtil.URL_TOPIC;
           objectId = indexEntry.getObjectId();
         } else if ("File".equals(resultType)) {
           // exemple http://server/silverpeas/File/ID_FILE
-          type = URLManager.URL_FILE;
+          type = URLUtil.URL_FILE;
           objectId = indexEntry.getObjectId();
         }
-        extURLSB.append(URLManager.getSimpleURL(type, objectId, compId, false));
+        extURLSB.append(URLUtil.getSimpleURL(type, objectId, compId, false));
         extURLSB.append("','").append(extSrv.getName()).append("');void 0;");
 
       }
@@ -2119,7 +2119,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ****************************************************************************************************************
    */
   public String initUserPanel() throws RemoteException {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostSpaceName = getString("pdcPeas.SearchPage");
     String hostUrl = m_context + "/RpdcSearch/jsp/FromUserPanel";
 
@@ -2344,7 +2344,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public String getUrl(String urlBase, String componentId, String pageAndParams) {
-    String url = urlBase + URLManager.getURL(null, componentId) + pageAndParams;
+    String url = urlBase + URLUtil.getURL(null, componentId) + pageAndParams;
     if (url.contains("?")) {
       url += "&From=Search";
     } else {

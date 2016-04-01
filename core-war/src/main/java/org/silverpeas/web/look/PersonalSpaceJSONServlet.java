@@ -21,13 +21,13 @@
 package org.silverpeas.web.look;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -174,7 +174,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         .put("description", component.getDescription())
         .put("label", getComponentLabel(component.getName(), helper))
         .put("id", component.getId())
-        .put("url", URLManager.getURL(component.getName(), "useless",
+        .put("url", URLUtil.getURL(component.getName(), "useless",
             component.getId()) + "Main"));
   }
 
@@ -186,7 +186,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
           .put("successfull", e == null);
       if (componentId != null) {
         jsonObject.put("id", componentId)
-            .put("url", URLManager.getURL(componentName, "useless", componentId) + "Main");
+            .put("url", URLUtil.getURL(componentName, "useless", componentId) + "Main");
       }
       if (e != null) {
         jsonObject.put("exception", e.getMessage());
@@ -220,26 +220,26 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
       json = JSONCodec.encodeArray(jsonArray -> {
         addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"),
-            URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main");
+            URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main");
         addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"),
-            URLManager.getURL(URLManager.CMP_TODO, null, null) + "todo.jsp");
+            URLUtil.getURL(URLUtil.CMP_TODO, null, null) + "todo.jsp");
         addNotificationsAsTool(jsonArray, helper, message);
         addTool(jsonArray, helper, "interestVisible", "subscriptions",
             message.getString("MyInterestCenters"),
-            URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null) + "subscriptionList.jsp");
+            URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION, null, null) + "subscriptionList.jsp");
         addTool(jsonArray, helper, "favRequestVisible", "requests",
             message.getString("FavRequests"),
-            URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS, null, null) + "iCenterList.jsp");
+            URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS, null, null) + "iCenterList.jsp");
         addTool(jsonArray, helper, "linksVisible", "links", message.getString("FavLinks"),
-            URLManager.getURL(URLManager.CMP_MYLINKSPEAS, null, null) + "Main");
+            URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS, null, null) + "Main");
         addFileSharingAsTool(jsonArray, helper, message);
         addWebConnectionsAsTool(jsonArray, helper, message);
         addTool(jsonArray, helper, "scheduleEventVisible", "scheduleevent",
             message.getString("ScheduleEvent"),
-            URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + "Main");
+            URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + "Main");
         addTool(jsonArray, helper, "customVisible", "personalize",
             message.getString("Personalization"),
-            URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "MyInfos");
+            URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null) + "MyInfos");
         addTool(jsonArray, helper, "mailVisible", "notifAdmins", message.getString("Feedback"),
             "javascript:notifyAdministrators()");
         addTool(jsonArray, helper, "clipboardVisible", "clipboard", message.getString("Clipboard"),
@@ -280,7 +280,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       }
 
       addTool(jsonArray, helper, "notificationVisible", "notification", message.getString("Mail"),
-          URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main", nbNotifications);
+          URLUtil.getURL(URLUtil.CMP_SILVERMAIL) + "Main", nbNotifications);
     }
   }
 
@@ -293,7 +293,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       try {
         if (!sharingTicket.getTicketsByUser(helper.getUserId()).isEmpty()) {
           addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",
-              message.getString("FileSharing"), URLManager.getURL(URLManager.CMP_FILESHARING)
+              message.getString("FileSharing"), URLUtil.getURL(URLUtil.CMP_FILESHARING)
               + "Main");
         }
       } catch (Exception e) {
@@ -312,7 +312,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         if (!webConnections.listWebConnectionsOfUser(helper.getUserId()).isEmpty()) {
           addTool(jsonArray, helper, "webconnectionsVisible", "webConnections",
               message.getString("WebConnections"),
-              URLManager.getURL(URLManager.CMP_WEBCONNECTIONS) + "Main");
+              URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS) + "Main");
         }
       } catch (RemoteException e) {
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",

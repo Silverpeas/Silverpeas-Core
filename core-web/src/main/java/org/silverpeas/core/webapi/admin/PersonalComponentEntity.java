@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 
 /**
@@ -79,7 +79,7 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
 
   private PersonalComponentEntity(final ComponentInst component) {
     super(TYPE, component.getId(), 0, component.getName(), component.getLabel(), component
-        .getDescription(), URLManager.getURL(component.getName(), null, component.getName() +
+        .getDescription(), URLUtil.getURL(component.getName(), null, component.getName() +
         component.getId()) +
         "Main");
   }

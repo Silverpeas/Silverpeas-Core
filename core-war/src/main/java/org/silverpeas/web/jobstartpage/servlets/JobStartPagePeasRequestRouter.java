@@ -24,11 +24,11 @@ import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.ParameterList;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.admin.service.AdminException;
@@ -126,7 +126,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         spaceint1 = jobStartPageSC.getSpaceInstById();
         spaceint1.setFirstPageType(SpaceInst.FP_TYPE_PORTLET);
         jobStartPageSC.updateSpaceInst(spaceint1);
-        request.setAttribute("fullURL", URLManager.getApplicationURL()
+        request.setAttribute("fullURL", URLUtil.getApplicationURL()
             + "/dt?dt.SpaceId=" + jobStartPageSC.getManagedSpaceId() + "&dt.Role=Admin");
         return "/jobStartPagePeas/jsp/goBack.jsp";
       case SelectPeas:
@@ -406,7 +406,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
             SilverpeasException.ERROR, "jobStartPagePeas.CANT_COPY_COMPONENT",
             e);
       }
-      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
+      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)
           + "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if ("Cut".equals(function)) {
       String objectId = request.getParameter("Id");
@@ -421,7 +421,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         throw new AdminException("JobStartPagePeasRequestRouter.getDestination()",
             SilverpeasException.ERROR, "jobStartPagePeas.CANT_CUT_ITEM", e);
       }
-      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
+      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)
           + "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if ("Paste".equals(function)) {
       Map<String, String> options = getPasteOptions(request);

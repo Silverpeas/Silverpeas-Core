@@ -1,4 +1,4 @@
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.web.tools.agenda.control.AgendaSessionController"%>
 <%@ page import="org.silverpeas.core.web.tools.agenda.control.AgendaUserException"%>
 <%@ page import="org.silverpeas.core.web.tools.agenda.view.AgendaHtmlView"%>
@@ -33,7 +33,7 @@
 <%@ page import="java.util.List" %>
 
 <%!
-String m_context = URLManager.getApplicationURL();
+String m_context = URLUtil.getApplicationURL();
 
 // Icones operationBar
 String agendaAddSrc         = m_context + "/util/icons/create-action/add-event.png";

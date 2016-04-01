@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.look;
 
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.core.util.URLUtil;
 
 public class TopItem {
 
@@ -86,7 +86,7 @@ public class TopItem {
     if (isSpace())
       return "/dt?SpaceId=" + getSubSpaceId();
     else if (isComponent())
-      return URLManager.getURL(null, getComponentId()) + "Main";
+      return URLUtil.getURL(null, getComponentId()) + "Main";
     else {
       if (StringUtil.isDefined(url)) {
         return url;

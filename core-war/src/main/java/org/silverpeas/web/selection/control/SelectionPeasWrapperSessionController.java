@@ -26,10 +26,10 @@ package org.silverpeas.web.selection.control;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -174,7 +174,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    * Init the user panel.
    */
   public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles) {
-    String m_context = URLManager.getApplicationURL();
+    String m_context = URLUtil.getApplicationURL();
     String hostUrl = m_context + "/RselectionPeasWrapper/jsp/close";
 
     Selection sel = getSelection();

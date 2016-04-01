@@ -47,11 +47,11 @@ if (applications.isEmpty()) { %>
 	for (ComponentInstLight appli : applications) {
 		String url = "";
 		String target = "";
-		if (URLManager.displayUniversalLinks()) {
-	      url = URLManager.getSimpleURL(URLManager.URL_COMPONENT, appli.getId());
+		if (URLUtil.displayUniversalLinks()) {
+	      url = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, appli.getId());
 	      target ="_top";
 	    } else {
-	      url = m_sContext + URLManager.getURL(appli.getName(), "useless", appli.getId()) + "Main";
+	      url = m_sContext + URLUtil.getURL(appli.getName(), "useless", appli.getId()) + "Main";
 	      target ="MyMain";
 	    }
 %>

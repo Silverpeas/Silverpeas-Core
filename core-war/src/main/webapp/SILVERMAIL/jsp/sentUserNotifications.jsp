@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ include file="checkSilvermail.jsp" %>
 <%@ include file="tabManager.jsp" %>
 <%@ page import="org.silverpeas.core.notification.user.client.model.SentNotificationDetail"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="java.util.Date"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
@@ -91,7 +91,8 @@ function deleteAllMessages() {
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(silvermailScc.getString("LireNotification"), "Main", false);
   tabbedPane.addTab(silvermailScc.getString("SentUserNotifications"), "SentUserNotifications", true);
-  tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "ParametrizeNotification", false);
+  tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLUtil.getURL(
+      URLUtil.CMP_PERSONALIZATION) + "ParametrizeNotification", false);
 
   out.println(window.printBefore());
   out.println(tabbedPane.print());

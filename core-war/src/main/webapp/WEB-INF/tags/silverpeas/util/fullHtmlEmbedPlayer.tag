@@ -1,4 +1,4 @@
-<%@ tag import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@ tag import="org.silverpeas.core.util.URLUtil" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
 
@@ -68,8 +68,8 @@
   <!-- optimize mobile versions -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="<%=URLManager.appendVersion(URLManager.getApplicationURL() + "/util/styleSheets/globalSP_SilverpeasV5.css")%>" rel="stylesheet">
-  <script src="<%=URLManager.appendVersion(URLManager.getApplicationURL() + "/util/javaScript/flowplayer/swfobject.js")%>"></script>
+  <link href="<%=URLUtil.appendVersion(URLUtil.getApplicationURL() + "/util/styleSheets/globalSP_SilverpeasV5.css")%>" rel="stylesheet">
+  <script src="<%=URLUtil.appendVersion(URLUtil.getApplicationURL() + "/util/javaScript/flowplayer/swfobject.js")%>"></script>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="${type}Player"/>
   <style type="text/css">
