@@ -26,8 +26,8 @@ package org.silverpeas.core.viewer.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.data.TemporaryDataManagementSetting;
-import org.silverpeas.util.data.TemporaryWorkspaceTranslation;
+import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
+import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 
 import java.io.File;
 import java.io.Serializable;

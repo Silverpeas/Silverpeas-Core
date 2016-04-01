@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.web.selection;
 
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
-import com.stratelia.silverpeas.genericPanel.PanelProvider;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelMiniFilterSelect;
+import org.silverpeas.core.web.panel.PanelProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.LocalizationBundle;

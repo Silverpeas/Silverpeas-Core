@@ -25,17 +25,13 @@
 package org.silverpeas.core.web.selection;
 
 import org.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
-import com.stratelia.silverpeas.genericPanel.PanelOperation;
-import com.stratelia.silverpeas.genericPanel.PanelProvider;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelMiniFilterEdit;
+import org.silverpeas.core.web.panel.PanelMiniFilterSelect;
+import org.silverpeas.core.web.panel.PanelMiniFilterToken;
+import org.silverpeas.core.web.panel.PanelOperation;
+import org.silverpeas.core.web.panel.PanelProvider;
 import org.silverpeas.core.util.URLUtil;
-import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.selection.SelectionExtraParams;
-import com.stratelia.silverpeas.selection.SelectionJdbcParams;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.selection.jdbc.JdbcConnectorDAO;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;

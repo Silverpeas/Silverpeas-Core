@@ -26,10 +26,9 @@ package org.silverpeas.core.web.selection;
 
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
-import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelMiniFilterEdit;
+import org.silverpeas.core.web.panel.PanelSearchToken;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 public class BrowseUserPanel extends BrowsePanelProvider {

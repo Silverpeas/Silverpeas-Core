@@ -20,6 +20,7 @@
  */
 package org.silverpeas.util;
 
+import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -113,7 +114,7 @@ public class FileServerUtils {
   public static String getWebUrl(String componentId, String logicalName, String physicalName,
       String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathParamValue(logicalName);
+    String newLogicalName = URLEncoder.encodePathParamValue(logicalName);
     url.append(newLogicalName).append("?ComponentId=").append(componentId).
         append("&SourceFile=").append(physicalName).append("&MimeType=").append(
         mimeType).append("&Directory=").append(subDirectory);
@@ -122,7 +123,7 @@ public class FileServerUtils {
 
   public static String getUrl(String componentId, String logicalName) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId);
     return url.toString();
@@ -131,7 +132,7 @@ public class FileServerUtils {
   public static String getUrl(String componentId, String logicalName, String physicalName,
       String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId).append("&SourceFile=").append(physicalName).append(
         "&MimeType=").append(mimeType).append("&Directory=").append(subDirectory);
@@ -141,7 +142,7 @@ public class FileServerUtils {
   public static String getOnlineURL(String componentId, String logicalName,
       String physicalName, String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/OnlineFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&SourceFile=").append(physicalName).
         append("&MimeType=").append(mimeType).append("&Directory=").append(subDirectory);
@@ -150,15 +151,15 @@ public class FileServerUtils {
 
   public static String getAttachmentURL(String componentId, String logicalName, String attachmentId,
       String lang) {
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     StringBuilder url = new StringBuilder();
     String language = lang;
     if (language == null) {
       language = I18NHelper.defaultLanguage;
     }
-    url.append("/attached_file/").append("componentId/").append(URLUtils.encodePathSegment(
-        componentId)).append("/attachmentId/").append(URLUtils.encodePathSegment(attachmentId)).
-        append("/lang/").append(URLUtils.encodePathSegment(language)).append("/name/").
+    url.append("/attached_file/").append("componentId/").append(URLEncoder.encodePathSegment(
+        componentId)).append("/attachmentId/").append(URLEncoder.encodePathSegment(attachmentId)).
+        append("/lang/").append(URLEncoder.encodePathSegment(language)).append("/name/").
         append(newLogicalName);
     return url.toString();
   }
@@ -210,7 +211,7 @@ public class FileServerUtils {
 
   public static String getAliasURL(String componentId, String logicalName, String attachmentId) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/AliasFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&AttachmentId=").
         append(attachmentId);
@@ -235,7 +236,7 @@ public class FileServerUtils {
 
   public static String getUrl(String logicalName, String physicalName, String mimeType) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?SourceFile=").append(physicalName).append("&TypeUpload=link&MimeType=").append(mimeType);
     return url.toString();
@@ -249,10 +250,10 @@ public class FileServerUtils {
     if (archiveIt) {
       archiveItStr = 'Y';
     }
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLEncoder.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId).append("&UserId=").append(userId).
-        append("&SourceFile=").append(URLUtils.encodePathParamValue(physicalName)).append(
+        append("&SourceFile=").append(URLEncoder.encodePathParamValue(physicalName)).append(
         "&MimeType=").append(mimeType).append("&ArchiveIt=").append(archiveItStr).append("&PubId=").
         append(pubId).append("&NodeId=").append(nodeId).append("&Directory=").append(subDirectory);
     return url.toString();
@@ -260,14 +261,14 @@ public class FileServerUtils {
 
   public static String getUrlToTempDir(String logicalName) {
     StringBuilder path = new StringBuilder();
-    path.append(getApplicationContext()).append("/TempFileServer/").append(URLUtils.
+    path.append(getApplicationContext()).append("/TempFileServer/").append(URLEncoder.
         encodePathSegment(logicalName));
     try {
       URI uri = new URI(null, null, path.toString(), null);
       return uri.toString();
     } catch (URISyntaxException ex) {
       path = new StringBuilder();
-      String newLogicalName = URLUtils.encodePathSegment(logicalName);
+      String newLogicalName = URLEncoder.encodePathSegment(logicalName);
       path.append(getApplicationContext()).append("/TempFileServer/").append(newLogicalName);
       return path.toString();
     }

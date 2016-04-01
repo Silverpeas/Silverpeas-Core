@@ -25,7 +25,7 @@ package org.silverpeas.core.web.mvc.processor;
 
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import com.stratelia.silverpeas.selection.Selection;
+import org.silverpeas.core.web.selection.Selection;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;

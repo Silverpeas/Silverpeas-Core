@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.mvc.util;
 
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.util.Pair;
 
 public class AlertUser {

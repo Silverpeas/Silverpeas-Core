@@ -25,13 +25,11 @@
 package org.silverpeas.core.web.selection;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
-import com.stratelia.silverpeas.genericPanel.PanelOperation;
-import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.selection.SelectionExtraParams;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelMiniFilterSelect;
+import org.silverpeas.core.web.panel.PanelMiniFilterToken;
+import org.silverpeas.core.web.panel.PanelOperation;
+import org.silverpeas.core.web.panel.PanelProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;

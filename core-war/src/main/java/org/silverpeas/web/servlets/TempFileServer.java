@@ -39,7 +39,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URLDecoder;
 
-import static org.silverpeas.util.data.TemporaryWorkspaceTranslation
+import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation
     .startWithTranslationDescriptorPrefix;
 
 /**

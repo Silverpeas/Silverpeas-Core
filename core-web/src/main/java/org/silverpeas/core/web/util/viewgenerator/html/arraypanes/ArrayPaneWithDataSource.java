@@ -30,9 +30,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.datapaginator.WADataPage;
-import org.silverpeas.util.datapaginator.WADataPaginator;
-import org.silverpeas.util.datapaginator.WAItem;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPage;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPaginator;
+import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WAItem;
 
 /**
  * The default implementation of ArrayPane interface.

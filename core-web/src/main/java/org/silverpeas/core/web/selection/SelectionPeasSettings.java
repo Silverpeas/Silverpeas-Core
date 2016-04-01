@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.web.selection;
 
-import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 

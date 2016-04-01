@@ -29,11 +29,11 @@ package org.silverpeas.web.genericpanel.control;
 
 import java.util.Set;
 
-import com.stratelia.silverpeas.genericPanel.GenericPanel;
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelOperation;
-import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
+import org.silverpeas.core.web.panel.GenericPanel;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelOperation;
+import org.silverpeas.core.web.panel.PanelProvider;
+import org.silverpeas.core.web.panel.PanelSearchToken;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

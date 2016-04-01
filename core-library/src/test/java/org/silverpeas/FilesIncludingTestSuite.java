@@ -32,8 +32,8 @@ import org.silverpeas.core.process.io.file.TestHandledFile;
 import org.silverpeas.core.io.upload.TestUploadSession;
 import org.silverpeas.core.io.upload.TestUploadSessionFile;
 import org.silverpeas.util.TestPdfUtil;
-import org.silverpeas.util.data.TestLastModifiedDateFileTask;
-import org.silverpeas.util.data.TestTemporaryWorkspaceTranslation;
+import org.silverpeas.core.io.temp.TestLastModifiedDateFileTask;
+import org.silverpeas.core.io.temp.TestTemporaryWorkspaceTranslation;
 
 /**
  * This test suite is to sequence unit tests that includes access to the filesystem and that could

@@ -30,7 +30,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
-import com.stratelia.silverpeas.selection.Selection;
+import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
 import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettingsDao;
@@ -55,7 +55,7 @@ import org.silverpeas.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.URLUtils;
+import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import java.io.File;
@@ -116,8 +116,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   public String getRSSUrl() {
     if (isUseRss()) {
       return "/rssAgenda/" + getAgendaUserId() + "?userId=" + getUserId() + "&amp;login=" +
-          URLUtils.encodePathParamValue(getUserDetail().getLogin()) + "&amp;password=" +
-          URLUtils.encodePathParamValue(getOrganisationController().getUserFull(getUserId()).
+          URLEncoder.encodePathParamValue(getUserDetail().getLogin()) + "&amp;password=" +
+          URLEncoder.encodePathParamValue(getOrganisationController().getUserFull(getUserId()).
               getPassword());
     }
     return null;
@@ -1597,8 +1597,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   public String getMyAgendaUrl() {
     String url =
         "/SubscribeAgenda/" + AGENDA_FILENAME_PREFIX + "?userId=" + getUserId() + "&amp;login=" +
-            URLUtils.encodePathParamValue(getUserDetail().getLogin()) + "&amp;password=" +
-            URLUtils.encodePathParamValue(OrganizationControllerProvider.
+            URLEncoder.encodePathParamValue(getUserDetail().getLogin()) + "&amp;password=" +
+            URLEncoder.encodePathParamValue(OrganizationControllerProvider.
                 getOrganisationController().getUserFull(getUserId()).getPassword());
     return url;
   }

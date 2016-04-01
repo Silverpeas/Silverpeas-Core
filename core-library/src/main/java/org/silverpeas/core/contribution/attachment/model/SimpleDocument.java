@@ -28,6 +28,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -695,7 +696,7 @@ public class SimpleDocument implements Serializable {
         .getOnlineURL(getPk().getComponentName(), getFilename(), "", getContentType(), "");
     String extension = FileRepositoryManager.getFileExtension(getFilename());
     if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
-      onlineUrl += "&logicalName=" + URLUtils.encodePathParamValue(getFilename());
+      onlineUrl += "&logicalName=" + URLEncoder.encodePathParamValue(getFilename());
     }
     return onlineUrl;
   }
@@ -708,7 +709,7 @@ public class SimpleDocument implements Serializable {
     }
     String extension = FileRepositoryManager.getFileExtension(getFilename());
     if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
-      aliasUrl += "&logicalName=" + URLUtils.encodePathParamValue(getFilename());
+      aliasUrl += "&logicalName=" + URLEncoder.encodePathParamValue(getFilename());
     }
     return aliasUrl;
   }

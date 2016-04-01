@@ -24,11 +24,10 @@
 
 package org.silverpeas.core.web.selection;
 
-import com.stratelia.silverpeas.genericPanel.PanelLine;
-import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
-import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.panel.PanelLine;
+import org.silverpeas.core.web.panel.PanelMiniFilterSelect;
+import org.silverpeas.core.web.panel.PanelProvider;
+import org.silverpeas.core.web.panel.PanelSearchToken;
 import org.silverpeas.core.util.LocalizationBundle;
 
 public class CartUserPanel extends PanelProvider {

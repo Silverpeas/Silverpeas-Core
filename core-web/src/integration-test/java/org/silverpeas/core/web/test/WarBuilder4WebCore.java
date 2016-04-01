@@ -49,6 +49,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addClasses(SilverpeasSessionOpener.class);
     addPackages(true, "org.silverpeas.core.web.http");
     addPackages(true, "org.silverpeas.core.web.mvc");
+    addPackages(true, "org.silverpeas.core.web.panel");
+    addPackages(true, "org.silverpeas.core.web.selection");
     addPackages(true, "org.silverpeas.core.web.subscription");
     addPackages(true, "org.silverpeas.core.web.util.security");
     addPackages(true, "org.silverpeas.core.web.util.servlet");

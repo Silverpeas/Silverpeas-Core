@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="com.stratelia.silverpeas.selection.Selection"%>
+<%@ page import="org.silverpeas.core.web.selection.Selection"%>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -22,7 +22,7 @@
 
 <c:set var="currentUserId"           value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="selection"               value="${requestScope.SELECTION}"/>
-<jsp:useBean id="selection" type="com.stratelia.silverpeas.selection.Selection"/>
+<jsp:useBean id="selection" type="org.silverpeas.core.web.selection.Selection"/>
 <c:set var="registeredServerDomains" value="${selection.registeredServerDomains}"/>
 <c:set var="multipleSelection"       value="${selection.multiSelect}"/>
 <c:set var="instanceId"              value="${selection.extraParams.componentId}"/>

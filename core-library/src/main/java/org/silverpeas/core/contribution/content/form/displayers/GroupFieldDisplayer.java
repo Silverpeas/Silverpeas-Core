@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.sis.internal.jaxb.gmd.GO_URL;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.apache.commons.fileupload.FileItem;
 
@@ -42,7 +43,6 @@ import org.silverpeas.core.contribution.content.form.field.GroupField;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.core.util.FileUploadUtil;
 
 /**
@@ -55,6 +55,8 @@ import org.silverpeas.core.util.FileUploadUtil;
  * @see FieldDisplayer
  */
 public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
+
+  private final static int GROUP = 1;
 
   /**
    * Returns the name of the managed types.
@@ -149,7 +151,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
           .append(pageContext.getFormName())
           .append("&elementId=").append(fieldName)
           .append("&elementName=").append(fieldName).append("_name")
-          .append("&selectable=").append(SelectionUsersGroups.GROUP)
+          .append("&selectable=").append(GROUP)
           .append("&selectedGroup=").append((groupId == null) ? "" : groupId)
           .append(groupsOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
           .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")

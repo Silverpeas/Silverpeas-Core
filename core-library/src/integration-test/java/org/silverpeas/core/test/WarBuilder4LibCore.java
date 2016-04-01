@@ -35,6 +35,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentIn
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
@@ -288,8 +289,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(URLUtil.class)) {
       addClasses(URLUtil.class);
     }
-    if (!contains(URLUtils.class)) {
-      addClasses(URLUtils.class);
+    if (!contains(URLEncoder.class)) {
+      addClasses(URLEncoder.class);
     }
     return this;
   }
