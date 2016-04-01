@@ -22,15 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.permalinks;
+package org.silverpeas.core.contribution.attachment.permalinks;
 
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.permalinks.model.DocumentPermalink;
-import org.silverpeas.permalinks.model.VersionPermalink;
-import org.silverpeas.permalinks.repository.DocumentPermalinkManager;
-import org.silverpeas.permalinks.repository.VersionPermalinkManager;
+import org.silverpeas.core.contribution.attachment.permalinks.model.DocumentPermalink;
+import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
+import org.silverpeas.core.contribution.attachment.permalinks.repository.DocumentPermalinkManager;
+import org.silverpeas.core.contribution.attachment.permalinks.repository.VersionPermalinkManager;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;

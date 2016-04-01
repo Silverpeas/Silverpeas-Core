@@ -22,33 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.permalinks.model;
+package org.silverpeas.core.contribution.attachment.permalinks.repository;
 
+import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
-
-@Entity
-@Table(name = "permalinks_version")
-@AttributeOverride(name = "id", column = @Column(name = "versionId"))
-public class VersionPermalink
-    extends AbstractJpaCustomEntity<VersionPermalink, UniqueIntegerIdentifier>
-    implements Serializable {
-  private static final long serialVersionUID = 1L;
-
-  @Column(name = "versionUuid", nullable = false)
-  private String uuid;
-
-  public String getUuid() {
-    return uuid;
-  }
-
-  public void setUuid(String uuid) {
-    this.uuid = uuid;
-  }
+public interface VersionPermalinkManager extends
+    BasicEntityRepository<VersionPermalink, UniqueIntegerIdentifier> {
 }

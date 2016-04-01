@@ -21,16 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.permalinks.repository;
 
-import org.silverpeas.permalinks.model.VersionPermalink;
+package org.silverpeas.core.contribution.attachment.permalinks.repository;
+
+import org.silverpeas.core.contribution.attachment.permalinks.model.DocumentPermalink;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 
-/**
- * @author: ebonnet
- */
-public class VersionPermalinkJpaManager
-    extends JpaBasicEntityManager<VersionPermalink, UniqueIntegerIdentifier>
-    implements VersionPermalinkManager {
+public interface DocumentPermalinkManager
+    extends BasicEntityRepository<DocumentPermalink, UniqueIntegerIdentifier> {
+
 }

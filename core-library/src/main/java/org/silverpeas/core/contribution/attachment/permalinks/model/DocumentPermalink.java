@@ -21,15 +21,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.permalinks;
 
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+package org.silverpeas.core.contribution.attachment.permalinks.model;
+
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+
+import java.io.Serializable;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
- * @author: ebonnet
+ * @author ehugonnet
  */
-public interface PermalinkCompatibilityService {
-  public SimpleDocument findDocumentVersionByOldId(int oldId);
+@Entity
+@Table(name = "permalinks_document")
+@AttributeOverride(name = "id", column = @Column(name = "documentId"))
+public class DocumentPermalink
+    extends AbstractJpaCustomEntity<DocumentPermalink, UniqueIntegerIdentifier>
+    implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-  public SimpleDocument findVersionnedDocumentByOldId(int oldId);
+  @Column(name = "documentUuid", nullable = false)
+  private String uuid;
+
+  public String getUuid() {
+    return uuid;
+  }
+
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 }

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.permalinks.repository;
+package org.silverpeas.core.contribution.attachment.permalinks.repository;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
@@ -35,7 +35,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.permalinks.model.DocumentPermalink;
+import org.silverpeas.core.contribution.attachment.permalinks.model.DocumentPermalink;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -79,7 +79,7 @@ public class DocumentPermalinkRepositoryTest {
     return WarBuilder4LibCore.onWarForTestClass(DocumentPermalinkRepositoryTest.class)
         .addJpaPersistenceFeatures()
         .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.permalinks");
+          warBuilder.addPackages(true, "org.silverpeas.core.contribution.attachment.permalinks");
     }).build();
   }
 

@@ -21,14 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.contribution.attachment.permalinks;
 
-package org.silverpeas.permalinks.repository;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
-import org.silverpeas.permalinks.model.DocumentPermalink;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
+/**
+ * @author: ebonnet
+ */
+public interface PermalinkCompatibilityService {
+  SimpleDocument findDocumentVersionByOldId(int oldId);
 
-public interface DocumentPermalinkManager
-    extends BasicEntityRepository<DocumentPermalink, UniqueIntegerIdentifier> {
-
+  SimpleDocument findVersionnedDocumentByOldId(int oldId);
 }

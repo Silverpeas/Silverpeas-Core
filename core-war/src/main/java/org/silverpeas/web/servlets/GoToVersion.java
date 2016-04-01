@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.permalinks.PermalinkServiceProvider;
+import org.silverpeas.core.contribution.attachment.permalinks.PermalinkServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;

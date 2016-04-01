@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.permalinks.repository;
+package org.silverpeas.core.contribution.attachment.permalinks.repository;
 
-import org.silverpeas.permalinks.model.DocumentPermalink;
+import org.silverpeas.core.contribution.attachment.permalinks.model.DocumentPermalink;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 

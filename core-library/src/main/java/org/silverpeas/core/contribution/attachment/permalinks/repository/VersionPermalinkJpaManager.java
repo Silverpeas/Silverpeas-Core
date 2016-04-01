@@ -21,21 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.contribution.attachment.permalinks.repository;
 
-package org.silverpeas.permalinks;
-
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 
 /**
- * For compatibility issues after migration to JCR.
+ * @author: ebonnet
  */
-public class PermalinkServiceProvider {
-
-  private PermalinkServiceProvider() {
-  }
-
-  public static PermalinkCompatibilityService getPermalinkCompatibilityService() {
-    return ServiceProvider.getService(PermalinkCompatibilityService.class);
-  }
-
+public class VersionPermalinkJpaManager
+    extends JpaBasicEntityManager<VersionPermalink, UniqueIntegerIdentifier>
+    implements VersionPermalinkManager {
 }
