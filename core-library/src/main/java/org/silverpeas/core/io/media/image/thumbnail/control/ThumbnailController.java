@@ -22,14 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.thumbnail.control;
+package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import com.silverpeas.thumbnail.ThumbnailException;
-import com.silverpeas.thumbnail.ThumbnailRuntimeException;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.thumbnail.service.ThumbnailService;
-import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
+import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ImageUtil;
@@ -443,8 +443,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
   }
 
   private static void createCropFile(int thumbnailWidth, int thumbnailHeight,
-      ThumbnailDetail thumbDetailComplete) throws IOException,
-      ThumbnailException {
+      ThumbnailDetail thumbDetailComplete) throws IOException, ThumbnailException {
 
     String pathOriginalFile = getImageDirectory(thumbDetailComplete.getInstanceId())
         + thumbDetailComplete.getOriginalFileName();

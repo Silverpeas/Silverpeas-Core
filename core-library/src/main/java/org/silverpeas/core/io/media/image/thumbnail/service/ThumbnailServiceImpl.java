@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.thumbnail.service;
+package org.silverpeas.core.io.media.image.thumbnail.service;
 
-import com.silverpeas.thumbnail.ThumbnailException;
-import com.silverpeas.thumbnail.model.ThumbnailDAO;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDAO;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.thumbnail.model;
+package org.silverpeas.core.io.media.image.thumbnail.model;
 
 import java.io.Serializable;
 

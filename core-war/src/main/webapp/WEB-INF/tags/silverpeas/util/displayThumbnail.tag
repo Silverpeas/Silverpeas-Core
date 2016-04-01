@@ -53,7 +53,7 @@ for (String compoId : compoIds) {
 request.setAttribute("galleries", galleries);
 %>
 
-<%@ attribute name="thumbnail" required="true" type="com.silverpeas.thumbnail.model.ThumbnailDetail" description="The thumbnail to manage" %>
+<%@ attribute name="thumbnail" required="true" type="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail" description="The thumbnail to manage" %>
 <%@ attribute name="mandatory" required="true" type="java.lang.Boolean" description="If thumbnail is mandatory" %>
 <%@ attribute name="error" required="false" type="java.lang.String" description="Error" %>
 <%@ attribute name="componentId" required="true" type="java.lang.String" description="Instance ID of object" %>

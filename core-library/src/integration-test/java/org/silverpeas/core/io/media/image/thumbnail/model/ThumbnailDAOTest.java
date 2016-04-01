@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.thumbnail.model;
+package org.silverpeas.core.io.media.image.thumbnail.model;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -45,7 +45,7 @@ import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 public class ThumbnailDAOTest {
 
   private static final String TABLE_CREATION_SCRIPT =
-      "/com/silverpeas/thumbnail/create-database.sql";
+      "/org/silverpeas/core/io/media/image/thumbnail/create-database.sql";
 
   @Rule
   public DbUnitLoadingRule dbSetupRule =
@@ -55,8 +55,8 @@ public class ThumbnailDAOTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(ThumbnailDAOTest.class)
         .addDatabaseToolFeatures()
-        .testFocusedOn(war -> war.addPackages(true, "com.silverpeas.thumbnail"))
-        .addAsResource("com/silverpeas/thumbnail/create-database.sql")
+        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.io.media.image.thumbnail"))
+        .addAsResource("org/silverpeas/core/io/media/image/thumbnail/create-database.sql")
         .build();
   }
 

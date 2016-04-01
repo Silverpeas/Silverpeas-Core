@@ -22,18 +22,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.thumbnail;
+package org.silverpeas.core.io.media.image.thumbnail;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
-public class ThumbnailException extends SilverpeasException {
+public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = 1L;
 
   /**
-   * Creates new AttachmentException
+   * method of interface FromModule
    */
-  public ThumbnailException(String callingClass, int errorLevel, String message) {
+  public String getModule() {
+    return "thumbnail";
+  }
+
+  /**
+   * constructors
+   */
+
+  public ThumbnailRuntimeException(String callingClass, int errorLevel,
+      String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -45,7 +54,7 @@ public class ThumbnailException extends SilverpeasException {
    * @param extraParams
    * @see
    */
-  public ThumbnailException(String callingClass, int errorLevel,
+  public ThumbnailRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
@@ -58,7 +67,7 @@ public class ThumbnailException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public ThumbnailException(String callingClass, int errorLevel,
+  public ThumbnailRuntimeException(String callingClass, int errorLevel,
       String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
@@ -72,16 +81,9 @@ public class ThumbnailException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public ThumbnailException(String callingClass, int errorLevel,
+  public ThumbnailRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * method of interface FromModule
-   */
-  public String getModule() {
-    return "thumbnail";
   }
 
 }

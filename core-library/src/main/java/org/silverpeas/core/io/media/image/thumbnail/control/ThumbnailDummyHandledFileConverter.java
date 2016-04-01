@@ -1,4 +1,4 @@
-package com.silverpeas.thumbnail.control;
+package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;

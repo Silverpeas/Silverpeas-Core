@@ -25,7 +25,7 @@
 --%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
+<%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
 <%@page import="org.silverpeas.util.FileServerUtils"%>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@ include file="thumbnailHeader.jsp"%>

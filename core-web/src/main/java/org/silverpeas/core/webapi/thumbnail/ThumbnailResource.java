@@ -30,9 +30,9 @@ import javax.ws.rs.core.Response.Status;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import com.silverpeas.thumbnail.ThumbnailException;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.thumbnail.service.ThumbnailService;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 /**

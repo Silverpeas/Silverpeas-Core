@@ -1,4 +1,4 @@
-package com.silverpeas.thumbnail.control;
+package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.apache.commons.io.FileUtils;
@@ -34,7 +34,7 @@ public class ComponentInstanceThumbnailDeletionIntegrationTest {
   private static final int COMPONENT_INSTANCE_NB_THUMBNAILS = 5;
 
   private static final String TABLE_CREATION_SCRIPT =
-      "/com/silverpeas/thumbnail/create-database.sql";
+      "/org/silverpeas/core/io/media/image/thumbnail/create-database.sql";
   private static final String DATASET_SCRIPT =
       "test-thumbnail-component-instance-deletion-data.sql";
 
@@ -54,8 +54,8 @@ public class ComponentInstanceThumbnailDeletionIntegrationTest {
         .addProcessFeatures().addApacheFileUploadFeatures()
         .addComponentInstanceDeletionFeatures()
         .testFocusedOn(war -> war
-            .addPackages(true, "com.silverpeas.thumbnail")
-            .addAsResource("com/silverpeas/thumbnail/create-database.sql"))
+            .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")
+            .addAsResource("org/silverpeas/core/io/media/image/thumbnail/create-database.sql"))
         .addAsResource("org/silverpeas/publication/publicationSettings.properties")
         .build();
   }

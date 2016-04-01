@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.thumbnail.control;
+package org.silverpeas.core.io.media.image.thumbnail.control;
 
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;

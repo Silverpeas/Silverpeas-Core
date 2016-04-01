@@ -21,10 +21,10 @@
  */
 package org.silverpeas.web.thumbnail.servlets;
 
-import com.silverpeas.thumbnail.ThumbnailRuntimeException;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
 import org.silverpeas.web.thumbnail.ThumbnailSessionController;
-import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

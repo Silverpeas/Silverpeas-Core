@@ -21,15 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.thumbnail;
+package org.silverpeas.core.io.media.image.thumbnail;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.admin.service.OrganizationController;
 
-import static com.silverpeas.thumbnail.ThumbnailSettings.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
@@ -53,7 +53,7 @@ public class ThumbnailSettingsTest {
   public void setup() {
     mockedOrganisationController = mock(OrganizationController.class);
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_WIDTH)).thenReturn("");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_WIDTH)).thenReturn("");
     commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganisationController);
     // the height about component instance parameters is not handled with the mock in order to
     // verify the behavior when null is returned instead of ""
@@ -62,8 +62,8 @@ public class ThumbnailSettingsTest {
   @Test
   public void shouldReturnDefaultSizeWhenComponentParametersAndDefaultPropertiesAreNotDefined() {
     ThumbnailSettings settings = ThumbnailSettings.getInstance(COMPONENT_INSTANCE_ID, -1, -1);
-    assertThat(settings.getWidth(), is(DEFAULT_SIZE));
-    assertThat(settings.getHeight(), is(DEFAULT_SIZE));
+    assertThat(settings.getWidth(), Matchers.is(ThumbnailSettings.DEFAULT_SIZE));
+    assertThat(settings.getHeight(), Matchers.is(ThumbnailSettings.DEFAULT_SIZE));
   }
 
   @Test
@@ -91,7 +91,7 @@ public class ThumbnailSettingsTest {
   public void defaultComponentInstanceWidthParameterShouldBeTakenIntoAccountAndAppliedOnHeightToo
       () {
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_WIDTH)).thenReturn("26");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_WIDTH)).thenReturn("26");
     ThumbnailSettings settings = ThumbnailSettings.getInstance(COMPONENT_INSTANCE_ID, -1, -1);
     assertThat(settings.getWidth(), is(26));
     assertThat(settings.getHeight(), is(26));
@@ -101,7 +101,7 @@ public class ThumbnailSettingsTest {
   public void defaultComponentInstanceHeightParameterShouldBeTakenIntoAccountAndAppliedOnWidthToo
       () {
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_HEIGHT)).thenReturn("38");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_HEIGHT)).thenReturn("38");
     ThumbnailSettings settings = ThumbnailSettings.getInstance(COMPONENT_INSTANCE_ID, -1, -1);
     assertThat(settings.getWidth(), is(38));
     assertThat(settings.getHeight(), is(38));
@@ -110,9 +110,9 @@ public class ThumbnailSettingsTest {
   @Test
   public void defaultComponentInstanceSizeParametersShouldBeTakenIntoAccount() {
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_WIDTH)).thenReturn("26");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_WIDTH)).thenReturn("26");
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_HEIGHT)).thenReturn("38");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_HEIGHT)).thenReturn("38");
     ThumbnailSettings settings = ThumbnailSettings.getInstance(COMPONENT_INSTANCE_ID, -1, -1);
     assertThat(settings.getWidth(), is(26));
     assertThat(settings.getHeight(), is(38));
@@ -122,7 +122,7 @@ public class ThumbnailSettingsTest {
   public void
   componentInstanceWidthParameterShouldBeGivenPriorityOverTheDefaultWidthAndHeightOfProperties() {
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_WIDTH)).thenReturn("26");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_WIDTH)).thenReturn("26");
     ThumbnailSettings settings = ThumbnailSettings.getInstance(COMPONENT_INSTANCE_ID, 1000, 1000);
     assertThat(settings.getWidth(), is(26));
     assertThat(settings.getHeight(), is(26));
@@ -132,7 +132,7 @@ public class ThumbnailSettingsTest {
   public void
   componentInstanceHeightParameterShouldBeGivenPriorityOverTheDefaultWidthAndHeightOfProperties() {
     when(mockedOrganisationController
-        .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_HEIGHT)).thenReturn("38");
+        .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_HEIGHT)).thenReturn("38");
     ThumbnailSettings settings = ThumbnailSettings.getInstance(COMPONENT_INSTANCE_ID, 1000, 1000);
     assertThat(settings.getWidth(), is(38));
     assertThat(settings.getHeight(), is(38));
