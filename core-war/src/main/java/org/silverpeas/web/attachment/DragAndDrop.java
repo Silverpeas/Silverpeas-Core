@@ -32,7 +32,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.upload.UploadSession;
+import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 

@@ -38,7 +38,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.upload.UploadSession;
+import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;

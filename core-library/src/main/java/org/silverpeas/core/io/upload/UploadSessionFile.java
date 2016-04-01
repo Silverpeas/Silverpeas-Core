@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.upload;
+package org.silverpeas.core.io.upload;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

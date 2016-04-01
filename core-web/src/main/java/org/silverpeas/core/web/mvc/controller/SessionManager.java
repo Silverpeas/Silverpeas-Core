@@ -40,7 +40,7 @@ import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
-import org.silverpeas.upload.UploadSession;
+import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
