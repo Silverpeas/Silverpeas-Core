@@ -26,7 +26,7 @@ package org.silverpeas.core.web.http;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;

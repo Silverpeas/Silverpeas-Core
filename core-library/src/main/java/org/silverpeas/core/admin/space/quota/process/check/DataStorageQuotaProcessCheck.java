@@ -31,10 +31,10 @@ import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.process.io.IOAccess;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.management.AbstractFileProcessCheck;
-import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.core.process.io.IOAccess;
+import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.management.AbstractFileProcessCheck;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.util.NotifierUtil;
@@ -69,8 +69,8 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   /*
    * (non-Javadoc)
    * @see
-   * org.silverpeas.process.management.AbstractFileProcessCheck#checkFiles(org.silverpeas.process
-   * .management.ProcessExecutionContext, org.silverpeas.process.io.file.FileHandler)
+   * AbstractFileProcessCheck#checkFiles(org.silverpeas.process
+   * .management.ProcessExecutionContext, FileHandler)
    */
   @Override
   public void checkFiles(final ProcessExecutionContext processExecutionContext,

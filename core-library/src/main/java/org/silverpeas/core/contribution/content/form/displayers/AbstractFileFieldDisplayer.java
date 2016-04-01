@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.core.util.StringUtil;

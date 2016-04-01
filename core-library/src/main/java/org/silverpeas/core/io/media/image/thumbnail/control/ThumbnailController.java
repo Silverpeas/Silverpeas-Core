@@ -47,7 +47,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;

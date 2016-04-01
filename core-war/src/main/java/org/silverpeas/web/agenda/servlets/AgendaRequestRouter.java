@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.Category;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;

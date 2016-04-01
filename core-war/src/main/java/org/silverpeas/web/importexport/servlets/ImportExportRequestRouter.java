@@ -29,7 +29,7 @@ import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.web.importexport.control.ImportExportSessionController;
 
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

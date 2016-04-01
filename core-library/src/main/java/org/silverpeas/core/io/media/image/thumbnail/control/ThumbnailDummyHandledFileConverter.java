@@ -1,8 +1,8 @@
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;
-import org.silverpeas.process.io.file.DummyHandledFile;
+import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
+import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.util.ActionType;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;

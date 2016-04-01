@@ -43,7 +43,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can

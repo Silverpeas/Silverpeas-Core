@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 

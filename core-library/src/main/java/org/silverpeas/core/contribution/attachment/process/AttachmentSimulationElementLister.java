@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.attachment.process;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.process.annotation.SimulationElementLister;
+import org.silverpeas.core.process.annotation.SimulationElementLister;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

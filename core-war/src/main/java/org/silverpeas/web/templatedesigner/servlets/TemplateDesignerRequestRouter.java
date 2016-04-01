@@ -49,7 +49,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

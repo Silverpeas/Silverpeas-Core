@@ -37,7 +37,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
-import org.silverpeas.settings.SilverpeasSettings;
+import org.silverpeas.core.util.SilverpeasSettings;
 import org.silverpeas.token.Token;
 
 import javax.inject.Inject;

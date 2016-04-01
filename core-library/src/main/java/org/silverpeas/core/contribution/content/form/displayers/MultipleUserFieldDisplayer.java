@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 
 /**
  * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can

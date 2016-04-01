@@ -1,5 +1,6 @@
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.util.FileRepositoryManager;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  * <p/>
  * Unlike the IO Processing API in Silverpeas, it is not dedicated to be used within a
  * transactional file processing; for a such use, please see the
- * {@link org.silverpeas.process.io.file.FileHandler} class that offers a higher level access to the
+ * {@link FileHandler} class that offers a higher level access to the
  * files managed in Silverpeas. This class is dedicated to provide a low-level and a single and
  * unique point to access the files in Silverpeas with a support for an additional computing in
  * order to hook parallel behaviours on the handled file.

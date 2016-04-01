@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.space.quota.process.check;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 
 /**

@@ -24,7 +24,7 @@
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.process.annotation.AbstractSimulationElement;
+import org.silverpeas.core.process.annotation.AbstractSimulationElement;
 
 /**
  * User: Yohann Chastagnier

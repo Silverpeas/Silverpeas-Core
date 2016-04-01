@@ -44,6 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button "%>
 <%@ page import="java.io.File" %>
+<%@ page import="org.silverpeas.core.util.FileUploadUtil" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -65,9 +66,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	    FileItem fileItem = httpRequest.getSingleFile();
 	    if (fileItem != null)
 	    {
-			String fichierName = org.silverpeas.servlet.FileUploadUtil.getFileName(fileItem);
+			String fichierName = FileUploadUtil.getFileName(fileItem);
 			File fichier = new File(thePath, fichierName);
-			org.silverpeas.servlet.FileUploadUtil.saveToFile(fichier, fileItem);
+			FileUploadUtil.saveToFile(fichier, fileItem);
 
 			String urlPath = thePath.substring(thePath.indexOf("/website"));
 

@@ -30,11 +30,11 @@ import org.silverpeas.core.admin.component.exception.ComponentFileFilterExceptio
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.process.io.IOAccess;
-import org.silverpeas.process.io.file.DummyHandledFile;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.management.AbstractFileProcessCheck;
-import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.core.process.io.IOAccess;
+import org.silverpeas.core.process.io.file.DummyHandledFile;
+import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.management.AbstractFileProcessCheck;
+import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
@@ -55,8 +55,8 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
   /*
    * (non-Javadoc)
    * @see
-   * org.silverpeas.process.management.AbstractFileProcessCheck#checkFiles(org.silverpeas.process
-   * .management.ProcessExecutionContext, org.silverpeas.process.io.file.FileHandler)
+   * AbstractFileProcessCheck#checkFiles(org.silverpeas.process
+   * .management.ProcessExecutionContext, FileHandler)
    */
   @Override
   public void checkFiles(final ProcessExecutionContext processExecutionContext,

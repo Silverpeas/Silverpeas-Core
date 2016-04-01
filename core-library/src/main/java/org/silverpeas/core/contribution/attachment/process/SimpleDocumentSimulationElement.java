@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.attachment.process;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.process.annotation.AbstractSimulationElement;
+import org.silverpeas.core.process.annotation.AbstractSimulationElement;
 
 /**
  * User: Yohann Chastagnier

@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.util.EncodeHelper;

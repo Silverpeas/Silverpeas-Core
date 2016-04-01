@@ -34,7 +34,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.core.util.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileRepositoryManager;
