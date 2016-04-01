@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.mail;
+package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.util.ServerSetup;
 import org.silverpeas.util.MailUtil;

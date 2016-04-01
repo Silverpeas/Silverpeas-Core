@@ -21,14 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail;
+package org.silverpeas.core.mail;
 
 import org.junit.Test;
 import org.silverpeas.core.util.StringUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.mail.MailAddress.eMail;
 
 public class ReceiverMailAddressSetTest {
 
@@ -249,7 +248,7 @@ public class ReceiverMailAddressSetTest {
   private ReceiverMailAddressSet initializeSeveralForTest(int size) {
     ReceiverMailAddressSet set = ReceiverMailAddressSet.with();
     for (int i = 0; i < size; i++) {
-      set.add(eMail("Email_" + StringUtil.leftPad(String.valueOf(i), 3, "0")));
+      set.add(MailAddress.eMail("Email_" + StringUtil.leftPad(String.valueOf(i), 3, "0")));
     }
     return set;
   }

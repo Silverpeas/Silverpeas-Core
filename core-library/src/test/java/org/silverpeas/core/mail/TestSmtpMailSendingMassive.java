@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail;
+package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -29,9 +29,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.mail.engine.MailSender;
-import org.silverpeas.mail.engine.MailSenderProvider;
-import org.silverpeas.mail.engine.SmtpMailSender;
+import org.silverpeas.core.mail.engine.MailSender;
+import org.silverpeas.core.mail.engine.MailSenderProvider;
+import org.silverpeas.core.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.StringUtil;
 
@@ -41,7 +41,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.mail.MailAddress.eMail;
 
 public class TestSmtpMailSendingMassive {
 
@@ -130,8 +129,8 @@ public class TestSmtpMailSendingMassive {
 
     @Override
     public void run() {
-      MailAddress senderEmail = eMail(COMMON_FROM);
-      MailAddress receiverEmail = eMail(COMMON_TO);
+      MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+      MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
       MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail)
           .withSubject(id + " subject - " + (asynch ? "A" : "S")).withContent(id + " content");
 

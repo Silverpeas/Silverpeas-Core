@@ -21,19 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail.engine;
-
-import org.silverpeas.mail.MailToSend;
+package org.silverpeas.core.mail.engine;
 
 /**
- * This interface provides a method to send a mail.
+ * Provider of {@link MailSender} instance.
  * @author Yohann Chastagnier
  */
-public interface MailSender {
+public class MailSenderProvider {
+  private static MailSender mailSender = new SmtpMailSender();
 
-  /**
-   * Performs a send of a mail.
-   * @param mail the mail to send.
-   */
-  void send(MailToSend mail);
+  public static MailSender get() {
+    return mailSender;
+  }
 }

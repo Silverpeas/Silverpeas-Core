@@ -26,8 +26,8 @@ import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.mail.MailAddress;
-import org.silverpeas.mail.MailSending;
+import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -49,7 +49,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.*;
-import static org.silverpeas.mail.MailAddress.eMail;
+import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.util.MailUtil.isForceReplyToSenderField;
 
 

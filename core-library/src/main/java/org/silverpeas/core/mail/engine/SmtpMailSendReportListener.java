@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail.engine;
+package org.silverpeas.core.mail.engine;
 
+import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.mail.MailToSend;
 
 import javax.mail.Address;
 import javax.mail.event.TransportEvent;

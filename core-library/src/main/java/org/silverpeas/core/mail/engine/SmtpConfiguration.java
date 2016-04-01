@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.mail.engine;
+package org.silverpeas.core.mail.engine;
 
 import org.silverpeas.util.MailUtil;
 

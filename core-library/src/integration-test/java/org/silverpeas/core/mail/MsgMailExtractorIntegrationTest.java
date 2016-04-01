@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail;
+package org.silverpeas.core.mail;
 
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
@@ -78,8 +78,8 @@ public class MsgMailExtractorIntegrationTest {
         .testFocusedOn(warBuilder -> {
           warBuilder
               .addMavenDependencies("com.icegreen:greenmail")
-              .addPackages(true, "org.silverpeas.mail")
-              .addAsResource("org/silverpeas/mail/mailWithAttachments.msg");
+              .addPackages(true, "org.silverpeas.core.mail")
+              .addAsResource("org/silverpeas/core/mail/mailWithAttachments.msg");
         }).build();
   }
 
@@ -199,6 +199,6 @@ public class MsgMailExtractorIntegrationTest {
    */
   private File getDocumentFromName(final String name) throws Exception {
     return FileUtils
-        .getFile(mavenTargetDirectoryRule.getResourceTestDirFile(), "org/silverpeas/mail", name);
+        .getFile(mavenTargetDirectoryRule.getResourceTestDirFile(), "org/silverpeas/core/mail", name);
   }
 }

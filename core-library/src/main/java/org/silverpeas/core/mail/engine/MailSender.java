@@ -21,22 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.mail.engine;
 
-package org.silverpeas.mail;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.silverpeas.core.mail.MailToSend;
 
 /**
- * Test suite to sequence the unit tests on the file processing API.
- * As each unit tests works on the same file structure, it is required to sequence them so
- * that they work on the filesystem each of their turn.
- * @author mmoquillon
+ * This interface provides a method to send a mail.
+ * @author Yohann Chastagnier
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestSmtpMailSendingMassive.class,
-    TestSmtpMailSending.class
-})
-public class SmtpMailTestSuite {
+public interface MailSender {
+
+  /**
+   * Performs a send of a mail.
+   * @param mail the mail to send.
+   */
+  void send(MailToSend mail);
 }

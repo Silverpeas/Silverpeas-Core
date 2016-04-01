@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail.engine;
+package org.silverpeas.core.mail.engine;
 
+import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.mail.MailToSend;
+import org.silverpeas.core.mail.ReceiverMailAddressSet;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.mail.MailAddress;
-import org.silverpeas.mail.MailToSend;
-import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;

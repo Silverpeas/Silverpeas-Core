@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.mail;
+package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -30,9 +30,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.mail.engine.MailSender;
-import org.silverpeas.mail.engine.MailSenderProvider;
-import org.silverpeas.mail.engine.SmtpMailSender;
+import org.silverpeas.core.mail.engine.MailSender;
+import org.silverpeas.core.mail.engine.MailSenderProvider;
+import org.silverpeas.core.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
@@ -47,7 +47,6 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.mail.MailAddress.eMail;
 
 public class TestSmtpMailSending {
 
@@ -98,7 +97,7 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailSynchronouslyWithFromNoToAndDefaultValues() throws Exception {
-    MailAddress email = eMail(COMMON_FROM);
+    MailAddress email = MailAddress.eMail(COMMON_FROM);
     MailSending mailSending = MailSending.from(email);
 
     // Verifying data
@@ -116,8 +115,8 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailSynchronouslyWithFromWithToAndDefaultValues() throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM);
-    MailAddress receiverEmail = eMail(COMMON_TO);
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
 
     // Sending mail
@@ -137,8 +136,8 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailSynchronouslyWithMalformedFromWithToAndDefaultValues() throws Exception {
-    MailAddress senderEmail = eMail(MALFORMED_FROM);
-    MailAddress receiverEmail = eMail(COMMON_TO);
+    MailAddress senderEmail = MailAddress.eMail(MALFORMED_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
 
     // Verifying data
@@ -156,8 +155,8 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailSynchronouslyWithFromWithMalformedToAndDefaultValues() throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM);
-    MailAddress receiverEmail = eMail(MALFORMED_TO);
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(MALFORMED_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
 
     // Sending mail
@@ -177,8 +176,8 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailSynchronouslyWithFromWithToWithSubjectAndDefaultValues() throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM);
-    MailAddress receiverEmail = eMail(COMMON_TO);
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     String subject = "A subject";
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail).withSubject(subject);
 
@@ -200,8 +199,8 @@ public class TestSmtpMailSending {
   @Test
   public void sendingMailSynchronouslyWithFromWithToWithStringContentAndDefaultValues()
       throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM);
-    MailAddress receiverEmail = eMail(COMMON_TO);
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     String content = "Super content !";
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail).withContent(content);
 
@@ -224,8 +223,8 @@ public class TestSmtpMailSending {
   public void
   sendingMailSynchronouslyWithFromPersonalWithToWithSubjectWithMailContentContentAndDefaultValues()
       throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM).withName("From Personal Name");
-    MailAddress receiverEmail = eMail(COMMON_TO);
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM).withName("From Personal Name");
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     String subject = "A subject";
     MailContent content = MailContent.EMPTY;
     MailSending mailSending =
@@ -250,8 +249,8 @@ public class TestSmtpMailSending {
   public void
   sendingMailSynchronouslyWithFromWithToPersonalWithSubjectWithMultipartContentAndDefaultValues()
       throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM);
-    MailAddress receiverEmail = eMail(COMMON_TO).withName("To Personal Name");
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO).withName("To Personal Name");
     String subject = "A subject";
     Multipart content = new MimeMultipart();
     MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -277,8 +276,8 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailSynchronouslyValidMailWithReplyTo() throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM).withName("From Personal Name");
-    MailAddress receiverEmail = eMail(COMMON_TO).withName("To Personal Name");
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM).withName("From Personal Name");
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO).withName("To Personal Name");
     String subject = "A subject";
     Multipart content = new MimeMultipart();
     MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -305,8 +304,8 @@ public class TestSmtpMailSending {
 
   @Test
   public void sendingMailAsynchronously() throws Exception {
-    MailAddress senderEmail = eMail(COMMON_FROM);
-    MailAddress receiverEmail = eMail(COMMON_TO);
+    MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
+    MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending =
         MailSending.from(senderEmail).to(receiverEmail).withSubject("A subject")
             .withContent("A super content !");
