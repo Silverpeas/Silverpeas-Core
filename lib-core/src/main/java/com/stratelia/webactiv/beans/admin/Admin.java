@@ -5507,32 +5507,7 @@ public final class Admin {
 
         // Getting users according to rule
         List<String> userIds = new ArrayList<String>();
-
-        if (rule.toLowerCase().startsWith("ds_")) {
-          if (rule.toLowerCase().startsWith("ds_accesslevel")) {
-            userIds = synchronizeGroupByAccessRoleRule(rule, domainId);
-          } else if (rule.toLowerCase().startsWith("ds_domain")) {
-            userIds = synchronizeGroupByDomainRule(rule, domainId);
-          }
-        } else if (rule.toLowerCase().startsWith("dc_")) {
-          // Extracting property name and searching property value
-          String propertyName = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim();
-          String propertyValue = rule.substring(rule.indexOf("=") + 1).trim();
-
-          if (domainId == null) {
-            // All users by extra information
-            Domain[] domains = getAllDomains();
-            for (Domain domain : domains) {
-              userIds.addAll(
-                  getUserIdsBySpecificProperty(domain.getId(), propertyName, propertyValue));
-            }
-          } else {
-            userIds = getUserIdsBySpecificProperty(domainId, propertyName, propertyValue);
-          }
-        } else {
-          SilverTrace.error("admin", "Admin.synchronizeGroup", "admin.MSG_ERR_SYNCHRONIZE_GROUP",
-              "rule '" + rule + "' for groupId '" + groupId + "' is not correct !");
-        }
+        userIds.addAll(evaluateRule(rule, domainId, groupId));
 
         // Add users
         List<String> newUsers = new ArrayList<String>();
@@ -5590,6 +5565,158 @@ public final class Admin {
         domainDriverManager.releaseOrganizationSchema();
       }
     }
+  }
+
+  private List<String> unionUserIdsGroups(List<String> userIdsSetA, List<String> userIdsSetB) {
+    // Return an union of two lists of userIds without duplicate entry
+    List<String> tmp = new ArrayList<String>(userIdsSetA);
+    for (String userId : userIdsSetB) {
+      if (!tmp.contains(userId)) tmp.add(userId);
+    }
+    return tmp;
+  }
+
+  private List<String> intersectionUserIdsGroups(List<String> userIdsSetA, List<String> userIdsSetB) {
+    // Return an intersection of two lists of userIds (userIds present in both lists)
+    List<String> tmp = new ArrayList<String>();
+    for (String userId : userIdsSetA) {
+      if (userIdsSetB.contains(userId)) tmp.add(userId);
+    }
+    return tmp;
+  }
+
+  private List<String> notUserIdsGroups(List<String> userIdsSetA, List<String> userIdsFullSet) {
+    // Return a list if UserIds present only in userIdsFullSet
+    // e.g to get all users except admins
+    List<String> tmp = new ArrayList<String>(userIdsFullSet);
+
+    for (String userId : userIdsSetA) {
+      if (userIdsFullSet.contains(userId)) tmp.remove(userId);
+    }
+    return tmp;
+  }
+
+  private List<String> evaluateRule(String rule, String domainId, String groupId) throws AdminException {
+    // Evaluate the rule and return a list of userIds
+    // a rule can be simple or multivalued with actions
+    // Multivalued rules are formed like LDAP search queries.
+    // Possible actions : & | !
+    List<String> userIds =  new ArrayList<String>();
+
+    // If rule start with a parenthese, split it and evaluate each element
+    if (rule.toLowerCase().startsWith("(")) {
+      String action = "";
+      List<String> rules = new ArrayList<String>();
+      // Remove first openning and last closing parentheses
+      rule = rule.substring(1, rule.length()-1);
+      // Get action if present
+      List<String> actions = Arrays.asList("&", "|", "!");
+      if (actions.contains(rule.toLowerCase().substring(0, 1))) {
+        action = rule.substring(0, 1);
+        rule = rule.substring(1, rule.length());
+      }
+      // Parse rule to extract sub-rules if parentheses present
+      // If not, it's a simple rule. Nothing to extract
+      if (rule.toLowerCase().startsWith("(")) {
+        while (rule.length() > 0) {
+          int iBracket=1;
+          int iCursor=1;
+          while (iBracket > 0 & iCursor<rule.length()) {
+            if (rule.substring(iCursor, iCursor+1).equals("(")) {
+              iBracket+=1;
+            } else if (rule.substring(iCursor, iCursor+1).equals(")")) {
+              iBracket-=1;
+            }
+            iCursor++;
+          }
+          int iOpenningBracket = 0;
+          int iClosingBracket = iCursor;
+          rules.add(rule.substring(iOpenningBracket, iClosingBracket));
+          rule = rule.substring(iClosingBracket, rule.length());
+        }
+      } else {
+        rules.add(rule);
+      }
+
+      // If no action is given, it's a simple rule. We evaluate it
+      if (action.equals("")) {
+        return evaluateRule(rules.get(0), domainId, groupId);
+      } else {
+        // An action is given.
+        // ! (NOT) - Equivalent to a subtraction of users from all users
+        // This is the only action having only a set of data as an input
+        if (action.equals("!")) {
+          // In case of "Domaine mixte", we retrieve all users of all domains
+          // Else we retrieve only users of group's domain
+          DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getCurrentDomainDriverManager();
+          List<String> allUsersIds = new ArrayList<String>();
+          if (domainId == null) {
+              allUsersIds = Arrays.asList(userManager.getAllUsersIds(domainDriverManager));
+          } else {
+              allUsersIds = Arrays.asList(userManager.getUserIdsOfDomain(domainDriverManager, domainId));
+          }
+          userIds = notUserIdsGroups(evaluateRule(rules.get(0), domainId, groupId), allUsersIds);
+        } else {
+          // Evaluate each rule and execute the appropriate action
+          for(String str:rules) {
+            if (userIds.isEmpty()) {
+              userIds = evaluateRule(str, domainId, groupId);
+            } else {
+              if (action.equals("|")) {
+                // Union of both lists of userIds
+                userIds = unionUserIdsGroups(userIds, evaluateRule(str, domainId, groupId));
+              } else if (action.equals("&")) {
+                // Intersection of both lists of userIds
+                userIds = intersectionUserIdsGroups(userIds, evaluateRule(str, domainId, groupId));
+              }
+            }
+          }
+        }
+        return userIds;
+      }
+    } else if (rule.toLowerCase().startsWith("ds_")) {
+      if (rule.toLowerCase().startsWith("ds_accesslevel")) {
+        userIds.addAll(synchronizeGroupByAccessRoleRule(rule, domainId));
+      } else if (rule.toLowerCase().startsWith("ds_domain")) {
+        userIds.addAll(synchronizeGroupByDomainRule(rule, domainId));
+      }
+    } else if (rule.toLowerCase().startsWith("dc_")) {
+      // Extracting property name and searching property value
+      String propertyName = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim();
+      String propertyValue = rule.substring(rule.indexOf("=") + 1).trim();
+
+      if (domainId == null) {
+        // All users by extra information
+        Domain[] domains = getAllDomains();
+        for (Domain domain : domains) {
+          userIds.addAll(
+            getUserIdsBySpecificProperty(domain.getId(), propertyName, propertyValue));
+        }
+      } else {
+          userIds.addAll(getUserIdsBySpecificProperty(domainId, propertyName, propertyValue));
+      }
+    } else if (rule.toLowerCase().startsWith("dr_")) {
+      // Get recursive option
+      boolean bRecursive = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim().toLowerCase().equals("recursivegroups");
+      // Get parameters
+      String groupValues = rule.substring(rule.indexOf("=") + 1).trim();
+      // Split parameters as a list using comma separator and trimming spaces
+      List<String> groupIds = new ArrayList<String>();
+      groupIds = Arrays.asList(groupValues.split("\\s*,\\s*"));
+      // Add each group passed as a parameter
+      List<String> allGroupIds = new ArrayList<String>();
+      for (String tempGroupId : groupIds) {
+        allGroupIds.add(tempGroupId);
+        // Add sub groups recursively if recursive option is selected
+        if (bRecursive) allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(tempGroupId));
+      }
+      // Add all users belonging to any group in the list
+      userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
+    } else {
+      SilverTrace.error("admin", "Admin.synchronizeGroup", "admin.MSG_ERR_SYNCHRONIZE_GROUP",
+        "rule '" + rule + "' for groupId '" + groupId + "' is not correct !");
+    }                
+    return userIds;
   }
 
   private List<String> synchronizeGroupByDomainRule(String rule, String domainId)
