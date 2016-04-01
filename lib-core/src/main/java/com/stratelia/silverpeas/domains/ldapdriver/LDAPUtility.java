@@ -542,6 +542,7 @@ public class LDAPUtility {
             } else {
               SilverTrace.error("admin", "LDAPUtility.search1000Plus", "admin.EX_ERR_LDAP_REFERRAL",
                   "#" + Integer.toString(le.getResultCode()) + " " + le.getLDAPErrorMessage(), le);
+              throw le;
             }
           }
           if (sizeLimitReached || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
