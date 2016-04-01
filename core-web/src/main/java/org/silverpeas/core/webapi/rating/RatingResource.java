@@ -26,12 +26,12 @@ package org.silverpeas.core.webapi.rating;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import com.silverpeas.notation.control.RatingService;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.RaterRating;
-import org.silverpeas.rating.RaterRatingPK;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.RaterRating;
+import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.core.util.StringUtil;
 

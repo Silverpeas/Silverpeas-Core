@@ -18,12 +18,12 @@
  * You should have received a copy of the GNU Affero General License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notation.control;
+package org.silverpeas.core.contribution.rating.service;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.RaterRatingPK;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Map;
@@ -68,18 +68,18 @@ public interface RatingService {
 
   /**
    * Getting notation about the given contributions.
-   * If a contribution has no notation, a {@link org.silverpeas.rating.ContributionRating} instance is returned anyway.
+   * If a contribution has no notation, a {@link ContributionRating} instance is returned anyway.
    * @param contributions the contributions which returned ratings must be attached.
-   * @return {@link org.silverpeas.rating.ContributionRating} instances ralated to the given contributions indexed by contribution
+   * @return {@link ContributionRating} instances ralated to the given contributions indexed by contribution
    * identifier.
    */
   Map<String, ContributionRating> getRatings(SilverpeasContent... contributions);
 
   /**
    * Getting notation about the given contribution.
-   * If the contribution has no notation, a {@link org.silverpeas.rating.ContributionRating} instance is returned anyway.
+   * If the contribution has no notation, a {@link ContributionRating} instance is returned anyway.
    * @param contribution the contribution which returned ratings must be attached.
-   * @return {@link org.silverpeas.rating.ContributionRating} instance ralated to the given contribution.
+   * @return {@link ContributionRating} instance ralated to the given contribution.
    */
   ContributionRating getRating(SilverpeasContent contribution);
 

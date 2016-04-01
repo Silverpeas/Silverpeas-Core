@@ -19,14 +19,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notation.model;
+package org.silverpeas.core.contribution.rating.service;
 
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
+import org.silverpeas.core.contribution.rating.model.Rating;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.RaterRatingPK;
 
 import java.util.Arrays;
 import java.util.HashMap;

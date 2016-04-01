@@ -1,4 +1,4 @@
-package org.silverpeas.rating;
+package org.silverpeas.core.contribution.rating.model;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;

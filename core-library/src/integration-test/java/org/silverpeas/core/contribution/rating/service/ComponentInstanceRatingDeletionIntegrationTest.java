@@ -1,8 +1,7 @@
-package com.silverpeas.notation.control;
+package org.silverpeas.core.contribution.rating.service;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -10,13 +9,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,8 +42,8 @@ public class ComponentInstanceRatingDeletionIntegrationTest {
   private ComponentInstanceDeletion ratingService;
 
   @Rule
-  public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("/com/silverpeas/notation/model/create_table.sql")
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
+      "/org/silverpeas/core/contribution/rating/model/create_table.sql")
           .loadInitialDataSetFrom(NOTATION_SETUP);
 
   @Deployment
@@ -52,9 +51,9 @@ public class ComponentInstanceRatingDeletionIntegrationTest {
     return WarBuilder4LibCore
         .onWarForTestClass(ComponentInstanceRatingDeletionIntegrationTest.class)
         .addJpaPersistenceFeatures().addComponentInstanceDeletionFeatures()
-        .testFocusedOn(
-            war -> war.addPackages(true, "com.silverpeas.notation", "org.silverpeas.rating"))
-        .addAsResource("com/silverpeas/notation/model/create_table.sql").build();
+        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.contribution.rating"))
+        .addAsResource("org/silverpeas/core/contribution/rating/model")
+        .build();
   }
 
   @Before

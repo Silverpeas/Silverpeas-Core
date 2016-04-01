@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,36 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.notation.control;
-
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-
-public class RatingRuntimeException extends SilverpeasRuntimeException {
-
-  private static final long serialVersionUID = 2282109565545438425L;
-
-  public String getModule() {
-    return "notation";
-  }
-
-  public RatingRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  public RatingRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public RatingRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public RatingRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-}
+/**
+ * Provides classes for rating the contributions.
+ * @author mmoquillon
+ */
+package org.silverpeas.core.contribution.rating;

@@ -18,15 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notation.control;
+package org.silverpeas.core.contribution.rating.service;
 
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import com.silverpeas.notation.model.Rating;
-import com.silverpeas.notation.model.RatingRepository;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.RaterRatingPK;
+import org.silverpeas.core.contribution.rating.model.Rating;
+import org.silverpeas.core.contribution.rating.model.ContributionRating;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

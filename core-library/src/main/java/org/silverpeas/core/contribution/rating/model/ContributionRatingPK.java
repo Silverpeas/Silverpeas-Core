@@ -1,4 +1,4 @@
-package org.silverpeas.rating;
+package org.silverpeas.core.contribution.rating.model;
 
 import org.silverpeas.util.ForeignPK;
 

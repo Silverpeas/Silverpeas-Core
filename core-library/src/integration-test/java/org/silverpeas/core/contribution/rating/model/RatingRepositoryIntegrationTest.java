@@ -19,11 +19,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notation.model;
+package org.silverpeas.core.contribution.rating.model;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,10 +30,9 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.rating.service.RatingRepository;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
@@ -62,8 +60,8 @@ public class RatingRepositoryIntegrationTest {
       .build();
 
   @Rule
-  public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("/com/silverpeas/notation/model/create_table.sql")
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
+      "/org/silverpeas/core/contribution/rating/model/create_table.sql")
           .loadInitialDataSetFrom(NOTATION_SETUP, UNIQUE_ID_SETUP);
 
   @Inject

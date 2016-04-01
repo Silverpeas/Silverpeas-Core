@@ -25,7 +25,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import com.silverpeas.notation.control.RatingService;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -60,7 +60,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
-import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
