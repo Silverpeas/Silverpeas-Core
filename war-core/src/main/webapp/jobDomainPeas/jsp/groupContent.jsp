@@ -28,8 +28,14 @@
 <%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
+<c:set var="reloadDomainNavigationFrame" value="${requestScope.reloadDomainNavigationFrame}"/>
+<c:set var="groupData" value="${requestScope.groupObject}"/>
+<jsp:useBean id="groupData" type="com.stratelia.webactiv.beans.admin.Group"/>
+
 <%
 	  Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
@@ -54,7 +60,7 @@
         operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
         operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','"+thisGroupId + "')");
         operationPane.addLine();
-        operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "groupSynchro?Idgroup="+thisGroupId);
+        operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "javascript:doSynchronization()");
 
         showTabs = true;
     }
@@ -101,7 +107,7 @@
     if (isDomainSync) {
       // Group operations
       operationPane.addLine();
-      operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"),"groupSynchro?Idgroup="+thisGroupId);
+      operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"),"javascript:doSynchronization()");
       operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"),resource.getString("JDP.groupUnsynchro"),"groupUnSynchro?Idgroup="+thisGroupId);
     }
 %>
@@ -119,6 +125,16 @@ function ConfirmAndSend(textToDisplay,groupId)
         jQuery('#deletionForm').submit();
     }
 }
+  function doSynchronization() {
+    $.progressMessage();
+    window.location.href = "groupSynchro?Idgroup=${groupData.id}";
+  }
+
+  <c:if test="${reloadDomainNavigationFrame}">
+  whenSilverpeasReady(function() {
+    parent.domainBar.refreshCurrentLevel();
+  });
+  </c:if>
 </script>
 </head>
 <body>
@@ -144,18 +160,25 @@ if (showTabs) {
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
 	</tr>
+  <c:if test="${not empty groupData.description}">
 	<tr>
 	    <td></td>
 		<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.description") %> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
 	</tr>
-	<% if (grObject.getRule() != null) { %>
+  </c:if>
+  <c:if test="${not empty groupData.rule}">
 	<tr>
     	<td></td>
     	<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("JDP.synchroRule") %> :</td>
     	<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
     </tr>
-    <% } %>
+  </c:if>
+  <tr>
+    <td></td>
+    <td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.users") %> :</td>
+    <td align=left valign="baseline" width="100%"><%=grObject.getTotalNbUsers()%></td>
+  </tr>
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
@@ -165,7 +188,7 @@ if (showTabs) {
 		Group[] subGroups = (Group[])request.getAttribute("subGroups");
 
 		arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
-		arrayPane.setTitle(resource.getString("JDP.groups"));
+		arrayPane.setTitle(resource.getString("JDP.groups") + " (" +  subGroups.length + ")");
 
 		arrayPane.addArrayColumn("&nbsp;");
 		arrayPane.addArrayColumn(resource.getString("GML.nom"));
@@ -202,7 +225,7 @@ if (showTabs) {
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
-  arrayPaneUser.setTitle(resource.getString("GML.users"));
+  arrayPaneUser.setTitle(resource.getString("GML.users") + " (" +  subUsers.size() + ")");
 
   arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
@@ -231,5 +254,6 @@ if (showTabs) {
   <input id="Idgroup" type="hidden" name="Idgroup"/>
 </form>
 <% out.println(window.printAfter()); %>
+<view:progressMessage/>
 </body>
 </html>

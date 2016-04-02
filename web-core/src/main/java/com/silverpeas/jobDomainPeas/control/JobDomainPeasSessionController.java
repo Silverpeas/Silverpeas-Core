@@ -69,6 +69,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.password.service.PasswordCheck;
 import org.silverpeas.password.service.PasswordServiceFactory;
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.util.NotifierUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -76,9 +77,11 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.*;
 
 import static com.silverpeas.SilverpeasServiceProvider.getPersonalizationService;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -1322,6 +1325,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createGroup()",
         "root.MSG_GEN_ENTER_METHOD", "ParentId=" + idParent + " Name="
         + groupName + " Desc=" + groupDescription);
+
+    boolean isSynchronizationToPerform = isDefined(groupRule);
+    if (isSynchronizationToPerform) {
+      groupRule = groupRule.trim();
+    }
+
     theNewGroup.setId("-1");
     if (StringUtil.isDefined(targetDomainId)
         && !"-1".equals(targetDomainId)) {
@@ -1337,7 +1346,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP");
     }
     refresh();
-    return isGroupRoot(idRet);
+
+    goIntoGroup(idRet);
+
+    return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
   }
 
   public boolean modifyGroup(String idGroup, String groupName,
@@ -1350,6 +1362,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException("JobDomainPeasSessionController.modifyGroup()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_GROUP");
     }
+    boolean isSynchronizationToPerform =
+        isDefined(groupRule) && !groupRule.equalsIgnoreCase(theModifiedGroup.getRule());
+    if (isSynchronizationToPerform) {
+      groupRule = groupRule.trim();
+    }
     theModifiedGroup.setName(groupName);
     theModifiedGroup.setDescription(groupDescription);
     theModifiedGroup.setRule(groupRule);
@@ -1360,7 +1377,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP");
     }
     refresh();
-    return isGroupRoot(idRet);
+    return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
   }
 
   public boolean updateGroupSubUsers(String idGroup, String[] userIds)
@@ -1380,12 +1397,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP");
     }
     refresh();
-    return false;
+    return true;
   }
 
   public boolean deleteGroup(String idGroup) throws JobDomainPeasException {
-    boolean haveToRefreshDomain = isGroupRoot(idGroup);
-
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.deleteGroup()",
         "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
 
@@ -1396,25 +1411,39 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     removeGroupFromPath(idGroup);
     refresh();
-    return haveToRefreshDomain;
+    return true;
   }
 
   public boolean synchroGroup(String idGroup) throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.synchroGroup()",
         "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
 
-    String idRet = m_AdminCtrl.synchronizeGroup(idGroup);
-    if (!StringUtil.isDefined(idRet)) {
+    String synchronizationResult = m_AdminCtrl.synchronizeGroup(idGroup);
+    if (!StringUtil.isDefined(synchronizationResult)) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.synchroGroup()",
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP");
     }
-    refresh();
-    return isGroupRoot(idRet);
+    if (StringUtil.isLong(synchronizationResult)) {
+      refresh();
+      return true;
+    }
+    if (synchronizationResult.startsWith("expression.")) {
+      if (synchronizationResult.startsWith("expression.groundrule.unknown")) {
+        final String[] keyRule = synchronizationResult.split("[|]");
+        String msgKey = keyRule[0];
+        String groundRule = "<b>" + keyRule[1] + "</b>";
+        NotifierUtil.addError(
+            MessageFormat.format(getString("JDP.groupSynchroRule." + msgKey), groundRule));
+      } else {
+        NotifierUtil.addError(getString("JDP.groupSynchroRule." + synchronizationResult));
+      }
+    } else {
+      NotifierUtil.addError(synchronizationResult);
+    }
+    return false;
   }
 
   public boolean unsynchroGroup(String idGroup) throws JobDomainPeasException {
-    boolean haveToRefreshDomain = isGroupRoot(idGroup);
-
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.unsynchroGroup()",
         "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
 
@@ -1425,7 +1454,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     removeGroupFromPath(idGroup);
     refresh();
-    return haveToRefreshDomain;
+    return true;
   }
 
   public boolean importGroup(String groupName) throws JobDomainPeasException {
@@ -1439,7 +1468,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP");
     }
     refresh();
-    return isGroupRoot(idRet);
+    return true;
   }
 
   /*

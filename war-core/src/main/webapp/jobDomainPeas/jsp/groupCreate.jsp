@@ -31,6 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
@@ -49,6 +50,13 @@
 <c:set var="displayedGroupDesc"><view:encodeHtml string="${groupDesc}" /></c:set>
 <c:set var="groupRule" value="${grObject.rule}" />
 <c:set var="displayedGroupRule"><view:encodeHtml string="${groupRule}" /></c:set>
+
+<c:set var="prefixedNotationHelp"><view:applyTemplate locationBase="core:expression" name="prefixedNotationHelp"/></c:set>
+<c:set var="synchronizationRuleHelp">
+  <view:applyTemplate locationBase="core:admin/group" name="synchronizationRuleHelp">
+    <view:templateParam name="prefixedNotationHelp" value="${silfn:escapeJs(prefixedNotationHelp)}"/>
+  </view:applyTemplate>
+</c:set>
 
 <%
 	Domain domObject = (Domain)request.getAttribute("domainObject");
@@ -77,6 +85,7 @@ function SubmitWithVerif(verifParams)
     }
     if (errorMsg == "")
     {
+        $.progressMessage();
         document.groupForm.submit();
     }
     else
@@ -89,9 +98,9 @@ $(document).ready(function()
 {
    $('#rule-info').qtip({
 	content: {
-		text: "<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.synchroRuleInfo"))%>",
+		text: "${silfn:escapeJs(synchronizationRuleHelp)}",
 		title: {
-			text: "<%=resource.getString("JDP.synchroRuleAvail")%>",
+			text: "<%=resource.getString("JDP.synchronizationRuleHelpTitle")%>",
 			button: "<%=resource.getString("GML.close")%>"
 		}
 	},
@@ -166,7 +175,7 @@ out.println(window.printBefore());
 	      	<div class="field" id="form-row-rule">
 				<label class="txtlibform"><fmt:message key="JDP.synchroRule"/></label>
 				<div class="champs">
-					<input type="text" name="groupRule" size="50" maxlength="100" VALUE="${displayedGroupRule}">
+					<input type="text" name="groupRule" size="50" maxlength="1998" VALUE="${displayedGroupRule}">
 					<img border="0" align="absmiddle" src="${context}${infoIcon}" id="rule-info"/>
 				</div>
 			</div>
@@ -189,5 +198,6 @@ out.println(window.printBefore());
 <%
 out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>

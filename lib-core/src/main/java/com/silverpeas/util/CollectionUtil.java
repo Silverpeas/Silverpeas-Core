@@ -27,15 +27,7 @@ import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Yohann Chastagnier
@@ -295,5 +287,39 @@ public class CollectionUtil {
       }
     }
     return result;
+  }
+
+  /**
+   * Makes an union between both of the given lists.<br/>
+   * The result contains unique values.
+   * @param list1 the first list.
+   * @param list2 the second list.
+   * @param <T>
+   * @return the union between the two lists.
+   */
+  public static <T> List<T> union(List<T> list1, List<T> list2) {
+    Set<T> set = new LinkedHashSet<T>();
+    set.addAll(list1);
+    set.addAll(list2);
+    return new ArrayList<T>(set);
+  }
+
+  /**
+   * Makes an intersection betwwen both of the given lists.<br/>
+   * The result contains unique values.
+   * @param list1 the first list.
+   * @param list2 the second list.
+   * @param <T>
+   * @return the intersection between the two lists.
+   */
+  public static <T> List<T> intersection(List<T> list1, List<T> list2) {
+    List<T> list = new ArrayList<T>(new LinkedHashSet<T>(list1));
+    Iterator<T> iterator = list.iterator();
+    while(iterator.hasNext()) {
+      if (!list2.contains(iterator.next())) {
+        iterator.remove();
+      }
+    }
+    return list;
   }
 }

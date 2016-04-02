@@ -43,13 +43,18 @@ import java.util.Set;
 
 public class GroupManager {
 
+  private static GroupManager instance = new GroupManager();
+  public static GroupManager get() {
+    return instance;
+  }
+
   private GroupDAO groupDao = new GroupDAO();
   private UserDAO userDao = new UserDAO();
 
   /**
    * Constructor
    */
-  public GroupManager() {
+  private GroupManager() {
   }
 
   /**

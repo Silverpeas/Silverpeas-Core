@@ -35,6 +35,7 @@ import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.util.PrefixedNotationExpressionEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1732,6 +1733,22 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
+  /**
+   * Synchronizes the users of the group represented by the given identifier.<br/>
+   * Two types of synchronization are possible:
+   * <ul>
+   * <li>when the group is synchronized from an LDAP domain, it is synchronized directly with the
+   * LDAP</li>
+   * <li>otherwise, the synchronization is done from the rule defined for the group</li>
+   * </ul>
+   * It is no guarantee that this treatment behavior is right if it is called out of the two
+   * previous cases.
+   * @param groupId the identifier of the group to process.
+   * @return <ul><li>in case of success, the identifier of the group (a number)</li><li>in case of
+   * error about the synchronization rule expression syntax, the key of the error from {@link
+   * PrefixedNotationExpressionEngine} (it can be used dor bundles for example)</li><li>an empty
+   * value otherwise</li></ul>
+   */
   public String synchronizeGroup(String groupId) {
     SilverTrace.info("admin", "AdminController.synchronizeGroup",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1740,6 +1757,16 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.synchronizeGroup",
           "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+      if (e instanceof AdminException &&
+          ((AdminException) e).getNested() instanceof GroupSynchronizationRule.Error) {
+        GroupSynchronizationRule.Error error =
+            (GroupSynchronizationRule.Error) ((AdminException) e).getNested();
+        if (error instanceof GroupSynchronizationRule.GroundRuleError) {
+          return error.getHandledMessage() + "|" +
+              ((GroupSynchronizationRule.GroundRuleError) error).getBaseRulePart();
+        }
+        return error.getHandledMessage();
+      }
       return "";
     }
   }

@@ -42,9 +42,14 @@ import java.util.List;
 
 public class UserManager {
 
+  private static UserManager instance = new UserManager();
+  public static UserManager get() {
+    return instance;
+  }
+
   private final UserDAO userDAO = new UserDAO();
 
-  public UserManager() {
+  private UserManager() {
   }
 
   /**

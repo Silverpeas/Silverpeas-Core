@@ -6411,6 +6411,10 @@ form .forms .fields > li{
  	width:98%
 }
 
+#profil-groups-belong #form-row-rule {
+ 	width:98%
+}
+
 .skinFieldset .fields  {
 	padding:0;
 }

@@ -82,7 +82,7 @@ import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
  * The class Admin is the main class of the Administrator.<BR/> The role of the administrator is to
  * create and maintain spaces.
  */
-public final class Admin {
+public class Admin {
 
   /**
    * Identifier of the administration component in Silverpeas. It identifies any administrative tool
@@ -108,8 +108,8 @@ public final class Admin {
   private static final ComponentInstManager componentManager = new ComponentInstManager();
   private static final ProfileInstManager profileManager = new ProfileInstManager();
   private static final SpaceProfileInstManager spaceProfileManager = new SpaceProfileInstManager();
-  private static final GroupManager groupManager = new GroupManager();
-  private static final UserManager userManager = new UserManager();
+  private final GroupManager groupManager;
+  private final UserManager userManager;
   private static final ProfiledObjectManager profiledObjectManager = new ProfiledObjectManager();
   private static final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
   // Component instanciator
@@ -160,6 +160,9 @@ public final class Admin {
   }
 
   Admin() {
+    userManager = UserManager.get();
+    groupManager = GroupManager.get();
+
     if (spaceInstanciator == null) {
       spaceInstanciator = new SpaceInstanciator(getAllComponents());
     }
@@ -5491,7 +5494,6 @@ public final class Admin {
         "groupId = " + groupId);
     Group group = getGroup(groupId);
     String rule = group.getRule();
-    String domainId = group.getDomainId();
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
         getCurrentDomainDriverManager();
     if (StringUtil.isDefined(rule)) {
@@ -5506,8 +5508,7 @@ public final class Admin {
         domainDriverManager.startTransaction(false);
 
         // Getting users according to rule
-        List<String> userIds = new ArrayList<String>();
-        userIds.addAll(evaluateRule(rule, domainId, groupId));
+        List<String> userIds = GroupSynchronizationRule.from(group).getUserIds();
 
         // Add users
         List<String> newUsers = new ArrayList<String>();
@@ -5554,7 +5555,8 @@ public final class Admin {
           SilverTrace.error("admin", "Admin.synchronizeGroup", "root.EX_ERR_ROLLBACK", e1);
         }
         SynchroGroupReport.error("admin.synchronizeGroup",
-            "Problème lors de la synchronisation : " + e.getMessage(), null);
+            "Error during the processing of synchronization rule of group '" + groupId + "': " +
+                e.getMessage(), null);
         throw new AdminException("Admin.synchronizeGroup",
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP",
             "groupId : '" + groupId + "'", e);
@@ -5565,249 +5567,6 @@ public final class Admin {
         domainDriverManager.releaseOrganizationSchema();
       }
     }
-  }
-
-  private List<String> unionUserIdsGroups(List<String> userIdsSetA, List<String> userIdsSetB) {
-    // Return an union of two lists of userIds without duplicate entry
-    List<String> tmp = new ArrayList<String>(userIdsSetA);
-    for (String userId : userIdsSetB) {
-      if (!tmp.contains(userId)) tmp.add(userId);
-    }
-    return tmp;
-  }
-
-  private List<String> intersectionUserIdsGroups(List<String> userIdsSetA, List<String> userIdsSetB) {
-    // Return an intersection of two lists of userIds (userIds present in both lists)
-    List<String> tmp = new ArrayList<String>();
-    for (String userId : userIdsSetA) {
-      if (userIdsSetB.contains(userId)) tmp.add(userId);
-    }
-    return tmp;
-  }
-
-  private List<String> notUserIdsGroups(List<String> userIdsSetA, List<String> userIdsFullSet) {
-    // Return a list if UserIds present only in userIdsFullSet
-    // e.g to get all users except admins
-    List<String> tmp = new ArrayList<String>(userIdsFullSet);
-
-    for (String userId : userIdsSetA) {
-      if (userIdsFullSet.contains(userId)) tmp.remove(userId);
-    }
-    return tmp;
-  }
-
-  private List<String> evaluateRule(String rule, String domainId, String groupId) throws AdminException {
-    // Evaluate the rule and return a list of userIds
-    // a rule can be simple or multivalued with actions
-    // Multivalued rules are formed like LDAP search queries.
-    // Possible actions : & | !
-    List<String> userIds =  new ArrayList<String>();
-
-    // If rule start with a parenthese, split it and evaluate each element
-    if (rule.toLowerCase().startsWith("(")) {
-      String action = "";
-      List<String> rules = new ArrayList<String>();
-      // Remove first openning and last closing parentheses
-      rule = rule.substring(1, rule.length()-1);
-      // Get action if present
-      List<String> actions = Arrays.asList("&", "|", "!");
-      if (actions.contains(rule.toLowerCase().substring(0, 1))) {
-        action = rule.substring(0, 1);
-        rule = rule.substring(1, rule.length());
-      }
-      // Parse rule to extract sub-rules if parentheses present
-      // If not, it's a simple rule. Nothing to extract
-      if (rule.toLowerCase().startsWith("(")) {
-        while (rule.length() > 0) {
-          int iBracket=1;
-          int iCursor=1;
-          while (iBracket > 0 & iCursor<rule.length()) {
-            if (rule.substring(iCursor, iCursor+1).equals("(")) {
-              iBracket+=1;
-            } else if (rule.substring(iCursor, iCursor+1).equals(")")) {
-              iBracket-=1;
-            }
-            iCursor++;
-          }
-          int iOpenningBracket = 0;
-          int iClosingBracket = iCursor;
-          rules.add(rule.substring(iOpenningBracket, iClosingBracket));
-          rule = rule.substring(iClosingBracket, rule.length());
-        }
-      } else {
-        rules.add(rule);
-      }
-
-      // If no action is given, it's a simple rule. We evaluate it
-      if (action.equals("")) {
-        return evaluateRule(rules.get(0), domainId, groupId);
-      } else {
-        // An action is given.
-        // ! (NOT) - Equivalent to a subtraction of users from all users
-        // This is the only action having only a set of data as an input
-        if (action.equals("!")) {
-          // In case of "Domaine mixte", we retrieve all users of all domains
-          // Else we retrieve only users of group's domain
-          DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getCurrentDomainDriverManager();
-          List<String> allUsersIds = new ArrayList<String>();
-          if (domainId == null) {
-              allUsersIds = Arrays.asList(userManager.getAllUsersIds(domainDriverManager));
-          } else {
-              allUsersIds = Arrays.asList(userManager.getUserIdsOfDomain(domainDriverManager, domainId));
-          }
-          userIds = notUserIdsGroups(evaluateRule(rules.get(0), domainId, groupId), allUsersIds);
-        } else {
-          // Evaluate each rule and execute the appropriate action
-          for(String str:rules) {
-            if (userIds.isEmpty()) {
-              userIds = evaluateRule(str, domainId, groupId);
-            } else {
-              if (action.equals("|")) {
-                // Union of both lists of userIds
-                userIds = unionUserIdsGroups(userIds, evaluateRule(str, domainId, groupId));
-              } else if (action.equals("&")) {
-                // Intersection of both lists of userIds
-                userIds = intersectionUserIdsGroups(userIds, evaluateRule(str, domainId, groupId));
-              }
-            }
-          }
-        }
-        return userIds;
-      }
-    } else if (rule.toLowerCase().startsWith("ds_")) {
-      if (rule.toLowerCase().startsWith("ds_accesslevel")) {
-        userIds.addAll(synchronizeGroupByAccessRoleRule(rule, domainId));
-      } else if (rule.toLowerCase().startsWith("ds_domain")) {
-        userIds.addAll(synchronizeGroupByDomainRule(rule, domainId));
-      }
-    } else if (rule.toLowerCase().startsWith("dc_")) {
-      // Extracting property name and searching property value
-      String propertyName = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim();
-      String propertyValue = rule.substring(rule.indexOf("=") + 1).trim();
-
-      if (domainId == null) {
-        // All users by extra information
-        Domain[] domains = getAllDomains();
-        for (Domain domain : domains) {
-          userIds.addAll(
-            getUserIdsBySpecificProperty(domain.getId(), propertyName, propertyValue));
-        }
-      } else {
-          userIds.addAll(getUserIdsBySpecificProperty(domainId, propertyName, propertyValue));
-      }
-    } else if (rule.toLowerCase().startsWith("dr_")) {
-      // Get recursive option
-      boolean bRecursive = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim().toLowerCase().equals("recursivegroups");
-      // Get parameters
-      String groupValues = rule.substring(rule.indexOf("=") + 1).trim();
-      // Split parameters as a list using comma separator and trimming spaces
-      List<String> groupIds = new ArrayList<String>();
-      groupIds = Arrays.asList(groupValues.split("\\s*,\\s*"));
-      // Add each group passed as a parameter
-      List<String> allGroupIds = new ArrayList<String>();
-      for (String tempGroupId : groupIds) {
-        allGroupIds.add(tempGroupId);
-        // Add sub groups recursively if recursive option is selected
-        if (bRecursive) allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(tempGroupId));
-      }
-      // Add all users belonging to any group in the list
-      userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
-    } else {
-      SilverTrace.error("admin", "Admin.synchronizeGroup", "admin.MSG_ERR_SYNCHRONIZE_GROUP",
-        "rule '" + rule + "' for groupId '" + groupId + "' is not correct !");
-    }                
-    return userIds;
-  }
-
-  private List<String> synchronizeGroupByDomainRule(String rule, String domainId)
-      throws AdminPersistenceException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-        getCurrentDomainDriverManager();
-    List<String> userIds = Collections.emptyList();
-    // Extracting domain id
-    String dId = rule.substring(rule.indexOf("=") + 1).trim();
-    // Available only for "domaine mixte"
-    if (domainId == null || "-1".equals(domainId)) {
-      userIds = Arrays.asList(domainDriverManager.getOrganization().user.getUserIdsOfDomain(
-          Integer.parseInt(dId)));
-    }
-    return userIds;
-  }
-
-  private List<String> synchronizeGroupByAccessRoleRule(String rule, String domainId)
-      throws AdminException {
-    List<String> userIds;// Extracting access level
-    String accessLevel = rule.substring(rule.indexOf("=") + 1).trim();
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-        getCurrentDomainDriverManager();
-    if ("*".equalsIgnoreCase(accessLevel)) {
-      // All users In case of "Domaine mixte", we retrieve all users of all domains
-      // Else we get only users of group's domain
-      if (domainId == null) {
-        userIds = Arrays.asList(userManager.getAllUsersIds(domainDriverManager));
-      } else {
-        userIds = Arrays.asList(userManager.getUserIdsOfDomain(domainDriverManager, domainId));
-      }
-    } else {
-      // All users by access level
-      if (domainId == null) {
-        userIds = Arrays.asList(domainDriverManager.getOrganization().user.getUserIdsByAccessLevel(
-            UserAccessLevel.fromCode(accessLevel)));
-      } else {
-        userIds = Arrays.asList(userManager.getUserIdsOfDomainAndAccessLevel(domainDriverManager,
-            domainId, UserAccessLevel.fromCode(accessLevel)));
-      }
-    }
-    return userIds;
-  }
-
-  private List<String> getUserIdsBySpecificProperty(String domainId, String propertyName,
-      String propertyValue) throws AdminException {
-    int iDomainId = Integer.parseInt(domainId);
-    UserDetail[] users = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-        getCurrentDomainDriverManager();
-    DomainDriver domainDriver = null;
-    try {
-      domainDriver = domainDriverManager.getDomainDriver(iDomainId);
-    } catch (Exception e) {
-      SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
-          "Erreur ! Domaine " + iDomainId + " inaccessible !", null);
-    }
-
-    if (domainDriver != null) {
-      try {
-        users = domainDriver.getUsersBySpecificProperty(propertyName,
-            propertyValue);
-        if (users == null) {
-          SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
-              "La propriété '" + propertyName + "' n'est pas définie dans le domaine "
-              + iDomainId, null);
-        }
-      } catch (Exception e) {
-        SynchroGroupReport.info("admin.getUserIdsBySpecificProperty", "Domain " + domainId
-            + " ne supporte pas les groupes synchronisés", null);
-      }
-    }
-
-    List<String> specificIds = new ArrayList<String>();
-    if (users != null) {
-      for (UserDetail user : users) {
-        specificIds.add(user.getSpecificId());
-      }
-    }
-
-    // We have to find users according to theirs specificIds
-    UserRow[] usersInDomain = domainDriverManager.getOrganization().user.getUsersBySpecificIds(
-        iDomainId, specificIds);
-    List<String> userIds = new ArrayList<String>();
-    if (usersInDomain != null) {
-      for (UserRow userInDomain : usersInDomain) {
-        userIds.add(Integer.toString(userInDomain.id));
-      }
-    }
-
-    return userIds;
   }
 
   // //////////////////////////////////////////////////////////
