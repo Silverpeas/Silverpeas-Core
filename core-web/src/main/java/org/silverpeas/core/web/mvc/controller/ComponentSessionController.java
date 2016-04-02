@@ -29,7 +29,7 @@
 
 package org.silverpeas.core.web.mvc.controller;
 
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardSelection;

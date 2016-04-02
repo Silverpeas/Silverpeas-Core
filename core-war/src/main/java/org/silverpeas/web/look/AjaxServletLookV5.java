@@ -29,8 +29,8 @@ import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInter
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;

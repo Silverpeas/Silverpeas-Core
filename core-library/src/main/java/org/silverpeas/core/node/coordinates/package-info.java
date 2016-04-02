@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,21 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.personalization;
-
 /**
- * User: ehugonnet Date: 21/03/11 Time: 16:59
+ * Provides interfaces and classes to place and to locate contributions on an hierachical tree of
+ * nodes.
+ * @author mmoquillon
  */
-public enum UserMenuDisplay {
-  /**
-   * ALL : display both tabs bookmarks and the full menu and the default is the full menu tab.
-   * BOOKMARKS : display both tabs bookmarks and the full menu and the default is the bookmarks menu
-   * tab. DISABLE : no bookmarks menu tab is displayed. DEFAULT : use the look display.
-   */
-  DISABLE, DEFAULT, BOOKMARKS, ALL;
-
-  public boolean isNotDefault() {
-    return this != DEFAULT;
-  }
-}
+package org.silverpeas.core.node.coordinates;

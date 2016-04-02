@@ -27,8 +27,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkCommunicationUser.jsp" %>
-<%@ page import="com.silverpeas.personalization.UserPreferences" %>
-<%@ page import="com.silverpeas.personalization.service.PersonalizationServiceProvider" %>
+<%@ page import="org.silverpeas.core.personalization.UserPreferences" %>
+<%@ page import="org.silverpeas.core.personalization.service.PersonalizationServiceProvider" %>
 
 <%
   ArrayLine arrayLine = null;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.jobdomain.control;
 
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -90,7 +90,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.silverpeas.personalization.service.PersonalizationServiceProvider
+import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider
     .getPersonalizationService;
 
 /**

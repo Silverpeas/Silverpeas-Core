@@ -37,7 +37,7 @@
 
 <%
   MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
-  SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+  SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.personalization.settings.personalizationPeasSettings");
   LocalizationBundle authRs = ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication", resource.getLanguage());
   SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 

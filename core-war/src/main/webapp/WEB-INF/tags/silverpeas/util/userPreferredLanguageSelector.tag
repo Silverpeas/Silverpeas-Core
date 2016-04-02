@@ -37,7 +37,7 @@
 <%-- TAG attributes --%>
 <%@ attribute name="user" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
               description="the user associated to the display choice" %>
-<%@ attribute name="userPreferences" required="false" type="com.silverpeas.personalization.UserPreferences"
+<%@ attribute name="userPreferences" required="false" type="org.silverpeas.core.personalization.UserPreferences"
               description="the user preferences associated to the display choice" %>
 <%@ attribute name="readOnly" required="false" type="java.lang.Boolean"
               description="indicates if data must be displayed as read only mode" %>

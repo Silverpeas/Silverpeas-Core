@@ -89,7 +89,7 @@
 	String ArrayPnoColorPix   = m_context + "/util/icons/colorPix/15px.gif";
 
 	MultiSilverpeasBundle resource 	= (MultiSilverpeasBundle) request.getAttribute("resources");
-	SettingBundle rs 			= ResourceLocator.getSettingBundle("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+	SettingBundle rs 			= ResourceLocator.getSettingBundle("org.silverpeas.personalization.settings.personalizationPeasSettings");
 	SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");

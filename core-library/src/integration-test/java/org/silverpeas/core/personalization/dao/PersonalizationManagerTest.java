@@ -22,15 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.personalization.dao;
+package org.silverpeas.core.personalization.dao;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -92,7 +92,7 @@ public class PersonalizationManagerTest {
     return WarBuilder4LibCore.onWarForTestClass(PersonalizationManagerTest.class)
         .addJpaPersistenceFeatures()
         .testFocusedOn(
-            (warBuilder) -> warBuilder.addPackages(true, "com.silverpeas.personalization"))
+            (warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.personalization"))
         .build();
   }
 

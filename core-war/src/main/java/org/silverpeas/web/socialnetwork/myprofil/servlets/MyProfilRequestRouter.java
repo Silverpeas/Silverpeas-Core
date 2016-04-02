@@ -22,8 +22,8 @@ package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
 import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.core.web.look.LookHelper;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
@@ -255,7 +255,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     SettingBundle rl = ResourceLocator.getSettingBundle(
-        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+        "org.silverpeas.personalization.settings.personalizationPeasSettings");
     SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");
     UserDetail currentUser = sc.getUserDetail();

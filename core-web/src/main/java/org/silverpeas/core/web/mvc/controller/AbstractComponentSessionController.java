@@ -27,7 +27,7 @@ package org.silverpeas.core.web.mvc.controller;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.admin.component.model.Parameter;
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.LocalizationBundle;

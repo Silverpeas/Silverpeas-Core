@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
-import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.notification.user.builder.AbstractResourceUserNotificationBuilder;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.util.StringUtil;

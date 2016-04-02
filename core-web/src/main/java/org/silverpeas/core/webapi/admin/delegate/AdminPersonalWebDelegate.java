@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.component.model.ComponentInst;

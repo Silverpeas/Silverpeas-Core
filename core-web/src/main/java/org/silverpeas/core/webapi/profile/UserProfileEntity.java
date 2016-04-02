@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.util.URLUtil;

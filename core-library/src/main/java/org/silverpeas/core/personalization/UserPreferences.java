@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.personalization;
+package org.silverpeas.core.personalization;
 
-import com.silverpeas.personalization.service.PersonalizationService;
+import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.core.util.StringUtil;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.subscription;
 
-import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.personalization.UserPreferences;
 import com.silverpeas.subscribe.SubscriptionResource;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;

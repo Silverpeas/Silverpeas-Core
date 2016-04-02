@@ -44,7 +44,7 @@ public class DisplayI18NHelper {
 
   static {
     SettingBundle settings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+        "org.silverpeas.personalization.settings.personalizationPeasSettings");
 
     defaultLanguage = settings.getString("DefaultLanguage");
 

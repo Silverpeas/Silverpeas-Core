@@ -26,16 +26,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.silverpeas.personalization.service;
+package org.silverpeas.core.personalization.service;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.dao.PersonalizationMatcher;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.dao.PersonalizationMatcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -93,9 +93,9 @@ public class PersonalizationServiceTest {
     return WarBuilder4LibCore.onWarForTestClass(PersonalizationServiceTest.class)
         .addJpaPersistenceFeatures()
         .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "com.silverpeas.personalization");
+          warBuilder.addPackages(true, "org.silverpeas.core.personalization");
           warBuilder.addAsResource(
-              "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings" +
+              "org/silverpeas/personalization/settings/personalizationPeasSettings" +
                   ".properties");
             })
         .build();

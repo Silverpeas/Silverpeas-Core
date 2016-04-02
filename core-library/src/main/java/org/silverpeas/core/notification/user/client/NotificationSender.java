@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import com.silverpeas.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterfaceImpl;

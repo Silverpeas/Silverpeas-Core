@@ -19,9 +19,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.personalization.notification;
+package org.silverpeas.core.personalization.notification;
 
-import com.silverpeas.personalization.service.PersonalizationService;
+import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.notification.SpaceEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;

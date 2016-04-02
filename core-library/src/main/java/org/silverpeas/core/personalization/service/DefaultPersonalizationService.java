@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.personalization.service;
+package org.silverpeas.core.personalization.service;
 
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.dao.PersonalizationManager;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.dao.PersonalizationManager;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -48,7 +48,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
   private PersonalizationManager personalizationManager;
 
   private final SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+      "org.silverpeas.personalization.settings.personalizationPeasSettings");
 
   private boolean getDefaultWebDAVEditingStatus() {
     return settings.getBoolean("DefaultWebDAVEditingStatus", true);

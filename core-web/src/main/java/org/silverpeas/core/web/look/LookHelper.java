@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.look;
 
-import com.silverpeas.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodePK;

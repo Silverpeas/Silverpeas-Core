@@ -20,8 +20,8 @@
  */
 package org.silverpeas.core.web.look;
 
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.service.PersonalizationService;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
