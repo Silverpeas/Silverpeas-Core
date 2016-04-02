@@ -401,10 +401,10 @@ public class LDAPUtility {
    * these ldap injection bugs in section 4 on page 4 Character ASCII value
    * --------------------------- * 0x2a ( 0x28 ) 0x29 \ 0x5c NUL 0x00
    *
-   * @param filter the search filter to be espaced.
+   * @param filter the search filter to be escaped.
    * @return the escaped search filter.
    */
-  public static String escapeLDAPSearchFilter(String filter) {
+  static String escapeLDAPSearchFilter(String filter) {
     StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
     for (int i = 0; i < filter.length(); i++) {
       char curChar = filter.charAt(i);
@@ -429,6 +429,22 @@ public class LDAPUtility {
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Unescaping search filter.
+   * @param filter the search filter to be unescaped.
+   * @return the escaped search filter.
+   * @see #escapeLDAPSearchFilter(String)
+   */
+  static String unescapeLDAPSearchFilter(String filter) {
+    String unescapedFilter = filter;
+    unescapedFilter = unescapedFilter.replace("\\5c", "\\");
+    unescapedFilter = unescapedFilter.replace("\\2a", "*");
+    unescapedFilter = unescapedFilter.replace("\\28", "(");
+    unescapedFilter = unescapedFilter.replace("\\29", ")");
+    unescapedFilter = unescapedFilter.replace("\\00", "\u0000");
+    return unescapedFilter;
   }
 
   /**
