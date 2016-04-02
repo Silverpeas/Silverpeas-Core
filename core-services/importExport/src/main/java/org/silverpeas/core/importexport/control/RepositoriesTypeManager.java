@@ -63,10 +63,10 @@ import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.mail.Extractor;
-import org.silverpeas.util.mail.Mail;
-import org.silverpeas.util.mail.MailAttachment;
-import org.silverpeas.util.mail.MailExtractor;
+import org.silverpeas.core.mail.extractor.Extractor;
+import org.silverpeas.core.mail.extractor.Mail;
+import org.silverpeas.core.mail.extractor.MailAttachment;
+import org.silverpeas.core.mail.extractor.MailExtractor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

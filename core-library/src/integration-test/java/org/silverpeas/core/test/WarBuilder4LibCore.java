@@ -113,7 +113,7 @@ import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.util.logging.LogAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogsAccessor;
-import org.silverpeas.util.mail.Mail;
+import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
 

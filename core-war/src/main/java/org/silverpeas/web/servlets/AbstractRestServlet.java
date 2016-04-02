@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.web.servlet;
+package org.silverpeas.web.servlets;
 
 import java.io.IOException;
 

@@ -34,9 +34,9 @@ import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.mail.Extractor;
-import org.silverpeas.util.mail.Mail;
-import org.silverpeas.util.mail.MailExtractor;
+import org.silverpeas.core.mail.extractor.Extractor;
+import org.silverpeas.core.mail.extractor.Mail;
+import org.silverpeas.core.mail.extractor.MailExtractor;
 
 import javax.mail.internet.InternetAddress;
 import java.io.File;

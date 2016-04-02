@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.util.web.servlet;
+package org.silverpeas.web.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class RestRequest {
 
-  public static enum Action {
+  public enum Action {
     UPDATE("put"),
     DELETE("delete"),
     FIND("get"),
@@ -38,7 +38,7 @@ public class RestRequest {
 
     private final String type;
 
-    private Action(String type) {
+    Action(String type) {
       this.type = type;
     }
 

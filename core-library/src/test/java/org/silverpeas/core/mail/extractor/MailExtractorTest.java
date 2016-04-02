@@ -1,4 +1,4 @@
-package org.silverpeas.util.mail;
+package org.silverpeas.core.mail.extractor;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Rule;

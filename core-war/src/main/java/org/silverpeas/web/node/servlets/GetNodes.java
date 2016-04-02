@@ -34,7 +34,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.web.servlet.RestRequest;
+import org.silverpeas.web.servlets.RestRequest;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;

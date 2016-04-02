@@ -25,7 +25,7 @@ import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.VersionFileTicket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.util.web.servlet.RestRequest;
+import org.silverpeas.web.servlets.RestRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;

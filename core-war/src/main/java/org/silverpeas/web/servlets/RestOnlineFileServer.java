@@ -43,7 +43,6 @@ import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.web.servlet.RestRequest;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;

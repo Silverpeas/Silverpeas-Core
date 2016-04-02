@@ -36,7 +36,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.util.mail.Mail;
+import org.silverpeas.core.mail.extractor.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;

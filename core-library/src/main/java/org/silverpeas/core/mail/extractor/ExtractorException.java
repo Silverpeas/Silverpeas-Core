@@ -21,14 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.mail;
+package org.silverpeas.core.mail.extractor;
 
-import java.util.List;
+import org.silverpeas.core.exception.SilverpeasException;
 
-public interface MailExtractor {
+public class ExtractorException extends SilverpeasException {
 
-  public Mail getMail() throws Exception;
+  private static final long serialVersionUID = 9169416970570371214L;
 
-  public List<MailAttachment> getAttachments() throws Exception;
+  public ExtractorException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
+
+  public ExtractorException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, null, nested);
+  }
+
+  @Override
+  public String getModule() {
+    return "util";
+  }
 
 }
