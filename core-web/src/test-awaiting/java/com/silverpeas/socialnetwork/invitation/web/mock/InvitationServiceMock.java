@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialnetwork.invitation.web.mock;
+package org.silverpeas.core.socialnetwork.invitation.web.mock;
 
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
 import java.util.List;
 import javax.inject.Named;
 import static org.mockito.Mockito.mock;

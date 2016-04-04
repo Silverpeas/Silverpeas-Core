@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import com.silverpeas.socialnetwork.dao.ExternalAccountManager;
+import org.silverpeas.core.socialnetwork.dao.ExternalAccountManager;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -45,9 +45,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import org.silverpeas.core.socialnetwork.model.ExternalAccountIdentifier;
+import org.silverpeas.core.socialnetwork.model.ExternalAccount;
+import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 
 /**
  * @author lbertin

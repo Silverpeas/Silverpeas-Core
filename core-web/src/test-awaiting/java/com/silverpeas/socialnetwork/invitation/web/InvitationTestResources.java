@@ -21,12 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialnetwork.invitation.web;
+package org.silverpeas.core.socialnetwork.invitation.web;
 
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
-import com.silverpeas.socialnetwork.invitation.web.InvitationEntity;
-import com.silverpeas.socialnetwork.invitation.web.mock.InvitationServiceMock;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.invitation.web.InvitationEntity;
+import org.silverpeas.core.socialnetwork.invitation.web.mock.InvitationServiceMock;
 import com.silverpeas.web.TestResources;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;

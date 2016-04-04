@@ -2,9 +2,9 @@ package org.silverpeas.core.contribution.publication.test;
 
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
-import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.util.ComponentHelper;

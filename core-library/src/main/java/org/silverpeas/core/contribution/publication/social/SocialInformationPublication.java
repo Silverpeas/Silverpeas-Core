@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.contribution.publication.social;
 
-import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;

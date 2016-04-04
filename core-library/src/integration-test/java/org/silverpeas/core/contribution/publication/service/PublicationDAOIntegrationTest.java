@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;

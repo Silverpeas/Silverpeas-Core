@@ -38,24 +38,24 @@
         http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
   <!-- context:annotation-config />
-  <context:component-scan base-package="com.silverpeas.socialnetwork.model" /> -->
-  <context:component-scan base-package="com.silverpeas.socialnetwork.connectors"/>
+  <context:component-scan base-package="org.silverpeas.core.socialnetwork.model" /> -->
+  <context:component-scan base-package="org.silverpeas.core.socialnetwork.connectors"/>
   <context:component-scan base-package="com.silverpeas.social.mock"/>
 
   <bean id="socialNetworkService" factory-method="getInstance"
-        class="com.silverpeas.socialnetwork.service.SocialNetworkService"/>
+        class="org.silverpeas.core.socialnetwork.service.SocialNetworkService"/>
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <!-- ebo <bean id="organizationControllerFactory"
         class="org.silverpeas.core.admin.OrganisationControllerProvider"
         factory-method="getFactory"/> -->
 
-  <jpa:repositories base-package="com.silverpeas.socialnetwork.dao"
+  <jpa:repositories base-package="org.silverpeas.core.socialnetwork.dao"
                     transaction-manager-ref="jpaTransactionManager"/>
   <import resource="spring-jpa.xml"/>
 
   <util:list id="entities">
-    <value>com.silverpeas.socialnetwork.model</value>
+    <value>org.silverpeas.core.socialnetwork.model</value>
   </util:list>
 
   <jdbc:embedded-database id="jpaDataSource" type="H2">

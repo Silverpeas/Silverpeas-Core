@@ -23,9 +23,9 @@ package org.silverpeas.core.calendar.socialnetwork;
 
 import java.util.Date;
 
-import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.calendar.model.Schedulable;
 import org.silverpeas.core.util.DateUtil;

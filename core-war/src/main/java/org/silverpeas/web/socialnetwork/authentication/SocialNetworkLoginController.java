@@ -21,12 +21,12 @@
 package org.silverpeas.web.socialnetwork.authentication;
 
 import org.silverpeas.core.admin.user.UserService;
-import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
-import com.silverpeas.socialnetwork.service.AccessToken;
-import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
-import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
+import org.silverpeas.core.socialnetwork.model.ExternalAccount;
+import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
+import org.silverpeas.core.socialnetwork.service.AccessToken;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;

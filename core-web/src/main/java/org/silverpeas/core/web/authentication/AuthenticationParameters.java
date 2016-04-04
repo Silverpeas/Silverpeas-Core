@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.web.authentication;
 
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
-import com.silverpeas.socialnetwork.service.AccessToken;
-import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import org.silverpeas.core.socialnetwork.model.ExternalAccount;
+import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
+import org.silverpeas.core.socialnetwork.service.AccessToken;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;

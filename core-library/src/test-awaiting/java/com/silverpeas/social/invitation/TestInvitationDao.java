@@ -46,8 +46,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 import static org.junit.Assert.*;
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationDao;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.InvitationDao;
 import org.silverpeas.util.DBUtil;
 
 /**

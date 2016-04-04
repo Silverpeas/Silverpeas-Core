@@ -21,8 +21,8 @@
 package org.silverpeas.core.calendar.socialnetwork;
 
 import org.silverpeas.core.date.Date;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.provider.SocialEventsInterface;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;

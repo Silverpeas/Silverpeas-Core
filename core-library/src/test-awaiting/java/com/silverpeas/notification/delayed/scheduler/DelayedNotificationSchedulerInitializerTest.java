@@ -1,6 +1,6 @@
 package com.silverpeas.usernotification.delayed.scheduler;
 
-import com.silverpeas.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.Scheduler;
 import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;

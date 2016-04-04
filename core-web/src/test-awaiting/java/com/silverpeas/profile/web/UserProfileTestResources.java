@@ -24,8 +24,8 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.profile.web.mock.RelationShipServiceMock;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.web.TestResources;
 import com.stratelia.webactiv.beans.admin.*;
 import java.sql.SQLException;

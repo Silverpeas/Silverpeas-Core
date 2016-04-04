@@ -34,7 +34,7 @@ import org.silverpeas.web.directory.model.UserItem;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;

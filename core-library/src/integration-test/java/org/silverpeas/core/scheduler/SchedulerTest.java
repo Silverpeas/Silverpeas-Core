@@ -87,7 +87,6 @@ public class SchedulerTest {
         .addMavenDependencies("com.jayway.awaitility:awaitility", "org.antlr:stringtemplate")
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.initialization");
-          //warBuilder.addPackages(true, "org.silverpeas.util");
         }).build();
   }
 

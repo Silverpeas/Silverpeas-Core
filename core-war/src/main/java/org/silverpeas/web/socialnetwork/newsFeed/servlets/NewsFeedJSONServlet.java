@@ -24,11 +24,11 @@
 
 package org.silverpeas.web.socialnetwork.newsfeed.servlets;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;

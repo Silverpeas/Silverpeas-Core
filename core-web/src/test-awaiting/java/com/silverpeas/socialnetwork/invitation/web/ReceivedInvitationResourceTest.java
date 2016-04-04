@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialnetwork.invitation.web;
+package org.silverpeas.core.socialnetwork.invitation.web;
 
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -30,8 +30,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
-import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
+import static org.silverpeas.core.socialnetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
+import static org.silverpeas.core.socialnetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

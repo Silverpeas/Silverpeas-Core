@@ -22,9 +22,9 @@ package org.silverpeas.core.admin.user.model;
 
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.socialnetwork.status.StatusService;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.OrganizationController;

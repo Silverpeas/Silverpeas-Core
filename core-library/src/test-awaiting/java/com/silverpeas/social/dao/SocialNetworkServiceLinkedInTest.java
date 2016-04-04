@@ -25,9 +25,9 @@
 package com.silverpeas.social.dao;
 
 import com.silverpeas.social.mock.OrganizationControllerMock;
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
-import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import org.silverpeas.core.socialnetwork.model.ExternalAccount;
+import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;

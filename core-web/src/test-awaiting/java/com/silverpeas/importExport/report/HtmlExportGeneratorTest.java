@@ -66,7 +66,7 @@ public class HtmlExportGeneratorTest {
 //    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
 //        TransactionRuntimeException.class);
 //    war.addPackages(false, "org.silverpeas.core.persistence.jdbc");
-//    war.addPackages(true, "com.silverpeas.scheduler");
+//    war.addPackages(true, "org.silverpeas.core.scheduler");
 
 //    war.addPackages(true, "com.silverpeas.importExport.report");
 //    war.addPackages(true, "com.silverpeas.importExport.control");

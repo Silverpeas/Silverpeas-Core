@@ -25,8 +25,8 @@
 package org.silverpeas.core.comment.socialnetwork;
 
 import org.silverpeas.core.comment.model.Comment;
-import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 
 public class SocialInformationComment extends AbstractSocialInformation {
 

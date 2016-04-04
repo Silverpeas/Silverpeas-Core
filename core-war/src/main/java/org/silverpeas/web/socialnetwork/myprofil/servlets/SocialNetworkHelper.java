@@ -20,13 +20,13 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
-import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
+import org.silverpeas.core.socialnetwork.model.ExternalAccount;
+import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
-import com.silverpeas.socialnetwork.service.AccessToken;
-import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
-import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import org.silverpeas.core.socialnetwork.service.AccessToken;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Inject;

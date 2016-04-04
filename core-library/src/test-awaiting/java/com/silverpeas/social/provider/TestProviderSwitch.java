@@ -29,25 +29,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.socialnetwork.provider.SocialCommentGalleryInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialCommentGalleryInterface;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.silverpeas.socialnetwork.provider.ProviderSwitch;
-import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
-import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
-import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
-import com.silverpeas.socialnetwork.provider.SocialCommentPublicationsInterface;
-import com.silverpeas.socialnetwork.provider.SocialCommentQuickInfosInterface;
-import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
-import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
-import com.silverpeas.socialnetwork.status.SocialInformationStatus;
-import com.silverpeas.socialnetwork.status.Status;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.provider.ProviderSwitch;
+import org.silverpeas.core.socialnetwork.provider.SocialEventsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialGalleryInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialPublicationsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialCommentPublicationsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialCommentQuickInfosInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialRelationShipsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialStatusInterface;
+import org.silverpeas.core.socialnetwork.status.SocialInformationStatus;
+import org.silverpeas.core.socialnetwork.status.Status;
 
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;

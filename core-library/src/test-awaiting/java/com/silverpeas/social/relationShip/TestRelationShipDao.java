@@ -25,9 +25,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipDao;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipDao;
 
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.core.util.DateUtil;

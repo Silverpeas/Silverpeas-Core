@@ -25,8 +25,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialnetwork.status.Status;
-import com.silverpeas.socialnetwork.status.StatusDao;
+import org.silverpeas.core.socialnetwork.status.Status;
+import org.silverpeas.core.socialnetwork.status.StatusDao;
 
 import org.silverpeas.util.DBUtil;
 
@@ -40,7 +40,7 @@ public class TestSatusDao extends AbstractTestDao {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    dao = new com.silverpeas.socialnetwork.status.StatusDao();
+    dao = new org.silverpeas.core.socialnetwork.status.StatusDao();
     DBUtil.getInstanceForTest(getConnection().getConnection());
   }
 

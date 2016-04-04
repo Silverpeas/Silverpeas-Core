@@ -27,8 +27,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 
 import org.silverpeas.util.DBUtil;
 

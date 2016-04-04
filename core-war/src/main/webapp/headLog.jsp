@@ -23,7 +23,7 @@
   --%>
 
 <%@page import="org.silverpeas.core.web.authentication.credentials.RegistrationSettings"%>
-<%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
+<%@page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>

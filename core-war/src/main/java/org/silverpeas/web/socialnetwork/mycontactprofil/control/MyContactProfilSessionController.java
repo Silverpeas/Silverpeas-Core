@@ -32,8 +32,8 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.silverpeas.socialnetwork.SocialNetworkException;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.SocialNetworkException;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.exception.SilverpeasException;
 

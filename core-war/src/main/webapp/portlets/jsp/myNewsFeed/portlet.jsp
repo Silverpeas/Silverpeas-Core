@@ -36,7 +36,7 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle"/>
 
-<view:setConstant var="ALL_SOCIAL_INFORMATION" constant="com.silverpeas.socialnetwork.model.SocialInformationType.ALL"/>
+<view:setConstant var="ALL_SOCIAL_INFORMATION" constant="org.silverpeas.core.socialnetwork.model.SocialInformationType.ALL"/>
 
 <portlet:defineObjects/>
 

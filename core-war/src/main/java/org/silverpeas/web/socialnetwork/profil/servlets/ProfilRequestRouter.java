@@ -26,7 +26,7 @@ package org.silverpeas.web.socialnetwork.profil.servlets;
 
 import org.silverpeas.core.web.directory.model.Member;
 import org.silverpeas.web.socialnetwork.profil.control.ProfilSessionController;
-import com.silverpeas.socialnetwork.SocialNetworkException;
+import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;

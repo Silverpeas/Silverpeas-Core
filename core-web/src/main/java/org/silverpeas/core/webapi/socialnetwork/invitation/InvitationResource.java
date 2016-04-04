@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.socialnetwork.invitation;
 
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.enterprise.context.RequestScoped;

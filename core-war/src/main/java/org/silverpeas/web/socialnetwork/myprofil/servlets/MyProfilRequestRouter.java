@@ -24,7 +24,7 @@ import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
 import org.silverpeas.core.ui.DisplayI18NHelper;

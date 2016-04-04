@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.socialnetwork.invitation.model;
 
-import com.silverpeas.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 /**

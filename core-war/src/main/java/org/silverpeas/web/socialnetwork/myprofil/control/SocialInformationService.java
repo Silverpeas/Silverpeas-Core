@@ -25,9 +25,9 @@
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
 import org.silverpeas.core.date.Date;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.silverpeas.socialnetwork.provider.ProviderSwitchInterface;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.model.SocialInformationType;
+import org.silverpeas.core.socialnetwork.provider.ProviderSwitchInterface;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
