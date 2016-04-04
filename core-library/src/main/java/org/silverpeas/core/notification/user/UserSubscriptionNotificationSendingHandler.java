@@ -45,35 +45,6 @@ public class UserSubscriptionNotificationSendingHandler {
       UserSubscriptionNotificationSendingHandler.class.getName() + "#SENDING_ENABLED_JMS_WAY";
 
   /**
-   * As treatments of asynchronous JMS notifications are executed in an other context of the user
-   * request, the indicator of the confirmation of subscription notification sending must be
-   * managed here (as this indicator is attached to the user request).
-   * @param resourceEvent the resource event that will be send on JMS.
-   */
-  public static void setupResourceEvent(AbstractResourceEvent resourceEvent) {
-    if (!isEnabledForCurrentRequest()) {
-      resourceEvent.putParameter(
-          UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "true");
-    }
-  }
-
-  /**
-   * Verifies from a resource event if it is indicated that subscription notification
-   * sending must be skipped.
-   * @param resourceEvent the resource event sent on JMS.
-   */
-  public static void verifyResourceEvent(AbstractResourceEvent resourceEvent) {
-    if (NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled() && StringUtil
-        .getBooleanValue(
-            resourceEvent.getParameterValue(
-                UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))) {
-      getThreadCacheService().put(SENDING_NOT_ENABLED_JMS_WAY_KEY, true);
-    } else {
-      getThreadCacheService().remove(SENDING_NOT_ENABLED_JMS_WAY_KEY);
-    }
-  }
-
-  /**
    * Verifies from a request if it is indicated that subscription notification sending must be
    * skipped for the current request (from request parameters or request headers).
    * @param request the current HTTP request.

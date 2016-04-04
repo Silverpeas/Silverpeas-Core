@@ -23,8 +23,7 @@
  * @author mmoquillon
  */
 /**
- * User Notification API for notifying the users about the events they have subscribed to or about
- * the result of their actions.
+ * Provides APIs for notifying either users or system components.
  * @author mmoquillon
  */
 package org.silverpeas.core.notification;

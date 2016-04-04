@@ -47,7 +47,6 @@ import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.persistence.ScheduledDBReset;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.notification.system.StateTransition;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
@@ -589,9 +588,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSynchAndAsynchResourceEventFeatures() {
-    addClasses(DecodingException.class, EncodingException.class, StateTransition.class);
+    addClasses(DecodingException.class, EncodingException.class);
     addClasses(NotificationManagerSettings.class);
-    addPackages(false, "org.silverpeas.core.notification.system");
     addAsResource(
         "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties");
     applyManually(war -> war.addAsManifestResource("META-INF/test-MANIFEST.MF", "MANIFEST.MF"));
@@ -626,7 +624,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.admin.user");
       addPackages(true, "org.silverpeas.core.admin.domain");
       addPackages(true, "org.silverpeas.core.admin.domain.driver.sqldriver");
-      addPackages(false, "org.silverpeas.core.notification.system");
       addPackages(true, "org.silverpeas.core.admin.component.notification");
       addPackages(true, "org.silverpeas.core.clipboard");
       addAsResource("xmlcomponents");

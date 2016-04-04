@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Provides two notification APIs: a System Notification API and a User Notification API. The first
- * one is on the inter-objects notification whereas the second one is on the inter-user
- * notification.
+ * Provides APIs for notifying users or system components. This package in this library provides
+ * an additional Notification API to the Core API for notifying users for events occurring in
+ * Silverpeas (like for example the creation or the update of a contribution).
  * @author mmoquillon
  */
 package org.silverpeas.core.notification;

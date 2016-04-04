@@ -21,7 +21,6 @@
 
 package org.silverpeas.core.notification.system;
 
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.jms.Message;
@@ -93,7 +92,6 @@ public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
   public void onMessage(final Message message) {
     try {
       T event = message.getBody(getResourceEventClass());
-      UserSubscriptionNotificationSendingHandler.verifyResourceEvent(event);
       dispatchEvent(event);
     } catch (Exception e) {
       if (retryAtFailure()) {

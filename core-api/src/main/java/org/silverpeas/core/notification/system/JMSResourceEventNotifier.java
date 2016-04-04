@@ -21,7 +21,6 @@
 
 package org.silverpeas.core.notification.system;
 
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 
 import javax.jms.Destination;
 import javax.jms.JMSProducer;
@@ -59,13 +58,6 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
 
   @Override
   public final void notify(final T event) {
-
-    // As treatments of asynchronous JMS notifications are executed in an other context of the
-    // user request, the indicator of the confirmation of subscription notification sending must
-    // be managed here (as this indicator is attached to the user request).
-    UserSubscriptionNotificationSendingHandler.setupResourceEvent(event);
-
-    // Sending
     JMSOperation.realize(context -> {
       JMSProducer producer = context.createProducer();
       // TODO the event has to be sent in a text representation. For doing, use JSONCodec to encode the event in JSON.

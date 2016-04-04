@@ -62,14 +62,6 @@ public class UserSubscriptionNotificationSendingHandlerTest {
   }
 
   @Test
-  public void enabledByDefault() {
-    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
-    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
-  }
-
-  @Test
   public void enabledIfSkipHttpParameterIsNotEqualToTrueOrFalse() {
     when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
         .thenReturn("toto");
@@ -122,28 +114,4 @@ public class UserSubscriptionNotificationSendingHandlerTest {
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
-  @Test
-  public void enabledIfSkipHttpParameterFromNotificationIsNotEqualToTrueOrFalse() {
-    resourceEvent.putParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "toto");
-    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
-  }
-
-  @Test
-  public void enabledIfSkipHttpParameterFromNotificationIsNotEqualToFalse() {
-    resourceEvent.putParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "false");
-    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
-  }
-
-  @Test
-  public void notEnabledIfSkipHttpFromNotificationParameterIsNotEqualToFalse() {
-    resourceEvent.putParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "true");
-    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getRequestCacheService().clear();
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getThreadCacheService().clear();
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
-  }
 }
