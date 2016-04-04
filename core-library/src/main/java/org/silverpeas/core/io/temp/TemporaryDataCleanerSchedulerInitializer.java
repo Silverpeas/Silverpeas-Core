@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.io.temp;
 
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.temp;
 
-import com.silverpeas.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.Scheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.jboss.arquillian.container.test.api.Deployment;

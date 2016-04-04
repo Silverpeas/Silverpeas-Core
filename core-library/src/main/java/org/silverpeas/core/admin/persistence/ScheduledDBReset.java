@@ -24,11 +24,11 @@
 
 package org.silverpeas.core.admin.persistence;
 
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerEvent;
-import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerProvider;
-import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerEvent;
+import org.silverpeas.core.scheduler.SchedulerEventListener;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;

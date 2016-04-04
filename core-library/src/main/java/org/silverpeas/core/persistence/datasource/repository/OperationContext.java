@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource.repository;
 
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.util.AssertArgument;
+import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 
@@ -152,8 +152,8 @@ public class OperationContext {
    */
   public void applyToPersistOperation(Entity entity) {
     String errorMessage = "the user identifier must exist when performing persist operation";
-    AssertArgument.assertNotNull(user, errorMessage);
-    AssertArgument.assertDefined(user.getId(), errorMessage);
+    ArgumentAssertion.assertNotNull(user, errorMessage);
+    ArgumentAssertion.assertDefined(user.getId(), errorMessage);
     entity.setCreator(user);
     entity.setLastUpdater(user);
   }
@@ -164,8 +164,8 @@ public class OperationContext {
    */
   public void applyToUpdateOperation(Entity entity) {
     String errorMessage = "the user identifier must exist when performing update operation";
-    AssertArgument.assertNotNull(user, errorMessage);
-    AssertArgument.assertDefined(user.getId(), errorMessage);
+    ArgumentAssertion.assertNotNull(user, errorMessage);
+    ArgumentAssertion.assertDefined(user.getId(), errorMessage);
     entity.setLastUpdater(user);
   }
 }

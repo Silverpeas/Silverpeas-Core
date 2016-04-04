@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.model;
 
-import org.silverpeas.util.AssertArgument;
+import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -83,9 +83,9 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
    */
   protected void performBeforePersist() {
     OperationContext.getFromCache().applyToPersistOperation(this);
-    AssertArgument.assertDefined(getCreatedBy(),
+    ArgumentAssertion.assertDefined(getCreatedBy(),
         "createdBy attribute of entity " + getClass().getName() + " must exists on insert");
-    AssertArgument.assertDefined(getLastUpdatedBy(),
+    ArgumentAssertion.assertDefined(getLastUpdatedBy(),
         "lastUpdateBy attribute of entity " + getClass().getName() + " must exists on insert");
     Timestamp timestamp = new Timestamp((new Date()).getTime());
     setCreateDate(timestamp);
@@ -97,7 +97,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
    */
   protected void performBeforeUpdate() {
     OperationContext.getFromCache().applyToUpdateOperation(this);
-    AssertArgument.assertDefined(getLastUpdatedBy(),
+    ArgumentAssertion.assertDefined(getLastUpdatedBy(),
         "lastUpdatedBy attribute of entity " + getClass().getName() + " must exists on update");
     setLastUpdateDate(new Timestamp((new Date()).getTime()));
   }

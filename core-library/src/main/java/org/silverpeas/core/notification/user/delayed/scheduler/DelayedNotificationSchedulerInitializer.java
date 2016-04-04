@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.notification.user.delayed.scheduler;
 
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.notification.user.client.AbstractNotification;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.initialization.Initialization;

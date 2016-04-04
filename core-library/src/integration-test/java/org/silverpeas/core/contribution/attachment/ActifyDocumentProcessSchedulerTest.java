@@ -25,11 +25,11 @@ package org.silverpeas.core.contribution.attachment;
 
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.DateTime;
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

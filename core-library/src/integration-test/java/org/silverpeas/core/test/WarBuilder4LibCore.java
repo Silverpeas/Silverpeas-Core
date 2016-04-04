@@ -35,6 +35,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentIn
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.ObjectType;
@@ -163,7 +164,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link ArrayUtil}</li>
    * <li>{@link CollectionUtil}</li>
    * <li>{@link MapUtil}</li>
-   * <li>{@link AssertArgument}</li>
+   * <li>{@link ArgumentAssertion}</li>
    * <li>{@link EncodeHelper}</li>
    * <li>{@link ActionType} and classes in {@link org.silverpeas.util.annotation}</li>
    * <li>{@link #addSilverpeasContentFeatures()}</li>
@@ -192,8 +193,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(CollectionUtil.class)) {
       addClasses(CollectionUtil.class, ExtractionList.class, ExtractionComplexList.class);
     }
-    if (!contains(AssertArgument.class)) {
-      addClasses(AssertArgument.class);
+    if (!contains(ArgumentAssertion.class)) {
+      addClasses(ArgumentAssertion.class);
     }
     if (!contains(ActionType.class)) {
       addSilverpeasContentFeatures();
@@ -686,9 +687,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder with scheduler features.
    */
   public WarBuilder4LibCore addSchedulerFeatures() {
-    if (!contains("com.silverpeas.scheduler")) {
+    if (!contains("org.silverpeas.core.scheduler")) {
       addMavenDependencies("org.quartz-scheduler:quartz");
-      addPackages(true, "com.silverpeas.scheduler");
+      addPackages(true, "org.silverpeas.core.scheduler");
     }
     return this;
   }

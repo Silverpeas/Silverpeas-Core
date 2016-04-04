@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerEvent;
-import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerProvider;
-import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerEvent;
+import org.silverpeas.core.scheduler.SchedulerEventListener;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;

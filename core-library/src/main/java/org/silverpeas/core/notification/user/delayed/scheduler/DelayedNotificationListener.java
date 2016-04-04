@@ -24,8 +24,8 @@
 package org.silverpeas.core.notification.user.delayed.scheduler;
 
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
-import com.silverpeas.scheduler.SchedulerEvent;
-import com.silverpeas.scheduler.SchedulerEventListener;
+import org.silverpeas.core.scheduler.SchedulerEvent;
+import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Singleton;
@@ -38,7 +38,7 @@ public class DelayedNotificationListener implements SchedulerEventListener {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.scheduler.SchedulerEventListener#triggerFired(com.silverpeas.scheduler.SchedulerEvent)
+   * @see SchedulerEventListener#triggerFired(SchedulerEvent)
    */
   @Override
   public void triggerFired(final SchedulerEvent anEvent) throws Exception {
@@ -47,7 +47,7 @@ public class DelayedNotificationListener implements SchedulerEventListener {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.scheduler.SchedulerEventListener#jobSucceeded(com.silverpeas.scheduler.SchedulerEvent)
+   * @see SchedulerEventListener#jobSucceeded(SchedulerEvent)
    */
   @Override
   public void jobSucceeded(final SchedulerEvent anEvent) {
@@ -55,7 +55,7 @@ public class DelayedNotificationListener implements SchedulerEventListener {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.scheduler.SchedulerEventListener#jobFailed(com.silverpeas.scheduler.SchedulerEvent)
+   * @see SchedulerEventListener#jobFailed(SchedulerEvent)
    */
   @Override
   public void jobFailed(final SchedulerEvent anEvent) {

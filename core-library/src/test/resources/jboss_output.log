@@ -369,7 +369,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -381,7 +381,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -395,7 +395,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -407,7 +407,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -419,7 +419,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -431,7 +431,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -443,7 +443,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -455,7 +455,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -467,7 +467,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -479,7 +479,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -491,7 +491,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -503,7 +503,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -515,7 +515,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -527,7 +527,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -539,7 +539,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -551,7 +551,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -563,7 +563,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -575,7 +575,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -587,7 +587,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -599,7 +599,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -611,7 +611,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -623,7 +623,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -635,7 +635,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -647,7 +647,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -659,7 +659,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -678,8 +678,8 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at org.silverpeas.core.util.SettingBundle.getLong(SettingBundle.java:149)
 	at TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted(TemporaryDataManagementSetting.java:54)
 	at TemporaryDataCleanerSchedulerInitializer$TemporaryDataCleanerJob.execute(TemporaryDataCleanerSchedulerInitializer.java:99)
-	at com.silverpeas.scheduler.quartz.QuartzSchedulerJob.execute(QuartzSchedulerJob.java:105)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:229)
+	at QuartzSchedulerJob.execute(QuartzSchedulerJob.java:105)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:229)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -691,7 +691,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -703,7 +703,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -715,7 +715,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -727,7 +727,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -739,7 +739,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -751,7 +751,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -763,7 +763,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -775,7 +775,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -787,7 +787,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -799,7 +799,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -811,7 +811,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -823,7 +823,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -835,7 +835,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -847,7 +847,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -859,7 +859,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -871,7 +871,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -883,7 +883,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -895,7 +895,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -907,7 +907,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -919,7 +919,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -931,7 +931,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -943,7 +943,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -955,7 +955,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -967,7 +967,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -979,7 +979,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -991,7 +991,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -1003,7 +1003,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 
@@ -1015,7 +1015,7 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
 	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
-	at com.silverpeas.scheduler.quartz.QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
 	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
 	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
 

@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerProvider;
-import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.silverpeas.scheduler.trigger.TimeUnit;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
