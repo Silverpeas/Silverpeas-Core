@@ -22,14 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.subscribe.web;
+package org.silverpeas.core.subscription.web;
 
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
-import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.NodeSubscription;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import com.silverpeas.web.RESTWebServiceTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -42,8 +42,8 @@ import org.junit.Test;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.UNSUBSCRIBE_RESOURCE_PATH;
+import static org.silverpeas.core.subscription.web.SubscriptionTestResources.COMPONENT_ID;
+import static org.silverpeas.core.subscription.web.SubscriptionTestResources.UNSUBSCRIBE_RESOURCE_PATH;
 import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
 public class UnsubscribePostTest extends RESTWebServiceTest<SubscriptionTestResources> {
 
   public UnsubscribePostTest() {
-    super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
+    super("org.silverpeas.core.subscription.web", "spring-subscription-webservice.xml");
   }
 
   @Override

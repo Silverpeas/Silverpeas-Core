@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
-import com.silverpeas.subscribe.Subscription;
+import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**

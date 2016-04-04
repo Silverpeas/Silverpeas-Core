@@ -33,11 +33,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.subscribe">
-    <ctx:exclude-filter type="regex" expression="com.silverpeas.subscribe.service.*" />
+  <ctx:component-scan base-package="org.silverpeas.core.subscription">
+    <ctx:exclude-filter type="regex" expression="org.silverpeas.core.subscription.service.*" />
   </ctx:component-scan>
-  <bean id="anyBeanId" class="com.silverpeas.subscribe.web.StubbedDefaultResourceSubscriptionService"/>
+  <bean id="anyBeanId" class="org.silverpeas.core.subscription.web.StubbedDefaultResourceSubscriptionService"/>
   <import resource="spring-webservice.xml"/>
-  <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceProvider"
+  <bean id="subscriptionServiceFactory" class="org.silverpeas.core.subscription.SubscriptionServiceProvider"
         factory-method="getFactory"/>
 </beans>

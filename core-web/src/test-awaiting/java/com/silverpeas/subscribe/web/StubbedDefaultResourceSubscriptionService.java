@@ -21,21 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.subscribe.web;
+package org.silverpeas.core.subscription.web;
 
-import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.subscribe.service.AbstractResourceSubscriptionService;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.service.DefaultResourceSubscriptionService;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
+import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import com.stratelia.webactiv.node.model.NodePK;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import static com.silverpeas.subscribe.SubscriptionServiceProvider.getSubscribeService;
+import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 
 /**
 * @author Yohann Chastagnier

@@ -23,19 +23,19 @@
  */
 package org.silverpeas.web.subscription.control;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionResource;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
-import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.NodeSubscription;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.subscription.util.SubscriptionList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -53,7 +53,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.silverpeas.subscribe.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
+import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 
 /**
  * User: Yohann Chastagnier

@@ -71,7 +71,7 @@
               description="True to display the attachment file size, false otherwise (false by default)" %>
 
 <%@ attribute name="subscriptionManagementContext" required="false"
-              type="com.silverpeas.subscribe.util.SubscriptionManagementContext"
+              type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"
               description="The context of the subscription notification to manage." %>
 
 <c:set var="_paramHandledSubscriptionType" value=""/>

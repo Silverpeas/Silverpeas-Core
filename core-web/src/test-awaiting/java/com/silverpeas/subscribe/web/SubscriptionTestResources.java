@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.subscribe.web;
+package org.silverpeas.core.subscription.web;
 
-import com.silverpeas.subscribe.MockableSubscriptionService;
+import org.silverpeas.core.subscription.MockableSubscriptionService;
 import com.silverpeas.web.TestResources;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 

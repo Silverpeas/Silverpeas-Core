@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionResource;
-import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.Group;

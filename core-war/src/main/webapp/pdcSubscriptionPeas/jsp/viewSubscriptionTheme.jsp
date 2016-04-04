@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
+<%@ page import="org.silverpeas.core.subscription.constant.SubscriberType" %>
 <%@ page import="org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 

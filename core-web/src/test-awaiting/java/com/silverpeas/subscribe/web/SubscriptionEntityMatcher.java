@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.subscribe.web;
+package org.silverpeas.core.subscription.web;
 
-import com.silverpeas.subscribe.Subscription;
+import org.silverpeas.core.subscription.Subscription;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

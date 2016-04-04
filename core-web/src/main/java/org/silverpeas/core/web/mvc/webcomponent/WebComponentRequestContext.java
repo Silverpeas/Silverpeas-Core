@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import com.silverpeas.subscribe.util.SubscriptionManagementContext;
+import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;

@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.subscribe;
+package org.silverpeas.core.subscription;
 
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
-import com.silverpeas.subscribe.util.SubscriptionList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.util.SubscriptionList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import com.silverpeas.util.Default;
 
 import javax.inject.Named;

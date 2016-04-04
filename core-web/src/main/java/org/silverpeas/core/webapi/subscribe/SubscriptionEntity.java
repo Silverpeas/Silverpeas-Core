@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.webapi.subscribe;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

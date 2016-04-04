@@ -28,16 +28,16 @@ import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
-import com.silverpeas.subscribe.service.SubscribeRuntimeException;
-import com.silverpeas.subscribe.util.SubscriptionList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
+import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
+import org.silverpeas.core.subscription.util.SubscriptionList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
@@ -142,7 +142,7 @@ public class SubscriptionResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriberEntity> getSubscribers(@PathParam("id") String resourceId) {
     try {
-      final com.silverpeas.subscribe.SubscriptionResource subscriptionResource;
+      final org.silverpeas.core.subscription.SubscriptionResource subscriptionResource;
       if (StringUtil.isDefined(resourceId)) {
         subscriptionResource = NodeSubscriptionResource.from(new NodePK(resourceId, componentId));
       } else {

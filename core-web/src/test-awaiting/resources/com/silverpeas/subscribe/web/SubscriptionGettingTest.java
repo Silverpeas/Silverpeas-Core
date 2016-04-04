@@ -19,21 +19,21 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.subscribe.web;
+package org.silverpeas.core.subscription.web;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceProvider;
-import com.silverpeas.subscribe.SubscriptionSubscriber;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.subscription.util.SubscriptionList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebServiceTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
@@ -57,8 +57,8 @@ import javax.ws.rs.core.Response.Status;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
+import static org.silverpeas.core.subscription.web.SubscriptionTestResources.COMPONENT_ID;
+import static org.silverpeas.core.subscription.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -70,7 +70,7 @@ import static org.mockito.Mockito.when;
 public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTestResources> {
 
   public SubscriptionGettingTest() {
-    super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
+    super("org.silverpeas.core.subscription.web", "spring-subscription-webservice.xml");
   }
 
   @Before

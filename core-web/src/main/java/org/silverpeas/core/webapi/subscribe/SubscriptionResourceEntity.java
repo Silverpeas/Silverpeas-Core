@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.webapi.subscribe;
 
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,7 +44,8 @@ public class SubscriptionResourceEntity {
   @XmlElement(required = true)
   private String instanceId;
 
-  static SubscriptionResourceEntity from(com.silverpeas.subscribe.SubscriptionResource resource) {
+  static SubscriptionResourceEntity from(
+      org.silverpeas.core.subscription.SubscriptionResource resource) {
     SubscriptionResourceEntity entity = new SubscriptionResourceEntity();
     entity.id = resource.getId();
     entity.node = SubscriptionResourceType.NODE.equals(resource.getType());
