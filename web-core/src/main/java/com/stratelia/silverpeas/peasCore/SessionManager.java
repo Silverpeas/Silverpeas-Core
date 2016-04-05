@@ -542,7 +542,13 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   @Override
   public SessionInfo openSession(UserDetail user, HttpServletRequest request) {
     HTTPSessionInfo si = null;
-    String anIP = request.getRemoteHost();
+    // If X-Forwarded-For header exists, we use the IP address contained in it as the client IP address
+    // This is the case when Silverpeas is behing a reverse-proxy
+    String anIP = request.getHeader("X-Forwarded-For");
+    if (anIP == null) {
+      // If not, we use the IP address given in the request
+      anIP = request.getRemoteHost();
+    }
     try {
       HttpSession session = request.getSession();
       si = new HTTPSessionInfo(session, anIP, user);
