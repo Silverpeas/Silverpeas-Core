@@ -34,8 +34,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.web.silverstatistics.vo.CrossAxisAccessVO"%>
 <%@ page import="org.silverpeas.web.silverstatistics.vo.CrossStatisticVO"%>
 <%@ page import="org.silverpeas.web.silverstatistics.vo.StatisticVO"%>
-<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>

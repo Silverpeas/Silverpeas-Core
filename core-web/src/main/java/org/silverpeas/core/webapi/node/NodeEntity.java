@@ -25,7 +25,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.owasp.encoder.Encode;
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlElement;

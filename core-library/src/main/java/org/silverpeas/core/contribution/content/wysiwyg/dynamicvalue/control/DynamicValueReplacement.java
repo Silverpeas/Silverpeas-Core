@@ -28,8 +28,8 @@ import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.Dynamic
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.model.DynamicValue;
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.pool.ConnectionFactory;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;

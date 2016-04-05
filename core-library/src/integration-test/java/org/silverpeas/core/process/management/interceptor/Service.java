@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.process.management.interceptor;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 /**
  * @author Yohann Chastagnier

@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.exception.SilverpeasException;
 import java.io.File;
 import java.io.FileInputStream;

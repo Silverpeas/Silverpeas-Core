@@ -41,7 +41,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.GlobalContext;
+import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
@@ -61,10 +61,10 @@ import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 /**

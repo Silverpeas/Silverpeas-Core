@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.FileServerUtils" %>
+<%@ page import="org.silverpeas.core.util.file.FileServerUtils" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

@@ -25,7 +25,7 @@ package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.notification.message.Message;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
@@ -48,41 +48,41 @@ public final class WebMessager {
    * @return the asked localization bundle.
    */
   public LocalizationBundle getLocalizationBundle(String bundleBaseName) {
-    return NotifierUtil.getLocalizationBundle(bundleBaseName);
+    return MessageNotifier.getLocalizationBundle(bundleBaseName);
   }
 
   /**
-   * @see NotifierUtil#addSevere(String, Object...)
+   * @see MessageNotifier#addSevere(String, Object...)
    */
   public Message addSevere(String message, Object... parameters) {
-    return NotifierUtil.addSevere(message, parameters);
+    return MessageNotifier.addSevere(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addError(String, Object...)
+   * @see MessageNotifier#addError(String, Object...)
    */
   public Message addError(String message, Object... parameters) {
-    return NotifierUtil.addError(message, parameters);
+    return MessageNotifier.addError(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addWarning(String, Object...)
+   * @see MessageNotifier#addWarning(String, Object...)
    */
   public Message addWarning(String message, Object... parameters) {
-    return NotifierUtil.addWarning(message, parameters);
+    return MessageNotifier.addWarning(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addSuccess(String, Object...)
+   * @see MessageNotifier#addSuccess(String, Object...)
    */
   public Message addSuccess(String message, Object... parameters) {
-    return NotifierUtil.addSuccess(message, parameters);
+    return MessageNotifier.addSuccess(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addInfo(String, Object...)
+   * @see MessageNotifier#addInfo(String, Object...)
    */
   public Message addInfo(String message, Object... parameters) {
-    return NotifierUtil.addInfo(message, parameters);
+    return MessageNotifier.addInfo(message, parameters);
   }
 }

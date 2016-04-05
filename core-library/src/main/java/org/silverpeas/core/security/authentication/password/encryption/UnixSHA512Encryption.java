@@ -69,8 +69,8 @@ package org.silverpeas.core.security.authentication.password.encryption;
 
 import org.apache.commons.codec.digest.Crypt;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Charsets;
 
 import javax.inject.Singleton;
 import java.text.MessageFormat;

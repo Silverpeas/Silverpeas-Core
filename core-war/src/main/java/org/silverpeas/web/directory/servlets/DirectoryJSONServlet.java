@@ -26,7 +26,7 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.owasp.encoder.Encode;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

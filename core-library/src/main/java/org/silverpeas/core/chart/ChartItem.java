@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.chart;
 
-import org.silverpeas.util.JSONCodec.JSONObject;
-
-import java.util.function.Function;
-
 /**
  * Representation of a chart item.
  * @author Yohann Chastagnier

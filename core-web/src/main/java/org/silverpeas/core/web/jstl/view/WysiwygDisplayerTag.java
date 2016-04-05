@@ -27,7 +27,7 @@ import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.servlet.jsp.JspException;

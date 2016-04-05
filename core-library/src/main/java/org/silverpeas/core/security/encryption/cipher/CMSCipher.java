@@ -30,7 +30,7 @@ import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.operator.OutputEncryptor;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;

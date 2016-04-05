@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.FileUtil" %>
+<%@page import="org.silverpeas.core.util.file.FileUtil" %>
 <%@page import="org.silverpeas.core.util.StringUtil" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page isELIgnored="false" %>
@@ -38,9 +38,9 @@
 <%@ page import="
 				 org.silverpeas.core.web.mvc.controller.MainSessionController,
                  org.silverpeas.core.util.URLUtil,
-                 org.silverpeas.util.MultiSilverpeasBundle,
-                 org.silverpeas.util.FileRepositoryManager,
-                 org.silverpeas.util.FileServerUtils,
+                 org.silverpeas.core.util.MultiSilverpeasBundle,
+                 org.silverpeas.core.util.file.FileRepositoryManager,
+                 org.silverpeas.core.util.file.FileServerUtils,
                  org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory,
                  org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText,
                  org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>

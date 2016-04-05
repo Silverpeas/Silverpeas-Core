@@ -26,7 +26,7 @@ package org.silverpeas.core.questioncontainer.answer.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 public class Answer implements Serializable {
   private static final long serialVersionUID = 7915608110782813687L;

@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.space.PersonalSpaceController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;

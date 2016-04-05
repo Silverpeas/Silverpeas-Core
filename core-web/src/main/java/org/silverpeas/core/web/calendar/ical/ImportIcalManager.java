@@ -45,7 +45,7 @@ import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;

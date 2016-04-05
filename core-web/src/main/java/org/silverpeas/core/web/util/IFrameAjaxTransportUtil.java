@@ -27,7 +27,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.textarea;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;

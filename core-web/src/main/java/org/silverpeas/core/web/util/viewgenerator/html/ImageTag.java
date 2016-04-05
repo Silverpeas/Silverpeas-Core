@@ -3,7 +3,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.ResourceLocator;
 import org.apache.ecs.xhtml.img;
 

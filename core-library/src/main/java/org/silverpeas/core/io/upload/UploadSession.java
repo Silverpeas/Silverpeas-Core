@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;

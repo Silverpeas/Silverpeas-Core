@@ -66,11 +66,11 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.csv.CSVReader;
-import org.silverpeas.util.csv.Variant;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.csv.CSVReader;
+import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.web.jobdomain.DomainNavigationStock;

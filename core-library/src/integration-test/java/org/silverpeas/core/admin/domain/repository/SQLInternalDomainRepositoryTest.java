@@ -36,7 +36,7 @@ import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;

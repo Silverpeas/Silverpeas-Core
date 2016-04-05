@@ -40,9 +40,9 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.IOException;
 import java.io.Serializable;

@@ -29,6 +29,7 @@
 <%@ include file="checkPdc.jsp"%>
 
 <%@ page import="java.net.URLEncoder"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 
 <%
 	 ArrayList result = new ArrayList();

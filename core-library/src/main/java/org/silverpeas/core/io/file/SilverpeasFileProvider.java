@@ -1,7 +1,7 @@
 package org.silverpeas.core.io.file;
 
 import org.silverpeas.core.process.io.file.FileHandler;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.util.ArrayList;
 import java.util.Collections;

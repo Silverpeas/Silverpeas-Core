@@ -27,7 +27,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.BufferedInputStream;
 import java.io.File;

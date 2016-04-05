@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.selection;
 
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.web.panel.PanelSearchEdit;
 import org.silverpeas.core.web.panel.PanelSearchToken;
 import org.silverpeas.core.admin.user.model.UserDetail;

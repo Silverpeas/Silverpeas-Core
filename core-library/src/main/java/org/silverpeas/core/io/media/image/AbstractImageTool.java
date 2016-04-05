@@ -32,7 +32,7 @@ import java.util.concurrent.Semaphore;
 
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import static java.util.Collections.singleton;
 

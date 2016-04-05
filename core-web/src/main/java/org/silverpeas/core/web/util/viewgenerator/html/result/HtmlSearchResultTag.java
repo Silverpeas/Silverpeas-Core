@@ -39,9 +39,9 @@ import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;

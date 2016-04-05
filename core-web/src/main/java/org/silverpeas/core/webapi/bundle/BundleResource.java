@@ -29,7 +29,7 @@ import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;

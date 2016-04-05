@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.util.ReversedFileLineReader.readLastLines;
+import static org.silverpeas.core.util.file.ReversedFileLineReader.readLastLines;
 
 /**
  * An accessor to the logs of Silverpeas.

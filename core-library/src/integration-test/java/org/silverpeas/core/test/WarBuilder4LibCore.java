@@ -24,49 +24,31 @@
 
 package org.silverpeas.core.test;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.admin.domain.driver.DriverSettings;
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.notification.user.client.constant.NotifChannel;
-import org.silverpeas.core.util.ArgumentAssertion;
-import org.silverpeas.core.util.URLEncoder;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
-import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
-import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
-import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
-import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.persistence.ScheduledDBReset;
-import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.repository.JcrContext;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionContent;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.StubbedAdministration;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.persistence.ScheduledDBReset;
+import org.silverpeas.core.admin.quota.QuotaKey;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
+import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
@@ -77,45 +59,63 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
+import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
+import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.persistence.jdbc.SchemaPool;
-import org.silverpeas.core.util.CDIContainer;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
-import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.core.admin.quota.QuotaKey;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
-import org.silverpeas.core.admin.quota.service.QuotaService;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.*;
-import org.silverpeas.util.comparator.AbstractComparator;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.EncodingException;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.repository.JcrContext;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionContent;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.exception.FromModule;
-import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.WithNested;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.mail.extractor.Mail;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
+import org.silverpeas.core.persistence.jdbc.AbstractTable;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.Schema;
+import org.silverpeas.core.persistence.jdbc.SchemaPool;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.LogAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogsAccessor;
-import org.silverpeas.core.mail.extractor.Mail;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
+import org.silverpeas.core.util.comparator.AbstractComparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.EncodingException;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -166,7 +166,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link MapUtil}</li>
    * <li>{@link ArgumentAssertion}</li>
    * <li>{@link EncodeHelper}</li>
-   * <li>{@link ActionType} and classes in {@link org.silverpeas.util.annotation}</li>
+   * <li>{@link ActionType} and classes in {@link org.silverpeas.core.annotation}</li>
    * <li>{@link #addSilverpeasContentFeatures()}</li>
    * <li>{@link AbstractComplexComparator}</li>
    * <li>{@link AbstractComparator}</li>
@@ -191,7 +191,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(Charsets.class);
     }
     if (!contains(CollectionUtil.class)) {
-      addClasses(CollectionUtil.class, ExtractionList.class, ExtractionComplexList.class);
+      addClasses(CollectionUtil.class);
     }
     if (!contains(ArgumentAssertion.class)) {
       addClasses(ArgumentAssertion.class);
@@ -199,7 +199,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(ActionType.class)) {
       addSilverpeasContentFeatures();
       addClasses(ActionType.class);
-      addPackages(false, "org.silverpeas.util.annotation");
+      addPackages(false, "org.silverpeas.core.util.annotation");
     }
     if (!contains(AbstractComplexComparator.class)) {
       addClasses(AbstractComplexComparator.class, AbstractComparator.class);
@@ -495,7 +495,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           Group.class, GroupProfileInst.class, AdminGroupInst.class, SearchCriteria.class,
           UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
       addClasses(RightRecover.class, AdminException.class);
-      addPackages(true, "org.silverpeas.util.i18n");
+      addPackages(true, "org.silverpeas.core.i18n");
       // Exclusions
       applyManually(war -> war.deleteClass("org.silverpeas.core.admin.service.Admin"));
     }
@@ -563,8 +563,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.notification.user.client");
       addPackages(true, "org.silverpeas.core.notification.user.server");
       addAsResource("org/silverpeas/notificationManager");
-      addClasses(JNDINames.class, AbstractTable.class,
-          UserSubscriptionNotificationSendingHandler.class);
+      addClasses(AbstractTable.class, UserSubscriptionNotificationSendingHandler.class);
       addAsResource("org/silverpeas/util/jndi.properties");
       // Centralized features
       addSilverpeasUrlFeatures();
@@ -618,7 +617,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(DriverSettings.class);
       addClasses(ObjectType.class);
       addClasses(PaginationPage.class);
-      addPackages(true, "org.silverpeas.util.i18n");
+      addPackages(true, "org.silverpeas.core.i18n");
       addPackages(true, "org.silverpeas.core.admin.component");
       addPackages(true, "org.silverpeas.core.admin.space");
       addPackages(true, "org.silverpeas.core.admin.service");

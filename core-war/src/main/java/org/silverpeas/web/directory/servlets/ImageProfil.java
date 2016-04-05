@@ -24,8 +24,8 @@
 
 package org.silverpeas.web.directory.servlets;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 

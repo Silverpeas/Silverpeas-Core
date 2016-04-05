@@ -36,11 +36,11 @@
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException" %>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController" %>
 

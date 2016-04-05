@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.Translation;
 
 public class NodeI18NDetail extends Translation implements java.io.Serializable {
 

@@ -24,22 +24,20 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,8 +79,6 @@ public class TestSimpleDocumentAccessController {
         .mockField(testInstance, ComponentAccessControl.class, "componentAccessController");
     nodeAccessController =
         reflectionRule.mockField(testInstance, NodeAccessControl.class, "nodeAccessController");
-    ComponentHelper componentHelper =
-        reflectionRule.spyField(testInstance, ComponentHelper.class, "componentHelper");
 
     final PublicationAccessControl publicationAccessController = reflectionRule
         .setField(testInstance, new PublicationAccessController(), "publicationAccessController");
@@ -92,15 +88,6 @@ public class TestSimpleDocumentAccessController {
         .setField(publicationAccessController, nodeAccessController, "nodeAccessController");
     publicationService = reflectionRule
         .mockField(publicationAccessController, PublicationService.class, "publicationService");
-    reflectionRule.setField(publicationAccessController, componentHelper, "componentHelper");
-
-    when(componentHelper.extractComponent(anyString())).thenAnswer(invocation -> {
-      String instanceId = (String) invocation.getArguments()[0];
-      String componentName = instanceId.replaceAll("[0-9]", "");
-      WAComponent component = new WAComponent();
-      component.setName(componentName);
-      return component;
-    });
   }
 
   @Test
@@ -1781,6 +1768,11 @@ public class TestSimpleDocumentAccessController {
 
     @SuppressWarnings("unchecked")
     public void setup() {
+      when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(invocation -> {
+        String instanceId = (String) invocation.getArguments()[0];
+        return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
+            instanceId.startsWith("toolbox");
+      });
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(componentUserRoles));

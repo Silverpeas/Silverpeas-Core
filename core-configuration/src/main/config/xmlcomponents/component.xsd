@@ -53,6 +53,14 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       </xs:documentation>
     </xs:annotation>
   </xs:element>
+
+  <xs:simpleType name="behavior" final="restriction" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="topicTracker" />
+      <xs:enumeration value="workflow" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="ProfileType" >
     <xs:complexContent>
       <xs:extension base="ProfileDescription" >
@@ -60,11 +68,13 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
   <xs:complexType name="multilang">
     <xs:sequence>
       <xs:element type="MessageType" name="message" maxOccurs="unbounded" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="ProfileDescription">
     <xs:sequence>
       <xs:element name="label" type="multilang" />
@@ -120,6 +130,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       <xs:element type="xs:string" name="personalSpaceValue" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="ParameterOptionType">
     <xs:sequence>
       <xs:element name="name" type="multilang"/>
@@ -130,7 +141,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
     <xs:sequence>
       <xs:element name="label" type="multilang" />
       <xs:element name="description" type="multilang"/>
-      <xs:element name="help" type="multilang"/>
+      <xs:element name="help" type="multilang" minOccurs="0"/>
       <xs:element name="order" type="xs:int" />
       <xs:element name="parameters" minOccurs="1" maxOccurs="1">
         <xs:complexType>
@@ -140,10 +151,19 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
         </xs:complexType>
       </xs:element>
     </xs:sequence>
+    <xs:attribute name="name" type="xs:token"/>
   </xs:complexType>
+
   <xs:complexType name="WAComponentType">
     <xs:sequence>
       <xs:element type="xs:string" name="name"/>
+      <xs:element name="behaviors" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="behavior" name="behavior" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element type="multilang" name="label"/>
       <xs:element type="multilang" name="description"/>
       <xs:element type="multilang" name="suite"/>

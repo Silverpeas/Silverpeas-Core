@@ -26,14 +26,14 @@ package org.silverpeas.core.web.http;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;

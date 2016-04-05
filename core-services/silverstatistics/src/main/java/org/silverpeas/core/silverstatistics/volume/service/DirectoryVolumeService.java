@@ -29,7 +29,7 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;

@@ -32,7 +32,7 @@ import javax.servlet.jsp.PageContext;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 /**
  * The FormPane interface gives us the skeleton for all funtionnalities we need to display typical

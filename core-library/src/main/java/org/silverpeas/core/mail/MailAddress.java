@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail;
 
-import org.silverpeas.util.MailUtil;
+import org.silverpeas.core.util.MailUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.mail.internet.AddressException;

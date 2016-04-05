@@ -42,13 +42,13 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.util.MapUtil;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 

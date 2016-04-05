@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeasSessionController> {
 
@@ -84,7 +84,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         myLinksSC.setScope(MyLinksPeasSessionController.SCOPE_USER);
         myLinksSC.setUrl(null);
 
-        NotifierUtil.addInfo(myLinksSC.getString("myLinks.draganddrop.info"));
+        MessageNotifier.addInfo(myLinksSC.getString("myLinks.draganddrop.info"));
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ComponentLinks")) {
         // Retrieve instance identifier

@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 
 /**

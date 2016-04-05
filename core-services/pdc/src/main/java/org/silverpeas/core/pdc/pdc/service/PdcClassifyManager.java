@@ -37,7 +37,7 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
-import org.silverpeas.util.JoinStatement;
+import org.silverpeas.core.util.JoinStatement;
 
 public interface PdcClassifyManager {
 

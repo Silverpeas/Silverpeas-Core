@@ -24,7 +24,7 @@
 
 --%>
 
-<%@ page import="org.silverpeas.core.util.DateUtil,org.silverpeas.util.MultiSilverpeasBundle,java.util.Collection,java.util.Iterator"%>
+<%@ page import="org.silverpeas.core.util.DateUtil,org.silverpeas.core.util.MultiSilverpeasBundle,java.util.Collection,java.util.Iterator"%>
 <% MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
 Collection cResultData = (Collection)request.getAttribute("ResultData");
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1

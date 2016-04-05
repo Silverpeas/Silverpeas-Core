@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,7 +55,7 @@ import java.util.Optional;
  * registry).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "WAComponentType", propOrder = { "name", "label", "description", "suite",
+@XmlType(name = "WAComponentType", propOrder = { "name", "behaviors", "label", "description", "suite",
     "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
     "groupsOfParameters", "parameters" })
 public class WAComponent {
@@ -83,6 +83,7 @@ public class WAComponent {
 
   @XmlElement(required = true)
   protected String name;
+  protected ComponentBehaviors behaviors;
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected HashMap<String, String> label;
@@ -122,6 +123,30 @@ public class WAComponent {
    */
   public void setName(String value) {
     this.name = value;
+  }
+
+  /**
+   * Gets the different behaviors this component satisfies.
+   *
+   * @return
+   *     possible object is
+   *     {@link ComponentBehaviors }
+   *
+   */
+  public ComponentBehaviors getBehaviors() {
+    return behaviors;
+  }
+
+  /**
+   * Sets all the behaviors this component has to satisfy.
+   *
+   * @param value
+   *     allowed object is
+   *     {@link ComponentBehaviors }
+   *
+   */
+  public void setBehaviors(ComponentBehaviors value) {
+    this.behaviors = value;
   }
 
   /**
@@ -370,11 +395,21 @@ public class WAComponent {
 
   /**
    * Is this WAComponent is a workflow?
-   * @return true if this component defines a workflow, false if it is a regular Silverpeas
+   * @return true if this component satisfies the behavior of a workflow, that is to say if it
+   * defines a workflow. False if it is a regular Silverpeas.
    * application.
    */
   public boolean isWorkflow() {
-    return "RprocessManager".equalsIgnoreCase(getRouter());
+    //return "RprocessManager".equalsIgnoreCase(getRouter());
+    return getBehaviors().getBehavior().contains(ComponentBehavior.WORKFLOW);
+  }
+
+  /**
+   * Is this WAComponent is a topic tracker?
+   * @return true if this component satisfies the behavior of a topic tracker.
+   */
+  public boolean isTopicTracker() {
+    return getBehaviors().getBehavior().contains(ComponentBehavior.TOPIC_TRACKER);
   }
 
 }

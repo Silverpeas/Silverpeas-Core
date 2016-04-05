@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

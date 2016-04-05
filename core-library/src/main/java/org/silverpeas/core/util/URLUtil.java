@@ -24,7 +24,7 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -224,7 +224,7 @@ public class URLUtil {
    * @return
    */
   public static String getComponentNameFromComponentId(String sClientComponentId) {
-    return ComponentHelper.get().extractComponentName(sClientComponentId);
+    return ComponentHelper.get().getWAComponentName(sClientComponentId);
   }
 
   /**

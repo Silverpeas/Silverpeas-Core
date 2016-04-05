@@ -39,8 +39,6 @@ import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
-import org.silverpeas.util.JNDINames;
-
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
@@ -80,9 +78,9 @@ public class TestBasicDaoFactory {
       IOUtils.closeQuietly(reader);
     }
     datasource = context.getBean("dataSource", BasicDataSource.class);
-    InitialContext ic = new InitialContext();
+    /*InitialContext ic = new InitialContext();
     ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
-    ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
+    ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);*/
     System.out.println(" -> node types registered");
   }
 

@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 import java.io.File;
 
 import static org.apache.commons.io.FileUtils.sizeOfDirectory;
-import static org.silverpeas.util.FileRepositoryManager.getAbsolutePath;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getAbsolutePath;
 
 /**
  * @author Yohann Chastagnier

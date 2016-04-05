@@ -30,7 +30,7 @@ import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 
 import javax.servlet.jsp.JspException;

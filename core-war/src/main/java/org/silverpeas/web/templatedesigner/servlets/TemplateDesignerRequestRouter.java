@@ -49,13 +49,13 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.web.templatedesigner.control.TemplateDesignerSessionController;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 public class TemplateDesignerRequestRouter extends
     ComponentRequestRouter<TemplateDesignerSessionController> {

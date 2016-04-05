@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail;
 
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.mail.Message;
 import java.util.ArrayList;

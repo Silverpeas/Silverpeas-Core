@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

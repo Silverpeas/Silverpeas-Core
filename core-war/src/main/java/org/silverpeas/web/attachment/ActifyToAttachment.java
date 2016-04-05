@@ -22,7 +22,7 @@ package org.silverpeas.web.attachment;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import java.io.File;
 import java.io.IOException;
 import javax.inject.Inject;

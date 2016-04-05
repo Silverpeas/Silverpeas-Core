@@ -25,8 +25,8 @@
 package org.silverpeas.core.web.selection;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.web.panel.PanelLine;
 import org.silverpeas.core.web.panel.PanelMiniFilterEdit;
 import org.silverpeas.core.web.panel.PanelMiniFilterSelect;

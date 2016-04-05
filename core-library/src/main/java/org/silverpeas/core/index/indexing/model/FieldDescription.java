@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.silverpeas.core.index.indexing.DateFormatter;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 /**
  * A FieldDescription pack all the needed information to parse and index a generic field (xml field,

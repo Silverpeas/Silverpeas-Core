@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
 import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
@@ -37,7 +37,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

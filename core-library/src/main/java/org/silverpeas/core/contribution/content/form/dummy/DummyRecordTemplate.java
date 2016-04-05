@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericDataRecord;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 
 /**
  * A dummy record template.

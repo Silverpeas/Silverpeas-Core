@@ -33,7 +33,6 @@ import org.silverpeas.core.sharing.services.JpaSharingTicketService;
 import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -110,8 +109,8 @@ public class VersionFileAccessControlTest {
 
   @Before
   public void generalSetUp() throws Exception {
-    InitialContext ic = new InitialContext();
-    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);
+    /*InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);*/
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);

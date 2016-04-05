@@ -66,17 +66,17 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.WAAttributeValuePair;
+import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -106,7 +106,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static java.io.File.separator;
-import static org.silverpeas.util.Charsets.UTF_8;
+import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.

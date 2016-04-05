@@ -31,7 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;

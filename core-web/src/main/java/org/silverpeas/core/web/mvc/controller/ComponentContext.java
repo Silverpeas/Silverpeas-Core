@@ -24,7 +24,7 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 
 /**
  * Built by the main sesion controller the ComponentContext objects store the context of a component

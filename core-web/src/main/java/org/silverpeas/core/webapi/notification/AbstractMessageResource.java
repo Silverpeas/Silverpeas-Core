@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.notification;
 
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.notification.message.MessageContainer;
 

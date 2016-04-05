@@ -5,7 +5,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.ResourceLocator;
 
 import javax.servlet.ServletException;

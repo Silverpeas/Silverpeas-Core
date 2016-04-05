@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -61,8 +60,8 @@ public class OrganizationSchemaTest {
     context = new ClassPathXmlApplicationContext(new String[]{
       "spring-attachments-embbed-datasource.xml"});
     dataSource = context.getBean("dataSource", DataSource.class);
-    InitialContext ic = new InitialContext();
-    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);
+    /*InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);*/
     DBUtil.getInstanceForTest(dataSource.getConnection());
   }
 

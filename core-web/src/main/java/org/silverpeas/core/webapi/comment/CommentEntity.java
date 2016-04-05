@@ -31,7 +31,7 @@ import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.owasp.encoder.Encode;
 
 import javax.validation.constraints.NotNull;

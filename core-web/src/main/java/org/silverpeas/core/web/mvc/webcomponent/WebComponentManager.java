@@ -28,7 +28,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.annotation.AnnotationUtil;
+import org.silverpeas.core.util.annotation.AnnotationUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletResponse;

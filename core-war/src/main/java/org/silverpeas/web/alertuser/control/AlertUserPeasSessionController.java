@@ -36,7 +36,7 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.owasp.encoder.Encode;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;

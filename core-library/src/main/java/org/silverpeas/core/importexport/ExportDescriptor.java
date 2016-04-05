@@ -28,7 +28,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import org.apache.commons.io.output.WriterOutputStream;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 /**
  * It represents a descriptor about the export of resources into a writer or an output stream. As

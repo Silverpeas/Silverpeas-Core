@@ -27,7 +27,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 import java.util.List;
 
 import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.util.i18n.I18NBean;
+import org.silverpeas.core.i18n.I18NBean;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 

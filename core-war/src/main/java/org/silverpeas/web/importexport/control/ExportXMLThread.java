@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.silverpeas.core.importexport.control.ImportExport;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.util.WAAttributeValuePair;
+import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.node.model.NodePK;
 
 public class ExportXMLThread extends ExportThread {

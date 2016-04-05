@@ -25,7 +25,7 @@ package org.silverpeas.core.web.subscription;
 
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 

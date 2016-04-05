@@ -1,9 +1,9 @@
 package org.silverpeas.core.security.encryption;
 
-import org.silverpeas.util.EncodingUtil;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.EncodingUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

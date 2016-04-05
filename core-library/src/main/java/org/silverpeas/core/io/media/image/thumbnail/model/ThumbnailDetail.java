@@ -26,10 +26,10 @@ package org.silverpeas.core.io.media.image.thumbnail.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.ResourceLocator;
 
 /**

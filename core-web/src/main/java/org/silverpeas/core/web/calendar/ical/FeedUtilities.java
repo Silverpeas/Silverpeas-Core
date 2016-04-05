@@ -40,7 +40,7 @@ import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;

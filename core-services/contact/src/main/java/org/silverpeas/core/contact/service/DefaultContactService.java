@@ -34,7 +34,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

@@ -2,8 +2,8 @@ package org.silverpeas.core.io.file;
 
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 

@@ -21,7 +21,7 @@
 package org.silverpeas.core.security.encryption.cipher;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;

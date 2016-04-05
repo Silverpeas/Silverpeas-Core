@@ -55,8 +55,8 @@ import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 

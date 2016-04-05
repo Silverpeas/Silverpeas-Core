@@ -28,8 +28,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NBean;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import java.util.ArrayList;

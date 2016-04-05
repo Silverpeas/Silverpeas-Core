@@ -42,7 +42,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

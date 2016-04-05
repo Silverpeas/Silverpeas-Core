@@ -34,7 +34,7 @@
 <%@ page import="org.silverpeas.web.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>

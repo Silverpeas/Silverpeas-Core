@@ -48,7 +48,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

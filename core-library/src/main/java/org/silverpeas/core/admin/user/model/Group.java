@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.user.model;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.io.Serializable;

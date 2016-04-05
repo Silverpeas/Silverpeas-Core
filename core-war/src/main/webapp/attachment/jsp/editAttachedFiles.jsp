@@ -38,9 +38,9 @@
 <%@ page import="org.silverpeas.core.contribution.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
-<%@ page import="org.silverpeas.util.ForeignPK" %>
+<%@ page import="org.silverpeas.core.ForeignPK" %>
 <%@ include file="checkAttachment.jsp"%>
-<view:setConstant var="spinfire" constant="org.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
+<view:setConstant var="spinfire" constant="org.silverpeas.core.util.MimeTypes.SPINFIRE_MIME_TYPE" />
 <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
 <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
 <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />

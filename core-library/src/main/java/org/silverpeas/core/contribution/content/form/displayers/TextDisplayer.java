@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;

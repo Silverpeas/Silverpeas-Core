@@ -24,7 +24,7 @@
 package org.silverpeas.core.mail;
 
 import org.junit.Test;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;

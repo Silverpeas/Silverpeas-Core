@@ -28,6 +28,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -39,8 +40,10 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.*;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -53,7 +56,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import static java.io.File.separatorChar;
-import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 
 /**
  *

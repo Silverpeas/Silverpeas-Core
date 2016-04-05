@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterNa
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -401,6 +401,10 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public boolean isWorkflow() {
     return WAComponent.get(getName()).get().isWorkflow();
+  }
+
+  public boolean isTopicTracker() {
+    return WAComponent.get(getName()).get().isTopicTracker();
   }
 
   public String getPermalink() {

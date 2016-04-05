@@ -25,7 +25,7 @@ package org.silverpeas.core.subscription.util;
 
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.contribution.ContributionStatus;
-import org.silverpeas.util.ActionType;
+import org.silverpeas.core.ActionType;
 
 /**
  * This class permits to specify a context into which the subscriptions have to be managed.

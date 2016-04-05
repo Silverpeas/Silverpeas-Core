@@ -71,7 +71,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.WAAttributeValuePair;
+import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.exception.UtilException;
 
 import javax.servlet.http.HttpServletRequest;

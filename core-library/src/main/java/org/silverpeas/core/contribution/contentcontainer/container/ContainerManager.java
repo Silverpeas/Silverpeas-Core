@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution.contentcontainer.container;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.JoinStatement;
+import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.Connection;

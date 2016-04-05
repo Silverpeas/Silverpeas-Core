@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authorization;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.apache.commons.collections.CollectionUtils;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.Collection;
 import java.util.EnumSet;

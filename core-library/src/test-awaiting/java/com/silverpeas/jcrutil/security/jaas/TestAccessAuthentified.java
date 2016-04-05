@@ -41,8 +41,6 @@ import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import org.silverpeas.util.MimeTypes;
 
-import org.silverpeas.util.JNDINames;
-
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
@@ -95,8 +93,8 @@ public class TestAccessAuthentified {
     }
     datasource = context.getBean("jpaDataSource", BasicDataSource.class);
     InitialContext ic = new InitialContext();
-    ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
-    ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
+    /*ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
+    ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);*/
     System.out.println(" -> node types registered");
   }
 

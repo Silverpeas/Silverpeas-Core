@@ -42,7 +42,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;

@@ -59,7 +59,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.chart.period.PeriodChart;
 import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.date.period.PeriodType;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;

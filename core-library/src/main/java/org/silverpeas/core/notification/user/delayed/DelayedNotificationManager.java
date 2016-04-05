@@ -33,9 +33,9 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.repository.NotificationResourceDataManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.MapUtil;
+import org.silverpeas.core.util.MapUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

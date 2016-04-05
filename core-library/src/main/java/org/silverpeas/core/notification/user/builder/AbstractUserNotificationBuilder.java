@@ -37,11 +37,11 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavio
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.util.Collection;
 

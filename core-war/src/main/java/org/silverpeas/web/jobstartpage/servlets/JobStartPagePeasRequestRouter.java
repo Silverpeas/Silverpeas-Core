@@ -47,7 +47,7 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.template.SilverpeasTemplate;
 

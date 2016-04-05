@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletException;

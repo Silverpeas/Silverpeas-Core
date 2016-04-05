@@ -28,8 +28,8 @@ import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.PaginationList;
+import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.EntityManager;
@@ -395,7 +395,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    * @param criteria the criteria constraining the query and for which the entities to list have to
    * satisfy.
    * @return a list of entities matching specified criteria. If a pagination criterion is defined
-   * in the criteria, then the returned list is a {@link org.silverpeas.util.PaginationList}
+   * in the criteria, then the returned list is a {@link PaginationList}
    * instance.
    */
   public List<ENTITY> findByCriteria(final QueryCriteria criteria) {

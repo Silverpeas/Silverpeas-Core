@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.process.io.file;
 
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

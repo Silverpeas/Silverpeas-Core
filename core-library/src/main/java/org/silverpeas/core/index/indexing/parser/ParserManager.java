@@ -22,7 +22,7 @@ package org.silverpeas.core.index.indexing.parser;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.index.indexing.parser.tika.TikaParser;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 

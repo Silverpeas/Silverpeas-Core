@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.util.NotifierUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
 import java.io.File;
 import java.util.Collection;
@@ -204,7 +204,7 @@ public class ComponentFileFilterParameter {
     if (!isFileAuthorized(file)) {
       ComponentFileFilterException exception =
           new ComponentFileFilterException(this, (file != null ? file.getName() : ""));
-      NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+      MessageNotifier.addSevere(SilverpeasTransverseErrorUtil
           .performExceptionMessage(exception, MessageManager.getLanguage()));
       throw exception;
     }

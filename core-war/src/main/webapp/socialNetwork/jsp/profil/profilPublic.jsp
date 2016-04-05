@@ -34,7 +34,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.core.web.directory.model.Member"%>
-<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.core.util.URLUtil"%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

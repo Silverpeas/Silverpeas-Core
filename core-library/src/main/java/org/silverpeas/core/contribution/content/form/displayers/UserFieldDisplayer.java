@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;

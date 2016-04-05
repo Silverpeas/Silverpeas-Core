@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.silverpeas.util.FileRepositoryManager.getUploadPath;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 
 /**
  * @author ehugonnet

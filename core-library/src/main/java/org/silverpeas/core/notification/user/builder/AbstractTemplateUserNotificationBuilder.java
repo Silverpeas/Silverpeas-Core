@@ -29,7 +29,7 @@ import java.util.Map;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.util.Link;
+import org.silverpeas.core.util.Link;
 import org.apache.commons.lang3.StringUtils;
 
 import org.silverpeas.core.notification.user.model.NotificationResourceData;

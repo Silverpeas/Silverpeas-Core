@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 

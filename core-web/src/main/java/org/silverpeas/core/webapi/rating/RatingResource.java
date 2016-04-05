@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.RaterRating;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.GET;
@@ -93,10 +93,10 @@ public class RatingResource extends RESTWebService {
     RatingService ratingService = RatingService.get();
     if (!StringUtil.isDefined(note)) {
       ratingService.deleteRaterRating(getRaterRatingPK());
-      NotifierUtil.addSuccess(getBundle().getString("notation.vote.delete.ok"));
+      MessageNotifier.addSuccess(getBundle().getString("notation.vote.delete.ok"));
     } else {
       ratingService.updateRating(getRaterRatingPK(), Integer.parseInt(note));
-      NotifierUtil.addSuccess(getBundle().getString("notation.vote.ok"));
+      MessageNotifier.addSuccess(getBundle().getString("notation.vote.ok"));
     }
     RaterRatingEntity newRating = getRaterRating();
     return Response.ok(newRating).build();

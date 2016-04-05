@@ -39,7 +39,7 @@ import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;

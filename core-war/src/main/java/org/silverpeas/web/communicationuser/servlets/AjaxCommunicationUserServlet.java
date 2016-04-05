@@ -43,7 +43,7 @@ import org.apache.commons.io.FileUtils;
 
 import org.silverpeas.web.communicationuser.CommunicationUserException;
 import org.silverpeas.web.communicationuser.control.CommunicationUserSessionController;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.DateUtil;
 
 public class AjaxCommunicationUserServlet extends HttpServlet {

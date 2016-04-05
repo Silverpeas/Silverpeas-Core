@@ -26,7 +26,7 @@ package org.silverpeas.web.socialnetwork.invitation.servlets;
 
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

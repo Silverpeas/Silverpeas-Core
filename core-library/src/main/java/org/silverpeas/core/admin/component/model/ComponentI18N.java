@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 
 public class ComponentI18N extends Translation {

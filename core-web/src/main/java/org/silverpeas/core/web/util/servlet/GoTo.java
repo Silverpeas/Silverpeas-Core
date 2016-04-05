@@ -29,7 +29,7 @@ import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 

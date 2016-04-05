@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.search;
 
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 /**
  * This class encapsulates all the data used to create a ResultDisplayer implementation.

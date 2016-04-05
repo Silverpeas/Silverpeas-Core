@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 
 /**
  * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can

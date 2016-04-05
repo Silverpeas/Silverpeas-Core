@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight" %>
-<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %><%--
+<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -160,7 +161,8 @@ out.println(frame.printBefore());
 		{
 			ArrayLine line = arrayPane.addArrayLine();
 			ComponentInstLight component = (ComponentInstLight) it.next();
-			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+EncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
+			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+
+					EncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemoveDate())+"&nbsp;("+component.getRemoverName()+")");
 			cell.setCompareOn(component.getRemoveDate());
 

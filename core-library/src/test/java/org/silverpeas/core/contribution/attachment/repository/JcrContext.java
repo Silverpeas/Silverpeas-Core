@@ -40,8 +40,8 @@ import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.persistence.jcr.SilverpeasJcrSchemaRegistering;
 import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.util.Charsets;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 

@@ -55,7 +55,7 @@ import org.silverpeas.core.contribution.content.form.record.ParameterValue;
 import org.silverpeas.core.contribution.content.form.record.Repeatable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A

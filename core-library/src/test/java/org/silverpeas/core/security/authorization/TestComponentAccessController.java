@@ -24,19 +24,17 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.ComponentHelper;
 
 import java.util.Set;
 
@@ -45,6 +43,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -83,24 +82,15 @@ public class TestComponentAccessController {
     controller =
         mockByReflectionRule.mockField(instance, OrganizationController.class, "controller");
     commonAPI4Test.injectIntoMockedBeanContainer(controller);
-    ComponentHelper componentHelper =
-        mockByReflectionRule.spyField(instance, ComponentHelper.class, "componentHelper");
-
-    when(componentHelper.extractComponent(anyString())).thenAnswer(invocation -> {
-      String instanceId = (String) invocation.getArguments()[0];
-      String componentName = instanceId.replaceAll("[0-9]","");
-      WAComponent component = new WAComponent();
-      component.setName(componentName);
-      return component;
-    });
-
     when(controller.getComponentInst(anyString())).thenAnswer(invocation -> {
       String instanceIdArg = (String) invocation.getArguments()[0];
-      ComponentInst componentInst = new ComponentInst();
-      if (publicComponentId.equals(instanceIdArg) ||
-          publicComponentIdWithUserRole.equals(instanceIdArg)) {
-        componentInst.setPublic(true);
-      }
+      ComponentInst componentInst = mock(ComponentInst.class);
+      when(componentInst.isPublic()).thenAnswer(
+          invocation1 -> publicComponentId.equals(instanceIdArg) ||
+              publicComponentIdWithUserRole.equals(instanceIdArg));
+      when(componentInst.isTopicTracker()).thenAnswer(
+          invocation1 -> instanceIdArg.startsWith("kmelia") || instanceIdArg.startsWith("kmax") ||
+              instanceIdArg.startsWith("toolbox"));
       return componentInst;
     });
 

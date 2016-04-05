@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution.publication.model;
 import java.io.Serializable;
 import java.util.List;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 /**
  * This object contains the description of a complete publication (publication parameter, info)

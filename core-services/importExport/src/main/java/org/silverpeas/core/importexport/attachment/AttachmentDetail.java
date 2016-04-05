@@ -21,11 +21,11 @@
 package org.silverpeas.core.importexport.attachment;
 
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.AbstractBean;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.i18n.AbstractBean;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.WAPrimaryKey;
 import org.apache.commons.io.FilenameUtils;
 

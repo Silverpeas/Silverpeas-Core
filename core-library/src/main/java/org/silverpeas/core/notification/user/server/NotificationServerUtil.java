@@ -33,7 +33,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import org.silverpeas.core.notification.user.server.xml.NotifyContentHandler;
 import org.silverpeas.core.exception.SilverpeasException;

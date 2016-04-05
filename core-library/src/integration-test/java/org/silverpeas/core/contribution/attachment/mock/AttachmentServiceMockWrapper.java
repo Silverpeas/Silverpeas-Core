@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.mock;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 import org.mockito.Mockito;
 import org.silverpeas.core.contribution.attachment.AttachmentException;

@@ -34,7 +34,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.GlobalContext;
+import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.xml.sax.InputSource;
 
 import java.io.File;

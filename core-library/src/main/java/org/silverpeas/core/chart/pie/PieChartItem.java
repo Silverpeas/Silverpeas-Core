@@ -24,7 +24,7 @@
 package org.silverpeas.core.chart.pie;
 
 import org.silverpeas.core.chart.AbstractChartItem;
-import org.silverpeas.util.JSONCodec.JSONObject;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 /**
  * @author Yohann Chastagnier

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.selection;
 
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.web.panel.PanelLine;
 import org.silverpeas.core.web.panel.PanelMiniFilterEdit;
 import org.silverpeas.core.web.panel.PanelMiniFilterSelect;

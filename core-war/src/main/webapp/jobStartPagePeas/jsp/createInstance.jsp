@@ -24,7 +24,7 @@
 
 --%>
 
-<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

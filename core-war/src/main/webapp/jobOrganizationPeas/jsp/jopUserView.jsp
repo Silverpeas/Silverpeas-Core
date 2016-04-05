@@ -28,7 +28,7 @@
 
 <%@page import="org.silverpeas.web.joborganization.control.JobOrganizationPeasSessionController"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 
 <%@ include file="check.jsp" %>
 

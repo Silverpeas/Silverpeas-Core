@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;

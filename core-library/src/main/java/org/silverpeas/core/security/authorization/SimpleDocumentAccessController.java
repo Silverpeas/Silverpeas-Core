@@ -24,11 +24,10 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -53,9 +52,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   @Inject
   private PublicationAccessControl publicationAccessController;
 
-  @Inject
-  private ComponentHelper componentHelper;
-
   SimpleDocumentAccessController () {
     // Instance by IoC only.
   }
@@ -67,7 +63,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     boolean componentAccessAuthorized = false;
 
     // Node access control
-    if (componentHelper.isThemeTracker(object.getInstanceId())) {
+    if (componentAccessController.isTopicTrackerSupported(object.getInstanceId())) {
       String foreignId = object.getForeignId();
       Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController()
           .getUserRoles(userId, new PublicationPK(foreignId, object.getInstanceId()), context);

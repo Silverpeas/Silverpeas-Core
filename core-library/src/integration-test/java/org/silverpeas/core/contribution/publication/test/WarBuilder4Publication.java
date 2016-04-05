@@ -7,7 +7,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.admin.component.ComponentHelper;
 
 /**
  * This builder extends the {@link WarBuilder4LibCore} in order to centralize the definition of

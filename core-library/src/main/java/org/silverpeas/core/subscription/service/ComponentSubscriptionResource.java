@@ -24,7 +24,7 @@
 package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.node.model.NodePK;
 
 /**

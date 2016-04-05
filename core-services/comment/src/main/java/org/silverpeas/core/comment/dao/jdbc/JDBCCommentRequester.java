@@ -30,9 +30,9 @@ import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
 

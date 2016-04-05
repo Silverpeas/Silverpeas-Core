@@ -36,12 +36,12 @@ import org.silverpeas.core.contribution.attachment.notification.AttachmentEventN
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -27,7 +27,7 @@
 
 package org.silverpeas.core.pdc.tree.model;
 
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 
 public class TreeNodeI18N extends Translation implements java.io.Serializable {

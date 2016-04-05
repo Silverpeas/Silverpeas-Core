@@ -34,7 +34,7 @@
 <%@ page import="org.silverpeas.core.pdc.subscription.model.PdcSubscription" %>
 <%@ page import="org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController" %>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Value" %>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>

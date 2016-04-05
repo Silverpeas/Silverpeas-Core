@@ -60,8 +60,8 @@ import org.exolab.castor.jdo.QueryResults;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 
 import java.text.DateFormat;

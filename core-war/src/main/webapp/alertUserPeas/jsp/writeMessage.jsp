@@ -33,7 +33,7 @@
 %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.Group"%>
-<%@ page import="org.silverpeas.util.Pair" %>
+<%@ page import="org.silverpeas.core.util.Pair" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 

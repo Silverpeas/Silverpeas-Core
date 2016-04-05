@@ -34,7 +34,7 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
 import java.util.Collection;

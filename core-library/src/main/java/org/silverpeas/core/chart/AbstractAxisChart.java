@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chart;
 
-import org.silverpeas.util.JSONCodec.JSONObject;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;

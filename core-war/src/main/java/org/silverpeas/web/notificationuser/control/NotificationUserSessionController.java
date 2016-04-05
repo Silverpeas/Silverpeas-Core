@@ -31,7 +31,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;

@@ -41,12 +41,12 @@ import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

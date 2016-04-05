@@ -24,7 +24,7 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.Date;

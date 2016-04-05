@@ -28,7 +28,7 @@ import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.process.management.AbstractFileProcess;
-import org.silverpeas.util.ActionType;
+import org.silverpeas.core.ActionType;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.List;

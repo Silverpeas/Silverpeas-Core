@@ -31,12 +31,12 @@ import java.util.Date;
 
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ExportReport;
-import org.silverpeas.util.ZipUtil;
+import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 
 public abstract class AbstractExportProcess {
 

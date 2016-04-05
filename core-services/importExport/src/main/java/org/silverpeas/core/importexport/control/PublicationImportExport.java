@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.calendar.ical;
 
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 /**
  * Simple password encoder. Note, this is not meant to keep your password secure.

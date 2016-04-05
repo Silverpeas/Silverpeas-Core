@@ -35,7 +35,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;

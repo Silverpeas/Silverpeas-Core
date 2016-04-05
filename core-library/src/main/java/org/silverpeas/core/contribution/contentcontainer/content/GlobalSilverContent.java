@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 
 import java.util.Iterator;

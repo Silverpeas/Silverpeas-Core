@@ -60,11 +60,11 @@ import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.io.PrintWriter;

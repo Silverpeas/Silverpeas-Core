@@ -20,6 +20,12 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,14 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;
-import org.silverpeas.core.util.UnitUtil;
-
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.core.util.memory.MemoryUnit;
 
 /**
  * Class declaration Get stat size directory data from database
@@ -47,7 +45,6 @@ public class SilverStatisticsPeasDAOVolumeServer {
   public static final int INDICE_DATE = 0;
   public static final int INDICE_LIB = 1;
   public static final int INDICE_SIZE = 2;
-  private static final String DB_NAME = JNDINames.SILVERSTATISTICS_DATASOURCE;
   private static final String selectQuery =
       " SELECT dateStat, fileDir, sizeDir FROM SB_Stat_SizeDirCumul ORDER BY dateStat";
 

@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
-import org.silverpeas.util.StringDataExtractor.RegexpPatternDirective;
+import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
 
 import java.util.Arrays;
@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexp;
-import static org.silverpeas.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
+import static org.silverpeas.core.util.StringDataExtractor.from;
 
 /**
  * Transforms all URL of images to take into account theirs display size.

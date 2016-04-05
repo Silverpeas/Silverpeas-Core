@@ -29,7 +29,7 @@ package org.silverpeas.web.silverstatistics.vo;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 /**
  * Class declaration

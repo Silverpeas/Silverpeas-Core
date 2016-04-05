@@ -31,7 +31,7 @@ import net.htmlparser.jericho.Source;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
 

@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.core.mylinks.model.LinkDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 
 <%@ include file="../portletImport.jsp"%>

@@ -35,8 +35,8 @@ import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.FileUploadUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;

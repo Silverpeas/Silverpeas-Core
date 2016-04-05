@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;

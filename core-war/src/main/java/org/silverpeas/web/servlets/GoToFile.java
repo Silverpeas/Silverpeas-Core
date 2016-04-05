@@ -27,7 +27,7 @@ import org.apache.commons.codec.CharEncoding;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.ClientBrowserUtil;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;

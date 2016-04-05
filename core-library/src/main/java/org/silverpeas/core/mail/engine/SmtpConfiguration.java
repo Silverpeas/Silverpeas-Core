@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.mail.engine;
 
-import org.silverpeas.util.MailUtil;
+import org.silverpeas.core.util.MailUtil;
 
 /**
  * SMTP configuration

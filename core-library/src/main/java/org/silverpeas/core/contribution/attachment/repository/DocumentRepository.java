@@ -34,11 +34,11 @@ import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryConnector;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.util.NodeIterable;
 import org.silverpeas.core.persistence.jcr.util.PropertyIterable;
 

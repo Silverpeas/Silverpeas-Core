@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.workflow.api.model.Actions" %>
-<%@ page import="org.silverpeas.core.workflow.api.model.Action" %><%--
+<%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 

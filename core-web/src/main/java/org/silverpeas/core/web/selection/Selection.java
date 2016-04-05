@@ -22,8 +22,8 @@ package org.silverpeas.core.web.selection;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;

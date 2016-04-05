@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexps;
-import static org.silverpeas.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexps;
+import static org.silverpeas.core.util.StringDataExtractor.from;
 
 /**
  * Transforms all referenced content links in order to be handled in mail sending. A content can be

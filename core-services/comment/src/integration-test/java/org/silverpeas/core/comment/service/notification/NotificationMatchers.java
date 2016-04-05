@@ -22,7 +22,7 @@ package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentUserNotification;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import java.util.Map;

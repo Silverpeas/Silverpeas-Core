@@ -29,7 +29,7 @@ import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResultRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;

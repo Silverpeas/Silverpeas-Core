@@ -22,7 +22,7 @@
 package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.util.ServerSetup;
-import org.silverpeas.util.MailUtil;
+import org.silverpeas.core.util.MailUtil;
 
 import java.io.IOException;
 import java.util.Properties;

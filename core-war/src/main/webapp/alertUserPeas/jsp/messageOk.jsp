@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.Pair" %>
+<%@ page import="org.silverpeas.core.util.Pair" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%--
 

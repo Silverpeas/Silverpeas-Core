@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>

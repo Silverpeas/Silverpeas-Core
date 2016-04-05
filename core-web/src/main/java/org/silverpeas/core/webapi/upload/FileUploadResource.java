@@ -34,10 +34,10 @@ import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.io.upload.UploadSessionFile;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
@@ -252,7 +252,7 @@ public class FileUploadResource extends RESTWebService {
           bundle.getString("attachment.dialog.maximumFileSize") + " (" +
           UnitUtil.formatMemSize(maximumFileSize) + ")";
       errorMessage = MessageFormat.format(errorMessage, fileName);
-      NotifierUtil.addError(errorMessage);
+      MessageNotifier.addError(errorMessage);
       throw new WebApplicationException(
           Response.status(Response.Status.PRECONDITION_FAILED).entity(errorMessage).build());
     }

@@ -41,7 +41,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionJdbcParams;
 import org.silverpeas.core.web.selection.jdbc.JdbcConnectorSetting;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.Pair;
 import java.util.*;
 
 /**

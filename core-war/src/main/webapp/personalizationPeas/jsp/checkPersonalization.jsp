@@ -33,8 +33,8 @@
 %>
 <%@ page import="org.silverpeas.web.personalization.control.PersonalizationSessionController"%>
 <%@ page import="org.owasp.encoder.Encode"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>

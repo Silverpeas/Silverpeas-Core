@@ -32,7 +32,7 @@ import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.security.token.TokenGenerationParameter;
 import org.silverpeas.core.security.token.TokenGenerator;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 /**
  * A generator of synchronizer tokens.

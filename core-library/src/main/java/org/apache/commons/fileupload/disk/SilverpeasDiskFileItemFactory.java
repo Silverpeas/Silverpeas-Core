@@ -23,7 +23,7 @@
  */
 package org.apache.commons.fileupload.disk;
 
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import java.io.File;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileCleaningTracker;
@@ -58,7 +58,7 @@ public class SilverpeasDiskFileItemFactory extends DiskFileItemFactory {
    * <ul>
    * <li>the size threshold is set at 2Mo: about this size, the file are temporarly stored in disk;</li>
    * <li>the temporary directory is the default one used in Silverpeas
-   * (@see org.silverpeas.util.FileRepositoryManager#getTemporaryPath());</li>
+   * (@see org.silverpeas.core.util.file.FileRepositoryManager#getTemporaryPath());</li>
    * <li>a temporary file cleaner is set: all stored file in disks are deleted once no more unused
    * (@see org.apache.commons.fileupload.disk.DiskFileItemFactory).<li>
    * </ul>

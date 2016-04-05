@@ -26,7 +26,7 @@ package org.silverpeas.core.questioncontainer.result.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 
 public class QuestionResult implements Serializable {

@@ -25,7 +25,7 @@ package org.silverpeas.core.subscription.util;
 
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.ArrayList;

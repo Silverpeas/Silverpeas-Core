@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.datereminder.provider;
 
-import org.silverpeas.util.MapUtil;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 

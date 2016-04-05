@@ -33,7 +33,7 @@ import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 import org.silverpeas.core.web.sharing.notification.FileSharingUserNotification;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

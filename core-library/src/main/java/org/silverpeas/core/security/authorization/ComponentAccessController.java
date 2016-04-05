@@ -29,7 +29,6 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.ComponentHelper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -50,34 +49,31 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Inject
   private OrganizationController controller;
 
-  @Inject
-  private ComponentHelper componentHelper;
-
   ComponentAccessController() {
     // Instance by IoC only.
   }
 
   @Override
   public boolean isRightOnTopicsEnabled(String componentId) {
-    return isThemeTracker(componentId) &&
+    return isTopicTrackerSupported(componentId) &&
         isComponentInstanceParameterEnabled(componentId, "rightsOnTopics");
   }
 
   @Override
   public boolean isCoWritingEnabled(String componentId) {
-    return isThemeTracker(componentId) &&
+    return isTopicTrackerSupported(componentId) &&
         isComponentInstanceParameterEnabled(componentId, "coWriting");
   }
 
   @Override
   public boolean isFileSharingEnabled(String componentId) {
-    return isThemeTracker(componentId) &&
+    return isTopicTrackerSupported(componentId) &&
         isComponentInstanceParameterEnabled(componentId, "useFileSharing");
   }
 
   @Override
   public boolean isPublicationSharingEnabled(String componentId) {
-    return isThemeTracker(componentId) &&
+    return isTopicTrackerSupported(componentId) &&
         isComponentInstanceParameterEnabled(componentId, "usePublicationSharing");
   }
 
@@ -87,8 +83,9 @@ public class ComponentAccessController extends AbstractAccessController<String>
         getComponentParameterValue(componentId, componentParameterName));
   }
 
-  private boolean isThemeTracker(String componentId) {
-    return componentHelper.isThemeTracker(componentId);
+  @Override
+  public boolean isTopicTrackerSupported(String componentId) {
+    return getOrganisationController().getComponentInst(componentId).isTopicTracker();
   }
 
   @Override

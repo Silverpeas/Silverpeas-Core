@@ -19,7 +19,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
 
 public interface OrganizationController extends java.io.Serializable {

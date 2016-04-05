@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.process.annotation;
 
-import org.silverpeas.util.annotation.Action;
+import org.silverpeas.core.util.annotation.Action;
 
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;

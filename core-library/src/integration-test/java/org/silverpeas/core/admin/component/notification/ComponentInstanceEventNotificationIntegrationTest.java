@@ -37,9 +37,9 @@ import org.silverpeas.core.util.BeanContainer;
 import org.silverpeas.core.util.CDIContainer;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.notification.system.StateTransition;
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NBean;
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.I18NBean;
+import org.silverpeas.core.i18n.Translation;
 
 import javax.inject.Inject;
 

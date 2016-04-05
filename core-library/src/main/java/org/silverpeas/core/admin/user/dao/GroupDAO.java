@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Singleton;
 

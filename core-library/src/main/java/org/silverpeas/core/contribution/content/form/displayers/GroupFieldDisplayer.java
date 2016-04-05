@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.sis.internal.jaxb.gmd.GO_URL;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.apache.commons.fileupload.FileItem;
 
@@ -40,10 +39,10 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.GroupField;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can

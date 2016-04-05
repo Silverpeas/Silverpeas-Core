@@ -26,7 +26,7 @@ package org.silverpeas.core.web.export;
 
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.html.HtmlCleaner;
+import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
 

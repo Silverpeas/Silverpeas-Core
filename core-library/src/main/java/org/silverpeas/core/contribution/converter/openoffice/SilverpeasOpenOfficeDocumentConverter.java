@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.util.MimeTypes.RTF_MIME_TYPE;
+import static org.silverpeas.core.util.MimeTypes.RTF_MIME_TYPE;
 
 /**
  * This Object is kind of patch of JODConverter tools in the aim to add some conversion options.

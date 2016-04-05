@@ -1,11 +1,11 @@
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;

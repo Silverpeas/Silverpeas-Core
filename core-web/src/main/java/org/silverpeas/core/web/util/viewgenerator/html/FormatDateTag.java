@@ -21,7 +21,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.DateUtil;
 import java.util.Date;
 import java.io.IOException;

@@ -33,7 +33,7 @@ import javax.inject.Singleton;
 
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 /**
  * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.

@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 

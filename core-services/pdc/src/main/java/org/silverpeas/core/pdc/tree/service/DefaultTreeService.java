@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.tree.service;
 
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
@@ -36,7 +36,7 @@ import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.index.search.model.AxisFilterNode;
 
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;

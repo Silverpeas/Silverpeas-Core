@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.silvertrace.SilverTrace;

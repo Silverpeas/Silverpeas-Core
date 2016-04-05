@@ -61,7 +61,6 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
-import org.silverpeas.util.LdapConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;

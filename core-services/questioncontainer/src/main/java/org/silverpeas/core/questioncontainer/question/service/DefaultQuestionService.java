@@ -33,7 +33,7 @@ import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
 import org.silverpeas.core.questioncontainer.question.model.QuestionRuntimeException;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;

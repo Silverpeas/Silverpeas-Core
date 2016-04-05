@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.base.aspect;
 
 import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.util.annotation.AnnotationUtil;
+import org.silverpeas.core.util.annotation.AnnotationUtil;
 
 import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;

@@ -26,7 +26,7 @@ package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisPK;

@@ -40,10 +40,10 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.File;
 import java.io.Serializable;

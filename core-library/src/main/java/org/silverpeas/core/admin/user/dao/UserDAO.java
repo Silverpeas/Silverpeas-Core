@@ -25,7 +25,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;

@@ -22,7 +22,7 @@ package org.silverpeas.core.admin.user.model;
 
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 
 import java.util.HashMap;
 import java.util.Map;

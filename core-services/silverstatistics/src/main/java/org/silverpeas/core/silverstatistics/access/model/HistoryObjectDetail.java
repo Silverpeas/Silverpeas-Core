@@ -30,7 +30,7 @@ package org.silverpeas.core.silverstatistics.access.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 /**
  * @author

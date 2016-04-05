@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.sharing.test.WarBuilder4Sharing;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

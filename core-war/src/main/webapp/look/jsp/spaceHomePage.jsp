@@ -27,7 +27,7 @@
 <%@page import="org.owasp.encoder.Encode"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>

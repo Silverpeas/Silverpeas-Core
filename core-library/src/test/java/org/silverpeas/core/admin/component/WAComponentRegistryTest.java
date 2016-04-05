@@ -38,7 +38,7 @@ import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.util.GlobalContext;
+import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;

@@ -36,9 +36,9 @@ import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 

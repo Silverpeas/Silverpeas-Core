@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.converter.openoffice;
 import com.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
 import com.artofsolving.jodconverter.DocumentFamily;
 import com.artofsolving.jodconverter.DocumentFormat;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.MimeTypes;
 
 /**
  * @author Yohann Chastagnier

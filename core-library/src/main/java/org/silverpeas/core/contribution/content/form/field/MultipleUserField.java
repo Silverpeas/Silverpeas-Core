@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;

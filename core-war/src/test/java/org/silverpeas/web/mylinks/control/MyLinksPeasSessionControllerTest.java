@@ -36,8 +36,8 @@ import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;

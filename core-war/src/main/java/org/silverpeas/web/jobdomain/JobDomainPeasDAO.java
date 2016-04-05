@@ -20,6 +20,15 @@
  */
 package org.silverpeas.web.jobdomain;
 
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.ServiceProvider;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,16 +36,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * Class declaration Get connections data from database
@@ -55,8 +54,7 @@ public class JobDomainPeasDAO {
       return DBUtil.openConnection();
     } catch (Exception e) {
       throw new JobDomainPeasRuntimeException("JobDomainPeasDAO.getConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "DbName="
-          + JNDINames.SILVERPEAS_DATASOURCE, e);
+          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "", e);
     }
   }
 

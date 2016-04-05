@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 
 public class SilverContent extends AbstractI18NBean<SilverContentI18N>
     implements SilverContentInterface {

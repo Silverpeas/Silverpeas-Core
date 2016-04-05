@@ -24,17 +24,6 @@
 
 package org.silverpeas.core.workflow.engine.model;
 
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
-import org.silverpeas.core.workflow.api.ProcessModelManager;
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.DataFolder;
-import org.silverpeas.core.workflow.api.model.Form;
-import org.silverpeas.core.workflow.api.model.Forms;
-import org.silverpeas.core.workflow.api.model.ProcessModel;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
@@ -42,20 +31,26 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.workflow.api.ProcessModelManager;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.model.DataFolder;
+import org.silverpeas.core.workflow.api.model.Form;
+import org.silverpeas.core.workflow.api.model.Forms;
+import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.xml.sax.InputSource;
 
 import javax.inject.Singleton;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -90,7 +85,6 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * The map (modelId -> cached process model).
    */
   private final Map<String, ProcessModel> models = new HashMap<>();
-  private String dbName = JNDINames.WORKFLOW_DATASOURCE;
 
   /**
    * Default constructor
@@ -500,34 +494,8 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   private Connection getConnection() throws WorkflowException {
     Connection con;
     try {
-      // con = DBUtil.makeConnection(dbName);
-      Context ctx = new InitialContext();
-      DataSource src = (DataSource) ctx.lookup(dbName);
-      con = src.getConnection();
+      con = DBUtil.openConnection();
       return con;
-    } catch (NamingException e) {
-      // the JNDI name have not been found in the current context
-      // The caller is not takes place in any context (web application nor ejb container)
-      // So lookup operation cannot find JNDI properties !
-      // This is absolutly normal according to the j2ee specification
-      // Unfortunately, only BES takes care about this spec. This exception doesn't appear with
-      // orion or BEA !
-      try {
-        // Get the initial Context
-        Context ctx = new InitialContext();
-        // Look up the datasource directly without JNDI access
-        DataSource dataSource = (DataSource) ctx.lookup(JNDINames.DIRECT_DATASOURCE);
-        // Create a connection object
-        con = dataSource.getConnection();
-        return con;
-      } catch (NamingException ne) {
-        throw new WorkflowException("ProcessModelManagerImpl.getConnection",
-            "root.EX_DATASOURCE_NOT_FOUND",
-            "Data source " + JNDINames.DIRECT_DATASOURCE + " not found", ne);
-      } catch (SQLException se) {
-        throw new WorkflowException("ProcessModelManagerImpl.getConnection",
-            "can't get connection for dataSource " + JNDINames.DIRECT_DATASOURCE, se);
-      }
     } catch (SQLException se) {
       throw new WorkflowException("ProcessModelManagerImpl.getConnection()",
           "root.EX_CONNECTION_OPEN_FAILED", se);

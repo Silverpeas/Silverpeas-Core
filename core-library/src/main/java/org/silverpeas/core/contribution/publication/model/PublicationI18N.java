@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.Translation;
 
 import java.io.Serializable;
 

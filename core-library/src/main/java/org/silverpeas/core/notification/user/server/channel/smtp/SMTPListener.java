@@ -28,12 +28,12 @@ import org.silverpeas.core.notification.user.server.channel.AbstractListener;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
@@ -50,7 +50,7 @@ import java.util.Map;
 
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.*;
 import static org.silverpeas.core.mail.MailAddress.eMail;
-import static org.silverpeas.util.MailUtil.isForceReplyToSenderField;
+import static org.silverpeas.core.util.MailUtil.isForceReplyToSenderField;
 
 
 @MessageDriven(activationConfig = {

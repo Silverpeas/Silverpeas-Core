@@ -28,7 +28,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCell"%>

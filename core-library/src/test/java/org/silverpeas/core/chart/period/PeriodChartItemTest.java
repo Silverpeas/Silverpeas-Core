@@ -31,7 +31,7 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.util.JSONCodec.encodeObject;
+import static org.silverpeas.core.util.JSONCodec.encodeObject;
 
 /**
  * @author Yohann Chastagnier

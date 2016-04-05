@@ -29,8 +29,8 @@ import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.Classification;
 import org.silverpeas.core.calendar.model.JournalHeader;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.util.Charsets;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.JSONCodec;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;

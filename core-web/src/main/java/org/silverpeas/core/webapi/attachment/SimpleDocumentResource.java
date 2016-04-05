@@ -38,10 +38,10 @@ import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 @Service

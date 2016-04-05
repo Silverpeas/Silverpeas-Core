@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chart.period;
 
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 
 import java.util.function.Function;
 

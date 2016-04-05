@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ import java.util.Date;
 
 import static org.silverpeas.core.importexport.control.RepositoriesTypeManager.handleFileToAttach;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.util.i18n.I18NHelper.checkLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * Servlet used whith the drag and drop applet to import non-versioned documents.

@@ -25,11 +25,11 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -67,7 +67,7 @@ public class AbstractSimpleDocumentResource extends RESTWebService {
             getBundle().getString("attachment.dialog.maximumFileSize") + " (" +
             UnitUtil.formatMemSize(maximumFileSize) + ")";
         errorMessage = MessageFormat.format(errorMessage, fileToCheck.getName());
-        NotifierUtil.addError(errorMessage);
+        MessageNotifier.addError(errorMessage);
         throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
             .entity(errorMessage).build());
       }

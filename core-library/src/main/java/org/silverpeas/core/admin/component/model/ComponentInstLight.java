@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
-import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.Date;

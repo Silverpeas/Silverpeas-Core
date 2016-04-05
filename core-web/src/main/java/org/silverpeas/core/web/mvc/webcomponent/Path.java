@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.util.MapUtil;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;

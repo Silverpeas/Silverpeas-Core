@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.admin.component.ComponentHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;

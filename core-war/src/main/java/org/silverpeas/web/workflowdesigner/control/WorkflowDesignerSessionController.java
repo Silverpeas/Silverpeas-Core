@@ -23,6 +23,8 @@
 */
 package org.silverpeas.web.workflowdesigner.control;
 
+import org.silverpeas.core.admin.component.model.ComponentBehavior;
+import org.silverpeas.core.admin.component.model.ComponentBehaviors;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
@@ -40,12 +42,12 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.File;
 import java.util.*;
@@ -2821,7 +2823,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     WAComponent waComponent = new WAComponent();
+    ComponentBehaviors behaviors = new ComponentBehaviors();
+    behaviors.getBehavior().add(ComponentBehavior.WORKFLOW);
     waComponent.setName(processModel.getName());
+    waComponent.setBehaviors(behaviors);
     Iterator<ContextualDesignation> labels =
         processModel.getLabels().iterateContextualDesignation();
     while (labels.hasNext()) {

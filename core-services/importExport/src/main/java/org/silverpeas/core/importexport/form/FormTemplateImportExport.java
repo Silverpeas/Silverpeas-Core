@@ -44,10 +44,10 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 public class FormTemplateImportExport {
 

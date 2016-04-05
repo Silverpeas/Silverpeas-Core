@@ -35,7 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
@@ -44,7 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button "%>
 <%@ page import="java.io.File" %>
-<%@ page import="org.silverpeas.core.util.FileUploadUtil" %>
+<%@ page import="org.silverpeas.core.util.file.FileUploadUtil" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

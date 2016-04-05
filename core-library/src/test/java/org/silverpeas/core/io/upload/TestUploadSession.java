@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
-import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
 /**
  * @author Yohann Chastagnier

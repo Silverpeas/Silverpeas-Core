@@ -31,7 +31,7 @@ import org.silverpeas.core.process.io.file.TestFileHandler;
 import org.silverpeas.core.process.io.file.TestHandledFile;
 import org.silverpeas.core.io.upload.TestUploadSession;
 import org.silverpeas.core.io.upload.TestUploadSessionFile;
-import org.silverpeas.util.TestPdfUtil;
+import org.silverpeas.core.util.TestPdfUtil;
 import org.silverpeas.core.io.temp.TestLastModifiedDateFileTask;
 import org.silverpeas.core.io.temp.TestTemporaryWorkspaceTranslation;
 

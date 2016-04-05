@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.Set;
 

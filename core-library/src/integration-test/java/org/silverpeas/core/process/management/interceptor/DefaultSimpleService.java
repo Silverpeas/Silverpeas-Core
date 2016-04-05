@@ -26,11 +26,11 @@ package org.silverpeas.core.process.management.interceptor;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.annotation.Action;
-import org.silverpeas.util.annotation.SourceObject;
-import org.silverpeas.util.annotation.TargetPK;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.annotation.Action;
+import org.silverpeas.core.util.annotation.SourceObject;
+import org.silverpeas.core.util.annotation.TargetPK;
 
 import javax.inject.Singleton;
 

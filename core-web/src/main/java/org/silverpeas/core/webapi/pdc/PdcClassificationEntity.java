@@ -29,8 +29,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.exception.DecodingException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;

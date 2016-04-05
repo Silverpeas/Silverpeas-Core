@@ -27,9 +27,9 @@ package org.silverpeas.web.jobstartpage;
 import java.io.File;
 import java.io.Serializable;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 public class SpaceLookItem implements Serializable {
 

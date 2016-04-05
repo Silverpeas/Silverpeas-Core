@@ -24,9 +24,9 @@
 package org.silverpeas.core.mail.extractor;
 
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.exception.SilverpeasException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,7 +51,7 @@ import org.apache.poi.hsmf.datatypes.AttachmentChunks;
 import org.apache.poi.hsmf.datatypes.Chunks;
 import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 

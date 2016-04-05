@@ -27,7 +27,7 @@ package org.silverpeas.core.contribution.content.form.dummy;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,7 +2,7 @@ package org.silverpeas.core.contribution.attachment.process;
 
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
-import org.silverpeas.util.ActionType;
+import org.silverpeas.core.ActionType;
 import org.silverpeas.core.WAPrimaryKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

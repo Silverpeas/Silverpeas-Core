@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvide
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.core.viewer.util.DocumentInfo;
 import org.silverpeas.core.viewer.util.JsonPdfUtil;

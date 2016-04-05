@@ -39,7 +39,7 @@ import org.silverpeas.core.contribution.converter.DocumentFormatConversion;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversionException;
 import org.silverpeas.core.contribution.converter.DocumentFormatException;
 import org.silverpeas.core.contribution.converter.option.FilterOption;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 

@@ -30,7 +30,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
 import java.io.IOException;

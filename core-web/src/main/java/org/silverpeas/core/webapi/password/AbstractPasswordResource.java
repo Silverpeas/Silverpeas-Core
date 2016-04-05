@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;

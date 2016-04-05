@@ -38,7 +38,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.JoinStatement;
+import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.logging.SilverLogger;
 

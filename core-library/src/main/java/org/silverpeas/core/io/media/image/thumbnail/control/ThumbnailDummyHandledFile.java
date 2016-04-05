@@ -24,7 +24,7 @@
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.process.io.file.AbstractDummyHandledFile;

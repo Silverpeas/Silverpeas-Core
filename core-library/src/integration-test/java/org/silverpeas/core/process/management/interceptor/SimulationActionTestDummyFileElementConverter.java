@@ -26,7 +26,7 @@ package org.silverpeas.core.process.management.interceptor;
 
 import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
-import org.silverpeas.util.ActionType;
+import org.silverpeas.core.ActionType;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.ArrayList;

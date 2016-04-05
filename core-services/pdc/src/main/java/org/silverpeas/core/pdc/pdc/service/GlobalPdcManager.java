@@ -50,11 +50,11 @@ import org.silverpeas.core.pdc.tree.service.TreeService;
 import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.JoinStatement;
+import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;

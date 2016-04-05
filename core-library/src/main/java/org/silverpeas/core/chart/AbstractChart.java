@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.chart;
 
-import org.silverpeas.util.JSONCodec;
-import org.silverpeas.util.JSONCodec.JSONObject;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

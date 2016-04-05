@@ -1,6 +1,6 @@
 package org.silverpeas.core.io.file;
 
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.apache.commons.io.FileUtils;
 

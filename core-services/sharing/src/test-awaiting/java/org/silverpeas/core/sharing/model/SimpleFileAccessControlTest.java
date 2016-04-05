@@ -71,7 +71,6 @@ import org.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;
@@ -120,8 +119,8 @@ public class SimpleFileAccessControlTest {
 
   @Before
   public void generalSetUp() throws Exception {
-    InitialContext ic = new InitialContext();
-    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);
+    /*InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);*/
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);

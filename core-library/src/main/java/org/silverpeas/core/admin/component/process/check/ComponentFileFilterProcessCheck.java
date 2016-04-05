@@ -35,9 +35,9 @@ import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -98,7 +98,7 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
               !componentFileFilter.isMimeTypeAuthorized(dummyHandledFile.getMimeType())) {
             ComponentFileFilterException exception =
                 new ComponentFileFilterException(componentFileFilter, dummyHandledFile.getName());
-            NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+            MessageNotifier.addSevere(SilverpeasTransverseErrorUtil
                 .performExceptionMessage(exception, MessageManager.getLanguage()));
             throw exception;
           }

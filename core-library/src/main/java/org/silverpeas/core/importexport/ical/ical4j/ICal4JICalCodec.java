@@ -27,7 +27,7 @@ import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.html.HtmlCleaner;
+import org.silverpeas.core.util.html.HtmlCleaner;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;

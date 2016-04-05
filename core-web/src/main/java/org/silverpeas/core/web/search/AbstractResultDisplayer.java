@@ -29,8 +29,8 @@ import org.silverpeas.core.personalization.service.PersonalizationServiceProvide
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 /**

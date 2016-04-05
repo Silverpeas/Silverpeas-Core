@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail;
 
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.mail.MessagingException;

@@ -36,7 +36,7 @@ import org.silverpeas.core.security.authentication.AuthenticationServiceProvider
 import org.silverpeas.core.security.authentication.UserSessionReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;

@@ -38,9 +38,9 @@ import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.util.FileUploadUtil;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;

@@ -23,7 +23,7 @@ package org.silverpeas.core.silverstatistics.access.service;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.Collection;

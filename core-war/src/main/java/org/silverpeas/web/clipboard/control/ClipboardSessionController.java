@@ -38,7 +38,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
 import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;

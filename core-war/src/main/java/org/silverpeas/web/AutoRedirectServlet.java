@@ -42,7 +42,7 @@ import java.io.PrintWriter;
 
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
-import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
 
 /**

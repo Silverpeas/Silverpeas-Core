@@ -1,6 +1,6 @@
 package org.silverpeas.core.contribution.rating.model;
 
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 import java.io.Serializable;
 

@@ -36,11 +36,11 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

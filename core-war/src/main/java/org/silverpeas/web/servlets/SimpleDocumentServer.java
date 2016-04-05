@@ -37,13 +37,13 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.ClientBrowserUtil;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
 
 /**
  * Servlet to access a simple document directly.

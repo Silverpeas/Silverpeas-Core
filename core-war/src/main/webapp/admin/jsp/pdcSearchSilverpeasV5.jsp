@@ -29,14 +29,14 @@
 <%@page import="java.io.IOException"%>
 <%@page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
 <%@page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.EncodeHelper"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.QueryParameters"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchContext"%>
 <%@page import="java.util.List"%>
-<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.web.pdc.control.PdcSearchSessionController"%>

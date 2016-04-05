@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;

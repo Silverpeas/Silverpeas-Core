@@ -1,13 +1,10 @@
 package org.silverpeas.core.importexport.ical.ical4j;
 
-import org.silverpeas.util.html.HtmlCleaner;
 import net.fortuna.ical4j.model.Escapable;
-import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyFactoryImpl;
 import net.fortuna.ical4j.model.ValidationException;
-import net.fortuna.ical4j.util.ParameterValidator;
 
 public class Html extends Property implements Escapable {
 

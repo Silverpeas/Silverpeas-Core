@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.process.annotation;
 
-import org.silverpeas.util.annotation.AnnotationUtil;
+import org.silverpeas.core.util.annotation.AnnotationUtil;
 
 import java.util.HashMap;
 import java.util.Map;

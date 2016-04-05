@@ -33,7 +33,7 @@
 
 <%@ page import="org.silverpeas.core.importexport.report.ExportReport" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 
 <%
   ExportReport report = (ExportReport) request.getAttribute("ExportReport");

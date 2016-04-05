@@ -104,7 +104,6 @@ public interface ProcessModel {
   /**
    * Get description in specific language for the given role
    *
-   * @param lang description's language
    * @param role role for which the description is
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in

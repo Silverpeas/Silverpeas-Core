@@ -23,22 +23,20 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,16 +81,6 @@ public class TestPublicationAccessController {
         reflectionRule.mockField(testInstance, NodeAccessControl.class, "nodeAccessController");
     publicationService =
         reflectionRule.mockField(testInstance, PublicationService.class, "publicationService");
-    ComponentHelper componentHelper =
-        reflectionRule.spyField(testInstance, ComponentHelper.class, "componentHelper");
-
-    when(componentHelper.extractComponent(anyString())).thenAnswer(invocation -> {
-      String instanceId = (String) invocation.getArguments()[0];
-      String componentName = instanceId.replaceAll("[0-9]", "");
-      WAComponent component = new WAComponent();
-      component.setName(componentName);
-      return component;
-    });
   }
 
   @Test
@@ -1194,6 +1182,12 @@ public class TestPublicationAccessController {
 
     public void clear() {
       Mockito.reset(componentAccessController, nodeAccessController, publicationService);
+      when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(
+          invocation -> {
+            String instanceId = (String) invocation.getArguments()[0];
+            return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
+                instanceId.startsWith("toolbox");
+          });
       isGED = false;
       isCoWriting = false;
       isPublicationSharing = false;
@@ -1287,25 +1281,31 @@ public class TestPublicationAccessController {
 
     @SuppressWarnings("unchecked")
     public void setup() {
-      Mockito.when(componentAccessController
+      when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(
+          invocation -> {
+            String instanceId = (String) invocation.getArguments()[0];
+            return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
+                instanceId.startsWith("toolbox");
+          });
+      when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(componentUserRoles));
-      Mockito.when(componentAccessController.isUserAuthorized(any(EnumSet.class)))
+      when(componentAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(new Returns(!componentUserRoles.isEmpty()));
-      Mockito.when(componentAccessController.isRightOnTopicsEnabled(anyString()))
+      when(componentAccessController.isRightOnTopicsEnabled(anyString()))
           .then(new Returns(isRightsOnDirectories));
-      Mockito.when(componentAccessController.isCoWritingEnabled(anyString()))
+      when(componentAccessController.isCoWritingEnabled(anyString()))
           .then(new Returns(isCoWriting));
-      Mockito.when(componentAccessController.isPublicationSharingEnabled(anyString()))
+      when(componentAccessController.isPublicationSharingEnabled(anyString()))
           .then(new Returns(isPublicationSharing));
-      Mockito.when(nodeAccessController
+      when(nodeAccessController
           .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class))).then(
           new Returns(isRightsOnDirectories ?
               (nodeNotInheritedUserRoles == null ? componentUserRoles : nodeNotInheritedUserRoles) :
               (aliasUserRoles == null ? componentUserRoles : aliasUserRoles)));
-      Mockito.when(nodeAccessController.isUserAuthorized(any(EnumSet.class)))
+      when(nodeAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(invocation -> CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]));
-      Mockito.when(publicationService.getDetail(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getDetail(any(PublicationPK.class))).then(invocation -> {
         if (isPublicationNotExisting) {
           return null;
         }
@@ -1315,14 +1315,14 @@ public class TestPublicationAccessController {
         publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
         return publi;
       });
-      Mockito.when(publicationService.getAllFatherPK(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getAllFatherPK(any(PublicationPK.class))).then(invocation -> {
         Collection<NodePK> nodes = new ArrayList<>();
         if (!testContext.isPublicationOnRootDirectory) {
           nodes.add(new NodePK("nodeId"));
         }
         return nodes;
       });
-      Mockito.when(publicationService.getAlias(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getAlias(any(PublicationPK.class))).then(invocation -> {
         Collection<Alias> alias = new ArrayList<>();
         if (testContext.aliasUserRoles != null) {
           alias.add(

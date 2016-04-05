@@ -33,10 +33,10 @@ import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

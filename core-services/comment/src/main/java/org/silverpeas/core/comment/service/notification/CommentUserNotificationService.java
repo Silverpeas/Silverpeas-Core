@@ -33,7 +33,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.logging.SilverLogger;

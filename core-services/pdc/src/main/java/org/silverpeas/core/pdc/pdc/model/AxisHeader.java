@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.WAPrimaryKey;
 
 /**

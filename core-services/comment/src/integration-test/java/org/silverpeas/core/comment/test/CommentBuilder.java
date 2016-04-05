@@ -26,7 +26,7 @@ package org.silverpeas.core.comment.test;
 
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 import java.util.Date;
 

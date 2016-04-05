@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.space;
 
-import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.core.admin.persistence.SpaceI18NRow;
 
 public class SpaceI18N extends Translation {

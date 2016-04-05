@@ -39,7 +39,7 @@ import java.io.Serializable;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation
     .startWithTranslationDescriptorPrefix;
 

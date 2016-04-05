@@ -10,7 +10,7 @@
 <%@ page import="org.silverpeas.core.calendar.model.Priority"%>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil"%>
 <%@ page import="org.silverpeas.core.util.DateUtil"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>

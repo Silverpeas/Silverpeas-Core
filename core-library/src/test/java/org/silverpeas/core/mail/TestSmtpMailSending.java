@@ -34,7 +34,7 @@ import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderProvider;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.mail.Message;

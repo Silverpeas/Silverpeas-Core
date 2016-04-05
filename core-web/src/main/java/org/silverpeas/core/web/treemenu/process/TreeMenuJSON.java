@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.treemenu.process;
 
 import org.silverpeas.core.web.treemenu.model.MenuItem;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 
 import java.util.List;
 

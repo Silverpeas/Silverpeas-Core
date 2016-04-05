@@ -108,7 +108,7 @@
   <function>
     <description>Function that display the estimated download time.</description>
     <name>estimateDownload</name>
-    <function-class>org.silverpeas.util.FileRepositoryManager</function-class>
+    <function-class>org.silverpeas.core.util.file.FileRepositoryManager</function-class>
     <function-signature>
       java.lang.String getFileDownloadTime( long )
     </function-signature>
@@ -124,7 +124,7 @@
   <function>
     <description>Function that display the file mime type.</description>
     <name>mimeType</name>
-    <function-class>org.silverpeas.util.FileUtil</function-class>
+    <function-class>org.silverpeas.core.util.file.FileUtil</function-class>
     <function-signature>
       java.lang.String getMimeType( java.lang.String )
     </function-signature>
@@ -179,31 +179,31 @@
   <function>
     <description>Function to encode a java String into a Javascript String.</description>
     <name>escapeJs</name>
-    <function-class>org.silverpeas.util.EncodeHelper</function-class>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
     <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
   </function>
   <function>
     <description>Function to encode a java String into a HTML String.</description>
     <name>escapeHtml</name>
-    <function-class>org.silverpeas.util.EncodeHelper</function-class>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
     <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
   </function>
   <function>
     <description>Function to encode a java whitespace String into a HTML whitespace String.</description>
     <name>escapeHtmlWhitespaces</name>
-    <function-class>org.silverpeas.util.EncodeHelper</function-class>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
     <function-signature>java.lang.String convertWhiteSpacesForHTMLDisplay( java.lang.String ) </function-signature>
   </function>
   <function>
     <description>Function to tell if Silverpeas is in mode i18N.</description>
     <name>isI18n</name>
-    <function-class>org.silverpeas.util.i18n.I18NHelper</function-class>
+    <function-class>org.silverpeas.core.i18n.I18NHelper</function-class>
     <function-signature>boolean isI18nContentEnabled()</function-signature>
   </function>
   <function>
     <description>Function to tell if Silverpeas is in mode i18N.</description>
     <name>i18nLanguageLabel</name>
-    <function-class>org.silverpeas.util.i18n.I18NHelper</function-class>
+    <function-class>org.silverpeas.core.i18n.I18NHelper</function-class>
     <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
   </function>
   <function>

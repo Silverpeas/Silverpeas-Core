@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.viewer.model;
 
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ImageUtil;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.ImageUtil;
 
 import java.io.File;
 

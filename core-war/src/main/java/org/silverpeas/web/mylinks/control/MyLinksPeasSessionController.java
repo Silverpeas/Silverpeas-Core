@@ -31,7 +31,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 
@@ -134,7 +134,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
       LinkDetail linkDetail = newLink.toLinkDetail();
       linkDetail.setUserId(getUserId());
       getMyLinksBm().createLink(linkDetail);
-      NotifierUtil.addSuccess(getString("myLinks.messageConfirm"));
+      MessageNotifier.addSuccess(getString("myLinks.messageConfirm"));
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.createLink",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
@@ -148,7 +148,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
       LinkDetail linkDetail = updatedLink.toLinkDetail();
       linkDetail.setUserId(getUserId());
       getMyLinksBm().updateLink(linkDetail);
-      NotifierUtil.addSuccess(getString("myLinks.updateLink.messageConfirm"));
+      MessageNotifier.addSuccess(getString("myLinks.updateLink.messageConfirm"));
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.updateLink",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
@@ -162,7 +162,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
           verifyCurrentUserIsOwner(linkId);
         }
         getMyLinksBm().deleteLinks(links);
-        NotifierUtil.addSuccess(getString("myLinks.deleteLinks.messageConfirm"), links.length);
+        MessageNotifier.addSuccess(getString("myLinks.deleteLinks.messageConfirm"), links.length);
       }
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.createLink",

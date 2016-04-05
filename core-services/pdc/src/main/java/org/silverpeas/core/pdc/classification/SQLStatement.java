@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.util.JoinStatement;
+import org.silverpeas.core.util.JoinStatement;
 
 import java.util.List;
 

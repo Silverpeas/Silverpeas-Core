@@ -31,8 +31,8 @@ import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.i18n.I18NLanguage;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NLanguage;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;

@@ -24,14 +24,13 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -60,9 +59,6 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
   @Inject
   private PublicationService publicationService;
-
-  @Inject
-  private ComponentHelper componentHelper;
 
   PublicationAccessController() {
     // Instance by IoC only.
@@ -138,7 +134,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
       componentAccessAuthorized = false;
     }
 
-    if (componentHelper.isThemeTracker(publicationPK.getInstanceId())) {
+    if (componentAccessController.isTopicTrackerSupported(publicationPK.getInstanceId())) {
       if (StringUtil.isInteger(publicationPK.getId())) {
         final PublicationDetail pubDetail;
         try {

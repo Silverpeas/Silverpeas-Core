@@ -40,6 +40,8 @@
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
+<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />

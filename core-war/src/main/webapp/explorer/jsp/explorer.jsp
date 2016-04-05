@@ -30,7 +30,7 @@
 
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>

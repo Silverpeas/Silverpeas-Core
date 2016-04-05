@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.workflowdesigner.taglib;
 
-import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -33,7 +33,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.silverpeas.core.workflow.api.model.RelatedUser;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;

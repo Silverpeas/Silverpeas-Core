@@ -28,7 +28,7 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 
 import java.util.HashMap;
 import java.util.Map;

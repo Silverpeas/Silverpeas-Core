@@ -29,8 +29,8 @@
 <%@page import="org.silverpeas.core.socialnetwork.model.SocialInformationType"%>
 <%@page import="org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes"%>
 <%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page import="java.util.List"%>
 
 <%

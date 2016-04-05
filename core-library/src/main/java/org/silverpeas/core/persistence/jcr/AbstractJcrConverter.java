@@ -54,9 +54,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
 
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.UtilException;

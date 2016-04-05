@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 
-import static org.silverpeas.util.FileServerUtils.*;
+import static org.silverpeas.core.util.file.FileServerUtils.*;
 
 public class FileServer extends AbstractFileSender {
 

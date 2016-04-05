@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.BufferedReader;

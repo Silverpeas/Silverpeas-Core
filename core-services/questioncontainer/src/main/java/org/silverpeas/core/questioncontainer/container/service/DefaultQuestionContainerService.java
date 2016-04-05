@@ -55,8 +55,8 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;

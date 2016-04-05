@@ -26,7 +26,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 

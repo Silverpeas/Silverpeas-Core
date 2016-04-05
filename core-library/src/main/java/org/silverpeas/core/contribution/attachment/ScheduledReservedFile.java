@@ -34,7 +34,7 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.util.Link;
+import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;

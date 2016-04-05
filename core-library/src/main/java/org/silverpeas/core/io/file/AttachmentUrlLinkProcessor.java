@@ -28,16 +28,16 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexp;
-import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexps;
-import static org.silverpeas.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexps;
+import static org.silverpeas.core.util.StringDataExtractor.from;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**

@@ -57,7 +57,7 @@ public class HtmlExportGeneratorTest {
 //    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
 //        SilverpeasRuntimeException.class, UtilException.class);
 //    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
-//        ExtractionList.class, ExtractionComplexList.class, ArgumentAssertion.class);
+//        ArgumentAssertion.class);
 //    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
 //        TransactionRuntimeException.class);
 //    war.addClasses(ConfigurationClassLoader.class, ConfigurationControl.class, FileUtil.class,

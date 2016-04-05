@@ -59,4 +59,11 @@ public interface ComponentAccessControl extends AccessController<String> {
    * @return true if file sharing is enabled, false otherwise.
    */
   boolean isFileSharingEnabled(String instanceId);
+
+  /**
+   *  Indicates if the specified component instance satisfy the topic tracking behavior.
+   * @param instanceId the identifier of the component instance.
+   * @return true if the topic tracking is supported, false otherwise.
+   */
+  boolean isTopicTrackerSupported(String instanceId);
 }

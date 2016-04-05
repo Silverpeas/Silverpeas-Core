@@ -32,8 +32,8 @@ import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.viewer.util.SwfUtil;
 
 import javax.inject.Inject;
@@ -43,8 +43,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.silverpeas.util.ImageUtil.*;
-import static org.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
+import static org.silverpeas.core.util.ImageUtil.*;
+import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 
 /**

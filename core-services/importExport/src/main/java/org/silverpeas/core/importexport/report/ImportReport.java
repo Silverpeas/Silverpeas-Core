@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.importexport.report;
 
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

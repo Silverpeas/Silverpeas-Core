@@ -25,7 +25,7 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

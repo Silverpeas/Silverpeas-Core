@@ -44,7 +44,7 @@ import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVe
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

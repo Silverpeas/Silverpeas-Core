@@ -39,8 +39,8 @@ import org.silverpeas.core.admin.domain.exception.DomainAuthenticationProperties
 import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 

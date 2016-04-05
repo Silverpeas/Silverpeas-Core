@@ -34,7 +34,7 @@ import javax.persistence.*;
 import java.lang.reflect.ParameterizedType;
 import java.util.Date;
 
-import static org.silverpeas.util.annotation.AnnotationUtil.searchClassThatDeclaresAnnotation;
+import static org.silverpeas.core.util.annotation.AnnotationUtil.searchClassThatDeclaresAnnotation;
 
 /**
  * This abstract class must be extended by all Silverpeas JPA entity definitions.

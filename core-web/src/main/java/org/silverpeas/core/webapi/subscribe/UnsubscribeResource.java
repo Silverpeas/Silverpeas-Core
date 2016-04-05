@@ -38,7 +38,7 @@ import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -95,7 +95,7 @@ public class UnsubscribeResource extends RESTWebService {
           new ComponentSubscription(subscriber, componentId, getUserDetail().getId());
       SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      NotifierUtil.addSuccess(MessageFormat
+      MessageNotifier.addSuccess(MessageFormat
           .format(getBundle().getString("GML.unsubscribe.success"),
               component.getLabel(getUserDetail().getUserPreferences().getLanguage())));
       return Response.ok(Collections.singletonList("OK")).build();

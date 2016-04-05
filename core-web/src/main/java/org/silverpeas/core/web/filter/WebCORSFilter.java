@@ -25,7 +25,7 @@ package org.silverpeas.core.web.filter;
 
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.util.HttpMethod;
+import org.silverpeas.core.web.util.HttpMethod;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.util.ForeignPK;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;

@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.util.LdapConfiguration;
+import org.silverpeas.core.admin.domain.driver.ldapdriver.LdapConfiguration;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,7 +36,7 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationHostE
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.Charsets;
 
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -52,7 +52,7 @@ import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchResults;
 
-import static org.silverpeas.util.Charsets.UTF_8;
+import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * This class performs the LDAP authentication

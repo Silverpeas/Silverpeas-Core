@@ -39,7 +39,7 @@ import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManag
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.security.token.Token;
-import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;

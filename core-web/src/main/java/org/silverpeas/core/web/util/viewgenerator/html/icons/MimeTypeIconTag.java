@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.icons;
 
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 

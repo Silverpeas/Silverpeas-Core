@@ -25,7 +25,7 @@ package org.silverpeas.core.process.io.file;
 
 import java.io.File;
 
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 
 /**

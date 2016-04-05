@@ -26,7 +26,6 @@ import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,8 +68,8 @@ public class XmlFormTest {
     when(connection.prepareStatement(anyString())).thenReturn(pstmt);
     when(pstmt.executeQuery()).thenReturn(rs);
     when(rs.next()).thenReturn(Boolean.FALSE);
-    InitialContext context = new InitialContext();
-    context.bind(JNDINames.FORMTEMPLATE_DATASOURCE, ds);
+    /*InitialContext context = new InitialContext();
+    context.bind(JNDINames.FORMTEMPLATE_DATASOURCE, ds);*/
     PublicationTemplateManager.templateDir = TARGET_DIR + SEPARATOR + "test-classes"
         + SEPARATOR + "templateRepository";
     template = PublicationTemplateManager.getInstance().loadPublicationTemplate("MyForm.xml");

@@ -1,7 +1,7 @@
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.Charsets;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;

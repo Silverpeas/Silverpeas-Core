@@ -37,11 +37,11 @@ import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
           // Throwing the data storage exception
           DataStorageQuotaException exception =
               new DataStorageQuotaException(quotaException.getQuota(), space, fromComponent);
-          NotifierUtil.addSevere(SilverpeasTransverseErrorUtil
+          MessageNotifier.addSevere(SilverpeasTransverseErrorUtil
               .performExceptionMessage(exception, MessageManager.getLanguage()));
           throw exception;
         }

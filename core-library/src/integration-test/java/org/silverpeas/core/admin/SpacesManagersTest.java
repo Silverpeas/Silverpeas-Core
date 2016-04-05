@@ -33,9 +33,9 @@ import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
 

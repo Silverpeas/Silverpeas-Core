@@ -42,8 +42,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.ListSlice;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -60,7 +60,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
-import static org.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+import static org.silverpeas.core.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement,

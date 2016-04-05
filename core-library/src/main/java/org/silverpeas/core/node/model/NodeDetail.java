@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.Collection;

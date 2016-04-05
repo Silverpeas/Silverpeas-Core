@@ -23,8 +23,8 @@
  ---*/
 package org.silverpeas.core.web.panel;
 
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Pair;
 
 public class GenericPanel {
 

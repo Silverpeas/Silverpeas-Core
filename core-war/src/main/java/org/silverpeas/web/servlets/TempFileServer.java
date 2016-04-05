@@ -22,8 +22,8 @@ package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 

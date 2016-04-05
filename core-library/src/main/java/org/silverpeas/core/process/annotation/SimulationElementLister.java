@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.process.annotation;
 
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.MapUtil;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.LinkedList;

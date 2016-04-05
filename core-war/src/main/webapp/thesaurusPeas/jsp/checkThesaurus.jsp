@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.web.thesaurus.control.ThesaurusSessionController"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.AxisHeader"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Value"%>
-<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>

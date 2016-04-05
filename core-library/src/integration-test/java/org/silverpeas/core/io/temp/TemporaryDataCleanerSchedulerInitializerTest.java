@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
-import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.inject.Inject;
 import java.io.File;

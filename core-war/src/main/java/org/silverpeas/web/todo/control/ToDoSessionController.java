@@ -36,7 +36,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.service.SilverpeasCalendar;
 import org.silverpeas.core.calendar.model.Attendee;
 import org.silverpeas.core.calendar.model.ToDoHeader;
-import org.silverpeas.util.Pair;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;

@@ -47,8 +47,8 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepositoryIntegrationTest;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MimeTypes;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.MimeTypes;
 
 import java.io.File;
 import java.io.IOException;

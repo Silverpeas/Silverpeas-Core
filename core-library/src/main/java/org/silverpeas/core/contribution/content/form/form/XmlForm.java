@@ -24,13 +24,12 @@
 package org.silverpeas.core.contribution.content.form.form;
 
 import org.silverpeas.core.contribution.content.form.*;
-import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.JdbcRefField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;

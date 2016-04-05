@@ -21,7 +21,7 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.index.search.model.SearchCompletion;
-import org.silverpeas.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
 
-import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 
 /**
  *
