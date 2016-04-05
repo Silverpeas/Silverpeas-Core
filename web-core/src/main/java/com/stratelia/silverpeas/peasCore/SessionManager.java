@@ -51,6 +51,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.silverpeas.servlets.LogoutServlet;
 
 import javax.annotation.PostConstruct;
@@ -544,7 +546,13 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     HTTPSessionInfo si = null;
     // If X-Forwarded-For header exists, we use the IP address contained in it as the client IP address
     // This is the case when Silverpeas is behing a reverse-proxy
-    String anIP = request.getHeader("X-Forwarded-For");
+    // Convert the header to InetAddress to avoid user injection
+    String anIP;
+    try {
+      anIP = InetAddress.getByName(request.getHeader("X-Forwarded-For")).getHostAddress();
+    } catch (UnknownHostException ex) {
+      anIP = null;
+    }
     if (anIP == null) {
       // If not, we use the IP address given in the request
       anIP = request.getRemoteHost();
