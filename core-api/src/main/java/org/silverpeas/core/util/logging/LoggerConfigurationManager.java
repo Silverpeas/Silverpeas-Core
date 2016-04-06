@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.annotation.Module;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -132,33 +133,46 @@ public class LoggerConfigurationManager {
    * the specified namespace.
    */
   public LoggerConfiguration getLoggerConfiguration(String moduleOrNamespace) {
-    String namespace = moduleOrNamespace;
-    String module = moduleOrNamespace;
-    Level level = null;
     Properties properties = getLoggerConfigurationsByModule().get(moduleOrNamespace);
     if (properties == null) {
       properties = getLoggerConfigurationsByLogger().get(moduleOrNamespace);
     }
-    if (properties != null) {
-      namespace = properties.getProperty(LOGGER_NAMESPACE);
-      module = properties.getProperty(SILVERPEAS_MODULE);
-      if (namespace == null || namespace.trim().isEmpty()) {
-        namespace = MessageFormat.format(DEFAULT_NAMESPACE, module);
-      }
-      String strLevel = properties.getProperty(LOGGER_LEVEL);
-      if (strLevel != null && !strLevel.trim().isEmpty()) {
-        try {
-          level = Level.valueOf(strLevel);
-        } catch (Throwable t) {
-          java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
-              .log(java.util.logging.Level.SEVERE, t.getMessage(), t);
+    return loadLoggerConfiguration(properties, moduleOrNamespace);
+  }
+
+  /**
+   * Gets the configuration parameters for the logger mapped with the Silverpeas module that
+   * includes the specified Java package.
+   * </p>
+   * By convention, each Silverpeas module matches a given package node by the name and all
+   * the children of this package node are then included by the module. So, to find the logger
+   * mapped to a module, we have to seek the module whose the name either matches one of the node
+   * of the specified package or is provided by the {@link org.silverpeas.core.annotation.Module}}
+   * annotation of one of the node of the specified package.
+   * @param aPackage a Java package/
+   * @return the configuration of the logger defined for the Silverpeas module matching the
+   * specified package.
+   */
+  public LoggerConfiguration getLoggerConfiguration(Package aPackage) {
+    String path = aPackage.getName();
+    String module = path;
+    for (int i = path.lastIndexOf("."); i > 0 && !module.equals("silverpeas");
+         i = path.lastIndexOf(".")) {
+      Package p = Package.getPackage(path);
+      Module m =
+          (p == null ? null : p.getAnnotation(Module.class)); // package-info.java can be missed
+      if (m == null) {
+        module = path.substring(i + 1);
+        if (!confByLogger.containsKey(module)) {
+          path = path.substring(0, i);
         }
+      } else {
+        module = m.value();
+        break;
       }
-    } else if (!moduleOrNamespace.startsWith(SilverLogger.ROOT_NAMESPACE)) {
-      // in the case it isn't a namespace dedicated to Silverpeas or it is a module name
-      namespace = MessageFormat.format(DEFAULT_NAMESPACE, moduleOrNamespace);
     }
-    return new LoggerConfiguration(module, namespace).withLevel(level);
+    Properties properties = getLoggerConfigurationsByModule().get(module);
+    return loadLoggerConfiguration(properties, module);
   }
 
   /**
@@ -247,5 +261,32 @@ public class LoggerConfigurationManager {
     public int compareTo(final LoggerConfiguration other) {
       return this.getNamespace().compareTo(other.getNamespace());
     }
+  }
+
+  private LoggerConfiguration loadLoggerConfiguration(Properties properties, String defaultModule) {
+    String namespace =
+        Character.toString(defaultModule.charAt(0)).toUpperCase() + defaultModule.substring(1);
+    String module = defaultModule;
+    Level level = null;
+    if (properties != null) {
+      namespace = properties.getProperty(LOGGER_NAMESPACE);
+      module = properties.getProperty(SILVERPEAS_MODULE);
+      if (namespace == null || namespace.trim().isEmpty()) {
+        namespace = MessageFormat.format(DEFAULT_NAMESPACE, module);
+      }
+      String strLevel = properties.getProperty(LOGGER_LEVEL);
+      if (strLevel != null && !strLevel.trim().isEmpty()) {
+        try {
+          level = Level.valueOf(strLevel);
+        } catch (Throwable t) {
+          java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
+              .log(java.util.logging.Level.SEVERE, t.getMessage(), t);
+        }
+      }
+    } else if (!namespace.startsWith(SilverLogger.ROOT_NAMESPACE)) {
+      // in the case it isn't a namespace dedicated to Silverpeas or it is a module name
+      namespace = MessageFormat.format(DEFAULT_NAMESPACE, defaultModule);
+    }
+    return new LoggerConfiguration(module, namespace).withLevel(level);
   }
 }

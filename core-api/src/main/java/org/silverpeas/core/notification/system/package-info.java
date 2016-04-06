@@ -27,4 +27,7 @@
  * notified about internal or user events.
  * @author mmoquillon
  */
+@Module("systemNotification")
 package org.silverpeas.core.notification.system;
+
+import org.silverpeas.core.annotation.Module;

@@ -126,7 +126,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return ArrayUtil.EMPTY_GROUP_ARRAY;
+    return new Group[0];
   }
 
   @Override

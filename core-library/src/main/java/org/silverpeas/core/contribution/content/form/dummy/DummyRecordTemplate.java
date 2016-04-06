@@ -65,7 +65,7 @@ public class DummyRecordTemplate implements RecordTemplate {
    */
   @Override
   public FieldTemplate[] getFieldTemplates() {
-    return ArrayUtil.EMPTY_FIELD_TEMPLATE_ARRAY;
+    return new FieldTemplate[0];
   }
 
   /**

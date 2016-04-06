@@ -1557,7 +1557,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public Group[] getAllRootGroups() {
     if (targetDomainId.length() <= 0) {
-      return ArrayUtil.EMPTY_GROUP_ARRAY;
+      return new Group[0];
     }
     Group[] selGroupsArray = m_TargetDomain.getAllGroupPage();
 

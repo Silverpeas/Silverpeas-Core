@@ -24,18 +24,10 @@
 
 package org.silverpeas.core.util;
 
-import com.novell.ldap.LDAPEntry;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class ArrayUtil extends ArrayUtils {
 
-  public static final Group[] EMPTY_GROUP_ARRAY = new Group[0];
   public static final UserDetail[] EMPTY_USER_DETAIL_ARRAY = new UserDetail[0];
-  public static final FieldTemplate[] EMPTY_FIELD_TEMPLATE_ARRAY = new FieldTemplate[0];
-  public static final LDAPEntry[] EMPTY_LDAP_ENTRY_ARRAY = new LDAPEntry[0];
-  public static final ComponentInst[] EMPTY_COMPONENT_INSTANCE_ARRAY = new ComponentInst[0];
 }

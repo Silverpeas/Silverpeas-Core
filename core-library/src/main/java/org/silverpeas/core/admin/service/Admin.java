@@ -409,9 +409,6 @@ class Admin implements Administration {
   @Override
   public String deleteSpaceInstById(String userId, String spaceId, boolean startNewTransaction,
       boolean definitive) throws AdminException {
-    SilverTrace.spy(MODULE_ADMIN, "Admin.deleteSpaceInstById()", spaceId, "ASP", "", userId,
-        SilverTrace.SPY_ACTION_DELETE);
-
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       if (startNewTransaction) {
@@ -1154,8 +1151,6 @@ class Admin implements Administration {
   private String deleteComponentInst(String userId, String componentId, boolean definitive,
       boolean startNewTransaction) throws AdminException {
     Connection connectionProd = null;
-    SilverTrace.spy(MODULE_ADMIN, "Admin.deleteComponentInst()", "ACP", componentId, "", userId,
-        SilverTrace.SPY_ACTION_DELETE);
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       if (startNewTransaction) {
@@ -2328,7 +2323,7 @@ class Admin implements Administration {
   @Override
   public Group[] getGroups(String[] asGroupId) throws AdminException {
     if (asGroupId == null) {
-      return ArrayUtil.EMPTY_GROUP_ARRAY;
+      return new Group[0];
     }
     Group[] aGroup = new Group[asGroupId.length];
     for (int nI = 0; nI < asGroupId.length; nI++) {

@@ -80,9 +80,12 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.exception.FromModule;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
@@ -105,17 +108,14 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.comparator.AbstractComparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.LogAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogsAccessor;
-import org.silverpeas.core.util.comparator.AbstractComparator;
-import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.EncodingException;
-import org.silverpeas.core.exception.RelativeFileAccessException;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -461,11 +461,11 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addPublicationTemplateFeatures() {
     addSecurityFeatures();
-    if (!contains(PublicationTemplate.class)) {
-      addPackages(true, "org.silverpeas.core.contribution.template.publication");
-      addPackages(true, "org.silverpeas.core.contribution.content.form");
-      addAsResource("org/silverpeas/publicationTemplate/settings");
-    }
+    addPackages(true, "org.silverpeas.core.contribution.template.publication");
+    addPackages(false, "org.silverpeas.core.contribution.content.form");
+    addPackages(false, "org.silverpeas.core.contribution.content.form.record");
+    addPackages(false, "org.silverpeas.core.contribution.content.form.form");
+    addAsResource("org/silverpeas/publicationTemplate/settings");
     return this;
   }
 
@@ -474,9 +474,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSecurityFeatures() {
-    if (!contains(PublicationTemplate.class)) {
-      addPackages(true, "org.silverpeas.core.security");
-    }
+    addPackages(true, "org.silverpeas.core.node");
+    addPackages(true, "org.silverpeas.core.contribution.publication.service");
+    addPackages(true, "org.silverpeas.core.contribution.publication.model");
+    addPackages(true, "org.silverpeas.core.contribution.publication.notification");
+    addPackages(true, "org.silverpeas.core.contribution.publication.dao");
+    addPackages(true, "org.silverpeas.core.contribution.rating");
+    addPackages(true, "org.silverpeas.core.socialnetwork.model");
+    addPackages(true, "org.silverpeas.core.security");
+    addClasses(SocialInformationPublication.class);
     return this;
   }
 

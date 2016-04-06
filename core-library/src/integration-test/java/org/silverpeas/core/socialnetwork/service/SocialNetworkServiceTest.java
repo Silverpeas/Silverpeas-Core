@@ -8,6 +8,9 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.I18NBean;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.core.socialnetwork.mock.OrganizationControllerMock;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
@@ -82,7 +85,7 @@ public class SocialNetworkServiceTest {
                   .addPackages(true, "org.silverpeas.core.socialnetwork.connectors")
                   .addPackages(true, "org.silverpeas.core.socialnetwork.dao")
                   .addPackages(true, "org.silverpeas.core.socialnetwork.model"));
-          warBuilder.addPackages(true, "org.silverpeas.util.i18n");
+          warBuilder.addPackages(true, "org.silverpeas.core.i18n");
           warBuilder
               .addAsResource("org/silverpeas/social/settings/socialNetworkSettings.properties");
         }).build();

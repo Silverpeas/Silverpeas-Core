@@ -216,7 +216,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter) throws
       AdminException {
     if (StringUtil.isDefined(parentId)) { // ALL ROOT GROUPS
-      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
+      return new LDAPEntry[0];
     } else {
       LDAPEntry[] theEntries = null;
       String theFilter = driverSettings.getGroupsFullFilter();

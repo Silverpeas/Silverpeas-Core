@@ -20,11 +20,11 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.model.SilverpeasToolContent;
+import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;

@@ -400,8 +400,8 @@ public class WAComponent {
    * application.
    */
   public boolean isWorkflow() {
-    //return "RprocessManager".equalsIgnoreCase(getRouter());
-    return getBehaviors().getBehavior().contains(ComponentBehavior.WORKFLOW);
+    return getBehaviors() != null &&
+        getBehaviors().getBehavior().contains(ComponentBehavior.WORKFLOW);
   }
 
   /**
@@ -409,7 +409,8 @@ public class WAComponent {
    * @return true if this component satisfies the behavior of a topic tracker.
    */
   public boolean isTopicTracker() {
-    return getBehaviors().getBehavior().contains(ComponentBehavior.TOPIC_TRACKER);
+    return getBehaviors() != null &&
+        getBehaviors().getBehavior().contains(ComponentBehavior.TOPIC_TRACKER);
   }
 
 }

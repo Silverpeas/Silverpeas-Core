@@ -898,7 +898,7 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getRootGroupsOfDomain",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
-      return ArrayUtil.EMPTY_GROUP_ARRAY;
+      return new Group[0];
     }
   }
 

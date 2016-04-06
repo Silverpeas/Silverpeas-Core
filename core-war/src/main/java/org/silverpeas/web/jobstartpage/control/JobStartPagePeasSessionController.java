@@ -113,7 +113,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   boolean m_spaceFirst = true;
   // Space sort buffers
   SpaceInst[] m_BrothersSpaces = new SpaceInst[0];
-  ComponentInst[] m_BrothersComponents = ArrayUtil.EMPTY_COMPONENT_INSTANCE_ARRAY;
+  ComponentInst[] m_BrothersComponents = new ComponentInst[0];
   public static final int SCOPE_BACKOFFICE = 0;
   public static final int SCOPE_FRONTOFFICE = 1;
   private int scope = SCOPE_BACKOFFICE;
@@ -967,7 +967,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public ComponentInst[] getBrotherComponents(boolean isNew) {
     ArrayList<ComponentInst> arc = getSpaceInstById().getAllComponentsInst();
     if (arc == null || arc.isEmpty()) {
-      return ArrayUtil.EMPTY_COMPONENT_INSTANCE_ARRAY;
+      return new ComponentInst[0];
     }
     if (isNew) {
       m_BrothersComponents = new ComponentInst[arc.size()];
@@ -988,7 +988,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public ComponentInst[] getComponentsOfSpace(String spaceId) {
     ArrayList<ComponentInst> arc = getSpaceInstById(spaceId).getAllComponentsInst();
     if (arc == null || arc.isEmpty()) {
-      return ArrayUtil.EMPTY_COMPONENT_INSTANCE_ARRAY;
+      return new ComponentInst[0];
     }
     ComponentInst[] m_Components = new ComponentInst[arc.size()];
     int j = 0;
@@ -1043,7 +1043,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     ArrayList<ComponentInst> arc = getSpaceInstById(spaceId).getAllComponentsInst();
 
     if (arc == null || arc.isEmpty()) {
-      return ArrayUtil.EMPTY_COMPONENT_INSTANCE_ARRAY;
+      return new ComponentInst[0];
     }
     if (isNew) {
       m_DestBrothersComponents = new ComponentInst[arc.size()];

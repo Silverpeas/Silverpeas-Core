@@ -43,6 +43,7 @@ public class ComponentInstancePublicationTemplateDeletionIntegrationTest {
         .addOrganisationFeatures()
         .addPublicationTemplateFeatures()
         .addComponentInstanceDeletionFeatures()
+        .addIndexEngineFeatures()
         .testFocusedOn(
             war -> war.addAsResource("org/silverpeas/core/contribution/template/publication"))
         .build();

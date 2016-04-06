@@ -163,7 +163,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
             .warn("admin", "LDAPGroupSubTree.getChildGroupsEntry()", "admin.EX_ERR_CHILD_GROUPS",
                 "ParentGroupId=" + parentId, e);
         append("PB getting Group's subgroups : ").append(parentId).append("\n");
-        return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
+        return new LDAPEntry[0];
       } else {
         throw e;
       }
@@ -239,7 +239,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     int i;
 
     if (theEntries == null) {
-      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
+      return new LDAPEntry[0];
     }
     for (i = 0; i < theEntries.length; i++) {
       groupEntry = theEntries[i];

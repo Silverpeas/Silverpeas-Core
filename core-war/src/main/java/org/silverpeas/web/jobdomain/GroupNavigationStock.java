@@ -72,7 +72,7 @@ public class GroupNavigationStock extends NavigationStock {
 
     subGroupsIds = m_adc.getAllSubGroupIds(m_NavGroup.getId());
     if (subGroupsIds == null) {
-      m_SubGroups = ArrayUtil.EMPTY_GROUP_ARRAY;
+      m_SubGroups = new Group[0];
     } else {
       if (manageableGroupIds != null)
         subGroupsIds = filterGroupsToGroupManager(subGroupsIds);

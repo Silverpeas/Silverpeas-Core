@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.silverpeas.core.util.SilverpeasModule;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 
 import java.util.function.Supplier;
@@ -61,8 +60,8 @@ public interface SilverLogger {
    * computed from the given module name.
    * </p>
    * The logger instance is obtained from the logging namespace mapped with the given Silverpeas
-   * module by using the {@code org.silverpeas.core.util.logging.LoggerFactory} factory. The factory has
-   * also the responsibility of the logger initialization mechanism from their logging
+   * module by using the {@code org.silverpeas.core.util.logging.LoggerFactory} factory. The factory
+   * has also the responsibility of the logger initialization mechanism from their logging
    * configuration parameters before returning them.
    * @return a logger instance, manufactured by a LoggerFactory instance.
    */
@@ -73,12 +72,26 @@ public interface SilverLogger {
   }
 
   /**
-   * Gets the logger for the specified object. The logger that is returned is the one mapped with
-   * the Silverpeas module into which the object belongs.
+   * Gets a logger for the specified object. The logger is found once the Silverpeas module is
+   * identified from the object's fully qualified Java package name.
+   * </p>
+   * In Silverpeas, as each module contains some code, they includes also som Java package. A rule
+   * in Silverpeas specifies that a Silverpeas module has to match a package node by the name. This
+   * rule can be broken or a module can be specified explicitly for a package node by using the
+   * {@©ode org.silverpeas.core.annotation.Module} annotation.
+   * </p>
+   * The module identification process is performed by starting with the direct Java package of the
+   * object. If no module matches the current package name, then the process reaches back to the
+   * parent package until one module matching the current package name is found.
    * @see SilverLogger#getLogger(String)
+   * @return a logger instance, manufactured by a LoggerFactory instance.
    */
   static SilverLogger getLogger(Object object) {
-    return getLogger(SilverpeasModule.getModuleName(object));
+    Package pkg = (object instanceof Class ? ((Class) object).getPackage() :
+        object.getClass().getPackage());
+    LoggerConfiguration configuration =
+        LoggerConfigurationManager.get().getLoggerConfiguration(pkg);
+    return SilverLoggerFactory.get().getLogger(configuration.getNamespace(), configuration);
   }
 
   /**

@@ -26,4 +26,7 @@
  * Provides an API for notifying users either directly or in a delayed way according to the
  * preferences of the users.
  */
+@Module("userNotification")
 package org.silverpeas.core.notification.user;
+
+import org.silverpeas.core.annotation.Module;

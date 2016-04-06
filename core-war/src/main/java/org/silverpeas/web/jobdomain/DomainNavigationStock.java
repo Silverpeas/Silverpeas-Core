@@ -66,7 +66,7 @@ public class DomainNavigationStock extends NavigationStock {
     JobDomainSettings.sortUsers(m_SubUsers);
     m_SubGroups = m_adc.getRootGroupsOfDomain(m_NavDomain.getId());
     if (m_SubGroups == null) {
-      m_SubGroups = ArrayUtil.EMPTY_GROUP_ARRAY;
+      m_SubGroups = new Group[0];
     }
 
     if (manageableGroupIds != null)
