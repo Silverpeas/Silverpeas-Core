@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
-import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
@@ -46,16 +47,13 @@ public class LoggerConfigurationEntity implements WebEntity {
 
   @XmlElement(defaultValue = "")
   private URI uri;
-  private String module;
   private String logger;
   private String level;
 
   private LoggerConfigurationEntity() {
-
   }
 
-  private LoggerConfigurationEntity(String module, String logger, String level) {
-    this.module = module;
+  private LoggerConfigurationEntity(String logger, String level) {
     this.logger = logger;
     this.level = (level == null || level.trim().isEmpty() ? PARENT_LEVEL : level);
   }
@@ -69,8 +67,7 @@ public class LoggerConfigurationEntity implements WebEntity {
   public static LoggerConfigurationEntity toWebEntity(LoggerConfiguration configuration) {
     String level =
         (configuration.getLevel() == null ? PARENT_LEVEL : configuration.getLevel().name());
-    return new LoggerConfigurationEntity(configuration.getModuleName(),
-        configuration.getNamespace(), level);
+    return new LoggerConfigurationEntity(configuration.getNamespace(), level);
   }
 
   public LoggerConfigurationEntity withAsURi(URI uri) {
@@ -87,10 +84,6 @@ public class LoggerConfigurationEntity implements WebEntity {
     return uri;
   }
 
-  public String getModule() {
-    return module;
-  }
-
   public String getLogger() {
     return logger;
   }
@@ -101,7 +94,9 @@ public class LoggerConfigurationEntity implements WebEntity {
 
   public LoggerConfiguration toLoggerConfiguration() {
     Level loggingLevel = (isLevelDefined(getLevel()) ? Level.valueOf(getLevel()) : null);
-    return new LoggerConfiguration(getModule(), getLogger()).withLevel(loggingLevel);
+    return LoggerConfigurationManager.get()
+        .getLoggerConfiguration(getLogger())
+        .withLevel(loggingLevel);
   }
 
   private boolean isLevelDefined(String level) {

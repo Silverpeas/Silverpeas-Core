@@ -25,9 +25,9 @@
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.Vector;
@@ -195,9 +195,9 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), theFilter, driverSettings.getGroupsNameField(),
             driverSettings.getGroupAttributes());
-        SynchroReport.debug("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
+        SynchroDomainReport.debug("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
             "Récupération de " + theEntries.length +
-                " groupes en tout, recherche des groupes racine...", null);
+                " groupes en tout, recherche des groupes racine...");
         for (i = 0; i < theEntries.length; i++) {
           // Search for groups that have at least one member attribute that
           // point to the group
@@ -226,10 +226,10 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
             "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
         append("PB getting Group's subgroups : ").append(parentId).append("\n");
         if (parentId == null) {
-          SynchroReport.error("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
+          SynchroDomainReport.error("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine", e);
         } else {
-          SynchroReport.error("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
+          SynchroDomainReport.error("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes fils du groupe " + parentId, e);
         }
       } else {

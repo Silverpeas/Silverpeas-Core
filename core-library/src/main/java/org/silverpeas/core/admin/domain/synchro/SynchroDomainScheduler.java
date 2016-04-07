@@ -24,16 +24,16 @@
 
 package org.silverpeas.core.admin.domain.synchro;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SynchroDomainScheduler implements SchedulerEventListener {
 
@@ -49,14 +49,13 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ADMINSYNCHRODOMAIN_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("admin", "SynchroDomainScheduler.initialize()",
-          "admin.CANT_INIT_DOMAINS_SYNCHRO", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
   public void addDomain(String id) {
     if (domainIds == null) {
-      domainIds = new ArrayList<String>();
+      domainIds = new ArrayList<>();
     }
     domainIds.add(id);
   }
@@ -74,8 +73,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
         try {
           AdministrationServiceProvider.getAdminService().synchronizeSilverpeasWithDomain(domainId, true);
         } catch (Exception e) {
-          SilverTrace.error("admin", "SynchroDomainScheduler.doSynchro()",
-              "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
     }
@@ -94,7 +92,6 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     String jobName = anEvent.getJobExecutionContext().getJobName();
-    SilverTrace.error("admin", "SynchroDomainScheduler.jobFailed", "The job '" + jobName +
-        "' was not successfull");
+    SilverLogger.getLogger(this).error("The domain synchronization job {0} failed!", jobName);
   }
 }

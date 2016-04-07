@@ -48,7 +48,7 @@ import static org.junit.Assert.assertThat;
  */
 public class SysLoggerFactoryTest {
 
-  private static String LOGGER_NAMESPACE = "Silverpeas.Test";
+  private static String LOGGER_NAMESPACE = "silverpeas.test";
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();

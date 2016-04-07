@@ -26,7 +26,4 @@
  * A set of HTML widgets used in the generation of the Web views for the Silverpeas GUI.
  * @author mmoquillon
  */
-@Module("viewgenerator")
 package org.silverpeas.core.web.util.viewgenerator.html;
-
-import org.silverpeas.core.annotation.Module;

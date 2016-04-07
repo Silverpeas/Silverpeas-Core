@@ -22,12 +22,12 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -93,9 +93,8 @@ public class LDAPUser {
     } else {
       theFilter = driverSettings.getUsersFullFilter();
     }
-    SynchroReport
-        .info("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...",
-            null);
+    SynchroDomainReport
+        .info("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...");
     List<UserDetail> usersVector = new ArrayList<>();
     LDAPEntry[] theEntries = LDAPUtility
         .search1000Plus(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
@@ -105,13 +104,13 @@ public class LDAPUser {
 
       usersVector.get(i).traceUser();// Trace niveau Info ds
       // module 'admin' des infos user courant : ID, domaine, login, e-mail,...
-      SynchroReport.debug("LDAPUser.getAllUsers()",
+      SynchroDomainReport.debug("LDAPUser.getAllUsers()",
           "Utilisateur trouvé no : " + i + ", login : " + usersVector.get(i).getLogin() + ", " +
               usersVector.get(i).getFirstName() + ", " + usersVector.get(i).getLastName() + ", " +
-              usersVector.get(i).geteMail(), null);
+              usersVector.get(i).geteMail());
     }
-    SynchroReport.info("LDAPUser.getAllUsers()",
-        "Récupération de " + theEntries.length + " utilisateurs du domaine LDAP distant", null);
+    SynchroDomainReport.info("LDAPUser.getAllUsers()",
+        "Récupération de " + theEntries.length + " utilisateurs du domaine LDAP distant");
     return usersVector.toArray(new UserDetail[usersVector.size()]);
   }
 

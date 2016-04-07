@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.admin.domain.synchro;
 
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,23 +50,18 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("admin", "SynchroGroupScheduler.initialize()",
-          "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
   public void doSynchroGroup() {
-    SilverTrace
-        .info("admin", "SynchroGroupScheduler.doSynchroGroup()", "root.MSG_GEN_ENTER_METHOD");
     SynchroGroupReport.startSynchro();
-
     for (int i = 0; synchronizedGroupIds != null && i < synchronizedGroupIds.size(); i++) {
       String groupId = synchronizedGroupIds.get(i);
       try {
         AdministrationServiceProvider.getAdminService().synchronizeGroupByRule(groupId, true);
       } catch (AdminException e) {
-        SilverTrace.error("admin", "SynchroGroupScheduler.doSynchroGroup",
-            "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
     SynchroGroupReport.stopSynchro();
@@ -98,8 +93,6 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     String jobName = anEvent.getJobExecutionContext().getJobName();
-    SilverTrace.error("admin",
-        "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-        + jobName + "' was not successfull");
+    SilverLogger.getLogger(this).error("The domain synchronization job {0} failed!", jobName);
   }
 }

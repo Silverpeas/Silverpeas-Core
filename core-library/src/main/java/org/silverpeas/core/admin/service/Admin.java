@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainScheduler;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupScheduler;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -41,7 +42,6 @@ import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.service.cache.AdminCache;
 import org.silverpeas.core.admin.service.cache.TreeCache;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
@@ -95,6 +95,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
@@ -4723,11 +4724,11 @@ class Admin implements Administration {
     if (StringUtil.isDefined(rule)) {
       try {
         if (!scheduledMode) {
-          SynchroGroupReport.setTraceLevel(SynchroGroupReport.TRACE_LEVEL_DEBUG);
+          SynchroGroupReport.setReportLevel(Level.DEBUG);
           SynchroGroupReport.startSynchro();
         }
         SynchroGroupReport.warn("admin.synchronizeGroup", "Synchronisation du groupe '" + group.
-            getName() + "' - Regle de synchronisation = \"" + rule + "\"", null);
+            getName() + "' - Regle de synchronisation = \"" + rule + "\"");
         List<String> actualUserIds = Arrays.asList(group.getUserIds());
         domainDriverManager.startTransaction(false);
 
@@ -4767,13 +4768,12 @@ class Admin implements Administration {
             if (!actualUserIds.contains(userId)) {
               newUsers.add(userId);
               SynchroGroupReport
-                  .info("admin.synchronizeGroup", "Ajout de l'utilisateur " + userId, null);
+                  .info("admin.synchronizeGroup", "Ajout de l'utilisateur " + userId);
             }
           }
         }
         SynchroGroupReport.warn("admin.synchronizeGroup",
-            "Ajout de " + newUsers.size() + " utilisateur(s)",
-            null);
+            "Ajout de " + newUsers.size() + " utilisateur(s)");
         if (!newUsers.isEmpty()) {
           domainDriverManager.getOrganization().group.addUsersInGroup(newUsers.toArray(
               new String[newUsers.size()]), Integer.parseInt(groupId), false);
@@ -4785,12 +4785,11 @@ class Admin implements Administration {
           if (userIds == null || !userIds.contains(actualUserId)) {
             removedUsers.add(actualUserId);
             SynchroGroupReport
-                .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId,
-                    null);
+                .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId);
           }
         }
         SynchroGroupReport.warn("admin.synchronizeGroup", "Suppression de " + removedUsers.size()
-            + " utilisateur(s)", null);
+            + " utilisateur(s)");
         if (removedUsers.size() > 0) {
           domainDriverManager.getOrganization().group.removeUsersFromGroup(
               removedUsers.toArray(new String[removedUsers.size()]), Integer.parseInt(groupId),
@@ -4871,7 +4870,7 @@ class Admin implements Administration {
       domainDriver = domainDriverManager.getDomainDriver(iDomainId);
     } catch (Exception e) {
       SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
-          "Erreur ! Domaine " + iDomainId + " inaccessible !", null);
+          "Erreur ! Domaine " + iDomainId + " inaccessible !");
     }
 
     if (domainDriver != null) {
@@ -4881,11 +4880,11 @@ class Admin implements Administration {
         if (users == null) {
           SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
               "La propriété '" + propertyName + "' n'est pas définie dans le domaine "
-              + iDomainId, null);
+              + iDomainId);
         }
       } catch (Exception e) {
         SynchroGroupReport.info("admin.getUserIdsBySpecificProperty", "Domain " + domainId
-            + " ne supporte pas les groupes synchronisés", null);
+            + " ne supporte pas les groupes synchronisés");
       }
     }
 
@@ -5262,13 +5261,13 @@ class Admin implements Administration {
 
       // Démarrage de la synchro avec la Popup d'affichage
       if (threaded) {
-        SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_WARN);
+        SynchroDomainReport.setReportLevel(Level.WARNING);
       }
-      SynchroReport.startSynchro();
+      SynchroDomainReport.startSynchro();
       try {
-        SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
+        SynchroDomainReport.warn("admin.synchronizeSilverpeasWithDomain",
             "Domain '" + domainDriverManager.getDomain(sDomainId).getName() + "', Id : "
-            + sDomainId, null);
+            + sDomainId);
         // Start synchronization
         domainDriverManager.beginSynchronization(sDomainId);
 
@@ -5302,8 +5301,8 @@ class Admin implements Administration {
 
         // End synchronization
         String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
-        SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------"
-            + sDomainSpecificErrors, null);
+        SynchroDomainReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------"
+            + sDomainSpecificErrors);
         return sReport + "\n----------------\n" + sDomainSpecificErrors;
       } catch (Exception e) {
         try {
@@ -5316,13 +5315,13 @@ class Admin implements Administration {
           SilverTrace.error("admin", "Admin.synchronizeSilverpeasWithDomain",
               "root.EX_ERR_ROLLBACK", e1);
         }
-        SynchroReport.error("admin.synchronizeSilverpeasWithDomain",
+        SynchroDomainReport.error("admin.synchronizeSilverpeasWithDomain",
             "Problème lors de la synchronisation : " + e.getMessage(), null);
         throw new AdminException("Admin.synchronizeSilverpeasWithDomain",
             SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN",
             "domain id : '" + sDomainId + "'\nReport:" + sReport, e);
       } finally {
-        SynchroReport.stopSynchro();// Fin de synchro avec la Popup d'affichage
+        SynchroDomainReport.stopSynchro();// Fin de synchro avec la Popup d'affichage
         // Reset the cache
         cache.resetCache();
         domainDriverManager.releaseOrganizationSchema();
@@ -5368,7 +5367,7 @@ class Admin implements Administration {
     Collection<UserDetail> updateUsers = new ArrayList<>();
     Collection<UserDetail> removedUsers = new ArrayList<>();
 
-    SynchroReport.warn("admin.synchronizeUsers", "Starting users synchronization...", null);
+    SynchroDomainReport.warn("admin.synchronizeUsers", "Starting users synchronization...");
     try {
       // Get all users of the domain from distant datasource
       DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
@@ -5377,11 +5376,11 @@ class Admin implements Administration {
       message = distantUDs.length
           + " user(s) have been changed in LDAP since the last synchronization";
       sReport += message + "\n";
-      SynchroReport.info("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.info("admin.synchronizeUsers", message);
 
       // Get all users of the domain from Silverpeas
       UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, domainId);
-      SynchroReport.info("admin.synchronizeUsers", "Adding or updating users in database...", null);
+      SynchroDomainReport.info("admin.synchronizeUsers", "Adding or updating users in database...");
 
       // Add new users or update existing ones from distant datasource
       for (UserDetail distantUD : distantUDs) {
@@ -5412,7 +5411,7 @@ class Admin implements Administration {
 
       if (!threaded || (threaded && delUsersOnDiffSynchro)) {
         // Delete obsolete users from Silverpeas
-        SynchroReport.info("admin.synchronizeUsers", "Removing users from database...", null);
+        SynchroDomainReport.info("admin.synchronizeUsers", "Removing users from database...");
         distantUDs = domainDriverManager.getAllUsers(domainId);
         for (UserDetail silverpeasUD : silverpeasUDs) {
           boolean bFound = false;
@@ -5440,14 +5439,14 @@ class Admin implements Administration {
 
       message = "Users synchronization terminated";
       sReport += message + "\n";
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
       message = "# of updated users : " + updateUsers.size() + ", added : " + addedUsers.size()
           + ", removed : " + removedUsers.size();
       sReport += message + "\n";
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
       return sReport;
     } catch (Exception e) {
-      SynchroReport.error("admin.synchronizeUsers", "Problem during synchronization of users : "
+      SynchroDomainReport.error("admin.synchronizeUsers", "Problem during synchronization of users : "
           + e.getMessage(), null);
       throw new AdminException("admin.synchronizeUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
@@ -5475,14 +5474,14 @@ class Admin implements Administration {
       updatedUsers.add(distantUD);
       String message = "user " + distantUD.getDisplayedName() + " updated (id:" + silverpeasId
           + " / specificId:" + specificId + ")";
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
       sReport += message + "\n";
     } catch (AdminException aeMaj) {
       SilverLogger.getLogger(this).error("Full synchro: error while updating user " + specificId,
           aeMaj);
       String message = "problem updating user " + distantUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeMaj.getMessage();
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
     }
   }
 
@@ -5495,7 +5494,7 @@ class Admin implements Administration {
         String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
             + specificId + ") - Login and LastName must be set !!!";
         sReport += message + "\n";
-        SynchroReport.warn("admin.synchronizeUsers", message, null);
+        SynchroDomainReport.warn("admin.synchronizeUsers", message);
         sReport += "user has not been added\n";
       } else {
 
@@ -5503,13 +5502,13 @@ class Admin implements Administration {
         String message = "user " + distantUD.getDisplayedName() + " added (id:" + silverpeasId
             + " / specificId:" + specificId + ")";
         sReport += message + "\n";
-        SynchroReport.warn("admin.synchronizeUsers", message, null);
+        SynchroDomainReport.warn("admin.synchronizeUsers", message);
       }
     } catch (AdminException ae) {
       SilverLogger.getLogger(this).error("Full synchro: error while adding user " + specificId, ae);
       String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
           + specificId + ") - " + ae.getMessage();
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
       sReport += message + "\n";
       sReport += "user has not been added\n";
     }
@@ -5524,14 +5523,14 @@ class Admin implements Administration {
       String message = "user " + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId
           + ")";
       sReport += message + "\n";
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
     } catch (AdminException aeDel) {
       SilverLogger.getLogger(this).error("Full synchro: error while deleting user " + specificId,
           aeDel);
       String message = "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeDel.getMessage();
       sReport += message + "\n";
-      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      SynchroDomainReport.warn("admin.synchronizeUsers", message);
       sReport += "user has not been deleted\n";
     }
   }
@@ -5584,21 +5583,20 @@ class Admin implements Administration {
     int iNbGroupsDeleted = 0;
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
-    SynchroReport.warn("admin.synchronizeGroups", "Starting groups synchronization...", null);
+    SynchroDomainReport.warn("admin.synchronizeGroups", "Starting groups synchronization...");
     try {
       // Get all root groups of the domain from distant datasource
       Group[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
       // Get all groups of the domain from Silverpeas
       Group[] silverpeasGroups = groupManager.getGroupsOfDomain(domainDriverManager, domainId);
 
-      SynchroReport.info("admin.synchronizeGroups", "Adding or updating groups in database...",
-          null);
+      SynchroDomainReport.info("admin.synchronizeGroups", "Adding or updating groups in database...");
       // Check for new groups resursively
       sReport += checkOutGroups(domainId, silverpeasGroups, distantRootGroups, allDistantGroups,
           userIds, null, iNbGroupsAdded, iNbGroupsMaj, iNbGroupsDeleted);
 
       // Delete obsolete groups
-      SynchroReport.info("admin.synchronizeGroups", "Removing groups from database...", null);
+      SynchroDomainReport.info("admin.synchronizeGroups", "Removing groups from database...");
       Group[] distantGroups = allDistantGroups.values().toArray(
           new Group[allDistantGroups.size()]);
       for (Group silverpeasGroup : silverpeasGroups) {
@@ -5620,8 +5618,8 @@ class Admin implements Administration {
             groupManager.deleteGroupById(domainDriverManager, silverpeasGroup, true);
             iNbGroupsDeleted++;
             sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroReport.warn("admin.synchronizeGroups", "Group " + silverpeasGroup.getName()
-                + " deleted (SpecificId:" + specificId + ")", null);
+            SynchroDomainReport.warn("admin.synchronizeGroups", "Group " + silverpeasGroup.getName()
+                + " deleted (SpecificId:" + specificId + ")");
           } catch (AdminException aeDel) {
             SilverLogger.getLogger(this).error("Full synchro: error while deleting group " +
                 specificId, aeDel);
@@ -5632,13 +5630,13 @@ class Admin implements Administration {
         }
       }
       sReport += "Groups synchronization terminated\n";
-      SynchroReport.info("admin.synchronizeGroups",
+      SynchroDomainReport.info("admin.synchronizeGroups",
           "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
-          + ", deleted : " + iNbGroupsDeleted, null);
-      SynchroReport.warn("admin.synchronizeGroups", "Groups synchronization terminated", null);
+          + ", deleted : " + iNbGroupsDeleted);
+      SynchroDomainReport.warn("admin.synchronizeGroups", "Groups synchronization terminated");
       return sReport;
     } catch (Exception e) {
-      SynchroReport.error("admin.synchronizeGroups",
+      SynchroDomainReport.error("admin.synchronizeGroups",
           "Problème lors de la synchronisation des groupes : " + e.getMessage(), null);
       throw new AdminException("admin.synchronizeGroups", SilverpeasException.ERROR,
           "admin.EX_ERR_SYNCHRONIZE_DOMAIN_GROUPS",
@@ -5690,25 +5688,24 @@ class Admin implements Administration {
 
       // Set the Parent Id
       if (bFound) {
-        SynchroReport.debug("admin.checkOutGroups", "avant maj du groupe " + specificId
-            + ", recherche de ses groupes parents", null);
+        SynchroDomainReport.debug("admin.checkOutGroups", "avant maj du groupe " + specificId
+            + ", recherche de ses groupes parents");
       } else {
-        SynchroReport.debug("admin.checkOutGroups", "avant ajout du groupe " + specificId
-            + ", recherche de ses groupes parents", null);
+        SynchroDomainReport.debug("admin.checkOutGroups", "avant ajout du groupe " + specificId
+            + ", recherche de ses groupes parents");
       }
       String[] groupParentsIds = domainDriverManager.getGroupMemberGroupIds(domainId, testedGroup.
           getSpecificId());
       if ((groupParentsIds == null) || (groupParentsIds.length == 0)) {
         testedGroup.setSuperGroupId(null);
-        SynchroReport.debug("admin.checkOutGroups", "le groupe " + specificId + " n'a pas de père",
-            null);
+        SynchroDomainReport.debug("admin.checkOutGroups", "le groupe " + specificId + " n'a pas de père");
       } else {
         testedGroup.setSuperGroupId(superGroupId);
         if (superGroupId != null)// sécurité
         {
-          SynchroReport.debug("admin.checkOutGroups",
+          SynchroDomainReport.debug("admin.checkOutGroups",
               "le groupe " + specificId + " a pour père le groupe " + domainDriverManager.getGroup(
-                  superGroupId).getSpecificId() + " d'Id base " + superGroupId, null);
+                  superGroupId).getSpecificId() + " d'Id base " + superGroupId);
         }
       }
       String[] userSpecificIds = testedGroup.getUserIds();
@@ -5731,9 +5728,8 @@ class Admin implements Administration {
             iNbGroupsMaj++;
             silverpeasId = testedGroup.getId();
             report += "updating group " + testedGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroReport.warn("admin.checkOutGroups", "maj groupe " + testedGroup.getName()
-                + " (id:" + silverpeasId + ") OK",
-                null);
+            SynchroDomainReport.warn("admin.checkOutGroups", "maj groupe " + testedGroup.getName()
+                + " (id:" + silverpeasId + ") OK");
           } else// le name groupe non renseigné
           {
             SilverLogger.getLogger(this).info("Full Synchro: error while updating group {0}",
@@ -5754,9 +5750,8 @@ class Admin implements Administration {
             iNbGroupsAdded++;
 
             report += "adding group " + testedGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroReport.warn("admin.checkOutGroups", "ajout groupe " + testedGroup.getName()
-                + " (id:" + silverpeasId + ") OK",
-                null);
+            SynchroDomainReport.warn("admin.checkOutGroups", "ajout groupe " + testedGroup.getName()
+                + " (id:" + silverpeasId + ") OK");
           } else { // le name groupe non renseigné
 
             report += "problem adding group id : " + specificId + "\n";
@@ -5775,9 +5770,9 @@ class Admin implements Administration {
           Group[] cleanSubGroups = removeCrossReferences(subGroups,
               allIncluededGroups, specificId);
           if (cleanSubGroups != null && cleanSubGroups.length > 0) {
-            SynchroReport.info("admin.checkOutGroups",
+            SynchroDomainReport.info("admin.checkOutGroups",
                 "Ajout ou mise à jour de " + cleanSubGroups.length + " groupes fils du groupe "
-                + specificId + "...", null);
+                + specificId + "...");
             report += checkOutGroups(domainId, existingGroups, cleanSubGroups,
                 allIncluededGroups,
                 userIds, silverpeasId, iNbGroupsAdded, iNbGroupsMaj, iNbGroupsDeleted);

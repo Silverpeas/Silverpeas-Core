@@ -24,9 +24,9 @@
 package org.silverpeas.core.contribution.content.form;
 
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class TypeManager {
     try {
       init();
     } catch (FormException e) {
-      SilverTrace.fatal("form", "TypeManager.initialization", "form.EXP_INITIALIZATION_FAILED", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -86,8 +86,6 @@ public class TypeManager {
   public String getDisplayerName(String typeName) throws FormException {
     List<String> displayerNames = typeName2displayerNames.get(typeName);
     if (displayerNames == null || displayerNames.isEmpty()) {
-      SilverTrace.fatal("form", "TypeManager.getDisplayerName", "form.EXP_UNKNOWN_TYPE",
-          typeName);
       throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
     }
     return displayerNames.get(0);

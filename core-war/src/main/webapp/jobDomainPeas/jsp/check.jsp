@@ -37,7 +37,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
 <%@ page import="org.silverpeas.core.admin.domain.model.DomainProperty"%>
 <%@ page import="org.silverpeas.core.admin.user.model.Group"%>
-<%@ page import="org.silverpeas.core.admin.domain.synchro.SynchroReport"%>
+<%@ page import="org.silverpeas.core.admin.domain.synchro.SynchroDomainReport"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 

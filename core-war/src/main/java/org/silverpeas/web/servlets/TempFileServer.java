@@ -20,12 +20,13 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -55,8 +56,8 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
   public void init(ServletConfig config) {
     try {
       super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("util", "TempFileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+    } catch (ServletException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

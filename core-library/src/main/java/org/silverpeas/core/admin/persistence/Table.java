@@ -25,7 +25,7 @@ package org.silverpeas.core.admin.persistence;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.Schema;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -536,7 +536,7 @@ public abstract class Table<T> {
       rowsCount = statement.executeUpdate();
       return rowsCount;
     } catch (SQLException e) {
-      SynchroReport.error("Table.insertRow()", "Exception SQL : " + e.getMessage(), null);
+      SynchroDomainReport.error("Table.insertRow()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.insertRow", SilverpeasException.ERROR,
               "root.EX_RECORD_INSERTION_FAILED", e);
     } finally {
@@ -553,7 +553,7 @@ public abstract class Table<T> {
       rowsCount = statement.executeUpdate();
       return rowsCount;
     } catch (SQLException e) {
-      SynchroReport.error("Table.updateRow()", "Exception SQL : " + e.getMessage(), null);
+      SynchroDomainReport.error("Table.updateRow()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.updateRow",
               SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
     } finally {
@@ -589,7 +589,7 @@ public abstract class Table<T> {
       rowsCount = statement.executeUpdate();
       return rowsCount;
     } catch (SQLException e) {
-      SynchroReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
+      SynchroDomainReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
               "admin.EX_ERR_UPDATE", e);
     } finally {
@@ -612,7 +612,7 @@ public abstract class Table<T> {
       rowsCount = statement.executeUpdate();
       return rowsCount;
     } catch (SQLException e) {
-      SynchroReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
+      SynchroDomainReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
               "admin.EX_ERR_UPDATE", e);
     } finally {

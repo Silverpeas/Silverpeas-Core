@@ -23,26 +23,26 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import org.silverpeas.core.web.mvc.AbstractFileSender;
-import org.silverpeas.core.webapi.attachment.SimpleDocumentResource;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.security.authorization.ComponentAccessController;
-import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessController;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.AbstractFileSender;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import org.silverpeas.core.webapi.attachment.SimpleDocumentResource;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -69,8 +69,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
   public void init(ServletConfig config) {
     try {
       super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("util", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+    } catch (ServletException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

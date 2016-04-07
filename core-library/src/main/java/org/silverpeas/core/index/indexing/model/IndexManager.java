@@ -24,7 +24,6 @@ import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.core.index.indexing.parser.ParserManager;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.Analyzer;
@@ -45,6 +44,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -136,8 +136,7 @@ public class IndexManager {
         try {
           writer.close();
         } catch (IOException e) {
-          SilverTrace.error("indexing", "IndexManager.optimize()",
-              "indexing.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath, e);
+          SilverLogger.getLogger(this).error("Cannot close index " + writerPath, e);
         }
       }
       // update the spelling index
@@ -157,8 +156,7 @@ public class IndexManager {
       // closing associated index searcher and removing it from cache
       IndexReadersCache.removeIndexReader(getIndexDirectoryPath(indexEntry));
     } catch (IOException e) {
-      SilverTrace.error("indexing", "IndexManager", "indexing.MSG_REMOVE_REQUEST_FAILED",
-          indexEntry.toString(), e);
+      SilverLogger.getLogger(this).error("Index deletion failure: " + indexEntry.toString(), e);
     }
   }
 
@@ -265,8 +263,7 @@ public class IndexManager {
       } catch (IOException e) {
         IOUtils.closeQuietly(writer);
         writer = null;
-        SilverTrace.error("indexing", "IndexManager.getIndexWriter",
-            "indexing.MSG_UNKNOWN_INDEX_FILE", path, e);
+        SilverLogger.getLogger(this).error("Unknown index file " + path, e);
       }
       if (writer != null) {
         indexWriter = Pair.of(path, writer);
@@ -282,22 +279,17 @@ public class IndexManager {
    * @param indexEntry
    */
   private void index(IndexWriter writer, FullIndexEntry indexEntry) {
-
     try {
       writer.addDocument(makeDocument(indexEntry));
-
     } catch (Exception e) {
-      SilverTrace.error("indexing", "IndexManager.index",
-            "indexing.MSG_ADD_REQUEST_FAILED", indexEntry.toString(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-
   }
 
   /**
    * Create a lucene Document object with the given indexEntry.
    */
   private Document makeDocument(FullIndexEntry indexEntry) {
-
     Document doc = new Document();
     // fields creation
     doc.add(new Field(KEY, indexEntry.getPK().toString(), YES, NOT_ANALYZED));
@@ -527,8 +519,7 @@ public class IndexManager {
         doc.add(field);
       }
     } catch (Throwable e) {
-      SilverTrace.error("indexing", "IndexManager",
-          "indexing.MSG_FILE_PARSING_FAILED", fileDescription.getPath(), e);
+      SilverLogger.getLogger(this).error("Failed to parse file " + fileDescription.getPath(), e);
     }
   }
 

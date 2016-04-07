@@ -20,6 +20,7 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
@@ -27,7 +28,6 @@ import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.persistence.UserRow;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -189,8 +189,8 @@ public class UserManager {
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
-      SynchroReport.info("UserManager.getUsersOfDomain()",
-          "Recherche des utilisateurs du domaine LDAP dans la base...", null);
+      SynchroDomainReport.info("UserManager.getUsersOfDomain()",
+          "Recherche des utilisateurs du domaine LDAP dans la base...");
       // Get users of domain from Silverpeas database
       UserRow[] urs = ddManager.getOrganization().user.getAllUserOfDomain(idAsInt(sDomainId));
 
@@ -198,13 +198,13 @@ public class UserManager {
       UserDetail[] aus = new UserDetail[urs.length];
       for (int nI = 0; nI < urs.length; nI++) {
         aus[nI] = userRow2UserDetail(urs[nI]);
-        SynchroReport.debug("UserManager.getUsersOfDomain()",
+        SynchroDomainReport.debug("UserManager.getUsersOfDomain()",
             "Utilisateur trouvé no : " + java.lang.Integer.toString(nI) + ", login : "
             + aus[nI].getLogin() + ", " + aus[nI].getFirstName() + ", "
-            + aus[nI].getLastName() + ", " + aus[nI].geteMail(), null);
+            + aus[nI].getLastName() + ", " + aus[nI].geteMail());
       }
-      SynchroReport.info("UserManager.getUsersOfDomain()", "Récupération de "
-          + urs.length + " utilisateurs du domaine LDAP dans la base", null);
+      SynchroDomainReport.info("UserManager.getUsersOfDomain()", "Récupération de "
+          + urs.length + " utilisateurs du domaine LDAP dans la base");
       return aus;
     } catch (Exception e) {
       throw new AdminException("UserManager.getUsersOfDomain",
@@ -540,17 +540,17 @@ public class UserManager {
         || !StringUtil.isDefined(userDetail.getLogin())
         || !StringUtil.isDefined(userDetail.getDomainId())) {
       if (userDetail == null) {
-        SynchroReport.error("UserManager.addUser()",
+        SynchroDomainReport.error("UserManager.addUser()",
             "Problème lors de l'ajout de l'utilisateur dans la base, cet utilisateur n'existe pas",
             null);
       } else if (!StringUtil.isDefined(userDetail.getLastName())) {
-        SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
+        SynchroDomainReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
             + userDetail.getSpecificId() + " dans la base, cet utilisateur n'a pas de nom", null);
       } else if (!StringUtil.isDefined(userDetail.getLogin())) {
-        SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
+        SynchroDomainReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
             + userDetail.getSpecificId() + " dans la base, login non spécifié", null);
       } else if (!StringUtil.isDefined(userDetail.getDomainId())) {
-        SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
+        SynchroDomainReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
             + userDetail.getSpecificId() + " dans la base, domaine non spécifié", null);
       }
       return "";
@@ -558,13 +558,13 @@ public class UserManager {
 
     try {
       ddManager.getOrganizationSchema();
-      SynchroReport.info("UserManager.addUser()", "Ajout de l'utilisateur "
-          + userDetail.getSpecificId() + " dans la base...", null);
+      SynchroDomainReport.info("UserManager.addUser()", "Ajout de l'utilisateur "
+          + userDetail.getSpecificId() + " dans la base...");
       // Check that the given login is not already used
       UserRow ur = ddManager.getOrganization().user.getUserByLogin(
           idAsInt(userDetail.getDomainId()), userDetail.getLogin());
       if (ur != null) {
-        SynchroReport.error("UserManager.addUser()", "Utilisateur " + userDetail.getLogin()
+        SynchroDomainReport.error("UserManager.addUser()", "Utilisateur " + userDetail.getLogin()
             + " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
         throw new AdminException("UserManager.addUser", SilverpeasException.ERROR,
             "admin.EX_ERR_LOGIN_ALREADY_USED", "user login: '" + userDetail.getLogin() + "'");
@@ -596,7 +596,7 @@ public class UserManager {
 
       return sUserId;
     } catch (Exception e) {
-      SynchroReport.error("UserManager.addUser()",
+      SynchroDomainReport.error("UserManager.addUser()",
           "problème à l'ajout de l'utilisateur " + userDetail.getFirstName()
           + " " + userDetail.getLastName() + "(specificId:"
           + userDetail.getSpecificId() + ") - " + e.getMessage(), null);
@@ -626,10 +626,10 @@ public class UserManager {
       try {
         DelayedNotificationDelegate.executeUserDeleting(Integer.valueOf(user.getId()));
       } catch (Exception e) {
-        SynchroReport.warn("UserManager.deleteUser()",
+        SynchroDomainReport.warn("UserManager.deleteUser()",
             "problème d'envoi des notifications journalisées "
             + user.getFirstName() + " " + user.getLastName() + "(specificId:"
-            + user.getSpecificId() + ") - " + e.getMessage(), null);
+            + user.getSpecificId() + ") - " + e.getMessage());
       }
 
       // Delete user from specific domain
@@ -637,8 +637,8 @@ public class UserManager {
         ddManager.deleteUser(user.getId());
       }
       // Delete the user node from Silverpeas
-      SynchroReport.info("UserManager.deleteUser()", "Suppression de l'utilisateur " + user.
-          getSpecificId() + " de la base...", null);
+      SynchroDomainReport.info("UserManager.deleteUser()", "Suppression de l'utilisateur " + user.
+          getSpecificId() + " de la base...");
       ddManager.getOrganization().user.removeUser(idAsInt(user.getId()));
       notifier.notifyEventOn(ResourceEvent.Type.DELETION, user);
 
@@ -654,7 +654,7 @@ public class UserManager {
 
       return user.getId();
     } catch (Exception e) {
-      SynchroReport.error("UserManager.deleteUser()", "problème à la suppression de l'utilisateur "
+      SynchroDomainReport.error("UserManager.deleteUser()", "problème à la suppression de l'utilisateur "
           + user.getFirstName() + " " + user.getLastName() + "(specificId:"
           + user.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.deleteUser", SilverpeasException.ERROR,
@@ -679,15 +679,15 @@ public class UserManager {
       UserRow ur = this.userDetail2UserRow(user);
 
       // update the user node in Silverpeas
-      SynchroReport.info("UserManager.updateUser()", "Maj de l'utilisateur "
-          + user.getSpecificId() + " dans la base...", null);
+      SynchroDomainReport.info("UserManager.updateUser()", "Maj de l'utilisateur "
+          + user.getSpecificId() + " dans la base...");
       ddManager.getOrganization().user.updateUser(ur);
 
       // index user information
       ddManager.indexUser(user.getId());
       return user.getId();
     } catch (Exception e) {
-      SynchroReport.error("UserManager.updateUser()", "problème lors de la maj de l'utilisateur "
+      SynchroDomainReport.error("UserManager.updateUser()", "problème lors de la maj de l'utilisateur "
           + user.getFirstName() + " " + user.getLastName() + "(specificId:"
           + user.getSpecificId()
           + ") - " + e.getMessage(), null);

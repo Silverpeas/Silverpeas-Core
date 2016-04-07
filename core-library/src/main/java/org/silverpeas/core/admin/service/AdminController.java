@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -47,8 +48,8 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -86,8 +87,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getGeneralSpaceId();
     } catch (Exception e) {
-      SilverTrace.fatal("admin", "AdminController.getGeneralSpaceId",
-          "admin.MSG_FATAL_GET_GENERAL_SPACE_ID", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "";
     }
   }
@@ -1200,8 +1200,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getDAPIGeneralAdminId();
     } catch (Exception e) {
-      SilverTrace.fatal("admin", "AdminController.getDAPIGeneralAdminId",
-          "admin.MSG_FATAL_GET_GENERAL_ADMIN_ID", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
     }
   }

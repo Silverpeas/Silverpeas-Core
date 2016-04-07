@@ -21,10 +21,10 @@
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,17 +130,17 @@ abstract public class AbstractLDAPGroup {
 
     int i;
     if (parentId == null) {
-      SynchroReport.info("AbstractLDAPGroup.getGroups()",
-          "Recherche des groupes racine du domaine LDAP distant...", null);
+      SynchroDomainReport.info("AbstractLDAPGroup.getGroups()",
+          "Recherche des groupes racine du domaine LDAP distant...");
     } else {
-      SynchroReport.info("AbstractLDAPGroup.getGroups()",
+      SynchroDomainReport.info("AbstractLDAPGroup.getGroups()",
           "Recherche des groupes fils inclus au groupe " + parentId
-          + " du domaine LDAP distant...", null);
+          + " du domaine LDAP distant...");
     }
     LDAPEntry[] groupsFounded = getChildGroupsEntry(lds, parentId, extraFilter);
 
-    SynchroReport.info("AbstractLDAPGroup.getGroups()", "groupsFounded="
-        + groupsFounded.length, null);
+    SynchroDomainReport.info("AbstractLDAPGroup.getGroups()", "groupsFounded="
+        + groupsFounded.length);
     Group[] groupsProcessed = new Group[groupsFounded.length];
 
     for (i = 0; i < groupsFounded.length; i++) {
@@ -172,9 +172,9 @@ abstract public class AbstractLDAPGroup {
       groupsReturned.add(groupsProcessed[i]);
 
       if (groupsProcessed[i] != null) {
-        SynchroReport.warn("AbstractLDAPGroup.getGroups()",
+        SynchroDomainReport.warn("AbstractLDAPGroup.getGroups()",
             "groupsReturned[i]" + groupsProcessed[i].getId() + " - "
-            + groupsProcessed[i].getName(), null);
+            + groupsProcessed[i].getName());
       }
 
       String StrTypeGroup;
@@ -184,29 +184,28 @@ abstract public class AbstractLDAPGroup {
         StrTypeGroup = "Groupe fils";
       }
       if (groupsProcessed[i].getUserIds().length != 0) {
-        SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
+        SynchroDomainReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
             + " trouvé no : " + Integer.toString(i) + ", nom du groupe : "
             + groupsProcessed[i].getSpecificId() + ", desc. : "
             + groupsProcessed[i].getDescription() + ". "
             + groupsProcessed[i].getUserIds().length
-            + " utilisateur(s) membre(s) associé(s)", null);
+            + " utilisateur(s) membre(s) associé(s)");
       } else {
-        SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
+        SynchroDomainReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
             + " trouvé no : " + Integer.toString(i) + ", nom du groupe : "
             + groupsProcessed[i].getSpecificId() + ", desc. : "
-            + groupsProcessed[i].getDescription(), null);
+            + groupsProcessed[i].getDescription());
       }
 
       groupsProcessed[i].traceGroup();
     }
 
     if (parentId == null) {
-      SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
-          + groupsFounded.length + " groupes racine du domaine LDAP distant",
-          null);
+      SynchroDomainReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
+          + groupsFounded.length + " groupes racine du domaine LDAP distant");
     } else {
-      SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
-          + groupsFounded.length + " groupes fils du groupe " + parentId, null);
+      SynchroDomainReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
+          + groupsFounded.length + " groupes fils du groupe " + parentId);
     }
 
     return groupsReturned.toArray(new Group[groupsReturned.size()]);
@@ -295,7 +294,7 @@ abstract public class AbstractLDAPGroup {
             "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
         synchroReport.append("PB getting Group's childs : ").append(groupInfos.getName()).append(
             "\n");
-        SynchroReport.error("AbstractLDAPGroup.translateGroup()",
+        SynchroDomainReport.error("AbstractLDAPGroup.translateGroup()",
             "Pb de récupération des membres utilisateurs du groupe "
             + groupInfos.getSpecificId(), e);
       } else {
@@ -337,8 +336,8 @@ abstract public class AbstractLDAPGroup {
       }
       try {
         String[] userIds = getUserIds(lds, groupEntry);
-        SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
-            "Users in group: " + userIds.length, null);
+        SynchroDomainReport.warn("AbstractLDAPGroup.translateGroups()",
+            "Users in group: " + userIds.length);
         Collections.addAll(allUserIds, userIds);
       } catch (AdminException e) {
         if (synchroInProcess) {
@@ -346,7 +345,7 @@ abstract public class AbstractLDAPGroup {
               "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
           synchroReport.append("PB getting Group's childs : ").append(groupInfos.getName()).append(
               "\n");
-          SynchroReport.error("AbstractLDAPGroup.translateGroups()",
+          SynchroDomainReport.error("AbstractLDAPGroup.translateGroups()",
               "Pb de récupération des membres utilisateurs du groupe "
               + groupInfos.getSpecificId(), e);
         } else {
@@ -355,8 +354,8 @@ abstract public class AbstractLDAPGroup {
       }
     }
     groupInfos.setUserIds(allUserIds.toArray(new String[allUserIds.size()]));
-    SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
-        "Users in merged Group: " + groupInfos.getNbUsers(), null);
+    SynchroDomainReport.warn("AbstractLDAPGroup.translateGroups()",
+        "Users in merged Group: " + groupInfos.getNbUsers());
     return groupInfos;
   }
 

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
@@ -298,10 +298,9 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     }
 
     int[] params = new int[] { spaceUserRoleId, userId };
-    SynchroReport.debug("SpaceUserRoleTable.removeUserFromSpaceUserRole()",
+    SynchroDomainReport.debug("SpaceUserRoleTable.removeUserFromSpaceUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " de role d'espace d'ID "
-        + spaceUserRoleId + ", requête : " + DELETE_SPACEUSERROLE_USER_REL,
-        null);
+        + spaceUserRoleId + ", requête : " + DELETE_SPACEUSERROLE_USER_REL);
     updateRelation(DELETE_SPACEUSERROLE_USER_REL, params);
   }
 
@@ -313,10 +312,9 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public void removeAllUsersFromSpaceUserRole(int spaceUserRoleId)
       throws AdminPersistenceException {
-    SynchroReport.debug("SpaceUserRoleTable.removeAllUsersFromSpaceUserRole()",
+    SynchroDomainReport.debug("SpaceUserRoleTable.removeAllUsersFromSpaceUserRole()",
         "Retrait des utilisateurs du role d'espace d'ID "
-        + spaceUserRoleId + ", requête : " + DELETE_SPACEUSERROLE_USER_REL,
-        null);
+        + spaceUserRoleId + ", requête : " + DELETE_SPACEUSERROLE_USER_REL);
     updateRelation(DELETE_ALL_USERS_FROM_SPACEUSERROLE, spaceUserRoleId);
   }
 
@@ -384,10 +382,10 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     }
 
     int[] params = new int[] { spaceUserRoleId, groupId };
-    SynchroReport.debug("SpaceUserRoleTable.removeGroupFromSpaceUserRole()",
+    SynchroDomainReport.debug("SpaceUserRoleTable.removeGroupFromSpaceUserRole()",
         "Retrait du groupe d'ID " + groupId + " de l'espace d'ID "
         + spaceUserRoleId + ", requête : "
-        + DELETE_SPACEUSERROLE_GROUP_REL, null);
+        + DELETE_SPACEUSERROLE_GROUP_REL);
     updateRelation(DELETE_SPACEUSERROLE_GROUP_REL, params);
   }
 
@@ -399,9 +397,9 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public void removeAllGroupsFromSpaceUserRole(int spaceUserRoleId)
       throws AdminPersistenceException {
-    SynchroReport.debug("SpaceUserRoleTable.removeAllGroupsFromSpaceUserRole()",
+    SynchroDomainReport.debug("SpaceUserRoleTable.removeAllGroupsFromSpaceUserRole()",
         "Retrait des groupes du rôle de l'espace d'ID " + spaceUserRoleId + ", requête : "
-        + DELETE_SPACEUSERROLE_GROUP_REL, null);
+        + DELETE_SPACEUSERROLE_GROUP_REL);
     updateRelation(DELETE_ALL_GROUPS_FROM_SPACEUSERROLE, spaceUserRoleId);
   }
 

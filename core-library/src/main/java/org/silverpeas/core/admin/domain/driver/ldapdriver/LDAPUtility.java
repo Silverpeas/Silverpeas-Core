@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import com.novell.ldap.LDAPAttribute;
@@ -255,7 +255,7 @@ public class LDAPUtility {
     LDAPSearchConstraints sc = connection.getSearchConstraints();
     sc.setBatchSize(1);
     sc.setMaxResults(1);
-    // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
+    // SynchroDomainReport.debug("LDAPUtility.getFirstEntryFromSearch()",
     // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
     // and stop when first entry is found
@@ -482,10 +482,10 @@ public class LDAPUtility {
       for (String baseDN1 : baseDNs) {
         theFullFilter = filter;
         while (theFullFilter != null) {
-          SynchroReport.debug("LDAPUtility.search1000Plus()",
+          SynchroDomainReport.debug("LDAPUtility.search1000Plus()",
               "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion()
               + "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter="
-              + theFullFilter, null);
+              + theFullFilter);
 
           try {
             LDAPSearchResults res = ld.search(baseDN1, scope, theFullFilter, args, false, cons);
@@ -495,8 +495,8 @@ public class LDAPUtility {
                 // res.next();
                 notTheFirst = false;
               } else {
-                SynchroReport.debug("LDAPUtility.search1000Plus()", "élément #" + nbReaded + " : "
-                    + entry.getDN(), null);
+                SynchroDomainReport.debug("LDAPUtility.search1000Plus()", "élément #" + nbReaded + " : "
+                    + entry.getDN());
                 entriesVector.add(entry);
                 nbReaded++;
               }
@@ -504,13 +504,13 @@ public class LDAPUtility {
           } catch (LDAPException le) {
             if (le.getResultCode() == LDAPException.SIZE_LIMIT_EXCEEDED) {
               sizeLimitReached = true;
-              SynchroReport.debug("LDAPUtility.search1000Plus()", "Size Limit Reached...", null);
+              SynchroDomainReport.debug("LDAPUtility.search1000Plus()", "Size Limit Reached...");
             } else if (le.getResultCode() == LDAPException.TIME_LIMIT_EXCEEDED) {
               timeLimitReached = true;
               nbRetryTimeLimit++;
               lastException = le;
-              SynchroReport.debug("LDAPUtility.search1000Plus()", "Time Limit Reached (#"
-                  + nbRetryTimeLimit + ")", null);
+              SynchroDomainReport.debug("LDAPUtility.search1000Plus()", "Time Limit Reached (#"
+                  + nbRetryTimeLimit + ")");
             } else {
               SilverTrace.error("admin", "LDAPUtility.search1000Plus", "admin.EX_ERR_LDAP_REFERRAL",
                   "#" + Integer.toString(le.getResultCode()) + " " + le.getLDAPErrorMessage(), le);
@@ -531,16 +531,16 @@ public class LDAPUtility {
         }
       }
     } catch (LDAPReferralException re) {
-      SynchroReport.error("LDAPUtility.search1000Plus()",
+      SynchroDomainReport.error("LDAPUtility.search1000Plus()",
           "Référence (referral) retournée mais pas suivie !", re);
       throw new AdminException("LDAPUtility.search1000Plus",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
           + Integer.toString(re.getResultCode()) + " "
           + re.getLDAPErrorMessage(), re);
     } catch (LDAPException e) {
-      SynchroReport.debug("LDAPUtility.search1000Plus()",
+      SynchroDomainReport.debug("LDAPUtility.search1000Plus()",
           "Une exception générale est survenue : #" + e.getResultCode() + " "
-          + e.getLDAPErrorMessage(), null);
+          + e.getLDAPErrorMessage());
       if (LDAPUtility.recoverConnection(lds, e)) {
         return search1000Plus(lds, baseDN, scope, filter, varToSort, args);
       } else {

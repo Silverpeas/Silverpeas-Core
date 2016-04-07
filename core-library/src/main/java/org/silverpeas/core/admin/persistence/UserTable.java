@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
@@ -187,10 +187,9 @@ public class UserTable extends Table<UserRow> {
     params.add(domainId);
     params.add(login);
     List<UserRow> users = getRows(SELECT_USER_BY_DOMAINID_AND_LOGIN, params);
-    SynchroReport.debug("UserTable.getUserByLogin()",
+    SynchroDomainReport.debug("UserTable.getUserByLogin()",
         "Vérification que le login" + login + " du domaine no " + domainId +
-            " n'est pas présent dans la base, requête : " + SELECT_USER_BY_DOMAINID_AND_LOGIN,
-        null);
+            " n'est pas présent dans la base, requête : " + SELECT_USER_BY_DOMAINID_AND_LOGIN);
     if (users.isEmpty()) {
       return null;
     }
@@ -313,9 +312,9 @@ public class UserTable extends Table<UserRow> {
    * @throws AdminPersistenceException
    */
   public String[] getDirectUserIdsOfGroup(int groupId) throws AdminPersistenceException {
-    SynchroReport.debug("UserTable.getDirectUserIdsOfGroup()",
+    SynchroDomainReport.debug("UserTable.getDirectUserIdsOfGroup()",
         "Recherche des utilisateurs inclus directement dans le groupe d'ID " + groupId +
-            ", requête : " + SELECT_USER_IDS_IN_GROUP, null);
+            ", requête : " + SELECT_USER_IDS_IN_GROUP);
     List<String> rows = getIds(SELECT_USER_IDS_IN_GROUP, groupId);
     return rows.toArray(new String[rows.size()]);
   }
@@ -346,9 +345,9 @@ public class UserTable extends Table<UserRow> {
    * @throws AdminPersistenceException
    */
   public UserRow[] getAllUserOfDomain(int domainId) throws AdminPersistenceException {
-    SynchroReport.debug("UserTable.getAllUserOfDomain()",
+    SynchroDomainReport.debug("UserTable.getAllUserOfDomain()",
         "Recherche de l'ensemble des " + "utilisateurs du domaine LDAP dans la base (ID " +
-            domainId + "), requête : " + SELECT_ALL_USERS_IN_DOMAIN, null);
+            domainId + "), requête : " + SELECT_ALL_USERS_IN_DOMAIN);
     List<UserRow> rows = getRows(SELECT_ALL_USERS_IN_DOMAIN, domainId);
     return rows.toArray(new UserRow[rows.size()]);
   }
@@ -559,9 +558,8 @@ public class UserTable extends Table<UserRow> {
    * @throws AdminPersistenceException
    */
   public void createUser(UserRow user) throws AdminPersistenceException {
-    SynchroReport
-        .debug("UserTable.createUser()", "Ajout de " + user.login + ", requête : " + INSERT_USER,
-            null);
+    SynchroDomainReport
+        .debug("UserTable.createUser()", "Ajout de " + user.login + ", requête : " + INSERT_USER);
     insertRow(INSERT_USER, user);
   }
 
@@ -607,8 +605,8 @@ public class UserTable extends Table<UserRow> {
    * @throws AdminPersistenceException
    */
   public void updateUser(UserRow user) throws AdminPersistenceException {
-    SynchroReport.debug("UserTable.updateUser()",
-        "Maj de " + user.login + ", Id=" + user.id + ", requête : " + UPDATE_USER, null);
+    SynchroDomainReport.debug("UserTable.updateUser()",
+        "Maj de " + user.login + ", Id=" + user.id + ", requête : " + UPDATE_USER);
     updateRow(UPDATE_USER, user);
   }
 
@@ -659,39 +657,37 @@ public class UserTable extends Table<UserRow> {
       return;
     }
 
-    SynchroReport.info("UserTable.removeUser()",
-        "Suppression de " + user.login + " des groupes dans la base", null);
+    SynchroDomainReport.info("UserTable.removeUser()",
+        "Suppression de " + user.login + " des groupes dans la base");
     GroupRow[] groups = organization.group.getDirectGroupsOfUser(id);
     for (GroupRow group : groups) {
       organization.group.removeUserFromGroup(id, group.id);
     }
 
-    SynchroReport
-        .info("UserTable.removeUser()", "Suppression de " + user.login + " des rôles dans la base",
-            null);
+    SynchroDomainReport
+        .info("UserTable.removeUser()", "Suppression de " + user.login + " des rôles dans la base");
     UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfUser(id);
     for (UserRoleRow role : roles) {
       organization.userRole.removeUserFromUserRole(id, role.id);
     }
 
-    SynchroReport.info("UserTable.removeUser()",
-        "Suppression de " + user.login + " en tant que manager d'espace dans la base", null);
+    SynchroDomainReport.info("UserTable.removeUser()",
+        "Suppression de " + user.login + " en tant que manager d'espace dans la base");
     SpaceUserRoleRow[] spaceRoles = organization.spaceUserRole.getDirectSpaceUserRolesOfUser(id);
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
       organization.spaceUserRole.removeUserFromSpaceUserRole(id, spaceRole.id);
     }
 
-    SynchroReport
-        .info("UserTable.removeUser()", "Delete " + user.login + " from user favorite space table",
-            null);
+    SynchroDomainReport
+        .info("UserTable.removeUser()", "Delete " + user.login + " from user favorite space table");
     UserFavoriteSpaceService ufsDAO = UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
     if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(id, -1))) {
       throw new AdminPersistenceException("UserTable.removeUser()", SilverpeasException.ERROR,
           "admin.EX_ERR_DELETE_USER");
     }
 
-    SynchroReport.debug("UserTable.removeUser()",
-        "Suppression de " + user.login + " (ID=" + id + "), requête : " + DELETE_USER, null);
+    SynchroDomainReport.debug("UserTable.removeUser()",
+        "Suppression de " + user.login + " (ID=" + id + "), requête : " + DELETE_USER);
     // Replace the login by a dummy one that must be unique
     user.login = "???REM???" + java.lang.Integer.toString(id);
     user.specificId = "???REM???" + java.lang.Integer.toString(id);

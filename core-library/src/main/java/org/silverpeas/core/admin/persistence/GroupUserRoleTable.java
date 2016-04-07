@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
@@ -205,10 +205,10 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
     }
 
     int[] params = new int[] { groupUserRoleId, userId };
-    SynchroReport.debug("GroupUserRoleTable.removeUserFromGroupUserRole()",
+    SynchroDomainReport.debug("GroupUserRoleTable.removeUserFromGroupUserRole()",
         "Retrait de l'utilisateur d'ID " + userId
         + " de role d'egroup d'ID " + groupUserRoleId + ", requête : "
-        + DELETE_GROUPUSERROLE_USER_REL, null);
+        + DELETE_GROUPUSERROLE_USER_REL);
     updateRelation(DELETE_GROUPUSERROLE_USER_REL, params);
   }
 
@@ -280,10 +280,10 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
     }
 
     int[] params = new int[] { groupUserRoleId, groupId };
-    SynchroReport.debug("GroupUserRoleTable.removeGroupFromGroupUserRole()",
+    SynchroDomainReport.debug("GroupUserRoleTable.removeGroupFromGroupUserRole()",
         "Retrait du groupe d'ID " + groupId + " de l'espace d'ID "
         + groupUserRoleId + ", requête : "
-        + DELETE_GROUPUSERROLE_GROUP_REL, null);
+        + DELETE_GROUPUSERROLE_GROUP_REL);
     updateRelation(DELETE_GROUPUSERROLE_GROUP_REL, params);
   }
 

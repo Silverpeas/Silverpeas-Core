@@ -178,11 +178,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     Connection con = getConnection();
     try {
       int indexOperation = detail.getIndexOperation();
-      SilverTrace.info("publication", "DefaultPublicationService.createPublication()",
-          "root.MSG_GEN_PARAM_VALUE",
-              "indexOperation = " + indexOperation);
       int id;
-
       try {
         id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
       } catch (SQLException ex) {
@@ -1525,9 +1521,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName) {
-    SilverTrace.info("publication", "DefaultPublicationService.getDetailByName()",
-        "root.MSG_GEN_ENTER_METHOD",
-            "pubPK = " + pubPK + ", pubName = " + pubName);
     Connection con = getConnection();
     try {
       PublicationDetail publicationDetail =

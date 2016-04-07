@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -285,9 +285,9 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException
    */
   public GroupRow[] getAllGroupsOfDomain(int domainId) throws AdminPersistenceException {
-    SynchroReport.debug("GroupTable.getAllGroupsOfDomain()",
+    SynchroDomainReport.debug("GroupTable.getAllGroupsOfDomain()",
         "Recherche de l'ensemble des groupes du domaine LDAP dans la base (ID " + domainId +
-            "), requête : " + SELECT_ALL_GROUPS_IN_DOMAIN, null);
+            "), requête : " + SELECT_ALL_GROUPS_IN_DOMAIN);
     List<GroupRow> rows = getRows(SELECT_ALL_GROUPS_IN_DOMAIN, domainId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -548,9 +548,8 @@ public class GroupTable extends Table<GroupRow> {
             "admin.EX_ERR_GROUP_NOT_FOUND", "father group id: '" + group.superGroupId + "'");
       }
     }
-    SynchroReport
-        .debug("GroupTable.createGroup()", "Ajout de " + group.name + ", requête : " + INSERT_GROUP,
-            null);
+    SynchroDomainReport
+        .debug("GroupTable.createGroup()", "Ajout de " + group.name + ", requête : " + INSERT_GROUP);
     insertRow(INSERT_GROUP, group);
 
   }
@@ -587,8 +586,8 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException
    */
   public void updateGroup(GroupRow group) throws AdminPersistenceException {
-    SynchroReport.debug("GroupTable.updateGroup()",
-        "Maj de " + group.name + ", Id=" + group.id + ", requête : " + UPDATE_GROUP, null);
+    SynchroDomainReport.debug("GroupTable.updateGroup()",
+        "Maj de " + group.name + ", Id=" + group.id + ", requête : " + UPDATE_GROUP);
     updateRow(UPDATE_GROUP, group);
   }
 
@@ -626,28 +625,28 @@ public class GroupTable extends Table<GroupRow> {
       return;
     }
 
-    SynchroReport.info("GroupTable.removeGroup()",
-        "Suppression du groupe " + group.name + " dans la base...", null);
+    SynchroDomainReport.info("GroupTable.removeGroup()",
+        "Suppression du groupe " + group.name + " dans la base...");
     // remove the group from each role where it's used.
     UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfGroup(id);
-    SynchroReport.info("GroupTable.removeGroup()",
-        "Suppression de " + group.name + " des rôles dans la base", null);
+    SynchroDomainReport.info("GroupTable.removeGroup()",
+        "Suppression de " + group.name + " des rôles dans la base");
     for (UserRoleRow role : roles) {
       organization.userRole.removeGroupFromUserRole(id, role.id);
     }
 
     // remove the group from each space role where it's used.
     SpaceUserRoleRow[] spaceRoles = organization.spaceUserRole.getDirectSpaceUserRolesOfGroup(id);
-    SynchroReport.info("GroupTable.removeGroup()",
-        "Suppression de " + group.name + " comme manager d'espace dans la base", null);
+    SynchroDomainReport.info("GroupTable.removeGroup()",
+        "Suppression de " + group.name + " comme manager d'espace dans la base");
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
       organization.spaceUserRole.removeGroupFromSpaceUserRole(id, spaceRole.id);
     }
     // remove all subgroups.
     GroupRow[] subGroups = getDirectSubGroups(id);
     if (subGroups.length > 0) {
-      SynchroReport.info("GroupTable.removeGroup()",
-          "Suppression des groupes fils de " + group.name + " dans la base", null);
+      SynchroDomainReport.info("GroupTable.removeGroup()",
+          "Suppression des groupes fils de " + group.name + " dans la base");
     }
     for (GroupRow subGroup : subGroups) {
       removeGroup(subGroup.id);
@@ -657,14 +656,14 @@ public class GroupTable extends Table<GroupRow> {
     for (UserRow user : users) {
       removeUserFromGroup(user.id, id);
     }
-    SynchroReport.info("GroupTable.removeGroup()",
+    SynchroDomainReport.info("GroupTable.removeGroup()",
         "Suppression de " + users.length + " utilisateurs inclus directement dans le groupe " +
-            group.name + " dans la base", null);
+            group.name + " dans la base");
 
     // remove the empty group.
     // organization.userSet.removeUserSet("G", id);
-    SynchroReport.debug("GroupTable.removeGroup()",
-        "Suppression de " + group.name + " (ID=" + id + "), requête : " + DELETE_GROUP, null);
+    SynchroDomainReport.debug("GroupTable.removeGroup()",
+        "Suppression de " + group.name + " (ID=" + id + "), requête : " + DELETE_GROUP);
     updateRelation(DELETE_GROUP, id);
   }
 
@@ -705,9 +704,9 @@ public class GroupTable extends Table<GroupRow> {
     }
 
     int[] params = new int[]{groupId, userId};
-    SynchroReport.debug("GroupTable.addUserInGroup()",
+    SynchroDomainReport.debug("GroupTable.addUserInGroup()",
         "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID " + groupId +
-            ", requête : " + INSERT_A_GROUP_USER_REL, null);
+            ", requête : " + INSERT_A_GROUP_USER_REL);
     updateRelation(INSERT_A_GROUP_USER_REL, params);
     GroupCache.removeCacheOfUser(Integer.toString(userId));
   }
@@ -748,7 +747,7 @@ public class GroupTable extends Table<GroupRow> {
         int[] params = new int[]{groupId, userId};
         SynchroGroupReport.debug("GroupTable.addUsersInGroup()",
             "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID " + groupId +
-                ", requête : " + INSERT_A_GROUP_USER_REL, null);
+                ", requête : " + INSERT_A_GROUP_USER_REL);
         updateRelation(INSERT_A_GROUP_USER_REL, params);
         GroupCache.removeCacheOfUser(Integer.toString(userId));
       }
@@ -771,9 +770,9 @@ public class GroupTable extends Table<GroupRow> {
           "group id: '" + groupId + "', user id: '" + userId + "'");
     }
     int[] params = new int[]{groupId, userId};
-    SynchroReport.debug("GroupTable.removeUserFromGroup()",
+    SynchroDomainReport.debug("GroupTable.removeUserFromGroup()",
         "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID " + groupId + ", requête : " +
-            DELETE_GROUP_USER_REL, null);
+            DELETE_GROUP_USER_REL);
     updateRelation(DELETE_GROUP_USER_REL, params);
     GroupCache.removeCacheOfUser(Integer.toString(userId));
   }
@@ -809,7 +808,7 @@ public class GroupTable extends Table<GroupRow> {
         int[] params = new int[]{groupId, userId};
         SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()",
             "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID " + groupId +
-                ", requête : " + DELETE_GROUP_USER_REL, null);
+                ", requête : " + DELETE_GROUP_USER_REL);
         updateRelation(DELETE_GROUP_USER_REL, params);
         GroupCache.removeCacheOfUser(Integer.toString(userId));
       } else {

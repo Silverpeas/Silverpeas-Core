@@ -24,11 +24,11 @@
 
 package org.silverpeas.core.web.admin.migration;
 
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -62,7 +62,7 @@ public class DomainSP2LDAPBatch {
    */
   public ArrayList<HashMap<String, UserDetail>> processMigration(String domainLDAP_Id)
       throws Exception {
-    SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_ENTER_METHOD", null);
+    SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_ENTER_METHOD");
     AdminController adminController = getAdminController();
 
     ArrayList<HashMap<String, UserDetail>> returnListLDAPUsers =
@@ -75,8 +75,8 @@ public class DomainSP2LDAPBatch {
     try {
       // get all users from ldap
       String[] listLDAPUsersIds = adminController.getUserIdsOfDomain(domainLDAP_Id);
-      SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
-          "Utilisateurs du domaine Silverpeas=" + listLDAPUsersIds.length, null);
+      SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
+          "Utilisateurs du domaine Silverpeas=" + listLDAPUsersIds.length);
       if (listLDAPUsersIds.length == 0)
         return returnListLDAPUsers;
 
@@ -115,8 +115,8 @@ public class DomainSP2LDAPBatch {
       if (processGroups) {
         // Move groups from domainSP to mixtDomain
         Group[] groups = getOrganisationController().getAllGroups();
-        SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
-            "DEBUT Migration des groupes du domaine SP vers le domaine mixte...", null);
+        SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
+            "DEBUT Migration des groupes du domaine SP vers le domaine mixte...");
         for (Group group : groups) {
           boolean processGroup = false;
 
@@ -136,15 +136,14 @@ public class DomainSP2LDAPBatch {
               group.setSpecificId(Integer.toString(nextId));
               group.setDomainId(null);
               adminController.updateGroup(group);
-              SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
+              SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
                   "- Groupe " + group.getName() + " avec " + group.getUserIds().length +
-                  " utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte",
-                  null);
+                  " utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte");
             }
           }
         }
-        SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
-            "FIN Migration des groupes du domaine SP vers le domaine mixte...", null);
+        SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
+            "FIN Migration des groupes du domaine SP vers le domaine mixte...");
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -152,17 +151,17 @@ public class DomainSP2LDAPBatch {
           SilverpeasException.ERROR,
           "Erreur lors de la migration des comptes Silverpeas", e);
     }
-    SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
-        "DEBUT Synchronisation post migration du domaine " + domainLDAP_Id, null);
-    SynchroReport.info("DomainSP2LDAPBatch.processMigration()", getAdminController()
-        .synchronizeSilverpeasWithDomain(domainLDAP_Id), null);
-    SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
-        "FIN Synchronisation post migration du domaine " + domainLDAP_Id, null);
+    SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
+        "DEBUT Synchronisation post migration du domaine " + domainLDAP_Id);
+    SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()", getAdminController()
+        .synchronizeSilverpeasWithDomain(domainLDAP_Id));
+    SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
+        "FIN Synchronisation post migration du domaine " + domainLDAP_Id);
     returnListLDAPUsers.add(processedUsers);
     returnListLDAPUsers.add(notProcessedSPUsers);
     returnListLDAPUsers.add(listLDAPUsers);
-    SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_EXIT_METHOD", null);
-    SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_UNKNOWN);
+    SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_EXIT_METHOD");
+    SynchroDomainReport.setReportLevel(null);
     return returnListLDAPUsers;
   }
 

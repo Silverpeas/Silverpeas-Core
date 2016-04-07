@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,4 @@
  * Provides an API for notifying users either directly or in a delayed way according to the
  * preferences of the users.
  */
-@Module("userNotification")
 package org.silverpeas.core.notification.user;
-
-import org.silverpeas.core.annotation.Module;

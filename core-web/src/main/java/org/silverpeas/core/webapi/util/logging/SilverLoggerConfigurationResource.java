@@ -47,31 +47,31 @@ import javax.ws.rs.core.Response;
  */
 @Service
 @RequestScoped
-@Path("logging/{module}/configuration")
+@Path("logging/{logger}/configuration")
 @Authenticated
 public class SilverLoggerConfigurationResource extends RESTWebService {
 
-  @PathParam("module")
-  private String silverpeasModule;
+  @PathParam("logger")
+  private String namespace;
 
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public LoggerConfigurationEntity changeLoggerConfiguration(LoggerConfigurationEntity config) {
     LoggerConfigurationManager configManager = LoggerConfigurationManager.get();
-    if (silverpeasModule.equals(config.getModule())) {
+    if (namespace.equals(config.getLogger())) {
       LoggerConfiguration loggerConfig = config.toLoggerConfiguration();
       /* save the logger configuration */
       configManager.saveLoggerConfiguration(loggerConfig);
       /* and now apply the change to the existing logger */
-      SilverLogger.getLogger(silverpeasModule).setLevel(loggerConfig.getLevel());
+      SilverLogger.getLogger(namespace).setLevel(loggerConfig.getLevel());
     } else {
       throw new WebApplicationException(
           "The module name of the configuration doesn't match with the URI",
           Response.Status.BAD_REQUEST);
     }
     return LoggerConfigurationEntity.toWebEntity(
-        configManager.getLoggerConfiguration(silverpeasModule))
+        configManager.getLoggerConfiguration(namespace))
         .withAsURi(getUriInfo().getRequestUri());
   }
 

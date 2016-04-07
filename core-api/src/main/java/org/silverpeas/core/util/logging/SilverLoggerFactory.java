@@ -33,11 +33,11 @@ import java.util.ServiceLoader;
  * Engine by wrapping and hence using a true logging backend.
  * </p>
  * The factory isn't dedicated to be used by client code but by the
- * {@code org.silverpeas.core.util.logging.SilverLogger} class to obtain an instance of a logger
+ * {@link org.silverpeas.core.util.logging.SilverLogger} class to obtain an instance of a logger
  * according to the actual active logging backend. By implementing this interface, the implementor
  * has the total control of any cache mechanism as well as of the loggers manufacture process.
  * </p>
- * The bind between the {@code org.silverpeas.core.util.logging.LoggerFactory}
+ * The bind between the {@link org.silverpeas.core.util.logging.SilverLoggerFactory}
  * interface and its implementation is performed by the Java SPI (Java Service Provider Interface).
  * Only the first available logger factory implementation is loaded.
  * @author miguel
@@ -63,9 +63,9 @@ public interface SilverLoggerFactory {
   }
 
   /**
-   * Gets a {@code org.silverpeas.core.util.logging.Logger} instance for the specified namespace.
-   * If a logger has already been created with the given namespace it is returned, otherwise a new
-   * logger is manufactured and initialized.
+   * Gets a {@link org.silverpeas.core.util.logging.SilverLogger} instance for the specified
+   * namespace. If a logger has already been created with the given namespace it is returned,
+   * otherwise a new logger is manufactured and initialized.
    * </p>
    * The logging level of the returned logger will be set according to the logging configuration
    * found for the given logger namespace. If no level setting is found from the configuration or
@@ -76,7 +76,7 @@ public interface SilverLoggerFactory {
    * Silverpeas.
    * </p>
    * This method should not be invoked directly. It is dedicated to be used by the
-   * {@code org.silverpeas.core.util.logging.SilverLogger#getLogger(String)} method or by the
+   * {@link org.silverpeas.core.util.logging.SilverLogger#getLogger(String)} method or by the
    * implementation of the Silverpeas Logging Engine.
    * @param namespace the hierarchical dot-separated namespace of the logger mapping the
    * hierachical relationships between the loggers from the root one.
@@ -89,9 +89,9 @@ public interface SilverLoggerFactory {
   }
 
   /**
-   * Gets a {@code org.silverpeas.core.util.logging.Logger} instance for the specified namespace.
-   * If a logger has already been created with the given namespace it is returned, otherwise a new
-   * logger is manufactured and initialized from the given logger configuration.
+   * Gets a {@link org.silverpeas.core.util.logging.SilverLogger} instance for the specified
+   * namespace. If a logger has already been created with the given namespace it is returned,
+   * otherwise a new logger is manufactured and initialized from the given logger configuration.
    * </p>
    * The logging level of the returned logger will be set according to the specified logging
    * configuration. If no level setting is found from the configuration or
@@ -102,14 +102,14 @@ public interface SilverLoggerFactory {
    * Silverpeas.
    * </p>
    * This method should not be invoked directly. It is dedicated to be used by the
-   * {@code org.silverpeas.core.util.logging.SilverLogger#getLogger(String)} method or by the
+   * {@link org.silverpeas.core.util.logging.SilverLogger#getLogger(String)} method or by the
    * implementation of the Silverpeas Logging Engine.
    * @param namespace the hierarchical dot-separated namespace of the logger mapping the
    * hierachical relationships between the loggers from the root one.
    * @param configuration the logger configuration to use when initializing the manufactured
    * logger. If the logger already exists, the configuration won't be used in order to avoid
    * any replacement of the existing configuration. To update its configuration, please use
-   * instead {@code org.silverpeas.core.util.logging.LoggerConfigurationManager}.
+   * instead {@link org.silverpeas.core.util.logging.LoggerConfigurationManager}.
    * @return a Silverpeas logger instance.
    */
   SilverLogger getLogger(String namespace, LoggerConfiguration configuration);

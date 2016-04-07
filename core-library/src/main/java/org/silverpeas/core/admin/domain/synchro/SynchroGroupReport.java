@@ -24,181 +24,157 @@
 
 package org.silverpeas.core.admin.domain.synchro;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import java.util.Vector;
+import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SynchroGroupReport {
 
-  // Niveaux de trace
-  public static final int TRACE_LEVEL_UNKNOWN = 0x00000000;
-  public static final int TRACE_LEVEL_DEBUG = 0x00000001;
-  public static final int TRACE_LEVEL_INFO = 0x00000002;
-  public static final int TRACE_LEVEL_WARN = 0x00000003;
-  public static final int TRACE_LEVEL_ERROR = 0x00000004;
-  public static final int TRACE_LEVEL_FATAL = 0x00000005;
-  // Etats de la synchro
+  private static final String REPORT_NAME = "DomainGroupSynchro";
+  private static final String REPORT_NAMESPACE = "silverpeas.core.admin.domain.synchro.group";
+  private static final String LOG_FORMAT = "[{0}] {1}: {2}";
+
+  // synchronization states
   public static final int STATE_NOSYNC = 0x00000000;
   public static final int STATE_WAITSTART = 0x00000001;
   public static final int STATE_STARTED = 0x00000002;
   public static final int STATE_ENDED = 0x00000003;
 
-  private static final String moduleName = "synchroGroup";
+  private static Level level;
+  private static List<String> messages = Collections.synchronizedList(new ArrayList<>());
+  private static int state = STATE_NOSYNC;
 
-  private static int iTraceLevel;
-  private static Vector<String> VMessage;
-  private static int iState;
-
-  // Initialisation
-  static {
-    iTraceLevel = TRACE_LEVEL_WARN;
-    VMessage = new Vector<String>();
-    iState = STATE_NOSYNC;
-  }
-
-  static public String getModuleName() {
-    return moduleName;
+  static public String getReportName() {
+    return REPORT_NAME;
   }
 
   /**
-   * Fixe le niveau de trace
+   * Sets the level from which the messages will be reported. This level doesn't apply on the level
+   * of the logs in the report file.
    */
-  static public void setTraceLevel(int iTraceLevelFixed) {
-    iTraceLevel = iTraceLevelFixed;
+  static public void setReportLevel(Level reportLevel) {
+    level = reportLevel;
+  }
+
+  public static Level getReportLevel() {
+    return level;
   }
 
   /**
-   * Recupere le niveau de trace
+   * Sets the state of the synchronization.
    */
-  static public int getTraceLevel() {
-    return iTraceLevel;
-  }
-
-  /**
-   * Recupere le niveau de trace ds une chaine
-   */
-  static public String getTraceLevelStr() {
-    if (iTraceLevel == TRACE_LEVEL_WARN)
-      return "warning";
-    else if (iTraceLevel == TRACE_LEVEL_DEBUG)
-      return "debug";
-    else if (iTraceLevel == TRACE_LEVEL_INFO)
-      return "info";
-    else if (iTraceLevel == TRACE_LEVEL_ERROR)
-      return "error";
-    else if (iTraceLevel == TRACE_LEVEL_FATAL)
-      return "fatal";
-    else
-      return "unknown";
-  }
-
-  /**
-   * Fixe l'etat
-   */
-  static synchronized public void setState(int iStateCours) {
-    if ((iState < STATE_WAITSTART) || (iStateCours != STATE_WAITSTART)) {
-      iState = iStateCours;
+  static synchronized private void setState(int iStateCours) {
+    if ((state < STATE_WAITSTART) || (iStateCours != STATE_WAITSTART)) {
+      state = iStateCours;
     }
   }
 
   /**
-   * Recupere l'etat
+   * Gets the current state of the report.
+   * @return the state of the report.
    */
-  static public int getState() {
-    return iState;
+  public static int getState() {
+    return state;
   }
 
-  /**
-
-     */
-  static public String getMessage() {
+  static public String getMessages() {
     String Message = null;
-    synchronized (VMessage) {
-      if (VMessage.size() > 0) {
-        Message = VMessage.remove(0);
+    synchronized (messages) {
+      if (messages.size() > 0) {
+        Message = messages.remove(0);
       }
     }
     return Message;
   }
 
   static public void startSynchro() {
-    synchronized (VMessage) {
-      VMessage.clear();
+    synchronized (messages) {
+      messages.clear();
     }
     setState(STATE_STARTED);
-    warn("SynchroReport.startSynchro", "Debut de Synchronisation", null);
+    warn("SynchroGroupReport.startSynchro", "Synchronisation Start");
   }
 
   static public void stopSynchro() {
-    warn("SynchroReport.stopSynchro", "Fin de Synchronisation", null);
+    warn("SynchroGroupReport.stopSynchro", "Synchronisation End");
     setState(STATE_ENDED);
   }
 
-  static public void debug(String classe, String message, Throwable ex) {
+  public static void reset() {
+    setState(STATE_NOSYNC);
+  }
+
+  public static void waitForStart() {
+    setState(STATE_WAITSTART);
+  }
+
+  static public void debug(String classe, String message) {
     if (isSynchroActive()) {
-      addMessage(msgFormat(TRACE_LEVEL_DEBUG, classe, message, ex),
-          TRACE_LEVEL_DEBUG);
-      SilverTrace.debug(getModuleName(), classe, message, ex);
+      addMessage(Level.DEBUG, msgFormat(Level.DEBUG, classe, message, null));
+      SilverLogger.getLogger(REPORT_NAMESPACE).debug(LOG_FORMAT, getReportName(), classe, message);
     }
   }
 
-  static public void info(String classe, String message, Throwable ex) {
+  static public void info(String classe, String message) {
     if (isSynchroActive()) {
-      addMessage(msgFormat(TRACE_LEVEL_INFO, classe, message, ex),
-          TRACE_LEVEL_INFO);
-
+      addMessage(Level.INFO, msgFormat(Level.INFO, classe, message, null));
+      SilverLogger.getLogger(REPORT_NAMESPACE).info(LOG_FORMAT, getReportName(), classe, message);
     }
   }
 
-  static public void warn(String classe, String message, Throwable ex) {
+  static public void warn(String classe, String message) {
     if (isSynchroActive()) {
-      addMessage(msgFormat(TRACE_LEVEL_WARN, classe, message, ex),
-          TRACE_LEVEL_WARN);
-      SilverTrace.warn(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE",
-          message, ex);
+      addMessage(Level.WARNING, msgFormat(Level.WARNING, classe, message, null));
+      SilverLogger.getLogger(REPORT_NAMESPACE).warn(LOG_FORMAT, getReportName(), classe, message);
     }
   }
 
   static public void error(String classe, String message, Throwable ex) {
     if (isSynchroActive()) {
-      addMessage(msgFormat(TRACE_LEVEL_ERROR, classe, message, ex),
-          TRACE_LEVEL_ERROR);
-      SilverTrace.error(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE",
-          message, ex);
+      addMessage(Level.ERROR, msgFormat(Level.ERROR, classe, message, ex));
+      SilverLogger.getLogger(REPORT_NAMESPACE)
+          .error(LOG_FORMAT, new Object[]{getReportName(), classe, message}, ex);
     }
   }
 
-  static protected void addMessage(String msg, int priority) {
-    if (priority >= iTraceLevel) {
-      synchronized (VMessage) {
-        VMessage.add(msg);
+  static protected void addMessage(Level msgLevel, String msg) {
+    if (msgLevel.value() >= level.value()) {
+      synchronized (messages) {
+        messages.add(msg);
       }
     }
   }
 
   static public boolean isSynchroActive() {
-    return (iState == STATE_STARTED);
+    return (state == STATE_STARTED);
   }
 
-  static protected String msgFormat(int traceLvl, String classe,
+  static protected String msgFormat(Level level, String from,
       String msgToTrace, Throwable ex) {
-    StringBuffer sb = new StringBuffer();
-
-    if (traceLvl == TRACE_LEVEL_DEBUG) {
-      sb.append("D_");
-    } else if (traceLvl == TRACE_LEVEL_INFO) {
-      sb.append("I_");
-    } else if (traceLvl == TRACE_LEVEL_WARN) {
-      sb.append("W_");
-    } else if (traceLvl == TRACE_LEVEL_ERROR) {
-      sb.append("E_");
-    } else if (traceLvl == TRACE_LEVEL_FATAL) {
-      sb.append("F_");
-    } else {
-      sb.append("U_");
+    StringBuilder sb = new StringBuilder();
+    switch(level) {
+      case DEBUG:
+        sb.append("[DEBUG] ");
+        break;
+      case INFO:
+        sb.append("[INFO] ");
+        break;
+      case WARNING:
+        sb.append("[WARN] ");
+        break;
+      case ERROR:
+        sb.append("[ERROR] ");
+        break;
+      default:
+        sb.append("[UNKNOWN] ");
+        break;
     }
     sb.append(msgToTrace);
-    if ((classe != null) && (classe.length() > 0)) {
-      sb.append(" | Classe : ").append(classe);
+    if ((from != null) && (from.length() > 0)) {
+      sb.append(" | From: ").append(from);
     }
     if (ex != null) {
       sb.append(" | !!! EXCEPTION !!! : ").append(ex.getMessage());

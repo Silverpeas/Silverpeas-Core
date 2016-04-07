@@ -78,88 +78,84 @@ public class LoggerConfigurationManagerTest {
   @Test
   public void allConfigurationFilesAreLoaded() {
     manager = LoggerConfigurationManager.get();
-    assertThat(manager.getLoggerConfigurationsByModule().size(), is(4));
-    assertThat(manager.getLoggerConfigurationsByLogger().size(), is(4));
-  }
-
-  @Test
-  public void getLoggerConfigurationWithoutLevelOfAnExistingModule() {
-    final String module = "attachment";
-    manager = LoggerConfigurationManager.get();
-    LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
-    assertThat(configuration, not(nullValue()));
-    assertThat(configuration.getModuleName(), is(module));
-    assertThat(configuration.getNamespace(), is("Silverpeas.Bus.attachment"));
-    assertThat(configuration.getLevel(), is(nullValue()));
+    assertThat(manager.getLoggerConfigurations().size(), is(4));
+    assertThat(manager.getLoggerConfigurations().size(), is(4));
   }
 
   @Test
   public void getLoggerConfigurationWithoutLevelOfAnExistingNamespace() {
-    final String namespace = "Silverpeas.Bus.attachment";
+    final String namespace = "silverpeas.core.contribution.attachment";
     manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration, not(nullValue()));
-    assertThat(configuration.getModuleName(), is("attachment"));
     assertThat(configuration.getNamespace(), is(namespace));
     assertThat(configuration.getLevel(), is(nullValue()));
+    assertThat(configuration.hasConfigurationFile(), is(true));
   }
 
   @Test
-  public void getLoggerConfigurationWithLevelOfAnExistingModule() {
-    final String module = "authentication";
+  public void getLoggerConfigurationWithLevelOfAnExistingNamespace() {
+    final String namespace = "silverpeas.core.security.authentication";
     manager = LoggerConfigurationManager.get();
-    LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
+    LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration, not(nullValue()));
-    assertThat(configuration.getModuleName(), is(module));
-    assertThat(configuration.getNamespace(), is("Silverpeas.Bus.Authentication"));
+    assertThat(configuration.getNamespace(), is(namespace));
     assertThat(configuration.getLevel(), is(Level.ERROR));
+    assertThat(configuration.hasConfigurationFile(), is(true));
   }
 
   @Test
-  public void getLoggerConfigurationOfANonExistingModuleOrNamespace() {
-    final String module = "toto";
+  public void getLoggerConfigurationOfANonExistingNamespace() {
+    final String namespace = "org.tartempion.toto";
     manager = LoggerConfigurationManager.get();
-    LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
+    LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration, not(nullValue()));
-    assertThat(configuration.getModuleName(), is(module));
-    assertThat(configuration.getNamespace(), is("Silverpeas.Other.toto"));
+    assertThat(configuration.getNamespace(), is(namespace));
     assertThat(configuration.getLevel(), is(nullValue()));
+    assertThat(configuration.hasConfigurationFile(), is(false));
   }
 
   @Test
-  public void updateLoggerConfigurationOfAnExistingModulePersistsTheChange() {
-    final String module = "calendar";
+  public void updateLoggerConfigurationOfAnExistingNamespacePersistsTheChange() {
+    final String namespace = "silverpeas.core.calendar";
     final Level level = Level.DEBUG;
     manager = LoggerConfigurationManager.get();
-    LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
+    LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration, not(nullValue()));
 
     // update configuration and ensures the change is done
     configuration.setLevel(level);
     manager.saveLoggerConfiguration(configuration);
-    configuration = manager.getLoggerConfiguration(module);
+    configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration.getLevel(), is(level));
 
     // reload configuration files to ensure the configuration was really persisted
     manager.loadAllConfigurationFiles();
-    configuration = manager.getLoggerConfiguration(module);
+    configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration.getLevel(), is(level));
   }
 
   @Test
-  public void updateLoggerConfigurationOfAnUnexistingModuleDoesNothing() {
-    final String module = "toto";
+  public void updateLoggerConfigurationOfAnUnexistingNamespaceDoesNothing() {
+    final String namespace = "org.tartempion.toto";
     final Level level = Level.DEBUG;
     manager = LoggerConfigurationManager.get();
-    LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
+    LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getLevel(), is(nullValue()));
+    assertThat(configuration.hasConfigurationFile(), is(false));
 
-    // the configuration cannot be persisted as no such module exist and hence no change can be
-    // done.
+    // the logger is changed
     configuration.setLevel(level);
     manager.saveLoggerConfiguration(configuration);
-    configuration = manager.getLoggerConfiguration(module);
+    configuration = manager.getLoggerConfiguration(namespace);
+    assertThat(configuration.getLevel(), is(level));
+    assertThat(configuration.hasConfigurationFile(), is(false));
+
+    // but the change isn't persisted as the logger has no config file
+    manager.loadAllConfigurationFiles();
+    configuration = manager.getLoggerConfiguration(namespace);
     assertThat(configuration.getLevel(), is(nullValue()));
+    assertThat(configuration.hasConfigurationFile(), is(false));
   }
 }

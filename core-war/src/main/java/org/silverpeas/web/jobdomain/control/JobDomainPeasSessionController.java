@@ -20,6 +20,7 @@
  */
 package org.silverpeas.web.jobdomain.control;
 
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -27,6 +28,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionException;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
@@ -40,7 +42,6 @@ import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -66,7 +67,6 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.csv.CSVReader;
@@ -1929,8 +1929,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   // ------------------
   public void synchroSQLDomain() {
     if (m_theThread == null) {
-      SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_INFO);
-      SynchroReport.setState(SynchroReport.STATE_WAITSTART);
+      SynchroDomainReport.setReportLevel(Level.INFO);
+      SynchroDomainReport.waitForStart();
       m_theThread = new SynchroWebServiceThread(this);
       m_ErrorOccured = null;
       m_SynchroReport = "";
@@ -1944,11 +1944,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       sReport.append("Démarrage de la synchronisation...\n\n");
       // Démarrage de la synchro avec la Popup d'affichage
-      SynchroReport.startSynchro();
+      SynchroDomainReport.startSynchro();
       Domain theDomain = getTargetDomain();
 
-      SynchroReport.warn("jobDomainPeas.synchronizeSilverpeasViaWebService",
-          "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId() + ")", null);
+      SynchroDomainReport.warn("jobDomainPeas.synchronizeSilverpeasViaWebService",
+          "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId() + ")");
 
       // 1- Récupère la liste des groupes à synchroniser (en insert et update)
       Collection<Group> listGroupToInsertUpdate;
@@ -2026,13 +2026,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       SilverTrace.error("JobDomainPeasSessionController",
           "JobDomainPeasSessionController.synchronizeSilverpeasViaWebService",
           "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
-      SynchroReport.error(
+      SynchroDomainReport.error(
           "JobDomainPeasSessionController.synchronizeSilverpeasViaWebService",
           "Problème lors de la synchronisation : " + e.getMessage(), null);
       sReport.append("Erreurs lors de la synchronisation : \n").append(e.getMessage());
     } finally {
       // Fin de synchro avec la Popup d'affichage
-      SynchroReport.stopSynchro();
+      SynchroDomainReport.stopSynchro();
       if (synchroUserWebService != null) {
         synchroUserWebService.endConnection();
       }
@@ -2040,10 +2040,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return sReport.toString();
   }
 
-  public void synchroDomain(int traceLevel) {
+  public void synchroDomain(Level level) {
     if (m_theThread == null) {
-      SynchroReport.setTraceLevel(traceLevel);
-      SynchroReport.setState(SynchroReport.STATE_WAITSTART);
+      SynchroDomainReport.setReportLevel(level);
+      SynchroDomainReport.waitForStart();
       m_theThread = new SynchroLdapThread(this, m_AdminCtrl, targetDomainId);
       m_ErrorOccured = null;
       m_SynchroReport = "";

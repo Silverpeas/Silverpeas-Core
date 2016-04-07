@@ -20,13 +20,13 @@
 */
 package org.silverpeas.core.index.indexing.parser;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.index.indexing.parser.tika.TikaParser;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,42 +79,26 @@ public final class ParserManager {
     try {
       SettingBundle parsersConfiguration =
           ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.Parser");
-      Set<String> formatNames = parsersConfiguration.keySet();
-      for (String name: formatNames) {
-        String newCall = parsersConfiguration.getString(name);
-        if ("ignored".equals(newCall) || newCall.isEmpty()) {
+      Set<String> mimeTypes = parsersConfiguration.keySet();
+      for (String mimeType : mimeTypes) {
+        String parserName = parsersConfiguration.getString(mimeType);
+        if ("ignored".equals(parserName) || parserName.isEmpty()) {
           continue; // we skip ignored mime type
         }
-        String className = getClassName(newCall);
+
         try {
-          Class<?> classe = Class.forName(className);
-          Class[] parametersClass = getParametersClass(newCall);
-          Constructor<?> constructor = classe.getConstructor(parametersClass);
-          Object[] parameters = getParameters(newCall);
-          Parser parser = (Parser) constructor.newInstance(parameters);
-          parserMap.put(name, parser);
-        } catch (ClassNotFoundException e) {
-          SilverTrace.error("indexing", "ParserManager", "indexing.MSG_UNKNOWN_PARSER_CLASS",
-            name + ", " + className);
+          Parser parser = ServiceProvider.getService(parserName);
+          parserMap.put(mimeType, parser);
+        } catch (IllegalStateException e) {
+          SilverLogger.getLogger(ParserManager.class)
+              .error("No parser found in silverpeas for {0}: {1}", mimeType, parserName);
         } catch (Exception e) {
-          SilverTrace.fatal("indexing", "ParserManager",
-            "indexing.MSG_PARSER_INITIALIZATION_FAILED", name);
+          SilverLogger.getLogger(ParserManager.class).error(e.getMessage(), e);
         }
       }
     } catch (MissingResourceException e) {
-      SilverTrace.fatal("indexing", "ParserManager", "indexing.MSG_MISSING_PARSER_PROPERTIES");
+      SilverLogger.getLogger(ParserManager.class).error(e.getMessage(), e);
     }
-  }
-
-  /**
-* Returns the class name in a string like "className(args, args, ...)"
-*/
-  static private String getClassName(String newCall) {
-    int par = newCall.indexOf('(');
-    if (par == -1) {
-      return newCall.trim();
-    }
-    return newCall.substring(0, par).trim();
   }
 
   /**

@@ -21,23 +21,25 @@
  */
 package org.silverpeas.core.index.indexing.parser.tika;
 
+import org.apache.tika.Tika;
+import org.silverpeas.core.index.indexing.parser.Parser;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.silverpeas.core.index.indexing.parser.Parser;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-
-import org.apache.tika.Tika;
-
+@Named("tikaParser")
 public class TikaParser implements Parser {
 
-  private final Tika tika = initTika();
+  private Tika tika;
 
-  private Tika initTika() {
-    return new Tika();
+  @PostConstruct
+  protected void initTika() {
+    tika = new Tika();
   }
 
   @Override
@@ -45,7 +47,7 @@ public class TikaParser implements Parser {
     try {
       return tika.parse(new File(path));
     } catch (IOException ex) {
-      SilverTrace.error("util", "OpenxmlParser.getReader", "root.EX_LOAD_IO_EXCEPTION", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return new StringReader("");
   }

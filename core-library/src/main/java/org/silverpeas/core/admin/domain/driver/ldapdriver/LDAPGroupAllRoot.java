@@ -22,12 +22,12 @@
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
 import org.silverpeas.core.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -229,14 +229,14 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(),
             theFilter, driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
-        SynchroReport.debug("LDAPGroupAllRoot.getChildGroupsEntry()",
-            "Récupération de " + theEntries.length + " groupes racine", null);
+        SynchroDomainReport.debug("LDAPGroupAllRoot.getChildGroupsEntry()",
+            "Récupération de " + theEntries.length + " groupes racine");
       } catch (AdminException e) {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
           append("PB getting Group's subgroups : ").append(parentId).append("\n");
-          SynchroReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
+          SynchroDomainReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine (parentId = " + parentId + ")", e);
         } else {
           throw e;

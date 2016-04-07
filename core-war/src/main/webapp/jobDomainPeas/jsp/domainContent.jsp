@@ -28,6 +28,7 @@
 <%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.util.logging.Level" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -148,7 +149,7 @@
   }
 
 function DomainSQLSynchro(){
-	top.IdleFrame.SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Integer.toString(SynchroReport.TRACE_LEVEL_DEBUG)%>', 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
+	top.IdleFrame.SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Level.DEBUG%>', 'SynchroDomainReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
 	window.location.href = "domainSQLSynchro";
 }
 </script>

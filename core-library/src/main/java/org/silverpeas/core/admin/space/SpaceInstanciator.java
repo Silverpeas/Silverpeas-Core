@@ -24,27 +24,27 @@
 
 package org.silverpeas.core.admin.space;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponent;
 import org.silverpeas.core.admin.space.model.SpaceComponentParameter;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * An instanciator of Silverpeas workspaces. A Silverpeas workspace is an area providing specified
@@ -83,15 +83,12 @@ public class SpaceInstanciator {
             spaceTemplates.put(spaceName, template);
           }
         }
-      } catch (JAXBException ex) {
-        SilverTrace.fatal("admin", "SpaceInstanciator", "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST",
-            ex);
-      } catch (XMLStreamException ex) {
-        SilverTrace.fatal("admin", "SpaceInstanciator", "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST",
-            ex);
-      } catch (FileNotFoundException ex) {
-        SilverTrace.fatal("admin", "SpaceInstanciator", "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST",
-            ex);
+      } catch (JAXBException e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      } catch (XMLStreamException e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      } catch (FileNotFoundException e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }

@@ -77,7 +77,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   @Deprecated
   @Override
   public void debug(String module, String classe, String message, String extraInfos, Throwable ex) {
-    SilverLogger.getLogger(module).debug(formatMessage(message, extraInfos));
+    SilverLogger.getLogger(computeNamespace(module)).debug(formatMessage(message, extraInfos));
   }
 
   @Deprecated
@@ -102,7 +102,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void info(String module, String classe, String messageID, String extraInfos,
       Throwable ex) {
-    SilverLogger.getLogger(module).info(formatMessage(messageID, extraInfos));
+    SilverLogger.getLogger(computeNamespace(module)).info(formatMessage(messageID, extraInfos));
   }
 
   @Deprecated
@@ -127,7 +127,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void warn(String module, String classe, String messageID, String extraInfos,
       Throwable ex) {
-    SilverLogger.getLogger(module).warn(formatMessage(messageID, extraInfos));
+    SilverLogger.getLogger(computeNamespace(module)).warn(formatMessage(messageID, extraInfos));
   }
 
   @Deprecated
@@ -152,7 +152,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void error(String module, String classe, String messageID, String extraInfos,
       Throwable ex) {
-    SilverLogger.getLogger(module).error(formatMessage(messageID, extraInfos), ex);
+    SilverLogger.getLogger(computeNamespace(module)).error(formatMessage(messageID, extraInfos), ex);
   }
 
   @Deprecated
@@ -177,14 +177,14 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void fatal(String module, String classe, String messageID, String extraInfos,
       Throwable ex) {
-    SilverLogger.getLogger(module).error(formatMessage(messageID, extraInfos), ex);
+    SilverLogger.getLogger(computeNamespace(module)).error(formatMessage(messageID, extraInfos), ex);
   }
 
   @Deprecated
   @Override
   public void spy(String module, String classe, String spaceId, String instanceId, String objectId,
       String userId, String actionId) {
-    SilverLogger.getLogger(module)
+    SilverLogger.getLogger(computeNamespace(module))
         .debug(formatSpyMessage(spaceId, instanceId, objectId, userId, actionId));
   }
 
@@ -441,6 +441,10 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
       message.append(extraInfos);
     }
     return message.toString();
+  }
+
+  private static String computeNamespace(String module) {
+    return "silverpeas.silvertrace." + module;
   }
 
 }

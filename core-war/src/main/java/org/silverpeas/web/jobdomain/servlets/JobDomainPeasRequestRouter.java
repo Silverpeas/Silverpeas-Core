@@ -20,6 +20,7 @@
  */
 package org.silverpeas.web.jobdomain.servlets;
 
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.web.jobdomain.JobDomainPeasException;
 import org.silverpeas.web.jobdomain.JobDomainSettings;
 import org.silverpeas.web.jobdomain.UserRequestData;
@@ -33,7 +34,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.domain.synchro.SynchroReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.apache.commons.fileupload.FileItem;
@@ -508,11 +509,11 @@ public class JobDomainPeasRequestRouter extends
 
               jobDomainSC.refresh();
 
-              request.setAttribute("SynchroReport", strSynchroReport);
+              request.setAttribute("SynchroDomainReport", strSynchroReport);
               destination = "domainSynchroReport.jsp";
             }
           } else if (function.startsWith("domainSynchro")) {
-            jobDomainSC.synchroDomain(Integer.parseInt(request.getParameter("IdTraceLevel")));
+            jobDomainSC.synchroDomain(Level.valueOf(request.getParameter("IdTraceLevel")));
             destination = "domainSynchroPing.jsp";
           } else if (function.startsWith("domainSQLSynchro")) {
             jobDomainSC.synchroSQLDomain();
@@ -634,7 +635,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayDomainSynchro")) {
           destination = "domainSynchro.jsp";
         } else if (function.startsWith("displayDynamicSynchroReport")) {
-          SynchroReport.setTraceLevel(Integer.parseInt(request.getParameter("IdTraceLevel")));
+          SynchroDomainReport.setReportLevel(Level.valueOf(request.getParameter("IdTraceLevel")));
           destination = "dynamicSynchroReport.jsp";
         }
       } else if (function.startsWith("welcome")) {

@@ -68,21 +68,20 @@
       <c:if test="${configuration.level == null}">
         <c:set var="level" value="PARENT"/>
       </c:if>
-      ${configuration.moduleName}: {
-        uri: webContext + '/services/logging/${configuration.moduleName}/configuration',
-        module: '${configuration.moduleName}',
+      '${configuration.namespace}': {
+        uri: webContext + '/services/logging/${configuration.namespace}/configuration',
         logger: '${configuration.namespace}',
         level: '${level}'
       },
     </c:forEach>
-      configurationOf: function(module) {
-        return this[module];
+      configurationOf: function(logger) {
+        return this[logger];
       }
     };
 
     function changeLoggingLevel() {
-      var module = $('#logger').val();
-      var config = loggerConfigurations.configurationOf(module);
+      var logger = $('#logger').val();
+      var config = loggerConfigurations.configurationOf(logger);
       config.level = $('#level').val();
       $.ajax({
         url : config.uri,
@@ -91,8 +90,8 @@
         contentType : 'application/json',
         dataType : 'json',
         success : function(configuration) {
-          var $item = $('#logger').find('option[value="' + module + '"]');
-          loggerConfigurations[module] = configuration;
+          var $item = $('#logger').find('option[value="' + logger + '"]');
+          loggerConfigurations[logger] = configuration;
           var level;
           if (configuration.level === 'PARENT') {
             level = DEFAULT_LEVEL_TEXT;
@@ -150,10 +149,10 @@
               <c:forEach var="configuration" items="${configurations}">
                 <c:choose>
                   <c:when test="${configuration.level == null}">
-                    <option class="default" value="${configuration.moduleName}">${configuration.namespace} (<fmt:message key="logging.admin.DefaultLevel"/>)</option>
+                    <option class="default" value="${configuration.namespace}">${configuration.namespace} (<fmt:message key="logging.admin.DefaultLevel"/>)</option>
                   </c:when>
                   <c:otherwise>
-                    <option value="${configuration.moduleName}">${configuration.namespace} (<fmt:message key="logging.admin.level"/> ${configuration.level})</option>
+                    <option value="${configuration.namespace}">${configuration.namespace} (<fmt:message key="logging.admin.level"/> ${configuration.level})</option>
                   </c:otherwise>
                 </c:choose>
               </c:forEach>
@@ -210,9 +209,9 @@
 </view:window>
 <script type="application/javascript">
   $(document).ready(function() {
-    function updateDefaultLevelState(module) {
+    function updateDefaultLevelState(logger) {
       var $parentOptions = $('#level').find('option[value="PARENT"]');
-      if (module === 'silverpeas') {
+      if (logger === 'silverpeas') {
         $parentOptions.attr('disabled', 'disabled');
       } else {
         $parentOptions.removeAttr('disabled');
@@ -223,14 +222,14 @@
     TipManager.simpleHelp($('#record-count-help'), "<fmt:message key='logging.admin.help.LogRecordCount'/>");
 
     var $logger = $('#logger');
-    var module = $logger.find('option:first-child').attr('selected', 'selected').val();
-    $('#level').val(loggerConfigurations.configurationOf(module).level);
-    updateDefaultLevelState(module);
+    var namespace = $logger.find('option:first-child').attr('selected', 'selected').val();
+    $('#level').val(loggerConfigurations.configurationOf(namespace).level);
+    updateDefaultLevelState(namespace);
 
     $logger.change(function() {
-      var module = $(this).val();
-      $('#level').val(loggerConfigurations.configurationOf(module).level);
-      updateDefaultLevelState(module);
+      var namespace = $(this).val();
+      $('#level').val(loggerConfigurations.configurationOf(namespace).level);
+      updateDefaultLevelState(namespace);
     });
 
     $('#logger-level-setting').submit(function() {

@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.admin.domain.synchro.SynchroDomainReport" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -29,15 +29,15 @@
 <%@ include file="check.jsp" %>
 <html>
 <head>
-<title> Synchro Dynamic Report - Mode <%=SynchroReport.getTraceLevelStr()%></title>
+<title> Synchro Dynamic Report - Mode <%=SynchroDomainReport.getReportLevel()%></title>
 </head>
 <body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 <NOBR>
 <%
-    String toDisp = SynchroReport.getMessage();
+    String toDisp = SynchroDomainReport.getMessages();
     boolean isActive = true;
 
-    SynchroReport.setState(SynchroReport.STATE_WAITSTART);
+    SynchroDomainReport.waitForStart();
     while (isActive || (toDisp != null))
     {
         if (toDisp != null)
@@ -74,13 +74,13 @@
             out.flush();
         }
         // Attention a l'ordre !!! Il faut absolument d'abord tester l'etat avant de faire l'appel a getMessage
-        if ((SynchroReport.isSynchroActive()) || (SynchroReport.getState() == SynchroReport.STATE_WAITSTART))
+        if ((SynchroDomainReport.isSynchroActive()) || (SynchroDomainReport.getState() == SynchroDomainReport.STATE_WAITSTART))
             isActive = true;
         else
             isActive = false;
-        toDisp = SynchroReport.getMessage();
+        toDisp = SynchroDomainReport.getMessages();
     }
-    SynchroReport.setState(SynchroReport.STATE_NOSYNC);
+    SynchroDomainReport.reset();
 %>
 </NOBR>
 </body>

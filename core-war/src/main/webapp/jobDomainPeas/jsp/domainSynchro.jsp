@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.core.admin.domain.synchro.SynchroDomainReport" %>
+<%@ page import="org.silverpeas.core.util.logging.Level" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -51,7 +52,7 @@ out.println(board.printBefore());
 %>
 <script language='JavaScript'>
 function ValidForm(){
-	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=' + document.domainForm.IdTraceLevel.value, 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
+	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=' + document.domainForm.IdTraceLevel.value, 'SynchroDomainReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
 	document.domainForm.submit();
 }
 </script>
@@ -79,10 +80,10 @@ function ValidForm(){
 		        </td>
 				<td valign="baseline" align=left>
 				 <select name="IdTraceLevel" size="1">
-					<option value=<%=Integer.toString(SynchroReport.TRACE_LEVEL_DEBUG)%>>Debug</option>
-					<option value=<%=Integer.toString(SynchroReport.TRACE_LEVEL_INFO)%>>Info</option>
-					<option value=<%=Integer.toString(SynchroReport.TRACE_LEVEL_WARN)%> selected>Warning</option>
-					<option value=<%=Integer.toString(SynchroReport.TRACE_LEVEL_ERROR)%>>Error</option>
+					<option value=<%=Level.DEBUG%>>Debug</option>
+					<option value=<%=Level.INFO%>>Info</option>
+					<option value=<%=Level.WARNING%> selected>Warning</option>
+					<option value=<%=Level.ERROR%>>Error</option>
 	             </select>
 				</td>
 			</tr>
