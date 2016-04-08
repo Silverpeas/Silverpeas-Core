@@ -913,7 +913,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       spaceId = getSubSpaceId();
     }
     if (StringUtil.isDefined(spaceId)) {
-      return URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId);
+      return URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId)+"?Fallback=true";
     }
     return null;
   }
