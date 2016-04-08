@@ -284,7 +284,8 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocumentPK docPk = repository.createDocument(session, document);
-      if (invokeCallback && StringUtil.isDefined(document.getCreatedBy())) {
+      if (reallyInvokeCallback(document, invokeCallback) &&
+          StringUtil.isDefined(document.getCreatedBy())) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
             parseInt(document.getCreatedBy()), document.getInstanceId(),
@@ -359,7 +360,7 @@ public class SimpleDocumentService implements AttachmentService {
     if (document.isOpenOfficeCompatible()) {
       webdavRepository.deleteAttachmentNode(session, document);
     }
-    if (invokeCallback) {
+    if (reallyInvokeCallback(document, invokeCallback)) {
       AttachmentNotificationService notificationService = AttachmentNotificationService
           .getService();
       notificationService.notifyOnDeletionOf(document);
@@ -442,7 +443,7 @@ public class SimpleDocumentService implements AttachmentService {
         }
       }
       String userId = document.getUpdatedBy();
-      if ((userId != null) && (userId.length() > 0) && invokeCallback) {
+      if (StringUtil.isDefined(userId) && reallyInvokeCallback(document, invokeCallback)) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
             document.getInstanceId(), document.getForeignId());
@@ -486,7 +487,8 @@ public class SimpleDocumentService implements AttachmentService {
       }
       repository.duplicateContent(document, finalDocument);
       String userId = finalDocument.getUpdatedBy();
-      if (StringUtil.isDefined(userId) && invokeCallback && finalDocument.isPublic()) {
+      if (StringUtil.isDefined(userId) && reallyInvokeCallback(finalDocument, invokeCallback) &&
+          finalDocument.isPublic()) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
             finalDocument.getInstanceId(), finalDocument.getForeignId());
@@ -515,7 +517,7 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
       String userId = document.getCreatedBy();
-      if ((userId != null) && (userId.length() > 0) && invokeCallback) {
+      if (StringUtil.isDefined(userId) && reallyInvokeCallback(document, invokeCallback)) {
         if (existsOtherContents) {
           CallBackManager callBackManager = CallBackManager.get();
           callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
@@ -882,7 +884,7 @@ public class SimpleDocumentService implements AttachmentService {
       session.save();
       if (document.isPublic()) {
         String userId = context.getUserId();
-        if (StringUtil.isDefined(userId) && invokeCallback) {
+        if (StringUtil.isDefined(userId) && reallyInvokeCallback(document, invokeCallback)) {
           CallBackManager callBackManager = CallBackManager.get();
           callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
               finalDocument.getInstanceId(), finalDocument.getForeignId());
@@ -1185,5 +1187,17 @@ public class SimpleDocumentService implements AttachmentService {
         BasicDaoFactory.logout(session);
       }
     }
+  }
+
+  /**
+   * Check if callback must be really invoked
+   */
+  private boolean reallyInvokeCallback(SimpleDocument document, boolean invoke) {
+    if (document.getDocumentType() == DocumentType.image) {
+      // adding an image (to an existing WYSIWYG) must never trigger the callback.
+      // This must be done by WYSIWYG service itself (if needed).
+      return false;
+    }
+    return invoke;
   }
 }
