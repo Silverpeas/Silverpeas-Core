@@ -26,6 +26,9 @@ package org.silverpeas.servlets;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -43,6 +46,15 @@ public class GoToSpace extends GoTo {
       HttpServletResponse res) throws Exception {
     SpaceInstLight space = OrganisationControllerFactory
         .getOrganisationController().getSpaceInstLightById(objectId);
+
+    boolean fallback = StringUtil.getBooleanValue(req.getParameter("Fallback"));
+    if (fallback) {
+      while (space != null && SpaceInst.STATUS_REMOVED.equals(space.getStatus())) {
+        space = OrganisationControllerFactory
+            .getOrganisationController().getSpaceInstLightById(space.getFatherId());
+      }
+    }
+
     if (space != null && space.getShortId() != null) {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -52,7 +64,7 @@ public class GoToSpace extends GoTo {
         gef.setSpaceIdForCurrentRequest(space.getFullId());
         helper.setSpaceIdAndSubSpaceId(space.getFullId());
       }
-      return "SpaceId=" + objectId;
+      return "SpaceId=" + space.getFullId();
     }
     return null;
   }
