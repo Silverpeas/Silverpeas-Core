@@ -781,6 +781,8 @@
           }, function() {
             $(this).removeClass('focus');
           });
+
+          autoresizeUserGroupFilters();
         });
     </script>
   </body>
