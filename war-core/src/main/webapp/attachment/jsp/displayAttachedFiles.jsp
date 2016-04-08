@@ -440,19 +440,23 @@
 
     // function to transform insecable string into secable one
     $(".lineMain a").html(function() {
-      var newLibelle = "";
+      var initialName = $(this).text();
       var maxLength = 38;
-      var chainesInsecables = $(this).text().split(" ");
-      for (i = 0; i < chainesInsecables.length; i++) {
-        var chainesSecables = " ";
-        while (chainesInsecables[i].length > maxLength) {
-          chainesSecables = chainesSecables + chainesInsecables[i].substring(0, maxLength) + '<br/>';
-          chainesInsecables[i] = chainesInsecables[i].substring(maxLength);
+      var finalName = "";
+      var currentPartLength = 0;
+      for (var i = 0; i < initialName.length; i++) {
+        var currentChar = initialName.charAt(i);
+        if (currentChar === ' ' || currentChar === '-') {
+          currentPartLength = 0;
         }
-        chainesInsecables[i] = chainesSecables + chainesInsecables[i];
-        newLibelle = newLibelle + chainesInsecables[i];
+        if (currentPartLength > maxLength) {
+          finalName += " ";
+          currentPartLength = 0;
+        }
+        currentPartLength++;
+        finalName += currentChar;
       }
-      $(this).html(newLibelle);
+      $(this).html(finalName);
     });
   });
 
