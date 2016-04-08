@@ -24,10 +24,12 @@
 
 package org.silverpeas.web.servlets;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +45,15 @@ public class GoToSpace extends GoTo {
       HttpServletResponse res) throws Exception {
     SpaceInstLight space = OrganizationControllerProvider
         .getOrganisationController().getSpaceInstLightById(objectId);
+
+    boolean fallback = StringUtil.getBooleanValue(req.getParameter("Fallback"));
+    if (fallback) {
+      while (space != null && SpaceInst.STATUS_REMOVED.equals(space.getStatus())) {
+        space = OrganizationControllerProvider.getOrganisationController()
+            .getSpaceInstLightById(space.getFatherId());
+      }
+    }
+
     if (space != null) {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -52,7 +63,7 @@ public class GoToSpace extends GoTo {
         gef.setSpaceIdForCurrentRequest(space.getId());
         helper.setSpaceIdAndSubSpaceId(space.getId());
       }
-      return "SpaceId=" + objectId;
+      return "SpaceId=" + space.getId();
     }
     return null;
   }

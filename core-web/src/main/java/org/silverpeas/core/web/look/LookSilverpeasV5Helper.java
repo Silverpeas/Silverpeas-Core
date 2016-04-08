@@ -895,7 +895,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
       spaceId = getSubSpaceId();
     }
     if (StringUtil.isDefined(spaceId)) {
-      return URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId);
+      return URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId)+"?Fallback=true";
     }
     return null;
   }
