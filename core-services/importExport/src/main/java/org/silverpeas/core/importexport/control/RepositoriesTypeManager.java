@@ -300,7 +300,7 @@ public class RepositoriesTypeManager {
     }
 
     if (needCreation) {
-      boolean notifying = !document.isVersioned() || publicVersion;
+      boolean notifying = false; // no notify (callback) on creation
       document =
           getAttachmentService().createAttachment(document, file, hasToBeIndexed, notifying);
     } else {
