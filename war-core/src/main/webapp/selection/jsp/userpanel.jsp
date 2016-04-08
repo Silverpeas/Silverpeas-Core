@@ -759,6 +759,8 @@
           } catch (e) {
             // to prevent errors according to cross browser compatibility
           }
+		  
+		 autoresizeUserGroupFilters();
 
           $(window).resize(function() {
             autoresizeUserGroupFilters();
