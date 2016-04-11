@@ -388,6 +388,11 @@
       $.post('<c:url value="/wysiwyg/jsp/htmlEditor.jsp"/>', $(document.recupHtml).serialize(),
           function() {
             $deferred.resolve(mustReload);
+          })
+          .fail(function(request) {
+            $deferred.reject(request);
+            notyError(request.responseText);
+            $.closeProgressMessage();
           });
     }
 
