@@ -56,12 +56,28 @@ public class SecuritySettings {
   }
 
   /**
+   * Indicates the parameters for which the SQL injection verification must be bypassed.
+   * @return a regexp represented by a string.
+   */
+  public static String skippedParametersAboutWebSqlInjectionSecurity() {
+    return settings.getString("security.web.protection.injection.sql.skipped.parameters", "");
+  }
+
+  /**
    * Is the XSS injection security mechanism enabled?
    * @return true if the security mechanism is enabled for Silverpeas, false otherwise.
    */
   public static boolean isWebXssInjectionSecurityEnabled() {
     return isWebProtectionEnabled() &&
         settings.getBoolean("security.web.protection.injection.xss", false);
+  }
+
+  /**
+   * Indicates the parameters for which the XSS injection verification must be bypassed.
+   * @return a regexp represented by a string.
+   */
+  public static String skippedParametersAboutWebXssInjectionSecurity() {
+    return settings.getString("security.web.protection.injection.xss.skipped.parameters", "");
   }
 
   /**
