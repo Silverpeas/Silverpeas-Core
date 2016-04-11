@@ -427,7 +427,7 @@ public class WysiwygManager {
         MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
     document.setDocumentType(context);
     AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-        new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, invokeCallback);
+        new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, false);
     if (invokeCallback) {
       invokeCallback(userId, foreignKey);
     }
