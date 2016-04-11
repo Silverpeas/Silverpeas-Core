@@ -41,7 +41,7 @@ import java.util.Set;
 public class IndexEntry implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -4817004188601716658L;
-  private IndexEntryPK pk;
+  private IndexEntryKey pk;
   /**
    * The IndexEntry attributes are null by default. The title should been set in order to display
    * the entry to the user when the document match his query. The index engine may set with a
@@ -72,7 +72,7 @@ public class IndexEntry implements Serializable, Cloneable {
    * doesn't need to tag them with a type.
    */
   public IndexEntry(WAPrimaryKey key) {
-    this(new IndexEntryPK(key.componentName, "", key.id));
+    this(new IndexEntryKey(key.componentName, "", key.id));
   }
 
   /**
@@ -81,7 +81,7 @@ public class IndexEntry implements Serializable, Cloneable {
    * distinguish the real type of the document between all the indexed document kind.
    */
   public IndexEntry(WAPrimaryKey key, String type) {
-    this(new IndexEntryPK(key.componentName, type, key.id));
+    this(new IndexEntryKey(key.componentName, type, key.id));
   }
 
   /**
@@ -91,17 +91,17 @@ public class IndexEntry implements Serializable, Cloneable {
    */
   public IndexEntry(String space, String component, String objectType,
           String objectId) {
-    this(new IndexEntryPK(space, component, objectType, objectId));
+    this(new IndexEntryKey(space, component, objectType, objectId));
   }
 
   public IndexEntry(String component, String objectType, String objectId) {
-    this(new IndexEntryPK(component, objectType, objectId));
+    this(new IndexEntryKey(component, objectType, objectId));
   }
 
   /**
    * The constructor only set the key part of the IndexEntry.
    */
-  public IndexEntry(IndexEntryPK pk) {
+  public IndexEntry(IndexEntryKey pk) {
     this.pk = pk;
   }
 
@@ -116,7 +116,7 @@ public class IndexEntry implements Serializable, Cloneable {
   /**
    * Return the key part of the IndexEntry
    */
-  public IndexEntryPK getPK() {
+  public IndexEntryKey getPK() {
     return pk;
   }
 
@@ -499,7 +499,7 @@ public class IndexEntry implements Serializable, Cloneable {
     return paths;
   }
 
-  public void setPK(IndexEntryPK pk) {
+  public void setPK(IndexEntryKey pk) {
     this.pk = pk;
   }
 

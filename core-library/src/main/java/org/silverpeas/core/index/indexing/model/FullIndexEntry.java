@@ -54,7 +54,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
     super(component, objectType, objectId);
   }
 
-  public FullIndexEntry(IndexEntryPK pk) {
+  public FullIndexEntry(IndexEntryKey pk) {
     super(pk);
   }
 

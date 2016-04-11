@@ -33,7 +33,7 @@ import org.silverpeas.core.calendar.model.TodoDetail;
 import org.silverpeas.core.calendar.socialnetwork.SocialInformationEvent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -1133,16 +1133,16 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   private void removeIndex(Schedulable detail, String userId) {
-    IndexEntryPK indexEntry = getIndexEntry(detail, userId);
+    IndexEntryKey indexEntry = getIndexEntry(detail, userId);
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
-  private IndexEntryPK getIndexEntry(Schedulable detail, String userId) {
-    IndexEntryPK indexEntry;
+  private IndexEntryKey getIndexEntry(Schedulable detail, String userId) {
+    IndexEntryKey indexEntry;
     if (detail instanceof ToDoHeader) {
-      indexEntry = new IndexEntryPK("user@" + userId + "_todo", "todo", detail.getId());
+      indexEntry = new IndexEntryKey("user@" + userId + "_todo", "todo", detail.getId());
     } else {
-      indexEntry = new IndexEntryPK("user@" + userId + "_agenda", "agenda", detail.getId());
+      indexEntry = new IndexEntryKey("user@" + userId + "_agenda", "agenda", detail.getId());
     }
     return indexEntry;
   }

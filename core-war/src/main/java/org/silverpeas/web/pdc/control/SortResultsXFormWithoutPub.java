@@ -21,7 +21,7 @@
 package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.contribution.contentcontainer.content.XMLFormFieldComparator;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
@@ -80,12 +80,12 @@ public class SortResultsXFormWithoutPub implements SortResults {
     List<GlobalSilverResult> filteredResults = new ArrayList<GlobalSilverResult>(originalResults
         .size());
     for (GlobalSilverResult modifiedResult : modifiedResults) {
-      IndexEntryPK entryToTest = modifiedResult.getIndexEntry().getPK();
+      IndexEntryKey entryToTest = modifiedResult.getIndexEntry().getPK();
       // Check to see if the corresponding publication is already in the list
       // as we don't want duplicates
       boolean toAdd = true;
       for (GlobalSilverResult filteredResult : filteredResults) {
-        IndexEntryPK filteredPK = filteredResult.getIndexEntry().getPK();
+        IndexEntryKey filteredPK = filteredResult.getIndexEntry().getPK();
         if (filteredPK.equals(entryToTest)) {
           toAdd = false;
           break;

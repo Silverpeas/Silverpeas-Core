@@ -32,7 +32,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -1098,7 +1098,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   @Override
   public void deleteIndex(NodePK pk) {
 
-    IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node", pk.getId());
+    IndexEntryKey indexEntry = new IndexEntryKey(pk.getComponentName(), "Node", pk.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 }

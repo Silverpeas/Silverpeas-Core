@@ -35,7 +35,7 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -380,7 +380,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   private void deleteIndex(final Comment comment) {
     String component = comment.getCommentPK().getComponentName();
     try {
-      IndexEntryPK indexEntry = new IndexEntryPK(component, "Comment"
+      IndexEntryKey indexEntry = new IndexEntryKey(component, "Comment"
           + comment.getCommentPK().getId(), comment.getForeignKey().getId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     } catch (Exception e) {

@@ -25,17 +25,22 @@ import java.io.Serializable;
 import java.util.StringTokenizer;
 
 /**
- * An IndexEntryPK uniquely identify an entry in the web'activ index. An IndexEntryPK is set at the
- * index entry creation time : when a web'activ's component adds a new element or document. This
- * IndexEntryPK will be return later when the document matchs a query. A web'activ document is
- * uniquely identified by : <UL> <LI>the space name where the element has been created. This space
- * name may be a user id : when the space is the private working space of this user.</LI> <LI>The
- * component name which handles the element. This component name may be an instance name when
- * several instances of the same component live in the same space.</LI> <LI>The object type. The
- * meaning of this type is uniquely determined by the component which handles the object.</LI>
- * <LI>The object id.</LI> </UL>
+ * An IndexEntryKey uniquely identifies an entry in the indexes. An IndexEntryKey is set at the
+ * index entry creation time : when a Silverpeas component adds a new element or document. This
+ * IndexEntryKey will be returned later when the document matches a query. A document in Silverpeas
+ * is uniquely identified by:
+ * <ul>
+ *  <LI>the space name where the element has been created. This space name may be a user id
+ *  when the space is the private working space of this user.</LI>
+ * <LI>The component name which handles the element. This component name may be an instance name
+ * when
+ * several instances of the same component live in the same space.</LI>
+ * <LI>The object type. The meaning of this type is uniquely determined by the component which
+ * handles the object.</LI>
+ * <LI>The object id.</LI>
+ * </UL>
  */
-public final class IndexEntryPK implements Serializable {
+public final class IndexEntryKey implements Serializable {
 
   private static final long serialVersionUID = 339617003068469338L;
 
@@ -44,7 +49,7 @@ public final class IndexEntryPK implements Serializable {
    *
    * @deprecated - parameter space is no more used
    */
-  public IndexEntryPK(String space, String component, String objectType,
+  public IndexEntryKey(String space, String component, String objectType,
       String objectId) {
     // this.space = space;
     this.component = component;
@@ -52,7 +57,7 @@ public final class IndexEntryPK implements Serializable {
     this.objectId = objectId;
   }
 
-  public IndexEntryPK(String componentId, String objectType, String objectId) {
+  public IndexEntryKey(String componentId, String objectType, String objectId) {
     this.component = componentId;
     this.objectType = objectType;
     this.objectId = objectId;
@@ -98,13 +103,13 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * To be equal two IndexEntryPK must have the same four parts (space, component, type, id). The
-   * equals method is redefined so IndexEntryPK objects can be put in a Set or used as Map key.
+   * To be equal two IndexEntryKey must have the same four parts (space, component, type, id). The
+   * equals method is redefined so IndexEntryKey objects can be put in a Set or used as Map key.
    */
   @Override
   public boolean equals(Object o) {
-    if (o instanceof IndexEntryPK) {
-      IndexEntryPK k = (IndexEntryPK) o;
+    if (o instanceof IndexEntryKey) {
+      IndexEntryKey k = (IndexEntryKey) o;
       return this.toString().equals(k.toString());
     }
     return false;
@@ -112,7 +117,7 @@ public final class IndexEntryPK implements Serializable {
 
   /**
    * Returns the hash code of the String representation. The hashCode method is redefined so
-   * IndexEntryPK objects can be put in a Set or used as Map key.
+   * IndexEntryKey objects can be put in a Set or used as Map key.
    */
   @Override
   public int hashCode() {
@@ -126,7 +131,7 @@ public final class IndexEntryPK implements Serializable {
    * create(s).toString().equals(s)
    * </PRE>
    */
-  static public IndexEntryPK create(String s) {
+  static public IndexEntryKey create(String s) {
     /*
      * The Tokenizer must return the separators SEP as a missing field must be parsed correctly :
      * SPACE|COMPO||ID must give (SPACE, COMP, "" , ID).
@@ -162,11 +167,11 @@ public final class IndexEntryPK implements Serializable {
       objId = Stk.nextToken();
     }
 
-    // return new IndexEntryPK(spa, comp, objType, objId);
-    return new IndexEntryPK(comp, objType, objId);
+    // return new IndexEntryKey(spa, comp, objType, objId);
+    return new IndexEntryKey(comp, objType, objId);
   }
   /**
-   * The four parts of an IndexEntryPK are private and fixed at construction time.
+   * The four parts of an IndexEntryKey are private and fixed at construction time.
    */
   // private final String space;
   private final String component;

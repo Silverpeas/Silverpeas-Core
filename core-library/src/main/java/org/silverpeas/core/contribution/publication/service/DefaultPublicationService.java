@@ -29,6 +29,7 @@ import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
@@ -63,7 +64,6 @@ import org.silverpeas.core.contribution.publication.notification.PublicationEven
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -1437,13 +1437,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public void deleteIndex(PublicationPK pubPK) {
 
-    IndexEntryPK indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
+    IndexEntryKey indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
     unindexAlias(pubPK);
   }
 
-  private IndexEntryPK getIndexEntryPK(String instanceId, String publiId) {
-    return new IndexEntryPK(instanceId, "Publication", publiId);
+  private IndexEntryKey getIndexEntryPK(String instanceId, String publiId) {
+    return new IndexEntryKey(instanceId, "Publication", publiId);
   }
 
   private void unindexAlias(PublicationPK pk, Alias alias) {
@@ -1473,11 +1473,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
 
     Collection<Alias> aliases = getAlias(pubPK);
-    Map<IndexEntryPK, List<String>> pathsByIndex = new HashMap<>();
+    Map<IndexEntryKey, List<String>> pathsByIndex = new HashMap<>();
     for (Alias alias : aliases) {
       if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
         //it's a true alias
-        IndexEntryPK pk = getIndexEntryPK(alias.getInstanceId(), pubPK.getId());
+        IndexEntryKey pk = getIndexEntryPK(alias.getInstanceId(), pubPK.getId());
         if (pathsByIndex.get(pk) == null) {
           pathsByIndex.put(pk, new ArrayList<String>());
         }
@@ -1486,10 +1486,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
     }
 
-    for (IndexEntryPK indexEntryPK : pathsByIndex.keySet()) {
+    for (IndexEntryKey indexEntryKey : pathsByIndex.keySet()) {
       FullIndexEntry aliasIndexEntry = indexEntry.clone();
-      aliasIndexEntry.setPK(indexEntryPK);
-      aliasIndexEntry.setPaths(pathsByIndex.get(indexEntryPK));
+      aliasIndexEntry.setPK(indexEntryKey);
+      aliasIndexEntry.setPaths(pathsByIndex.get(indexEntryKey));
       aliasIndexEntry.setAlias(true);
       IndexEngineProxy.addIndexEntry(aliasIndexEntry);
     }

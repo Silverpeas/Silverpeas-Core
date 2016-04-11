@@ -49,37 +49,21 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
     columnList = new ArrayList<>();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.workflow.engine.model.Columns#getItemRefList()
-   */
   @Override
   public List<Column> getColumnList() {
     return columnList;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.workflow.engine.model.Columns#getRoleName()
-   */
   @Override
   public String getRoleName() {
     return roleName;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.workflow.engine.model.Columns#setRoleName(java.lang.String)
-   */
   @Override
   public void setRoleName(String roleName) {
     this.roleName = roleName;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#getColumn(java.lang.String)
-   */
   @Override
   public Column getColumn(String strItemName) {
     ItemImpl search = new ItemImpl();
@@ -101,38 +85,21 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
     return (this.roleName);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#addColumn(com.silverpeas.workflow
-   * .api.model.Column)
-   */
   @Override
   public void addColumn(Column column) {
     columnList.add(column);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#createColumn()
-   */
   @Override
   public Column createColumn() {
     return new ColumnImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#iterateColumn()
-   */
   @Override
   public Iterator<Column> iterateColumn() {
     return columnList.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#removeAllColumns()
-   */
   @Override
   public void removeAllColumns() {
     columnList.clear();

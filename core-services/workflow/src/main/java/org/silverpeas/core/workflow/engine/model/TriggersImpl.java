@@ -48,47 +48,26 @@ public class TriggersImpl implements Serializable, Triggers {
     triggerList = new ArrayList<>();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.workflow.engine.model.Columns#getItemRefList()
-   */
   @Override
   public List<Trigger> getTriggerList() {
     return triggerList;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#addColumn(com.silverpeas.workflow
-   * .api.model.Column)
-   */
   @Override
   public void addTrigger(Trigger trigger) {
     triggerList.add(trigger);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#createColumn()
-   */
   @Override
   public Trigger createTrigger() {
     return new TriggerImpl();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#iterateColumn()
-   */
   @Override
   public Iterator<Trigger> iterateTrigger() {
     return triggerList.iterator();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Columns#removeAllColumns()
-   */
   @Override
   public void removeAllTriggers() {
     triggerList.clear();

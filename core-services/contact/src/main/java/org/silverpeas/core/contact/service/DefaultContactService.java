@@ -31,7 +31,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -505,7 +505,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
    * @param contactPK
    */
   public void deleteIndex(ContactPK contactPK) {
-    IndexEntryPK indexEntry = new IndexEntryPK(contactPK.getComponentName(), "Contact", contactPK.getId());
+    IndexEntryKey indexEntry = new IndexEntryKey(contactPK.getComponentName(), "Contact", contactPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

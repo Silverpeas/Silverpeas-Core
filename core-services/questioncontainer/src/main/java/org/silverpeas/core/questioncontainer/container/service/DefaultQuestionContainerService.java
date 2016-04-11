@@ -25,6 +25,7 @@
 package org.silverpeas.core.questioncontainer.container.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.questioncontainer.container.dao.QuestionContainerDAO;
 import org.silverpeas.core.questioncontainer.container.model.Comment;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
@@ -53,7 +54,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.ForeignPK;
@@ -1106,8 +1106,8 @@ public class DefaultQuestionContainerService
   @Override
   public void deleteIndex(QuestionContainerPK pk) {
 
-    IndexEntryPK indexEntry =
-        new IndexEntryPK(pk.getComponentName(), "QuestionContainer", pk.getId());
+    IndexEntryKey indexEntry =
+        new IndexEntryKey(pk.getComponentName(), "QuestionContainer", pk.getId());
 
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

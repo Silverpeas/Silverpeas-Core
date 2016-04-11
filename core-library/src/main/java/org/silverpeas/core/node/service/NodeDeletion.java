@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.node.service;
 
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.notification.NodeEventNotifier;
 import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.dao.NodeI18NDAO;
@@ -32,7 +33,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
@@ -79,7 +79,7 @@ public class NodeDeletion {
     NodeDetail node = NodeDAO.loadRow(connection, pk);
     NodeDAO.deleteRow(connection, pk);
     NodeI18NDAO.removeTranslations(connection, Integer.parseInt(pk.getId()));
-    IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node", pk.getId());
+    IndexEntryKey indexEntry = new IndexEntryKey(pk.getComponentName(), "Node", pk.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
     NodeEventNotifier notifier = ServiceProvider.getService(NodeEventNotifier.class);
     notifier.notifyEventOn(ResourceEvent.Type.DELETION, node);

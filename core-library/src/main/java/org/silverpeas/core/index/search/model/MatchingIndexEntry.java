@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 
 /**
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
@@ -63,7 +63,7 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
   /**
    * The constructor set only the key part of the entry.
    */
-  public MatchingIndexEntry(IndexEntryPK pk) {
+  public MatchingIndexEntry(IndexEntryKey pk) {
     super(pk);
   }
 

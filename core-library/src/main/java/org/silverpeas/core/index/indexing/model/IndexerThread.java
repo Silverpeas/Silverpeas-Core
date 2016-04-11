@@ -72,7 +72,7 @@ public class IndexerThread extends Thread {
   /**
    * Add a request 'remove entry index'
    */
-  static public void removeIndexEntry(IndexEntryPK indexEntry) {
+  static public void removeIndexEntry(IndexEntryKey indexEntry) {
     try {
       queueSemaphore.acquire();
       synchronized (requestList) {
@@ -231,7 +231,7 @@ class RemoveIndexEntryRequest implements Request {
    * Constructor declaration
    * @param indexEntry
    */
-  public RemoveIndexEntryRequest(IndexEntryPK indexEntry) {
+  public RemoveIndexEntryRequest(IndexEntryKey indexEntry) {
     this.indexEntry = indexEntry;
   }
 
@@ -246,5 +246,5 @@ class RemoveIndexEntryRequest implements Request {
 
   }
 
-  private final IndexEntryPK indexEntry;
+  private final IndexEntryKey indexEntry;
 }

@@ -278,7 +278,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
       StringBuilder queryBuf = new StringBuilder();
       queryBuf.
-          append("SELECT distinct instance FROM com.silverpeas.workflow.engine.instance" +
+          append("SELECT distinct instance FROM org.silverpeas.core.workflow.engine.instance" +
               ".ProcessInstanceImpl instance");
       queryBuf.append(" WHERE instanceId IN LIST(");
 
@@ -570,7 +570,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       rs = prepStmt.executeQuery();
 
       StringBuilder queryBuf = new StringBuilder();
-      queryBuf.append("SELECT distinct instance FROM com.silverpeas.workflow.engine.instance" +
+      queryBuf.append("SELECT distinct instance FROM org.silverpeas.core.workflow.engine.instance" +
           ".ProcessInstanceImpl instance");
       queryBuf.append(" WHERE instanceId IN LIST(");
 

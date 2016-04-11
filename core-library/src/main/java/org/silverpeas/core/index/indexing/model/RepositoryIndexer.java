@@ -105,7 +105,7 @@ public class RepositoryIndexer {
       IndexEngineProxy.addIndexEntry(fullIndexEntry);
       count++;
     } else if (REMOVE_ACTION.equals(action)) {
-      IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedDir", unixDirectoty);
+      IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "LinkedDir", unixDirectoty);
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
   }
@@ -142,7 +142,7 @@ public class RepositoryIndexer {
       IndexEngineProxy.addIndexEntry(fullIndexEntry);
       count++;
     } else if (REMOVE_ACTION.equals(action)) { // Remove file from index
-      IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedFile", unixFilePath);
+      IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "LinkedFile", unixFilePath);
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
   }

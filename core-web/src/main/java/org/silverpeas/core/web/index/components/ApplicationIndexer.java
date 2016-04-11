@@ -52,15 +52,12 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   public void index(String personalComponent) throws Exception {
-    setSilverTraceLevel();
     if (personalComponent != null) {
       indexPersonalComponent(personalComponent);
     }
   }
 
   public void indexComponent(String spaceId, ComponentInst compoInst) {
-
-
     // index component info
     admin.indexComponent(compoInst.getId());
 
@@ -102,7 +99,6 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   public void indexPdc() throws Exception {
-    setSilverTraceLevel();
     PdcIndexer indexer = PdcIndexer.getInstance();
     indexer.index();
   }

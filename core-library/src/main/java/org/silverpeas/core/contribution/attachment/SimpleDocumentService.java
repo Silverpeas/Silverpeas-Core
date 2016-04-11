@@ -49,7 +49,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -192,7 +192,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       language = I18NHelper.defaultLanguage;
     }
     String objectType = "Attachment" + document.getId() + '_' + language;
-    IndexEntryPK indexEntry = new IndexEntryPK(document.getInstanceId(), objectType, document.
+    IndexEntryKey indexEntry = new IndexEntryKey(document.getInstanceId(), objectType, document.
         getForeignId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

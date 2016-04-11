@@ -45,7 +45,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
   }
 
   protected ApplicationDYMIndexer() {
-    setSilverTraceLevel();
+
   }
 
   /**
@@ -120,7 +120,6 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * creates a spellchecker index for the PDC
    */
   public void indexPdc() {
-    setSilverTraceLevel();
     String pdcIndexPath = IndexFileManager
         .getAbsoluteIndexPath(null, "pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);

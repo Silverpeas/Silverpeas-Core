@@ -26,7 +26,6 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminController;
 
 /**
@@ -37,17 +36,11 @@ public abstract class AbstractIndexer {
   protected final AdminController admin = ServiceProvider.getService(AdminController.class);
   private final static String silvertraceModule = "applicationIndexer";
 
-  protected void setSilverTraceLevel() {
-    SilverTrace.setTraceLevel(silvertraceModule, SilverTrace.TRACE_LEVEL_INFO);
-  }
-
   public void indexAllSpaces() throws Exception {
     index(null, null);
   }
 
   public void index(String currentSpaceId, String componentId) throws Exception {
-    setSilverTraceLevel();
-
     if (currentSpaceId == null) {
       // index whole application
       String[] spaceIds = OrganizationControllerProvider.getOrganisationController().getAllSpaceIds();

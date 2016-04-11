@@ -157,7 +157,7 @@ public class IndexManager {
     }
   }
 
-  private void removeIndexEntry(IndexWriter writer, IndexEntryPK indexEntry) {
+  private void removeIndexEntry(IndexWriter writer, IndexEntryKey indexEntry) {
     Term term = new Term(KEY, indexEntry.toString());
     try {
       // removing document according to indexEntryPK
@@ -174,7 +174,7 @@ public class IndexManager {
    *
    * @param indexEntry
    */
-  public void removeIndexEntry(IndexEntryPK indexEntry) {
+  public void removeIndexEntry(IndexEntryKey indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
     IndexWriter writer = getIndexWriter(indexPath, "");
     if (writer != null) {
@@ -198,7 +198,7 @@ public class IndexManager {
    * @param indexEntry
    * @return the path to the directory where are stored the index for the given index entry.
    */
-  public String getIndexDirectoryPath(IndexEntryPK indexEntry) {
+  public String getIndexDirectoryPath(IndexEntryKey indexEntry) {
     return getIndexDirectoryPath(null, indexEntry.getComponent());
   }
 

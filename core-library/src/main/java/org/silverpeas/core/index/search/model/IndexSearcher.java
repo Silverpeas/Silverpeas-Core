@@ -43,7 +43,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.indexing.model.IndexReadersCache;
 import org.silverpeas.core.index.indexing.model.SpaceComponentPair;
@@ -150,12 +150,12 @@ public class IndexSearcher {
     Set<SpaceComponentPair> set = new HashSet<>(1);
     set.add(pair);
 
-    IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
+    IndexEntryKey indexEntryKey = new IndexEntryKey(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
     org.apache.lucene.search.IndexSearcher searcher = getSearcher(set);
     try {
       TopDocs topDocs;
-      Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
+      Term term = new Term(IndexManager.KEY, indexEntryKey.toString());
 
       TermQuery query = new TermQuery(term);
       topDocs = searcher.search(query, maxNumberResult);
@@ -386,7 +386,7 @@ public class IndexSearcher {
       org.apache.lucene.search.IndexSearcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
     MatchingIndexEntry indexEntry =
-        new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
+        new MatchingIndexEntry(IndexEntryKey.create(doc.get(IndexManager.KEY)));
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {

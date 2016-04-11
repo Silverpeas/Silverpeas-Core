@@ -21,7 +21,6 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.PostConstruct;
@@ -41,17 +40,37 @@ public final class IndexEngineProxy {
   }
 
   /**
-   * Add an entry index.
+   * Adds the specified entry in the indexes.
+   * @param entry the index to add.
    */
-  static public void addIndexEntry(FullIndexEntry indexEntry) {
-    IndexerThread.addIndexEntry(indexEntry);
+  public void add(FullIndexEntry entry) {
+    IndexerThread.addIndexEntry(entry);
   }
 
   /**
-   * Remove an entry index.
+   * Removes from the indexes the entry identified by the specified key.
+   * @param entryKey the key of the entry in the indexes.
    */
-  static public void removeIndexEntry(IndexEntryPK indexEntry) {
-    IndexerThread.removeIndexEntry(indexEntry);
+  public void delete(IndexEntryKey entryKey) {
+    IndexerThread.removeIndexEntry(entryKey);
+  }
+
+  public static IndexEngineProxy get() {
+    return ServiceProvider.getService(IndexEngineProxy.class);
+  }
+
+  /**
+   * Adds an entry index.
+   */
+  public static void addIndexEntry(FullIndexEntry indexEntry) {
+    get().add(indexEntry);
+  }
+
+  /**
+   * Removes an entry index.
+   */
+  public static void removeIndexEntry(IndexEntryKey indexEntry) {
+    get().delete(indexEntry);
   }
 
   /**

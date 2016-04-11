@@ -25,6 +25,7 @@
 package org.silverpeas.core.pdc.tree.service;
 
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
@@ -40,7 +41,6 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -1015,7 +1015,7 @@ public class DefaultTreeService implements TreeService {
    */
   private void deleteIndex(TreeNodePK pk, String treeId) {
 
-    IndexEntryPK indexEntry = new IndexEntryPK("pdc", "TreeNode", pk.getId()
+    IndexEntryKey indexEntry = new IndexEntryKey("pdc", "TreeNode", pk.getId()
         + "_" + treeId);
 
     IndexEngineProxy.removeIndexEntry(indexEntry);
