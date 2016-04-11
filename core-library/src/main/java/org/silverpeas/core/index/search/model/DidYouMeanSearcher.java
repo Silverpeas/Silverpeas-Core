@@ -24,18 +24,6 @@
 
 package org.silverpeas.core.index.search.model;
 
-import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
-import org.silverpeas.core.index.indexing.model.IndexManager;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -43,21 +31,35 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
- *
+ * An interactive search to propose queries matching some results the user is expecting.
  *
  */
 public class DidYouMeanSearcher {
   private List<SpellChecker> spellCheckers = null;
   private String query = null;
   private final File uploadIndexDir;
+  @Inject
+  private IndexSearcher indexSearcher;
+  @Inject
+  private IndexManager indexManager;
 
-  /**
-   *
-   */
-  public DidYouMeanSearcher() {
-    spellCheckers = new ArrayList<SpellChecker>();
+  private DidYouMeanSearcher() {
+    spellCheckers = new ArrayList<>();
     uploadIndexDir =  new File(IndexFileManager.getIndexUpLoadPath());
   }
 
@@ -77,7 +79,7 @@ public class DidYouMeanSearcher {
     if (StringUtil.isDefined(queryDescription.getQuery())) {
 
       // parses the query string to prepare the search
-      Analyzer analyzer = new IndexManager().getAnalyzer(queryDescription.getRequestedLanguage());
+      Analyzer analyzer = indexManager.getAnalyzer(queryDescription.getRequestedLanguage());
       QueryParser queryParser = new QueryParser(Version.LUCENE_36, field, analyzer);
 
       Query parsedQuery;
@@ -93,9 +95,8 @@ public class DidYouMeanSearcher {
       StringTokenizer tokens = new StringTokenizer(query);
 
       // gets spelling index paths
-      WAIndexSearcher waIndexSearcher = new WAIndexSearcher();
       Set<String> spellIndexPaths =
-          waIndexSearcher.getIndexPathSet(queryDescription.getSpaceComponentPairSet());
+          indexSearcher.getIndexPathSet(queryDescription.getSpaceComponentPairSet());
 
       try {
         while (tokens.hasMoreTokens()) {
@@ -124,8 +125,7 @@ public class DidYouMeanSearcher {
           }
         }
       } catch (IOException e) {
-        SilverTrace.error("searchEngine", DidYouMeanIndexer.class.toString(),
-            "root.EX_LOAD_IO_EXCEPTION", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
 
       suggestions = buildFinalResult();

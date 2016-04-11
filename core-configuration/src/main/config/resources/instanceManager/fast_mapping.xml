@@ -27,7 +27,7 @@
 
 <!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.exolab.org/mapping.dtd">
 <mapping>
-  <class name="ProcessInstanceImpl" key-generator="MAX" identity="instanceId">
+  <class name="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="instanceId">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_processinstance" />
     <field name="locked" type="boolean" get-method="isLockedByAdmin" set-method="setLockedByAdmin">
@@ -50,38 +50,38 @@
       <sql name="modelid" />
       <bind-xml name="modelId" />
     </field>
-    <field name="historySteps" collection="vector" type="HistoryStepImpl" set-method="castor_setHistorySteps" get-method="castor_getHistorySteps">
+    <field name="historySteps" collection="vector" type="org.silverpeas.core.workflow.engine.instance.HistoryStepImpl" set-method="castor_setHistorySteps" get-method="castor_getHistorySteps">
       <sql many-key="instanceid" />
       <bind-xml name="historySteps" />
     </field>
-    <field name="questions" collection="vector" type="QuestionImpl" set-method="castor_setQuestions" get-method="castor_getQuestions">
+    <field name="questions" collection="vector" type="org.silverpeas.core.workflow.engine.instance.QuestionImpl" set-method="castor_setQuestions" get-method="castor_getQuestions">
       <sql many-key="instanceid" />
       <bind-xml name="questions" />
     </field>
-    <field name="interestedUsers" collection="vector" type="InterestedUser" set-method="castor_setInterestedUsers" get-method="castor_getInterestedUsers">
+    <field name="interestedUsers" collection="vector" type="org.silverpeas.core.workflow.engine.instance.InterestedUser" set-method="castor_setInterestedUsers" get-method="castor_getInterestedUsers">
       <sql many-key="instanceid" />
       <bind-xml name="interestedUsers" />
     </field>
-    <field name="workingUsers" collection="vector" type="WorkingUser" set-method="castor_setWorkingUsers" get-method="castor_getWorkingUsers">
+    <field name="workingUsers" collection="vector" type="org.silverpeas.core.workflow.engine.instance.WorkingUser" set-method="castor_setWorkingUsers" get-method="castor_getWorkingUsers">
       <bind-xml name="workingUsers" />
     </field>
-    <field name="lockingUsers" collection="vector" type="LockingUser" set-method="castor_setLockingUsers" get-method="castor_getLockingUsers">
+    <field name="lockingUsers" collection="vector" type="org.silverpeas.core.workflow.engine.instance.LockingUser" set-method="castor_setLockingUsers" get-method="castor_getLockingUsers">
       <sql many-key="instanceid" />
       <bind-xml name="lockingUsers" />
     </field>
-    <field name="activeStates" collection="vector" type="ActiveState" set-method="castor_setActiveStates" get-method="castor_getActiveStates">
+    <field name="activeStates" collection="vector" type="org.silverpeas.core.workflow.engine.instance.ActiveState" set-method="castor_setActiveStates" get-method="castor_getActiveStates">
       <sql many-key="instanceid" />
       <bind-xml name="activeStates" />
     </field>
   </class>
-  <class name="WorkingUser" depends="ProcessInstanceImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.WorkingUser" depends="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_workinguser" />
     <field name="id" type="string">
       <sql type="integer" name="id" />
       <bind-xml name="id" />
     </field>
-    <field name="processInstance" type="ProcessInstanceImpl">
+    <field name="processInstance" type="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
     </field>
@@ -106,14 +106,14 @@
       <bind-xml name="groupId" />
     </field>
   </class>
-  <class name="QuestionImpl" depends="ProcessInstanceImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.QuestionImpl" depends="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_question" />
     <field name="id" type="string">
       <sql type="integer" name="id" />
       <bind-xml name="id" />
     </field>
-    <field name="processInstance" type="ProcessInstanceImpl">
+    <field name="processInstance" type="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
     </field>
@@ -154,14 +154,14 @@
       <bind-xml name="toUserId" />
     </field>
   </class>
-  <class name="ActiveState" depends="ProcessInstanceImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.ActiveState" depends="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_activestate" />
     <field name="id" type="string">
       <sql type="integer" name="id" />
       <bind-xml name="id" />
     </field>
-    <field name="processInstance" type="ProcessInstanceImpl">
+    <field name="processInstance" type="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
     </field>
@@ -178,14 +178,14 @@
       <bind-xml name="timeoutStatus" />
     </field>
   </class>
-  <class name="HistoryStepImpl" depends="ProcessInstanceImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.HistoryStepImpl" depends="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_historystep" />
     <field name="id" type="string">
       <sql type="integer" name="id" />
       <bind-xml name="id" />
     </field>
-    <field name="processInstance" type="ProcessInstanceImpl">
+    <field name="processInstance" type="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
     </field>
@@ -218,7 +218,7 @@
       <bind-xml name="actionStatus" />
     </field>
   </class>
-  <class name="UndoHistoryStep" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.UndoHistoryStep" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_undo_step" />
     <field name="id" type="string">
@@ -242,7 +242,7 @@
       <bind-xml name="parameters" />
     </field>
   </class>
-  <class name="LockingUser" depends="ProcessInstanceImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.LockingUser" depends="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_lockinguser" />
     <field name="id" type="string">
@@ -253,7 +253,7 @@
       <sql name="userid" />
       <bind-xml name="userId" />
     </field>
-    <field name="processInstance" type="ProcessInstanceImpl">
+    <field name="processInstance" type="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
     </field>
@@ -266,7 +266,7 @@
       <bind-xml name="lockDate" />
     </field>
   </class>
-  <class name="InterestedUser" depends="ProcessInstanceImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.instance.InterestedUser" depends="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_interesteduser" />
     <field name="id" type="string">
@@ -281,7 +281,7 @@
       <sql name="usersrole" />
       <bind-xml name="usersRole" />
     </field>
-    <field name="processInstance" type="ProcessInstanceImpl">
+    <field name="processInstance" type="org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
     </field>
@@ -298,7 +298,7 @@
       <bind-xml name="groupId" />
     </field>
   </class>
-  <class name="UserSettingsImpl" key-generator="MAX" identity="settingsId">
+  <class name="org.silverpeas.core.workflow.engine.user.UserSettingsImpl" key-generator="MAX" identity="settingsId">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_usersettings" />
     <field name="settingsId" type="string">
@@ -313,12 +313,12 @@
       <sql name="peasid" />
       <bind-xml name="peasId" />
     </field>
-    <field name="userInfos" collection="vector" type="UserInfoImpl" set-method="castor_setUserInfos" get-method="castor_getUserInfos">
+    <field name="userInfos" collection="vector" type="org.silverpeas.core.workflow.engine.user.UserInfoImpl" set-method="castor_setUserInfos" get-method="castor_getUserInfos">
       <sql many-key="settingsid" />
       <bind-xml name="userInfos" />
     </field>
   </class>
-  <class name="UserInfoImpl" depends="UserSettingsImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.user.UserInfoImpl" depends="org.silverpeas.core.workflow.engine.user.UserSettingsImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_userinfo" />
     <field name="id" type="string">
@@ -333,12 +333,12 @@
       <sql name="value" />
       <bind-xml name="value" />
     </field>
-    <field name="userSettings" type="UserSettingsImpl">
+    <field name="userSettings" type="org.silverpeas.core.workflow.engine.user.UserSettingsImpl">
       <sql name="settingsid" />
       <bind-xml name="userSettings" />
     </field>
   </class>
-  <class name="WorkflowErrorImpl" key-generator="MAX" identity="id">
+  <class name="org.silverpeas.core.workflow.engine.error.WorkflowErrorImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
     <map-to table="sb_workflow_error" />
     <field name="id" type="string">

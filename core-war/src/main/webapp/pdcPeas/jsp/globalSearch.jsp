@@ -27,7 +27,7 @@
 
 <%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@page import="org.apache.lucene.queryParser.QueryParser"%>
-<%@page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
+<%@page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
@@ -133,7 +133,7 @@ ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
-QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
+QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

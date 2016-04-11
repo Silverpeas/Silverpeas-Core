@@ -25,14 +25,15 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.index.search.model.WAIndexSearcher;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,9 +44,14 @@ import java.util.List;
  */
 public class UserIndexation {
 
-  private WAIndexSearcher searcher = new WAIndexSearcher();
+  @Inject
+  private IndexSearcher searcher;
   static final String COMPONENT_ID = "users";
   public static final String OBJECT_TYPE = "UserFull";
+
+  private UserIndexation() {
+
+  }
 
   /**
    * Indexes the specified user. If no user exist with the specified unique identifier, nothing is

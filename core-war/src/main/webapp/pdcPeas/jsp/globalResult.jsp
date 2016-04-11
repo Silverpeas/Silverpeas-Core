@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.web.pdc.vo.FacetEntryVO"%>
 <%@ page import="org.silverpeas.web.pdc.vo.ResultGroupFilter"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
-<%@ page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
+<%@ page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
@@ -162,7 +162,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
-QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
+QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
 
 int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue();
 String pageId = (String) request.getAttribute("ResultPageId");

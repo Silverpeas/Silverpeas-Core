@@ -38,7 +38,7 @@ public class TikaParser implements Parser {
   private Tika tika;
 
   @PostConstruct
-  protected void initTika() {
+  private void initTika() {
     tika = new Tika();
   }
 

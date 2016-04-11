@@ -26,6 +26,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.UserIndexation;
@@ -52,7 +53,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DomainDriverManager extends AbstractDomainDriver {
 
-  private UserIndexation userIndexation = null;
   private OrganizationSchema organization = null;
   private Map<String, DomainDriver> domainDriverInstances =
           new ConcurrentHashMap<>();
@@ -1231,10 +1231,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   private UserIndexation getUserIndexation() {
-    if (userIndexation == null) {
-      userIndexation = new UserIndexation();
-    }
-    return userIndexation;
+    return ServiceProvider.getService(UserIndexation.class);
   }
 
   @Override

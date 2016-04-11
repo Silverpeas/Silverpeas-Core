@@ -21,14 +21,15 @@
 package org.silverpeas.core.index.search;
 
 import org.silverpeas.core.index.search.model.DidYouMeanSearcher;
+import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.index.search.model.SearchCompletion;
-import org.silverpeas.core.index.search.model.WAIndexSearcher;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,6 +46,11 @@ import java.util.Set;
 @Singleton
 public class SimpleSearchEngine implements SearchEngine {
 
+  @Inject
+  private DidYouMeanSearcher didYouMeanSearcher;
+  @Inject
+  private IndexSearcher indexSearcher;
+
   SettingBundle pdcSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
@@ -58,12 +64,10 @@ public class SimpleSearchEngine implements SearchEngine {
   @Override
   public PlainSearchResult search(QueryDescription query) throws ParseException {
     try {
-      List<MatchingIndexEntry> results = Arrays.asList(new WAIndexSearcher().search(query));
+      List<MatchingIndexEntry> results = Arrays.asList(indexSearcher.search(query));
       @SuppressWarnings("unchecked") Set<String> spellingWords = Collections.EMPTY_SET;
       if (enableWordSpelling && isSpellingNeeded(results)) {
-        DidYouMeanSearcher searcher = new DidYouMeanSearcher();
-
-        String[] suggestions = searcher.suggest(query);
+        String[] suggestions = didYouMeanSearcher.suggest(query);
         if (suggestions != null && suggestions.length > 0) {
           spellingWords = new HashSet<>(suggestions.length);
           Collections.addAll(spellingWords, suggestions);

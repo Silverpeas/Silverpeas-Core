@@ -22,10 +22,11 @@ package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.contribution.contentcontainer.content.XMLFormFieldComparator;
 import org.silverpeas.core.index.indexing.model.IndexEntryPK;
+import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.index.search.model.WAIndexSearcher;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,8 +42,10 @@ import java.util.List;
 public class SortResultsXFormWithoutPub implements SortResults {
 
   private PdcSearchSessionController pdcSearchSessionController;
+  @Inject
+  private IndexSearcher indexSearcher;
 
-  public SortResultsXFormWithoutPub() {
+  private SortResultsXFormWithoutPub() {
   }
 
   /*
@@ -54,7 +57,6 @@ public class SortResultsXFormWithoutPub implements SortResults {
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> originalResults, String sortOrder,
       String sortValue, String language) {
 
-    WAIndexSearcher indexSearcher = new WAIndexSearcher();
     List<GlobalSilverResult> modifiedResults = new ArrayList<GlobalSilverResult>(originalResults
         .size());
     for (GlobalSilverResult originalResult : originalResults) {

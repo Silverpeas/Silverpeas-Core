@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
-<%@ page import="org.silverpeas.core.index.search.model.WAIndexSearcher"%>
+<%@ page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
@@ -53,7 +53,7 @@ BrowseBar 	browseBar 	= window.getBrowseBar();
 Frame 		frame 		= gef.getFrame();
 Board		board		= gef.getBoard();
 
-QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
+QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
 
 %>
 

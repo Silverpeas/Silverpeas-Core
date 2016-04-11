@@ -20,14 +20,6 @@
  */
 package org.silverpeas.core.index.search.model;
 
-import org.silverpeas.core.index.indexing.model.ExternalComponent;
-import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEntryPK;
-import org.silverpeas.core.index.indexing.model.IndexReadersCache;
-import org.silverpeas.core.index.indexing.model.SpaceComponentPair;
-import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -37,15 +29,33 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.model.ExternalComponent;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryPK;
 import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.index.indexing.model.IndexReadersCache;
+import org.silverpeas.core.index.indexing.model.SpaceComponentPair;
+import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,24 +69,33 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
+ * The IndexSearcher class implements search over all the indexes. A IndexSearcher
  * manages a set of cached lucene IndexSearcher.
  */
-public class WAIndexSearcher {
+public class IndexSearcher {
+
+  public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
 
   /**
-   * The primary and secondary factor are used to give a better score to entries whose title or
+   * The primary factor used with the secondary one to give a better score to entries whose title or
    * abstract match the query.
    */
   private int primaryFactor = 3;
+  /**
+   * The secondary factor used with the first one to give a better score to entries whose title or
+   * abstract match the query.
+   */
   private int secondaryFactor = 1;
-  public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
+  @Inject
+  private IndexManager indexManager;
+
   /**
    * indicates the number maximum of results returned by the search
    */
   public static int maxNumberResult = 0;
 
-  static {
+  @PostConstruct
+  private void init() {
     try {
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
@@ -89,9 +108,8 @@ public class WAIndexSearcher {
 
       maxNumberResult = settings.getInteger("maxResults", 100);
     } catch (MissingResourceException e) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_FILE_NOT_FOUND", e);
-    } catch (NumberFormatException e) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_INVALID_ARG", e);
+      SilverLogger.getLogger(this)
+          .error("Error while loading the settings from searchEngineSettings.properties", e);
     }
   }
 
@@ -99,11 +117,12 @@ public class WAIndexSearcher {
    * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
    * file.
    */
-  public WAIndexSearcher() {
-    indexManager = new IndexManager();
+  private IndexSearcher() {
+    indexManager = IndexManager.get();
     primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
     secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
   }
+
 
   /**
    * Get the primary factor from the IndexEngine.properties file.
@@ -133,7 +152,7 @@ public class WAIndexSearcher {
 
     IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
-    IndexSearcher searcher = getSearcher(set);
+    org.apache.lucene.search.IndexSearcher searcher = getSearcher(set);
     try {
       TopDocs topDocs;
       Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
@@ -144,8 +163,7 @@ public class WAIndexSearcher {
 
       matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
     } catch (IOException ioe) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+      SilverLogger.getLogger(this).error("Index file corrupted", ioe);
     } finally {
       IOUtils.closeQuietly(searcher);
     }
@@ -164,7 +182,7 @@ public class WAIndexSearcher {
       throws org.silverpeas.core.index.search.model.ParseException {
     List<MatchingIndexEntry> results;
 
-    IndexSearcher searcher = getSearcher(query);
+    org.apache.lucene.search.IndexSearcher searcher = getSearcher(query);
 
     try {
       TopDocs topDocs;
@@ -207,7 +225,7 @@ public class WAIndexSearcher {
               booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
             }
           } catch (ParseException e) {
-            throw new org.silverpeas.core.index.search.model.ParseException("WAIndexSearcher", e);
+            throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
           }
         }
       }
@@ -224,8 +242,7 @@ public class WAIndexSearcher {
 
       results = makeList(topDocs, query, searcher);
     } catch (IOException ioe) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+      SilverLogger.getLogger(this).error("Index file corrupted", ioe);
       results = new ArrayList<>();
     }
     return results.toArray(new MatchingIndexEntry[results.size()]);
@@ -301,7 +318,7 @@ public class WAIndexSearcher {
 
       return booleanQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException("WAIndexSearcher", e);
+      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
     }
   }
 
@@ -328,7 +345,7 @@ public class WAIndexSearcher {
 
       return booleanQuery;
     } catch (ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException("WAIndexSearcher", e);
+      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
     }
   }
 
@@ -366,7 +383,7 @@ public class WAIndexSearcher {
    * @throws IOException if there is a problem when searching Lucene index
    */
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
-      IndexSearcher searcher) throws IOException {
+      org.apache.lucene.search.IndexSearcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
     MatchingIndexEntry indexEntry =
         new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
@@ -432,7 +449,7 @@ public class WAIndexSearcher {
    * reached or whose endDate is passed are pruned from the results list.
    */
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
-      IndexSearcher searcher) throws IOException {
+      org.apache.lucene.search.IndexSearcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<>();
 
     if (topDocs != null) {
@@ -447,15 +464,12 @@ public class WAIndexSearcher {
     }
     return results;
   }
-  /**
-   * The manager of all the Web'Activ index.
-   */
-  private final IndexManager indexManager;
 
   /**
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
-  private IndexSearcher getSearcher(Set<SpaceComponentPair> spaceComponentPairSet) {
+  private org.apache.lucene.search.IndexSearcher getSearcher(
+      Set<SpaceComponentPair> spaceComponentPairSet) {
     Set<String> indexPathSet = getIndexPathSet(spaceComponentPairSet);
 
     List<IndexReader> readers = new ArrayList<>();
@@ -465,13 +479,14 @@ public class WAIndexSearcher {
         readers.add(indexReader);
       }
     }
-    return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[readers.size()])));
+    return new org.apache.lucene.search.IndexSearcher(
+        new MultiReader(readers.toArray(new IndexReader[readers.size()])));
   }
 
   /**
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
-  private IndexSearcher getSearcher(QueryDescription query) {
+  private org.apache.lucene.search.IndexSearcher getSearcher(QueryDescription query) {
     Set<String> indexPathSet = getIndexPathSet(query.getSpaceComponentPairSet());
     List<IndexReader> readers = new ArrayList<>();
     for (String path : indexPathSet) {
@@ -490,7 +505,8 @@ public class WAIndexSearcher {
         readers.add(searcher);
       }
     }
-    return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[readers.size()])));
+    return new org.apache.lucene.search.IndexSearcher(
+        new MultiReader(readers.toArray(new IndexReader[readers.size()])));
   }
 
   private String getExternalComponentPath(ExternalComponent extComp) {

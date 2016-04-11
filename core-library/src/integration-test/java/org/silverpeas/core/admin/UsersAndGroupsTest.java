@@ -39,7 +39,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.SearchEngineException;
-import org.silverpeas.core.index.search.model.WAIndexSearcher;
+import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
@@ -90,7 +90,7 @@ public class UsersAndGroupsTest {
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
             AttachmentServiceProvider.class, ParseException.class,
-            SearchEngineException.class, WAIndexSearcher.class, TokenException.class,
+            SearchEngineException.class, IndexSearcher.class, TokenException.class,
             SearchEnginePropertiesManager.class, TokenRuntimeException.class, AbstractTable.class)
         .build();
   }

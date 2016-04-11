@@ -21,13 +21,16 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.index.indexing.IndexFileManager;
-
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ServiceProvider;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 
 /**
- * The IndexEngineProxy class encapsulates the calls to the index engine server.
+ * A proxy to the Indexing Engine. It delegates all the call to the underlying indexing engine.
  */
+@Singleton
 public final class IndexEngineProxy {
 
   /**
@@ -41,38 +44,22 @@ public final class IndexEngineProxy {
    * Add an entry index.
    */
   static public void addIndexEntry(FullIndexEntry indexEntry) {
-    init();
-    if (indexEngine != null) {
-      IndexerThread.addIndexEntry(indexEntry);
-    } else {
-      SilverTrace.error("indexing", "IndexEngineProxy",
-              "indexing.MSG_ADD_REQUEST_IGNORED");
-    }
+    IndexerThread.addIndexEntry(indexEntry);
   }
 
   /**
    * Remove an entry index.
    */
   static public void removeIndexEntry(IndexEntryPK indexEntry) {
-    init();
-    if (indexEngine != null) {
-      IndexerThread.removeIndexEntry(indexEntry);
-    } else {
-      SilverTrace.error("indexing", "IndexEngineProxy",
-              "indexing.MSG_REMOVE_REQUEST_IGNORED");
-    }
+    IndexerThread.removeIndexEntry(indexEntry);
   }
 
   /**
-   * Initialize the class, if this is not already done.
+   * Initialize the engine proxy.
    */
-  static private void init() {
-    String rootPath = IndexFileManager.getAbsoluteIndexPath("x", "x");
-    IndexerThread.start(new IndexManager());
-    indexEngine = "indexing";
+  @PostConstruct
+  private void init() {
+    IndexerThread.start(IndexManager.get());
   }
-  /**
-   * The indexEngineBm to which all the requests are forwarded.
-   */
-  static private String indexEngine = null;
+
 }

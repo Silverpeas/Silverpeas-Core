@@ -37,7 +37,7 @@ import javax.inject.Named;
 @Named
 public class DefaultSortResults implements SortResults {
 
-  public DefaultSortResults() {
+  private DefaultSortResults() {
   }
 
   /*

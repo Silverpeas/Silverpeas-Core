@@ -41,11 +41,13 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -104,11 +106,18 @@ public class IndexManager {
   public static final int READD = 2;
   private Pair<String, IndexWriter> indexWriter = Pair.of("", null);
 
+  public static IndexManager get() {
+    return ServiceProvider.getService(IndexManager.class);
+  }
+
+  @Inject
+  private ParserManager parserManager;
+
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
    * properties file "org/silverpeas/util/indexing/indexing.properties".
    */
-  public IndexManager() {
+  private IndexManager() {
   }
 
   /**
@@ -228,7 +237,7 @@ public class IndexManager {
    */
   public Reader getReader(FileDescription file) {
     Reader reader = null;
-    Parser parser = ParserManager.getParser(file.getFormat());
+    Parser parser = parserManager.getParser(file.getFormat());
 
     if (parser != null) {
       reader = parser.getReader(file.getPath(), file.getEncoding());
