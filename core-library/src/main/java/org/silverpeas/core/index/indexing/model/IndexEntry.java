@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * IndexEntry is the base class for all the entries which are indexed in the web'activ index. A
- * IndexEntry is create by a web'activ's component when it creates a new element or document. This
- * IndexEntry will be return later when the document matchs a query.
+ * IndexEntry is the base class for all the entries which are indexed in the Silverpeas indexes. An
+ * IndexEntry is created by a Silverpeas component when it creates a new element or document. This
+ * IndexEntry will be returned later when the document matches a query.
  */
 public class IndexEntry implements Serializable, Cloneable {
 

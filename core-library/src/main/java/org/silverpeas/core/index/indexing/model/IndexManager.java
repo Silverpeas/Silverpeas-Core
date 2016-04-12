@@ -20,10 +20,6 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.index.indexing.IndexFileManager;
-import org.silverpeas.core.index.indexing.parser.Parser;
-import org.silverpeas.core.index.indexing.parser.ParserManager;
-import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.Analyzer;
@@ -39,12 +35,15 @@ import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.IndexFileManager;
+import org.silverpeas.core.index.indexing.parser.Parser;
+import org.silverpeas.core.index.indexing.parser.ParserManager;
+import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -416,7 +415,9 @@ public class IndexManager {
     }
 
     if (StringUtil.isDefined(indexEntry.getObjectId())) {
-      AttachmentServiceProvider.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+      ServiceProvider.getAllServices(DocumentIndexing.class)
+          .stream()
+          .forEach(documentIndexing -> documentIndexing.updateIndexEntryWithDocuments(indexEntry));
     }
 
     List<FileDescription> list2 = indexEntry.getFileContentList();

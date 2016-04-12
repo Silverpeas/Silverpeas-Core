@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.index.indexing.model.DocumentIndexing;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -44,11 +45,11 @@ import java.util.Map;
  *
  * @author ehugonnet
  */
-public interface AttachmentService {
+public interface AttachmentService extends DocumentIndexing {
 
-  public static final String VERSION_MODE = "versionControl";
+  String VERSION_MODE = "versionControl";
 
-  public static AttachmentService get() {
+  static AttachmentService get() {
     return ServiceProvider.getService(AttachmentService.class);
   }
 
@@ -454,6 +455,7 @@ public interface AttachmentService {
    *
    * @param indexEntry the entry to be updated with the document indexes.
    */
+  @Override
   void updateIndexEntryWithDocuments(FullIndexEntry indexEntry);
 
   /**

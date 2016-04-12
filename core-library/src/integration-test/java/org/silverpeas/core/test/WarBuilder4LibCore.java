@@ -434,7 +434,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addMavenDependencies("org.apache.lucene:lucene-spellchecker");
       addPackages(true, "org.silverpeas.core.index.indexing");
       addAsResource("org/silverpeas/index/indexing");
-      addClasses(IndexFileManager.class);
     }
     return this;
   }

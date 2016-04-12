@@ -81,15 +81,15 @@ public class UsersAndGroupsTest {
         .addSilverpeasUrlFeatures()
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
         .addAsResource("org/silverpeas/core/admin/domain/driver")
-        .addMavenDependencies("org.apache.lucene:lucene-core")
-        .addMavenDependencies("org.apache.lucene:lucene-analyzers")
+        .addAsResource("org/silverpeas/core/index/search")
+        .addPackages(true, "org.silverpeas.core.index.search.model")
         .addPackages(false, "org.silverpeas.core.admin.space.quota")
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
         .addPackages(true, "org.silverpeas.core.notification.user")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
-            AttachmentServiceProvider.class, ParseException.class,
+            ParseException.class,
             SearchEngineException.class, IndexSearcher.class, TokenException.class,
             SearchEnginePropertiesManager.class, TokenRuntimeException.class, AbstractTable.class)
         .build();
