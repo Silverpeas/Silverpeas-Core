@@ -30,7 +30,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +48,7 @@ public final class ParserManager {
    */
   private final Map<String, Parser> parserMap = new HashMap<>();
   @Inject
-  @Named("tikaParser")
+  @DefaultParser
   private Parser defaultParser;
 
   private ParserManager() {

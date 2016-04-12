@@ -38,10 +38,12 @@ import java.io.Writer;
 
 import org.silverpeas.core.index.indexing.parser.PipedParser;
 
+import javax.inject.Named;
+
 /**
  * the psParser parse a postscript file
  */
-
+@Named("psParser")
 public class PsParser extends PipedParser {
 
   public PsParser() {

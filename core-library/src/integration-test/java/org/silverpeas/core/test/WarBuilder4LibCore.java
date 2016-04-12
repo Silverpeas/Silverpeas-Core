@@ -428,6 +428,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addIndexEngineFeatures() {
     if (!contains(FullIndexEntry.class)) {
+      addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
       addMavenDependencies("org.apache.lucene:lucene-core");
       addMavenDependencies("org.apache.lucene:lucene-analyzers");
       addMavenDependencies("org.apache.lucene:lucene-spellchecker");

@@ -28,12 +28,14 @@ import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import net.htmlparser.jericho.Source;
 
+import javax.inject.Named;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
+@Named("htmlParser")
 public class HTMLParser2 implements Parser {
   public HTMLParser2() {
   }

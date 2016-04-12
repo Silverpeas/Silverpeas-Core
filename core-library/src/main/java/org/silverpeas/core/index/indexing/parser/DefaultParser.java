@@ -21,49 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.index.indexing.parser.wordParser;
+package org.silverpeas.core.index.indexing.parser;
 
-import org.silverpeas.core.index.indexing.parser.Parser;
+import javax.inject.Qualifier;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import java.io.*;
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.hwpf.extractor.WordExtractor;
-
-import javax.inject.Named;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A WordParser parse a Word file. Use an open source java library named textmining Class
- * WordExtractor extracts the text from a Word 6.0/95/97/2000/XP word doc
- * @author neysseri
+ * A qualifier for denoting a given Parser implementation is the default parser to use when no one
+ * is available for a given content type (defined by the content MIME type).
+ * @author mmoquillon
  */
-@Named("wordParser")
-public class WordParser implements Parser {
-
-  /**
-   * Constructor declaration
-   */
-  public WordParser() {
-  }
-
-  /**
-   * Method declaration
-   * @param path
-   * @param encoding
-   * @return
-   */
-  @Override
-  public Reader getReader(String path, String encoding) {
-    Reader reader = null;
-    InputStream file = null;
-    try {
-      file = new FileInputStream(path);
-      WordExtractor extractor = new WordExtractor(file);
-      String wordText = extractor.getText();
-      reader = new StringReader(wordText);
-    } catch (Exception e) {
-    } finally {
-      IOUtils.closeQuietly(file);
-    }
-    return reader;
-  }
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RUNTIME)
+@Documented
+@Qualifier
+public @interface DefaultParser {
 }

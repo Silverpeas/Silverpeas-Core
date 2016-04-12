@@ -29,11 +29,14 @@ import org.silverpeas.core.index.indexing.parser.Parser;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 
+import javax.inject.Named;
+
 /**
  * A TextParser parse a text file without any processing.
  *
  * @author $Author: neysseri $
  */
+@Named("plainTextParser")
 public class TextParser implements Parser {
 
   /**

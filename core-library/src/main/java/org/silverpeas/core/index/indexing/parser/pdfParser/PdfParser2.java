@@ -34,9 +34,12 @@ import org.silverpeas.core.index.indexing.parser.Parser;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 
+import javax.inject.Named;
+
 /**
  * the pdfParser parse a pdf file
  */
+@Named("pdfParser")
 public class PdfParser2 implements Parser {
 
   public PdfParser2() {

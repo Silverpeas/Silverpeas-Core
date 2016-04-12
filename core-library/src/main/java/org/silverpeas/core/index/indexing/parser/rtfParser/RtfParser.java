@@ -28,6 +28,7 @@ import org.silverpeas.core.index.indexing.parser.PipedParser;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 
+import javax.inject.Named;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 import java.io.FileInputStream;
@@ -39,7 +40,7 @@ import java.io.Writer;
  * ExcelParser parse an excel file
  * @author $Author: neysseri $
  */
-
+@Named("rtfParser")
 public class RtfParser extends PipedParser {
 
   public RtfParser() {

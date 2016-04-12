@@ -40,11 +40,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
+import javax.inject.Named;
+
 /**
  * ExcelParser parse an excel file
  * @author $Author: neysseri $
  */
-
+@Named("excelParser")
 public class ExcelParser extends PipedParser {
   public ExcelParser() {
   }

@@ -51,6 +51,9 @@ import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
+import javax.inject.Named;
+
+@Named("openDocumentParser")
 public class OOParser implements Parser {
 
   /**

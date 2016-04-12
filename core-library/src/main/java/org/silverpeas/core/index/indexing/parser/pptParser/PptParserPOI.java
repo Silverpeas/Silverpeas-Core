@@ -32,11 +32,14 @@ import org.silverpeas.core.index.indexing.parser.Parser;
 
 import org.silverpeas.core.silvertrace.SilverTrace;
 
+import javax.inject.Named;
+
 /**
- * a pptParser uses POI to extract the text wich will be indexed
+ * a pptParser uses POI to extract the text which will be indexed
  *
  * @author $Author: neysseri $
  */
+@Named("powerPointParser")
 public class PptParserPOI implements Parser {
 
   public PptParserPOI() {
