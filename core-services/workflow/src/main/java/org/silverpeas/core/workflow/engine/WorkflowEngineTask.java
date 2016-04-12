@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.workflow.api.event.QuestionEvent;
 import org.silverpeas.core.workflow.api.event.ResponseEvent;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
@@ -141,6 +142,7 @@ public class WorkflowEngineTask implements Runnable {
          * First, all the requests are processed until the queue becomes empty.
          */
         do {
+          CacheServiceProvider.clearAllThreadCaches();
           request = null;
 
           synchronized (requestList) {
