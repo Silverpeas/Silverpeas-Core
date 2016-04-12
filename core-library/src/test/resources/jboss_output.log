@@ -1,0 +1,1059 @@
+=========================================================================
+
+  JBoss Bootstrap Environment
+
+  JBOSS_HOME: /home/miguel/Applications/wildfly
+
+  JAVA: /usr/lib/jvm/java-8-oracle/bin/java
+
+  JAVA_OPTS:  -server -XX:+UseCompressedOops  -server -XX:+UseCompressedOops -Xmx2048m -Djava.net.preferIPv4Stack=true -Dsilverpeas.refresh.configuration=-1 -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n
+
+=========================================================================
+
+Listening for transport dt_socket at address: 5005
+[0m16:57:44,270 INFO  [org.jboss.modules] (main) JBoss Modules version 1.4.3.Final
+[0m[0m16:57:44,471 INFO  [org.jboss.msc] (main) JBoss MSC version 1.2.6.Final
+[0m[0m16:57:44,550 INFO  [org.jboss.as] (MSC service thread 1-7) WFLYSRV0049: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) starting
+[0m[0m16:57:45,812 INFO  [org.jboss.as.controller.management-deprecated] (ServerService Thread Pool -- 28) WFLYCTL0028: Attribute 'job-repository-type' in the resource at address '/subsystem=batch' is deprecated, and may be removed in future version. See the attribute description in the output of the read-resource-description operation to learn more about the deprecation.
+[0m[0m16:57:45,825 INFO  [org.jboss.as.controller.management-deprecated] (ServerService Thread Pool -- 21) WFLYCTL0028: Attribute 'enabled' in the resource at address '/subsystem=datasources/data-source=ExampleDS' is deprecated, and may be removed in future version. See the attribute description in the output of the read-resource-description operation to learn more about the deprecation.
+[0m[0m16:57:45,835 INFO  [org.jboss.as.controller.management-deprecated] (ServerService Thread Pool -- 21) WFLYCTL0028: Attribute 'enabled' in the resource at address '/subsystem=datasources/data-source=Silverpeas' is deprecated, and may be removed in future version. See the attribute description in the output of the read-resource-description operation to learn more about the deprecation.
+[0m[0m16:57:45,836 INFO  [org.jboss.as.controller.management-deprecated] (ServerService Thread Pool -- 21) WFLYCTL0028: Attribute 'enabled' in the resource at address '/subsystem=datasources/data-source=DocumentStore' is deprecated, and may be removed in future version. See the attribute description in the output of the read-resource-description operation to learn more about the deprecation.
+[0m[0m16:57:45,852 INFO  [org.jboss.as.server.deployment.scanner] (DeploymentScanner-threads - 1) WFLYDS0004: Found weblib.war in deployment directory. To trigger deployment create a file called weblib.war.dodeploy
+[0m[0m16:57:45,852 INFO  [org.jboss.as.server.deployment.scanner] (DeploymentScanner-threads - 1) WFLYDS0004: Found website.war in deployment directory. To trigger deployment create a file called website.war.dodeploy
+[0m[0m16:57:45,891 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0039: Creating http management service using socket-binding (management-http)
+[0m[0m16:57:45,920 INFO  [org.xnio] (MSC service thread 1-2) XNIO version 3.3.1.Final
+[0m[0m16:57:45,932 INFO  [org.xnio.nio] (MSC service thread 1-2) XNIO NIO Implementation Version 3.3.1.Final
+[0m[0m16:57:45,965 INFO  [org.jboss.remoting] (MSC service thread 1-2) JBoss Remoting version 4.0.9.Final
+[0m[0m16:57:46,000 INFO  [org.wildfly.extension.io] (ServerService Thread Pool -- 40) WFLYIO001: Worker 'default' has auto-configured to 16 core threads with 128 task threads based on your 8 available processors
+[0m[0m16:57:46,012 INFO  [org.jboss.as.clustering.infinispan] (ServerService Thread Pool -- 41) WFLYCLINF0001: Activating Infinispan subsystem.
+[0m[0m16:57:46,139 INFO  [org.jboss.as.security] (ServerService Thread Pool -- 59) WFLYSEC0002: Activating Security Subsystem
+[0m[33m16:57:46,140 WARN  [org.jboss.as.txn] (ServerService Thread Pool -- 60) WFLYTX0013: Node identifier property is set to the default value. Please make sure it is unique.
+[0m[0m16:57:46,142 INFO  [org.jboss.as.security] (MSC service thread 1-8) WFLYSEC0001: Current PicketBox version=4.9.2.Final
+[0m[0m16:57:46,144 INFO  [org.jboss.as.connector.subsystems.datasources] (ServerService Thread Pool -- 36) WFLYJCA0004: Deploying JDBC-compliant driver class org.h2.Driver (version 1.3)
+[0m[0m16:57:46,147 INFO  [org.wildfly.iiop.openjdk] (ServerService Thread Pool -- 42) WFLYIIOP0001: Activating IIOP Subsystem
+[0m[0m16:57:46,157 INFO  [org.jboss.as.webservices] (ServerService Thread Pool -- 62) WFLYWS0002: Activating WebServices Extension
+[0m[0m16:57:46,179 INFO  [org.jboss.as.naming] (ServerService Thread Pool -- 52) WFLYNAM0001: Activating Naming Subsystem
+[0m[0m16:57:46,217 INFO  [org.jboss.as.jsf] (ServerService Thread Pool -- 48) WFLYJSF0007: Activated the following JSF Implementations: [main]
+[0m[0m16:57:46,223 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-3) WFLYUT0003: Undertow 1.2.9.Final starting
+[0m[0m16:57:46,225 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 61) WFLYUT0003: Undertow 1.2.9.Final starting
+[0m[0m16:57:46,248 INFO  [org.jboss.as.connector] (MSC service thread 1-3) WFLYJCA0009: Starting JCA Subsystem (IronJacamar 1.2.5.Final)
+[0m[0m16:57:46,279 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-7) WFLYJCA0018: Started Driver service with driver-name = h2
+[0m[0m16:57:46,404 INFO  [org.jboss.as.mail.extension] (MSC service thread 1-8) WFLYMAIL0001: Bound mail session [java:jboss/mail/Default]
+[0m[0m16:57:46,419 INFO  [org.jboss.as.naming] (MSC service thread 1-8) WFLYNAM0003: Starting Naming Service
+[0m[0m16:57:46,528 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 61) WFLYUT0014: Creating file handler for path /home/miguel/Applications/wildfly/welcome-content
+[0m[0m16:57:46,553 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-5) WFLYUT0012: Started server default-server.
+[0m[0m16:57:46,583 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-1) WFLYUT0018: Host default-host starting
+[0m[0m16:57:46,685 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-5) WFLYUT0006: Undertow HTTP listener default listening on /0.0.0.0:8000
+[0m[0m16:57:46,896 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-5) WFLYJCA0001: Bound data source [java:jboss/datasources/ExampleDS]
+[0m[0m16:57:46,921 INFO  [org.wildfly.iiop.openjdk] (MSC service thread 1-6) WFLYIIOP0009: CORBA ORB Service started
+[0m[0m16:57:47,028 INFO  [org.jboss.as.server.deployment.scanner] (MSC service thread 1-2) WFLYDS0013: Started FileSystemDeploymentService for directory /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/web
+[0m[0m16:57:47,053 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-2) WFLYSRV0027: Starting deployment of "website.war" (runtime-name: "website.war")
+[0m[0m16:57:47,053 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0027: Starting deployment of "silverpeas.war" (runtime-name: "silverpeas.war")
+[0m[0m16:57:47,054 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-8) WFLYSRV0027: Starting deployment of "jackrabbit-jca.rar" (runtime-name: "jackrabbit-jca.rar")
+[0m[0m16:57:47,055 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-8) WFLYSRV0027: Starting deployment of "postgresql.jar" (runtime-name: "postgresql.jar")
+[0m[0m16:57:47,056 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-4) WFLYSRV0027: Starting deployment of "weblib.war" (runtime-name: "weblib.war")
+[0m[0m16:57:47,061 INFO  [org.jboss.as.server.deployment.scanner] (MSC service thread 1-2) WFLYDS0013: Started FileSystemDeploymentService for directory /home/miguel/Applications/wildfly/standalone/deployments
+[0m[0m16:57:47,197 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221000: live server is starting with configuration HornetQ Configuration (clustered=false,backup=false,sharedStore=true,journalDirectory=/home/miguel/Applications/wildfly/standalone/data/messagingjournal,bindingsDirectory=/home/miguel/Applications/wildfly/standalone/data/messagingbindings,largeMessagesDirectory=/home/miguel/Applications/wildfly/standalone/data/messaginglargemessages,pagingDirectory=/home/miguel/Applications/wildfly/standalone/data/messagingpaging)
+[0m[0m16:57:47,204 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221006: Waiting to obtain live lock
+[0m[0m16:57:47,251 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221012: Using AIO Journal
+[0m[0m16:57:47,348 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221043: Adding protocol support CORE
+[0m[0m16:57:47,357 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221043: Adding protocol support AMQP
+[0m[0m16:57:47,361 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221043: Adding protocol support STOMP
+[0m[0m16:57:47,363 INFO  [org.jboss.ws.common.management] (MSC service thread 1-1) JBWS022052: Starting JBoss Web Services - Stack CXF Server 5.0.0.Final
+[0m[0m16:57:47,635 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221034: Waiting to obtain live lock
+[0m[0m16:57:47,635 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221035: Live Server Obtained live lock
+[0m[0m16:57:47,862 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-6) WFLYJCA0005: Deploying non-JDBC-compliant driver class org.postgresql.Driver (version 9.3)
+[0m[0m16:57:47,905 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-1) WFLYJCA0018: Started Driver service with driver-name = postgresql.jar
+[0m[0m16:57:47,911 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-6) WFLYJCA0001: Bound data source [java:/datasources/silverpeas]
+[0m[0m16:57:47,915 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-1) WFLYJCA0001: Bound data source [java:/datasources/DocumentStore]
+[0m[0m16:57:48,753 INFO  [org.jboss.messaging] (MSC service thread 1-1) WFLYMSG0016: Registered HTTP upgrade for hornetq-remoting protocol handled by http-acceptor-throughput acceptor
+[0m[0m16:57:48,749 INFO  [org.jboss.messaging] (MSC service thread 1-6) WFLYMSG0016: Registered HTTP upgrade for hornetq-remoting protocol handled by http-acceptor acceptor
+[0m[0m16:57:48,828 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221007: Server is now live
+[0m[0m16:57:48,829 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221001: HornetQ Server version 2.4.7.Final (2.4.7.Final, 124) [d6d762f7-8857-11e5-af3d-dfdc0c62e50d]
+[0m[0m16:57:48,833 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 64) HQ221003: trying to deploy queue jms.queue.statistics
+[0m[0m16:57:48,845 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 69) HQ221003: trying to deploy queue jms.queue.ExpiryQueue
+[0m[0m16:57:48,872 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 70) HQ221003: trying to deploy queue jms.topic.wysiwyg
+[0m[0m16:57:48,907 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 65) HQ221003: trying to deploy queue jms.topic.attachments
+[0m[0m16:57:48,941 INFO  [org.jboss.as.messaging] (ServerService Thread Pool -- 68) WFLYMSG0002: Bound messaging object to jndi name java:/ConnectionFactory
+[0m[0m16:57:48,952 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 67) HQ221003: trying to deploy queue jms.queue.DLQ
+[0m[0m16:57:48,953 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 71) HQ221003: trying to deploy queue jms.queue.notifications
+[0m[0m16:57:48,954 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 66) HQ221003: trying to deploy queue jms.topic.comments
+[0m[0m16:57:48,959 INFO  [org.hornetq.jms.server] (ServerService Thread Pool -- 64) HQ121005: Invalid "host" value "0.0.0.0" detected for "http-connector" connector. Switching to "pc-mig". If this new address is incorrect please manually configure the connector to use the proper one.
+[0m[0m16:57:48,964 INFO  [org.jboss.as.messaging] (ServerService Thread Pool -- 64) WFLYMSG0002: Bound messaging object to jndi name java:jboss/exported/jms/RemoteConnectionFactory
+[0m[0m16:57:49,061 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-1) WFLYJCA0007: Registered connection factory java:/JmsXA
+[0m[0m16:57:49,142 INFO  [org.hornetq.ra] (MSC service thread 1-1) HornetQ resource adaptor started
+[0m[0m16:57:49,143 INFO  [org.jboss.as.connector.services.resourceadapters.ResourceAdapterActivatorService$ResourceAdapterActivator] (MSC service thread 1-1) IJ020002: Deployed: file://RaActivatorhornetq-ra
+[0m[0m16:57:49,158 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-2) WFLYJCA0002: Bound JCA ConnectionFactory [java:/JmsXA]
+[0m[0m16:57:49,158 INFO  [org.jboss.as.messaging] (MSC service thread 1-1) WFLYMSG0002: Bound messaging object to jndi name java:jboss/DefaultJMSConnectionFactory
+[0m[0m16:57:49,609 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 70) WFLYUT0021: Registered web context: /weblib
+[0m[0m16:57:49,609 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 65) WFLYUT0021: Registered web context: /website
+[0m[33m16:57:51,353 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-logging-1.1.1.jar in /content/jackrabbit-jca.rar/httpservices-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,353 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-codec-1.6.jar in /content/jackrabbit-jca.rar/httpservices-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,353 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry slf4j-api-1.7.7.jar in /content/jackrabbit-jca.rar/httpservices-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,354 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-logging-1.1.1.jar in /content/jackrabbit-jca.rar/grib-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,355 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-codec-1.6.jar in /content/jackrabbit-jca.rar/grib-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,355 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry jcl-over-slf4j-1.7.7.jar in /content/jackrabbit-jca.rar/grib-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,355 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry guava-17.0.jar in /content/jackrabbit-jca.rar/grib-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,355 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry slf4j-api-1.7.7.jar in /content/jackrabbit-jca.rar/grib-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,360 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-logging-1.1.1.jar in /content/jackrabbit-jca.rar/junrar-0.7.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,380 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-logging-1.1.1.jar in /content/jackrabbit-jca.rar/cdm-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,380 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-codec-1.6.jar in /content/jackrabbit-jca.rar/cdm-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,380 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry jcl-over-slf4j-1.7.7.jar in /content/jackrabbit-jca.rar/cdm-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,380 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry slf4j-api-1.7.7.jar in /content/jackrabbit-jca.rar/cdm-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,380 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry guava-17.0.jar in /content/jackrabbit-jca.rar/cdm-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,508 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-logging-1.1.1.jar in /content/jackrabbit-jca.rar/netcdf4-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,508 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry commons-codec-1.6.jar in /content/jackrabbit-jca.rar/netcdf4-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,508 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry jcl-over-slf4j-1.7.7.jar in /content/jackrabbit-jca.rar/netcdf4-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,509 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry guava-17.0.jar in /content/jackrabbit-jca.rar/netcdf4-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:51,509 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0059: Class Path entry slf4j-api-1.7.7.jar in /content/jackrabbit-jca.rar/netcdf4-4.5.5.jar  does not point to a valid jar for a Class-Path reference.
+[0mJava HotSpot(TM) 64-Bit Server VM warning: You have loaded library /home/miguel/Applications/wildfly-9.0.2.Final/standalone/tmp/vfs/deployment/deploymente26067904e07551/jna-4.1.0.jar-8476bb7be5e0858f/contents/com/sun/jna/openbsd-x86-64/libjnidispatch.so which might have disabled stack guard. The VM will try to fix the stack guard now.
+It's highly recommended that you fix the library with 'execstack -c <libfile>', or link it with '-z noexecstack'.
+[33m16:57:52,161 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry ridl.jar in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,162 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry unoloader.jar in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,162 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry ../../lib/ in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,163 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry ../bin/ in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,173 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/cglib2.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,173 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/commons-beanutils.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,173 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/commons-collections.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,174 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/commons-lang.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,174 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/commons-logging.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,174 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/dom4j.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,174 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/ehcache.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,175 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/hibernate2.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,175 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/hsqldb.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,175 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/jta.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,175 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/junit.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,176 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/lucene.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,176 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/odmg.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,177 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/xdoclet-hibernate-module.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,177 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/xdoclet-xdoclet-module.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,177 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/xdoclet.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,178 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/xjavadoc.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,178 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry lib/jdom-1.1.1.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,199 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry ridl.jar in /content/silverpeas.war/WEB-INF/lib/juh-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,200 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0059: Class Path entry jurt.jar in /content/silverpeas.war/WEB-INF/lib/juh-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m16:57:52,220 WARN  [org.apache.jackrabbit.core.config.ConfigurationErrorHandler] (MSC service thread 1-5) Warning parsing the configuration at line 1 using system id file:/home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository.xml: org.xml.sax.SAXParseException; systemId: file:/home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository.xml; lineNumber: 1; columnNumber: 51; Document root element "Repository", must match DOCTYPE root "null".
+[0m[33m16:57:52,220 WARN  [org.apache.jackrabbit.core.config.ConfigurationErrorHandler] (MSC service thread 1-5) Warning parsing the configuration at line 1 using system id file:/home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository.xml: org.xml.sax.SAXParseException; systemId: file:/home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository.xml; lineNumber: 1; columnNumber: 51; Document is invalid: no grammar found.
+[0m[0m16:57:52,300 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (MSC service thread 1-5) Starting repository...
+[0m[0m16:57:52,304 INFO  [org.apache.jackrabbit.core.fs.local.LocalFileSystem] (MSC service thread 1-5) LocalFileSystem initialized at path /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository
+[0m[0m16:57:52,539 INFO  [org.apache.jackrabbit.core.fs.local.LocalFileSystem] (MSC service thread 1-5) LocalFileSystem initialized at path /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/version
+[0m[0m16:57:52,842 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (MSC service thread 1-5) initializing workspace 'silverpeas'...
+[0m[0m16:57:52,843 INFO  [org.apache.jackrabbit.core.fs.local.LocalFileSystem] (MSC service thread 1-5) LocalFileSystem initialized at path /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/workspaces/silverpeas
+[0m[0m16:57:53,006 INFO  [org.jboss.as.jpa] (MSC service thread 1-1) WFLYJPA0002: Read persistence.xml for silverpeas
+[0m[33m16:57:53,468 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-2) WFLYSRV0018: Deployment "deployment.silverpeas.war" is using a private module ("org.jboss.as.naming:main") which may be changed or removed in future versions without notice.
+[0m[33m16:57:53,469 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-2) WFLYSRV0018: Deployment "deployment.silverpeas.war" is using a private module ("org.apache.commons.codec:main") which may be changed or removed in future versions without notice.
+[0m[33m16:57:53,469 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-2) WFLYSRV0018: Deployment "deployment.silverpeas.war" is using a private module ("org.antlr:main") which may be changed or removed in future versions without notice.
+[0m[0m16:57:53,492 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 65) WFLYJPA0010: Starting Persistence Unit (phase 1 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m16:57:53,506 INFO  [org.hibernate.jpa.internal.util.LogHelper] (ServerService Thread Pool -- 65) HHH000204: Processing PersistenceUnitInfo [
+	name: silverpeas
+	...]
+[0m[0m16:57:53,613 INFO  [org.hibernate.Version] (ServerService Thread Pool -- 65) HHH000412: Hibernate Core {4.3.10.Final}
+[0m[0m16:57:53,615 INFO  [org.hibernate.cfg.Environment] (ServerService Thread Pool -- 65) HHH000206: hibernate.properties not found
+[0m[0m16:57:53,618 INFO  [org.hibernate.cfg.Environment] (ServerService Thread Pool -- 65) HHH000021: Bytecode provider name : javassist
+[0m[0m16:57:53,743 INFO  [org.apache.jackrabbit.core.query.lucene.SearchIndex] (MSC service thread 1-5) Index initialized: /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository/index Version: 3
+[0m[0m16:57:54,140 INFO  [org.apache.jackrabbit.core.query.lucene.SearchIndex] (MSC service thread 1-5) Index initialized: /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/workspaces/silverpeas/index Version: 3
+[0m[0m16:57:54,140 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (MSC service thread 1-5) workspace 'silverpeas' initialized
+[0m[0m16:57:54,143 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (MSC service thread 1-5) SecurityManager = class org.apache.jackrabbit.core.security.simple.SimpleSecurityManager
+[0m[0m16:57:54,144 INFO  [org.apache.jackrabbit.core.security.simple.SimpleSecurityManager] (MSC service thread 1-5) init: using Repository LoginModule configuration for Silverpeas
+[0m[0m16:57:54,150 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (MSC service thread 1-5) Repository started (1850ms)
+[0m[0m16:57:54,151 INFO  [org.jboss.as.connector.deployers.RaXmlDeployer] (MSC service thread 1-5) jackrabbit-jca.rar: Created repository (org.apache.jackrabbit.core.RepositoryImpl@236f03da)
+[0m[0m16:57:54,152 INFO  [org.jboss.as.connector.deployers.RaXmlDeployer] (MSC service thread 1-5) jackrabbit-jca.rar: Created repository handle (org.apache.jackrabbit.jca.JCARepositoryHandle@560cbe81)
+[0m[0m16:57:54,153 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-5) WFLYJCA0007: Registered connection factory java:/jca/jcr
+[0m[33m16:57:54,154 WARN  [org.jboss.as.connector.deployers.RaXmlDeployer] (MSC service thread 1-5) IJ020016: Missing <recovery> element. XA recovery disabled for: java:/jca/jcr
+[0m[0m16:57:54,155 INFO  [org.jboss.as.connector.deployers.RaXmlDeployer] (MSC service thread 1-5) IJ020002: Deployed: file:/home/miguel/Applications/wildfly/standalone/tmp/vfs/temp/temp8121379b4c1d7a2e/content-3e0c16d08422758/contents/
+[0m[0m16:57:54,157 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-4) WFLYJCA0002: Bound JCA ConnectionFactory [java:/jca/jcr]
+[0m[0m16:57:54,224 INFO  [org.jboss.weld.deployer] (MSC service thread 1-7) WFLYWELD0003: Processing weld deployment silverpeas.war
+[0m[0m16:57:54,353 INFO  [org.hibernate.validator.internal.util.Version] (MSC service thread 1-7) HV000001: Hibernate Validator 5.1.3.Final
+[0m[0m16:57:54,466 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-7) JNDI bindings for session bean named TagCloud in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/TagCloud!TagCloudBm
+	java:app/silverpeas/TagCloud!TagCloudBm
+	java:module/TagCloud!TagCloudBm
+	java:global/silverpeas/TagCloud
+	java:app/silverpeas/TagCloud
+	java:module/TagCloud
+
+[0m[0m16:57:54,466 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-7) JNDI bindings for session bean named Thesaurus in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:app/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:module/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:global/silverpeas/Thesaurus
+	java:app/silverpeas/Thesaurus
+	java:module/Thesaurus
+
+[0m[0m16:57:54,467 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-7) JNDI bindings for session bean named AdminBm in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/AdminBm!com.silverpeas.admin.ejb.AdminBusiness
+	java:app/silverpeas/AdminBm!com.silverpeas.admin.ejb.AdminBusiness
+	java:module/AdminBm!com.silverpeas.admin.ejb.AdminBusiness
+	java:global/silverpeas/AdminBm
+	java:app/silverpeas/AdminBm
+	java:module/AdminBm
+
+[0m[0m16:57:54,467 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-7) JNDI bindings for session bean named AuthenticationBm in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/AuthenticationBm!com.silverpeas.authentication.ejb.AuthenticationBm
+	java:app/silverpeas/AuthenticationBm!com.silverpeas.authentication.ejb.AuthenticationBm
+	java:module/AuthenticationBm!com.silverpeas.authentication.ejb.AuthenticationBm
+	java:global/silverpeas/AuthenticationBm
+	java:app/silverpeas/AuthenticationBm
+	java:module/AuthenticationBm
+
+[0m[0m16:57:55,125 INFO  [org.jboss.weld.deployer] (MSC service thread 1-8) WFLYWELD0006: Starting Services for CDI deployment: silverpeas.war
+[0m[0m16:57:55,177 INFO  [org.jboss.weld.Version] (MSC service thread 1-8) WELD-000900: 2.2.16 (SP1)
+[0m[0m16:57:55,305 INFO  [org.jboss.as.ejb3] (MSC service thread 1-1) WFLYEJB0042: Started message driven bean 'REMOVEListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,307 INFO  [org.jboss.as.ejb3] (MSC service thread 1-6) WFLYEJB0042: Started message driven bean 'POPUPListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,308 INFO  [org.jboss.as.ejb3] (MSC service thread 1-3) WFLYEJB0042: Started message driven bean 'CommentUserNotification' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,313 INFO  [org.jboss.as.ejb3] (MSC service thread 1-5) WFLYEJB0042: Started message driven bean 'KmeliaAttachmentEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,314 INFO  [org.jboss.as.ejb3] (MSC service thread 1-8) WFLYEJB0042: Started message driven bean 'SilverStatisticsMessageDriven' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,317 INFO  [org.jboss.as.ejb3] (MSC service thread 1-2) WFLYEJB0042: Started message driven bean 'SERVERListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,319 INFO  [org.jboss.as.ejb3] (MSC service thread 1-7) WFLYEJB0042: Started message driven bean 'SMTPListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,322 INFO  [org.jboss.as.ejb3] (MSC service thread 1-4) WFLYEJB0042: Started message driven bean 'SILVERMAILListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,336 INFO  [org.jboss.as.ejb3] (MSC service thread 1-1) WFLYEJB0042: Started message driven bean 'SharedAttachmentEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,337 INFO  [org.jboss.as.ejb3] (MSC service thread 1-5) WFLYEJB0042: Started message driven bean 'KmeliaWysiwygEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,337 INFO  [org.jboss.as.ejb3] (MSC service thread 1-3) WFLYEJB0042: Started message driven bean 'BlogWysiwygEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,338 INFO  [org.jboss.as.ejb3] (MSC service thread 1-8) WFLYEJB0042: Started message driven bean 'WebPagesWysiwygEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m16:57:55,339 INFO  [org.jboss.weld.deployer] (MSC service thread 1-8) WFLYWELD0009: Starting weld service for deployment silverpeas.war
+[0m[0m16:57:56,535 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 65) WFLYJPA0010: Starting Persistence Unit (phase 2 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m16:57:56,610 INFO  [org.hibernate.annotations.common.Version] (ServerService Thread Pool -- 65) HCANN000001: Hibernate Commons Annotations {4.0.5.Final}
+[0m[0m16:57:57,169 INFO  [org.hibernate.dialect.Dialect] (ServerService Thread Pool -- 65) HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL9Dialect
+[0m[0m16:57:57,180 INFO  [org.hibernate.engine.jdbc.internal.LobCreatorBuilder] (ServerService Thread Pool -- 65) HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
+[0m[0m16:57:57,538 INFO  [org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory] (ServerService Thread Pool -- 65) HHH000397: Using ASTQueryTranslatorFactory
+[0m[0m16:58:07,079 INFO  [javax.enterprise.resource.webcontainer.jsf.config] (ServerService Thread Pool -- 90) Initialisation de Mojarra 2.2.12-jbossorg-2 20150729-1131 pour le contexte «/silverpeas»
+[0m[0m16:58:10,665 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 90) Deploying javax.ws.rs.core.Application: class com.silverpeas.web.WebResourceProvider$Proxy$_$$_WeldClientProxy
+[0m[0m16:58:11,045 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) authenticate-header = Basic realm="Jackrabbit Webdav Server"
+[0m[0m16:58:11,046 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) csrf-protection = null
+[0m[0m16:58:11,046 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) createAbsoluteURI = true
+[0m[0m16:58:11,046 INFO  [org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet] (ServerService Thread Pool -- 90) resource-path-prefix = '/repository2000'
+[0m[0m16:58:11,105 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) authenticate-header = Basic realm="Jackrabbit Webdav Server"
+[0m[0m16:58:11,105 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) csrf-protection = null
+[0m[0m16:58:11,105 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 90) createAbsoluteURI = true
+[0m[0m16:58:11,106 INFO  [org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet] (ServerService Thread Pool -- 90) resource-path-prefix = '/repository'
+[0m[0m16:58:11,137 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 90) WFLYUT0021: Registered web context: /silverpeas
+[0m[0m16:58:11,177 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "silverpeas.war" (runtime-name : "silverpeas.war")
+[0m[0m16:58:11,177 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "jackrabbit-jca.rar" (runtime-name : "jackrabbit-jca.rar")
+[0m[0m16:58:11,177 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "postgresql.jar" (runtime-name : "postgresql.jar")
+[0m[0m16:58:11,178 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 37) WFLYSRV0010: Deployed "website.war" (runtime-name : "website.war")
+[0m[0m16:58:11,178 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 37) WFLYSRV0010: Deployed "weblib.war" (runtime-name : "weblib.war")
+[0m[0m16:58:11,374 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+[0m[0m16:58:11,374 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+[0m[0m16:58:11,374 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) started in 27439ms - Started 2182 of 2376 services (281 services are lazy, passive or on-demand)
+[0m[31m17:02:26,924 ERROR [io.undertow.request] (default task-8) UT005023: Exception handling request to /silverpeas/admin/jsp/SilverLoggerAdmin.jsp: java.lang.IllegalStateException: UT010019: Response already commited
+	at io.undertow.servlet.spec.ServletOutputStreamImpl.resetBuffer(ServletOutputStreamImpl.java:715)
+	at io.undertow.servlet.spec.HttpServletResponseImpl.resetBuffer(HttpServletResponseImpl.java:483)
+	at io.undertow.servlet.spec.HttpServletResponseImpl.doErrorDispatch(HttpServletResponseImpl.java:141)
+	at io.undertow.servlet.handlers.ServletInitialHandler.handleFirstRequest(ServletInitialHandler.java:285)
+	at io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitialHandler.java:261)
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$000(ServletInitialHandler.java:80)
+	at io.undertow.servlet.handlers.ServletInitialHandler$1.handleRequest(ServletInitialHandler.java:172)
+	at io.undertow.server.Connectors.executeRootHandler(Connectors.java:199)
+	at io.undertow.server.HttpServerExchange$1.run(HttpServerExchange.java:774)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+
+[0m[0m17:05:16,269 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 92) WFLYUT0022: Unregistered web context: /silverpeas
+[0m[0m17:05:16,467 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 102) WFLYJPA0011: Stopping Persistence Unit (phase 2 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m17:05:16,477 INFO  [org.jboss.weld.deployer] (MSC service thread 1-4) WFLYWELD0010: Stopping weld service for deployment silverpeas.war
+[0m[0m17:05:16,480 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 102) WFLYJPA0011: Stopping Persistence Unit (phase 1 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m17:05:16,773 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0028: Stopped deployment silverpeas.war (runtime-name: silverpeas.war) in 522ms
+[0m[0m17:05:16,844 INFO  [org.jboss.as.repository] (management-handler-thread - 7) WFLYDR0002: Content removed from location /home/miguel/Applications/wildfly/standalone/data/content/87/c7378c63c468706b0ceb444972177bc1ac889b/content
+[0m[0m17:05:16,844 INFO  [org.jboss.as.server] (management-handler-thread - 7) WFLYSRV0009: Undeployed "silverpeas.war" (runtime-name: "silverpeas.war")
+[0m[0m17:05:22,136 INFO  [org.jboss.as.repository] (management-handler-thread - 5) WFLYDR0001: Content added at location /home/miguel/Applications/wildfly/standalone/data/content/3e/70e1099637566e0db85370935fce276a2af72e/content
+[0m[0m17:05:22,150 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0027: Starting deployment of "silverpeas.war" (runtime-name: "silverpeas.war")
+[0m[33m17:05:25,119 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry ridl.jar in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,119 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry unoloader.jar in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,119 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry ../../lib/ in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,119 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry ../bin/ in /content/silverpeas.war/WEB-INF/lib/jurt-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/cglib2.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/commons-beanutils.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/commons-collections.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/commons-lang.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/commons-logging.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/dom4j.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/ehcache.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/hibernate2.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/hsqldb.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,124 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/jta.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/junit.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/lucene.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/odmg.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/xdoclet-hibernate-module.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/xdoclet-xdoclet-module.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/xdoclet.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/xjavadoc.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,125 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry lib/jdom-1.1.1.jar in /content/silverpeas.war/WEB-INF/lib/informa-0.6.5-silverpeas.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,128 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry ridl.jar in /content/silverpeas.war/WEB-INF/lib/juh-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[33m17:05:25,128 WARN  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0059: Class Path entry jurt.jar in /content/silverpeas.war/WEB-INF/lib/juh-2.3.0.jar  does not point to a valid jar for a Class-Path reference.
+[0m[0m17:05:25,438 INFO  [org.jboss.as.jpa] (MSC service thread 1-8) WFLYJPA0002: Read persistence.xml for silverpeas
+[0m[33m17:05:25,747 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-4) WFLYSRV0018: Deployment "deployment.silverpeas.war" is using a private module ("org.jboss.as.naming:main") which may be changed or removed in future versions without notice.
+[0m[33m17:05:25,747 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-4) WFLYSRV0018: Deployment "deployment.silverpeas.war" is using a private module ("org.apache.commons.codec:main") which may be changed or removed in future versions without notice.
+[0m[33m17:05:25,747 WARN  [org.jboss.as.dependency.private] (MSC service thread 1-4) WFLYSRV0018: Deployment "deployment.silverpeas.war" is using a private module ("org.antlr:main") which may be changed or removed in future versions without notice.
+[0m[0m17:05:25,750 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 102) WFLYJPA0010: Starting Persistence Unit (phase 1 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m17:05:25,750 INFO  [org.hibernate.jpa.internal.util.LogHelper] (ServerService Thread Pool -- 102) HHH000204: Processing PersistenceUnitInfo [
+	name: silverpeas
+	...]
+[0m[0m17:05:26,386 INFO  [org.jboss.weld.deployer] (MSC service thread 1-3) WFLYWELD0003: Processing weld deployment silverpeas.war
+[0m[0m17:05:26,407 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-3) JNDI bindings for session bean named TagCloud in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/TagCloud!TagCloudBm
+	java:app/silverpeas/TagCloud!TagCloudBm
+	java:module/TagCloud!TagCloudBm
+	java:global/silverpeas/TagCloud
+	java:app/silverpeas/TagCloud
+	java:module/TagCloud
+
+[0m[0m17:05:26,407 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-3) JNDI bindings for session bean named Thesaurus in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:app/silverpeas/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:module/Thesaurus!org.silverpeas.core.pdc.thesaurus.service.ThesaurusBm
+	java:global/silverpeas/Thesaurus
+	java:app/silverpeas/Thesaurus
+	java:module/Thesaurus
+
+[0m[0m17:05:26,407 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-3) JNDI bindings for session bean named AdminBm in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/AdminBm!com.silverpeas.admin.ejb.AdminBusiness
+	java:app/silverpeas/AdminBm!com.silverpeas.admin.ejb.AdminBusiness
+	java:module/AdminBm!com.silverpeas.admin.ejb.AdminBusiness
+	java:global/silverpeas/AdminBm
+	java:app/silverpeas/AdminBm
+	java:module/AdminBm
+
+[0m[0m17:05:26,407 INFO  [org.jboss.as.ejb3.deployment.processors.EjbJndiBindingsDeploymentUnitProcessor] (MSC service thread 1-3) JNDI bindings for session bean named AuthenticationBm in deployment unit deployment "silverpeas.war" are as follows:
+
+	java:global/silverpeas/AuthenticationBm!com.silverpeas.authentication.ejb.AuthenticationBm
+	java:app/silverpeas/AuthenticationBm!com.silverpeas.authentication.ejb.AuthenticationBm
+	java:module/AuthenticationBm!com.silverpeas.authentication.ejb.AuthenticationBm
+	java:global/silverpeas/AuthenticationBm
+	java:app/silverpeas/AuthenticationBm
+	java:module/AuthenticationBm
+
+[0m[0m17:05:26,660 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) WFLYWELD0006: Starting Services for CDI deployment: silverpeas.war
+[0m[0m17:05:26,689 INFO  [org.jboss.as.ejb3] (MSC service thread 1-6) WFLYEJB0042: Started message driven bean 'KmeliaWysiwygEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,690 INFO  [org.jboss.as.ejb3] (MSC service thread 1-8) WFLYEJB0042: Started message driven bean 'REMOVEListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,692 INFO  [org.jboss.as.ejb3] (MSC service thread 1-8) WFLYEJB0042: Started message driven bean 'CommentUserNotification' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,696 INFO  [org.jboss.as.ejb3] (MSC service thread 1-5) WFLYEJB0042: Started message driven bean 'POPUPListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,698 INFO  [org.jboss.as.ejb3] (MSC service thread 1-4) WFLYEJB0042: Started message driven bean 'SharedAttachmentEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,709 INFO  [org.jboss.as.ejb3] (MSC service thread 1-8) WFLYEJB0042: Started message driven bean 'WebPagesWysiwygEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,709 INFO  [org.jboss.as.ejb3] (MSC service thread 1-7) WFLYEJB0042: Started message driven bean 'KmeliaAttachmentEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,713 INFO  [org.jboss.as.ejb3] (MSC service thread 1-1) WFLYEJB0042: Started message driven bean 'SERVERListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,714 INFO  [org.jboss.as.ejb3] (MSC service thread 1-3) WFLYEJB0042: Started message driven bean 'BlogWysiwygEventListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,715 INFO  [org.jboss.weld.deployer] (MSC service thread 1-3) WFLYWELD0009: Starting weld service for deployment silverpeas.war
+[0m[0m17:05:26,718 INFO  [org.jboss.as.ejb3] (MSC service thread 1-2) WFLYEJB0042: Started message driven bean 'SILVERMAILListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,721 INFO  [org.jboss.as.ejb3] (MSC service thread 1-4) WFLYEJB0042: Started message driven bean 'SMTPListener' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:26,722 INFO  [org.jboss.as.ejb3] (MSC service thread 1-5) WFLYEJB0042: Started message driven bean 'SilverStatisticsMessageDriven' with 'hornetq-ra.rar' resource adapter
+[0m[0m17:05:28,121 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 102) WFLYJPA0010: Starting Persistence Unit (phase 2 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m17:05:28,308 INFO  [org.hibernate.dialect.Dialect] (ServerService Thread Pool -- 102) HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL9Dialect
+[0m[0m17:05:28,309 INFO  [org.hibernate.engine.jdbc.internal.LobCreatorBuilder] (ServerService Thread Pool -- 102) HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
+[0m[0m17:05:28,404 INFO  [org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory] (ServerService Thread Pool -- 102) HHH000397: Using ASTQueryTranslatorFactory
+[0m[0m17:05:33,766 INFO  [javax.enterprise.resource.webcontainer.jsf.config] (ServerService Thread Pool -- 103) Initialisation de Mojarra 2.2.12-jbossorg-2 20150729-1131 pour le contexte «/silverpeas»
+[0m[0m17:05:35,536 INFO  [org.jboss.resteasy.spi.ResteasyDeployment] (ServerService Thread Pool -- 103) Deploying javax.ws.rs.core.Application: class com.silverpeas.web.WebResourceProvider$Proxy$_$$_WeldClientProxy
+[0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) authenticate-header = Basic realm="Jackrabbit Webdav Server"
+[0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) csrf-protection = null
+[0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) createAbsoluteURI = true
+[0m[0m17:05:35,669 INFO  [org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet] (ServerService Thread Pool -- 103) resource-path-prefix = '/repository2000'
+[0m[0m17:05:35,684 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) authenticate-header = Basic realm="Jackrabbit Webdav Server"
+[0m[0m17:05:35,685 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) csrf-protection = null
+[0m[0m17:05:35,685 INFO  [org.apache.jackrabbit.webdav.server.AbstractWebdavServlet] (ServerService Thread Pool -- 103) createAbsoluteURI = true
+[0m[0m17:05:35,685 INFO  [org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet] (ServerService Thread Pool -- 103) resource-path-prefix = '/repository'
+[0m[0m17:05:35,699 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 103) WFLYUT0021: Registered web context: /silverpeas
+[0m[0m17:05:35,756 INFO  [org.jboss.as.server] (management-handler-thread - 5) WFLYSRV0010: Deployed "silverpeas.war" (runtime-name : "silverpeas.war")
+[0m[31m17:06:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:07:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[0m17:07:44,827 INFO  [org.jboss.as.repository] (ServerService Thread Pool -- 91) WFLYDR0009: Content /home/miguel/Applications/wildfly/standalone/data/content/c6/ad0579387af475af5c668ceb4129f8bc032ec9 is obsolete and will be removed
+[0m[0m17:07:44,851 INFO  [org.jboss.as.repository] (ServerService Thread Pool -- 91) WFLYDR0002: Content removed from location /home/miguel/Applications/wildfly/standalone/data/content/c6/ad0579387af475af5c668ceb4129f8bc032ec9/content
+[0m[31m17:08:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:09:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:10:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:11:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:12:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:13:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:14:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:15:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:16:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:17:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:18:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:19:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:20:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:21:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:22:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:23:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:24:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:25:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:26:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:27:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:28:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:29:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:30:00,001 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.AdminSynchroGroupJob threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:30:00,003 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.TemporayDataCleanerJob threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at org.silverpeas.core.util.ResourceLocator.loadResourceBundle(ResourceLocator.java:188)
+	at org.silverpeas.core.util.ResourceLocator.loadResourceBundle(ResourceLocator.java:168)
+	at org.silverpeas.core.util.SettingBundle.getWrappedBundle(SettingBundle.java:201)
+	at org.silverpeas.core.util.SettingBundle.getString(SettingBundle.java:98)
+	at org.silverpeas.core.util.SettingBundle.getLong(SettingBundle.java:149)
+	at TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted(TemporaryDataManagementSetting.java:54)
+	at TemporaryDataCleanerSchedulerInitializer$TemporaryDataCleanerJob.execute(TemporaryDataCleanerSchedulerInitializer.java:99)
+	at QuartzSchedulerJob.execute(QuartzSchedulerJob.java:105)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:229)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:30:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:31:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:32:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:33:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:34:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:35:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:36:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:37:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:38:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:39:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:40:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:41:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:42:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:43:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:44:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:45:33,493 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-4) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:46:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:47:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-7) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:48:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:49:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-9) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:50:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:51:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-2) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:52:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-5) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:53:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-6) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:54:33,495 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-8) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:55:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-10) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:56:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-1) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[31m17:57:33,494 ERROR [org.quartz.core.JobRunShell] (DefaultQuartzScheduler_Worker-3) Job DEFAULT.mailingListScheduler threw an unhandled Exception: : java.util.ServiceConfigurationError: org.silverpeas.core.util.logging.SilverLoggerFactory: Provider org.silverpeas.core.util.logging.sys.SysLoggerFactory not a subtype
+	at java.util.ServiceLoader.fail(ServiceLoader.java:239)
+	at java.util.ServiceLoader.access$300(ServiceLoader.java:185)
+	at java.util.ServiceLoader$LazyIterator.nextService(ServiceLoader.java:376)
+	at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:404)
+	at java.util.ServiceLoader$1.next(ServiceLoader.java:480)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:74)
+	at org.silverpeas.core.util.logging.SilverLogger.getLogger(SilverLogger.java:95)
+	at QuartzScheduler$QuartzJob.execute(QuartzScheduler.java:242)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:207)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:560)
+
+[0m[0m17:57:44,497 INFO  [org.jboss.as.server] (management-handler-thread - 9) WFLYSRV0211: Suspending server
+[0m[0m17:57:44,632 INFO  [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested.
+[0m[0m17:57:44,645 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 122) WFLYUT0022: Unregistered web context: /silverpeas
+[0m[0m17:57:44,662 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-7) WFLYJCA0010: Unbound data source [java:/datasources/DocumentStore]
+[0m[0m17:57:44,669 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 124) WFLYUT0022: Unregistered web context: /weblib
+[0m[0m17:57:44,672 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 123) WFLYUT0022: Unregistered web context: /website
+[0m[0m17:57:44,688 INFO  [org.jboss.as.messaging] (ServerService Thread Pool -- 125) WFLYMSG0006: Unbound messaging object to jndi name java:jboss/exported/jms/RemoteConnectionFactory
+[0m[0m17:57:44,721 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-1) WFLYSRV0028: Stopped deployment weblib.war (runtime-name: weblib.war) in 81ms
+[0m[0m17:57:44,721 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-3) WFLYSRV0028: Stopped deployment website.war (runtime-name: website.war) in 84ms
+[0m[0m17:57:44,726 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0019: Host default-host stopping
+[0m[0m17:57:44,743 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 125) WFLYJPA0011: Stopping Persistence Unit (phase 2 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m17:57:44,748 INFO  [org.jboss.as.jpa] (ServerService Thread Pool -- 125) WFLYJPA0011: Stopping Persistence Unit (phase 1 of 2) Service 'silverpeas.war#silverpeas'
+[0m[0m17:57:44,748 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-3) WFLYJCA0010: Unbound data source [java:jboss/datasources/ExampleDS]
+[0m[0m17:57:44,748 INFO  [org.jboss.as.messaging] (MSC service thread 1-3) WFLYMSG0006: Unbound messaging object to jndi name java:jboss/DefaultJMSConnectionFactory
+[0m[0m17:57:44,748 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-3) WFLYJCA0011: Unbound JCA ConnectionFactory [java:/jca/jcr]
+[0m[0m17:57:44,749 INFO  [org.jboss.weld.deployer] (MSC service thread 1-3) WFLYWELD0010: Stopping weld service for deployment silverpeas.war
+[0m[0m17:57:44,749 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-7) WFLYJCA0011: Unbound JCA ConnectionFactory [java:/JmsXA]
+[0m[0m17:57:44,749 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-7) WFLYJCA0010: Unbound data source [java:/datasources/silverpeas]
+[0m[0m17:57:44,753 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-8) WFLYJCA0019: Stopped Driver service with driver-name = h2
+[0m[0m17:57:44,756 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-5) WFLYJCA0019: Stopped Driver service with driver-name = postgresql.jar
+[0m[0m17:57:44,759 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (ServerService Thread Pool -- 135) Shutting down repository...
+[0m[0m17:57:44,776 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-5) WFLYSRV0028: Stopped deployment postgresql.jar (runtime-name: postgresql.jar) in 136ms
+[0m[0m17:57:44,785 INFO  [org.apache.jackrabbit.core.query.lucene.SearchIndex] (ServerService Thread Pool -- 135) Index closed: /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/repository/index
+[0m[0m17:57:44,785 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (ServerService Thread Pool -- 135) shutting down workspace 'silverpeas'...
+[0m[0m17:57:44,785 INFO  [org.hornetq.ra] (ServerService Thread Pool -- 130) HQ151003: HornetQ resource adaptor stopped
+[0m[0m17:57:44,786 INFO  [org.apache.jackrabbit.core.observation.ObservationDispatcher] (ServerService Thread Pool -- 135) Notification of EventListeners stopped.
+[0m[0m17:57:44,820 INFO  [org.apache.jackrabbit.core.query.lucene.SearchIndex] (ServerService Thread Pool -- 135) Index closed: /home/miguel/Applications/silverpeas-6.0-SNAPSHOT-wildfly9/data/jcr/workspaces/silverpeas/index
+[0m[0m17:57:44,825 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (ServerService Thread Pool -- 135) workspace 'silverpeas' has been shutdown
+[0m[0m17:57:44,836 INFO  [org.apache.jackrabbit.core.RepositoryImpl] (ServerService Thread Pool -- 135) Repository has been shutdown
+[0m[0m17:57:44,888 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-3) WFLYSRV0028: Stopped deployment jackrabbit-jca.rar (runtime-name: jackrabbit-jca.rar) in 252ms
+[0m[0m17:57:45,032 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-7) WFLYSRV0028: Stopped deployment silverpeas.war (runtime-name: silverpeas.war) in 394ms
+[0m[0m17:57:45,070 INFO  [org.hornetq.core.server] (ServerService Thread Pool -- 130) HQ221002: HornetQ Server version 2.4.7.Final (2.4.7.Final, 124) [d6d762f7-8857-11e5-af3d-dfdc0c62e50d] stopped
+[0m[0m17:57:45,071 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0008: Undertow HTTP listener default suspending
+[0m[0m17:57:45,072 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0007: Undertow HTTP listener default stopped, was bound to /0.0.0.0:8000
+[0m[0m17:57:45,072 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0004: Undertow 1.2.9.Final stopping
+[0m[0m17:57:45,080 INFO  [org.jboss.as] (MSC service thread 1-8) WFLYSRV0050: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) stopped in 414ms
+[0m
+[0m

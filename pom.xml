@@ -95,7 +95,7 @@
           <appendAssemblyId>true</appendAssemblyId>
           <attach>true</attach>
           <skipAssembly>true</skipAssembly>
-          <finalName>${project.artifactId}-${project.version}-configuration</finalName>
+          <finalName>${project.artifactId}-${project.version}</finalName>
         </configuration>
         <executions>
           <execution>
@@ -224,15 +224,14 @@
   </profiles>
 
   <modules>
-    <module>api-core</module>
-    <module>test-core</module>
-    <module>lib-core</module>
-    <module>it-test-core</module>
-    <module>ws-test-core</module>
-    <module>ejb-core</module>
-    <module>web-core</module>
-    <module>war-core</module>
-    <module>config-core</module>
+    <module>core-api</module>
+    <module>core-test</module>
+    <module>core-library</module>
+    <module>core-web-test</module>
+    <module>core-services</module>
+    <module>core-web</module>
+    <module>core-war</module>
+    <module>core-configuration</module>
   </modules>
 
   <properties>

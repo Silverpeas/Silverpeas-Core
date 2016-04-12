@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2014 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<!--
+<!DOCTYPE config [
+        <!ELEMENT config (iomanager , propertymanager, (collection | noncollection)? , filter?, mimetypeproperties?) >
+
+        <!ELEMENT iomanager (class, iohandler*) >
+        <!ELEMENT iohandler (class) >
+
+        <!ELEMENT propertymanager (class, propertyhandler*) >
+        <!ELEMENT propertyhandler (class) >
+
+        <!ELEMENT collection (nodetypes) >
+        <!ELEMENT noncollection (nodetypes) >
+
+        <!ELEMENT filter (class, namespaces?, nodetypes?) >
+
+        <!ELEMENT class >
+        <!ATTLIST class
+            name  CDATA #REQUIRED
+        >
+        <!ELEMENT namespaces (prefix | uri)* >
+        <!ELEMENT prefix (CDATA) >
+        <!ELEMENT uri (CDATA) >
+
+        <!ELEMENT nodetypes (nodetype)* >
+        <!ELEMENT nodetype (CDATA) >
+
+        <!ELEMENT mimetypeproperties (mimemapping*, defaultmimetype) >
+
+        <!ELEMENT mimemapping >
+        <!ATTLIST mimemapping
+            extension  CDATA #REQUIRED
+            mimetype  CDATA #REQUIRED
+        >
+
+        <!ELEMENT defaultmimetype (CDATA) >
+]>
+-->
+
+<config>
+    <!--
+     Defines the IOManager implementation that is responsible for passing
+     import/export request to the individual IO-handlers.
+    -->
+    <iomanager>
+        <!-- class element defines the manager to be used. The specified class
+             must implement the IOManager interface.
+             Note, that the handlers are being added and called in the order
+             they appear in the configuration.
+        -->
+        <class name="org.apache.jackrabbit.server.io.IOManagerImpl" />
+        <iohandler>
+            <class name="org.apache.jackrabbit.server.io.VersionHandler" />
+        </iohandler>
+        <iohandler>
+            <class name="org.apache.jackrabbit.server.io.VersionHistoryHandler" />
+        </iohandler>
+        <iohandler>
+            <class name="org.apache.jackrabbit.server.io.ZipHandler" />
+        </iohandler>
+        <iohandler>
+            <class name="org.apache.jackrabbit.server.io.XmlHandler" />
+        </iohandler>
+        <iohandler>
+            <class name="org.apache.jackrabbit.server.io.DirListingExportHandler" />
+        </iohandler>
+        <iohandler>
+            <class name="org.apache.jackrabbit.server.io.DefaultHandler" />
+        </iohandler>
+    </iomanager>
+    <!--
+     Example config for iomanager that populates its list of handlers with
+     default values. Therefore the 'iohandler' elements are omited.
+    -->
+    <!--
+    <iomanager>
+        <class name="org.apache.jackrabbit.server.io.DefaultIOManager" />
+    </iomanager>
+    -->
+    <!--
+     Defines the PropertyManager implementation that is responsible for export
+     and import of resource properties.
+    -->
+    <propertymanager>
+        <!-- class element defines the manager to be used. The specified class
+             must implement the PropertyManager interface.
+             Note, that the handlers are being added and called in the order
+             they appear in the configuration.
+        -->
+        <class name="org.apache.jackrabbit.server.io.PropertyManagerImpl" />
+        <propertyhandler>
+            <class name="org.apache.jackrabbit.server.io.VersionHandler" />
+        </propertyhandler>
+        <propertyhandler>
+            <class name="org.apache.jackrabbit.server.io.VersionHistoryHandler" />
+        </propertyhandler>
+        <propertyhandler>
+            <class name="org.apache.jackrabbit.server.io.ZipHandler" />
+        </propertyhandler>
+        <propertyhandler>
+            <class name="org.apache.jackrabbit.server.io.XmlHandler" />
+        </propertyhandler>
+        <propertyhandler>
+            <class name="org.apache.jackrabbit.server.io.DirListingExportHandler" />
+        </propertyhandler>
+        <propertyhandler>
+            <class name="org.apache.jackrabbit.server.io.DefaultHandler" />
+        </propertyhandler>
+    </propertymanager>
+    <!--
+     Define nodetypes, that should never by displayed as 'collection'
+    -->
+    <noncollection>
+        <nodetypes>
+            <nodetype>nt:file</nodetype>
+            <nodetype>nt:resource</nodetype>
+        </nodetypes>
+    </noncollection>
+    <!--
+     Example: Defines nodetypes, that should always be displayed as 'collection'.
+    -->
+    <!--
+    <collection>
+        <nodetypes>
+            <nodetype>nt:folder</nodetype>
+            <nodetype>rep:root</nodetype>
+        </nodetypes>
+    </collection>
+    -->
+    <!--
+     Filter that allows to prevent certain items from being displayed.
+     Please note, that this has an effect on PROPFIND calls only and does not
+     provide limited access to those items matching any of the filters.
+
+     However specifying a filter may cause problems with PUT or MKCOL if the
+     resource to be created is being filtered out, thus resulting in inconsistent
+     responses (e.g. PUT followed by PROPFIND on parent).
+     -->
+    <filter>
+        <!-- class element defines the resource filter to be used. The specified class
+             must implement the ItemFilter interface -->
+        <class name="org.apache.jackrabbit.webdav.simple.DefaultItemFilter" />
+        <!--
+         Nodetype names to be used to filter child nodes.
+         A child node can be filtered if the declaring nodetype of its definition
+         is one of the nodetype names specified in the nodetypes Element.
+         E.g. defining 'rep:root' as filtered nodetype whould result in jcr:system
+         being hidden but no other child node of the root node, since those
+         are defined by the nodetype nt:unstructered.
+        -->
+        <!--
+        <nodetypes>
+            <nodetype>rep:root</nodetype>
+        </nodetypes>
+        -->
+        <!--
+         Namespace prefixes or uris. Items having a name that matches any of the
+         entries will be filtered.
+        -->
+        <namespaces>
+            <prefix>rep</prefix>
+            <prefix>jcr</prefix>
+            <!--
+            <uri>internal</uri>
+            <uri>http://www.jcp.org/jcr/1.0</uri>
+            -->
+        </namespaces>
+    </filter>
+
+    <!--
+     Optional 'mimetypeproperties' element.
+     It defines additional or replaces existing mappings for the MimeResolver
+     instance created by the ResourceConfig.
+     The default mappings are defined in org.apache.jackrabbit.server.io.mimetypes.properties.
+     If the default mime type defined by MimeResolver is 'application/octet-stream'.
+    -->
+    <!--
+    <mimetypeproperties>
+        <mimemapping extension="rtf" mimetype="application/rtf" />
+        <mimemapping extension="ott" mimetype="application/vnd.oasis.opendocument.text-template" />
+        <defaultmimetype>text/html</defaultmimetype>
+    </mimetypeproperties>
+    -->
+</config>

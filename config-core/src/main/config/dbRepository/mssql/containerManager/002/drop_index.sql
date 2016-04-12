@@ -1,1 +1,0 @@
-DROP INDEX SB_ContainerManager_Links.IN_ContainerManager_Links_DLB;

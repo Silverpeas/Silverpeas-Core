@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP"
+             classname="org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
+             thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
+
+  <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
+    classname="-" authenticationserver="-" thetimestamp="0" silverpeasserverurl="''" />
+
+  <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs"
+    passwordvalid="Y" />
+
+  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+
+  <st_space id="3" name="Espace de Tests" description="" createdby="0" firstpagetype="1" firstpageextraparam="indicateurs16"
+    ordernum="2" createtime="1194276699849" updatetime="1205750893265" spacestatus="[NULL]" domainfatherid="[NULL]"
+    updatedby="0" lang="fr" isinheritanceblocked="0" look="" />
+
+  <domainsp_user id="12" firstname="Homer" lastname="Simpson" login="hsimpson" password="SPyj3vDk7LDtg"
+    passwordvalid="Y" email="homer.simpson@silverpeas.com" />
+  <domainsp_user id="11" firstname="Bart" lastname="Simpson" login="bsimpson" password="SPWEj.7amsdlQ"
+    passwordvalid="Y" email="bart.simpson@silverpeas.com" />
+  <domainsp_user id="13" firstname="Marge" lastname="Simpson" login="msimpson" password="SPRD7QJAXKf2o"
+    passwordvalid="Y" email="marge.simpson@silverpeas.com" />
+  <domainsp_user id="14" firstname="Lisa" lastname="Simpson" login="lsimpson" password="SPBbTn/fcfP3A"
+    passwordvalid="Y" email="lisa.simpson@silverpeas.com" />
+  <domainsp_user id="15" firstname="Maggie" lastname="Simpson" login="bbsimpson" password="SPF2co.HquBD."
+    passwordvalid="Y" email="maggie.simpson@silverpeas.com" />
+
+  <st_spaceuserrole id="2" spaceid="3" name="Administrateur" rolename="admin" description=""
+    isinherited="0" />
+  <st_spaceuserrole id="3" spaceid="3" name="Manager d'espace" rolename="Manager" description=""
+    isinherited="0" />
+  <st_spaceuserrole id="4" spaceid="3" name="Lecteur" rolename="reader" description="" isinherited="0" />
+  <st_spaceuserrole id="5" spaceid="3" name="Publieur" rolename="publisher" description="" isinherited="0" />
+  <st_spaceuserrole id="6" spaceid="3" name="Auteur" rolename="writer" description="" isinherited="0" />
+
+  <st_spaceuserrole_user_rel />
+
+  <st_componentinstance id="60" spaceid="3" name="TestVersioning" componentname="kmelia"
+    description="" createdby="0" createtime="1205747025390" ispublic="1" ishidden="0" lang="fr" isinheritanceblocked="1" />
+
+  <st_instance_data id="419" componentid="60" name="publicationAlwaysVisible" label="Publication toujours visible"
+    value="no" />
+  <st_instance_data id="420" componentid="60" name="sortedTopics" label="Thèmes ordonnés" value="no" />
+  <st_instance_data id="421" componentid="60" name="nbPubliOnRoot" label="Nb dernières publi" value="15" />
+  <st_instance_data id="422" componentid="60" name="displayNB" label="Affichage nombre de publications"
+    value="no" />
+  <st_instance_data id="423" componentid="60" name="tabSeeAlso" label="Voir Aussi" value="no" />
+  <st_instance_data id="424" componentid="60" name="usePdc" label="Classification PDC" value="no" />
+  <st_instance_data id="425" componentid="60" name="tabAttachments" label="Fichiers Joints" value="yes" />
+  <st_instance_data id="426" componentid="60" name="tabComments" label="Commentaires" value="no" />
+  <st_instance_data id="427" componentid="60" name="tabReadersList" label="Contrôles de Lecture" value="no" />
+  <st_instance_data id="428" componentid="60" name="nbPubliPerPage" label="Nb Publi / Page" value="" />
+  <st_instance_data id="429" componentid="60" name="isTree" label="Gestion arborescente" value="yes" />
+  <st_instance_data id="430" componentid="60" name="useAuthor" label="Champ Auteur" value="no" />
+  <st_instance_data id="431" componentid="60" name="webContent" label="Orienté contenu Web" value="no" />
+  <st_instance_data id="432" componentid="60" name="massiveDragAndDrop" label="Drag And Drop" value="no" />
+  <st_instance_data id="433" componentid="60" name="delegatedTopicManagement" label="Gestion déléguée des thèmes"
+    value="no" />
+  <st_instance_data id="434" componentid="60" name="versionControl" label="Versioning" value="yes" />
+  <st_instance_data id="435" componentid="60" name="openSingleAttachment" label="Ouverture directe fichier joint"
+    value="no" />
+  <st_instance_data id="436" componentid="60" name="tabAccessPaths" label="Emplacements Multiples"
+    value="yes" />
+  <st_instance_data id="437" componentid="60" name="draft" label="Mode brouillon" value="no" />
+  <st_instance_data id="438" componentid="60" name="targetValidation" label="Validation ciblée" value="no" />
+  <st_instance_data id="439" componentid="60" name="useTreeview" label="Explorateur de thèmes" value="yes" />
+  <st_instance_data id="440" componentid="60" name="importFiles" label="Importation de document(s)"
+    value="0" />
+  <st_instance_data id="441" componentid="60" name="coWriting" label="Co Rédaction" value="no" />
+  <st_instance_data id="442" componentid="60" name="tabContent" label="Contenu" value="yes" />
+  <st_instance_data id="443" componentid="60" name="exportComponent" label="Exportation du composant"
+    value="no" />
+  <st_instance_data id="444" componentid="60" name="wizardEnabled" label="Assistant de publication"
+    value="no" />
+  <st_instance_data id="445" componentid="60" name="rightsOnTopics" label="Droits sur les thèmes"
+    value="no" />
+
+  <st_user id="8" domainid="0" specificid="12" firstname="Homer" lastname="Simpson" email="homer.simpson@silverpeas.com"
+    login="hsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="7" domainid="0" specificid="11" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.com"
+    login="bsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="9" domainid="0" specificid="13" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.com"
+    login="msimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="10" domainid="0" specificid="14" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.com"
+    login="lsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="11" domainid="0" specificid="15" firstname="Maggie" lastname="Simpson" email="maggie.simpson@silverpeas.com"
+    login="bbsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+
+  <st_notifdefaultaddress id="1" userid="7" notifaddressid="-12" />
+  <st_notifdefaultaddress id="2" userid="8" notifaddressid="-12" />
+  <st_notifdefaultaddress id="3" userid="9" notifaddressid="-12" />
+  <st_notifdefaultaddress id="4" userid="10" notifaddressid="-12" />
+
+  <personalization id="11" languages="en," look="Initial" personalwspace="WA3" thesaurusstatus="0"
+    draganddropstatus="1" webdaveditingstatus="1" />
+  <personalization id="7" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
+    draganddropstatus="1" webdaveditingstatus="1" />
+  <personalization id="8" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
+    draganddropstatus="1" webdaveditingstatus="1" />
+  <personalization id="9" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
+    draganddropstatus="1" webdaveditingstatus="1" />
+  <personalization id="10" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
+    draganddropstatus="1" webdaveditingstatus="1" />
+  <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
+    draganddropstatus="1" webdaveditingstatus="1" />
+
+  <st_userrole id="58" instanceid="60" name="Gestionnaire" rolename="admin" isinherited="0" />
+  <st_userrole id="59" instanceid="60" name="Modérateur" rolename="moderator" isinherited="0" />
+  <st_userrole id="60" instanceid="60" name="Lecteurs" rolename="user" isinherited="0" />
+  <st_userrole id="61" instanceid="60" name="Publieurs" rolename="publisher" isinherited="0" />
+  <st_userrole id="62" instanceid="60" name="Rédacteurs" rolename="writer" isinherited="0" />
+
+  <st_userrole_user_rel userroleid="58" userid="7" />
+  <st_userrole_user_rel userroleid="61" userid="9" />
+  <st_userrole_user_rel userroleid="61" userid="8" />
+  <st_userrole_user_rel userroleid="60" userid="10" />
+  <st_userrole_user_rel userroleid="62" userid="11" />
+
+  <sb_contentmanager_instance instanceid="10" componentid="kmelia60" containertype="containerPDC"
+    contenttype="kmelia" />
+  <sb_contentmanager_content silvercontentid="200" internalcontentid="4" contentinstanceid="10"
+    authorid="7" creationdate="2008-05-15" begindate="2008/05/15" enddate="9999/99/99" isvisible="1" />
+
+  <sb_node_node nodeid="0" nodename="Accueil" nodedescription="La Racine" nodecreationdate="2008/04/23"
+    nodecreatorid="0" nodepath="/" nodelevelnumber="1" nodefatherid="-1" modelid="" nodestatus="Visible" instanceid="kmelia60"
+    ordernumber="0" rightsdependson="-1" lang="fr" type="[NULL]" />
+  <sb_node_node nodeid="1" nodename="Corbeille" nodedescription="Vous trouvez ici les publications que vous avez supprimées"
+    nodecreationdate="2008/04/23" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid=""
+    nodestatus="Invisible" instanceid="kmelia60" ordernumber="2" rightsdependson="-1" />
+  <sb_node_node nodeid="2" nodename="Déclassées" nodedescription="Vos publications inaccessibles se retrouvent ici"
+    nodecreationdate="2008/04/23" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid=""
+    nodestatus="Invisible" instanceid="kmelia60" ordernumber="1" rightsdependson="-1" />
+  <sb_node_node nodeid="3" nodename="Theme de Test" nodedescription="Vos publications de test se retrouvent ici"
+    nodecreationdate="2008/04/30" nodecreatorid="7" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid=""
+    nodestatus="Visible" instanceid="kmelia60" ordernumber="3" lang="fr" rightsdependson="-1" type="default" />
+  <sb_node_node nodeid="4" nodename="Sous Theme de Test" nodedescription="Vos publications peuvent se retrouver ici"
+    nodecreationdate="2008/05/10" nodecreatorid="7" nodepath="/0/3/" nodelevelnumber="3" nodefatherid="3" modelid=""
+    nodestatus="Visible" instanceid="kmelia60" ordernumber="1" lang="fr" rightsdependson="-1" type="default" />
+
+  <sb_publication_publi />
+  <sb_attachment_attachment />
+  <sb_attachment_attachmenti18n />
+  <sb_version_document />
+  <sb_document_worklist />
+</dataset>

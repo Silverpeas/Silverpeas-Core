@@ -1,0 +1,354 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ @import url("basic.css");
+
+
+/***************************** IMAGES *****************************************/
+
+.fondDomainsBar {
+	background:#262827 url("imgDesign/fondNav.gif") top left  repeat-y ;/**  Fond de la colonne de gauche **/
+	padding-top: 138px;
+}
+
+#backHome {
+	background:url("") 8px 6px no-repeat ;/**  Logo pour retour a l'accueil **/
+	height: 115px;
+    left: 0;
+    top: 0;
+    width: 160px;
+}
+
+#recherche {
+	background:#212221 url("imgDesign/fondRecherche.jpg") top left no-repeat;/**  Fond de la zone recherche **/
+	height:126px;
+	width:250px;
+	position:fixed;
+	top:0;
+	left:0;
+	z-index:100;
+}
+
+
+/***************************** COULEURS *****************************************/
+
+a:hover {
+	color:#AE0000;
+}
+
+#administration{
+	background:#AE0000;
+	border:1px solid #a82f41;
+
+}
+
+#administration a {
+	color:#FFF;
+	background:transparent url("imgDesign/puceAdministration.png") 0px 3px no-repeat;
+	    margin-left: -10px;
+    margin-top: -5px;
+}
+
+#administration a:hover, #administration a:focus{
+	color:#000;
+}
+
+#pdcFrame {
+	background-color:#E0DFE0;
+	color:#222222;
+}
+
+#domainsBar a {
+	color:#777777;
+}
+
+/* fil ariane */
+#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover,  #browseBar #breadCrumb, #browseBar .information{
+	color: #FFF;
+}
+
+/* NAV GAUCHE */
+.spaceLevel1On .contentSpace, #contentSpacespacePerso {
+	background-color: #ececec;
+	}
+#domainsBar #spaces a:hover {
+	color:#AE0000;
+}
+.spaceLevel1, .spaceLevel1On,
+#domainsBar #spaces  .spaceLevel1On  .contentSpace .spaceOn .contentSpace a,
+#domainsBar #spaces .spaceLevel1 .spaceURL{
+	color:#616063;
+}
+#domainsBar #spaces .spaceLevel1 a.spaceURL:hover,
+#domainsBar #spaces .spaceLevel1On a.spaceURL:hover,
+#domainsBar #spaces .spaceLevel1On a.spaceURL{
+	background-color:#AE0000;
+	color:#FFF;
+}
+#domainsBar #spaces  .spaceLevel1On  .contentSpace .spaceOn a {
+	color:#AE0000;
+}
+
+#spacePerso {
+    background-color: transparent;
+    background-image: none;
+    border: 0;
+	margin-top: 15px;
+}
+#domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+	background:transparent url(imgDesign/bg_perso.gif) 13px 0px  no-repeat;
+	color: #000000;
+    display: block;
+    font-size: 12px;
+    height: 85px;
+    padding-top:40px;
+    padding-left: 84px;
+    text-align: left;
+    text-transform: uppercase;
+    width: 140px;
+
+}
+#domainsBar #spacePerso .browseComponent a:hover,
+#domainsBar #spacePerso .browseComponent a ,
+#domainsBar #spacePerso .browseComponentActiv a
+{
+	background-image:none;
+	display:block;
+	padding-left:10px;
+	color:#FFF;
+	font-weight:100;
+	text-align:left;
+	font-size:11px;
+}
+
+#domainsBar #spacePerso .browseComponentActiv a {font-weight:bold;}
+
+#domainsBar #spacePerso .contentSpace {
+	border-right:0;
+    border-left: 2px solid #AE0000;
+    clear: both;
+    margin-left: 60px;
+    margin-top: -6px;
+    padding-top: 5px;
+	background-color:transparent;
+}
+
+#domainsBar #spacePerso .contentSpace .browseComponent {
+	text-align:left;
+}
+
+#domainsBar #spacePerso .contentSpace a{
+	padding-left:10px;}
+
+/* btn & onglet */
+.milieuBoutonV5 {
+	background-color:#AE0000;
+	border:1px solid #990404;
+}
+#domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
+	color: #FFF;
+}
+
+.sousOnglets , .milieuOngletOn{
+	background-color:#AE0000;
+}
+.milieuOngletOn a {
+	color:#FFF;
+	font-weight:bold;
+}
+.milieuOngletOff {
+	background-color:#D6D7D9;
+}
+.milieuOngletOff a {
+	color:#666666;
+}
+.milieuBoutonV5 a:hover , .milieuOngletOff a:hover  {
+	color: #000000;
+}
+
+/* menu que voulez-vous faire */
+#menutoggle {
+	background-color: #7A7A7B;
+	border:1px solid #5d5d5e ;
+}
+#topPage .yuimenu, #kmelia .yuimenu, #attachmentList .yuimenu{
+	background-color:#e9e9e9;
+	border:1px solid #5d5d5e;
+}
+#topPage .yuimenu ul, #kmelia .yuimenu ul, #attachmentList .yuimenu ul {
+	border-color:#5d5d5e;
+}
+.yuimenu a , #portletPages .yuimenu a {
+	background-color:#e9e9e9;
+	color:#5d5d5e;
+}
+.yuimenu .yuimenubaritem-selected,
+.yuimenu .yuimenuitem-selected {
+    background-color: #F2D5D8;
+
+}
+.yuimenu a:hover, #portletPages .yuimenu  a:hover{
+	color:#FFF;
+	background-color: #5d5d5e;
+	border-color:#5d5d5e;
+}
+
+/**/
+
+#blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{
+	color:#AE0000;
+
+}
+.txtlibform, .textePetitBold {
+	color:#444444;
+	}
+
+#myProfileFiche .action .link, #publicProfileFiche #contactCommun .link, #publicProfileFiche #allContact .link ,.txtnav, .txtbigdate, .txttitrecol{
+   border-color: #D8B1B1;
+    color: #AE0000;
+	}
+.txtnav {
+	font-size:12px;
+}
+
+
+.ArrayColumn , #classifieds .tableFrame #categories .categoryTitle{
+	background-color:#D6D7D9;
+	color:#000000;
+}
+.ArrayColumn a {
+	color:#000000;
+}
+.ArrayColumn a:hover {
+	color:#444444;
+}
+
+.pageNav {
+	background-color:#FFF;
+}
+.pageNav .pageIndex {
+	background-color:transparent;
+	border-right:1px solid #AE0000;
+}
+
+button {
+	background-color:#AE0000;
+	border:1px solid #AE0000;
+	color: #fff;
+}
+
+
+
+
+.skinFieldset legend {
+		border-radius: 5px;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+		background-color:#AE0000 !important;
+		padding:5px 20px 5px 5px;
+		color:#FFF !important;
+		border:1px solid #2a2a2a;
+		background-position:11px 4px !important;
+}
+
+#dNdActionLabel, #footer {color:#FFF}
+
+.rightContent #dNdActionLabel {color:#333}
+
+
+#settings .txtlibform, #settings .textePetitBold , .pdcPosition h3,
+#blog #blogContainer #bandeau a, #backHomeBlog a{
+    color: #fff;
+}
+
+.eventName a {  color:#AE0000 !important;}
+.eventMonth{ background-color:#FFF; color:#212322 !important;}
+.eventsView #navigation {
+	background-color:transparent;
+}
+
+
+.help-modal-message .ui-widget-header,
+.ui-widget-header {
+    background: none repeat scroll 0 0 #AE0000;
+    border: 1px solid #AE0000;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    color: #AE0000;
+}
+
+.vsplitbar {
+    background-color:#EFEFEF;
+    margin-left: 3px;
+}
+
+.jstree-default .jstree-clicked,
+.jstree-default .jstree-hovered
+{
+    background-color: #EBEBEB !important;
+    border: 1px solid #CCCCCC !important;
+}
+
+#menubar-creation-actions {
+    background-color: #EBEBEB;
+    border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
+}
+
+
+#menubar-creation-actions .menubar-creation-actions-item:hover {
+    background-color: #AE0000;
+}
+
+.publicationManager .legend {
+	color:#FFF;
+}
+
+div.eventBeginDate {
+    background-image: url("imgDesign/bgCalendar.png") ;
+}
+
+.jstree-default a .jstree-icon {
+    background-image: url("imgDesign/guitare-dossier.png") ;
+	background-position:0 0 !important;
+}
+
+.jstree-0 li[rel="bin"] > a > .jstree-icon {
+    background-image: url("imgDesign/trash.png") !important;
+}
+
+.jstree-0 li[rel="tovalidate"] > a > .jstree-icon {
+	background-image: url("imgDesign/to-validate.png") !important;
+}
+.jstree a {
+
+    height: 24px !important;
+    line-height: 24px !important;
+
+}
+
+.jstree a > ins {
+    height: 24px !important;
+    width: 24px !important;
+}

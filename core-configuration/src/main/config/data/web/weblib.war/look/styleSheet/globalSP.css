@@ -1,0 +1,282 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*************************************
+Redefinition des style de balises HTML
+*************************************/
+BODY                              {
+                                   scrollbar-face-color: #FFFFFF;
+                                   scrollbar-shadow-color: #FFFFFF;
+								   scrollbar-highlight-color: #FFFFFF;
+								   scrollbar-3dlight-color: #EDEDED;
+								   scrollbar-darkshadow-color: #949FB2;
+								   scrollbar-track-color: #EDEDED;
+								   scrollbar-arrow-color: #AFB8C9
+								  }
+
+TD                                { font-family: "Verdana", "Helvetica", "Arial", sans-serif; font-size: 10px}
+A                                 { font-family: "Verdana", "Helvetica", "Arial", sans-serif; font-size: 10px; text-decoration: underline; color: #000000}
+INPUT                             {
+	background-color: #F0F8FF;
+	font-family: "Verdana", "Helvetica", "Arial", sans-serif;
+	font-size: 10px;
+	color: Black;
+	border:1 solid  rgb(175,184,201);
+}
+SELECT                            {
+	background-color: #F0F8FF;
+	font-family: "Verdana", "Helvetica", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+}
+
+.selectHead                          {
+	background-color: #FFFDDD;
+}
+
+TEXTAREA                          {
+	background-color: #F0F8FF;
+	font-family: "Verdana", "Helvetica", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+	border:1 solid  rgb(175,184,201);
+}
+
+TABLE.frame                       { background-color: #CCCCCC}
+TR.frame                          { background-color: #CCCCCC}
+TD.frame                          { background-color: #CCCCCC; color: #FFFFFF; text-align: left;  font-style: normal;  font-weight: bold}
+
+TABLE.title                       { background-color: #CCCCCC}
+TR.title                          { background-color: #CCCCCC}
+TD.title                          { background-color: #CCCCCC; font-style: normal; font-size: 10pt; font-weight: bold; color: #000000}
+
+TD.sommaireTitle                  { font-size: 20pt; font-weight: bold}
+TD.sommaireDescription            { font-size: 8pt; color: #000000}
+TD.sommaire                       { font-size: 12pt; font-weight: bold}
+
+/* Correction appliqu� � Netscape */
+.selectNS                         {  font-family: "Verdana", "Helvetica", "Arial", sans-serif; font-size: 10px; color: #000000}
+
+/*******************************
+LRPRIM class de style Silverpeas
+*******************************/
+h4 		                          { font-size: x-small }
+.BilanLine 	                      { background-color : #D9E5FF }
+.IndispoLine 	                  { background-color : #6699FF }
+.JobFreeLine 	                  { background-color : #FF6600 }
+.JobAssignLine 	                  { background-color : #CC0066 }
+.PersonAssignLine                 { background-color : #669900 }
+.PersonFreeLine                   { background-color : #003399 }
+.SpecialDays 	                  { background-color : #FFFF00 }
+.txt1 		                      { font-size: 12px; font-weight: bold; color: #333333 }
+.t1 		                      { font-size: 20pt; font-weight: bold; color: #D8D8D8 }
+.t2 		                      { font-size: 13pt; font-weight: bold }
+.t3 		                      { background-color : #DEDEDE; font-size: 12px; font-weight: bold ; font-family: Verdana, Arial, Helvetica, sans-serif}
+.t8 		                      { }
+
+/*****************************************
+N&D
+****************************************/
+.bleu1{color:#D70000}
+.bleu2{color:#003399}
+
+/***************************************
+Definition des class de style Silverpeas
+***************************************/
+.peer                             { color: #003399}
+.odd 							  { color: #000000}
+.couleurCadreExterieur            { background-color : #CCCCCC}
+.couleurCadreInterieur            { background-color : #D9E5FF}
+.couleurFondCadre                 { background-color : #FFFFFF}
+.couleurFondOperation             { }
+
+/* Couleur de l'interface : Frame */
+.couleurCadre                      { background-color : #DEDEDE }
+.couleurFenetre                    { background-color : #D9E5FF }
+
+/* Couleur de l'interface : TopBar et DomainsBar */
+.couleurInterface                 { background-color: #003399}
+.winScreen{
+	background-color : #F0F8FF;
+}
+
+.titremodule                      { font-size: 13pt; font-weight: bold; color: #000000 }
+.txtnote                          { font-size: 10px; color: #000000; text-decoration: none}
+.txtnote:hover                    { font-size: 10px; color: #000000; text-decoration: underline}
+.txttitrecol                      { font-size: 10px; color: #000000; font-weight: bold }
+.txtnav                           { font-size: 10pt; font-weight: bold; color: #000000}
+.textePetitBold                   { font-size: 10px; font-weight: bold; color: #000000}
+.textePetitBoldVert                   { font-size: 10px; font-weight: bold; color: #669966}
+.textePetitBold2                  { font-size: 10px; font-weight: bold; color: #666666}
+.txtpetitblanc                    { font-size: 10px; font-weight: bold; color: #FFFFFF}
+.txtGrandBlanc                    { font-size: 13pt; font-weight: bold; color: #FFFFFF}
+.txtlibform                       { font-size: 8pt; font-weight: bold; color: #999999}
+.txtlibform_underline                 { font-size: 8pt; font-weight: bold; color: #999999; text-decoration: underline}
+.txtlibform_resa                      {
+	font-size: 8pt;
+	font-weight: bold;
+	color: #5189FF;
+}
+.texteNombreBigBold		  { font-size: 24pt; font-weight: bold; color: #003366}
+.texteLabelForm                   { font-size: 10px; color: #666666; font-weight: bold }
+
+ /* Agenda */
+.a                                { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+.txtbigdate                       { font-size: 25pt; font-weight: bold; color: #ffffff }
+.txtnav2                          { font-size: 10pt; font-weight: bold; color: #FFFFFF}
+.txtnav21                         { font-size: 10pt; font-weight: bold; color: #AFB8C9}
+.txtnav3                          { font-size: 10px; color: #FFFFFF; text-decoration : none }
+.txtnav4                          { font-size: 10px; font-weight: bold; color: #FFFFFF }
+.labelFormulaire                  { font-size: 10px; font-weight: bold; color: #333333}
+
+.date                             { font-size: 10pt; color: black }
+.intfdcolor                       { background-color: #AFB8C9}
+.intfdcolor0                       { background-color: #8494B2 }
+/*.intfdcolor                       { background-color: #CCCCCC}*/
+.
+.intfdcolor1                      { background-color: #666666}
+.intfdcolor2                      { background-color: #EDEDED}
+.intfdcolor3                      { background-color: #AFB8C9}
+.intfdcolor4                      { background-color: #FFFFFF}
+.intfdcolor5                      { background-color: #DEDEDE}
+.intfdcolor51                     { background-color: #EDEDED}
+.intfdcolor52                     { background-color: #F0F8FF}
+.intfdcolor6                      { background-color: #D9E5FF}
+.fondCartouche                    { background-color: #E5E5E5}
+.line                   { background-color: #000000}
+
+/*News*/
+.headline						  { font-size: 14pt; font-weight: bold; color: #000000; font-family: Times New Roman, Times, serif ; text-decoration: underline}
+.headline:hover					  { font-size: 14pt; font-weight: bold; color: #666666; font-family: Times New Roman, Times, serif ;   text-decoration: underline overline}
+.healineBody					  { font-size: 10pt; color: #000000 }
+
+
+
+/*********************************
+Style Utilise par le ViewGenerator
+*********************************/
+
+/* OBJETS : ButtonWA - ButtonWA2 */
+.buttonStyle                      { background-color: #CCCCCC; text-decoration: none; font-weight: bold; color: #003366}
+.buttonColorLight                 { background-color: #DEDEDE}
+.buttonColorDark                  { background-color: #999999}
+
+ /* OBJETS : BrowseBarWA - BrowseBarWA2 */
+.hrefComponentName				  { font-size: 10pt; font-weight: bold; color: #000000}
+.componentName                    { font-size: 13pt; font-weight: bold}
+.navigationBarLink:hover          { font-size: 10px; font-weight: bold; color: #666666; text-decoration: underline overline}
+.hrefComponentName:hover          { font-size: 10pt; font-weight: bold; color: #666666; text-decoration: underline overline}
+.hrefComponentNameOff	          { font-size: 10pt; font-weight: bold; color: #666666; text-decoration: underline overline}
+
+.hrefTreeManager:hover {
+	font : 10px;
+	background-color : Navy;
+	color : White;
+	text-decoration: none;
+}
+.hrefTreeManager:link {
+	font : 10px;
+	background-color : White;
+	color : Navy;
+	text-decoration: none;
+}
+
+.hrefTreeManager:vlink {
+	font : 10px;
+	background-color : Navy;
+	color : White;
+	text-decoration: none;
+}
+
+.componentNav                     { font-size: 10px}
+.domainName                       { font-size: 13pt; font-weight: bold}
+
+  /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
+.ongletOn                         { background-color: #EDEDED; font-size: 8pt; font-weight: bold; color: #003366; text-decoration: none}
+.ongletOff                        { background-color: #AFB8C9; font-size: 8pt; font-weight: bold; color: #EDEDED; text-decoration: none}
+.ongletDark                       { background-color: #666666}
+.ongletColorLight                 { background-color: #DEDEDE}
+.ongletColorDark                  { background-color: #7D7D7D}
+
+  /* OBJETS : TabbedPaneWA - TabbedPaneWA3 */
+
+.titreFenetre                     { font-size: 13pt; font-weight: bold; color: #666666}
+.legalInformation                 { color: #999999}
+.titreFenetre2                    { font-size: 13pt; font-weight: bold; color: #FFFFFF}
+.sousTitreFenetre                 { font-size: 10pt; font-weight: bold; color: #666666}
+.styleOngletOn                    { background-color: #DEDEDE; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+.styleOngletOff                   { background-color: #5A5A5A; font-size: 10px; color: #FFFFFF; text-decoration: none}
+
+ /* OBJETS : ArrayPaneWA */
+.ArrayCellHot					  { font-size: 10px; color: #FF6000}
+.ArrayCell                        { font-size: 10px; color: #000000}
+.ArrayColumn                      { background-color: #AFB8C9; font-size: 10px; font-weight: bold; color: #000000}
+.ArrayNavigation                  { background-color: #AFB8C9; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+
+/************************************
+Definition des class de style Portlet
+************************************/
+.borderLineColorPortlet			  { background-color: #003366}
+.interfaceColorPortlet			  { background-color: #003399}
+.windowColorPortlet			      { background-color: #EDEDED}
+.intfdcolor11                     { background-color: #000000}
+.intfdcolor12                     { background-color: #999999}
+.intfdcolor13                     { background-color: #CCCCCC}
+
+/** mailservice status highlight display */
+.MessageNotRead
+{
+    COLOR: #000000;
+    FONT-SIZE: 8pt;
+    FONT-WEIGHT: bold
+}
+
+.MessageNotReadAndHighPriority
+{
+    COLOR: #FF0000;
+    FONT-SIZE: 8pt;
+    FONT-WEIGHT: bold
+}
+
+.MessageReadHighPriority
+{
+    COLOR: #FF0000;
+    FONT-SIZE: 8pt;
+    FONT-WEIGHT: bold
+}
+.contourintfdcolor {  border: #AFB8C9; border-style: solid; border-top-width: thin; border-right-width: thin; border-bottom-width: thin; border-left-width: thin}
+
+.eventCells{
+	background : #FFFFFF;
+}
+
+.contourt3 {  border: #DEDEDE; border-style: solid; border-top-width: thin; border-right-width: thin; border-bottom-width: thin; border-left-width: thin}
+.contourbleufondblanc {  background-color: #FFFFFF; border: #AFB8C9; border-style: solid; border-top-width: thin; border-right-width: thin; border-bottom-width: thin; border-left-width: thin}
+.quizzscore                         { background-color: #AFB8C9; font-size: 10pt; font-weight: bold; color: #FFFFFF; text-decoration: none}
+.Titre{
+	font : bold xx-small Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color : Gray;
+	line-height : 12px;
+
+}

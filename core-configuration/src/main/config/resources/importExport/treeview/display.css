@@ -1,0 +1,92 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+body, td, th, textarea, ul , li, h1, h2, p, a{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000;
+	margin:0;
+	padding:0;
+	}
+body {
+	padding:0 5px;
+	}
+
+a {
+	text-decoration: none;
+	color: #000000
+	}
+a:hover {
+	color: #666699;
+	}
+p {
+	line-height:180%;
+	padding:12px 0;
+	}
+
+
+.numberOfDocument {
+	padding: 5px;
+	margin: 10px 10px 10px 0px;
+	text-align: center;
+	border: 2px solid #F9E98E;
+	background-color: #FFFCCF;
+}
+
+h1 {
+	font-size:130%;
+	color:#333;
+	border-bottom:1px solid #BBBBBB;
+	line-height:200%;
+	}
+.creationDetail {
+	text-align:right;
+	color:#909090;
+	margin-bottom:10px
+	}
+
+
+.content {
+	width:76%;
+	float:left;
+	overflow:auto;
+	}
+.attachments {
+	margin:20px 0 0 77%;
+	padding: 5px;
+	border: 2px solid #A4DA6A;
+	background:#E5F5D1 url(attach.gif) no-repeat top right;
+	}
+#imageThumbnailArea {
+	margin:20px 0 0 77%;
+	border-top:1px dashed  #BBBBBB;
+	padding-top:10px
+	}
+#imageThumbnailArea	 img {
+	width:100%;
+	border-color:#BBBBBB;
+	margin-bottom:10px;}
+ul.list , ul.list li {
+	margin:0 0 8px 8px;
+	list-style-type:disc;}

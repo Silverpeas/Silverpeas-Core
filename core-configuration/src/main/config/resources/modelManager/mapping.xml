@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<mapping>
+
+    <class name="ProcessModelImpl">
+        <map-to xml="processModel" />
+
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="descriptions" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
+            <bind-xml name="description" node="element" />
+        </field>
+        <field name="roles" type="Roles"
+            get-method="getRolesEx" set-method="setRoles" create-method="createRoles">
+            <bind-xml name="roles" node="element" />
+        </field>
+        <field name="presentation" type="Presentation"
+               create-method="createPresentation" get-method="getPresentationForCastor"
+               set-method="setPresentation">
+            <bind-xml name="presentation" node="element" />
+        </field>
+        <field name="participants" type="Participants"
+            get-method="getParticipantsEx" set-method="setParticipants" create-method="createParticipants">
+            <bind-xml name="participants" node="element" />
+        </field>
+        <field name="states" type="States"
+            get-method="getStatesEx" set-method="setStates" create-method="createStates">
+            <bind-xml name="states" node="element" />
+        </field>
+        <field name="actions" type="Actions"
+            get-method="getActionsEx" set-method="setActions" create-method="createActions">
+            <bind-xml name="actions" node="element" />
+        </field>
+        <field name="userInfos" type="DataFolder"
+               create-method="createDataFolder">
+            <bind-xml name="userInfos" node="element" />
+        </field>
+        <field name="dataFolder" type="DataFolder"
+               create-method="createDataFolder">
+            <bind-xml name="dataFolder" node="element" />
+        </field>
+        <field name="forms" type="Forms"
+            get-method="getForms" set-method="setForms" create-method="createForms">
+            <bind-xml name="forms" node="element" />
+        </field>
+    </class>
+
+    <!-- Implements ContextualDesignation -->
+    <class name="SpecificLabel">
+        <field name="content" type="string">
+            <bind-xml node="text" />
+        </field>
+        <field name="role" type="string">
+            <bind-xml name="role" node="attribute" />
+        </field>
+        <field name="language" type="string">
+            <bind-xml name="lang" node="attribute" />
+        </field>
+    </class>
+
+    <class name="RolesImpl">
+        <field name="roleList" type="Role" collection="arraylist"
+               get-method="iterateRole" set-method="addRole" create-method="createRole">
+            <bind-xml name="role" node="element" />
+        </field>
+    </class>
+
+    <class name="RoleImpl">
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="descriptions" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
+            <bind-xml name="description" node="element" />
+        </field>
+    </class>
+
+    <class name="PresentationImpl">
+        <field name="titles" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateTitle" set-method="addTitle" create-method="createDesignation">
+            <bind-xml name="title" node="element" />
+        </field>
+        <field name="columns" type="Columns" collection="vector"
+               get-method="iterateColumns" set-method="addColumns" create-method="createColumns">
+            <bind-xml name="columns" node="element"/>
+        </field>
+    </class>
+
+    <class name="ColumnsImpl">
+        <field name="column" type="ColumnImpl"
+            collection="vector" get-method="iterateColumn" set-method="addColumn"
+            create-method="createColumn">
+            <bind-xml name="column" node="element" />
+        </field>
+        <field name="roleName" type="string">
+            <bind-xml name="role" node="attribute" />
+        </field>
+    </class>
+
+    <class name="ColumnImpl">
+        <field name="item" type="Item">
+            <bind-xml name="item" node="attribute" reference="true"/>
+        </field>
+    </class>
+
+    <class name="ParticipantsImpl">
+        <field name="participantList"
+            type="Participant" collection="arraylist"
+            get-method="iterateParticipant" set-method="addParticipant" create-method="createParticipant">
+            <bind-xml name="participant" node="element" />
+        </field>
+    </class>
+
+    <class name="ParticipantImpl" identity="name">
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="resolvedState" type="string">
+            <bind-xml name="resolvedState" node="attribute" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="descriptions" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
+            <bind-xml name="description" node="element" />
+        </field>
+    </class>
+
+    <class name="StatesImpl">
+        <field name="stateList" type="State" collection="arraylist"
+               get-method="iterateState" set-method="addState" create-method="createState">
+            <bind-xml name="state" node="element" />
+        </field>
+    </class>
+
+    <class name="StateImpl" identity="name">
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="timeoutAction" type="Action">
+            <bind-xml name="timeoutAction" node="attribute" reference="true" />
+        </field>
+        <field name="timeoutInterval" type="string" get-method="castor_getTimeoutInterval"
+               set-method="castor_setTimeoutInterval">
+            <bind-xml name="timeoutInterval" node="attribute" />
+        </field>
+        <field name="timeoutNotifyAdmin" type="boolean">
+            <bind-xml name="timeoutNotifyAdmin" node="attribute" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="descriptions" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
+            <bind-xml name="description" node="element" />
+        </field>
+        <field name="activities" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateActivity" set-method="addActivity" create-method="createDesignation">
+            <bind-xml name="activity" node="element" />
+        </field>
+        <field name="workingUsers"
+            type="QualifiedUsers" get-method="getWorkingUsersEx"
+            create-method="createQualifiedUsers" set-method="setWorkingUsers">
+            <bind-xml name="workingUsers" node="element" />
+        </field>
+        <field name="interestedUsers" type="QualifiedUsers"
+               get-method="getInterestedUsersEx" create-method="createQualifiedUsers"
+               set-method="setInterestedUsers">
+            <bind-xml name="interestedUsers" node="element" />
+        </field>
+        <field name="allowedActions" type="AllowedActions"
+            get-method="getAllowedActionsEx" set-method="setAllowedActions"
+            create-method="createAllowedActions">
+            <bind-xml name="allowedActions" node="element" />
+        </field>
+        <field name="timeoutActions" type="TimeOutActions"
+            get-method="getTimeOutActionsEx" set-method="setTimeOutActions"
+            create-method="createTimeOutActions">
+            <bind-xml name="timeOutActions" node="element" />
+        </field>
+    </class>
+
+    <!-- Class implements StateSetter -->
+    <class name="StateRef">
+        <field name="state" type="State">
+            <bind-xml name="state" node="attribute" reference="true" />
+        </field>
+    </class>
+
+    <class name="ActionImpl"
+        identity="name">
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="kind" type="string">
+            <bind-xml name="kind" node="attribute" />
+        </field>
+        <field name="form" type="Form">
+            <bind-xml name="form" node="attribute" reference="true" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="descriptions" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
+            <bind-xml name="description" node="element" />
+        </field>
+        <field name="allowedUsers" type="QualifiedUsers"
+               create-method="createQualifiedUsers">
+            <bind-xml name="allowedUsers" node="element" />
+        </field>
+        <field name="consequences" type="Consequences"
+               create-method="createConsequences">
+            <bind-xml name="consequences" node="element" />
+        </field>
+    </class>
+
+    <!-- Class implements AllowedAction -->
+    <class name="ActionRef">
+        <field name="action" type="Action">
+            <bind-xml name="action" node="attribute" reference="true" />
+        </field>
+    </class>
+
+    <!-- Class implements AllowedActions -->
+    <class name="ActionRefs">
+        <field name="actionRefList" type="AllowedAction"
+            collection="vector" get-method="iterateAllowedAction" set-method="addAllowedAction"
+            create-method="createAllowedAction">
+            <bind-xml name="allow" node="element" />
+        </field>
+    </class>
+
+    <class name="TimeOutActionsImpl">
+        <field name="timeOutActionList" type="TimeOutAction"
+            collection="vector" get-method="iterateTimeOutAction" set-method="addTimeOutAction"
+            create-method="createTimeOutAction">
+            <bind-xml name="timeOutAction" node="element" />
+        </field>
+    </class>
+
+    <!-- Class implements TimeOutAction -->
+    <class name="TimeOutActionImpl">
+        <field name="action" type="Action">
+            <bind-xml name="action" node="attribute" reference="true" />
+        </field>
+        <field name="delay" type="string">
+            <bind-xml name="delay" node="attribute" />
+        </field>
+        <field name="order" type="string" get-method="castor_getOrder"
+               set-method="castor_setOrder">
+            <bind-xml name="order" node="attribute" />
+        </field>
+        <field name="dateItem" type="Item">
+            <bind-xml name="dateItem" node="attribute" reference="true" />
+        </field>
+    </class>
+
+    <class name="ActionsImpl">
+        <field name="actionList" type="Action"
+            collection="arraylist" get-method="iterateAction" set-method="addAction"
+            create-method="createAction">
+            <bind-xml name="action" node="element" />
+        </field>
+    </class>
+
+    <class name="ConsequencesImpl">
+        <field name="consequenceList"
+            type="Consequence"
+            collection="vector" get-method="iterateConsequence" set-method="addConsequence"
+            create-method="createConsequence">
+            <bind-xml name="consequence" node="element" />
+        </field>
+    </class>
+
+    <class name="ConsequenceImpl">
+        <field name="item" type="string">
+            <bind-xml name="item" node="attribute" />
+        </field>
+        <field name="operator" type="string">
+            <bind-xml name="operator" node="attribute" />
+        </field>
+        <field name="value" type="string">
+            <bind-xml name="value" node="attribute" />
+        </field>
+        <field name="kill" type="boolean">
+            <bind-xml name="kill" node="element" />
+        </field>
+        <field name="targetStateList" type="StateSetter"
+            collection="vector" get-method="iterateTargetState" set-method="addTargetState"
+            create-method="createStateSetter">
+            <bind-xml name="set" node="element" />
+        </field>
+        <field name="unsetStateList" type="StateSetter"
+            collection="vector" get-method="iterateUnsetState" set-method="addUnsetState"
+            create-method="createStateSetter">
+            <bind-xml name="unset" node="element" />
+        </field>
+        <field name="notifiedUsers" type="QualifiedUsers"
+               collection="arraylist" get-method="iterateNotifiedUsers" set-method="addNotifiedUsers"
+               create-method="createQualifiedUsers">
+            <bind-xml name="notify" node="element" />
+        </field>
+        <field name="triggers" type="Triggers"
+            create-method="createTriggers">
+            <bind-xml name="triggers" node="element" />
+        </field>
+    </class>
+
+    <class name="TriggersImpl">
+        <field name="triggerList" type="Trigger"
+            collection="vector" get-method="iterateTrigger" set-method="addTrigger"
+            create-method="createTrigger">
+            <bind-xml name="trigger" node="element" />
+        </field>
+    </class>
+
+    <class name="TriggerImpl" identity="name">
+	<field name="name" type="string">
+            <bind-xml name="name" node="attribute"/>
+        </field>
+        <field name="className" type="string">
+            <bind-xml name="className" node="attribute"/>
+        </field>
+		<field name="parameters" type="Parameter"
+            collection="vector" get-method="iterateParameter" set-method="addParameter"
+            create-method="createParameter">
+            <bind-xml name="param" node="element" />
+        </field>
+    </class>
+
+    <class name="DataFolderImpl">
+        <field name="itemList" type="Item"
+            collection="vector" get-method="iterateItem" set-method="addItem"
+            create-method="createItem">
+            <bind-xml name="item" node="element" />
+        </field>
+    </class>
+
+    <class name="ItemImpl" identity="name">
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="computed" type="boolean" get-method="isComputed">
+            <bind-xml name="computed" node="attribute" />
+        </field>
+        <field name="mapTo" type="string">
+            <bind-xml name="mapTo" node="attribute" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="descriptions" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
+            <bind-xml name="description" node="element" />
+        </field>
+        <field name="type" type="string">
+            <bind-xml name="type" node="element" />
+        </field>
+        <field name="readonly" type="boolean" get-method="isReadonly"
+            set-method="setReadonly">
+            <bind-xml name="readonly" node="element" />
+        </field>
+        <field name="parameters" type="Parameter"
+            collection="vector" get-method="iterateParameter" set-method="addParameter"
+            create-method="createParameter">
+            <bind-xml name="param" node="element" />
+        </field>
+        <field name="formula" type="string">
+            <bind-xml name="formula" node="element" />
+        </field>
+    </class>
+
+    <class name="ParameterImpl" identity="name" >
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute"/>
+        </field>
+        <field name="value" type="string">
+            <bind-xml name="value" node="attribute"/>
+        </field>
+    </class>
+
+    <!-- Class implementing Input -->
+    <class name="ItemRef">
+        <field name="item" type="Item">
+            <bind-xml name="item" node="attribute" reference="true" />
+        </field>
+        <field name="value" type="string">
+            <bind-xml name="value" node="attribute" />
+        </field>
+        <field name="labels" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
+            <bind-xml name="label" node="element" />
+        </field>
+        <field name="readonly" type="boolean" get-method="isReadonly"
+            set-method="setReadonly">
+            <bind-xml name="readonly" node="attribute" />
+        </field>
+        <field name="mandatory" type="boolean" get-method="isMandatory"
+            set-method="setMandatory">
+            <bind-xml name="mandatory" node="attribute" />
+        </field>
+        <field name="displayerName" type="string">
+            <bind-xml name="displayerName" node="attribute" />
+        </field>
+    </class>
+
+    <class name="FormsImpl">
+        <field name="formList" type="Form"
+            collection="arraylist" get-method="iterateForm" set-method="addForm"
+            create-method="createForm">
+            <bind-xml name="form" node="element" />
+        </field>
+    </class>
+
+    <class name="FormImpl" identity="name">
+        <field name="name" type="string">
+            <bind-xml name="name" node="attribute" />
+        </field>
+        <field name="role" type="string">
+            <bind-xml name="role" node="attribute" />
+        </field>
+        <field name="HTMLFileName" type="string">
+            <bind-xml name="HTMLFileName" node="attribute" />
+        </field>
+        <field name="titles" type="ContextualDesignation" collection="arraylist"
+               get-method="iterateTitle" set-method="addTitle" create-method="createDesignation">
+            <bind-xml name="title" node="element" />
+        </field>
+        <field name="inputList" type="Input"
+            collection="vector" get-method="iterateInput" set-method="addInput"
+            create-method="createInput">
+            <bind-xml name="input" node="element" />
+        </field>
+    </class>
+
+    <class name="QualifiedUsersImpl">
+        <field name="message" type="string">
+            <bind-xml name="message" node="attribute"/>
+        </field>
+        <field name="role" type="string">
+            <bind-xml name="role" node="attribute"/>
+        </field>
+        <field name="senderId" type="string">
+            <bind-xml name="senderId" node="attribute"/>
+        </field>
+        <field name="relatedUserList" type="RelatedUser"
+               collection="vector" get-method="iterateRelatedUser" set-method="addRelatedUser"
+               create-method="createRelatedUser">
+            <bind-xml name="relatedUser" node="element"/>
+        </field>
+		<field name="relatedGroupList" type="RelatedGroup"
+               collection="vector" get-method="iterateRelatedGroup" set-method="addRelatedGroup"
+               create-method="createRelatedGroup">
+            <bind-xml name="relatedGroup" node="element"/>
+        </field>
+        <field name="userInRoleList" type="UserInRole"
+               collection="vector" get-method="iterateUserInRole" set-method="addUserInRole"
+               create-method="createUserInRole">
+            <bind-xml name="userInRole" node="element"/>
+        </field>
+    </class>
+
+    <class name="RelatedUserImpl">
+        <field name="participant" type="Participant">
+            <bind-xml name="participant" node="attribute" reference="true"/>
+        </field>
+        <field name="folderItem" type="Item">
+            <bind-xml name="folderItem" node="attribute" reference="true"/>
+        </field>
+        <field name="relation" type="string">
+            <bind-xml name="relation" node="attribute"/>
+        </field>
+        <field name="role" type="string">
+            <bind-xml name="role" node="attribute"/>
+        </field>
+    </class>
+
+	<class name="RelatedGroupImpl">
+        <field name="folderItem" type="Item">
+            <bind-xml name="folderItem" node="attribute" reference="true"/>
+        </field>
+        <field name="role" type="string">
+            <bind-xml name="role" node="attribute"/>
+        </field>
+    </class>
+
+    <class name="UserInRoleImpl">
+        <field name="roleName" type="string">
+            <bind-xml name="name" node="attribute"/>
+        </field>
+    </class>
+
+</mapping>

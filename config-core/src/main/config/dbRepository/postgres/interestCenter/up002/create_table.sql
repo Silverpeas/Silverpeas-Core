@@ -1,3 +1,0 @@
-ALTER TABLE SB_Interest_Center
-ALTER COLUMN criteria DROP NOT NULL
-;

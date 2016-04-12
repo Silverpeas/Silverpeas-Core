@@ -1,0 +1,241 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+.sp-menu-root > ul {
+  margin:0;
+  padding:0;
+  list-style-type:none;
+ }
+
+.sp-menu-root > ul  > .sp-space > div.sp-space-name  a {
+  display:block;
+    color: #444;
+    font-size: 14px;
+  font-weight:bold;
+    background:transparent url("/silverpeas/admin/jsp/icons/silverpeas_light/puceSpace.png") 5px 3px no-repeat;
+    border-bottom: 1px solid #CACACA;
+  padding:12px 16px 12px 43px;
+ }
+  .sp-menu-root  .sp-space {
+  position:relative;
+ }
+ .sp-menu-root > ul  > .sp-space ul {
+  list-style-type:none;
+  margin:0;
+  padding:0 0 0 13px;
+ }
+ .sp-menu-root > ul  > .sp-space .sp-space > div.sp-space-name > a {
+  display:block;
+    color: #777;
+    font-size: 12px;
+  font-weight:bold;
+  padding:2px 17px 2px 0;
+ }
+
+  .sp-menu-root .sp-component > div > a {
+  display:block;
+  color: #777;
+    font-size: 12px;
+  line-height:17px;
+ }
+ .sp-menu-root .sp-component > div > a.sp-menu-selected{
+   background:transparent url(/silverpeas/admin/jsp/icons/silverpeasV5/activComponent.gif) right center no-repeat;
+   font-weight:bold;
+ }
+  .sp-menu-root .space-management-favorite{
+  position:absolute;
+  top:4px;
+  right:4px;
+ }
+
+
+ .blog div a span {
+  background:url(/silverpeas/util/icons/component/blogSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .almanach div a span {
+  background:url(/silverpeas/util/icons/component/almanachSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .bookmark div a span {
+  background:url(/silverpeas/util/icons/component/bookmarkSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .chat div a span {
+  background:url(/silverpeas/util/icons/component/chatSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .classifieds div a span {
+  background:url(/silverpeas/util/icons/component/classifiedsSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .connecteurJDBC div a span {
+  background:url(/silverpeas/util/icons/component/connecteurJDBCSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .processManager div a span {
+  background:url(/silverpeas/util/icons/component/processManagerSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .formsOnline div a span {
+  background:url(/silverpeas/util/icons/component/formsOnlineSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .forums div a span {
+  background:url(/silverpeas/util/icons/component/forumsSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .gallery div a span {
+  background:url(/silverpeas/util/icons/component/gallerySmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .hyperlink div a span {
+  background:url(/silverpeas/util/icons/component/hyperlinkSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .infoLetter div a span {
+  background:url(/silverpeas/util/icons/component/infoLetterSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .kmax div a span {
+  background:url(/silverpeas/util/icons/component/kmaxSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .kmelia div a span {
+  background:url(/silverpeas/util/icons/component/kmeliaSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .mailinglist div a span {
+  background:url(/silverpeas/util/icons/component/mailinglistSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .myDB div a span {
+  background:url(/silverpeas/util/icons/component/myDBSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .newsEdito div a span {
+  background:url(/silverpeas/util/icons/component/newsEditoSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .pollingStation div a span {
+  background:url(/silverpeas/util/icons/component/pollingStationSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .projectManager div a span {
+  background:url(/silverpeas/util/icons/component/projectManagerSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .questionReply div a span {
+  background:url(/silverpeas/util/icons/component/questionReplySmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .quickinfo div a span {
+  background:url(/silverpeas/util/icons/component/quickinfoSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .quizz div a span {
+  background:url(/silverpeas/util/icons/component/quizzSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .resourcesManager div a span {
+  background:url(/silverpeas/util/icons/component/resourcesManagerSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .rssAgregator div a span {
+  background:url(/silverpeas/util/icons/component/rssAgregatorSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .silverCrawler div a span {
+  background:url(/silverpeas/util/icons/component/silverCrawlerSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .survey div a span {
+  background:url(/silverpeas/util/icons/component/surveySmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .toolbox div a span {
+  background:url(/silverpeas/util/icons/component/toolboxSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .webPages div a span {
+  background:url(/silverpeas/util/icons/component/webPagesSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .webSites div a span {
+  background:url(/silverpeas/util/icons/component/webSitesSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .whitePages div a span {
+  background:url(/silverpeas/util/icons/component/whitePagesSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .wiki div a span {
+  background:url(/silverpeas/util/icons/component/wikiSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .yellowpages div a span {
+  background:url(/silverpeas/util/icons/component/yellowpagesSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .suggestionBox div a span {
+  background:url(/silverpeas/util/icons/component/suggestionBoxSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }
+ .spaceMembers div a span {
+  background:url(/silverpeas/util/icons/component/spaceMembersSmall.gif) top left no-repeat;
+  padding-left:20px;
+  display:block;
+ }

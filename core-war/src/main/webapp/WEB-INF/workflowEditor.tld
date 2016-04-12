@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+  <description>Workflow Designer 1.0 core library</description>
+  <display-name>Workflow Designer</display-name>
+  <tlib-version>1.0</tlib-version>
+  <short-name>workflowDesigner</short-name>
+  <tag>
+    <description>Tag to display a set of Workflow Designer tabs.</description>
+    <name>processModelTabs</name>
+    <tag-class>
+      org.silverpeas.web.workflowdesigner.taglib.ProcessModelTabs
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The link to the current editor tab.
+      </description>
+      <name>currentTab</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to display a pair of OK/ Cancel buttons.</description>
+    <name>buttonPane</name>
+    <tag-class>
+      org.silverpeas.web.workflowdesigner.taglib.ProcessModelButtonPane
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The URL of the action on 'Cancel'</description>
+      <name>cancelAction</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to display a ContextualDesignations object ( a list of ContextualDesignations).</description>
+    <name>contextualDesignationList</name>
+    <tag-class>
+      org.silverpeas.web.workflowdesigner.taglib.ContextualDesignationList
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The Contextual Designations to display</description>
+      <name>designations</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.workflow.api.model.ContextualDesignations</type>
+    </attribute>
+    <attribute>
+      <description>
+        Path to the ContextualDesignations being presented (just the value)
+      </description>
+      <name>context</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>@Deprecated: The relative URL to the page embedding the list</description>
+      <name>parentScreen</name><!-- TODO remove this attribute! -->
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The resource key to get the pane title.
+      </description>
+      <name>paneTitleKey</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The resource key to get the label for the 'content' column.
+      </description>
+      <name>columnLabelKey</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to display a list of RelatedUsers.</description>
+    <name>relatedUsersList</name>
+    <tag-class>
+      org.silverpeas.web.workflowdesigner.taglib.RelatedUserList
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>An iterator over Related Users to display</description>
+      <name>iterRelatedUser</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.Iterator</type>
+    </attribute>
+    <attribute>
+      <description>
+        Path to the Related Users being presented
+      </description>
+      <name>context</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The relative URL to the page embedding the list</description>
+      <name>currentScreen</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to display a list of Items.</description>
+    <name>itemList</name>
+    <tag-class>
+      org.silverpeas.web.workflowdesigner.taglib.ItemList
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Items to display</description>
+      <name>items</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.workflow.api.model.DataFolder</type>
+    </attribute>
+    <attribute>
+      <description>
+        Path to the Items being presented
+      </description>
+      <name>context</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The relative URL to the page embedding the list</description>
+      <name>currentScreen</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The resource key to get the pane title.
+      </description>
+      <name>paneTitleKey</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+</taglib>

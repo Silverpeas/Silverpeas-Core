@@ -1,1 +1,0 @@
-ALTER TABLE st_token DROP CONSTRAINT const_st_token_pk;

@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd /etc/opt/SUNWportal/dtd/portlet.xsd" version="1.0">
+
+
+ <portlet>
+        <description>Test portlet embarquee dans SP</description>
+        <portlet-name>HelloSilverpeasPortlet</portlet-name>
+        <display-name>HelloSilverpeasPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.HelloSilverpeasPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>HelloSilverpeasPortlet title</title>
+            <short-title>HelloSilverpeasPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Dernieres publications</description>
+        <portlet-name>LastPublicationsPortlet</portlet-name>
+        <display-name>LastPublicationsPortlet</display-name>
+        <portlet-class>org.silverpeas.components.kmelia.portlets.LastPublicationsPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>LastPublicationsPortlet title</title>
+            <short-title>LastPublicationsPortlet shortTitle</short-title>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>nbPublis</name>
+                <value>5</value>
+            </preference>
+        </portlet-preferences>
+ </portlet>
+
+ <portlet>
+        <description>Prochains evenements</description>
+        <portlet-name>NextEventsPortlet</portlet-name>
+        <display-name>NextEventsPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.NextEventsPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>NextEventsPortlet title</title>
+            <short-title>NextEventsPortlet shortTitle</short-title>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>nbEvents</name>
+                <value>5</value>
+            </preference>
+        </portlet-preferences>
+ </portlet>
+
+ <portlet>
+        <description>Mes requetes favorites</description>
+        <portlet-name>FavoriteQueriesPortlet</portlet-name>
+        <display-name>FavoriteQueriesPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.FavoriteQueriesPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>FavoriteQueriesPortlet title</title>
+            <short-title>FavoriteQueriesPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Un composant</description>
+        <portlet-name>ComponentInstancePortlet</portlet-name>
+        <display-name>ComponentInstancePortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.ComponentInstancePortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>ComponentInstancePortlet title</title>
+            <short-title>ComponentInstancePortlet shortTitle</short-title>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>instanceId</name>
+                <value>toolbox69</value>
+            </preference>
+        </portlet-preferences>
+ </portlet>
+
+ <portlet>
+        <description>Mes liens</description>
+        <portlet-name>MyBookmarksPortlet</portlet-name>
+        <display-name>MyBookmarksPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyBookmarksPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyBookmarksPortlet title</title>
+            <short-title>MyBookmarksPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+  <portlet>
+    <description>Responsables de l'espace</description>
+    <portlet-name>SpaceResponsiblesPortlet</portlet-name>
+    <display-name>SpaceResponsiblesPortlet</display-name>
+    <portlet-class>org.silverpeas.web.portlets.SpaceResponsiblesPortlet</portlet-class>
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>SpaceResponsiblesPortlet title</title>
+      <short-title>SpaceResponsiblesPortlet shortTitle</short-title>
+    </portlet-info>
+  </portlet>
+
+ <portlet>
+        <description>Mes taches</description>
+        <portlet-name>MyTodosPortlet</portlet-name>
+        <display-name>MyTodosPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyTodosPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyTodosPortlet title</title>
+            <short-title>MyTodosPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Actualites</description>
+        <portlet-name>QuickInfosPortlet</portlet-name>
+        <display-name>QuickInfosPortlet</display-name>
+        <portlet-class>org.silverpeas.components.quickinfo.portlets.QuickInfosPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>QuickInfosPortlet title</title>
+            <short-title>QuickInfosPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Mes fichiers reserves</description>
+        <portlet-name>MyCheckOutFiles</portlet-name>
+        <display-name>MyCheckOutFiles</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyCheckOutFiles</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyCheckOutFiles title</title>
+            <short-title>MyCheckOutFiles shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Mes notifications</description>
+        <portlet-name>MyNotificationsPortlet</portlet-name>
+        <display-name>MyNotificationsPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyNotificationsPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyNotificationsPortlet title</title>
+            <short-title>MyNotificationsPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Portlet iFrame</description>
+        <portlet-name>IFramePortlet</portlet-name>
+        <display-name>IFramePortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.IFramePortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>IFramePortlet title</title>
+            <short-title>IFramePortlet shortTitle</short-title>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>url</name>
+                <value>http://www.silverpeas.com</value>
+            </preference>
+        </portlet-preferences>
+ </portlet>
+
+ <portlet>
+        <description>Mes brouillons</description>
+        <portlet-name>MyDraftsPortlet</portlet-name>
+        <display-name>MyDraftsPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyDrafts</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Drafts of connected user</title>
+            <short-title>My drafts</short-title>
+        </portlet-info>
+ </portlet>
+
+  <portlet>
+        <description>Dernieres publications consultees</description>
+        <portlet-name>MyLastPubliReadPortlet</portlet-name>
+        <display-name>MyLastPubliReadPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyLastPubliReadPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyLastPubliReadPortlet title</title>
+            <short-title>MyLastPubliReadPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Dernieres applications consultees</description>
+        <portlet-name>MyLastAccessedAppliPortlet</portlet-name>
+        <display-name>MyLastAccessedAppliPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyLastAccessedAppliPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyLastAccessedAppliPortlet title</title>
+            <short-title>MyLastAccessedAppliPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Mes contacts</description>
+        <portlet-name>MyContactsPortlet</portlet-name>
+        <display-name>MyContactsPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyContactsPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyContactsPortlet title</title>
+            <short-title>MyContactsPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+
+ <portlet>
+        <description>Mon fil d'informations</description>
+        <portlet-name>MyNewsFeedPortlet</portlet-name>
+        <display-name>MyNewsFeedPortlet</display-name>
+        <portlet-class>org.silverpeas.web.portlets.MyNewsFeedPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>MyNewsFeedPortlet title</title>
+            <short-title>MyNewsFeedPortlet shortTitle</short-title>
+        </portlet-info>
+ </portlet>
+</portlet-app>

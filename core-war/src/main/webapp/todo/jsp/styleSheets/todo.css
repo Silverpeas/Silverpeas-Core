@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+<!--
+	TR.header {background-color:#000000; }
+	input        { font-size: 8pt; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; color: #000000}
+	textarea     { font-size: 8pt; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; color: #000000}
+	td { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+	a {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000; text-decoration: none}
+    select {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+
+  .txtnav { font-size: 8pt; color: #000000}
+  .txtnavTitle { font-size: 10pt; font-weight: normal; color: #000000}
+  .txtnavHot    { font-size: 8pt; font-weight: bold; color: #FF0000}
+
+  .domainName            {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+  .componentName         {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+  .componentNav          {font-family : "Verdana", serif; font-size : 12px }
+
+  /*
+    Style pour ButtonWA & ButtonWA2
+    */
+    .buttonStyle        { background-color : #FAE57F; text-decoration: none; font-weight : bold; color : #000000}
+
+    /*
+    Style pour ButtonWA2
+    */
+    .buttonColorLight   { background-color : #FCEEAC}
+    .buttonColorDark    { background-color : #F0CF3E}
+
+    /*
+    Style pour TabbedPaneWA & TabbedPaneWA2
+    */
+    .ongletOn           { background-color: #FAE57F; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none}
+    .ongletOff          { background-color: #F0CF3E; font-size: 8pt; font-weight: bold; color: #FFFFFF; text-decoration: none}
+    .ongletColorLight   { background-color: #FCEEAC}
+    .ongletColorDark    { background-color: #DBB418}
+
+  .ArrayCell { font-size: 8pt; color: #000000}
+  .ArrayCellHot { font-size: 8pt; font-weight: bold; color: #FF0000}
+  .ArrayColumn { font-size: 10px; font-weight: bold; color: #000000; background-color: FAE57F }
+  .ArrayNavigation { font-size: 10px; font-weight: bold; color: #000000; background-color: #DEDEDE ;text-decoration: none }
+
+
+.txtlibform {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #EACA15}
+.selectNS {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+.txttitrecol { font-size: 10px; font-weight: bold; color: #000000; background-color: #EACA15 }
+
+
+-->

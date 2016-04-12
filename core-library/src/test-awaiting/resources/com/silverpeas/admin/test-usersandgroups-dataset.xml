@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP"
+             classname="org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver" authenticationserver="autDomainSP" />
+  <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="2" domainid="0" specificid="2" lastname="Hetfield" login="jhetfield" accesslevel="U" state='VALID' stateSaveDate='2013-02-11 00:00:00 0' />
+  <st_user id="3" domainid="0" specificid="3" lastname="Hammett" login="khammett" accesslevel="U" state='VALID' stateSaveDate='2013-02-11 00:00:00 0' />
+
+  <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin" />
+  <domainsp_user id="2" lastname="Hetfield" login="jhetfield" />
+  <domainsp_user id="3" lastname="Hammett" login="khammett" />
+  <st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
+
+  <domainsp_group id="1" name="Groupe 1"/>
+  <uniqueid maxid="1" tablename="domainsp_group"/>
+  <uniqueid maxid="1" tablename="st_group"/>
+  <uniqueid maxid="3" tablename="domainsp_user"/>
+  <uniqueid maxid="4" tablename="st_user"/>
+</dataset>

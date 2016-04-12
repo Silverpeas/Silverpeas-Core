@@ -1,0 +1,1 @@
+UPDATE sr_packages SET sr_package = 'interests' WHERE sr_package = 'interestCenter';

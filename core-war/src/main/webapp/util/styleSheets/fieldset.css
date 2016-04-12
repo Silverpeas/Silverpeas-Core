@@ -1,0 +1,309 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**mise en page g�n�rale pour les fieldset & formulaire de ce genre **/
+
+
+form {
+	margin:0;
+	padding:0;
+}
+
+fieldset.skinFieldset {
+	position:relative;
+	margin:0 0  1%;
+	padding-bottom:15px;
+	background-color :#CCC;
+	border:1px solid #CCC;
+	border-radius:10px;
+	min-height:80px;
+	display:block;
+	background-color:#F4F4F4;
+	background: -webkit-linear-gradient(left, #fff 0%, #e5e5e5 100%);
+	background: -moz-linear-gradient(left, #fff 0%, #e5e5e5 100%);
+	background: -ms-linear-gradient(left, #fff 0%, #e5e5e5 100%);
+	background: linear-gradient(left, #fff 0%, #e5e5e5 100%);
+ }
+
+ .table {
+	display:table;
+	width:100%;
+	height:auto;
+	}
+
+ :root *> .table {
+	height:8%;
+	margin-bottom:1%;
+	}
+
+.cell {
+	display:inline !ie;
+	float:left !ie;
+	width:49.9% !ie;
+	}
+
+.cell {
+	display:table-cell;
+	height:100%;
+	width:50%;
+}
+
+.table .cell:nth-child(2n){
+	width:50%;
+	padding-right:0
+}
+
+.table .cell:nth-child(2n+1){
+	width:48%;
+	padding-right:2%
+}
+
+.cell .field {
+	width:98%;
+}
+
+
+.cell fieldset.skinFieldset{
+	height:99%;
+	padding: 0;
+}
+
+.skinFieldset label {
+	color:#444;
+}
+
+.skinFieldset legend {
+	color:#333;
+	font-size:12px;
+	line-height:16px;
+	padding-left:36px;
+	margin-left:5px;
+}
+
+.skinFieldset legend.without-img {
+	padding: 0px 10px;
+}
+
+.champs {
+	display: table-cell;
+  padding: 5px 15px 5px 0;
+	min-width:180px;
+}
+
+.oneFieldPerLine,
+.fields {
+	margin: 10px 15px 0;
+	position:relative;
+	clear: both;
+	max-width:100%;
+}
+
+.field {
+	height: auto;
+	display: inline-table;
+	position:relative;
+	float:left;
+	width:46%;
+	padding:0;
+}
+
+.oneFieldPerLine .field,
+.field.entireWidth {
+	width:98%;
+}
+
+
+label.txtlibform {
+padding-right:0;
+}
+
+.field label {
+  display: table-cell;
+  padding: 5px 15px 5px 0;
+  width: 180px;
+  white-space: normal;
+}
+.row {
+	clear:both ;
+}
+
+.champs input, .champs select, .champs textarea {
+	width:90%;
+	margin:0;
+}
+
+.champs input[type="checkbox"] {
+	width: auto;
+	background-color:transparent;
+}
+
+#languageArea .champs select {
+	width:auto;
+}
+
+input.dateToPick,
+.ui-dialog .champ-ui-dialog input.dateToPick {
+	width:68px;
+	margin:0;
+}
+
+input.int-5,
+.ui-dialog .champ-ui-dialog input.int-5 {
+  width:36px;
+  margin:0;
+}
+
+input.inputHour{
+	width:48px;
+	margin:0;
+}
+
+.champs input.checkbox, .champs input.radio,  .champs input[type="radio"]{
+	width:13px;
+	vertical-align:middle;
+	margin:0 5px 0 15px;
+	border:0;
+	background-color:transparent;
+}
+
+.champs input.checkbox:first-child, .champs input.radio:first-child,
+ .champs input.radio.newline{
+	margin-left:0;
+	border:0;
+}
+
+/* Default forms look n feel */
+.forms .skinFieldset {
+	margin:1% 0 ;
+	padding:10px 10px 15px;
+}
+
+.forms .skinFieldset legend {
+    padding-left: 10px;
+}
+
+
+
+/* form & CKeditor */
+.container-wysiwyg input,
+.container-wysiwyg select
+ {
+    width: auto;
+}
+
+.skinFieldset .champs .wysiwyg-fileStorage {
+	width:90%;
+	background-color:#FFF;
+}
+
+/* fieldset & Formulaire */
+
+.skinFieldset .forms .fields > li {
+  float:none;
+}
+
+.skinFieldset .forms .fields .fieldInput {
+  display: block;
+  margin-left: 195px;
+}
+
+.skinFieldset .forms .fields .fieldInput select{
+  max-width:200px;
+}
+
+/* Notifications  */
+#send-notification legend {
+  background: url("../icons/email.gif") no-repeat scroll 11px 1px transparent;
+}
+#send-notification #recipientsArea, #subjectArea, #messageArea {
+  width: 98%;
+}
+#send-notification #recipientsArea ul.tagit {
+	width:90%;
+	display:inline-block;
+	margin-bottom:0;
+}
+#send-notification #recipientsArea img {
+  vertical-align:baseline;
+  border:0;
+}
+#send-notification #messageArea textarea {
+  width:95%;
+}
+
+/**** notion de groupe de champs *****/
+.group-field {
+	clear:both;
+	list-style-type:none;
+	padding-top:0.5em
+}
+.group-field ul {
+	padding:0;
+	margin:0 0 0 5em;
+}
+.group-field  .group-field-name{
+	border-bottom:1px solid #ccc;
+	display:block;
+	text-align:left;
+	padding:0.5em 0;
+	margin-bottom:0.5em;
+	color:#1C94D4;
+}
+
+.group-field ul li:nth-child(odd){
+	clear:left;
+}
+
+fieldset.parameters {
+  clear:right;
+  margin-right:0;
+}
+
+.parameters legend {
+  background:transparent url('../icons/cog.png') 11px 0px no-repeat;
+}
+
+.parameters  .parameterInfo {
+  left:-17px;
+  position: absolute;
+  top:7px;
+  width: 12px;
+}
+
+.group-field-description {
+	padding:0;
+	margin:0 0 0.5em;
+}
+
+
+@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+	.cell  {
+		width:100%;
+		display:block;
+	}
+}
+
+#reminder legend {
+  background:transparent url(../../util/icons/calendar_1.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
+}

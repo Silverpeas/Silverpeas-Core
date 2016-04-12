@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+  <description>Silverpeas Functions core library</description>
+  <display-name>Silverpeas Functions</display-name>
+  <tlib-version>1.0</tlib-version>
+  <short-name>silfn</short-name>
+  <uri>http://www.silverpeas.com/tld/silverFunctions</uri>
+
+  <function>
+    <description>Function that returns the value of a class constant.</description>
+    <name>constantValue</name>
+    <function-class>org.silverpeas.core.web.jstl.constant.reflect.ClassConstantInspector</function-class>
+    <function-signature>
+      java.lang.Object getValue( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the boolean value of a String.</description>
+    <name>booleanValue</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      boolean getBooleanValue( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that repeat x times a string to obtain the final string.</description>
+    <name>repeat</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String repeat(java.lang.String,int)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that replace regex text parts by a replacement text</description>
+    <name>regexReplace</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String regexReplace(java.lang.String,java.lang.String,java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns capitalized string</description>
+    <name>capitalize</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String capitalize(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a String is defined.</description>
+    <name>isDefined</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      boolean isDefined( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a String is not defined.</description>
+    <name>isNotDefined</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      boolean isNotDefined( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Use empty string if the one passed is not defined.</description>
+    <name>defaultEmptyString</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String defaultStringIfNotDefined(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Use default string if the first passed is not defined.</description>
+    <name>defaultString</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String defaultStringIfNotDefined(java.lang.String,java.lang.String))
+    </function-signature>
+  </function>
+  <function>
+    <description>Truncate the specified text to the specified length if necessary.</description>
+    <name>truncate</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      java.lang.String truncate(java.lang.String,int)
+    </function-signature>
+  </function>
+  <function>
+    <description>Splits the provided text into an array, using whitespace as the separator.</description>
+    <name>split</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String[] split(java.lang.String,java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Splits the provided text into an array, using whitespace as the separator.</description>
+    <name>splitOnWhitespace</name>
+    <function-class>org.apache.commons.lang3.StringUtils</function-class>
+    <function-signature>
+      java.lang.String[] split(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the estimated download time.</description>
+    <name>estimateDownload</name>
+    <function-class>org.silverpeas.core.util.file.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileDownloadTime( long )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file size in a human readable format.</description>
+    <name>humanReadableSize</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file mime type.</description>
+    <name>mimeType</name>
+    <function-class>org.silverpeas.core.util.file.FileUtil</function-class>
+    <function-signature>
+      java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file is previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.core.viewer.service.ViewerProvider</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file can be displayed with FlexPaper.</description>
+    <name>isViewable</name>
+    <function-class>org.silverpeas.core.viewer.service.ViewerProvider</function-class>
+    <function-signature>
+      boolean isViewable( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function that formats as memory size the given byte value.</description>
+    <name>formatMemSize</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a time data the given long time value.</description>
+    <name>getTimeData</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      org.silverpeas.core.util.time.TimeData getTimeData(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a memory data the given byte value.</description>
+    <name>getMemData</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      org.silverpeas.core.util.memory.MemoryData getMemData(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that converts as a desired memory size the given byte value.</description>
+    <name>getMemorySizeConvertedTo</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      java.math.BigDecimal convertAndRoundTo(org.silverpeas.core.util.memory.MemoryData,org.silverpeas.core.util.memory.MemoryUnit)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a Javascript String.</description>
+    <name>escapeJs</name>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
+    <name>escapeHtml</name>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java whitespace String into a HTML whitespace String.</description>
+    <name>escapeHtmlWhitespaces</name>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String convertWhiteSpacesForHTMLDisplay( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to tell if Silverpeas is in mode i18N.</description>
+    <name>isI18n</name>
+    <function-class>org.silverpeas.core.i18n.I18NHelper</function-class>
+    <function-signature>boolean isI18nContentEnabled()</function-signature>
+  </function>
+  <function>
+    <description>Function to tell if Silverpeas is in mode i18N.</description>
+    <name>i18nLanguageLabel</name>
+    <function-class>org.silverpeas.core.i18n.I18NHelper</function-class>
+    <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatDate</name>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDate(java.util.Date,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDate(date, "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatDateAndHour</name>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDateAndHour(java.util.Date,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatDateAndHour(date, "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatStringDate</name>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDate(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatStringDate("yyyy/MM/dd", "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a date.</description>
+    <name>formatStringDateAndHour</name>
+    <function-class>org.silverpeas.core.util.DateUtil</function-class>
+    <function-signature>java.lang.String getOutputDateAndHour(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatStringDateAndHour("yyyy/MM/dd HH:mm", "fr")}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a pagination.</description>
+    <name>formatPaginationFromFirstIndexOfItem</name>
+    <function-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromFirstIndexOfItem(int,int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPagination(15,50,30)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a pagination.</description>
+    <name>formatPaginationFromCurrentPageIndex</name>
+    <function-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromCurrentPageIndex(int,int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPagination(15,50,2)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to count the total number of pages to display.</description>
+    <name>countTotalNumberOfPagesOfPagination</name>
+    <function-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>int countTotalNumberOfPages(int,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:countTotalNumberOfPages(15,50)}">
+    </example>
+  </function>
+  <function>
+    <description>Function that returns the Full URL of the application.</description>
+    <name>fullApplicationURL</name>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
+    <function-signature>
+      java.lang.String getFullApplicationURL(javax.servlet.http.HttpServletRequest)()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the URL of the application.</description>
+    <name>applicationURL</name>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
+    <function-signature>
+      java.lang.String getApplicationURL()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the component URL of the specified component instance
+      identifier.
+    </description>
+    <name>componentURL</name>
+    <function-class>org.silverpeas.core.util.URLUtil</function-class>
+    <function-signature>
+      java.lang.String getComponentInstanceURL(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the images attached to the path for the website application.</description>
+    <name>webSiteImages</name>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
+    <function-signature>
+      java.lang.String[][] getWebsiteImages(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the images attached to an object in an application.</description>
+    <name>attachmentImages</name>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getImages(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the list of components kmelia (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to file storage.</description>
+    <name>componentsFileStorage</name>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getStorageFile()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the list of components gallery (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to image storage.</description>
+    <name>componentsImageStorage</name>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
+    <function-signature>
+      java.util.List getGalleries()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if the dynamic value functionality in wysiwyg is active.</description>
+    <name>isDynamicValueActivate</name>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-signature>
+      boolean isActivate()
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the html code of the list of dynamic value in wysiwyg.</description>
+    <name>buildHtmlListDynamicValue</name>
+    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
+    <function-signature>
+      java.lang.String buildHTMLSelect(java.lang.String, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <description>Gets the greatest role on the component represented by the given identifier the current user has.</description>
+    <name>getGreatestRoleOfCurrentUserOn</name>
+    <function-class>org.silverpeas.core.admin.user.model.SilverpeasRole</function-class>
+    <function-signature>
+      org.silverpeas.core.admin.user.model.SilverpeasRole getGreatestOfCurrentUserOn(java.lang.String)
+    </function-signature>
+  </function>
+</taglib>

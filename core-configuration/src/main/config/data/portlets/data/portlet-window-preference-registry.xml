@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<PortletWindowPreferenceRegistry version="1.0">
+  <PortletWindowPreference name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbPublis" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbEvents" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyNotificationsPortlet" portletName="silverpeas.MyNotificationsPortlet" userName="default">
+    <Properties />
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" userName="default">
+    <Properties />
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.HelloSilverpeasPortlet" portletName="silverpeas.HelloSilverpeasPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="url" value="http://www.silverpeas.com"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyDraftsPortlet" portletName="silverpeas.MyDraftsPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyLastPubliReadPortlet" portletName="silverpeas.MyLastPubliReadPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbPublis" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyLastAccessedAppliPortlet" portletName="silverpeas.MyLastAccessedAppliPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbApplis" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyContactsPortlet" portletName="silverpeas.MyContactsPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyNewsFeedPortlet" portletName="silverpeas.MyNewsFeedPortlet" userName="default">
+	<Properties/>
+  </PortletWindowPreference>
+</PortletWindowPreferenceRegistry>

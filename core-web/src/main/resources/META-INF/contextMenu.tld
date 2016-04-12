@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+  <description>Context Menu library</description>
+  <display-name>Context Menu</display-name>
+  <tlib-version>1.0</tlib-version>
+  <short-name>menu</short-name>
+  <uri>http://www.silverpeas.com/tld/contextMenu</uri>
+
+  <tag>
+    <description>
+      Tag to print out contextual menu of an SimpleDocument.
+    </description>
+    <name>simpleDocument</name>
+    <tag-class>org.silverpeas.core.web.attachment.tag.SimpleDocumentContextualMenu</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The attachment related to the current menu.</description>
+      <name>attachment</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.attachment.model.SimpleDocument</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if there is a xml form attached to the attachment.</description>
+      <name>useXMLForm</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if the attachment may be edited with webdav.</description>
+      <name>useWebDAV</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if notification is enabled.</description>
+      <name>showMenuNotif</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if contextual menu is enabled.</description>
+      <name>useContextualMenu</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+</taglib>

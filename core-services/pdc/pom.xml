@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.silverpeas.core</groupId>
+    <artifactId>services</artifactId>
+    <version>6.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.silverpeas.core.services</groupId>
+  <artifactId>silverpeas-core-pdc</artifactId>
+  <packaging>jar</packaging>
+  <name>Silverpeas PdC Service ${project.version}</name>
+  <description>
+    Provides business beans and services to define a classification plan, to parametrize it for
+    a Silverpeas component instance, to classify a content, etc.
+  </description>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
+
+</project>

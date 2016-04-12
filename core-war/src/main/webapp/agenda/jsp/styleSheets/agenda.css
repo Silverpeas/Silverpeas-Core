@@ -1,0 +1,86 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+<!--
+
+TR.header     { background-color: #000000}
+select        { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000}
+input         { font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; color: #000000}
+textarea      { font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; color: #000000}
+td            { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+a             { font-size: 10px; font-weight: normal; color: #000000}
+
+.selectNS     {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000}
+.a            {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+
+.domainName            {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+.componentName         {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+.componentNav          {font-family : "Verdana", serif; font-size : 12px }
+
+.txtbigdate   { font-size: 25pt; font-weight: bold; color: #ffffff }
+.txtnote      {  font-size: 10px; font-weight: normal; color: #000000}
+.txtnav       { font-size: 10pt; font-weight: normal; color: #000000}
+.txtnav2      {  font-size: 10px; font-weight: bold; color: #FFFFFF; line-height: 5px}
+.txtnav3      {  font-size: 10px; color: #FFFFFF; text-decoration : none }
+.txtlibform   {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #7AC8D6}
+.txttitrecol  { font-size: 10px; font-weight: bold; color: #000000 }
+
+ /*
+    Style pour ButtonWA & ButtonWA2
+    */
+    .buttonStyle        { background-color : #7AC8D6; text-decoration: none; font-weight : bold; color : #000000}
+
+    /*
+    Style pour ButtonWA2
+    */
+    .buttonColorLight   { background-color : #A7E0EB}
+    .buttonColorDark    { background-color : #52AFBF}
+
+    /*
+    Style pour TabbedPaneWA & TabbedPaneWA2
+    */
+    .ongletOn           { background-color: #7AC8D6; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none}
+    .ongletOff          { background-color: #52AFBF; font-size: 8pt; font-weight: bold; color: #FFFFFF; text-decoration: none}
+    .ongletColorLight   { background-color: #A7E0EB}
+    .ongletColorDark    { background-color: #3194A3}
+
+    /*
+    Style pour TabbedPaneWA3
+    */
+    .couleurCadre       { background-color: #DEDEDE}
+    .couleurFenetre     { background-color: #7AC8D6}
+    .styleOngletOn      { background-color: #DEDEDE; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+    .styleOngletOff     { background-color: #5A5A5A; font-size: 10px; font-weight: bold; color: #FFFFFF; text-decoration: none}
+    .titreFenetre       { font-size: 13pt; font-weight: bold; color: #000000}
+    .legalInformation   { font-size: 10px; color: #999999}
+    .labelFormulaire    { font-size: 10px; font-weight: bold; color: #333333}
+
+.intfdcolor   {  background-color: #7AC8D6}
+.intfdcolor2  {  background-color: #D6E1E4}
+.intfdcolor3  {  background-color: #369FB1}
+.intfdcolor4  {  background-color: #FFFFFF}
+.intfdcolor5  {  background-color: #FCF38B}
+.intfdcolor6  {  background-color: #FFFFCC}
+
+-->

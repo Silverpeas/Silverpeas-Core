@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<mapping>
+	<class name="org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl">
+		<map-to xml="publicationTemplate"/>
+		<field name="name" type="string">
+			<bind-xml name="name" node="element"/>
+		</field>
+		<field name="description" type="string">
+			<bind-xml name="description" node="element"/>
+		</field>
+		<field name="thumbnail" type="string">
+			<bind-xml name="image" node="element"/>
+		</field>
+		<field name="visible" type="boolean">
+			<bind-xml name="visible" node="element"/>
+		</field>
+		<field name="viewFileName" type="string">
+			<bind-xml name="viewFileName" node="element"/>
+		</field>
+		<field name="viewTypeFile" type="string">
+			<bind-xml name="viewTypeFile" node="element"/>
+		</field>
+		<field name="updateFileName" type="string">
+			<bind-xml name="updateFileName" node="element"/>
+		</field>
+		<field name="updateTypeFile" type="string">
+			<bind-xml name="updateTypeFile" node="element"/>
+		</field>
+		<field name="searchFileName" type="string">
+			<bind-xml name="searchFileName" node="element"/>
+		</field>
+		<field name="dataFileName" type="string">
+			<bind-xml name="dataFileName" node="element"/>
+		</field>
+		<field name="templatesObj" type="com.silverpeas.publicationTemplate.TemplateFile" collection="arraylist">
+			<bind-xml name="template" node="element"/>
+		</field>
+	</class>
+	<class name="com.silverpeas.publicationTemplate.TemplateFile">
+		<map-to xml="template"/>
+		<field name="fileName" type="string">
+			<bind-xml name="fileName" node="element"/>
+		</field>
+		<field name="typeName" type="string">
+			<bind-xml name="typeName" node="element"/>
+		</field>
+		<field name="name" type="string">
+			<bind-xml name="name" node="element"/>
+		</field>
+	</class>
+</mapping>

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:castor="http://castor.exolab.org/"
+         xmlns:sp="http://intranoo.oevo.com/websilverpeas/exchange/v5"
+         xsi:schemaLocation="http://castor.exolab.org/ mapping.xsd">
+  <castor:class name="SilverPeasExchangeType">
+    <castor:map-to xml="SilverpeasExchange" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="targetComponentId" type="string">
+      <castor:bind-xml name="targetComponentId" node="attribute"/>
+    </castor:field>
+    <castor:field name="usePOI" type="boolean">
+      <castor:bind-xml name="usePOI" node="attribute"/>
+    </castor:field>
+    <castor:field name="publicationsType" type="PublicationsType">
+      <castor:bind-xml name="sp:publications" node="element"/>
+    </castor:field>
+    <castor:field name="repositoriesType" type="RepositoriesType">
+      <castor:bind-xml name="sp:repositories" node="element"/>
+    </castor:field>
+    <castor:field name="pdcType" type="org.silverpeas.core.pdc.pdc.importexport.PdcType">
+      <castor:bind-xml name="sp:pdc" node="element"/>
+    </castor:field>
+    <castor:field name="nodeTreesType" type="org.silverpeas.core.node.importexport.NodeTreesType">
+      <castor:bind-xml name="sp:topicTrees" node="element"/>
+    </castor:field>
+    <castor:field name="componentsType" type="org.silverpeas.core.importexport.admin.ComponentsType">
+      <castor:bind-xml name="sp:components" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="PublicationsType">
+    <castor:map-to xml="publications" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listPublicationType" type="PublicationType" collection="arraylist">
+      <castor:bind-xml name="sp:publication" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="PublicationType">
+    <castor:map-to xml="publication" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="id">
+      <castor:bind-xml name="id" node="attribute"/>
+    </castor:field>
+    <castor:field name="componentId" type="string">
+      <castor:bind-xml name="componentId" node="attribute"/>
+    </castor:field>
+    <castor:field name="publicationDetail" type="com.stratelia.webactiv.publication.model.PublicationDetail">
+      <castor:bind-xml name="sp:publicationHeader" node="element"/>
+    </castor:field>
+    <castor:field name="publicationContentType" type="org.silverpeas.core.importexport.publication.PublicationContentType">
+      <castor:bind-xml name="sp:publicationContent" node="element"/>
+    </castor:field>
+    <castor:field name="attachmentsType" type="org.silverpeas.core.importexport.attachment.AttachmentsType">
+      <castor:bind-xml name="sp:attachments" node="element"/>
+    </castor:field>
+    <castor:field name="documentsType" type="org.silverpeas.core.importexport.versioning.DocumentsType">
+      <castor:bind-xml name="sp:documents" node="element"/>
+    </castor:field>
+    <castor:field name="nodePositionsType" type="org.silverpeas.core.node.importexport.NodePositionsType">
+      <castor:bind-xml name="sp:topicPositions" node="element"/>
+    </castor:field>
+    <castor:field name="pdcPositionsType" type="org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType">
+      <castor:bind-xml name="sp:pdcPositions" node="element"/>
+    </castor:field>
+    <castor:field name="coordinatesPositionsType" type="org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType">
+      <castor:bind-xml name="sp:coordinatesPositions" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="com.stratelia.webactiv.publication.model.PublicationDetail">
+    <castor:map-to xml="publicationHeader" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="name" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="description" type="string">
+      <castor:bind-xml name="sp:description" node="element"/>
+    </castor:field>
+    <castor:field name="creationDate" type="string" handler="DateHandler">
+      <castor:bind-xml name="sp:creationDate" node="element"/>
+    </castor:field>
+    <castor:field name="beginDate" type="string" handler="DateHandler">
+      <castor:bind-xml name="sp:beginDate" node="element"/>
+    </castor:field>
+    <castor:field name="endDate" type="string" handler="DateHandler">
+      <castor:bind-xml name="sp:endDate" node="element"/>
+    </castor:field>
+    <castor:field name="creatorId" type="string">
+      <castor:bind-xml name="sp:creatorId" node="element"/>
+    </castor:field>
+    <castor:field name="creatorName" type="string">
+      <castor:bind-xml name="sp:creatorName" node="element"/>
+    </castor:field>
+    <castor:field name="importance">
+      <castor:bind-xml name="sp:importance" node="element"/>
+    </castor:field>
+    <castor:field name="version" type="string">
+      <castor:bind-xml name="sp:version" node="element"/>
+    </castor:field>
+    <castor:field name="keywords" type="string">
+      <castor:bind-xml name="sp:keywords" node="element"/>
+    </castor:field>
+    <castor:field name="status" type="string">
+      <castor:bind-xml name="sp:status" node="element"/>
+    </castor:field>
+    <castor:field name="image" type="string">
+      <castor:bind-xml name="sp:vignette" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="RepositoriesType">
+    <castor:map-to xml="repositories" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listRepositoryType" type="RepositoryType" collection="arraylist">
+      <castor:bind-xml name="sp:repository" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="RepositoryType">
+    <castor:map-to xml="repository" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="path" type="string">
+      <castor:bind-xml name="path" node="attribute"/>
+    </castor:field>
+    <castor:field name="componentId" type="string">
+      <castor:bind-xml name="componentId" node="attribute"/>
+    </castor:field>
+    <castor:field name="topicId">
+      <castor:bind-xml name="topicId" node="attribute"/>
+    </castor:field>
+    <castor:field name="massiveType" type="string">
+      <castor:bind-xml name="massiveType" node="attribute"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.attachment.AttachmentsType">
+    <castor:map-to xml="attachments" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listAttachmentDetail" type="org.silverpeas.core.importexport.attachment.AttachmentDetail" collection="arraylist">
+      <castor:bind-xml name="sp:attachment" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.attachment.AttachmentDetail">
+    <castor:map-to xml="attachment" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="title" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="info" type="string">
+      <castor:bind-xml name="sp:description" node="element"/>
+    </castor:field>
+    <castor:field name="physicalName" type="string">
+      <castor:bind-xml name="path" node="attribute"/>
+    </castor:field>
+    <castor:field name="importUpdateRule" type="string">
+      <castor:bind-xml name="updateRule" node="attribute"/>
+    </castor:field>
+    <castor:field name="xMLModelContentType" type="org.silverpeas.core.importexport.form.XMLModelContentType">
+      <castor:bind-xml name="sp:xmlModel" node="element"/>
+    </castor:field>
+    <castor:field name="removeAfterImport" type="boolean">
+      <castor:bind-xml name="removeAfterImport" node="attribute"/>
+    </castor:field>
+  </castor:class>
+  <!-- Versioning -->
+  <castor:class name="org.silverpeas.core.importexport.versioning.DocumentsType">
+    <castor:map-to xml="documents" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listDocuments" type="org.silverpeas.core.importexport.versioning.Document" collection="arraylist">
+      <castor:bind-xml name="sp:document" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.versioning.Document">
+    <castor:map-to xml="document" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="name" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="description" type="string">
+      <castor:bind-xml name="sp:description" node="element"/>
+    </castor:field>
+    <castor:field name="versionsType" type="org.silverpeas.core.importexport.versioning.VersionsType">
+      <castor:bind-xml name="sp:versions" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.versioning.VersionsType">
+    <castor:map-to xml="versions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listVersions" type="org.silverpeas.core.importexport.versioning.DocumentVersion" collection="arraylist">
+      <castor:bind-xml name="sp:version" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.versioning.DocumentVersion">
+    <castor:map-to xml="version" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="physicalName" type="string">
+      <castor:bind-xml name="path" node="attribute"/>
+    </castor:field>
+    <castor:field name="type" type="int">
+      <castor:bind-xml name="sp:versionType" node="element"/>
+    </castor:field>
+    <castor:field name="majorNumber" type="int">
+      <castor:bind-xml name="sp:majorNumber" node="element"/>
+    </castor:field>
+    <castor:field name="minorNumber" type="int">
+      <castor:bind-xml name="sp:minorNumber" node="element"/>
+    </castor:field>
+    <castor:field name="creationDate" type="string" handler="DateHandler">
+      <castor:bind-xml name="sp:creationDate" node="element"/>
+    </castor:field>
+    <castor:field name="authorId" type="int">
+      <castor:bind-xml name="sp:creatorId" node="element"/>
+    </castor:field>
+    <castor:field name="creatorName" type="string">
+      <castor:bind-xml name="sp:creatorName" node="element"/>
+    </castor:field>
+    <castor:field name="comments" type="string">
+      <castor:bind-xml name="sp:description" node="element"/>
+    </castor:field>
+    <castor:field name="xMLModelContentType" type="org.silverpeas.core.importexport.form.XMLModelContentType">
+      <castor:bind-xml name="sp:xmlModel" node="element"/>
+    </castor:field>
+    <castor:field name="removeAfterImport" type="boolean">
+      <castor:bind-xml name="removeAfterImport" node="attribute"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.node.importexport.NodePositionsType">
+    <castor:map-to xml="topicPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listNodePositionType" type="org.silverpeas.core.node.importexport.NodePositionType" collection="arraylist">
+      <castor:bind-xml name="sp:topicPosition" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.node.importexport.NodePositionType">
+    <castor:map-to xml="topicPosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="id">
+      <castor:bind-xml name="topicId" node="attribute"/>
+    </castor:field>
+    <castor:field name="explicitPath">
+      <castor:bind-xml name="explicitPath" node="attribute"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType">
+    <castor:map-to xml="pdcPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listClassifyPosition" type="org.silverpeas.core.pdc.pdc.model.ClassifyPosition" collection="arraylist">
+      <castor:bind-xml name="sp:pdcPosition" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.publication.PublicationContentType">
+    <castor:map-to xml="publicationContent" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="wysiwygContentType" type="org.silverpeas.core.importexport.wysiwyg.WysiwygContentType">
+      <castor:bind-xml name="sp:wysiwyg" node="element"/>
+    </castor:field>
+    <castor:field name="xMLModelContentType" type="org.silverpeas.core.importexport.publication.XMLModelContentType">
+      <castor:bind-xml name="sp:xmlModel" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.publication.XMLModelContentType">
+    <castor:map-to xml="xmlModel" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="name">
+      <castor:bind-xml name="name" node="attribute"/>
+    </castor:field>
+    <castor:field name="fields" type="XMLField" collection="arraylist">
+      <castor:bind-xml name="sp:xmlField" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.form.XMLModelContentType">
+    <castor:map-to xml="xmlModel" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="name">
+      <castor:bind-xml name="name" node="attribute"/>
+    </castor:field>
+    <castor:field name="fields" type="XMLField" collection="arraylist">
+      <castor:bind-xml name="sp:xmlField" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="XMLField">
+    <castor:map-to xml="xmlField" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="name" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="value" type="string">
+      <castor:bind-xml name="sp:value" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.wysiwyg.WysiwygContentType">
+    <castor:map-to xml="wysiwyg" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="path" type="string">
+      <castor:bind-xml name="path" node="attribute"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.pdc.pdc.model.ClassifyPosition">
+    <castor:map-to xml="pdcPosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listClassifyValue" type="org.silverpeas.core.pdc.pdc.model.ClassifyValue" collection="arraylist">
+      <castor:bind-xml name="sp:axisPosition" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.pdc.pdc.model.ClassifyValue">
+    <castor:map-to xml="axisPosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="axisId">
+      <castor:bind-xml name="axisId" node="attribute"/>
+    </castor:field>
+    <castor:field name="value" type="string">
+      <castor:bind-xml name="pdcValuePath" node="attribute"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.node.importexport.NodeTreesType">
+    <castor:map-to xml="topicTrees" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listNodeTreeType" type="org.silverpeas.core.node.importexport.NodeTreeType" collection="arraylist">
+      <castor:bind-xml name="sp:topicTree" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.node.importexport.NodeTreeType">
+    <castor:map-to xml="topicTree" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="componentId" type="string">
+      <castor:bind-xml name="componentId" node="attribute"/>
+    </castor:field>
+    <castor:field name="nodeDetail" type="NodeDetail">
+      <castor:bind-xml name="sp:topic" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="NodeDetail">
+    <castor:map-to xml="topic" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="id">
+      <castor:bind-xml name="id" node="attribute"/>
+    </castor:field>
+    <castor:field name="name" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="description" type="string">
+      <castor:bind-xml name="sp:description" node="element"/>
+    </castor:field>
+    <!--<castor:field name="path" type="string">
+        <castor:bind-xml name="sp:path" node="element"/>
+    </castor:field>
+    <castor:field name="creationDate" type="string">
+        <castor:bind-xml name="sp:creationDate" node="element"/>
+    </castor:field>
+    <castor:field name="level">
+        <castor:bind-xml name="sp:level" node="element"/>
+    </castor:field>
+    <castor:field name="status" type="string">
+        <castor:bind-xml name="sp:status" node="element"/>
+    </castor:field>-->
+    <castor:field name="childrenDetails" type="NodeDetail" collection="arraylist">
+      <castor:bind-xml name="sp:topic" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.PdcType">
+    <castor:map-to xml="pdc" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listAxisType" type="org.silverpeas.core.pdc.pdc.importexport.AxisType" collection="arraylist">
+      <castor:bind-xml name="sp:axis" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.AxisType">
+    <castor:map-to xml="axis" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="id">
+      <castor:bind-xml name="id" node="attribute"/>
+    </castor:field>
+    <castor:field name="name" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="path" type="string">
+      <castor:bind-xml name="pdcValuePath" node="attribute"/>
+    </castor:field>
+    <castor:field name="listPdcValueType" type="org.silverpeas.core.pdc.pdc.importexport.PdcValueType" collection="arraylist">
+      <castor:bind-xml name="sp:pdcValue" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.pdc.pdc.importexport.PdcValueType">
+    <castor:map-to xml="pdcValue" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="path" type="string">
+      <castor:bind-xml name="pdcValuePath" node="attribute"/>
+    </castor:field>
+    <castor:field name="name" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="listPdcValueType" type="org.silverpeas.core.pdc.pdc.importexport.PdcValueType" collection="arraylist">
+      <castor:bind-xml name="sp:pdcValue" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.admin.ComponentsType">
+    <castor:map-to xml="components" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="listComponentInst" type="org.silverpeas.core.admin.component.model.ComponentInst" collection="arraylist">
+      <castor:bind-xml name="sp:component" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.admin.component.model.ComponentInst">
+    <castor:map-to xml="component" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="id" type="string">
+      <castor:bind-xml name="id" node="attribute"/>
+    </castor:field>
+    <castor:field name="label" type="string">
+      <castor:bind-xml name="sp:name" node="element"/>
+    </castor:field>
+    <castor:field name="description" type="string">
+      <castor:bind-xml name="sp:description" node="element"/>
+    </castor:field>
+  </castor:class>
+  <castor:class name="org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType">
+    <castor:map-to xml="coordinatesPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="createEnable" type="boolean">
+      <castor:bind-xml name="createEnable" node="attribute"/>
+    </castor:field>
+    <castor:field name="coordinatesPositions" type="Coordinate" collection="arraylist">
+      <castor:bind-xml name="sp:coordinatePosition" node="element"/>
+    </castor:field>
+  </castor:class>
+
+  <castor:class name="Coordinate">
+    <castor:map-to xml="coordinatePosition" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="coordinatePoints" type="org.silverpeas.core.importexport.coordinates.CoordinatePointType" collection="arraylist">
+      <castor:bind-xml name="sp:coordinateAxis" node="element"/>
+    </castor:field>
+  </castor:class>
+
+  <castor:class name="org.silverpeas.core.importexport.coordinates.CoordinatePointType">
+    <castor:map-to xml="coordinateAxis" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
+    <castor:field name="axisId" type="int">
+      <castor:bind-xml name="axisId" node="attribute"/>
+    </castor:field>
+    <castor:field name="value" type="string">
+      <castor:bind-xml name="value" node="attribute"/>
+    </castor:field>
+  </castor:class>
+</mapping>

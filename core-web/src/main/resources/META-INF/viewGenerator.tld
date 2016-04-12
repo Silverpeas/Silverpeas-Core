@@ -1,0 +1,2306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+  <description>View Generator 1.1 core library</description>
+  <display-name>View Generator</display-name>
+  <tlib-version>1.0</tlib-version>
+  <short-name>view</short-name>
+  <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
+
+  <tag>
+    <description>
+      Tag to print out the img HTML tag with the path of the targeted image computed from the tag's
+      attributes. This tag is used to refer a dynamic resized version of an existing image; the
+      size of an image can be passed as such to the tag or can be computed from its type or using
+      context. The types of the images are defined in the
+      org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
+    </description>
+    <name>image</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.ImageTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        The relative path of the source image from the web context. The exact URL will be
+        computed by the tag itself.
+      </description>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A short description of the image as an alternative way to render it if the image cannot be
+        displayed for any reasons.
+      </description>
+      <name>alt</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        An explicit size of the targeted image. This attribute is applied over the type one. It is
+        predominant over the type attribute. The path of the image is then computed according to
+        this size. The size should be in the form of WIDTHxHEIGH with WIDTH the width in pixels of
+        the image and HEIGHT the height in pixels of the image; one of these parameters can be
+        omitted but the 'x' character must be present.
+      </description>
+      <name>size</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The type of the image. The types of an image are defined in the
+        org.silverpeas.lookAndFeel.generalLook.properties bundle under the key prefix image.size.
+        For example, the type avatar.original is defined by the key image.size.avatar.original. The
+        type of the image is used to fetch the size with which the targeted image is asked. The path
+        of the image is then computed according to this size. If the size attribute is also valued,
+        then only the size attribute will be taken into account.
+      </description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A name of a CSS class to apply to the img HTML tag. If this attribute isn't valued, then
+        the CSS class of the image is by default valued with the type of the image (see type
+        attribute) with each point replaced by a minus. If the attribute type isn't valued, then
+        no CSS class is provided.
+      </description>
+      <name>css</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The HTML element identifier in the HTML DOM.
+      </description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Tag to print out the panel of management of the attachements for a given component instance
+      and for a given resource.
+    </description>
+    <name>attachmentPane</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.AttachmentPaneTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the resource that accepts the attachements.</description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The unique identifier of the component instance the resource belongs to.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Indicates if the attachment pane must be display in read only view.
+        By default, it is in editable view.
+      </description>
+      <name>readOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Tag to print out the full name of the current user and to use with it the userzoom silverpeas
+      plugin.
+    </description>
+    <name>username</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.UserNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the user</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is the userzoom plugin has to be used with this user? By default, it is activated.
+        This attribute is to deactivate it.
+      </description>
+      <name>zoom</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
+      in charge by the tag. If the javascript requires a stylesheet, it is also included with
+      the script. Currently, the supported plugins (JQuery as well Silverpeas ones) are defined in
+      the enum org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScriptPlugins.
+    </description>
+    <name>includePlugin</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.IncludeJSPluginTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The plugin name (plugin identifier). For example, qtip for the JQuery qtip plugin</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out an HTML/javascript widget with which the predefined classification
+      on the PdC of a component instance or of a node (a topic, a category, ...) can be defined or
+      modified.
+    </description>
+    <name>pdcPredefinedClassification</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the node for which the predefined classification on the PdC
+        has to be rendered. If not specified, the predefined classification on the PdC for a parent
+        node or for the whole component instance is taken into account.
+      </description>
+      <name>nodeId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out the HTML/javascript widget with which the classification on the PdC
+      of a given resource content is opened and can be edited. If the PdC was parametrized for the
+      given component instance, only the axis used by this later will be loaded.
+    </description>
+    <name>pdcClassification</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier to set for the HTML element within the classificiation will be rendered</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+        has to be rendered.
+      </description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is this classification on the PdC should be editable? By default, if not set, the
+        classification isn't editable
+      </description>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out the HTML/javascript widget within which a preview of the
+      classification on the PdC of a given resource content is rendered.
+    </description>
+    <name>pdcClassificationPreview</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationPreviewTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+        has to be rendered.
+      </description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out an HTML/javascript widget to classify new content that will
+      published into a given component instance. The created classification can be retrieved with the
+      tag pdcPositions and it can be validated with the tag pdcValidateClassification. The widget has
+      no side effect with the Silverpeas collaborative portal.
+    </description>
+    <name>pdcNewContentClassification</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcNewContentClassificationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured. If a
+        default classification exists for the specified component instance, then it will be taken into
+        account for classifying the content.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the node (if any) to which the new content will belong. If this
+        attribute is set and a predefined classification exists for this node, then it will be taken into
+        account instead of the component's one for classifying the content.
+      </description>
+      <name>nodeId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out javascript code to validate the classification on the PdC that
+      was done through the tag pdcNewContentClassification for a new content. The tag generates javascript
+      instruction that returns the error message if the classification isn't valid, otherwise an empty
+      message.
+    </description>
+    <name>pdcValidateClassification</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationValidationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The name of the Javascript variable that will accept the error message when the
+        classification of the content isn't valid. The message is concatenated at the variable'value.
+      </description>
+      <name>errorMessager</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The name of the Javascript variable representing the counter of detected errors
+        in the form validation and that will be incremented by one at the classification validation
+        failure.
+      </description>
+      <name>errorCounter</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Indicates if the render of the error is by WEB way.</description>
+      <name>errorWebRender</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out javascript code to get the positions of a classification on the PdC
+      of a content.
+    </description>
+    <name>pdcPositions</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The name of the Javascript variable that will accept the positions set through the
+        pdcNewClassification tag.
+      </description>
+      <name>setIn</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out a date localized from the specified language</description>
+    <name>formatDate</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.FormatDateTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The date to format</description>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.Date</type>
+    </attribute>
+    <attribute>
+      <description>The language to use for localizing the date. If not set, then the resources wrapper
+        usually carried in the request is used.
+      </description>
+      <name>language</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out a date and time localized from the specified language</description>
+    <name>formatDateTime</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.FormatDateTimeTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The date and time to format</description>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.Date</type>
+    </attribute>
+    <attribute>
+      <description>The language to use for localizing the date and time. If not set, then the
+        resources wrapper usually carried in the request is used.
+      </description>
+      <name>language</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out a list of comments on a given resource</description>
+    <name>commentListing</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.comment.CommentListTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The identifier of the user that request the comments.
+      </description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the Silverpeas component instance to which the commented resource belongs
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the resource in Silverpeas that is commented out and for which the
+        comments must be printed.
+      </description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A javascript callback to call at each event on the comments. At event reception, the function
+        will be invoked with as parameter an object having two attributes: the event that occured
+        (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
+        by the event (either a comment or the list of comments for listing).
+      </description>
+      <name>callback</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out an edition form for adding new comments on a given resource.
+      The edition is printed only for non-guest users.
+    </description>
+    <name>commentEdition</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.comment.CommentEditionTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The identifier of the user that request the adding of a new comment.
+      </description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the Silverpeas component instance to which the commented resource belongs
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the resource in Silverpeas that is commented out and for which the
+        comments must be printed.
+      </description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        New comments should be indexed? If not set or valued with '1', 'yes' or 'true', all new
+        comments will be indexed by Silverpeas.
+      </description>
+      <name>indexed</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A javascript callback to call at each event on the comments. At event reception, the function
+        will be invoked with as parameter an object having two attributes: the event that occured
+        (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
+        by the event (either a comment or the list of comments for listing).
+      </description>
+      <name>callback</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out both a list of comments and an edition form for adding new comments on a given resource/
+      The edition form is printed only for non-guest users.
+    </description>
+    <name>comments</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.comment.CommentTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The identifier of the user that request the adding of a new comment.
+      </description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the Silverpeas component instance or the tool to which the commented resource belongs
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The type of the resource in Silverpeas that is commented out and for which the
+        comments must be printed. Usually this value is that of the getContributionType
+        method from SilverpeasContent interface implemented by the resource.
+      </description>
+      <name>resourceType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the resource in Silverpeas that is commented out and for which the
+        comments must be printed.
+      </description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        New comments should be indexed? If not set or valued with '1', 'yes' or 'true', all new
+        comments will be indexed by Silverpeas.
+      </description>
+      <name>indexed</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        A javascript callback to call at each event on the comments. At event reception, the function
+        will be invoked with as parameter an object having two attributes: the event that occured
+        (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
+        by the event (either a comment or the list of comments for listing).
+      </description>
+      <name>callback</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out the URL of a Silverpeas component instance.</description>
+    <name>componentUrl</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.ComponentURLTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The name of the Silverpeas component instance.</description>
+      <name>componentName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the Silverpeas component instance.</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a Board. A Board should be used inside a Frame.</description>
+    <name>board</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.board.BoardTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a frame. A Frame should be used inside a Window.</description>
+    <name>frame</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.frame.FrameTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to create HTML to access the look and feel.</description>
+    <name>looknfeel</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.LookAndStyleTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Include fieldset automatically</description>
+      <name>withFieldsetStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Include checkform automatically</description>
+      <name>withCheckFormScript</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a list of icons.</description>
+    <name>icons</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPaneTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>orientation de la liste des icones (vertical, horizontal)</description>
+      <name>orientation</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>espacement des icones</description>
+      <name>spacing</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display an icon.</description>
+    <name>icon</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.icons.IconTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>clef de l'icone a afficher</description>
+      <name>iconName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>texte alternatif</description>
+      <name>altText</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>action associee a l'icone</description>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>clef de l'icone a afficher</description>
+      <name>imagePath</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a list of tabs.</description>
+    <name>tabs</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPaneTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Simple tag to display a list of tabs. It should be used inside a Window.</description>
+    <name>tab</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.tabs.TabTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Display lable inside the tab.</description>
+      <name>label</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Action for the tab.</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>true or false, to indicate if this tab is selected of not.</description>
+      <name>selected</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a button pane.</description>
+    <name>buttonPane</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPaneTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Indicates if the button are added vertically.</description>
+      <name>verticalPosition</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Indicates if the button are added horizontically</description>
+      <name>horizontalPosition</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>The height of the panel.</description>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        true or false to indicate if the button is disabled or not.
+      </description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a button.</description>
+    <name>button</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ButtonTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The display label in the button.</description>
+      <name>label</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The action of the button.</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        true or false to indicate if the button is disabled or not.
+      </description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>This TAG must be called into body of Button TAG. It permits to handle a user
+      confirmation of subscription notification sending.
+    </description>
+    <name>confirmComponentSubscriptionNotificationSending</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Specify the name of the method to call in order to validate the data filled by
+        a user. The method must return true if data filled are ok, false otherwise.</description>
+      <name>jsValidationCallbackMethodName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>This TAG must be called into body of Button TAG. It permits to handle a user
+      confirmation of subscription notification sending.
+    </description>
+    <name>confirmResourceSubscriptionNotificationSending</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The type of the resource subscription handled</description>
+      <name>subscriptionResourceType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.subscription.constant.SubscriptionResourceType</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource on which the subscription is registered</description>
+      <name>subscriptionResourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Specify the name of the method to call in order to validate the data filled by
+        a user. The method must return true if data filled are ok, false otherwise.</description>
+      <name>jsValidationCallbackMethodName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a navigation item list.</description>
+    <name>navigationList</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The title of the navigation list</description>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The number of columns that must be displayed</description>
+      <name>nbCol</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a navigation item list.</description>
+    <name>navigationListItem</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListItemTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The label of the item of the navigation list</description>
+      <name>label</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The action that must be performed on HTML event (click for example)</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The number of elements the item can display</description>
+      <name>nbElem</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>The additional information</description>
+      <name>description</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The universal link associated to the item</description>
+      <name>universalLink</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a window. A window can contain TabbedPane, Frames and Boards. It should be used after the BrowseBar and the OperationPane.</description>
+    <name>window</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.window.WindowTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        true or false to indicate if the browse bar is displayed or not.
+      </description>
+      <name>browseBarVisible</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        true or false to indicate if the window is displayed in a popup page
+      </description>
+      <name>popup</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define a Window browse bar. It should be declared and used before a Window.</description>
+    <name>browseBar</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Extra information to be displayed.</description>
+      <name>extraInformations</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Path to be displayed.</description>
+      <name>path</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <deferred-value>
+        <type>java.lang.Object</type>
+      </deferred-value>
+    </attribute>
+    <attribute>
+      <description>Forces spaceId (usefull in portlets page and space homepage)</description>
+      <name>spaceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Forces componentId (usefull in portlets case)</description>
+      <name>componentId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Permit to use component's link given by setComponentName(name, link) method</description>
+      <name>ignoreComponentLink</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Allows to display a non clickable breadcrumb</description>
+      <name>clickable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>
+    <name>browseBarElt</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElementTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The url for the browseBar element.</description>
+      <name>link</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The content to be displayed for the browseBar element.</description>
+      <name>label</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id for the element data for the current component.</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define an operationPane: a panel with a list of operations (could be a menu).
+      It should be declared and used before a Window. It contains a list of operation tags.
+    </description>
+    <name>operationPane</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Set type of OperationPane (personal, space or component)</description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define a separator line between two operations in an OperationPane.
+    </description>
+    <name>operationSeparator</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationSeparatorTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Simple tag to create HTML to display operations of creation.</description>
+    <name>areaOfOperationOfCreation</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Simple tag to define an operation in an OperationPane.</description>
+    <name>operation</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The action for this operation.</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The icon for this operation.</description>
+      <name>icon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Alternative text to the icon of this operation.</description>
+      <name>altText</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define an operation of creation in an OperationPane.</description>
+    <name>operationOfCreation</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationOfCreationTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The action for this operation.</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The icon for this operation.</description>
+      <name>icon</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Alternative text to the icon of this operation.</description>
+      <name>altText</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to create an ArrayPane: a table to display a list of data.</description>
+    <name>arrayPane</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPaneTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>summary</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of the ArrayPane in the SessionScope</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>URL to be used to sort the content.</description>
+      <name>routingAddress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Export data parameter.</description>
+      <name>export</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>URL to be used to export data.</description>
+      <name>exportURL</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Defines if lines can be explicitly sorted</description>
+      <name>sortableLines</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Defines number of lines displayed per page</description>
+      <name>numberLinesPerPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to create a column header for an ArrayPane</description>
+    <name>arrayColumn</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumnTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The String to be displayed as a title in the Column Header</description>
+      <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>If the column is sortable</description>
+      <name>sortable</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to create a new line in the ArrayPane</description>
+    <name>arrayLine</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLineTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The String to identified this line</description>
+      <name>id</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to create a new cell in the current line of the ArrayPane.</description>
+    <name>arrayCellText</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellTextTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The text to be displayed if the body is empty</description>
+      <name>text</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define a pagination navigation bar.</description>
+    <name>pagination</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The action is a link or javascript method name with one parameter.
+      </description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Lien de l'action.
+      </description>
+      <name>actionIsJsFunction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Index of current page.
+      </description>
+      <name>currentPage</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of items per page.
+      </description>
+      <name>nbItemsPerPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of handled items.
+      </description>
+      <name>totalNumberOfItems</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Total number of pages.
+      </description>
+      <name>nbPages</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+      Param name to pass the page number (starting at 0) to be displayed.
+      </description>
+      <name>pageParam</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Alt message for previous page.
+      </description>
+      <name>altPreviousAction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Alt message for next page.
+      </description>
+      <name>altNextAction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Alt message for go to page.
+      </description>
+      <name>altGoToAction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Equivalent of the JSTL fmt:setBundle tag but with support for the ResourceWrapper</description>
+    <name>setBundle</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.SetBundleTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        Scope to store the bundle.
+      </description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The name of the variable containing the bundle.
+      </description>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The ResourceBundle.
+      </description>
+      <name>bundle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.util.SilverpeasBundle</type>
+    </attribute>
+    <attribute>
+      <description>Basename of the bundle.</description>
+      <name>basename</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a div with the style corresponding to the mime type.</description>
+    <name>mimeTypeIcon</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.icons.MimeTypeIconTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The file's name.
+      </description>
+      <name>fileName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The file's extension.
+      </description>
+      <name>fileExtension</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The unique id for the div element.
+      </description>
+      <name>divId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to highlight some terms contained in his body</description>
+    <name>highlight</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.glossary.HighlightTermTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The css class used to highlight a word .</description>
+      <name>className</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The Glossary identifier (pdc axis).</description>
+      <name>axisId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>indicates if all a term occurrences must be highlight or only the fisrt</description>
+      <name>onlyFirst</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>indicates the language used to display the definition term.</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a progress message.</description>
+    <name>progressMessage</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessageTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Alternative messages to default ones</description>
+      <name>messages</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.List</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to manage upload of files.</description>
+    <name>fileUpload</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.upload.FileUploadTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>If not filled, default id is 'fileUpload'.</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        By this attribute is passed the jQuery selector that permits to identify html forms to
+        manage. If files are being upload, all the html forms aimed by the given selector can not be
+        submitted. When an html forms can not be submitted, a modal warning message is displayed to
+        the user.
+      </description>
+      <name>jqueryFormSelector</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        If filled with a positive value, when the number of uploads reaches the value, it is no more
+        possible to upload files.
+      </description>
+      <name>nbFileLimit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Pass true if the UI has to be displayed in a fieldset.
+      </description>
+      <name>fieldset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Choose several files at one time. If not filled, default is true.
+        If the web browser is not compatible with multiple file selection, the
+        feature is deactivated.
+      </description>
+      <name>multiple</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Default value is true.
+        If true drop zone area is displayed on compatible web browsers. If false a standard input
+        file is displayed in any case.
+      </description>
+      <name>dragAndDropDisplay</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to play a video in flowplayer.</description>
+    <name>video</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.VideoPlayerTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>URL to the flash video</description>
+      <name>url</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Width</description>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>Height</description>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>Set to true if you want the video to start automatically</description>
+      <name>autostart</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into a Javascript String.</description>
+    <name>encodeJs</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.JavascriptEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into an HTML String.</description>
+    <name>encodeHtml</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.HtmlEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into a XML escaped String.</description>
+    <name>encodeXml</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.XMLEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into an HTML Paragraph String.</description>
+    <name>encodeHtmlParagraph</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.HtmlParagraphEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Generate HTML search result element.</description>
+    <name>displayResult</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.result.HtmlSearchResultTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>User identifier</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Global Silver Result</description>
+      <name>gsr</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.pdc.pdc.model.GlobalSilverResult</type>
+    </attribute>
+    <attribute>
+      <description>Sort value</description>
+      <name>sortValue</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>Active selection</description>
+      <name>activeSelection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Export enabled</description>
+      <name>exportEnabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Settings of search engine</description>
+      <name>resources</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.util.MultiSilverpeasBundle</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Generate HTML for the site Map.</description>
+    <name>map</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.map.MapTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Space Identifier</description>
+      <name>spaceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag that checks the validity of the current session and forwards to the error page.</description>
+    <name>timeout</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.security.SessionTimeoutTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Tag that checks the user is currently authenticated and that he is not an anonymous user.</description>
+    <name>authenticatedUser</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.security.AuthenticatedUserTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Tag that display javascript initialization of Wysiwyg editor</description>
+    <name>wysiwyg</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.wysiwyg.WysiwygTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Id of HTML element to replace by wysiwyg editor</description>
+      <name>replace</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Width of wysiwyg editor</description>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Height of wysiwyg editor</description>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Language of wysiwyg editor UI</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Toolbar used by wysiwyg editor</description>
+      <name>toolbar</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current space</description>
+      <name>spaceId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current space</description>
+      <name>spaceName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current component</description>
+      <name>componentId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current component</description>
+      <name>componentName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of current object for browseBar</description>
+      <name>browseInfo</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current object</description>
+      <name>objectId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>False if the button to browse files has not to be displayed</description>
+      <name>displayFileBrowser</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag that displays the available languages.</description>
+    <name>langSelect</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.LanguageSelectorTag
+    </tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Current lang</description>
+      <name>langCode</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name for the input field/select</description>
+      <name>elementName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id for the input field/select</description>
+      <name>elementId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Include label before the input field/select</description>
+      <name>includeLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>If true, only the language label of langCode attribute is displayed</description>
+      <name>readOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Obtain the value of the parameter for the specified component instance.</description>
+    <name>componentParam</name>
+    <tag-class>org.silverpeas.core.web.jstl.ComponentParameterTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        Scope to store the value.
+      </description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The component identifier.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Parameter name.</description>
+      <name>parameter</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Creates a scoped variable representing the value of the referenced class constant.</description>
+    <name>setConstant</name>
+    <tag-class>org.silverpeas.core.web.jstl.constant.SetConstantTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The fully qualified name of the class constant.</description>
+      <name>constant</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>The scope in which the scoped variable is to be created.</description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag that display a StringTemplate content.</description>
+    <name>applyTemplate</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.template.StringTemplateTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The base of the location of the template. It is separated into two parts by a colon character.
+        First part corresponds at the namespace. If it is defined "core" then template location base starts from
+        the CORE root path of templates. Otherwise, the name of a component instance has to be defined and template
+        location base starts from the COMPONENT root path of templates (for example "kmelia:publication/content"
+        indicates that the COMPONENT root path of templates is used and that the location base after parsing
+        is "COMPONENT_ROOT_PATH/kmelia/publication/content"). Second part represents the base of templates
+        location, from the CORE or the COMPONENT starting node, into which templates are performed.
+      </description>
+      <name>locationBase</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of the template to apply (without the language suffix).</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Parameter of a StringTemplate Tag. This parameter represents a StringTemplate attribute.</description>
+    <name>templateParam</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.template.StringTemplateParamTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Name of the parameter.</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Value of the parameter.</description>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>
+  </tag>
+
+  <tag>
+    <description>
+      Establishes a scoped variable that contains a java.util.Map of a named class constants.
+    </description>
+    <name>constantsMap</name>
+    <tag-class>org.silverpeas.core.web.jstl.constant.ConstantsMapTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The fully qualified name of the class whose class constants are to be established in the generated Map instance.</description>
+      <name>className</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>The scope in which the scoped variable is to be created.</description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <description>
+      Establishes a scoped variable that contains the value of the defined settings.
+    </description>
+    <name>settings</name>
+    <tag-class>org.silverpeas.core.web.jstl.settings.SettingsValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The fully qualified name of the ResourceLocator to be used for the settings.</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The key of the wanted settings.</description>
+      <name>key</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The default value for the corresponding setting. The type of the value returned is based on the type of the default value.</description>
+      <name>defaultValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The scope in which the scoped variable is to be created.</description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Display the content of a Wysiwyg.
+    </description>
+    <name>displayWysiwyg</name>
+    <tag-class>org.silverpeas.core.web.jstl.view.WysiwygDisplayerTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The language of the wysiwyg to display.</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the component to which this wysiwyg is attached.</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the object to which this wysiwyg is attached.</description>
+      <name>objectId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the classification scheme axis to which this wysiwyg is attached for highlighting.</description>
+      <name>axisId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if the highlight is first or not.</description>
+      <name>highlightFirst</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>FORM HTML TAG OVERRIDE</description>
+    <name>form</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.FormTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>method</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>A HTML TAG OVERRIDE</description>
+    <name>a</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.ATag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>SCRIPT HTML TAG OVERRIDE</description>
+    <name>script</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.ScriptTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        Specify the script src without the webContext. The webContext is automatically
+        added to the src. If already filled, the webContext is not added again.
+        If the webContext is not the default one, it can be set by applicationContext attribute.
+      </description>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>applicationContext</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>LINK HTML TAG OVERRIDE</description>
+    <name>link</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.LinkTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        Specify the script href without the webContext. The webContext is automatically
+        added to the href. If already filled, the webContext is not added again.
+        If the webContext is not the default one, it can be set by applicationContext attribute.
+      </description>
+      <name>href</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>applicationContext</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Tag to print out the full path of an application
+    </description>
+    <name>componentPath</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.ComponentPathTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the application</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is the application must be displayed at the end of path. True by default.</description>
+      <name>includeComponent</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>String to separate path items. ' > ' by default.</description>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag that display date reminder</description>
+    <name>dateReminder</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.datereminder.DateReminderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Id of current resource</description>
+      <name>resourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Type of current resource</description>
+      <name>resourceType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id of current user</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Language of current user</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <function>
+    <description>Function that returns the value of a class constant.</description>
+    <name>constantValue</name>
+    <function-class>org.silverpeas.core.web.jstl.constant.reflect.ClassConstantInspector</function-class>
+    <function-signature>
+      java.lang.Object getValue( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that returns the boolean value of a String.</description>
+    <name>booleanValue</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      boolean getBooleanValue( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a String is defined.</description>
+    <name>isDefined</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      boolean isDefined( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the estimated download time.</description>
+    <name>estimateDownload</name>
+    <function-class>org.silverpeas.core.util.file.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileDownloadTime( long )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file size in a human readable format.</description>
+    <name>humanReadableSize</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file mime type.</description>
+    <name>mimeType</name>
+    <function-class>org.silverpeas.core.util.file.FileUtil</function-class>
+    <function-signature>
+      java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file is previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.core.viewer.service.ViewerProvider</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file can be displayed with FlexPaper.</description>
+    <name>isViewable</name>
+    <function-class>org.silverpeas.core.viewer.service.ViewerProvider</function-class>
+    <function-signature>
+      boolean isViewable( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function that formats as memory size the given value.</description>
+    <name>formatMemSize</name>
+    <function-class>org.silverpeas.core.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a Javascript String.</description>
+    <name>escapeJs</name>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
+    <name>escapeHtml</name>
+    <function-class>org.silverpeas.core.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
+  </function>
+</taglib>

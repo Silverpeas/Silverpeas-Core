@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses />.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.silverpeas</groupId>
+    <artifactId>core</artifactId>
+    <version>6.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.silverpeas.core</groupId>
+  <artifactId>silverpeas-core-war</artifactId>
+  <packaging>war</packaging>
+  <name>Silverpeas Core Web Archive ${project.version}</name>
+  <description>The Web GUI for the core elements of Silverpeas.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>silverpeas-core-web</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>javax.servlet.jsp.jstl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-jcr-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-jcr-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-comment</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-silverstatistics</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-pdc</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-calendar</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-contact</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-mylinks</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-importexport</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-tagcloud</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-questioncontainer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-viewer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-workflow</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-sharing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <artifactId>portlet-container</artifactId>
+      <groupId>com.sun.portal.portletcontainer</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>portlet-api</artifactId>
+      <groupId>javax.portlet</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>container</artifactId>
+      <groupId>com.sun.portal.portletcontainer</groupId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>silverpeas-core-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parsers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-all-7.0</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>rome</artifactId>
+      <groupId>rome</groupId>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <jackrabbit>deployment.jackrabbit-jca.rar</jackrabbit>
+  </properties>
+  <build>
+    <finalName>silverpeas</finalName>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+          <webResources>
+            <webResource>
+              <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+              <includes>
+                <include>web.xml</include>
+              </includes>
+              <targetPath>WEB-INF</targetPath>
+              <filtering>true</filtering>
+            </webResource>
+          </webResources>
+          <archive>
+            <manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,1 +1,0 @@
-ALTER TABLE SB_ContainerManager_Instance DROP CONSTRAINT PK_ContainerManager_Instance;
