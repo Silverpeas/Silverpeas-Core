@@ -25,6 +25,8 @@
 package org.silverpeas.search.indexEngine.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.cache.service.CacheServiceFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -104,6 +106,7 @@ public class IndexerThread extends Thread {
        * First, all the requests are processed until the queue becomes empty.
        */
       do {
+        CacheServiceFactory.clearAllThreadCaches();
         request = null;
 
         synchronized (requestList) {

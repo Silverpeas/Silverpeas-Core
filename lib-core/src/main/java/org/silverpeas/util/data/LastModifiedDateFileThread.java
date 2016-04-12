@@ -26,6 +26,7 @@ package org.silverpeas.util.data;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -96,6 +97,7 @@ public class LastModifiedDateFileThread extends Thread {
     // The loop condition must be verified on a private attribute of run method (not on the static
     // running attribute) in order to avoid concurrent access.
     while (pair != null) {
+      CacheServiceFactory.clearAllThreadCaches();
 
       /*
        * Each request is processed out of the synchronized block so the others threads (which put

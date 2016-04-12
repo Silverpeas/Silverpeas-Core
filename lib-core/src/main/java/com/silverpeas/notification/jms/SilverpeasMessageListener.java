@@ -30,6 +30,7 @@ import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 /**
  * Listener of messages droven in JMS. A JMS message wrap the silverpeas notification that was
@@ -53,6 +54,7 @@ public class SilverpeasMessageListener implements MessageListener {
 
   @Override
   public void onMessage(Message msg) {
+    CacheServiceFactory.clearAllThreadCaches();
     ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
     try {
       Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());

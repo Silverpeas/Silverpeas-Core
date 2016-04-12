@@ -66,6 +66,7 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
 import com.silverpeas.workflow.external.ExternalAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 /**
  * A thread WorkflowEngineThread process in the background a batch of events sent to workflow All
@@ -167,6 +168,7 @@ public class WorkflowEngineThread extends Thread {
          * First, all the requests are processed until the queue becomes empty.
          */
         do {
+          CacheServiceFactory.clearAllThreadCaches();
           request = null;
 
           synchronized (requestList) {

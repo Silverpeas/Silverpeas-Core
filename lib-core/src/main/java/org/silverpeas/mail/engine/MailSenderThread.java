@@ -25,6 +25,7 @@
 package org.silverpeas.mail.engine;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.mail.MailToSend;
 
 import java.util.ArrayList;
@@ -114,6 +115,7 @@ public class MailSenderThread extends Thread {
     // The loop condition must be verified on a private attribute of run method (not on the static
     // running attribute) in order to avoid concurrent access.
     while (currentRequest != null) {
+      CacheServiceFactory.clearAllThreadCaches();
 
         /*
          * Each request is processed out of the synchronized block so the others threads (which put
