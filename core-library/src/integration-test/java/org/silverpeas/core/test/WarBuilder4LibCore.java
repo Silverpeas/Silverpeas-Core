@@ -570,7 +570,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.notification.user.server");
       addAsResource("org/silverpeas/notificationManager");
       addClasses(AbstractTable.class, UserSubscriptionNotificationSendingHandler.class);
-      addAsResource("org/silverpeas/util/jndi.properties");
       // Centralized features
       addSilverpeasUrlFeatures();
     }
