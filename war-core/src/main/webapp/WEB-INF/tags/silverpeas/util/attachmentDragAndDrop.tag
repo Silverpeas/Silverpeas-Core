@@ -75,6 +75,8 @@
 
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<jsp:useBean id="publisherRole" type="com.stratelia.webactiv.SilverpeasRole"/>
 <c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <c:set var="domIdSuffix" value="${fn:replace(resourceId, '-', '_')}"/>
@@ -91,7 +93,7 @@
   <c:url var="uploadCompletedUrl" value="/DragAndDrop/drop">
     <c:param name="ComponentId" value="${componentInstanceId}"/>
     <c:param name="ResourceId" value="${resourceId}"/>
-    <c:param name="IndexIt" value="${hasToBeIndexed}"/>
+    <c:param name="IndexIt" value="${hasToBeIndexed and greatestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
     <c:param name="DocumentType" value="${documentType}"/>
   </c:url>
 

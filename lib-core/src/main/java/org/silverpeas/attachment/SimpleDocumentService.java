@@ -284,19 +284,19 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocumentPK docPk = repository.createDocument(session, document);
-      if (reallyInvokeCallback(document, invokeCallback) &&
-          StringUtil.isDefined(document.getCreatedBy())) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
-            parseInt(document.getCreatedBy()), document.getInstanceId(),
-            document.getForeignId());
-      }
       session.save();
       SimpleDocument createdDocument = repository.findDocumentById(session, docPk, document.
           getLanguage());
       createdDocument.setPublicDocument(document.isPublic());
       SimpleDocument finalDocument = repository.unlock(session, createdDocument, false);
       repository.storeContent(finalDocument, content, false);
+      if (reallyInvokeCallback(finalDocument, invokeCallback) &&
+          StringUtil.isDefined(finalDocument.getCreatedBy())) {
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
+                parseInt(finalDocument.getCreatedBy()), finalDocument.getInstanceId(),
+            finalDocument.getForeignId());
+      }
       if (indexIt) {
         createIndex(finalDocument);
       }
@@ -442,6 +442,7 @@ public class SimpleDocumentService implements AttachmentService {
           }
         }
       }
+      session.save();
       String userId = document.getUpdatedBy();
       if (StringUtil.isDefined(userId) && reallyInvokeCallback(document, invokeCallback)) {
         CallBackManager callBackManager = CallBackManager.get();
@@ -451,7 +452,6 @@ public class SimpleDocumentService implements AttachmentService {
       if (indexIt) {
         createIndex(document);
       }
-      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
@@ -486,6 +486,7 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
       repository.duplicateContent(document, finalDocument);
+      session.save();
       String userId = finalDocument.getUpdatedBy();
       if (StringUtil.isDefined(userId) && reallyInvokeCallback(finalDocument, invokeCallback) &&
           finalDocument.isPublic()) {
@@ -496,7 +497,6 @@ public class SimpleDocumentService implements AttachmentService {
       if (indexIt) {
         createIndex(finalDocument);
       }
-      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
@@ -516,6 +516,8 @@ public class SimpleDocumentService implements AttachmentService {
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
+      deleteIndex(document, document.getLanguage());
+      session.save();
       String userId = document.getCreatedBy();
       if (StringUtil.isDefined(userId) && reallyInvokeCallback(document, invokeCallback)) {
         if (existsOtherContents) {
@@ -526,8 +528,6 @@ public class SimpleDocumentService implements AttachmentService {
           AttachmentNotificationService.getService().notifyOnDeletionOf(document);
         }
       }
-      deleteIndex(document, document.getLanguage());
-      session.save();
       SimpleDocument finalDocument = document;
       if (requireLock) {
         finalDocument = repository.unlockFromContentDeletion(session, document);
