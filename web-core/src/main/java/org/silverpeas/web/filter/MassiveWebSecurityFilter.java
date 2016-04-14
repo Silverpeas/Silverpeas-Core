@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.filter;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DBUtil;
@@ -66,7 +67,11 @@ public class MassiveWebSecurityFilter implements Filter {
       UriBuilder.fromUri(URLManager.getApplicationURL())
           .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).build().toString();
 
-  private final static List<Pattern> SKIPED_PARAMETER_PATTERNS;
+  private final static String WEB_PAGES_URI_PREFIX =
+      UriBuilder.fromUri(URLManager.getApplicationURL()).path("RwebPages").build().toString();
+
+  private final static List<Pattern> SQL_SKIPPED_PARAMETER_PATTERNS;
+  private final static List<Pattern> XSS_SKIPPED_PARAMETER_PATTERNS;
 
   private final static List<Pattern> SQL_PATTERNS;
   private final static List<Pattern> XSS_PATTERNS;
@@ -87,8 +92,16 @@ public class MassiveWebSecurityFilter implements Filter {
 
     // In treatments each sequence of spaces is replaced by one space
 
-    SKIPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
-    SKIPED_PARAMETER_PATTERNS.add(Pattern.compile("(?i)^(editor|sqlreq)"));
+    SQL_SKIPPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
+    if (StringUtil.isDefined(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity())) {
+      SQL_SKIPPED_PARAMETER_PATTERNS
+          .add(Pattern.compile(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity()));
+    }
+    XSS_SKIPPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
+    if (StringUtil.isDefined(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity())) {
+      XSS_SKIPPED_PARAMETER_PATTERNS
+          .add(Pattern.compile(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity()));
+    }
 
     SQL_PATTERNS = new ArrayList<Pattern>(6);
     SQL_PATTERNS.add(Pattern.compile("(?i)(grant|revoke)" +
@@ -114,15 +127,16 @@ public class MassiveWebSecurityFilter implements Filter {
       boolean isWebServiceMultipart =
           httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
               httpRequest.isContentInMultipart();
+      boolean isWebPageMultiPart =
+          httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
+              httpRequest.isContentInMultipart();
       boolean isWebSqlInjectionSecurityEnabled =
           SecuritySettings.isWebSqlInjectionSecurityEnabled();
       boolean isWebXssInjectionSecurityEnabled =
           SecuritySettings.isWebXssInjectionSecurityEnabled();
 
-      // Verifying security only if following rules are verified:
-      // - request must not be a REST Web Service multipart one
-      // - one web security mechanism is at least enabled
-      if (!isWebServiceMultipart &&
+      // Verifying security only if all the prerequisite are satisfied
+      if (!(isWebServiceMultipart || isWebPageMultiPart) &&
           (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled)) {
 
         long start = System.currentTimeMillis();
@@ -133,7 +147,11 @@ public class MassiveWebSecurityFilter implements Filter {
           for (Map.Entry<String, String[]> parameterEntry : httpRequest.getParameterMap()
               .entrySet()) {
 
-            if (!mustTheParameterBeVerified(parameterEntry.getKey())) {
+            boolean sqlInjectionToVerify = isWebSqlInjectionSecurityEnabled &&
+                mustTheParameterBeVerifiedForSqlVerifications(parameterEntry.getKey());
+            boolean xssInjectionToVerify = isWebXssInjectionSecurityEnabled &&
+                mustTheParameterBeVerifiedForXssVerifications(parameterEntry.getKey());
+            if (!sqlInjectionToVerify && !xssInjectionToVerify) {
               continue;
             }
 
@@ -143,7 +161,7 @@ public class MassiveWebSecurityFilter implements Filter {
               parameterValue = parameterValue.replaceAll("\\s+", " ");
 
               // SQL injections?
-              if (isWebSqlInjectionSecurityEnabled && (patternMatcherFound =
+              if (sqlInjectionToVerify && (patternMatcherFound =
                   findPatternMatcherFromString(SQL_PATTERNS, parameterValue, true)) != null) {
 
                 if (!verifySqlDeeply(patternMatcherFound, parameterValue)) {
@@ -156,7 +174,7 @@ public class MassiveWebSecurityFilter implements Filter {
               }
 
               // XSS injections?
-              if (isWebXssInjectionSecurityEnabled &&
+              if (xssInjectionToVerify &&
                   findPatternMatcherFromString(XSS_PATTERNS, parameterValue, false) != null) {
                 throw new WebXssInjectionSecurityException();
               }
@@ -272,12 +290,23 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   /**
-   * Must the given paramater be skiped from injection verifying?
+   * Must the given parameter be skipped from SQL injection verifying?
    * @param parameterName
    * @return
    */
-  private boolean mustTheParameterBeVerified(String parameterName) {
-    return findPatternMatcherFromString(SKIPED_PARAMETER_PATTERNS, parameterName, false) == null;
+  private boolean mustTheParameterBeVerifiedForSqlVerifications(String parameterName) {
+    return findPatternMatcherFromString(SQL_SKIPPED_PARAMETER_PATTERNS, parameterName, false) ==
+        null;
+  }
+
+  /**
+   * Must the given parameter be skipped from XSS injection verifying?
+   * @param parameterName
+   * @return
+   */
+  private boolean mustTheParameterBeVerifiedForXssVerifications(String parameterName) {
+    return findPatternMatcherFromString(XSS_SKIPPED_PARAMETER_PATTERNS, parameterName, false) ==
+        null;
   }
 
   /**
