@@ -154,14 +154,14 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
           .append("&selectedGroup=").append((groupId == null) ? "" : groupId)
           .append(groupsOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
           .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
-          .append("','selectGroup',800,600,'');\" >");
+          .append("','selectGroup',800,600,'');return false;\" >");
       html.append("<img src=\"").append(selectGroupImg).
           append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(selectGroupLab).
           append("\" align=\"top\" title=\"").append(selectGroupLab).append("\"/></a>");
       html.append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.").
           append(pageContext.getFormName()).append(".").append(fieldName).
           append(".value='';" + "document.").append(pageContext.getFormName()).append(".").
-          append(fieldName).append("$$name" + ".value='';" + "\">");
+          append(fieldName).append("$$name" + ".value='';return false;" + "\">");
       html.append("<img src=\"").append(deleteImg).append(
           "\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).append(
           "\" align=\"top\" title=\"").append(deleteLab).append("\"/></a>");
