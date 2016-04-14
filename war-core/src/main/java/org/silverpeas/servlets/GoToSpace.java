@@ -24,8 +24,12 @@
 
 package org.silverpeas.servlets;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -43,16 +47,53 @@ public class GoToSpace extends GoTo {
       HttpServletResponse res) throws Exception {
     SpaceInstLight space = OrganisationControllerFactory
         .getOrganisationController().getSpaceInstLightById(objectId);
-    if (space != null && space.getShortId() != null) {
+
+    boolean fallback = StringUtil.getBooleanValue(req.getParameter("Fallback"));
+    if (fallback) {
+
+      // When fallback is requested, if the user has no right access to aimed space (or if the
+      // space is deleted) then the first parent the user can access is searched.
+      // It is possible that no space is found when user has no more access on the entire path.
+
+      AccessController<String> spaceAccessController =
+          AccessControllerProvider.getAccessController("spaceAccessController");
+      while (space != null &&
+          !spaceAccessController.isUserAuthorized(getUserId(req), space.getShortId())) {
+        space = OrganisationControllerFactory
+            .getOrganisationController().getSpaceInstLightById(space.getFatherId());
+      }
+    }
+
+    if (fallback || (space != null && space.getShortId() != null)) {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-      if (gef != null && helper != null) {
-        gef.setSpaceIdForCurrentRequest(space.getFullId());
-        helper.setSpaceIdAndSubSpaceId(space.getFullId());
+      if (space != null) {
+
+        // This is the case where a space has been found directly or by the fallback processing.
+
+        if (gef != null && helper != null) {
+          gef.setSpaceIdForCurrentRequest(space.getFullId());
+          helper.setSpaceIdAndSubSpaceId(space.getFullId());
+        }
+        return "SpaceId=" + space.getFullId();
+
+      } else {
+
+        // This is the case where fallback treatment has been performed without finding a space
+        // target. The user will be redirected on the default homepage.
+
+        if (gef != null && helper != null) {
+          // Cleaning the location registered into look helper before returning the homepage url
+          helper.setSpaceId(null);
+          helper.setSubSpaceId(null);
+          helper.setComponentId(null);
+          String serverUrl = URLManager.getFullApplicationURL(req);
+          return (gef.getLookFrame().startsWith("/") ? serverUrl : serverUrl + "/admin/jsp/") +
+              gef.getLookFrame() + "?Login=1";
+        }
       }
-      return "SpaceId=" + objectId;
     }
     return null;
   }

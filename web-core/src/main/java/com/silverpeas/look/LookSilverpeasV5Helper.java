@@ -104,10 +104,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
-    if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      this.spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
+    if (StringUtil.isDefined(spaceId)) {
+      if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+        this.spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
+      }
+      reloadProperties(spaceId);
     }
-    reloadProperties(spaceId);
   }
 
   /*
@@ -126,10 +128,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSubSpaceId(String subSpaceId) {
     this.subSpaceId = subSpaceId;
-    if (!subSpaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      this.subSpaceId = Admin.SPACE_KEY_PREFIX + subSpaceId;
+    if (StringUtil.isDefined(subSpaceId)) {
+      if (!subSpaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+        this.subSpaceId = Admin.SPACE_KEY_PREFIX + subSpaceId;
+      }
+      reloadProperties(subSpaceId);
     }
-    reloadProperties(subSpaceId);
   }
 
   /*
@@ -913,7 +917,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       spaceId = getSubSpaceId();
     }
     if (StringUtil.isDefined(spaceId)) {
-      return URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId);
+      return URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId)+"?Fallback=true";
     }
     return null;
   }

@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.beans.admin.cache;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.util.StringUtil;
@@ -233,6 +234,14 @@ public class TreeCache {
   public static void addSubSpace(String spaceId, SpaceInstLight subSpace) {
     Space space = getSpace(spaceId);
     if (space != null) {
+      Iterator<SpaceInstLight> spaceSubSpaceIterator = space.getSubspaces().iterator();
+      while(spaceSubSpaceIterator.hasNext()) {
+        SpaceInstLight currentSpaceSubSpace = spaceSubSpaceIterator.next();
+        if (currentSpaceSubSpace.getFullId().equals(subSpace.getFullId())) {
+          spaceSubSpaceIterator.remove();
+          break;
+        }
+      }
       space.getSubspaces().add(subSpace);
     }
   }
