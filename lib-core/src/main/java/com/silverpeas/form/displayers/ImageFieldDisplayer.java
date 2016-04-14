@@ -145,7 +145,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       out.println("&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document.getElementById('" + fieldName + "ThumbnailArea').style.display='none';"
           + "document." + pageContext.getFormName() + "." + fieldName
-          + OPERATION_KEY + ".value='"+Operation.DELETION.name()+"';"
+          + OPERATION_KEY + ".value='"+Operation.DELETION.name()+"';return false;"
           + "\">");
       out.println("<img src=\""
           + deleteImg

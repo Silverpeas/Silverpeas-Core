@@ -170,7 +170,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
       if (StringUtil.isDefined(roles)) {
         html += "&roles=" + roles;
       }
-      html += "','selectUser',800,600,'');\" >";
+      html += "','selectUser',800,600,'');return false;\" >";
       html += "<img src=\""
           + selectUserImg
           + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
@@ -180,7 +180,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document." + pageContext.getFormName() + "." + fieldName + ".value='';"
           + "document." + pageContext.getFormName() + "." + fieldName + "$$name"
-          + ".value='';"
+          + ".value='';return false;"
           + "\">";
       html += "<img src=\""
           + deleteUserImg

@@ -158,7 +158,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
             append(fieldName).append("').style.display='none';" + "document.").
             append(pageContext.getFormName()).append(".").append(fieldName).
             append(OPERATION_KEY + ".value='").append(Operation.DELETION.name()).append(
-                "';" + "\">");
+                "';return false;" + "\">");
         html.append("<img src=\"").append(deleteImg).
             append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).
             append("\" align=\"top\" title=\"").append(deleteLab).append(
