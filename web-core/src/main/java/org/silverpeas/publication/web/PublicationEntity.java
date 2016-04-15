@@ -132,7 +132,9 @@ public class PublicationEntity implements Exposable {
     this.setUri(uri);
     this.setUpdateDate(publication.getUpdateDate());
     this.creator = UserProfileEntity.fromUser(publication.getCreator());
-    this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
+    if (StringUtil.isDefined(publication.getUpdaterId())) {
+      this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
+    }
   }
   
   public PublicationEntity withAttachments(Collection<SimpleDocument> attachmentDetails) {
@@ -228,6 +230,10 @@ public class PublicationEntity implements Exposable {
     return updateDate;
   }
 
+  public void setCreator(UserDetail user) {
+    creator = UserProfileEntity.fromUser(user);
+  }
+
   protected void setAttachments(List<AttachmentEntity> attachments) {
     this.attachments = attachments;
   }
@@ -244,7 +250,9 @@ public class PublicationEntity implements Exposable {
     publication.setKeywords(keywords);
     publication.setImportance(importance);
     publication.setCreatorId(creator.getId());
-    publication.setUpdaterId(lastUpdater.getId());
+    if (lastUpdater != null) {
+      publication.setUpdaterId(lastUpdater.getId());
+    }
     publication.setUpdateDate(updateDate);
     return publication;
   }
