@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.Arrays;
 import java.util.List;
 
@@ -224,7 +225,7 @@ public class Group implements Serializable, Comparable<Group> {
 
   @Override
   public int compareTo(Group o) {
-    return (getName().toLowerCase()).compareTo(o.getName().toLowerCase());
+    return Collator.getInstance().compare(getName().toLowerCase(), o.getName().toLowerCase());
   }
 
   public String getRule() {

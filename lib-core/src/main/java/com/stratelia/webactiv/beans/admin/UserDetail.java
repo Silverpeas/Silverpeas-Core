@@ -45,6 +45,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.text.Collator;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -716,13 +717,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   @Override
   public int compareTo(UserDetail other) {
+    Collator collator = Collator.getInstance();
     String myLastName = getLastName().toLowerCase(I18NHelper.defaultLocale);
     String otherLastName = other.getLastName().toLowerCase(I18NHelper.defaultLocale);
-    int result = myLastName.compareTo(otherLastName);
+    int result = collator.compare(myLastName, otherLastName);
     if (result == 0) {
       String myFirstName = getFirstName().toLowerCase(I18NHelper.defaultLocale);
       String otherFirstName = other.getFirstName().toLowerCase(I18NHelper.defaultLocale);
-      result = myFirstName.compareTo(otherFirstName);
+      result = collator.compare(myFirstName, otherFirstName);
       if (result == 0) {
         String myId = getId();
         String otherId = other.getId();
