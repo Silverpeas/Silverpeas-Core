@@ -185,7 +185,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
           .addElement(deletionImage)
           .setOnClick("javascript: document.getElementById('" + fieldName
           + "Video').style.display='none'; document." + pagesContext.getFormName() + "."
-          + fieldName + OPERATION_KEY + ".value='" + Operation.DELETION.name() + "';");
+          + fieldName + OPERATION_KEY + ".value='" + Operation.DELETION.name() + "';return false;");
       div videoDiv = new div();
       videoDiv.setID(fieldName + "Video");
       videoDiv.setClass("video");
