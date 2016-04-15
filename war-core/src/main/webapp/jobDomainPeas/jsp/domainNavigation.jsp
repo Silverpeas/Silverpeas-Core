@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 List<Domain> allDomains = (List<Domain>)request.getAttribute("allDomains");
@@ -47,7 +48,8 @@ function viewGroup(arg){
 
 function viewDomain()
 {
-    <% 
+  <c:if test="${empty requestScope.domainRefreshCurrentLevel}">
+    <%
         String URLForContent = (String)request.getAttribute("URLForContent");
 
         if ((URLForContent != null) && (URLForContent.length() > 0))
@@ -55,6 +57,11 @@ function viewDomain()
             out.println("parent.domainContent.location = \"" + URLForContent + "\"");
         }
     %>
+  </c:if>
+}
+
+function refreshCurrentLevel() {
+  parent.domainBar.location = "domainRefreshCurrentLevel";
 }
 
 </script>
@@ -79,7 +86,7 @@ function viewDomain()
 <tr class="intfdcolor">
     <td width="100%">
         <table width="100%" border="0" cellspacing="2" cellpadding="0">
-          <tr> 
+          <tr>
             <td width="100%"><img align="absmiddle" width="3" height="1" src="<%=resource.getIcon("JDP.px")%>"><span class="domains-label"><%=resource.getString("JDP.domains")%> : </span></td>
           </tr>
         </table>
@@ -110,14 +117,14 @@ function viewDomain()
 <tr class="intfdcolor51">
     <td width="100%">
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
-          <tr> 
+          <tr>
             <td>&nbsp;</td>
             <td width="100%"><span class="txtnote">
 						<table cellpadding=0 cellspacing=0 border=0 width=100%>
-						<tr><td> 
+						<tr><td>
             	<% if (allDomains.size() > 1) { %>
-            		<form name="domainsNamesForm" Action="domainNavigation" Method="POST">	
-	                    <span class="selectNS"> 
+            		<form name="domainsNamesForm" Action="domainNavigation" Method="POST">
+	                    <span class="selectNS">
 	                    <select name="Iddomain" size="1" onchange="javascript:document.domainsNamesForm.submit()">
 	                    <option value=""><%=resource.getString("GML.select")%></option>
 	                    <option value="">-----------------</option>
@@ -169,13 +176,13 @@ function viewDomain()
 <tr class="intfdcolor51">
     <td width="100%">
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
-          <tr> 
+          <tr>
             <td>&nbsp;</td>
             <td width="100%"><span class="txtnote">
 						<table cellpadding=0 cellspacing=2 border=0 width=100%>
-						<tr><td> 
+						<tr><td>
 						<%
-                            Group[] allRootGroups = (Group[])request.getAttribute("allRootGroups");
+              Group[] allRootGroups = (Group[])request.getAttribute("allRootGroups");
 							String icon = null;
 							for (Group group : allRootGroups) {
 								icon = resource.getIcon("JDP.group");
@@ -183,7 +190,9 @@ function viewDomain()
 									icon = resource.getIcon("JDP.groupSynchronized");
 								}
 								%>
-								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br><img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">&nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName())%></a><br>
+								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br>
+                <img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">
+                &nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName()) + " (" + group.getTotalNbUsers() + ")"%></a><br>
 								<%
                             }
 						%>

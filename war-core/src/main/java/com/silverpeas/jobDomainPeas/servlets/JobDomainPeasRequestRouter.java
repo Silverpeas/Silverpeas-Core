@@ -360,7 +360,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupDelete")) {
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupSynchro")) {
-          jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
+          bHaveToRefreshDomain = jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
@@ -423,10 +423,13 @@ public class JobDomainPeasRequestRouter extends
         }
 
         if (destination.length() <= 0) {
-          if (bHaveToRefreshDomain) {
-            destination = getDestination("domainRefresh", jobDomainSC, request);
-          } else if (jobDomainSC.getTargetGroup() != null) {
+          if (jobDomainSC.getTargetGroup() != null) {
+            if (bHaveToRefreshDomain) {
+              reloadDomainNavigation(request);
+            }
             destination = "groupContent.jsp";
+          } else if (bHaveToRefreshDomain) {
+            destination = getDestination("domainRefresh", jobDomainSC, request);
           } else {
             destination = getDestination("domainContent", jobDomainSC, request);
           }
@@ -440,6 +443,9 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.returnIntoGroup(null);
           jobDomainSC.setRefreshDomain(true);
 
+          destination = "domainNavigation.jsp";
+        } else if (function.startsWith("domainRefreshCurrentLevel")) {
+          request.setAttribute("domainRefreshCurrentLevel", true);
           destination = "domainNavigation.jsp";
         } else {
           if (function.startsWith("domainContent")) {
@@ -782,6 +788,15 @@ public class JobDomainPeasRequestRouter extends
     SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
+  }
+
+  /**
+   * Marks into the request an attribute that indicates the domain navigation frame has to be
+   * reloaded.
+   * @param request the request to mark.
+   */
+  private void reloadDomainNavigation(final HttpRequest request) {
+    request.setAttribute("reloadDomainNavigationFrame", true);
   }
 
   private void processSelection(HttpServletRequest request,

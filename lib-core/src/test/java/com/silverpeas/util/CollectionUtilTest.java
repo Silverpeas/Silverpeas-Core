@@ -24,10 +24,12 @@
 package com.silverpeas.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -158,6 +160,26 @@ public class CollectionUtilTest {
     assertThat(test.size(), is(1));
     test = CollectionUtil.split(list, 500);
     assertThat(test.size(), is(1));
+  }
+
+  @Test
+  public void unionOfTwoListsShouldContainOnlyUniqueValues() {
+    List<String> A = Arrays.asList("A", "B", "C", "D", "D", "E", "Z");
+    List<String> B = Arrays.asList("A", "A", "A", "D", "E", "E", "Y");
+    List<String> union = CollectionUtil.union(A, B);
+    assertThat(union, contains("A", "B", "C", "D", "E", "Z", "Y"));
+    union = CollectionUtil.union(B, A);
+    assertThat(union, contains("A", "D", "E", "Y", "B", "C", "Z"));
+  }
+
+  @Test
+  public void intersectionOfTwoListsShouldContainOnlyUniqueValues() {
+    List<String> A = Arrays.asList("A", "B", "C", "D", "D", "E", "Z");
+    List<String> B = Arrays.asList("Y", "E", "E", "D", "A", "A", "A");
+    List<String> intersection = CollectionUtil.intersection(A, B);
+    assertThat(intersection, contains("A", "D", "E"));
+    intersection = CollectionUtil.intersection(B, A);
+    assertThat(intersection, contains("E", "D", "A"));
   }
 
   /**

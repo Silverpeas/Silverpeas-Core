@@ -96,9 +96,55 @@ public class LDAPUtilityTest {
    */
   @Test
   public void testEscapeLDAPSearchFilter() {
-    assertEquals("No special characters to escape", "Hi This is a test #çà", 
+    final String expectedEscapedValue = "Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
+
+    assertEquals("No special characters to escape", "Hi This is a test #çà",
         LDAPUtility.escapeLDAPSearchFilter("Hi This is a test #çà"));
-       assertEquals("LDAP Christams Tree", "Hi \\28This\\29 = is \\2a a \\5c test # ç à ô",
-           LDAPUtility.escapeLDAPSearchFilter("Hi (This) = is * a \\ test # ç à ô"));
+    assertEquals("LDAP Christams Tree", expectedEscapedValue,
+        LDAPUtility.escapeLDAPSearchFilter("Hi \u0000 (This) = is * a \\ test # ç à ô"));
+    assertEquals("LDAP Christams Tree",
+        "Hi \\5c00 \\5c28This\\5c29 = is \\5c2a a \\5c5c test # ç à ô",
+        LDAPUtility.escapeLDAPSearchFilter(expectedEscapedValue));
+  }
+
+  /**
+   * Test of unescapeLDAPSearchFilter method, of class LDAPUtility.
+   */
+  @Test
+  public void testUnescapeLDAPSearchFilter() {
+    final String expectedUnescapedValue = "Hi \u0000 (This) = is * a \\ test # ç à ô";
+
+    assertEquals("No special characters to escape", "Hi This is a test #çà",
+        LDAPUtility.unescapeLDAPSearchFilter("Hi This is a test #çà"));
+    assertEquals("LDAP Christams Tree", expectedUnescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter("Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô"));
+    assertEquals("LDAP Christams Tree", expectedUnescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter(expectedUnescapedValue));
+  }
+
+  /**
+   * Test of unescapeLDAPSearchFilter method, of class LDAPUtility.
+   */
+  @Test
+  public void testChainedUnescapeAndEscapeLDAPSearchFilter() {
+    final String escapedValue = "Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
+    final String unescapedValue = "Hi \u0000 (This) = is * a \\ test # ç à ô";
+
+    assertEquals("LDAP Christams Tree", unescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter(escapedValue));
+    assertEquals("LDAP Christams Tree", escapedValue,
+        LDAPUtility.escapeLDAPSearchFilter(LDAPUtility.unescapeLDAPSearchFilter(escapedValue)));
+
+    final String partiallyEscapedValue =
+        "Hi ( ) \\ * \u0000 \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
+    final String partiallyUnescapedValue =
+        "Hi ( ) \\ * \u0000 \u0000 (This) = is * a \\ test # ç à ô";
+    final String expectedPartiallyEscapedValue =
+        "Hi \\28 \\29 \\5c \\2a \\00 \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
+
+    assertEquals("LDAP Christams Tree", partiallyUnescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter(partiallyEscapedValue));
+    assertEquals("LDAP Christams Tree", expectedPartiallyEscapedValue, LDAPUtility
+        .escapeLDAPSearchFilter(LDAPUtility.unescapeLDAPSearchFilter(partiallyEscapedValue)));
   }
 }
