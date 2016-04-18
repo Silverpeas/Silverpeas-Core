@@ -24,6 +24,11 @@
 
 package org.silverpeas.core.exception;
 
+/**
+ * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasException}
+ * @deprecated
+ */
+@Deprecated
 public class UtilTrappedException extends SilverpeasTrappedException {
 
   private static final long serialVersionUID = 1L;

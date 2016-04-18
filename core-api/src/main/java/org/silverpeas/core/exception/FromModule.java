@@ -31,18 +31,19 @@ package org.silverpeas.core.exception;
  * AdminException qui "extends" SilverpeasException, et "implements" FromModuleException. La méthode
  * getModule devra renvoyer une chaine du style "Admin".
  */
+@Deprecated
 public interface FromModule {
   /**
    * This function must be defined by the Classes that herit from this one
    * @return The SilverTrace's module name
    **/
-  public String getModule();
+  String getModule();
 
-  public String getMessageLang();
+  String getMessageLang();
 
-  public String getMessageLang(String language);
+  String getMessageLang(String language);
 
-  public void traceException();
+  void traceException();
 
-  public int getErrorLevel();
+  int getErrorLevel();
 }
