@@ -24,6 +24,7 @@
  */
 /**
  * Provides the base exceptions in Silverpeas.
+ * @deprecated
  * @author mmoquillon
  */
 package org.silverpeas.core.exception;

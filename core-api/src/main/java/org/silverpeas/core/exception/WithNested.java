@@ -26,8 +26,9 @@
 
 package org.silverpeas.core.exception;
 
+@Deprecated
 public interface WithNested {
 
-  public Throwable getNested();
+  Throwable getNested();
 
 }

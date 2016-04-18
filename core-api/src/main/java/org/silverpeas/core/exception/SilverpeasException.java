@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasException}
+ * </p>
  * SilverpeasException est la racine de la hiérarchie d'exception silverpeas. Toutes les classes
  * d'exception spécifiques aux differents modules doivent dériver (directement ou non) de
  * SilverpeasException. La page d'erreur globale à l'application ne saura traiter correctement que
@@ -38,7 +40,9 @@ import java.util.List;
  * etre affiché à l'utilisateur. C'est pourquoi le label est multilangue. Chaque classe heritant de
  * SilverpeasException doit surdefinir la fonction getModule qui retourne le nom du module (le meme
  * nom que celui defini dans Silvertrace)
+ * @deprecated
  */
+@Deprecated
 abstract public class SilverpeasException extends Exception implements WithNested, FromModule {
 
   public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
