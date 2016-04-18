@@ -85,6 +85,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   private UserMenuDisplay displayUserMenu = UserMenuDisplay.DISABLE;
   private boolean enableUFSContainsState = false;
   private HttpSession session = null;
+  private String currentLookName = null;
 
   /*
    * (non-Javadoc)
@@ -102,6 +103,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
+    reloadProperties(spaceId);
   }
 
   /*
@@ -120,6 +122,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public void setSubSpaceId(String subSpaceId) {
     this.subSpaceId = subSpaceId;
+    reloadProperties(subSpaceId);
   }
 
   /*
@@ -187,8 +190,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
    */
   protected LookSilverpeasV5Helper(HttpSession session) {
     this.session = session;
-    GraphicElementFactory gef =
-        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    GraphicElementFactory gef = getGraphicElementFactory();
     init(gef.getFavoriteLookSettings());
   }
 
@@ -238,6 +240,20 @@ public class LookSilverpeasV5Helper extends LookHelper {
     }
   }
 
+  private void reloadProperties(String spaceId) {
+    String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
+    if (!StringUtil.isDefined(spaceLook)) {
+      // no look defined for this space (or its parent),
+      // use user's favorite look or look by default
+      spaceLook = getMainSessionController().getFavoriteLook();
+    }
+    if (spaceLook != null && !spaceLook.equals(currentLookName)) {
+      getGraphicElementFactory().setLook(spaceLook);
+      init(getGraphicElementFactory().getFavoriteLookSettings());
+      currentLookName = spaceLook;
+    }
+  }
+
   @Override
   public boolean isMenuPersonalisationEnabled() {
     return UserMenuDisplay.DISABLE != UserMenuDisplay.valueOf(resources.getString(
@@ -255,6 +271,15 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   protected OrganizationController getOrganisationController() {
     return organizationController;
+  }
+
+  protected GraphicElementFactory getGraphicElementFactory() {
+    if (session != null) {
+      GraphicElementFactory gef = (GraphicElementFactory) session
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      return gef;
+    }
+    return null;
   }
 
   /*
