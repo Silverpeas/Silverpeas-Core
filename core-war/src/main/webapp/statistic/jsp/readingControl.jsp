@@ -31,6 +31,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -68,15 +69,13 @@
     ArrayColumn columnDetail = arrayPane.addArrayColumn(messages.getString("statistic.detail"));
     columnDetail.setSortable(false);
 
-    Iterator it = readingState.iterator();
-    while (it.hasNext())
-    {
-	ArrayLine ligne = arrayPane.addArrayLine();
-
-	HistoryByUser historyByUser = (HistoryByUser) it.next();
-	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), currentUserId));
-	Date haveRead = historyByUser.getLastAccess();
-	String readingDate = "";
+    for (HistoryByUser historyByUser : readingState) {
+      ArrayLine ligne = arrayPane.addArrayLine();
+      UserDetail user = historyByUser.getUser();
+      ArrayCellText cell0 = ligne.addArrayCellText(UserNameGenerator.toString(user, currentUserId));
+      cell0.setCompareOn(user);
+      Date haveRead = historyByUser.getLastAccess();
+      String readingDate = "";
         if (haveRead == null) {
 		readingDate = "&nbsp;";
         } else {
