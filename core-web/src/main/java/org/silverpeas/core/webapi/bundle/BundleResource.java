@@ -116,7 +116,7 @@ public class BundleResource extends RESTWebService {
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
   @GET
-  @Path("{bundle: (com|org)/[a-zA-Z0-9/._$]+}")
+  @Path("{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
   public Response getLocalizedBundle(@PathParam("bundle") final String bundle) throws IOException {
     String language = getLanguage();
@@ -172,7 +172,7 @@ public class BundleResource extends RESTWebService {
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
   @GET
-  @Path("settings/{bundle: (com|org)/[a-zA-Z0-9/._$]+}")
+  @Path("settings/{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
   public Response getSettingsBundle(@PathParam("bundle") final String bundle) throws IOException {
     String settingsBundle = bundle;
