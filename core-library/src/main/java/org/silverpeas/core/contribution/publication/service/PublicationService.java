@@ -25,7 +25,6 @@ import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.NodeTree;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
@@ -37,6 +36,7 @@ import org.silverpeas.core.WAPrimaryKey;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface declaration
@@ -292,7 +292,7 @@ public interface PublicationService {
    * @return the tree of nodes with the number of publication per node
    * @
    */
-  public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
+  public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility);
 
   /**

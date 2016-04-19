@@ -1761,6 +1761,14 @@ class Admin implements Administration {
   }
 
   @Override
+  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(String objectType,
+      String componentId, String userId) throws AdminException {
+    List<String> groups = getAllGroupsOfUser(userId);
+    return profiledObjectManager.getUserProfileNames(objectType, getDriverComponentId(componentId),
+        Integer.parseInt(userId), groups);
+  }
+
+  @Override
   public boolean isObjectAvailable(String componentId, int objectId, String objectType,
       String userId) throws AdminException {
     return userId == null

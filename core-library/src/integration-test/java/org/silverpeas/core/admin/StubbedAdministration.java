@@ -337,6 +337,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final String objectType,
+      final String componentId, final String userId) throws AdminException {
+    return null;
+  }
+
+  @Override
   public boolean isObjectAvailable(final String componentId, final int objectId,
       final String objectType, final String userId) throws AdminException {
     return false;
