@@ -22,36 +22,17 @@
 package org.silverpeas.core.contribution.content.wysiwyg.notification;
 
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
-import org.silverpeas.core.notification.system.JMSResourceEventNotifier;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
-
-import javax.annotation.Resource;
-import javax.jms.Destination;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
-import javax.jms.Topic;
 
 /**
  * A notifier of events about a WYSIWYG content. Currently, the notifications are sent
  * asynchronously.
  * @author mmoquillon
  */
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/topic/wysiwyg",
-        interfaceName = "javax.jms.Topic",
-        destinationName = "WysiwygEventNotification")})
-public class WysiwygEventNotifier extends JMSResourceEventNotifier<WysiwygContent, WysiwygEvent> {
-
-  @Resource(lookup = "java:/topic/wysiwyg")
-  private Topic topic;
+public class WysiwygEventNotifier extends CDIResourceEventNotifier<WysiwygContent, WysiwygEvent> {
 
   private WysiwygEventNotifier() {
-  }
-
-  @Override
-  protected Destination getDestination() {
-    return topic;
   }
 
   @Override
