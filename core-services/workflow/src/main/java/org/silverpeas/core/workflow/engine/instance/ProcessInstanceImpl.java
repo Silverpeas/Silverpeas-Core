@@ -1239,12 +1239,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       // Constructs the query
       db = WorkflowJDOManager.getDatabase();
       db.begin();
-      query = db.
-          getOQLQuery(
-              "SELECT undoStep FROM UndoHistoryStep " +
-                  "undoStep " +
-                  "WHERE undoStep.instanceId = $1 " + "AND undoStep.action = \"addActiveState\" " +
-                  "AND undoStep.parameters = $2");
+      query = db.getOQLQuery(
+          "SELECT undoStep " +
+          "FROM org.silverpeas.core.workflow.engine.instance.UndoHistoryStep undoStep " +
+          "WHERE undoStep.instanceId = $1 " +
+          "AND undoStep.action = \"addActiveState\" " +
+          "AND undoStep.parameters = $2");
 
       // Execute the query
       query.bind((Integer.parseInt(instanceId)));
@@ -1798,11 +1798,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       // Constructs the query
       db = WorkflowJDOManager.getDatabase();
       db.begin();
-      query = db.
-          getOQLQuery(
-              "SELECT undoStep FROM UndoHistoryStep " +
-                  "undoStep " +
-                  "WHERE undoStep.stepId = $1 ");
+      query = db.getOQLQuery(
+          "SELECT undoStep " +
+          "FROM org.silverpeas.core.workflow.engine.instance.UndoHistoryStep undoStep " +
+          "WHERE undoStep.stepId = $1 ");
 
       // Execute the query
       query.bind((Integer.parseInt(historyStep.getId())));
@@ -1948,12 +1947,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       // Constructs the query
       db = WorkflowJDOManager.getDatabase();
       db.begin();
-      query = db.
-          getOQLQuery(
-              "SELECT undoStep FROM UndoHistoryStep " +
-                  "undoStep " +
-                  "WHERE undoStep.instanceId = $1 " + "AND undoStep.action = $2 " +
-                  "AND undoStep.parameters = $3 ");
+      query = db.getOQLQuery(
+          "SELECT undoStep " +
+          "FROM org.silverpeas.core.workflow.engine.instance.UndoHistoryStep undoStep " +
+          "WHERE undoStep.instanceId = $1 " +
+          "AND undoStep.action = $2 " +
+          "AND undoStep.parameters = $3 ");
 
       // Search for all steps that activates the given state
       // Tests if user is a working user for this state
