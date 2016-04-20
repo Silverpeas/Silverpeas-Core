@@ -244,9 +244,11 @@ public class UserManagerImpl implements UserManager {
         // Constructs the query
         db = WorkflowJDOManager.getDatabase(true);
         db.begin();
-        query = db.getOQLQuery("SELECT settings FROM "
-            + "UserSettingsImpl settings "
-            + "WHERE userId = $1 AND peasId = $2");
+        query = db.getOQLQuery(
+            "SELECT settings " +
+            "FROM org.silverpeas.core.workflow.engine.user.UserSettingsImpl settings " +
+            "WHERE userId = $1 " +
+            "AND peasId = $2");
         // Execute the query
         query.bind(userId);
         query.bind(peasId);
