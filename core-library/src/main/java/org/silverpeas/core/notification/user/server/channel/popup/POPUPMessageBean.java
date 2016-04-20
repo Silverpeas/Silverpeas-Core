@@ -44,23 +44,29 @@ import javax.validation.constraints.NotNull;
             ":senderId")})
 public class POPUPMessageBean
     extends AbstractJpaCustomEntity<POPUPMessageBean, UniqueLongIdentifier> {
-
   private static final long serialVersionUID = 7025111830012761169L;
-
-  public POPUPMessageBean() {
-  }
 
   @Column(nullable = false)
   @NotNull
   private long userId = -1;
+  @Column(length = 4000)
   private String body = "";
+  @Column(length = 10)
   private String senderId = null;
+  @Column(length = 200)
   private String senderName = null;
+  @Column(length = 1)
   private String answerAllowed = "0";
+  @Column
   private String source = "";
+  @Column
   private String url = "";
+  @Column(length = 10)
   private String msgDate = null;
+  @Column(length = 5)
   private String msgTime = null;
+  public POPUPMessageBean() {
+  }
 
   public long getUserId() {
     return userId;
@@ -102,40 +108,32 @@ public class POPUPMessageBean
     this.answerAllowed = answerAllowed;
   }
 
-  public void setAnswerAllowed(boolean answerAllowed) {
-    if (answerAllowed) {
-      this.answerAllowed = "1";
-    } else {
-      this.answerAllowed = "0";
-    }
+  public String getSource() {
+    return source;
   }
 
   public void setSource(String value) {
     source = value;
   }
 
-  public String getSource() {
-    return source;
+  public String getUrl() {
+    return url;
   }
 
   public void setUrl(String value) {
     url = value;
   }
 
-  public String getUrl() {
-    return url;
-  }
-
   public String getMsgDate() {
     return msgDate;
   }
 
-  public String getMsgTime() {
-    return msgTime;
-  }
-
   public void setMsgDate(String date) {
     msgDate = date;
+  }
+
+  public String getMsgTime() {
+    return msgTime;
   }
 
   public void setMsgTime(String time) {
@@ -146,6 +144,13 @@ public class POPUPMessageBean
     return "1".equals(getAnswerAllowed());
   }
 
+  public void setAnswerAllowed(boolean answerAllowed) {
+    if (answerAllowed) {
+      this.answerAllowed = "1";
+    } else {
+      this.answerAllowed = "0";
+    }
+  }
 
   @Override
   public boolean equals(final Object o) {

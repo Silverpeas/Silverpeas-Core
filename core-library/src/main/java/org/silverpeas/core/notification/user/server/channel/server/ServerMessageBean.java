@@ -44,15 +44,24 @@ import javax.validation.constraints.NotNull;
             ":sessionId")})
 public class ServerMessageBean
     extends AbstractJpaCustomEntity<ServerMessageBean, UniqueLongIdentifier> {
-
   private static final long serialVersionUID = 769537113068849221L;
-
-  public ServerMessageBean() {
-  }
 
   @Column(nullable = false)
   @NotNull
   private long userId = -1;
+  @Column(length = 4000)
+  private String body = "";
+  @Column
+  private String sessionId = "";
+  @Column
+  private String header;
+  @Column(length = 1024)
+  private String subject;
+  @Column(length = 1)
+  private Character type;
+
+  public ServerMessageBean() {
+  }
 
   public long getUserId() {
     return userId;
@@ -62,8 +71,6 @@ public class ServerMessageBean
     userId = value;
   }
 
-  private String body = "";
-
   public String getBody() {
     return body;
   }
@@ -72,8 +79,6 @@ public class ServerMessageBean
     body = value;
   }
 
-  private String sessionId = "";
-
   public String getSessionId() {
     return sessionId;
   }
@@ -81,11 +86,6 @@ public class ServerMessageBean
   public void setSessionId(String value) {
     sessionId = value;
   }
-
-  private String header;
-  private String subject;
-  private Character type;
-
 
   @Override
   public boolean equals(final Object o) {
