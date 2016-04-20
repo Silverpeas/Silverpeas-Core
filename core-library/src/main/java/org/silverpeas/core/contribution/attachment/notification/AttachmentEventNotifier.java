@@ -21,41 +21,21 @@
 package org.silverpeas.core.contribution.attachment.notification;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.notification.system.JMSResourceEventNotifier;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Resource;
-import javax.jms.Destination;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
-import javax.jms.Topic;
-
 /**
- * A service to notify about the events which occurs on attachment. It provides an easy access to
- * the underlying messaging system used in the notification.
+ * A service to notify about the events which occurs on attachment.
  */
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/topic/attachments",
-        interfaceName = "javax.jms.Topic",
-        destinationName = "AttachmentEventNotification")})
 public class AttachmentEventNotifier
-    extends JMSResourceEventNotifier<SimpleDocument, AttachmentEvent> {
+    extends CDIResourceEventNotifier<SimpleDocument, AttachmentEvent> {
 
   public static AttachmentEventNotifier getNotifier() {
     return ServiceProvider.getService(AttachmentEventNotifier.class);
   }
 
-  @Resource(lookup = "java:/topic/attachments")
-  private Topic topic;
-
   private AttachmentEventNotifier() {
-  }
-
-  @Override
-  protected Destination getDestination() {
-    return topic;
   }
 
   @Override

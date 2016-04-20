@@ -270,7 +270,8 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       InputStream content, boolean indexIt, boolean notify) {
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
-      if (notify && StringUtil.isDefined(document.getCreatedBy())) {
+      if (reallyNotifying(document, notify) &&
+          StringUtil.isDefined(document.getCreatedBy())) {
         notificationService.notifyEventOn(ResourceEvent.Type.CREATION, document);
       }
       session.save();
@@ -332,7 +333,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
     if (document.isOpenOfficeCompatible()) {
       webdavRepository.deleteAttachmentNode(session, document);
     }
-    if (notify) {
+    if (reallyNotifying(document, notify)) {
       notificationService.notifyEventOn(ResourceEvent.Type.DELETION, document);
     }
   }
@@ -402,7 +403,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
 
 
       String userId = document.getUpdatedBy();
-      if ((userId != null) && (userId.length() > 0) && notify) {
+      if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
         notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, oldAttachment, document);
       }
       if (indexIt) {
@@ -440,7 +441,8 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       }
       repository.duplicateContent(document, finalDocument);
       String userId = finalDocument.getUpdatedBy();
-      if (StringUtil.isDefined(userId) && notify && finalDocument.isPublic()) {
+      if (StringUtil.isDefined(userId) && reallyNotifying(finalDocument, notify) &&
+          finalDocument.isPublic()) {
         notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, docBeforeUpdate, document);
       }
       if (indexIt) {
@@ -453,7 +455,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
   }
 
   @Override
-  public void removeContent(SimpleDocument document, String lang, boolean notifiy) {
+  public void removeContent(SimpleDocument document, String lang, boolean notify) {
     try (JcrSession session = openSystemSession()) {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
@@ -461,7 +463,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
       String userId = document.getCreatedBy();
-      if ((userId != null) && (userId.length() > 0) && notifiy) {
+      if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
         if (existsOtherContents) {
           notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document, document);
         } else {
@@ -775,7 +777,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       session.save();
       if (document.isPublic()) {
         String userId = context.getUserId();
-        if (StringUtil.isDefined(userId) && notify) {
+        if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
           notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, docBeforeUpdate, document);
         }
       }
@@ -1027,6 +1029,18 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
         throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
       }
     }
+  }
+
+  /**
+   * Check if notification must be really performed
+   */
+  private boolean reallyNotifying(SimpleDocument document, boolean requestedNotify) {
+    if (document.getDocumentType() == DocumentType.image) {
+      // adding an image (to an existing WYSIWYG) must never trigger the notification.
+      // This must be done by WYSIWYG service itself (if needed).
+      return false;
+    }
+    return requestedNotify;
   }
 
   /**

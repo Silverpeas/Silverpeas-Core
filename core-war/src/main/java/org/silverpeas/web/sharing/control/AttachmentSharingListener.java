@@ -24,35 +24,21 @@
  */
 package org.silverpeas.web.sharing.control;
 
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.notification.system.JMSResourceEventListener;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.services.SharingTicketService;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 
 /**
  * @author neysseri
  */
-@MessageDriven(name = "SharedAttachmentEventListener", activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup",
-        propertyValue = "topic/attachments"),
-    @ActivationConfigProperty(propertyName = "destinationType",
-        propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "acknowledgeMode",
-        propertyValue = "Auto-acknowledge")})
-public class AttachmentSharingListener extends JMSResourceEventListener<AttachmentEvent> {
+public class AttachmentSharingListener extends CDIResourceEventListener<AttachmentEvent> {
 
   @Inject
   private SharingTicketService service;
-
-  @Override
-  protected Class<AttachmentEvent> getResourceEventClass() {
-    return AttachmentEvent.class;
-  }
 
   @Override
   public void onDeletion(final AttachmentEvent event) throws Exception {

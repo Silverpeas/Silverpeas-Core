@@ -426,7 +426,7 @@ public class WysiwygManager {
     document.setDocumentType(context);
     AttachmentServiceProvider.getAttachmentService()
         .createAttachment(document, new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)),
-            indexIt, notify);
+            indexIt, false);
     if (notify) {
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, content);
     }

@@ -27,10 +27,12 @@ package org.silverpeas.core.notification.user.server.channel.silvermail;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ST_SilverMailMessage")
@@ -45,10 +47,30 @@ public class SILVERMAILMessageBean
     extends AbstractJpaCustomEntity<SILVERMAILMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = -3073514330044912996L;
 
+  @Column(nullable = false)
+  @NotNull
+  private long userId = -1;
+  @Column
+  private long folderId = 0; // 0 = INBOX
+  @Column
+  private String senderName = "";
+  @Column(length = 1024)
+  private String subject = "";
+  @Column
+  private String source = "";
+  @Column
+  private String url = "";
+  @Column
+  private String dateMsg;
+  @Column(length = 4000)
+  private String body = "";
+  @Column(nullable = false)
+  private int readen = 0;
+  @Column
+  private String header;
+
   public SILVERMAILMessageBean() {
   }
-
-  private long userId = -1;
 
   public long getUserId() {
     return userId;
@@ -58,88 +80,69 @@ public class SILVERMAILMessageBean
     userId = value;
   }
 
-  private long folderId = 0; // 0 = INBOX
-
-  public void setFolderId(long value) {
-    folderId = value;
-  }
-
   public long getFolderId() {
     return folderId;
   }
 
-  private String senderName = "";
-
-  public void setSenderName(String value) {
-    senderName = value;
+  public void setFolderId(long value) {
+    folderId = value;
   }
 
   public String getSenderName() {
     return senderName;
   }
 
-  private String subject = "";
-
-  public void setSubject(String value) {
-    subject = value;
+  public void setSenderName(String value) {
+    senderName = value;
   }
 
   public String getSubject() {
     return subject;
   }
 
-  private String source = "";
-
-  public void setSource(String value) {
-    source = value;
+  public void setSubject(String value) {
+    subject = value;
   }
 
   public String getSource() {
     return source;
   }
 
-  private String url = "";
-
-  public void setUrl(String value) {
-    url = value;
+  public void setSource(String value) {
+    source = value;
   }
 
   public String getUrl() {
     return url;
   }
 
-  private String dateMsg;
-
-  public void setDateMsg(String value) {
-    dateMsg = value;
+  public void setUrl(String value) {
+    url = value;
   }
 
   public String getDateMsg() {
     return dateMsg;
   }
 
-  private String body = "";
-
-  public void setBody(String value) {
-    body = value;
+  public void setDateMsg(String value) {
+    dateMsg = value;
   }
 
   public String getBody() {
     return body;
   }
 
-  private int readen = 0;
-
-  public void setReaden(int readen) {
-    readen = readen;
+  public void setBody(String value) {
+    body = value;
   }
 
   public int getReaden() {
     return readen;
   }
 
-  private String header;
-
+  public void setReaden(int value) {
+    readen = value;
+  }
 
   @Override
   public boolean equals(final Object o) {
