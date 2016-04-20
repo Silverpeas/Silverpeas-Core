@@ -144,7 +144,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
         }
       }
     } catch (Exception e) {
-      getLogger("upload").warn(e.getMessage());
+      getLogger(this).warn(e.getMessage());
       session.setAttribute(UPLOAD_FATAL_ERROR,
           "Could not process uploaded file. Please see log for details.");
     } finally {

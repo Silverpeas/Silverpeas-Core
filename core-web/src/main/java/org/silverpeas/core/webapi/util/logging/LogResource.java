@@ -65,10 +65,10 @@ public class LogResource extends RESTWebService {
     try {
       return logsAccessor.getLastLogRecords(logName, count);
     } catch (FileNotFoundException ex) {
-      SilverLogger.getLogger("core").error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     } catch (IOException ex) {
-      SilverLogger.getLogger("core").error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
   }

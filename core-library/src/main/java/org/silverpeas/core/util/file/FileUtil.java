@@ -91,7 +91,7 @@ public class FileUtil implements MimeTypes {
       try {
         mimeType = MetadataExtractor.get().detectMimeType(file);
       } catch (Exception ex) {
-        SilverLogger.getLogger("file")
+        SilverLogger.getLogger(FileUtil.class)
             .warn("File exists ({0}), but mime-type has been detected: {1}", file.getName(),
                 ex.getMessage());
       }
@@ -104,7 +104,7 @@ public class FileUtil implements MimeTypes {
           }
         }
       } catch (final MissingResourceException e) {
-        SilverLogger.getLogger("file").warn("Unknown mime-type: {0}", e.getMessage());
+        SilverLogger.getLogger(FileUtil.class).warn("Unknown mime-type: {0}", e.getMessage());
       }
     }
     if (!StringUtil.isDefined(mimeType)) {
@@ -502,7 +502,7 @@ public class FileUtil implements MimeTypes {
       validateFilename(fileName, intendedDir);
       result = true;
     } catch (Exception e) {
-      SilverLogger.getLogger("file").warn("Security alert on " + fileName);
+      SilverLogger.getLogger(FileUtil.class).warn("Security alert on " + fileName);
     }
     return result;
   }

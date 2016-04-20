@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
  */
 public class MassiveWebSecurityFilter implements Filter {
 
-  private static final SilverLogger logger = SilverLogger.getLogger("security");
+  private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
 
   private final static String WEB_SERVICES_URI_PREFIX =
       UriBuilder.fromUri(URLUtil.getApplicationURL())

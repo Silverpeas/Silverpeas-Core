@@ -55,7 +55,7 @@ public class SortResultsFactory {
       try {
         return (SortResults) ServiceProvider.getService(qualifier);
       } catch (Exception e) {
-        SilverLogger.getLogger("pdcPeas").error("Sort result error", e);
+        SilverLogger.getLogger(SortResultsFactory.class).error("Sort result error", e);
       }
     }
     return ServiceProvider.getService("defaultSortResults");

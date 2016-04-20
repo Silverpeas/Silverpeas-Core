@@ -88,7 +88,7 @@ public class UserIndexation {
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception ex) {
-      SilverLogger.getLogger("admin").error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
   }
 
@@ -117,7 +117,7 @@ public class UserIndexation {
       }
       return foundUsers;
     } catch (ParseException ex) {
-      SilverLogger.getLogger("admin").error(ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }

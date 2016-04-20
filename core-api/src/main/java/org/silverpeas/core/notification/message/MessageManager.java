@@ -175,7 +175,7 @@ public class MessageManager {
 
     // If null, manager has not been initialized -> ERROR is traced
     if (container == null) {
-      SilverLogger.getLogger("notification").error("ResourceLocator : " + bundleBaseName);
+      SilverLogger.getLogger(MessageManager.class).error("ResourceLocator : " + bundleBaseName);
       return null;
     }
 
@@ -314,7 +314,7 @@ public class MessageManager {
 
     // If null, manager has not been initialized -> ERROR is traced
     if (container == null) {
-      SilverLogger.getLogger("notification")
+      SilverLogger.getLogger(MessageManager.class)
           .error("Type : " + message.getType() + ", Message : " + message.getContent());
     } else {
       container.addMessage(message);

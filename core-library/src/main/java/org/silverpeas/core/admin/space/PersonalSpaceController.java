@@ -137,7 +137,7 @@ public class PersonalSpaceController {
     try {
       return getAdminService().getPersonalSpace(userId);
     } catch (AdminException e) {
-      SilverLogger.getLogger("admin").warn(e.getMessage());
+      SilverLogger.getLogger(this).warn(e.getMessage());
       return null;
     }
   }

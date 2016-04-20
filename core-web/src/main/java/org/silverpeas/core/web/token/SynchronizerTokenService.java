@@ -66,7 +66,7 @@ public class SynchronizerTokenService {
       "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rchat/chat[0-9]+|blockingNews|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
-  private static final SilverLogger logger = SilverLogger.getLogger("security");
+  private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
   private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList("POST", "PUT",
       "DELETE");
 

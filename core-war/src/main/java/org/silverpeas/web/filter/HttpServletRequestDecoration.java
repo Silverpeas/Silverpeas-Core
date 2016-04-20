@@ -35,8 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * A filter to decorate the incoming request into a {@link HttpRequest}
- * instance.
+ * A filter to decorate the incoming request into a {@link HttpRequest} instance.
  * @author mmoquillon
  */
 public class HttpServletRequestDecoration implements Filter {

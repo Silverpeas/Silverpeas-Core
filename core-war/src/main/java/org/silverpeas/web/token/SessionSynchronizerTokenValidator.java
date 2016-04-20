@@ -57,7 +57,7 @@ import java.io.IOException;
  */
 public class SessionSynchronizerTokenValidator implements Filter {
 
-  private static final SilverLogger logger = SilverLogger.getLogger("security");
+  private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
 
   @Inject
   private SynchronizerTokenService tokenService;

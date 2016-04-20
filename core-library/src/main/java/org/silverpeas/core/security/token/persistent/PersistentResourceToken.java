@@ -225,7 +225,7 @@ public class PersistentResourceToken
           ref = null;
         }
       } catch (Exception ex) {
-        SilverLogger.getLogger("core").error(ex.getMessage(), ex);
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       }
     }
     return ref;
