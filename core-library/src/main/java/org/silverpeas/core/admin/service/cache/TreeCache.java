@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.space.model.Space;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -225,6 +226,14 @@ public class TreeCache {
   public static void addSubSpace(int spaceId, SpaceInstLight subSpace) {
     Space space = getSpace(spaceId);
     if (space != null) {
+      Iterator<SpaceInstLight> spaceSubSpaceIterator = space.getSubspaces().iterator();
+      while(spaceSubSpaceIterator.hasNext()) {
+        SpaceInstLight currentSpaceSubSpace = spaceSubSpaceIterator.next();
+        if (currentSpaceSubSpace.getId().equals(subSpace.getId())) {
+          spaceSubSpaceIterator.remove();
+          break;
+        }
+      }
       space.getSubspaces().add(subSpace);
     }
   }
