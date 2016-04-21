@@ -20,11 +20,6 @@
  */
 package org.silverpeas.core.admin.user.model;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.socialnetwork.invitation.InvitationService;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -32,23 +27,29 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.Collator;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -688,13 +689,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   @Override
   public int compareTo(UserDetail other) {
+    Collator collator = Collator.getInstance();
     String myLastName = getLastName().toLowerCase(I18NHelper.defaultLocale);
     String otherLastName = other.getLastName().toLowerCase(I18NHelper.defaultLocale);
-    int result = myLastName.compareTo(otherLastName);
+    int result = collator.compare(myLastName, otherLastName);
     if (result == 0) {
       String myFirstName = getFirstName().toLowerCase(I18NHelper.defaultLocale);
       String otherFirstName = other.getFirstName().toLowerCase(I18NHelper.defaultLocale);
-      result = myFirstName.compareTo(otherFirstName);
+      result = collator.compare(myFirstName, otherFirstName);
       if (result == 0) {
         String myId = getId();
         String otherId = other.getId();
