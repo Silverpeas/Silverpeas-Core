@@ -187,7 +187,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
               .append(fieldName)
               .append(OPERATION_KEY + ".value='")
               .append(Operation.DELETION.name())
-              .append("';" + "\">")
+              .append("';return false;\">")
               .append("<img src=\"")
               .append(deleteImg)
               .append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"")

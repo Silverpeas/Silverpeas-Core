@@ -161,7 +161,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
           .append(usersOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
           .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
           .append("&selectionMultiple=true")
-          .append("','selectUser',800,600,'');\" >");
+          .append("','selectUser',800,600,'');return false;\" >");
 
       html.append("<img src=\"").append(selectUserImg).append(
           "\" width=\"15\" height=\"15\" border=\"0\" alt=\"")
