@@ -71,6 +71,7 @@ public class DidYouMeanSearcher {
    */
   public String[] suggest(QueryDescription queryDescription)
       throws org.silverpeas.core.index.search.model.ParseException, IOException {
+    spellCheckers.clear();
 
     String[] suggestions = null;
     // The variable field is only used to parse the query String and to obtain the words that will

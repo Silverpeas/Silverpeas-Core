@@ -110,4 +110,16 @@ public class CacheServiceProvider {
     }
     return cacheService;
   }
+
+  /**
+   * Clears all caches associated to the current thread:
+   * <ul>
+   *   <li>Request Cache Service</li>
+   *   <li>Thread Cache Service</li>
+   * </ul>
+   */
+  public static void clearAllThreadCaches() {
+    getThreadCacheService().clear();
+    getRequestCacheService().clear();
+  }
 }

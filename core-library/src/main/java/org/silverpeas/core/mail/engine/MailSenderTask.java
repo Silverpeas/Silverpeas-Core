@@ -24,9 +24,10 @@
 
 package org.silverpeas.core.mail.engine;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,9 +85,7 @@ public class MailSenderTask implements Runnable {
       try {
         addMailToSendRequest.process(orderedOneByOneSemaphore);
       } catch (Exception e) {
-        e.printStackTrace();
-        SilverTrace
-            .error("mailSenderEngine", "MailSenderThread", "mailSenderEngine.UNEXPECTED_ERROR", e);
+        SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
       }
     }
   }
@@ -111,6 +110,7 @@ public class MailSenderTask implements Runnable {
     // The loop condition must be verified on a private attribute of run method (not on the static
     // running attribute) in order to avoid concurrent access.
     while (currentRequest != null) {
+      CacheServiceProvider.clearAllThreadCaches();
 
         /*
          * Each request is processed out of the synchronized block so the others threads (which put
@@ -120,8 +120,7 @@ public class MailSenderTask implements Runnable {
         currentRequest.process(orderedOneByOneSemaphore);
       } catch (Exception e) {
         e.printStackTrace();
-        SilverTrace
-            .error("mailSenderEngine", "MailSenderThread", "mailSenderEngine.UNEXPECTED_ERROR", e);
+        SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
       }
 
       // Getting the next request if any.

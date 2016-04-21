@@ -270,16 +270,16 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       InputStream content, boolean indexIt, boolean notify) {
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
-      if (reallyNotifying(document, notify) &&
-          StringUtil.isDefined(document.getCreatedBy())) {
-        notificationService.notifyEventOn(ResourceEvent.Type.CREATION, document);
-      }
       session.save();
       SimpleDocument createdDocument = repository.findDocumentById(session, docPk, document.
           getLanguage());
       createdDocument.setPublicDocument(document.isPublic());
       SimpleDocument finalDocument = repository.unlock(session, createdDocument, false);
       repository.storeContent(finalDocument, content, false);
+      if (reallyNotifying(document, notify) &&
+          StringUtil.isDefined(document.getCreatedBy())) {
+        notificationService.notifyEventOn(ResourceEvent.Type.CREATION, document);
+      }
       if (indexIt) {
         createIndex(finalDocument);
       }
@@ -401,6 +401,7 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
         }
       }
 
+      session.save();
 
       String userId = document.getUpdatedBy();
       if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
@@ -409,7 +410,6 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       if (indexIt) {
         createIndex(document);
       }
-      session.save();
     } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
@@ -440,6 +440,9 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
       repository.duplicateContent(document, finalDocument);
+
+      session.save();
+
       String userId = finalDocument.getUpdatedBy();
       if (StringUtil.isDefined(userId) && reallyNotifying(finalDocument, notify) &&
           finalDocument.isPublic()) {
@@ -448,7 +451,6 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       if (indexIt) {
         createIndex(finalDocument);
       }
-      session.save();
     } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
@@ -462,6 +464,10 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
+      deleteIndex(document, document.getLanguage());
+
+      session.save();
+
       String userId = document.getCreatedBy();
       if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
         if (existsOtherContents) {
@@ -470,8 +476,6 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
           notificationService.notifyEventOn(ResourceEvent.Type.DELETION, document);
         }
       }
-      deleteIndex(document, document.getLanguage());
-      session.save();
       SimpleDocument finalDocument = document;
       if (requireLock) {
         finalDocument = repository.unlockFromContentDeletion(session, document);

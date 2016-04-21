@@ -160,7 +160,8 @@ public class UploadedFile {
     SimpleDocument document = retrieveSimpleDocument(resourcePk, contributionLanguage);
 
     // Create attachment (please read the method documentation ...)
-    AttachmentServiceProvider.getAttachmentService().createAttachment(document, getFile(), indexIt);
+    AttachmentServiceProvider.getAttachmentService()
+        .createAttachment(document, getFile(), indexIt, false);
 
     // Delete the original content from its original location.
     markAsProcessed();

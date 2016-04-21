@@ -24,7 +24,9 @@
 
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -64,8 +66,7 @@ public class IndexerThread extends Thread {
         requestList.notify();
       }
     } catch (InterruptedException e) {
-      SilverTrace
-          .error("indexing", "IndexerThread", "indexing.INFO_STARTS_INDEXER_THREAD", e);
+      SilverLogger.getLogger(IndexerThread.class).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -80,8 +81,7 @@ public class IndexerThread extends Thread {
         requestList.notify();
       }
     } catch (InterruptedException e) {
-      SilverTrace
-          .error("indexing", "IndexerThread", "indexing.INFO_STARTS_INDEXER_THREAD", e);
+      SilverLogger.getLogger(IndexerThread.class).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -99,6 +99,7 @@ public class IndexerThread extends Thread {
        * First, all the requests are processed until the queue becomes empty.
        */
       do {
+        CacheServiceProvider.clearAllThreadCaches();
         request = null;
 
         synchronized (requestList) {
