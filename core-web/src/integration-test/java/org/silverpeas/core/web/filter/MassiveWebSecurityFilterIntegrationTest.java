@@ -66,7 +66,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
   }
 
   private final static String COMMON_PARAMETER_NAME = "parameterName";
-  private final static String SKIPED_PARAMETER_NAME = "editor";
+  private final static String SKIPPED_PARAMETER_NAME = "editor";
 
   private final static String[] PONCTUATIONS = {",", "?", "-", ".", "!", "&", "~", "'", ";"};
   private final static String[] SQL_PRIVILEGES =
@@ -77,10 +77,10 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testXss() {
-    assertXSS(skipedParam("script"), false);
+    assertXSS(skippedParam("script"), false);
     assertXSS(param("script"), false);
 
-    assertXSS(skipedParam("<script>"), false);
+    assertXSS(skippedParam("<script>"), false);
     assertXSS(param("<script>"), true);
 
     assertXSS(param("<sCRipt >"), true);
@@ -116,10 +116,10 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testSqlGRANT() {
-    assertSQL(skipedParam("script"), false);
+    assertSQL(skippedParam("script"), false);
     assertSQL(param("script"), false);
 
-    assertSQL(skipedParam("GRANT SELECT ON suppliers TO smithj"), false);
+    assertSQL(skippedParam("GRANT SELECT ON suppliers TO smithj"), false);
     assertSQL(param("GRANT COOK ON suppliers TO smithj"), false);
     assertSQL(param("GRANT SELECT ON suppliers TO smithj"), true);
     assertSQL(param("miGRANT SELECT ON suppliers TO smithj"), false);
@@ -176,7 +176,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testSqlREVOKE() {
-    assertSQL(skipedParam("REVOKE SELECT ON suppliers FROM smithj"), false);
+    assertSQL(skippedParam("REVOKE SELECT ON suppliers FROM smithj"), false);
     assertSQL(param("REVOKE COOK ON suppliers FROM smithj"), false);
     assertSQL(param("miREVOKE SELECT ON suppliers FROM smithj"), false);
     assertSQL(param("SREVOKE SELECT ON suppliers FROM smithj"), false);
@@ -240,7 +240,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
     for (String action : actions) {
       for (String resource : resources) {
-        assertSQL(skipedParam(action + " " + resource + " aResource"), false);
+        assertSQL(skippedParam(action + " " + resource + " aResource"), false);
         assertSQL(param(action + " " + resource + " aResource"), true);
         assertSQL(param("s" + action + " " + resource + " aResource"), false);
         assertSQL(param("é" + action + " " + resource + " aResource"), false);
@@ -254,7 +254,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testSqlSELECT() {
-    assertSQL(skipedParam("SELECT * FROM catalogs"), false);
+    assertSQL(skippedParam("SELECT * FROM catalogs"), false);
     assertSQL(param("SELECT ; FRoM catalog"), false);
     assertSQL(param("SELECT ; FRoM catalogs SELECT 1 FROM supliers"), true);
     assertSQL(param("SELECT supliers; FRoM supliers SELECT 1 FROM supliers"), false);
@@ -301,7 +301,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testSqlINSERT() {
-    assertSQL(skipedParam("INSERT inTo catalogs (id) values"), false);
+    assertSQL(skippedParam("INSERT inTo catalogs (id) values"), false);
     assertSQL(param("INSERT inTo catalogs (id) valuess"), false);
     assertSQL(param("INSERT inTo catalogs (id) values"), true);
     assertSQL(param("INSERT inTo catalogs (id) values \t\n"), true);
@@ -328,7 +328,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testSqlUPDATE() {
-    assertSQL(skipedParam("uPdaTe catalogs set"), false);
+    assertSQL(skippedParam("uPdaTe catalogs set"), false);
     assertSQL(param("uPdaTe catalogs sets"), false);
     assertSQL(param("uPdaTe catalogs set"), true);
     assertSQL(param("uPdaTe st_space_space set"), true);
@@ -352,7 +352,7 @@ public class MassiveWebSecurityFilterIntegrationTest {
 
   @Test
   public void testSqlDELETE() {
-    assertSQL(skipedParam("DeleTe from catalogs"), false);
+    assertSQL(skippedParam("DeleTe from catalogs"), false);
     assertSQL(param("DeleTe from catalogs"), true);
   }
 
@@ -382,8 +382,8 @@ public class MassiveWebSecurityFilterIntegrationTest {
     SECOND_PARAMETER_SECOND_VALUE
   }
 
-  private URLConfigTest skipedParam(String parameterValue) {
-    return param(SKIPED_PARAMETER_NAME, parameterValue);
+  private URLConfigTest skippedParam(String parameterValue) {
+    return param(SKIPPED_PARAMETER_NAME, parameterValue);
   }
 
   private URLConfigTest param(String parameterValue) {
