@@ -29,59 +29,44 @@
 <%@ include file="check.jsp" %>
 <html>
 <head>
-<title> Synchro Dynamic Report - Mode <%=SynchroDomainReport.getReportLevel()%></title>
+  <title> Synchro Dynamic Report - Mode <%=SynchroDomainReport.getReportLevel()%>
+  </title>
 </head>
 <body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 <NOBR>
-<%
+  <%
     String toDisp = SynchroDomainReport.getMessages();
     boolean isActive = true;
 
     SynchroDomainReport.waitForStart();
-    while (isActive || (toDisp != null))
-    {
-        if (toDisp != null)
-        {
-            if (toDisp.length() > 0)
-            {
-                if (toDisp.startsWith("F"))
-                {
-                    out.print("<FONT SIZE=3 COLOR=#FF0000>");
-                }
-                else if (toDisp.startsWith("E"))
-                {
-                    out.print("<FONT SIZE=3 COLOR=#FF6666>");
-                }
-                else if (toDisp.startsWith("W"))
-                {
-                    out.print("<FONT COLOR=#000000>");
-                }
-                else if (toDisp.startsWith("I"))
-                {
-                    out.print("<FONT COLOR=#0000FF>");
-                }
-                else if (toDisp.startsWith("D"))
-                {
-                    out.print("<FONT COLOR=#B6B6B6>");
-                }
-                else
-                {
-                    out.print("<FONT COLOR=#00FF00>");
-                }
-            }
-            out.print(EncodeHelper.javaStringToHtmlString(toDisp.substring(2)) + "<BR>");
-            out.print("</FONT>");
-            out.flush();
+    while (isActive || (toDisp != null)) {
+      if (toDisp != null) {
+        if (toDisp.length() > 0) {
+          if (toDisp.startsWith("[F")) {
+            out.print("<FONT SIZE=3 COLOR=#FF0000>");
+          } else if (toDisp.startsWith("[E")) {
+            out.print("<FONT SIZE=3 COLOR=#FF6666>");
+          } else if (toDisp.startsWith("[W")) {
+            out.print("<FONT COLOR=#000000>");
+          } else if (toDisp.startsWith("[I")) {
+            out.print("<FONT COLOR=#0000FF>");
+          } else if (toDisp.startsWith("[D")) {
+            out.print("<FONT COLOR=#B6B6B6>");
+          } else {
+            out.print("<FONT COLOR=#00FF00>");
+          }
         }
-        // Attention a l'ordre !!! Il faut absolument d'abord tester l'etat avant de faire l'appel a getMessage
-        if ((SynchroDomainReport.isSynchroActive()) || (SynchroDomainReport.getState() == SynchroDomainReport.STATE_WAITSTART))
-            isActive = true;
-        else
-            isActive = false;
-        toDisp = SynchroDomainReport.getMessages();
+        out.print(EncodeHelper.javaStringToHtmlString(toDisp) + "<BR>");
+        out.print("</FONT>");
+        out.flush();
+      }
+      // Verifying the state before getting the next message.
+      isActive = (SynchroDomainReport.isSynchroActive()) ||
+          (SynchroDomainReport.getState() == SynchroDomainReport.STATE_WAITSTART);
+      toDisp = SynchroDomainReport.getMessages();
     }
     SynchroDomainReport.reset();
-%>
+  %>
 </NOBR>
 </body>
 </html>

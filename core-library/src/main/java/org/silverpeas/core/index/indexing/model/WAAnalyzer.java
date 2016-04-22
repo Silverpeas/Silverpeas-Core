@@ -38,11 +38,13 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.Reader;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Extends lucene Analyzer : prunes from a tokens stream all the meaningless words and prunes all
@@ -114,15 +116,16 @@ public final class WAAnalyzer extends Analyzer {
    * Returns an array of words which are not usually usefull for searching.
    */
   private void getStopWords(String language) {
-    stopWords = new HashSet<>();
+    stopWords = Collections.emptySet();
     String currentLanguage = language;
     try {
       if (!StringUtil.isDefined(currentLanguage)) {
         currentLanguage = I18NHelper.defaultLanguage;
       }
-      LocalizationBundle resource =
-          ResourceLocator.getLocalizationBundle("org.silverpeas.index.indexing.StopWords", currentLanguage);
-      stopWords.addAll(resource.keySet());
+      LocalizationBundle resource = ResourceLocator
+          .getLocalizationBundle("org.silverpeas.index.indexing.StopWords", currentLanguage);
+      stopWords = resource.keySet().stream().filter(s -> !s.startsWith("GML."))
+          .collect(Collectors.toCollection(LinkedHashSet::new));
     } catch (MissingResourceException e) {
       SilverTrace.warn("indexing", "WAAnalyzer", "indexing.MSG_MISSING_STOPWORDS_DEFINITION");
     }
