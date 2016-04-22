@@ -47,8 +47,8 @@ import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -98,8 +98,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.isSpaceInstExist(sClientSpaceId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isSpaceInstExist",
-          "admin.MSG_ERR_IS_SPACE_EXIST", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;
     }
   }
@@ -110,8 +109,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getSpaceInstById(sSpaceId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getSpaceInstById",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -121,8 +119,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getSpaceInstLightById(sSpaceId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getSpaceInstLight",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -132,8 +129,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getTreeView(userId, spaceId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getTreeView",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -143,8 +139,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getPathToComponent(componentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getPathToComponent",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -154,8 +149,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getPathToSpace(spaceId, includeTarget);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getPathToSpace",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -166,9 +160,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getUserManageableSpaceRootIds(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin",
-          "AdminController.getUserManageableSpaceRootIds",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -180,30 +172,27 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getUserManageableSubSpaceIds(sUserId, sParentSpace);
     } catch (Exception e) {
-      SilverTrace.error("admin",
-          "AdminController.getUserManageableSubSpaceIds",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
 
   /**
-* Return the space Instance corresponding to the given space id : FORMAT EX : 123
-*/
+   * Return the space Instance corresponding to the given space id : FORMAT EX : 123
+   */
   public String[] getUserManageableSpaceIds(String sUserId) {
 
     try {
       return admin.getUserManageableSpaceIds(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserManageableSpaceIds",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
 
   /**
-* Return the space Instance corresponding to the given space id : FORMAT EX : WA123
-*/
+   * Return the space Instance corresponding to the given space id : FORMAT EX : WA123
+   */
   /** If user is Admin, return all space Ids */
   public String[] getUserManageableSpaceClientIds(String sUserId) {
 
@@ -215,9 +204,7 @@ public class AdminController implements java.io.Serializable {
         return admin.getClientSpaceIds(admin.getUserManageableSpaceIds(sUserId));
       }
     } catch (Exception e) {
-      SilverTrace.error("admin",
-          "AdminController.getUserManageableSpaceClientIds",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -228,7 +215,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.addSpaceInst(spaceInst.getCreatorUserId(), spaceInst);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addSpaceInst", "admin.MSG_ERR_ADD_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -239,20 +226,20 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.deleteSpaceInstById(user.getId(), sSpaceInstId, definitive);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteSpaceInstById", "admin.MSG_ERR_DELETE_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Update the space Instance corresponding to the given space name wuth the given SpaceInst
-*/
+   * Update the space Instance corresponding to the given space name wuth the given SpaceInst
+   */
   public String updateSpaceInst(SpaceInst spaceInstNew) {
 
     try {
       return admin.updateSpaceInst(spaceInstNew);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateSpaceInst", "admin.MSG_ERR_UPDATE_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -271,8 +258,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllRootSpaceIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSpaceIds", "admin.MSG_ERR_GET_ALL_SPACE_IDS",
-          e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -283,8 +269,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllSpaceIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSpaceIds",
-          "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -295,22 +280,20 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllSpaceIds(userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSpaceIds",
-          "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
   /**
-* Return all the sub spaces Id available in webactiv given the fatherDomainId
-*/
+   * Return all the sub spaces Id available in webactiv given the fatherDomainId
+   */
   public String[] getAllSubSpaceIds(String sDomainFatherId) {
 
     try {
       return admin.getAllSubSpaceIds(sDomainFatherId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSubSpaceIds",
-          "admin.MSG_ERR_GET_SUBSPACE_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -322,8 +305,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllSubSpaceIds(sDomainFatherId, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSubSpaceIds",
-          "admin.MSG_ERR_GET_SUBSPACE_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -334,8 +316,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getSpaceNames(asSpaceIds);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getSpaceNames",
-          "admin.MSG_ERR_GET_SPACE_NAMES", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -345,8 +326,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.updateSpaceOrderNum(sSpaceId, orderNum);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateSpaceOrderNum",
-          "admin.MSG_ERR_UPDATE_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -368,8 +348,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllComponents();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllComponents",
-          "admin.MSG_ERR_GET_ALL_COMPONENTS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return new HashMap<String, WAComponent>();
     }
   }
@@ -380,8 +359,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getComponentInst(sComponentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getComponentInst",
-          "admin.MSG_ERR_GET_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -391,8 +369,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getComponentInstLight(sComponentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getComponentInstLight",
-          "admin.MSG_ERR_GET_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -411,17 +388,17 @@ public class AdminController implements java.io.Serializable {
       return "";
     } finally {
       if (exceptionCatched != null) {
-        SilverTrace.error("admin", "AdminController.addComponentInst",
-            "admin.MSG_ERR_ADD_COMPONENT", exceptionCatched);
+        SilverLogger.getLogger(this)
+            .error(exceptionCatched.getLocalizedMessage(), exceptionCatched);
       }
     }
   }
 
   /**
-* @param componentInst The component instance to add.
-* @param userId The id of the user who becomes the instance's creator.
-* @return The id of the new component instance.
-*/
+   * @param componentInst The component instance to add.
+   * @param userId The id of the user who becomes the instance's creator.
+   * @return The id of the new component instance.
+   */
   public String addComponentInst(ComponentInst componentInst, String userId) throws QuotaException {
 
     try {
@@ -429,8 +406,7 @@ public class AdminController implements java.io.Serializable {
     } catch (QuotaException e) {
       throw e;
     } catch (Exception e) {
-      SilverTrace.error(
-        "admin", "AdminController.addComponentInst", "admin.MSG_ERR_ADD_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -441,23 +417,21 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.deleteComponentInst(user.getId(), sComponentId, definitive);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteComponentInst",
-          "admin.MSG_ERR_DELETE_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Update the component Instance corresponding to the given space component with the given
-* ComponentInst
-*/
+   * Update the component Instance corresponding to the given space component with the given
+   * ComponentInst
+   */
   public String updateComponentInst(ComponentInst componentInst) {
 
     try {
       return admin.updateComponentInst(componentInst);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateComponentInst",
-          "admin.MSG_ERR_UPDATE_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -471,15 +445,14 @@ public class AdminController implements java.io.Serializable {
   }
 
   /**
-* Return the component ids available for the cuurent user Id in the given space id
-*/
+   * Return the component ids available for the cuurent user Id in the given space id
+   */
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
 
     try {
       return admin.getAvailCompoIds(sClientSpaceId, sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAvailCompoIds",
-          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -489,25 +462,23 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.isComponentAvailable(componentId, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isComponentAvailable",
-          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;
     }
   }
 
   /**
-* Indcates if a user can access the specified space.
-* @param userId the user id.
-* @param spaceId the space id.
-* @return true if the space is accessible - false otherwise.
-*/
+   * Indcates if a user can access the specified space.
+   * @param userId the user id.
+   * @param spaceId the space id.
+   * @return true if the space is accessible - false otherwise.
+   */
   public boolean isSpaceAvailable(String userId, String spaceId) {
 
     try {
       return admin.isSpaceAvailable(userId, spaceId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isSpaceAvailable",
-          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;
     }
   }
@@ -517,8 +488,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.updateComponentOrderNum(sComponentId, orderNum);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateComponentOrderNum",
-          "admin.MSG_ERR_UPDATE_COMPONENT", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -533,8 +503,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getRemovedSpaces();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getRemovedSpaces",
-          "admin.MSG_ERR_GET_REMOVED_SPACES", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -543,8 +512,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getRemovedComponents();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getRemovedComponents",
-          "admin.MSG_ERR_GET_REMOVED_COMPONENTS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -553,8 +521,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.restoreSpaceFromBasket(spaceId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.restoreSpaceFromBasket",
-          "admin.MSG_ERR_GET_RESTORE_SPACE_FROM_BASKET", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -562,8 +529,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.restoreComponentFromBasket(componentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.restoreComponentFromBasket",
-          "admin.MSG_ERR_GET_RESTORE_COMPONENT_FROM_BASKET", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -576,8 +542,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllProfilesNames(sComponentName);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllProfilesNames",
-          "admin.MSG_ERR_GET_ALL_PROFILE_NAMES", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -588,8 +553,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getProfileInst(sProfileId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getProfileInst",
-          "admin.MSG_ERR_GET_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -600,8 +564,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getProfilesByObject(objectId, objectType, componentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getProfilesByObject",
-          "admin.MSG_ERR_GET_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -612,8 +575,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getProfilesByObjectAndUserId(objectId, objectType, componentId, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isObjectAvailable",
-          "admin.MSG_ERR_GET_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -624,8 +586,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.isObjectAvailable(componentId, objectId, objectType, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isObjectAvailable",
-          "admin.MSG_ERR_GET_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;
     }
   }
@@ -640,17 +601,16 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.addProfileInst(profileInst, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addProfileInst",
-          "admin.MSG_ERR_ADD_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Delete the Profile Instance corresponding to the given Profile id.
-* @param sProfileId
-* @return
-*/
+   * Delete the Profile Instance corresponding to the given Profile id.
+   * @param sProfileId
+   * @return
+   */
   public String deleteProfileInst(String sProfileId) {
     return deleteProfileInst(sProfileId, null);
   }
@@ -660,15 +620,14 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.deleteProfileInst(sProfileId, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteProfileInst",
-          "admin.MSG_ERR_DELETE_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Update the Profile Instance corresponding to the given space Profile with the given ProfileInst
-*/
+   * Update the Profile Instance corresponding to the given space Profile with the given ProfileInst
+   */
   public String updateProfileInst(ProfileInst profileInst) {
     return updateProfileInst(profileInst, null);
   }
@@ -678,23 +637,22 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.updateProfileInst(profileInst, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateProfileInst",
-          "admin.MSG_ERR_UPDATE_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Get the profile label from its name
-*/
+   * Get the profile label from its name
+   */
   public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
 
     try {
       return admin.getProfileLabelfromName(sComponentName, sProfileName, lang);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getProfileLabelfromName",
-          "admin.MSG_ERR_GET_PROFILE_LABEL_FROM_NAME", "component name: "
-          + sComponentName + ", profile name: " + sProfileName, e);
+      SilverLogger.getLogger(this).error(
+          "cannot get profile label from component name ''{0}'' and profile name ''{1}'' ({2})",
+          new String[]{sComponentName, sProfileName, e.getLocalizedMessage()}, e);
       return "";
     }
   }
@@ -703,16 +661,15 @@ public class AdminController implements java.io.Serializable {
   // User Profile related functions
   // ----------------------------------------------
   /**
-* All the profiles to which the user belongs
-* @return an array of profile IDs
-*/
+   * All the profiles to which the user belongs
+   * @return an array of profile IDs
+   */
   public String[] getProfileIds(String sUserId) {
 
     try {
       return admin.getProfileIds(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getProfileIds",
-          "admin.MSG_ERR_GET_USERPROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -721,16 +678,15 @@ public class AdminController implements java.io.Serializable {
   // Group Profile related functions
   // ----------------------------------------------
   /**
-* All the profiles to which the group belongs
-* @return an array of profile IDs
-*/
+   * All the profiles to which the group belongs
+   * @return an array of profile IDs
+   */
   public String[] getProfileIdsOfGroup(String sGroupId) {
 
     try {
       return admin.getProfileIdsOfGroup(sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getProfileIdsOfGroup",
-          "admin.MSG_ERR_GET_USERPROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -746,8 +702,6 @@ public class AdminController implements java.io.Serializable {
   public void assignRightsFromUserToUser(RightAssignationContext.MODE operationMode,
       String sourceUserId, String targetUserId, boolean nodeAssignRights, String authorId)
       throws AdminException {
-    SilverTrace
-        .info("admin", "AdminController.assignRightsFromUserToUser", "root.MSG_GEN_ENTER_METHOD");
     admin.assignRightsFromUserToUser(operationMode, sourceUserId, targetUserId, nodeAssignRights,
         authorId);
   }
@@ -763,8 +717,6 @@ public class AdminController implements java.io.Serializable {
   public void assignRightsFromUserToGroup(RightAssignationContext.MODE operationMode,
       String sourceUserId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException {
-    SilverTrace
-        .info("admin", "AdminController.assignRightsFromUserToGroup", "root.MSG_GEN_ENTER_METHOD");
     admin.assignRightsFromUserToGroup(operationMode, sourceUserId, targetGroupId, nodeAssignRights,
         authorId);
   }
@@ -780,8 +732,6 @@ public class AdminController implements java.io.Serializable {
   public void assignRightsFromGroupToUser(RightAssignationContext.MODE operationMode,
       String sourceGroupId, String targetUserId, boolean nodeAssignRights, String authorId)
       throws AdminException {
-    SilverTrace
-        .info("admin", "AdminController.assignRightsFromGroupToUser", "root.MSG_GEN_ENTER_METHOD");
     admin.assignRightsFromGroupToUser(operationMode, sourceGroupId, targetUserId, nodeAssignRights,
         authorId);
   }
@@ -797,8 +747,6 @@ public class AdminController implements java.io.Serializable {
   public void assignRightsFromGroupToGroup(RightAssignationContext.MODE operationMode,
       String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException {
-    SilverTrace
-        .info("admin", "AdminController.assignRightsFromGroupToGroup", "root.MSG_GEN_ENTER_METHOD");
     admin
         .assignRightsFromGroupToGroup(operationMode, sourceGroupId, targetGroupId, nodeAssignRights,
             authorId);
@@ -812,176 +760,166 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getDirectGroupsIdsOfUser(userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getDirectGroupsIdsOfUser",
-          "admin.MSG_ERR_GET_DOMAIN", "user id: " + userId, e);
+      SilverLogger.getLogger(this)
+          .error("cannot get direct group identifiers of userId ''{0}'' ({1})",
+              new String[]{userId, e.getLocalizedMessage()}, e);
       return null;
     }
   }
 
   /**
-* Add a new domain
-*/
+   * Add a new domain
+   */
   public String addDomain(Domain theDomain) {
 
     try {
       return admin.addDomain(theDomain);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addDomain",
-          "admin.MSG_ERR_ADD_DOMAIN", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* update a domain
-*/
+   * update a domain
+   */
   public String updateDomain(Domain theDomain) {
 
     try {
       return admin.updateDomain(theDomain);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateDomain",
-          "admin.EX_ERR_UPDATE_DOMAIN", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Remove a domain
-*/
+   * Remove a domain
+   */
   public String removeDomain(String domainId) {
 
     try {
       return admin.removeDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.removeDomain",
-          "admin.MSG_ERR_DELETE_DOMAIN", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Get a domain with given id
-*/
+   * Get a domain with given id
+   */
   public Domain getDomain(String domainId) {
 
     try {
       return admin.getDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getDomain",
-          "admin.MSG_ERR_GET_DOMAIN", "domain id: " + domainId, e);
+      SilverLogger.getLogger(this).error("cannot get domain from identifier ''{0}'' ({1})",
+          new String[]{domainId, e.getLocalizedMessage()}, e);
       return null;
     }
   }
 
   /**
-* Get a domain's possible actions
-*/
+   * Get a domain's possible actions
+   */
   public long getDomainActions(String domainId) {
 
     try {
       return admin.getDomainActions(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getDomainActions",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return 0;
     }
   }
 
   /**
-* Get ALL the domain's groups
-*/
+   * Get ALL the domain's groups
+   */
   public Group[] getRootGroupsOfDomain(String domainId) {
 
     try {
       return admin.getRootGroupsOfDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getRootGroupsOfDomain",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return new Group[0];
     }
   }
 
   /**
-* Get ALL Group Ids for the domain's groups
-*/
+   * Get ALL Group Ids for the domain's groups
+   */
   public String[] getRootGroupIdsOfDomain(String domainId) {
 
     try {
       return admin.getRootGroupIdsOfDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getRootGroupIdsOfDomain",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
   /**
-* Get ALL the users that are in a group or his sub groups
-*/
+   * Get ALL the users that are in a group or his sub groups
+   */
   public UserDetail[] getAllUsersOfGroup(String groupId) {
 
     try {
       return admin.getAllUsersOfGroup(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllUsersOfGroup",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
   }
 
   /**
-* Get ALL the domain's users
-*/
+   * Get ALL the domain's users
+   */
   public UserDetail[] getUsersOfDomain(String domainId) {
 
     try {
       return admin.getUsersOfDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUsersOfDomain",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
   }
 
   /**
-* Get ALL the userId of the domain
-*/
+   * Get ALL the userId of the domain
+   */
   public String[] getUserIdsOfDomain(String domainId) {
 
     try {
       return admin.getUserIdsOfDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserIdsOfDomain",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
   /**
-* Get number of the domain's users
-*/
+   * Get number of the domain's users
+   */
   public int getUsersNumberOfDomain(String domainId) {
 
     try {
       return admin.getUsersNumberOfDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUsersNumberOfDomain",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return 0;
     }
   }
 
   /**
-* Get all domains declared in Silverpeas
-*/
+   * Get all domains declared in Silverpeas
+   */
   public Domain[] getAllDomains() {
 
     try {
       return admin.getAllDomains();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllDomains",
-          "admin.MSG_ERR_GET_ALL_DOMAINS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -989,16 +927,16 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Space Profile related functions
   // ----------------------------------------------
+
   /**
-  * Return the space profile Instance corresponding to the given space profile id
-  */
+   * Return the space profile Instance corresponding to the given space profile id
+   */
   public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
 
     try {
       return admin.getSpaceProfileInst(sSpaceProfileId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getSpaceProfileInst",
-       "admin.MSG_ERR_GET_SPACE_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
         return null;
     }
   }
@@ -1010,38 +948,35 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.addSpaceProfileInst(spaceProfileInst, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addSpaceProfileInst",
-          "admin.MSG_ERR_ADD_SPACE_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Delete the Space Profile Instance corresponding to the given Space Profile id
-*/
+   * Delete the Space Profile Instance corresponding to the given Space Profile id
+   */
   public String deleteSpaceProfileInst(String sSpaceProfileId, String userId) {
 
     try {
       return admin.deleteSpaceProfileInst(sSpaceProfileId, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteSpaceProfileInst",
-          "admin.MSG_ERR_DELETE_SPACE_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Update the Space Profile Instance corresponding to the given space Profile with the given
-* SpaceProfileInst
-*/
+   * Update the Space Profile Instance corresponding to the given space Profile with the given
+   * SpaceProfileInst
+   */
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       String userId) {
 
     try {
       return admin.updateSpaceProfileInst(spaceProfileInst, userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateSpaceProfileInst",
-          "admin.MSG_ERR_UPDATE_SPACE_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1049,57 +984,53 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Groups related functions
   // ----------------------------------------------
+
   /** Return all the groups ids available in webactiv */
   public String[] getAllGroupsIds() {
 
     try {
       return admin.getAllGroupIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllGroupIds",
-          "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
   /**
-* @return all the root groups ids available
-*/
+   * @return all the root groups ids available
+   */
   public String[] getAllRootGroupIds() {
 
     try {
       return admin.getAllRootGroupIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllRootGroupsIds",
-          "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
   /**
-* @return all the direct subgroups ids of a given group
-*/
+   * @return all the direct subgroups ids of a given group
+   */
   public String[] getAllSubGroupIds(String groupId) {
 
     try {
       return admin.getAllSubGroupIds(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getDirectSubgroupIds",
-          "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
   /**
-* @return all subgroups ids of a given group
-*/
+   * @return all subgroups ids of a given group
+   */
   public String[] getAllSubGroupIdsRecursively(String groupId) {
 
     try {
       return admin.getAllSubGroupIdsRecursively(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin",
-          "AdminController.getAllSubGroupIdsRecursively",
-          "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -1110,8 +1041,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getGroupNames(asGroupIds);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getGroupNames",
-          "admin.MSG_ERR_GET_GROUP_NAMES", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -1122,8 +1052,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getGroupName(sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getGroupName",
-          "admin.MSG_ERR_GET_GROUP_NAME", "group id: " + sGroupId, e);
+      SilverLogger.getLogger(this).error("cannot get group name from identifier ''{0}'' ({1})",
+          new String[]{sGroupId, e.getLocalizedMessage()}, e);
       return "";
     }
   }
@@ -1134,23 +1064,21 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllUsersIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllUsersIds",
-          "admin.MSG_ERR_GET_ALL_USER_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
 
   /**
-* The spaces that can be managed by the given group
-* @return the array of space IDs
-*/
+   * The spaces that can be managed by the given group
+   * @return the array of space IDs
+   */
   public String[] getGroupManageableSpaceIds(String sGroupId) {
 
     try {
       return admin.getGroupManageableSpaceIds(sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getGroupManageableSpaceIds",
-          "admin.MSG_ERR_GET_SPACE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1161,8 +1089,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getGroupProfileInst(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getGroupProfile",
-          "admin.MSG_ERR_GET_GROUP_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1173,8 +1100,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.deleteGroupProfileInst(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteGroupProfile",
-          "admin.MSG_ERR_DELETE_GROUP_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1185,8 +1111,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.updateGroupProfileInst(profile);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateGroupProfile",
-          "admin.MSG_ERR_UPDATE_GROUP_PROFILE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1194,6 +1119,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // General Admin ID related functions
   // ----------------------------------------------
+
   /** Return the general admin id */
   public String getDAPIGeneralAdminId() {
 
@@ -1208,28 +1134,29 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Admin User Detail related functions
   // ----------------------------------------------
+
   /** Return the admin user detail corresponding to the given id */
   public UserDetail getUserDetail(String sId) {
 
     try {
       return admin.getUserDetail(sId);
     } catch (Exception e) {
-      SilverTrace.warn("admin", "AdminController.getUserDetail",
-          "admin.EX_ERR_GET_USER_DETAIL", "user id: " + sId, e);
+      SilverLogger.getLogger(this).error("cannot get user data from identifier ''{0}'' ({1})",
+          new String[]{sId, e.getLocalizedMessage()}, e);
       return null;
     }
   }
 
   /**
-* Return the UserFull of the user with the given Id
-*/
+   * Return the UserFull of the user with the given Id
+   */
   public UserFull getUserFull(String sUserId) {
 
     try {
       return admin.getUserFull(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
-          "user Id : '" + sUserId + "'", e);
+      SilverLogger.getLogger(this).error("cannot get full user data from identifier ''{0}'' ({1})",
+          new String[]{sUserId, e.getLocalizedMessage()}, e);
       return null;
     }
   }
@@ -1239,8 +1166,9 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getUserFull(domainId, specificId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
-          "specificId = " + specificId, e);
+      SilverLogger.getLogger(this)
+          .error("cannot get full user data from domainId ''{0}'' and specificId ''{1}'' ({2})",
+              new String[]{domainId, specificId, e.getLocalizedMessage()}, e);
       return null;
     }
   }
@@ -1250,8 +1178,9 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getUserIdByLoginAndDomain(sLogin, sDomainId);
     } catch (Exception e) {
-      SilverTrace.warn("admin", "AdminController.getUserIdByLoginAndDomain",
-          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = " + sDomainId, e);
+      SilverLogger.getLogger(this)
+          .error("cannot get user identifier from login ''{0}'' and domainId ''{1}'' ({2})",
+              new String[]{sLogin, sDomainId, e.getLocalizedMessage()}, e);
       return null;
     }
   }
@@ -1265,8 +1194,7 @@ public class AdminController implements java.io.Serializable {
       }
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserDetails", "admin.EX_ERR_GET_USER_DETAILS",
-          e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1277,7 +1205,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.addUser(userDetail);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addUser", "admin.EX_ERR_ADD_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1286,13 +1214,10 @@ public class AdminController implements java.io.Serializable {
    * Updates the acceptance date of a user from its id.
    */
   public void userAcceptsTermsOfService(String userId) {
-    SilverTrace
-        .info("admin", "AdminController.userAcceptsTermsOfService", "root.MSG_GEN_ENTER_METHOD");
     try {
       admin.userAcceptsTermsOfService(userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.userAcceptsTermsOfService",
-          "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1302,7 +1227,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.blockUser(userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.blockUser", "admin.EX_ERR_BLOCK_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1312,7 +1237,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.unblockUser(userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.unblockUser", "admin.EX_ERR_UNBLOCK_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1324,8 +1249,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.deactivateUser(userId);
     } catch (Exception e) {
-      SilverTrace
-          .error("admin", "AdminController.deactivateUser", "admin.EX_ERR_DEACTIVATE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1337,8 +1261,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.activateUser(userId);
     } catch (Exception e) {
-      SilverTrace
-          .error("admin", "AdminController.activateUser", "admin.EX_ERR_UNDEACTIVATE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1348,8 +1271,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.deleteUser(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteUser",
-          "admin.EX_ERR_DELETE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1360,23 +1282,21 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.updateUser(userDetail);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateUser",
-          "admin.EX_ERR_UPDATE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   /**
-* Update the silverpeas specific infos of a synchronized user. For the moment : same as
-* updateUser
-*/
+   * Update the silverpeas specific infos of a synchronized user. For the moment : same as
+   * updateUser
+   */
   public String updateSynchronizedUser(UserDetail userDetail) {
 
     try {
       return admin.updateUser(userDetail);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateSynchronizedUser",
-          "admin.EX_ERR_UPDATE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1400,8 +1320,8 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.indexUsers(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.indexUsers",
-          "admin.CANT_INDEX_USERS", "domainId = " + domainId, e);
+      SilverLogger.getLogger(this).error("cannot index users of domainId ''{0}'' ({1})",
+          new String[]{domainId, e.getLocalizedMessage()}, e);
     }
   }
 
@@ -1409,8 +1329,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.indexAllUsers();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.indexAllUsers",
-          "admin.CANT_INDEX_ALL_USERS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1423,8 +1342,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAllGroupIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllGroupIds",
-          "admin.EX_ERR_GET_ALL_GROUP_IDS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -1435,8 +1353,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.isGroupExist(sName);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isGroupExist",
-          "admin.EX_ERR_IS_GROUP_EXIST", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;
     }
   }
@@ -1447,8 +1364,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getGroup(sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getGroupById",
-          "admin.EX_ERR_GET_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1459,8 +1375,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getPathToGroup(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getPathToGroup",
-          "admin.EX_ERR_GET_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1471,8 +1386,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getGroupByNameInDomain(sGroupName, sDomainFatherId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getGroupByNameInDomain",
-          "admin.EX_ERR_GET_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1483,8 +1397,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.addGroup(group);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addGroup",
-          "admin.EX_ERR_ADD_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1495,8 +1408,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.deleteGroupById(sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteGroupById",
-          "admin.EX_ERR_DELETE_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1507,8 +1419,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.updateGroup(group);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateGroup",
-          "admin.EX_ERR_UPDATE_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1518,8 +1429,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getAdminOrganization();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAdminOrganization",
-          "admin.EX_ERR_GET_ADMIN_ORGANIZATION", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1528,8 +1438,8 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.indexGroups(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.indexGroups",
-          "admin.CANT_INDEX_GROUPS", "domainId = " + domainId, e);
+      SilverLogger.getLogger(this).error("cannot index groups of domainId ''{0}'' ({1})",
+          new String[]{domainId, e.getLocalizedMessage()}, e);
     }
   }
 
@@ -1537,26 +1447,24 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.indexAllGroups();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.indexAllGroups",
-          "admin.CANT_INDEX_ALL_USERS", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
   // //////////////////////////////////////////////////////////
   // Synchronization tools
   // //////////////////////////////////////////////////////////
+
   /**
-* Synchronize users and groups between cache and domain's datastore
-* @param domainId Id of domain to synchronize
-* @return String to show as the report of synchronization
-*/
+   * Synchronize users and groups between cache and domain's datastore
+   * @param domainId Id of domain to synchronize
+   * @return String to show as the report of synchronization
+   */
   public String synchronizeSilverpeasWithDomain(String domainId) {
     try {
       return admin.synchronizeSilverpeasWithDomain(domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin",
-          "AdminController.synchronizeSilverpeasWithDomain",
-          "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "Error has occurred";
     }
   }
@@ -1566,8 +1474,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.synchronizeUser(userId, true);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.synchronizeUser",
-          "admin.MSG_ERR_SYNCHRONIZE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1577,8 +1484,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.synchronizeImportUser(domainId, userLogin, true);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.synchronizeImportUser",
-          "admin.MSG_ERR_SYNCHRONIZE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1588,9 +1494,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.getSpecificPropertiesToImportUsers(domainId, language);
     } catch (Exception e) {
-      SilverTrace.error("admin",
-          "AdminController.getSpecificPropertiesToImportUsers",
-          "admin.MSG_ERR_SYNCHRONIZE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
     }
   }
@@ -1600,8 +1504,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return Arrays.asList(admin.searchUsers(domainId, query));
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.searchUsers",
-          "admin.MSG_ERR_SYNCHRONIZE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return new ArrayList<UserDetail>();
     }
   }
@@ -1611,19 +1514,45 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.synchronizeRemoveUser(userId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.synchronizeRemoveUser",
-          "admin.MSG_ERR_SYNCHRONIZE_USER", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
+  /**
+   * Synchronizes the users of the group represented by the given identifier.<br/>
+   * Two types of synchronization are possible:
+   * <ul>
+   * <li>when the group is synchronized from an LDAP domain, it is synchronized directly with the
+   * LDAP</li>
+   * <li>otherwise, the synchronization is done from the rule defined for the group</li>
+   * </ul>
+   * It is no guarantee that this treatment behavior is right if it is called out of the two
+   * previous cases.
+   * @param groupId the identifier of the group to process.
+   * @return <ul><li>in case of success, the identifier of the group (a number)</li><li>in case of
+   * error about the synchronization rule expression syntax, the key of the error from {@link
+   * PrefixedNotationExpressionEngine} (it can be used for bundles for example)</li><li>in case
+   * of error about the ground rule syntax, the key of the error and the ground rule as string
+   * both separated by '|' character (it can be used for bundles for example)</li><li>an empty
+   * value otherwise</li></ul>
+   */
   public String synchronizeGroup(String groupId) {
 
     try {
       return admin.synchronizeGroup(groupId, true);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.synchronizeGroup",
-          "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      if (e instanceof AdminException &&
+          ((AdminException) e).getNested() instanceof GroupSynchronizationRule.Error) {
+        GroupSynchronizationRule.Error error =
+            (GroupSynchronizationRule.Error) ((AdminException) e).getNested();
+        if (error instanceof GroupSynchronizationRule.GroundRuleError) {
+          return error.getHandledMessage() + "|" +
+              ((GroupSynchronizationRule.GroundRuleError) error).getBaseRulePart();
+        }
+        return error.getHandledMessage();
+      }
       return "";
     }
   }
@@ -1633,8 +1562,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.synchronizeImportGroup(domainId, groupName, null, true, false);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.synchronizeImportGroup",
-          "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1644,19 +1572,17 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.synchronizeRemoveGroup(groupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.synchronizeRemoveGroup",
-          "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
 
   public void resetAllDBConnections(boolean isScheduled) {
-    //
+
     try {
       admin.resetAllDBConnections(isScheduled);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.resetAllDBConnections",
-          "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1666,8 +1592,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.removeUserFromGroup(sUserId, sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.removeUserFromGroup",
-          "admin.EX_ERR_REMOVE_USER_FROM_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1677,8 +1602,7 @@ public class AdminController implements java.io.Serializable {
     try {
       admin.addUserInGroup(sUserId, sGroupId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addUserInGroup",
-          "admin.EX_ERR_ADD_USER_IN_GROUP", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 
@@ -1701,8 +1625,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return admin.isDomainManagerUser(userId, domainId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.isDomainManagerUser",
-          "Error inside admin service", e);
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
     return false;
   }

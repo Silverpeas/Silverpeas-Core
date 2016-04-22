@@ -55,7 +55,7 @@ void displayItemsListHeader(String query, Pagination pagination, MultiSilverpeas
 	out.println(pagination.printCounter());
 	out.println(resource.getString("pdcPeas.ManyResultPages"));
 	if (query != null && query.length() > 0)
-		out.println(" <span id=\"globalResultForYourQuery\">" + resource.getString("pdcPeas.ForYourQuery") + query + "</div>");
+		out.println(" <span id=\"globalResultForYourQuery\">" + resource.getString("pdcPeas.ForYourQuery") + " " + query + "</div>");
 	out.println("</td>");
 	out.println("</tr>");
 }

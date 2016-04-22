@@ -24,6 +24,7 @@ import org.silverpeas.core.admin.component.ApplicationResourcePasting;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -32,16 +33,22 @@ import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.domain.synchro.SynchroDomainScheduler;
-import org.silverpeas.core.admin.domain.synchro.SynchroGroupScheduler;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
+import org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPSynchroUserItf;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.model.DomainCache;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainScheduler;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
+import org.silverpeas.core.admin.domain.synchro.SynchroGroupScheduler;
+import org.silverpeas.core.admin.persistence.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.OrganizationSchemaPool;
+import org.silverpeas.core.admin.persistence.ScheduledDBReset;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.cache.AdminCache;
 import org.silverpeas.core.admin.service.cache.TreeCache;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
@@ -50,51 +57,41 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceInstanciator;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceProfileInstManager;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPSynchroUserItf;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.GroupManager;
-import org.silverpeas.core.admin.user.ProfileInstManager;
-import org.silverpeas.core.admin.user.ProfiledObjectManager;
-import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
-import org.silverpeas.core.admin.user.UserManager;
-import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.domain.model.DomainCache;
-import org.silverpeas.core.admin.user.model.GroupCache;
-import org.silverpeas.core.admin.space.model.Space;
-import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
-import org.silverpeas.core.admin.persistence.OrganizationSchemaPool;
-import org.silverpeas.core.admin.persistence.ScheduledDBReset;
-import org.silverpeas.core.admin.persistence.UserRow;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.space.model.Space;
+import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.user.GroupManager;
+import org.silverpeas.core.admin.user.ProfileInstManager;
+import org.silverpeas.core.admin.user.ProfiledObjectManager;
+import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
+import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
+import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
+import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -4726,7 +4723,6 @@ class Admin implements Administration {
 
     Group group = getGroup(groupId);
     String rule = group.getRule();
-    String domainId = group.getDomainId();
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     if (StringUtil.isDefined(rule)) {
@@ -4741,33 +4737,7 @@ class Admin implements Administration {
         domainDriverManager.startTransaction(false);
 
         // Getting users according to rule
-        List<String> userIds = new ArrayList<>();
-
-        if (rule.toLowerCase().startsWith("ds_")) {
-          if (rule.toLowerCase().startsWith("ds_accesslevel")) {
-            userIds = synchronizeGroupByAccessRoleRule(rule, domainId);
-          } else if (rule.toLowerCase().startsWith("ds_domain")) {
-            userIds = synchronizeGroupByDomainRule(rule, domainId);
-          }
-        } else if (rule.toLowerCase().startsWith("dc_")) {
-          // Extracting property name and searching property value
-          String propertyName = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim();
-          String propertyValue = rule.substring(rule.indexOf("=") + 1).trim();
-
-          if (domainId == null) {
-            // All users by extra information
-            Domain[] domains = getAllDomains();
-            for (Domain domain : domains) {
-              userIds.addAll(
-                  getUserIdsBySpecificProperty(domain.getId(), propertyName, propertyValue));
-            }
-          } else {
-            userIds = getUserIdsBySpecificProperty(domainId, propertyName, propertyValue);
-          }
-        } else {
-          SilverTrace.error("admin", "Admin.synchronizeGroup", "admin.MSG_ERR_SYNCHRONIZE_GROUP",
-              "rule '" + rule + "' for groupId '" + groupId + "' is not correct !");
-        }
+        List<String> userIds = GroupSynchronizationRule.from(group).getUserIds();
 
         // Add users
         List<String> newUsers = new ArrayList<>();
@@ -4812,7 +4782,8 @@ class Admin implements Administration {
           SilverTrace.error("admin", "Admin.synchronizeGroup", "root.EX_ERR_ROLLBACK", e1);
         }
         SynchroGroupReport.error("admin.synchronizeGroup",
-            "Problème lors de la synchronisation : " + e.getMessage(), null);
+            "Error during the processing of synchronization rule of group '" + groupId + "': " +
+                e.getMessage(), null);
         throw new AdminException("Admin.synchronizeGroup",
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP",
             "groupId : '" + groupId + "'", e);
@@ -4823,97 +4794,6 @@ class Admin implements Administration {
         domainDriverManager.releaseOrganizationSchema();
       }
     }
-  }
-
-  private List<String> synchronizeGroupByDomainRule(String rule, String domainId)
-      throws AdminPersistenceException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
-    List<String> userIds = Collections.emptyList();
-    // Extracting domain id
-    String dId = rule.substring(rule.indexOf("=") + 1).trim();
-    // Available only for "domaine mixte"
-    if (domainId == null || "-1".equals(domainId)) {
-      userIds = Arrays.asList(domainDriverManager.getOrganization().user.getUserIdsOfDomain(
-          Integer.parseInt(dId)));
-    }
-    return userIds;
-  }
-
-  private List<String> synchronizeGroupByAccessRoleRule(String rule, String domainId)
-      throws AdminException {
-    List<String> userIds;// Extracting access level
-    String accessLevel = rule.substring(rule.indexOf("=") + 1).trim();
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
-    if ("*".equalsIgnoreCase(accessLevel)) {
-      // All users In case of "Domaine mixte", we retrieve all users of all domains
-      // Else we get only users of group's domain
-      if (domainId == null) {
-        userIds = Arrays.asList(userManager.getAllUsersIds(domainDriverManager));
-      } else {
-        userIds = Arrays.asList(userManager.getUserIdsOfDomain(domainDriverManager, domainId));
-      }
-    } else {
-      // All users by access level
-      if (domainId == null) {
-        userIds = Arrays.asList(domainDriverManager.getOrganization().user.getUserIdsByAccessLevel(
-            UserAccessLevel.fromCode(accessLevel)));
-      } else {
-        userIds = Arrays.asList(userManager.getUserIdsOfDomainAndAccessLevel(domainDriverManager,
-            domainId, UserAccessLevel.fromCode(accessLevel)));
-      }
-    }
-    return userIds;
-  }
-
-  private List<String> getUserIdsBySpecificProperty(String domainId, String propertyName,
-      String propertyValue) throws AdminException {
-    int iDomainId = Integer.parseInt(domainId);
-    UserDetail[] users = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
-    DomainDriver domainDriver = null;
-    try {
-      domainDriver = domainDriverManager.getDomainDriver(iDomainId);
-    } catch (Exception e) {
-      SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
-          "Erreur ! Domaine " + iDomainId + " inaccessible !");
-    }
-
-    if (domainDriver != null) {
-      try {
-        users = domainDriver.getUsersBySpecificProperty(propertyName,
-            propertyValue);
-        if (users == null) {
-          SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
-              "La propriété '" + propertyName + "' n'est pas définie dans le domaine "
-              + iDomainId);
-        }
-      } catch (Exception e) {
-        SynchroGroupReport.info("admin.getUserIdsBySpecificProperty", "Domain " + domainId
-            + " ne supporte pas les groupes synchronisés");
-      }
-    }
-
-    List<String> specificIds = new ArrayList<>();
-    if (users != null) {
-      for (UserDetail user : users) {
-        specificIds.add(user.getSpecificId());
-      }
-    }
-
-    // We have to find users according to theirs specificIds
-    UserRow[] usersInDomain = domainDriverManager.getOrganization().user.getUsersBySpecificIds(
-        iDomainId, specificIds);
-    List<String> userIds = new ArrayList<>();
-    if (usersInDomain != null) {
-      for (UserRow userInDomain : usersInDomain) {
-        userIds.add(Integer.toString(userInDomain.id));
-      }
-    }
-
-    return userIds;
   }
 
   // //////////////////////////////////////////////////////////

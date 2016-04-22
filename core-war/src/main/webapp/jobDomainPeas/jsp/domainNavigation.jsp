@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 List<Domain> allDomains = (List<Domain>)request.getAttribute("allDomains");
@@ -47,6 +48,7 @@ function viewGroup(arg){
 
 function viewDomain()
 {
+  <c:if test="${empty requestScope.domainRefreshCurrentLevel}">
     <%
         String URLForContent = (String)request.getAttribute("URLForContent");
 
@@ -55,6 +57,11 @@ function viewDomain()
             out.println("parent.domainContent.location = \"" + URLForContent + "\"");
         }
     %>
+  </c:if>
+}
+
+function refreshCurrentLevel() {
+  parent.domainBar.location = "domainRefreshCurrentLevel";
 }
 
 </script>
@@ -175,7 +182,7 @@ function viewDomain()
 						<table cellpadding=0 cellspacing=2 border=0 width=100%>
 						<tr><td>
 						<%
-                            Group[] allRootGroups = (Group[])request.getAttribute("allRootGroups");
+              Group[] allRootGroups = (Group[])request.getAttribute("allRootGroups");
 							String icon = null;
 							for (Group group : allRootGroups) {
 								icon = resource.getIcon("JDP.group");
@@ -183,7 +190,9 @@ function viewDomain()
 									icon = resource.getIcon("JDP.groupSynchronized");
 								}
 								%>
-								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br><img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">&nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName())%></a><br>
+								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br>
+                <img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">
+                &nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName()) + " (" + group.getTotalNbUsers() + ")"%></a><br>
 								<%
                             }
 						%>

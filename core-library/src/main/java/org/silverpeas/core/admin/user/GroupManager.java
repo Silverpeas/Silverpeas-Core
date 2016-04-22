@@ -64,7 +64,7 @@ public class GroupManager {
   /**
    * Constructor
    */
-  public GroupManager() {
+  private GroupManager() {
   }
 
   /**

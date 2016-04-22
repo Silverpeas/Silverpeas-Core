@@ -173,8 +173,8 @@ abstract public class AbstractLDAPGroup {
 
       if (groupsProcessed[i] != null) {
         SynchroDomainReport.warn("AbstractLDAPGroup.getGroups()",
-            "groupsReturned[i]" + groupsProcessed[i].getId() + " - "
-            + groupsProcessed[i].getName());
+            "groupsReturned[" + i + "]" + groupsProcessed[i].getSpecificId() + " - " +
+                groupsProcessed[i].getName());
       }
 
       String StrTypeGroup;

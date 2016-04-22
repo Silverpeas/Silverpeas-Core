@@ -39,7 +39,7 @@
 <head>
 <view:looknfeel withCheckFormScript="true"/>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 
 <%
 out.println(window.printBefore());
@@ -50,7 +50,7 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 <TEXTAREA NAME="Report" ROWS="20" COLS="110">
-<%=(String)request.getAttribute("SynchroReport")%>
+<%=(String)request.getAttribute("SynchroDomainReport")%>
 </TEXTAREA>
 <%
 out.println(board.printAfter());

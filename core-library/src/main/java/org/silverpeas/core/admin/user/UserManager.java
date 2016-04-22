@@ -57,7 +57,7 @@ public class UserManager {
   @Inject
   private UserEventNotifier notifier;
 
-  public UserManager() {
+  private UserManager() {
   }
 
   /**

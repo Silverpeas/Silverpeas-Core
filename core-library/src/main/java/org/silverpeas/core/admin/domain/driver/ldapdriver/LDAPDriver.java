@@ -431,7 +431,15 @@ public class LDAPDriver extends AbstractDomainDriver {
     } else {
       String ld = LDAPUtility.openConnection(driverSettings);
       try {
-        String extraFilter = "(" + property.getMapParameter() + "=" + propertyValue + ")";
+        String escapedPropertyValue = propertyValue;
+        if (StringUtil.isDefined(propertyValue)) {
+          // In a first time, as it could exist already LDAP escaped characters into the filter,
+          // an unescaping is done
+          String unescapedPropertyValue = LDAPUtility.unescapeLDAPSearchFilter(propertyValue);
+          // Then the escaping is performed
+          escapedPropertyValue = LDAPUtility.normalizeFilterValue(unescapedPropertyValue);
+        }
+        String extraFilter = "(" + property.getMapParameter() + "=" + escapedPropertyValue + ")";
         return userTranslator.getAllUsers(ld, extraFilter);
       } finally {
         LDAPUtility.closeConnection(ld);

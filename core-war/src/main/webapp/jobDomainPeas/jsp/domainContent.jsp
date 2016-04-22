@@ -199,7 +199,7 @@ out.println(window.printBefore());
 <%
   ArrayPane arrayPane = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
-  arrayPane.setTitle(resource.getString("JDP.groups"));
+  arrayPane.setTitle(resource.getString("JDP.groups") + " (" +  subGroups.length + ")");
 
   arrayPane.addArrayColumn("&nbsp;");
   arrayPane.addArrayColumn(resource.getString("GML.name"));
@@ -236,7 +236,7 @@ out.println(window.printBefore());
 	  ArrayPane arrayPaneUser = gef.getArrayPane("users", "domainContent.jsp", request, session);
 
 	  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
-	  arrayPaneUser.setTitle(resource.getString("GML.users"));
+	  arrayPaneUser.setTitle(resource.getString("GML.users") + " (" +  subUsers.size() + ")");
 
 	  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));

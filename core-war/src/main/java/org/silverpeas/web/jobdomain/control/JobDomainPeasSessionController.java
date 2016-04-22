@@ -20,18 +20,6 @@
  */
 package org.silverpeas.web.jobdomain.control;
 
-import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionException;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
@@ -42,6 +30,8 @@ import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -53,26 +43,37 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.UtilTrappedException;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.csv.CSVReader;
+import org.silverpeas.core.util.csv.Variant;
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.csv.CSVReader;
-import org.silverpeas.core.util.csv.Variant;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionException;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.web.jobdomain.DomainNavigationStock;
 import org.silverpeas.web.jobdomain.GroupNavigationStock;
 import org.silverpeas.web.jobdomain.JobDomainPeasDAO;
@@ -88,6 +89,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.*;
 
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider
@@ -1317,6 +1319,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public boolean createGroup(String idParent, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
     Group theNewGroup = new Group();
+
+    boolean isSynchronizationToPerform = StringUtil.isDefined(groupRule);
+    if (isSynchronizationToPerform) {
+      groupRule = groupRule.trim();
+    }
+
     theNewGroup.setId("-1");
     if (StringUtil.isDefined(targetDomainId)
         && !"-1".equals(targetDomainId)) {
@@ -1332,7 +1340,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP");
     }
     refresh();
-    return isGroupRoot(idRet);
+
+    goIntoGroup(idRet);
+
+    return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
   }
 
   public boolean modifyGroup(String idGroup, String groupName,
@@ -1344,6 +1355,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException("JobDomainPeasSessionController.modifyGroup()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_GROUP");
     }
+    boolean isSynchronizationToPerform =
+        StringUtil.isDefined(groupRule) && !groupRule.equalsIgnoreCase(theModifiedGroup.getRule());
+    if (isSynchronizationToPerform) {
+      groupRule = groupRule.trim();
+    }
     theModifiedGroup.setName(groupName);
     theModifiedGroup.setDescription(groupDescription);
     theModifiedGroup.setRule(groupRule);
@@ -1354,7 +1370,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP");
     }
     refresh();
-    return isGroupRoot(idRet);
+    return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
   }
 
   public boolean updateGroupSubUsers(String idGroup, String[] userIds)
@@ -1373,12 +1389,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP");
     }
     refresh();
-    return false;
+    return true;
   }
 
   public boolean deleteGroup(String idGroup) throws JobDomainPeasException {
-    boolean haveToRefreshDomain = isGroupRoot(idGroup);
-
 
 
     String idRet = m_AdminCtrl.deleteGroupById(idGroup);
@@ -1388,24 +1402,37 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     removeGroupFromPath(idGroup);
     refresh();
-    return haveToRefreshDomain;
+    return true;
   }
 
   public boolean synchroGroup(String idGroup) throws JobDomainPeasException {
 
-
-    String idRet = m_AdminCtrl.synchronizeGroup(idGroup);
-    if (!StringUtil.isDefined(idRet)) {
+    String synchronizationResult = m_AdminCtrl.synchronizeGroup(idGroup);
+    if (!StringUtil.isDefined(synchronizationResult)) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.synchroGroup()",
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP");
     }
-    refresh();
-    return isGroupRoot(idRet);
+    if (StringUtil.isLong(synchronizationResult)) {
+      refresh();
+      return true;
+    }
+    if (synchronizationResult.startsWith("expression.")) {
+      if (synchronizationResult.startsWith("expression.groundrule.unknown")) {
+        final String[] keyRule = synchronizationResult.split("[|]");
+        String msgKey = keyRule[0];
+        String groundRule = "<b>" + keyRule[1] + "</b>";
+        MessageNotifier.addError(
+            MessageFormat.format(getString("JDP.groupSynchroRule." + msgKey), groundRule));
+      } else {
+        MessageNotifier.addError(getString("JDP.groupSynchroRule." + synchronizationResult));
+      }
+    } else {
+      MessageNotifier.addError(synchronizationResult);
+    }
+    return false;
   }
 
   public boolean unsynchroGroup(String idGroup) throws JobDomainPeasException {
-    boolean haveToRefreshDomain = isGroupRoot(idGroup);
-
 
 
     String idRet = m_AdminCtrl.synchronizeRemoveGroup(idGroup);
@@ -1415,7 +1442,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     removeGroupFromPath(idGroup);
     refresh();
-    return haveToRefreshDomain;
+    return true;
   }
 
   public boolean importGroup(String groupName) throws JobDomainPeasException {
@@ -1428,7 +1455,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP");
     }
     refresh();
-    return isGroupRoot(idRet);
+    return true;
   }
 
   /*

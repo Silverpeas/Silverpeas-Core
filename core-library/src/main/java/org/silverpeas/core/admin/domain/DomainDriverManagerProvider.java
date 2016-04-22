@@ -41,19 +41,21 @@ public class DomainDriverManagerProvider {
     }
   };
 
-  private static DomainDriverManagerProvider getProvider() {
-    return ServiceProvider.getService(DomainDriverManagerProvider.class);
-  }
-
   public static DomainDriverManager getDomainDriverManager() {
-    return getProvider().domainDriverManagerRef.get();
+    DomainDriverManagerProvider provider =
+        ServiceProvider.getService(DomainDriverManagerProvider.class);
+    return provider.getDomainDriverManagerRef().get();
   }
 
   public static DomainDriverManager getCurrentDomainDriverManager() {
-    return getProvider().getDomainDriverManager();
+    return getDomainDriverManager();
   }
 
   // Don't let outsiders create new factories directly
   private DomainDriverManagerProvider() {
+  }
+
+  public ThreadLocal<DomainDriverManager> getDomainDriverManagerRef() {
+    return domainDriverManagerRef;
   }
 }
