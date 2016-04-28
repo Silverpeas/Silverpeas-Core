@@ -195,10 +195,10 @@ public class TreeCache {
   public static List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);
     if (component != null && component.hasDomainFather()) {
-      return getSpacePath(Integer.parseInt(component.getDomainFatherId().substring(
-          SpaceInst.SPACE_KEY_PREFIX.length())));
+      return getSpacePath(Integer.parseInt(
+          component.getDomainFatherId().replaceFirst("^" + SpaceInst.SPACE_KEY_PREFIX, "")));
     }
-    return new ArrayList<SpaceInstLight>();
+    return new ArrayList<>();
   }
 
   public synchronized static void updateSpace(SpaceInstLight spaceLight) {

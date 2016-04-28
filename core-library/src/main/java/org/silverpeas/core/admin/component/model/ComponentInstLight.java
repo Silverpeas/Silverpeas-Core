@@ -142,8 +142,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
    * @return true if this component has a domain father, false otherwise.
    */
   public boolean hasDomainFather() {
-    return StringUtil.isDefined(m_sDomainFatherId) &&
-        m_sDomainFatherId.startsWith(SpaceInst.SPACE_KEY_PREFIX);
+    return StringUtil.isDefined(m_sDomainFatherId);
   }
 
   /**
