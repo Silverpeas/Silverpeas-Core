@@ -145,12 +145,12 @@
     }
 
     //--------------------------------------------------------------------------------------OpenDiscussion
+    var discussionPopup;
     function OpenDiscussion(page, nom, largeur, hauteur, options) {
-      if (!top.scriptFrame.impopup || (top.scriptFrame.impopup.closed)) {
-        top.scriptFrame.impopup = SP_openWindow(page, nom, largeur, hauteur, options);
-      } else {
-        top.scriptFrame.impopup.focus();
+      if (!discussionPopup || (discussionPopup.closed)) {
+        discussionPopup = SP_openWindow(page, nom, largeur, hauteur, options);
       }
+      discussionPopup.focus();
 
       <%
        String messageId = (String) request.getAttribute("MessageID");

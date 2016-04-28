@@ -59,7 +59,7 @@ function openMySpace() {
       } else {
         homePage = homePage + '?SpaceId=-10';
       }
-      parent.MyMain.location.href = getContext() + homePage;
+      top.reloadBodyContentPart(getContext() + homePage);
     }
     catch (e) {
       homePage = getHomepage();
@@ -68,7 +68,7 @@ function openMySpace() {
       } else {
         homePage = homePage + '?SpaceId=-20';
       }
-      parent.MyMain.location.href = getContext() + homePage;
+      top.reloadBodyContentPart(getContext() + homePage);
     }
   }
   else {
@@ -145,7 +145,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
   currentSpaceId = spaceId;
   currentSpaceLevel = spaceLevel;
 
-  parent.MyMain.location.href = getContext() + getHomepage() + "?SpaceId=" + spaceId;
+  top.reloadBodyContentPart(getContext() + getHomepage() + "?SpaceId=" + spaceId);
 
   refreshPDCFrame();
   refreshTopFrame();
@@ -162,24 +162,17 @@ function refreshPDCFrame() {
 }
 
 function refreshTopFrame() {
-  try {
-    var topBarFrame = getTopBarPage();
-    if (!topBarFrame.startsWith('/')) {
-      topBarFrame = '/admin/jsp/' + topBarFrame;
-    }
-
-    top.topFrame.location.href = getContext() + topBarFrame;
-  }
-  catch (e) {
-    //frame named 'pdcFrame' does not exist
-  }
+  top.reloadHeaderPart();
 }
 
 function displayPDCFrame(spaceId, componentId) {
   if (displayContextualPDC) {
     try {
-      var footerPage = getFooterPage();
-      top.pdcFrame.location.href = footerPage + "spaces=" + spaceId + "&componentSearch=" + componentId + "&FromPDCFrame=true";
+      top.loadPdcPart({
+        "spaces" : spaceId,
+        "componentSearch" : componentId,
+        "FromPDCFrame" : "true"
+      });
     }
     catch (e) {
       //frame named 'pdcFrame' does not exist
@@ -255,7 +248,7 @@ function openComponent(componentId, componentLevel, componentURL) {
   currentComponentId = componentId;
 
   if (componentURL.substring(0, 11).toLowerCase() !== "javascript:") {
-    parent.MyMain.location.href = getContext() + componentURL;
+    top.reloadBodyContentPart(getContext() + componentURL);
   }
   else {
     eval(componentURL);
@@ -345,7 +338,7 @@ function pdcAxisSearch(axisId) {
     query += "&componentSearch=" + currentComponentId + "&spaces=" + currentSpaceId;
   }
 
-  parent.MyMain.location.href = query;
+  top.reloadBodyContentPart(query);
 }
 
 function pdcValueSearch(valuePath) {
@@ -354,7 +347,7 @@ function pdcValueSearch(valuePath) {
     query += "&componentSearch=" + currentComponentId + "&spaces=" + currentSpaceId;
   }
 
-  parent.MyMain.location.href = query;
+  top.reloadBodyContentPart(query);
 }
 
 function pdcValueExpand(valuePath) {

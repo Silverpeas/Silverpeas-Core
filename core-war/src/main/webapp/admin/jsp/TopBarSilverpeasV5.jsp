@@ -47,10 +47,6 @@ String currentSpaceId		= helper.getSpaceId();
 gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
 
 boolean goToFavoriteSpaceOnHomeLink = settings.getBoolean("home.target.favoriteSpace", false);
-String goToHome = "frameBottomSilverpeasV5.jsp?FromTopBar=1";
-if (goToFavoriteSpaceOnHomeLink) {
-  goToHome += "&SpaceId="+m_MainSessionCtrl.getFavoriteSpace();
-}
 
 List<TopItem> topItems = helper.getTopItems();
 
@@ -96,7 +92,12 @@ body {
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
 <script type="text/javascript">
 function goToHome() {
-  top.bottomFrame.location.href = "<%=goToHome%>";
+  var params = {};
+  params.FromTopBar = "1";
+  <%if (goToFavoriteSpaceOnHomeLink) {%>
+  params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
+  <%}%>
+  top.reloadBodyPart(params);
 }
 
 function displayPDCFrame() {
@@ -115,10 +116,6 @@ function getContext() {
   return "<%=m_sContext%>";
 }
 
-function getDomainsBarPage() {
-	return "DomainsBarSilverpeasV5.jsp";
-}
-
 function getTopBarPage() {
 	return "TopBarSilverpeasV5.jsp";
 }
@@ -126,10 +123,6 @@ function getTopBarPage() {
 $(function() {
   setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
 });
-
-function reloadTopBar() {
-	//Silverpeas V4 compatibility
-}
 
 function getBannerHeight() {
 	return "<%=helper.getSettings("bannerHeight", "115")%>";
@@ -142,8 +135,6 @@ function getFooterHeight() {
 </head>
 <body>
 <div id="topBar">
-	<div style="position: absolute; right: 0px; top: 0px; background-color: #FFFFFF; width: 100%"><img src="icons/silverpeasV5/px.gif" border="0" height="0" id="space2Expand" align="middle" alt=""/></div>
-	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="middle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
     <div id="backHome">
         <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
 	  <viewTags:displayTicker/>

@@ -21,50 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var navVisible = true;
-function resizeFrame() {
-  if (navVisible) {
-    if (displayPDCFrame()) {
-      parent.setframevalue("rows", "10,100%,*,*,*,*");
-    } else {
-      parent.setframevalue("rows", "10,100%,*,*,*");
-    }
-
-    document.body.scroll = "no";
-    document.getElementById('space2Expand').height = '10';
-    document.images['expandReduce'].src = "icons/silverpeasV5/extendTopBar.gif";
-  }
-  else {
-    document.body.scroll = "no";
-    document.getElementById('space2Expand').height = '0';
-    document.images['expandReduce'].src = "icons/silverpeasV5/reductTopBar.gif";
-
-    var bannerHeight = "115";
-    var footerHeight = "26";
-    try {
-	bannerHeight = getBannerHeight();
-	footerHeight = getFooterHeight();
-    } catch (e) {
-    }
-
-    if (displayPDCFrame()) {
-      parent.setframevalue("rows", bannerHeight+",100%,"+footerHeight+",*,*,*");
-    } else {
-      parent.setframevalue("rows", bannerHeight+",100%,"+footerHeight+",*,*");
-    }
-  }
-  document.images['expandReduce'].blur();
-  navVisible = !navVisible;
-}
 
 function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
-      var domainsBarPage = getDomainsBarPage();
-      if (!domainsBarPage.startsWith('/')) {
-        domainsBarPage = '/admin/jsp/' + domainsBarPage;
-      }
 
-  top.bottomFrame.SpacesBar.location = getContext() + domainsBarPage + "?privateDomain=" + spaceId + "&privateSubDomain=" + subSpaceId + "&component_id=" + componentId + "&FromTopBar=1";
-  top.bottomFrame.MyMain.location = url;
+  top.reloadBodyMenuPart({
+    "privateDomain" : spaceId,
+    "privateSubDomain" : subSpaceId,
+    "component_id" : componentId,
+    "FromTopBar" : '1'
+  });
+  top.reloadBodyContentPart(url);
 
   if (reloadPage) {
     var topBarFrame = getTopBarPage();

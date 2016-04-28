@@ -217,31 +217,21 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 		document.AdvancedSearch.submit();
 	}
 
-	function jumpToComponent(componentId) {
-		if (<%=refreshEnabled.booleanValue()%>)
-		{
-			//Reload DomainsBar
-			parent.SpacesBar.document.privateDomainsForm.component_id.value=componentId;
-			parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
-			parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
-			parent.SpacesBar.document.privateDomainsForm.submit();
+  function jumpToComponent(componentId) {
+    if (<%=refreshEnabled.booleanValue()%>) {
+      //Reload menu and header
+      top.reloadBodyMenuAndHeaderParts({
+        "component_id" : componentId
+      });
+    }
+  }
 
-			//Reload Topbar
-			parent.SpacesBar.reloadTopBar(true);
-		}
-	}
-
-	function goToSpace(spaceId)
-	{
-		//Reload DomainsBar
-		parent.SpacesBar.document.privateDomainsForm.component_id.value=spaceId;
-		parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
-		parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
-		parent.SpacesBar.document.privateDomainsForm.submit();
-
-		//Reload Topbar
-		parent.SpacesBar.reloadTopBar(true);
-	}
+  function goToSpace(spaceId) {
+    //Reload menu and header
+    top.reloadBodyMenuAndHeaderParts({
+      "privateDomain" : spaceId
+    });
+  }
 
 
 	function openGlossary(uniqueId)

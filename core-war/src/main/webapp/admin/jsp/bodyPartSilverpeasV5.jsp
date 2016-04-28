@@ -29,8 +29,16 @@
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<view:setBundle basename="org.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
+
+<fmt:message var="redExtLabel" key="lookSilverpeasV5.reductExtend" />
 
 <%
 String strGoToNew 	= (String) session.getAttribute("gotoNew");
@@ -41,7 +49,7 @@ String login		= request.getParameter("Login");
 
 LookHelper helper = LookHelper.getLookHelper(session);
 
-int framesetWidth = helper.getSettings("domainsBarFramesetWidth", 255);
+String menuWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
 
 String paramsForDomainsBar = "";
 if ("1".equals(request.getParameter("FromTopBar"))) {
@@ -86,56 +94,87 @@ session.removeAttribute("gotoNew");
 session.removeAttribute("RedirectToComponentId");
 session.removeAttribute("RedirectToSpaceId");
 %>
+<style type="text/css">
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:includePlugin name="jquery"/>
-<view:includePlugin name="tkn"/>
+  #bodyLayout {
+    width: 100%;
+    height: 100%;
+    display: table;
+  }
+
+  #menuContainer, #contentContainer {
+    height: 100%;
+    display: table-cell;
+  }
+
+  #menuContainer {
+    width: <%=menuWidth%>;
+  }
+
+  #redExp {
+    display: table;
+  }
+
+  #redExp div {
+    margin: 0;
+    padding: 0 2px 0 0;
+    border: none;
+    display: table-cell;
+    cursor: pointer;
+  }
+</style>
+<div id="redExp" style="display: none">
+  <div id="toggleMenu"><img src="icons/silverpeasV5/reduct.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
+  <div id="toggleHeader"><img src="icons/silverpeasV5/reductTopBar.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
+</div>
+<div id="bodyLayout">
+  <div id="menuContainer">
+    <iframe src="DomainsBarSilverpeasV5.jsp<%=paramsForDomainsBar%>" marginwidth="0" marginheight="10" id="SpacesBar" name="SpacesBar" frameborder="0" scrolling="auto" width="100%" height="100%"></iframe>
+  </div>
+  <div id="contentContainer">
+    <iframe src="<%=frameURL%>" marginwidth="0" id="MyMain" name="MyMain" marginheight="0" frameborder="0" scrolling="auto" width="100%" height="100%"></iframe>
+  </div>
+</div>
 <script type="text/javascript">
-var columntype=""
-var defaultsetting=""
+  var bodyContext = {
+    toggleContainer: document.querySelector("#redExp"),
+    bodyLayout: document.querySelector("#bodyLayout"),
+    menuContainer : document.querySelector("#menuContainer"),
+    contentFrame: document.querySelector("#MyMain")
+  };
 
-function getCurrentSetting(){
-	if (document.body)
-		return (document.body.cols)? document.body.cols : document.body.rows
-}
+  bodyContext.contentFrame.setAttribute('webkitallowfullscreen', 'true');
+  bodyContext.contentFrame.setAttribute('mozallowfullscreen', 'true');
+  bodyContext.contentFrame.setAttribute('allowfullscreen', 'true');
 
-function setframevalue(coltype, settingvalue){
-	if (coltype=="rows")
-		document.body.rows=settingvalue
-	else if (coltype=="cols")
-		document.body.cols=settingvalue
-}
+  function applyBodyLayoutPartAutoSize() {
+    bodyContext.bodyLayout.style.height = bodyContext.bodyLayout.parentNode.style.height;
+  }
 
-function resizeFrame(contractsetting){
-	if (getCurrentSetting()!=defaultsetting)
-		setframevalue(columntype, defaultsetting)
-	else
-		setframevalue(columntype, contractsetting)
-}
+  function reloadBodyMenuPart(urlParameters) {
+    var parameters = extendsObject({
+      "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
+    }, urlParameters);
+    top.SpacesBar.location.href =
+        spTools.formatUrl('<c:url value="/admin/jsp/DomainsBarSilverpeasV5.jsp"/>', parameters);
+  }
 
-function init() {
-	if (!document.all && !document.getElementById)
-    return
-	if (document.body != null){
-		columntype=(document.body.cols)? "cols" : "rows"
-		defaultsetting=(document.body.cols)? document.body.cols : document.body.rows
-	}
-	else
-		setTimeout("init()",100)
-}
+  function reloadBodyMenuAndHeaderParts(urlParameters) {
+    reloadBodyMenuPart(urlParameters);
+    reloadHeaderPart();
+  }
 
-setTimeout("init()",100);
+  function reloadBodyContentPart(url) {
+    bodyContext.toggleContainer.style.display = 'none';
+    top.MyMain.location.href = url;
+  }
 
+  (function() {
+    applyBodyLayoutPartAutoSize();
+    document.querySelector("#toggleHeader").addEventListener('click', toggleHeaderPart);
+    document.querySelector("#toggleMenu").addEventListener('click', toggleMenuPart);
+    bodyContext.contentFrame.addEventListener('load', function() {
+      bodyContext.toggleContainer.style.display = '';
+    });
+  })();
 </script>
-</head>
-	<frameset cols="<%=framesetWidth%>,*">
-		<frame src="DomainsBarSilverpeasV5.jsp<%=paramsForDomainsBar%>" marginwidth="0" marginheight="10" name="SpacesBar" frameborder="0" scrolling="auto"/>
-		<frame src="<%=frameURL%>" marginwidth="0" name="MyMain" marginheight="0" frameborder="0" scrolling="auto"/>
-		<noframes>
-			<body>Votre navigateur ne prend pas en charge les frames</body>
-		</noframes>
-	</frameset>
-</html>

@@ -469,18 +469,30 @@ if (typeof window.silverpeasAjax === 'undefined') {
 }
 
 if(typeof window.whenSilverpeasReady === 'undefined') {
+  var whenSilverpeasReadyPromise = false;
   function whenSilverpeasReady(callback) {
+    if (!whenSilverpeasReadyPromise) {
+      whenSilverpeasReadyPromise = Promise.resolve();
+    }
     if (window.bindPolyfillDone) {
       jQuery(document).ready(function() {
-        callback.call(this);
+        whenSilverpeasReadyPromise.then(function() {
+          callback.call(this)
+        }.bind(this));
       }.bind(this));
     } else {
-      if (document.readyState !== 'interactive' && document.readyState !== 'loaded') {
+      if (document.readyState !== 'interactive' &&
+          document.readyState !== 'loaded' &&
+          document.readyState !== 'complete') {
         document.addEventListener('DOMContentLoaded', function() {
-          callback.call(this);
+          whenSilverpeasReadyPromise.then(function() {
+            callback.call(this)
+          }.bind(this));
         }.bind(this));
       } else {
-        callback.call(this);
+        whenSilverpeasReadyPromise.then(function() {
+          callback.call(this)
+        }.bind(this));
       }
     }
   }
@@ -497,4 +509,28 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
     };
     return promise;
   }
+}
+
+if (typeof window.spTools === 'undefined') {
+  window.spTools = {
+    formatUrl : function(url, params) {
+      var paramPart = url.indexOf('?') > 0 ? '&' : '?';
+      if (params) {
+        for (var key in params) {
+          var paramList = params[key];
+          if (!paramList) {
+            continue;
+          }
+          if (typeof paramList === 'string') {
+            paramList = [paramList];
+          }
+          if (paramPart.length > 1) {
+            paramPart += '&';
+          }
+          paramPart += key + "=" + paramList.join("&" + key + "=");
+        }
+      }
+      return url + paramPart;
+    }
+  };
 }

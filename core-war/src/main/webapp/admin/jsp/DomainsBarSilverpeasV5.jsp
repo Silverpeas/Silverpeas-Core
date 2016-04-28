@@ -120,12 +120,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 		}
 	}
 
-  function reloadTopBar(reload)
-  {
-    if (reload)
-      top.topFrame.location.href="<%=m_sContext%>/admin/jsp/TopBarSilverpeasV5.jsp";
-  }
-
     function checkSubmitToSearch(ev)
   {
     var touche = ev.keyCode;
@@ -154,24 +148,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
   function advancedSearchEngine(){
     document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert";
     document.searchForm.submit();
-  }
-
-  var navVisible = true;
-  function resizeFrame()
-  {
-    parent.resizeFrame('10,*');
-    if (navVisible)
-    {
-      document.body.scroll = "no";
-      document.images['expandReduce'].src="icons/silverpeasV5/extend.gif";
-    }
-    else
-    {
-      document.body.scroll = "auto";
-      document.images['expandReduce'].src="icons/silverpeasV5/reduct.gif";
-    }
-    document.images['expandReduce'].blur();
-    navVisible = !navVisible;
   }
 
   // Callback methods to navigation.js
@@ -234,16 +210,13 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
         return "TopBarSilverpeasV5.jsp";
     }
 
-    function getFooterPage()
-    {
-	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
-    }
-
     /**
      * Reload bottom frame
      */
     function reloadSpacesBarFrame(tabId) {
-       top.bottomFrame.location.href="<%=m_sContext%>/admin/jsp/frameBottomSilverpeasV5.jsp?UserMenuDisplayMode=" + tabId;
+      top.reloadBodyPart({
+        "UserMenuDisplayMode" : tabId
+      });
     }
 
     function getPersonalSpaceLabels()
@@ -283,7 +256,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 </script>
 </head>
 <body class="fondDomainsBar">
-<div id="redExp"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reduct.gif" border="0" name="expandReduce" alt="<fmt:message key="lookSilverpeasV5.reductExtend" />" title="<fmt:message key="lookSilverpeasV5.reductExtend" />"/></a></div>
 <div id="domainsBar">
   <div id="recherche">
     <div id="submitRecherche">
@@ -429,12 +401,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 </div>
 <form name="clipboardForm" action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
 <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
-</form>
-<!-- Form below is used only to refresh this page according to external link (ie search engine, homepage,...) -->
-<form name="privateDomainsForm" action="DomainsBarSilverpeasV5.jsp" method="get">
-<input type="hidden" name ="component_id"/>
-<input type="hidden" name ="privateDomain"/>
-<input type="hidden" name ="privateSubDomain"/>
 </form>
 </body>
 </html>

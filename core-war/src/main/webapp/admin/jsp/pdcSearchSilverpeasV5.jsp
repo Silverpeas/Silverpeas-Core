@@ -209,9 +209,9 @@ function raz() {
 function init() {
 <%
   if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
-    out.println("parent.showPdcFrame();");
+    out.println("parent.showPdcPart();");
   } else {
-    out.println("parent.hidePdcFrame();");
+    out.println("parent.hidePdcPart();");
   }
 %>
 }
