@@ -344,7 +344,7 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 	function sendQuery() {
 		try {
 			 //empty query field
-			 top.topFrame.document.searchForm.query.value = "";
+			 top.document.topBarSearchForm.query.value = "";
 		} catch (e) {
 			 //Topbar don't have waited form and/or field
 		}

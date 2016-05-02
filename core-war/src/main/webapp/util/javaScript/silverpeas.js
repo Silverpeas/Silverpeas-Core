@@ -347,7 +347,7 @@ if (!window.SilverpeasPluginBundle) {
             translation =
                 translation.replace(new RegExp('[{]' + (paramIndex++) + '[}]', 'g'), param);
           });
-        } else if (params && typeof params === 'string') {
+        } else if (params && typeof params !== 'object') {
           translation =
               translation.replace(new RegExp('[{]' + (paramIndex++) + '[}]', 'g'), params);
         }
@@ -399,12 +399,67 @@ if (typeof SilverpeasClass === 'undefined') {
   };
 }
 
+if (!window.SilverpeasAjaxConfig) {
+  SilverpeasAjaxConfig = function(anUrl) {
+    var _self = this;
+    var url = anUrl;
+    var method = 'GET';
+    var headers = {};
+    var parameters = {};
+    this.withHeaders = function(headerParams) {
+      headers = (headerParams) ?  headerParams : {};
+      return _self;
+    };
+    this.withParams = function(params) {
+      parameters = (params) ? params : {};
+      return _self;
+    };
+    this.withHeader = function(name, value) {
+      headers[name] = encodeURIComponent(value);
+      return _self;
+    };
+    this.withParam = function(name, value) {
+      parameters[name] = encodeURIComponent(value);
+      return _self;
+    };
+    this.byPostMethod = function() {
+      method = 'POST';
+      return _self;
+    };
+    this.getUrl = function() {
+      return (method !== 'POST') ? sp.formatUrl(url, parameters) : url;
+    };
+    this.getMethod = function() {
+      return method;
+    };
+    this.getParams = function() {
+      return parameters;
+    };
+    this.getHeaders = function() {
+      return headers;
+    };
+  };
+}
+
 if (typeof window.silverpeasAjax === 'undefined') {
   function silverpeasAjax(options) {
     if (typeof options === 'string') {
       options = {url : options};
     }
-    var params = extendsObject({"method" : "GET", url : '', headers : {}}, options);
+    var params;
+    if (typeof options.getUrl !== 'function') {
+      params = extendsObject({"method" : "GET", url : '', headers : {}}, options);
+    } else {
+      var ajaxConfig = options;
+      params = {
+        url : ajaxConfig.getUrl(),
+        method : ajaxConfig.getMethod(),
+        headers : ajaxConfig.getHeaders()
+      };
+      if (ajaxConfig.getMethod().startsWith('P')) {
+        params.data = ajaxConfig.getParams();
+      }
+    }
     return new Promise(function(resolve, reject) {
 
       if (Object.getOwnPropertyNames) {
@@ -457,7 +512,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
 
         // Adding settings
         if (params.data) {
-          options.data = $.toJSON(params.data);
+          options.data = jQuery.toJSON(params.data);
           options.contentType = "application/json";
         }
 
@@ -511,8 +566,41 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
   }
 }
 
-if (typeof window.spTools === 'undefined') {
-  window.spTools = {
+if (typeof window.sp === 'undefined') {
+  var debug = true;
+  window.sp = {
+    log : {
+      infoActivated : false,
+      warningActivated : false,
+      errorActivated : false,
+      debugActivated : false,
+      display : function(msg) {
+        console && console.log(msg);
+      },
+      info : function(msg) {
+        if (this.infoActivated) {
+          this.display('Silverpeas - info - ' + msg);
+        }
+      },
+      warning : function(msg) {
+        if (this.warningActivated) {
+          this.display('Silverpeas - warning - ' + msg);
+        }
+      },
+      error : function(msg) {
+        if (this.errorActivated) {
+          this.display('Silverpeas - error - ' + msg);
+        }
+      },
+      debug : function(msg) {
+        if (this.debugActivated) {
+          this.display('Silverpeas - debug - ' + msg);
+        }
+      }
+    },
+    ajaxConfig : function(url) {
+      return new SilverpeasAjaxConfig(url);
+    },
     formatUrl : function(url, params) {
       var paramPart = url.indexOf('?') > 0 ? '&' : '?';
       if (params) {
@@ -531,6 +619,17 @@ if (typeof window.spTools === 'undefined') {
         }
       }
       return url + paramPart;
+    },
+    load : function(target, ajaxConfig) {
+      return new Promise(function(resolve, reject) {
+        silverpeasAjax(ajaxConfig).then(function(request) {
+          jQuery(target).html(request.responseText);
+          resolve()
+        }, function(request) {
+          sp.log.error(request.status + " " + xhr.statusText);
+          reject();
+        });
+      });
     }
   };
 }

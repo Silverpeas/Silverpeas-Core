@@ -34,7 +34,7 @@ function notyInfo(text, customOptions) {
     type: 'information'
   };
   if (customOptions) {
-    $.extend(options, customOptions);
+    extendsObject(options, customOptions);
   }
   return __noty(options);
 }
@@ -49,7 +49,7 @@ function notySuccess(text, customOptions) {
     type: 'success'
   };
   if (customOptions) {
-    $.extend(options, customOptions);
+    extendsObject(options, customOptions);
   }
   return __noty(options);
 }
@@ -66,7 +66,7 @@ function notyWarning(text, customOptions) {
     type: 'warning'
   };
   if (customOptions) {
-    $.extend(options, customOptions);
+    extendsObject(options, customOptions);
   }
   return __noty(options);
 }
@@ -83,7 +83,7 @@ function notyError(text, customOptions) {
     type: 'error'
   };
   if (customOptions) {
-    $.extend(options, customOptions);
+    extendsObject(options, customOptions);
   }
   return __noty(options);
 }
@@ -101,7 +101,7 @@ function notyDebug(text, customOptions) {
     type: 'warning'
   };
   if (customOptions) {
-    $.extend(options, customOptions);
+    extendsObject(options, customOptions);
   }
   return __noty(options);
 }
@@ -111,7 +111,7 @@ function notyDebug(text, customOptions) {
  * @param text
  */
 function __noty(customOptions) {
-  var options = $.extend({
+  var options = extendsObject({
     layout: 'topCenter',
     theme: 'silverpeas',
     timeout: 5000,

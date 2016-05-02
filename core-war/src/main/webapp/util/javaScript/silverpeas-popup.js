@@ -577,16 +577,16 @@
  */
 function displaySingleFreePopupFrom(url, options) {
   var deferred = new jQuery.Deferred();
-  $.popup.showWaiting();
-  $.ajax({
+  jQuery.popup.showWaiting();
+  jQuery.ajax({
     url: url,
     type: 'GET',
     dataType: 'html',
     cache : false
   }).success(function(data, status, jqXHR) {
-    var $popup = $('#popupHelperContainer');
+    var $popup = jQuery('#popupHelperContainer');
     if ($popup.length == 0) {
-      $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+      $popup = jQuery('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
       $popup.appendTo(document.body);
     }
     $popup.empty();
@@ -597,7 +597,7 @@ function displaySingleFreePopupFrom(url, options) {
     notyError(errorThrown);
     deferred.reject();
   }).always(function(data, status, jqXHR) {
-    $.popup.hideWaiting();
+    jQuery.popup.hideWaiting();
   });
   return deferred.promise();
 }
@@ -606,7 +606,7 @@ function displaySingleFreePopupFrom(url, options) {
  * Closes the single free popup.
  */
 function closeSingleFreePopup() {
-  $('#popupHelperContainer').popup('close');
+  jQuery('#popupHelperContainer').popup('close');
 }
 
 /**
@@ -619,16 +619,16 @@ function closeSingleFreePopup() {
  */
 function displaySingleConfirmationPopupFrom(url, options) {
   var deferred = new jQuery.Deferred();
-  $.popup.showWaiting();
-  $.ajax({
+  jQuery.popup.showWaiting();
+  jQuery.ajax({
     url: url,
     type: 'GET',
     dataType: 'html',
     cache : false
   }).success(function(data, status, jqXHR) {
-    var $popup = $('#popupHelperContainer');
+    var $popup = jQuery('#popupHelperContainer');
     if ($popup.length == 0) {
-      $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+      $popup = jQuery('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
       $popup.appendTo(document.body);
     }
     $popup.empty();
@@ -639,7 +639,7 @@ function displaySingleConfirmationPopupFrom(url, options) {
     notyError(errorThrown);
     deferred.reject();
   }).always(function(data, status, jqXHR) {
-    $.popup.hideWaiting();
+    jQuery.popup.hideWaiting();
   });
   return deferred.promise();
 }
@@ -648,5 +648,5 @@ function displaySingleConfirmationPopupFrom(url, options) {
  * Closes the single confirmation popup.
  */
 function closeSingleConfirmationPopup() {
-  $('#popupHelperContainer').popup('close');
+  jQuery('#popupHelperContainer').popup('close');
 }

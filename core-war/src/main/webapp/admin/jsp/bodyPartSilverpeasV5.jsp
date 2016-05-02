@@ -51,14 +51,18 @@ LookHelper helper = LookHelper.getLookHelper(session);
 
 String menuWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
 
-String paramsForDomainsBar = "";
-if ("1".equals(request.getParameter("FromTopBar"))) {
-	paramsForDomainsBar = (spaceId == null) ? "" : "?privateDomain="+spaceId+"&privateSubDomain="+subSpaceId+"&FromTopBar=1";
-}  else if (componentId != null)  {
-	paramsForDomainsBar = "?privateDomain=&component_id="+componentId;
-} else {
-	paramsForDomainsBar = "?privateDomain="+spaceId;
-}
+  StringBuilder paramsForDomainsBar = new StringBuilder().append("{");
+  if ("1".equals(request.getParameter("FromTopBar"))) {
+    if (spaceId != null) {
+      paramsForDomainsBar.append("privateDomain:'").append(spaceId).append("', privateSubDomain:'")
+          .append(subSpaceId).append("', FromTopBar:'1'");
+    }
+    ;
+  } else if (componentId != null) {
+    paramsForDomainsBar.append("privateDomain:'', component_id:'").append(componentId).append("'");
+  } else {
+    paramsForDomainsBar.append("privateDomain:'").append(spaceId).append("'");
+  }
 
 //Allow to force a page only on login and when user clicks on logo
 boolean displayLoginHomepage = false;
@@ -98,17 +102,20 @@ session.removeAttribute("RedirectToSpaceId");
 
   #bodyLayout {
     width: 100%;
-    height: 100%;
-    display: table;
-  }
-
-  #menuContainer, #contentContainer {
-    height: 100%;
-    display: table-cell;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
   }
 
   #menuContainer {
+    position: relative;
+    overflow: auto;
     width: <%=menuWidth%>;
+  }
+
+  #contentContainer {
+    flex: 1;
+    height: 100%;
   }
 
   #redExp {
@@ -128,18 +135,26 @@ session.removeAttribute("RedirectToSpaceId");
   <div id="toggleHeader"><img src="icons/silverpeasV5/reductTopBar.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
 </div>
 <div id="bodyLayout">
-  <div id="menuContainer">
-    <iframe src="DomainsBarSilverpeasV5.jsp<%=paramsForDomainsBar%>" marginwidth="0" marginheight="10" id="SpacesBar" name="SpacesBar" frameborder="0" scrolling="auto" width="100%" height="100%"></iframe>
-  </div>
+  <div id="menuContainer"></div>
   <div id="contentContainer">
     <iframe src="<%=frameURL%>" marginwidth="0" id="MyMain" name="MyMain" marginheight="0" frameborder="0" scrolling="auto" width="100%" height="100%"></iframe>
   </div>
 </div>
 <script type="text/javascript">
+  var resolveContentFrameLoadPromise;
+  var rejectContentFrameLoadPromise;
+  function newContentFrameLoadPromise() {
+    return new Promise(function(resolve, reject) {
+      resolveContentFrameLoadPromise = resolve;
+      rejectContentFrameLoadPromise = reject;
+    });
+  }
+
   var bodyContext = {
     toggleContainer: document.querySelector("#redExp"),
     bodyLayout: document.querySelector("#bodyLayout"),
     menuContainer : document.querySelector("#menuContainer"),
+    menuFrame: document.querySelector("#SpacesBar"),
     contentFrame: document.querySelector("#MyMain")
   };
 
@@ -152,29 +167,40 @@ session.removeAttribute("RedirectToSpaceId");
   }
 
   function reloadBodyMenuPart(urlParameters) {
+    jQuery.progressMessage();
+    bodyContext.toggleContainer.style.display = 'none';
     var parameters = extendsObject({
       "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
     }, urlParameters);
-    top.SpacesBar.location.href =
-        spTools.formatUrl('<c:url value="/admin/jsp/DomainsBarSilverpeasV5.jsp"/>', parameters);
+    var ajaxConfig = sp.ajaxConfig('<c:url value="/admin/jsp/DomainsBarSilverpeasV5.jsp"/>')
+        .withParams(parameters);
+    return sp.load(bodyContext.menuContainer, ajaxConfig).then(function() {
+      bodyContext.toggleContainer.style.display = '';
+    });
   }
 
   function reloadBodyMenuAndHeaderParts(urlParameters) {
-    reloadBodyMenuPart(urlParameters);
     reloadHeaderPart();
+    reloadBodyMenuPart(urlParameters);
   }
 
   function reloadBodyContentPart(url) {
-    bodyContext.toggleContainer.style.display = 'none';
+    jQuery.progressMessage();
+    var promise = newContentFrameLoadPromise();
     top.MyMain.location.href = url;
+    return promise;
   }
 
   (function() {
+    newContentFrameLoadPromise();
     applyBodyLayoutPartAutoSize();
+    reloadBodyMenuPart(<%=paramsForDomainsBar.append('}')%>);
+
     document.querySelector("#toggleHeader").addEventListener('click', toggleHeaderPart);
     document.querySelector("#toggleMenu").addEventListener('click', toggleMenuPart);
     bodyContext.contentFrame.addEventListener('load', function() {
-      bodyContext.toggleContainer.style.display = '';
+      resolveContentFrameLoadPromise();
+      jQuery.closeProgressMessage();
     });
   })();
 </script>

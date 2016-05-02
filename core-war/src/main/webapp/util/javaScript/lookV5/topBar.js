@@ -33,13 +33,11 @@ function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
   top.reloadBodyContentPart(url);
 
   if (reloadPage) {
-    var topBarFrame = getTopBarPage();
-    if (!topBarFrame.startsWith('/')) {
-      topBarFrame = '/admin/jsp/' + topBarFrame;
-    }
-    location.href = getContext() + topBarFrame + "?ComponentId=" + componentId + "&SpaceId=" + spaceId;
-  }
-  else {
+    top.reloadHeaderPart({
+      "ComponentId" : componentId,
+      "SpaceId" : spaceId
+    });
+  } else {
     //unactivate all items
     var tr = document.getElementById('item' + itemId).parentNode;
     if (tr.hasChildNodes()) {

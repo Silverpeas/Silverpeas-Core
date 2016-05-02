@@ -63,11 +63,6 @@ if (wallPaper == null) {
 boolean outilDisplayed = false;
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>entete</title>
-<view:looknfeel />
 <view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {
@@ -100,10 +95,6 @@ function goToHome() {
   top.reloadBodyPart(params);
 }
 
-function displayPDCFrame() {
-  return <%=helper.displayPDCFrame()%>;
-}
-
 function getConnectedUsersLabel(nb) {
   if (nb == 1) {
     return " <%=helper.getString("lookSilverpeasV5.connectedUser")%>";
@@ -116,13 +107,9 @@ function getContext() {
   return "<%=m_sContext%>";
 }
 
-function getTopBarPage() {
-	return "TopBarSilverpeasV5.jsp";
-}
-
-$(function() {
+(function() {
   setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
-});
+})();
 
 function getBannerHeight() {
 	return "<%=helper.getSettings("bannerHeight", "115")%>";
@@ -132,8 +119,6 @@ function getFooterHeight() {
 }
 //-->
 </script>
-</head>
-<body>
 <div id="topBar">
     <div id="backHome">
         <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
@@ -216,8 +201,6 @@ function getFooterHeight() {
     </div>
     <% } %>
 </div>
-<form name="searchForm" action="">
+<form name="topBarSearchForm" action="">
 <input type="hidden" name="query"/>
 </form>
-</body>
-</html>

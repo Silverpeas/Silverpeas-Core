@@ -137,7 +137,7 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           includeLang(xhtml);
           break;
         case ticker:
-          includeTicker(xhtml);
+          includeTicker(xhtml, getLanguage());
           break;
         case subscription:
           includeDynamicallySubscription(xhtml, null);

@@ -29,11 +29,9 @@
 
 <c:set var="lookHelper" value="${sessionScope['Silverpeas_LookHelper']}"/>
 <c:set var="settings" value="${lookHelper.tickerSettings}"/>
-<c:set var="language" value="${lookHelper.language}"/>
 
 <script type="text/javascript">
 function __getTime(news) {
-  __loadI18NProp();
   var date = new Date(news.date);
   var hour = date.getHours();
   var minute = date.getMinutes();
@@ -43,38 +41,18 @@ function __getTime(news) {
   var nbDays = news.publishedForNbDays;
   var label = hour + ":" + minute;
   if (nbDays == 1) {
-    label = __getI18NProp("lookSilverpeasV5.ticker.date.yesterday") + " " + label;
+    label = TickerBundle.get('lookSilverpeasV5.ticker.date.yesterday') + " " + label;
   } else if (nbDays > 1) {
-    label = __getI18NProp("lookSilverpeasV5.ticker.date.daysAgo", [nbDays]);
+    label = TickerBundle.get('lookSilverpeasV5.ticker.date.daysAgo', nbDays);
   }
   return label;
 }
 
-var i18nProp = false;
-
-function __loadI18NProp() {
-  if (!i18nProp) {
-    $.i18n.properties({
-	  name: 'lookBundle',
-	  path: webContext + '/services/bundles/org/silverpeas/lookSilverpeasV5/multilang/',
-      language: '${language}',
-      mode: 'map'
-    });
-    i18nProp = true;
-  }
-}
-
-function __getI18NProp(prop, params) {
-  __loadI18NProp();
-  return $.i18n.prop(prop, params);
-}
-
-$(document).ready(function() {
+jQuery(document).ready(function() {
   if (!("Notification" in window) || (Notification && Notification.permission === "granted")) {
-    $("#desktop-notifications-permission").remove();
+    jQuery("#desktop-notifications-permission").remove();
   } else {
-
-    $("#desktop-notifications-permission").text(__getI18NProp("lookSilverpeasV5.ticker.notifications.permission.request"));
+    jQuery("#desktop-notifications-permission").text(TickerBundle.get("lookSilverpeasV5.ticker.notifications.permission.request"));
   }
 });
 
@@ -85,7 +63,7 @@ function requestNotificationPermission() {
         Notification.permission = status;
       }
       if (status === "granted") {
-        $("#desktop-notifications-permission").remove();
+        jQuery("#desktop-notifications-permission").remove();
       }
     })
   }
@@ -136,68 +114,70 @@ function __isNewNews(id) {
 
 var tickerNews = [];
 
-(function worker() {
-  $.ajax({
-    url: webContext+'/services/news/ticker',
-    type: "GET",
-	async : true,
-	dataType : "json",
-	cache : false,
-    success: function(data) {
-      var nbNews = data.length;
-      $("#sp-ticker").empty();
-      if (nbNews === 0) {
-        $("#ticker").hide();
-      } else {
-        $("#ticker").show();
-        var ul = $("<ul>").appendTo("#sp-ticker");
-        ul.attr("id", "js-news").attr("class", "js-hidden");
-        var firstLoad = (tickerNews.length == 0);
-        $.each(data, function(i, item) {
-          if (firstLoad) {
-            tickerNews[tickerNews.length] = item.id;
-          } else {
-            if (__isNewNews(item.id)) {
-              __notifyUser(item);
+(function($) {
+  function worker() {
+    $.ajax({
+      url : webContext + '/services/news/ticker',
+      type : "GET",
+      async : true,
+      dataType : "json",
+      cache : false,
+      success : function(data) {
+        var nbNews = data.length;
+        $("#sp-ticker").empty();
+        if (nbNews === 0) {
+          $("#ticker").hide();
+        } else {
+          $("#ticker").show();
+          var ul = $("<ul>").appendTo("#sp-ticker");
+          ul.attr("id", "js-news").attr("class", "js-hidden");
+          var firstLoad = (tickerNews.length == 0);
+          $.each(data, function(i, item) {
+            if (firstLoad) {
               tickerNews[tickerNews.length] = item.id;
+            } else {
+              if (__isNewNews(item.id)) {
+                __notifyUser(item);
+                tickerNews[tickerNews.length] = item.id;
+              }
             }
-          }
-          var li = $("<li>").attr("class", "news-item").appendTo("#js-news");
-          var date = $("<span>").attr("class", "ticker-item-date").text(__getTime(item)+ " - ");
-          date.appendTo(li);
-          var span = $("<span>").attr("title", item.description).text(item.title);
-          if (${settings.linkOnItem}) {
-            var a = $("<a>").attr("href", item.permalink).attr("target", "_top");
-            span.appendTo(a);
-            a.appendTo(li);
-          } else {
-            span.appendTo(li);
-          }
-        });
+            var li = $("<li>").attr("class", "news-item").appendTo("#js-news");
+            var date = $("<span>").attr("class", "ticker-item-date").text(__getTime(item) + " - ");
+            date.appendTo(li);
+            var span = $("<span>").attr("title", item.description).text(item.title);
+            if (${settings.linkOnItem}) {
+              var a = $("<a>").attr("href", item.permalink).attr("target", "_top");
+              span.appendTo(a);
+              a.appendTo(li);
+            } else {
+              span.appendTo(li);
+            }
+          });
 
-        //init the ticker plugin itself
-        $('#js-news').ticker({
-	    speed: ${settings.getParam('speed', '0.10')},
-	    pauseOnItems: ${settings.getParam('pauseOnItems', '5000')},
-	    htmlFeed: true,
-	    controls: ${settings.getParam('controls', 'false')},
-	    displayType: '${settings.getParam('displayType', 'fade')}',
-	    fadeInSpeed: ${settings.getParam('fadeInSpeed', '600')},
-	    fadeOutSpeed: ${settings.getParam('fadeOutSpeed', '300')},
-	    titleText: '${settings.label}'
-		});
+          //init the ticker plugin itself
+          $('#js-news').ticker({
+            speed : ${settings.getParam('speed', '0.10')},
+            pauseOnItems : ${settings.getParam('pauseOnItems', '5000')},
+            htmlFeed : true,
+            controls : ${settings.getParam('controls', 'false')},
+            displayType : '${settings.getParam('displayType', 'fade')}',
+            fadeInSpeed : ${settings.getParam('fadeInSpeed', '600')},
+            fadeOutSpeed : ${settings.getParam('fadeOutSpeed', '300')},
+            titleText : '${settings.label}'
+          });
+        }
+
+        // Schedule the next request when the current one's complete
+        var refreshDelay = ${settings.refreshDelay}*1000;
+        setTimeout(worker, refreshDelay);
       }
+    });
+  }
 
-	  // Schedule the next request when the current one's complete
-	  var refreshDelay = ${settings.refreshDelay}*1000;
-      setTimeout(worker, refreshDelay);
-    }
-  });
-})();
+  worker();
+})(jQuery);
 </script>
 <div id="ticker" style="display: none">
-  <span id="sp-ticker">
-  Chargement...
-  </span>
+  <span id="sp-ticker"></span>
   <a href="#" onclick="requestNotificationPermission()" id="desktop-notifications-permission"></a>
 </div>

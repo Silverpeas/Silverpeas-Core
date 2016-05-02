@@ -124,8 +124,8 @@
 
     <% if (displayConnectedUsers) { %>
     function refreshTopBar() {
-      if (typeof top.topFrame.setConnectedUsers === 'function') {
-        top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
+      if (typeof top.setConnectedUsers === 'function') {
+        top.setConnectedUsers(<%=nbConnectedUsers%>);
       }
     }
     <% } %>

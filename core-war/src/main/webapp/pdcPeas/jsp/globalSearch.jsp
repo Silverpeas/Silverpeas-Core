@@ -245,7 +245,7 @@ function sendQuery() {
 	if (checkDates()) {
 		try {
 		  // clear global input search
-		  top.topFrame.document.searchForm.query.value = "";
+		  top.document.topBarSearchForm.query.value = "";
 		} catch (e) {
 		  // catch exceptions if this input does not exist
 		}

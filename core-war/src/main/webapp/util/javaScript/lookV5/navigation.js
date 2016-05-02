@@ -644,40 +644,6 @@ function enableUserFavoriteParentStatus(spaceId) {
   }
 }
 
-var spaceUpdater;
-
-//Event.observe(window, 'load', function(){
-jQuery(document).ready(function() {
-
-  // Handler for .ready() called.
-  currentLook = getLook();
-  try {
-    currentSpaceWithCSSApplied = getSpaceWithCSSToApply();
-    //alert("set currentSpaceCSS to "+getSpaceWithCSSToApply());
-  } catch (e) {
-    // look do not provide getSpaceCSS() function
-  }
-
-  hideTransverseSpace();
-
-  spaceUpdater = new SpaceUpdater();
-  ajaxEngine.registerRequest('getSpaceInfo', getContext() + '/RAjaxSilverpeasV5/dummy');
-  ajaxEngine.registerAjaxObject('spaceUpdater', spaceUpdater);
-
-  //Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
-  ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=1',
-          'GetPDC=' + displayPDC(), 'SpaceId=' + getSpaceIdToInit(),
-          'ComponentId=' + getComponentIdToInit(), 'UserMenuDisplayMode=' + getUserMenuDisplayMode());
-
-  try {
-    displayContextualPDC = displayContextualPDC();
-  } catch (e) {
-    displayContextualPDC = true;
-  }
-
-  displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
-});
-
 function displayFavoriteSpaceIcon(space, spaceId, newSpace) {
   if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() === "ALL") {
     var favSpace = space.getAttribute("favspace");
@@ -706,9 +672,7 @@ function displayFavoriteSpaceIcon(space, spaceId, newSpace) {
   }
 }
 
-var SpaceUpdater = Class.create();
-
-SpaceUpdater.prototype = {
+var SpaceUpdater = SilverpeasClass.extend({
   initialize: function() {
     this.useHighlighting = true;
     this.lastPersonSelected = null;
@@ -1064,8 +1028,11 @@ SpaceUpdater.prototype = {
   },
   displayAxis: function(axisList) {
     removePDC();
+    if (!axisList) {
+      return;
+    }
 
-    var nbAxis = axisList.childNodes.length;
+    var nbAxis = axisList.childNodes ? axisList.childNodes.length : 0;
 
     if (nbAxis > 0) {
       //if (currentSpaceLevel == 0)
@@ -1253,7 +1220,7 @@ SpaceUpdater.prototype = {
     img.setAttribute("width", "15");
     img.setAttribute("height", "15");
   }
-};
+});
 
 function getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen, itemURL,
         itemName) {
@@ -1310,3 +1277,115 @@ function getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen
 
   return newEntry;
 }
+
+var AjaxEngine = function() {
+  var requestURLS = {};
+  var ajaxObjects = {};
+  this.registerRequest = function(name, url) {
+    requestURLS[name] = url;
+  };
+  this.registerAjaxObject = function(name, url) {
+    ajaxObjects[name] = url;
+  };
+  var _createQueryString = function( theArgs, offset ) {
+    var queryList = [];
+    for ( var i = offset ; i < theArgs.length ; i++ ) {
+      var anArg = theArgs[i];
+
+      if ( anArg.name != undefined && anArg.value != undefined ) {
+        queryList[anArg.name] = encodeURIComponent(anArg.value);
+      }
+      else {
+        var ePos  = anArg.indexOf('=');
+        var argName  = anArg.substring( 0, ePos );
+        var argValue = anArg.substring( ePos + 1 );
+        queryList[argName] = encodeURIComponent(argValue);
+
+      }
+    }
+
+    var d = new Date();
+    var trick = d.getYear() + "ie" + d.getMonth() + "t" + d.getDate() + "r" + d.getHours() + "i" +
+        d.getMinutes() + "c" + d.getSeconds() + "k" + d.getMilliseconds();
+
+    queryList["&ietrick"] = trick;
+
+    return queryList;
+  };
+  var _processAjaxResponse = function( xmlResponseElements ) {
+    for ( var i = 0 ; i < xmlResponseElements.length ; i++ ) {
+      var responseElement = xmlResponseElements[i];
+
+      // only process nodes of type element.....
+      if ( responseElement.nodeType != 1 )
+        continue;
+
+      var responseType = responseElement.getAttribute("type");
+      var responseId   = responseElement.getAttribute("id");
+
+      if ( responseType == "object" )
+        _processAjaxObjectUpdate( ajaxObjects[ responseId ], responseElement );
+      else
+        alert('unrecognized AjaxResponse type : ' + responseType );
+    }
+  };
+
+  var _processAjaxObjectUpdate = function( ajaxObject, responseElement ) {
+    ajaxObject.ajaxUpdate( responseElement );
+  };
+  this.sendRequest = function(requestName, options) {
+    var requestURL = requestURLS[requestName];
+    if (!requestURL) {
+      return;
+    }
+
+    // Allow for backwards Compatibility
+    if (arguments.length >= 2 && typeof arguments[1] == 'string') {
+      options = {parameters : _createQueryString(arguments, 1)};
+    }
+
+    var ajaxConfig = sp.ajaxConfig(requestURL).withParams(options.parameters);
+    return silverpeasAjax(ajaxConfig).then(function(request) {
+      var response = request.responseXML.getElementsByTagName("ajax-response");
+      if (response && response.length === 1) {
+        _processAjaxResponse(response[0].childNodes);
+      }
+    });
+  }
+};
+
+var spaceUpdater;
+var ajaxEngine;
+
+//Event.observe(window, 'load', function(){
+jQuery(document).ready(function() {
+
+  // Handler for .ready() called.
+  currentLook = getLook();
+  try {
+    currentSpaceWithCSSApplied = getSpaceWithCSSToApply();
+    //alert("set currentSpaceCSS to "+getSpaceWithCSSToApply());
+  } catch (e) {
+    // look do not provide getSpaceCSS() function
+  }
+
+  hideTransverseSpace();
+
+  spaceUpdater = new SpaceUpdater();
+  ajaxEngine = new AjaxEngine();
+  ajaxEngine.registerRequest('getSpaceInfo', getContext() + '/RAjaxSilverpeasV5/dummy');
+  ajaxEngine.registerAjaxObject('spaceUpdater', spaceUpdater);
+
+  //Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
+  ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=1',
+      'GetPDC=' + displayPDC(), 'SpaceId=' + getSpaceIdToInit(),
+      'ComponentId=' + getComponentIdToInit(), 'UserMenuDisplayMode=' + getUserMenuDisplayMode());
+
+  try {
+    displayContextualPDC = displayContextualPDC();
+  } catch (e) {
+    displayContextualPDC = true;
+  }
+
+  displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
+});

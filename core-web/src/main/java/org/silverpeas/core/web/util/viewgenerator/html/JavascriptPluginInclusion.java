@@ -305,8 +305,18 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeTicker(final ElementContainer xhtml) {
+  public static ElementContainer includeTicker(final ElementContainer xhtml,
+      final String language) {
     xhtml.addElement(link(jqueryPath + TICKER_CSS));
+    xhtml.addElement(scriptContent(JavascriptBundleProducer
+        .bundleVariableName("TickerBundle")
+        .add(ResourceLocator
+                .getLocalizationBundle("org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+                    language),
+            "lookSilverpeasV5.ticker.date.yesterday",
+            "lookSilverpeasV5.ticker.date.daysAgo",
+            "lookSilverpeasV5.ticker.notifications.permission.request")
+        .produce()));
     xhtml.addElement(script(jqueryPath + TICKER_JS));
     return xhtml;
   }
@@ -326,7 +336,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DATEPICKER));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DATE_UTILS));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DATECHECKER));
-    xhtml.addElement(scriptContent("$.datechecker.settings.language = '" + language + "';"));
+    xhtml.addElement(scriptContent("jQuery.datechecker.settings.language = '" + language + "';"));
     return xhtml;
   }
 
@@ -372,10 +382,10 @@ public class JavascriptPluginInclusion {
       String language) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_RESPONSIBLES));
     StringBuilder responsiblePluginLabels = new StringBuilder();
-    responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
+    responsiblePluginLabels.append("jQuery.responsibles.labels.platformResponsible = '").append(
         ResourceLocator.getGeneralLocalizationBundle(language)
             .getString("GML.platform.responsibles")).append("';");
-    responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
+    responsiblePluginLabels.append("jQuery.responsibles.labels.sendMessage = '").append(
         ResourceLocator.getGeneralLocalizationBundle(language)
             .getString("GML.notification.send")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));

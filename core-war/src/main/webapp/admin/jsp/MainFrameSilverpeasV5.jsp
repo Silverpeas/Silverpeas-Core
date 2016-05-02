@@ -123,6 +123,8 @@ if (m_MainSessionCtrl == null) {
       }
 %>
 
+<c:set var="pdcActivated" value="<%=helper.displayPDCFrame()%>"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -146,6 +148,9 @@ if (m_MainSessionCtrl == null) {
 
   #mainLayout {
     width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
   }
 
   #layoutHeaderPart, #layoutBodyPart, #layoutFooterPart {
@@ -182,16 +187,9 @@ if (m_MainSessionCtrl == null) {
 <% } %>
 
 <div id="mainLayout">
-  <div id="layoutHeaderPart">
-    <iframe src="TopBarSilverpeasV5.jsp" id="topFrame" name="topFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" width="100%" height="100%"></iframe>
-  </div>
+  <div id="layoutHeaderPart"></div>
   <div id="layoutBodyPart"></div>
-  <div id="layoutFooterPart" class="hidden-part">
-    <% if (helper.displayPDCFrame()) { %>
-    <!--  Content of this frame is processed when DomainsBar is initialized -->
-    <iframe src="" id="pdcFrame" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" width="100%" height="100%"></iframe>
-    <% } %>
-  </div>
+  <div id="layoutFooterPart" class="hidden-part"></div>
 </div>
 <div class="hidden-part" style="height: 0">
   <iframe src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
@@ -207,9 +205,9 @@ if (m_MainSessionCtrl == null) {
 
   function applyMainFrameAutoSize() {
     var bodyLayoutHeight = window.innerHeight - mainContext.headerLayout.offsetHeight;
-    <% if (helper.displayPDCFrame()) { %>
+    <c:if test="${pdcActivated}">
     bodyLayoutHeight -= mainContext.footerLayout.offsetHeight;
-    <% } %>
+    </c:if>
     mainContext.bodyLayout.style.height = bodyLayoutHeight + 'px';
     if (typeof applyBodyLayoutPartAutoSize !== 'undefined') {
       applyBodyLayoutPartAutoSize();
@@ -217,33 +215,45 @@ if (m_MainSessionCtrl == null) {
   }
 
   function loadPdcPart(urlParameters) {
+    <c:if test="${pdcActivated}">
     var parameters = extendsObject({
-      "spaces" : "", "componentSearch" : "", "FromPDCFrame" : ""
+      "action" : "ChangeSearchTypeToExpert",
+      "SearchPage" : "/admin/jsp/pdcSearchSilverpeasV5.jsp"
     }, urlParameters);
-    top.pdcFrame.location.href = spTools.formatUrl(
-        '<c:url value="/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp"/>',
-        parameters);
-    applyMainFrameAutoSize();
+    var action = parameters.action;
+    delete parameters.action;
+    var ajaxConfig = sp.ajaxConfig('<c:url value="/RpdcSearch/jsp/"/>' + action)
+        .withParams(parameters);
+    return sp.load(mainContext.footerLayout, ajaxConfig).then(function() {
+      applyMainFrameAutoSize();
+    });
+    </c:if>
   }
 
   function showPdcPart() {
+    <c:if test="${pdcActivated}">
     mainContext.footerLayout.classList.remove('hidden-part');
     applyMainFrameAutoSize();
+    </c:if>
   }
 
   function hidePdcPart() {
+    <c:if test="${pdcActivated}">
     mainContext.footerLayout.classList.add('hidden-part');
     applyMainFrameAutoSize();
+    </c:if>
   }
 
   function reloadHeaderPart(urlParameters) {
-    top.topFrame.location.href =
-        spTools.formatUrl('<c:url value="/admin/jsp/TopBarSilverpeasV5.jsp"/>', urlParameters);
+    return sp.load(mainContext.headerLayout,
+        sp.ajaxConfig('<c:url value="/admin/jsp/TopBarSilverpeasV5.jsp"/>').withParams(
+            urlParameters));
   }
 
   function reloadBodyPart(urlParameters) {
-    jQuery(mainContext.bodyLayout).load(
-        spTools.formatUrl('<c:url value="/admin/jsp/bodyPartSilverpeasV5.jsp"/>', urlParameters));
+    return sp.load(mainContext.bodyLayout,
+        sp.ajaxConfig('<c:url value="/admin/jsp/bodyPartSilverpeasV5.jsp"/>').withParams(
+            urlParameters));
   }
 
   var toggleHeaderPart = function() {
@@ -274,6 +284,7 @@ if (m_MainSessionCtrl == null) {
 
   (function() {
     applyMainFrameAutoSize();
+    reloadHeaderPart();
     reloadBodyPart(<%=frameBottomParams.append('}')%>);
 
     var timer_resize;
@@ -285,6 +296,7 @@ if (m_MainSessionCtrl == null) {
     });
   })();
 </script>
+<view:progressMessage/>
 </body>
 </html>
 <% } %>

@@ -31,6 +31,10 @@
   });
 
   $.progressMessage = function (options, callback) {
+    if (top != window && top.jQuery && top.jQuery.progressMessage) {
+      top.jQuery.progressMessage(options, callback);
+      return;
+    }
     // Pass the options and a callback to execute if affirmative user response.
     var opts = new Defaults();
     $.extend(opts, options);
@@ -47,6 +51,7 @@
             close: function () {
               // Clean up
               dlg.dialog('destroy');
+              dlg = undefined;
             },
             open: function(event, ui) {
               $(".ui-dialog-titlebar-close").hide();
@@ -55,16 +60,20 @@
 
       // Set options, open, and bind callback
       dlg.dialog('open');
-  }
+  };
 
   $.closeProgressMessage = function (options, callback) {
+    if (top != window && top.jQuery && top.jQuery.closeProgressMessage) {
+      top.jQuery.closeProgressMessage(options, callback);
+      return;
+    }
     // Pass the options and a callback to execute if affirmative user response.
     var opts = new Defaults();
     $.extend(opts, options);
     if (dlg) {
       dlg.dialog('close');
     }
-  }
+  };
 
   $.progressMessage.defaults = function (options) {
     $.extend(Defaults.prototype, options);

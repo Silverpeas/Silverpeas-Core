@@ -7,14 +7,14 @@
 
 #backHome {
      background: url("imgDesign/logo.png") no-repeat scroll 7px 0px transparent;
-     height: 115px;
+     height: 80px;
      left: 0px;
      top: 0px;
      width: 189px;
 }
 
 #backHome img {
-     height: 115px ! important;
+     height: 80px ! important;
      width: 214px ! important;
 }
 
@@ -187,8 +187,9 @@ a:hover {
      background: url("imgDesign/espacePerso.gif") repeat-x scroll 0px 0px #F2F2F2;
      bottom: 0px;
      left: 0px;
-     position: fixed;
+     position: absolute;
      width: 100%;
+     border: 0
 }
 
 #contentSpacespacePerso{
