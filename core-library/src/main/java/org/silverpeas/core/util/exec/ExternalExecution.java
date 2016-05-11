@@ -35,9 +35,10 @@ public class ExternalExecution {
     final List<String> errors = new LinkedList<>();
     CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
     final Process process;
+    Thread errEater = null, outEater = null;
     try {
       process = Runtime.getRuntime().exec(commandLine.toStrings());
-      final Thread errEater = new Thread(() -> {
+      errEater = new Thread(() -> {
         try {
           errors.addAll(IOUtils.readLines(process.getErrorStream()));
         } catch (final IOException e) {
@@ -45,7 +46,7 @@ public class ExternalExecution {
         }
       });
       errEater.start();
-      final Thread outEater = new Thread(() -> {
+      outEater = new Thread(() -> {
         try {
           result.addAll(IOUtils.readLines(process.getInputStream()));
         } catch (final IOException e) {
@@ -56,6 +57,10 @@ public class ExternalExecution {
       process.waitFor();
       int exitStatus = process.exitValue();
       if (exitStatus != config.getSuccessfulExitStatusValue()) {
+        try {
+          errEater.join();
+        } catch (InterruptedException e) {
+        }
         throw new RuntimeException(
             "Exit error status : " + exitStatus + " " + logErrors.getMessage());
       }
@@ -63,6 +68,10 @@ public class ExternalExecution {
       performExternalExecutionException(config, e);
     } finally {
       IOUtils.closeQuietly(logErrors);
+    }
+    try {
+      outEater.join();
+    } catch (InterruptedException e) {
     }
     return result;
   }

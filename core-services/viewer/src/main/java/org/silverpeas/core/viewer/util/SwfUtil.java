@@ -24,6 +24,7 @@
 package org.silverpeas.core.viewer.util;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

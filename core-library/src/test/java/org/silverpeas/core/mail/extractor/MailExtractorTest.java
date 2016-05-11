@@ -155,7 +155,6 @@ public class MailExtractorTest {
     assertThat(attachments.size(), is(2));
     MailAttachment attachment = attachments.get(0);
     assertThat(attachment.getName(), is("Liste des applications-V1.0.pdf"));
-    assertThat(attachment.getSize(), is(149463L));
     attachment = attachments.get(1);
     assertThat(attachment.getName(), is("Silverpeas-SearchEngine.odt"));
   }
