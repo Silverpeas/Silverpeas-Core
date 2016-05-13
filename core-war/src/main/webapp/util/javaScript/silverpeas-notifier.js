@@ -111,6 +111,9 @@ function notyDebug(text, customOptions) {
  * @param text
  */
 function __noty(customOptions) {
+  if (top !== window && typeof top.window.__noty === 'function') {
+    return top.window.__noty(customOptions);
+  }
   var options = extendsObject({
     layout: 'topCenter',
     theme: 'silverpeas',

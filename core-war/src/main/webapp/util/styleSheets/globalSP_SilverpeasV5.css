@@ -5880,6 +5880,10 @@ input.search:focus {
   height: 13px;
 }
 
+.ui-front {
+  z-index: 2000;
+}
+
 .ui-dialog .label-ui-dialog {
   float:left;
   clear:both;

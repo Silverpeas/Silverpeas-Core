@@ -155,7 +155,8 @@ session.removeAttribute("RedirectToSpaceId");
     bodyLayout: document.querySelector("#bodyLayout"),
     menuContainer : document.querySelector("#menuContainer"),
     menuFrame: document.querySelector("#SpacesBar"),
-    contentFrame: document.querySelector("#MyMain")
+    contentFrame: document.querySelector("#MyMain"),
+    contentContainer : document.querySelector("#contentContainer")
   };
 
   bodyContext.contentFrame.setAttribute('webkitallowfullscreen', 'true');
