@@ -108,6 +108,7 @@ public class JavascriptBundleProducer {
    * Please ensure that it is unique.
    * @return the javascript as string.
    */
+  @SuppressWarnings("Duplicates")
   public String produce() {
     StringBuilder js = new StringBuilder();
     js.append("window.").append(jsBundleVariableName).append("=new SilverpeasPluginBundle({");

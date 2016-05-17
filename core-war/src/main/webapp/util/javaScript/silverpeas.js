@@ -357,6 +357,16 @@ if (!window.SilverpeasPluginBundle) {
   };
 }
 
+if (!window.SilverpeasPluginSettings) {
+  SilverpeasPluginSettings = function(theSettings) {
+    var settings = theSettings ? theSettings : {};
+    this.get = function() {
+      var key = arguments[0];
+      return settings[key];
+    };
+  };
+}
+
 if (typeof extendsObject === 'undefined') {
   /**
    * Extends an object.
