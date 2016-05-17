@@ -24,16 +24,16 @@
 
 function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
 
-  top.reloadBodyMenuPart({
+  spLayout.getBody().getNavigation().load({
     "privateDomain" : spaceId,
     "privateSubDomain" : subSpaceId,
     "component_id" : componentId,
     "FromTopBar" : '1'
   });
-  top.reloadBodyContentPart(url);
+  spLayout.getBody().getContent().load(url);
 
   if (reloadPage) {
-    top.reloadHeaderPart({
+    spLayout.getHeader().load({
       "ComponentId" : componentId,
       "SpaceId" : spaceId
     });

@@ -580,31 +580,28 @@ if (typeof window.sp === 'undefined') {
   var debug = true;
   window.sp = {
     log : {
-      infoActivated : false,
-      warningActivated : false,
-      errorActivated : false,
+      infoActivated : true,
+      warningActivated : true,
+      errorActivated : true,
       debugActivated : false,
-      display : function(msg) {
-        console && console.log(msg);
-      },
       info : function(msg) {
         if (this.infoActivated) {
-          this.display('Silverpeas - info - ' + msg);
+          console && console.info('Silverpeas - INFO - ' + msg);
         }
       },
       warning : function(msg) {
         if (this.warningActivated) {
-          this.display('Silverpeas - warning - ' + msg);
+          console && console.warn('Silverpeas - WARNING - ' + msg);
         }
       },
       error : function(msg) {
         if (this.errorActivated) {
-          this.display('Silverpeas - error - ' + msg);
+          console && console.error('Silverpeas - ERROR - ' + msg);
         }
       },
       debug : function(msg) {
         if (this.debugActivated) {
-          this.display('Silverpeas - debug - ' + msg);
+          console && console.log('Silverpeas - DEBUG - ' + msg);
         }
       }
     },

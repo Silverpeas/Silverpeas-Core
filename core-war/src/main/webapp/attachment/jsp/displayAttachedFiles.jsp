@@ -650,7 +650,6 @@
             attachmentId + '/switchDownloadAllowedForReaders',
         type : "POST",
         cache : false,
-        contentType : "application/json",
         dataType : "json",
         data : {"allowed" : (allowed) ? allowed : false},
         success : function(data) {
@@ -831,6 +830,7 @@
                 });
               } else {
                 reloadIncludingPage();
+                $this.dialog("close");
               }
             };
             _consumeDeleteOperations();
@@ -899,6 +899,7 @@
         modal : true,
         buttons : {
           '<fmt:message key="GML.ok"/>' : function() {
+            var $this = $(this);
             var filename = $.trim($("#file_create").val().split('\\').pop());
             if (filename === '') {
               return false;
@@ -917,6 +918,7 @@
                   data : formData,
                   success : function(data) {
                     reloadIncludingPage();
+                    $this.dialog("close");
                   }
                 });
               } else {
@@ -942,6 +944,7 @@
         modal : true,
         buttons : {
           '<fmt:message key="GML.ok"/>' : function() {
+            var $this = $(this);
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
                 $(this).data('attachmentId');
             var filename = $.trim($("#file_upload").val().split('\\').pop());
@@ -962,6 +965,7 @@
                   data : formData,
                   success : function(data) {
                     reloadIncludingPage();
+                    $this.dialog("close");
                   }
                 });
               } else {
@@ -1023,6 +1027,7 @@
             },
             error : function(jqXHR, textStatus, errorThrown) {
               alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+              reloadIncludingPage();
             }
           });
         }
@@ -1048,6 +1053,7 @@
               },
               error : function(jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+                reloadIncludingPage();
               }
             });
           },

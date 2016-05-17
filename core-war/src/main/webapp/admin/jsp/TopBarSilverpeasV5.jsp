@@ -82,9 +82,9 @@ body {
 	background-position: left top;
 }
 </style>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/connectedUsers.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
+<view:script src="/util/javaScript/lookV5/connectedUsers.js"/>
+<view:script src="/util/javaScript/lookV5/tools.js"/>
+<view:script src="/util/javaScript/lookV5/topBar.js"/>
 <script type="text/javascript">
 function goToHome() {
   var params = {};
@@ -92,7 +92,7 @@ function goToHome() {
   <%if (goToFavoriteSpaceOnHomeLink) {%>
   params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
   <%}%>
-  top.reloadBodyPart(params);
+  spLayout.getBody().load(params);
 }
 
 function getConnectedUsersLabel(nb) {

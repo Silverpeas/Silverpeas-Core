@@ -196,12 +196,12 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 
   function executePdcActionToBodyPartTarget(baseUrl) {
     var url = sp.formatUrl(baseUrl, jQuery(document.PdcWidgetAdvancedSearch).serializeFormJSON());
-    top.reloadBodyContentPart(url);
+    spLayout.getBody().getContent().load(url);
   }
 
   function executePdcActionToSelfTarget(action) {
     top.jQuery.progressMessage();
-    top.loadPdcPart(extendsObject({"action" : action},
+    spLayout.getFooter().loadPdc(extendsObject({"action" : action},
         jQuery(document.PdcWidgetAdvancedSearch).serializeFormJSON()))
         .then(top.jQuery.closeProgressMessage);
   }
@@ -209,9 +209,9 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
   whenSilverpeasReady(function() {
     <%
       if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
-        out.println("top.showPdcPart();");
+        out.println("spLayout.getFooter().showPdc();");
       } else {
-        out.println("top.hidePdcPart();");
+        out.println("spLayout.getFooter().hidePdc();");
       }
     %>
   });

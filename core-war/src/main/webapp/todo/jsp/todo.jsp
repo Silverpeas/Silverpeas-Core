@@ -161,7 +161,7 @@ function goTo(baseURL, Id, Type, componentId) {
 function jumpToComponent(componentId) {
 
 	//Reload menu and header
-  top.reloadBodyMenuAndHeaderParts({
+  spLayout.loadBodyNavigationAndHeaderParts({
     "component_id" : componentId
   });
 

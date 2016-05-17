@@ -49,6 +49,7 @@ String.prototype.startsWith = function(str) {
 
 
 function openMySpace() {
+  var mySpaceContainer = document.querySelector("#spacePerso");
   if (displayMySpace === "off") {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'SpaceId=-10');
     displayMySpace = "on";
@@ -59,7 +60,7 @@ function openMySpace() {
       } else {
         homePage = homePage + '?SpaceId=-10';
       }
-      top.reloadBodyContentPart(getContext() + homePage);
+      spLayout.getBody().getContent().load(getContext() + homePage);
     }
     catch (e) {
       homePage = getHomepage();
@@ -68,13 +69,23 @@ function openMySpace() {
       } else {
         homePage = homePage + '?SpaceId=-20';
       }
-      top.reloadBodyContentPart(getContext() + homePage);
+      spLayout.getBody().getContent().load(getContext() + homePage);
     }
+
+    if (currentSpaceId !== "-1") {
+      closeSpace(currentSpaceId, currentSpaceLevel, true);
+      hideTransverseSpace();
+    }
+
+    mySpaceContainer.classList.remove("spaceLevelPerso");
+    mySpaceContainer.classList.add("spaceLevelPersoOn");
   }
   else {
     var spaceContent = document.getElementById("contentSpace" + "spacePerso");
     var space = spaceContent.parentNode;
     space.removeChild(spaceContent);
+    mySpaceContainer.classList.add("spaceLevelPerso");
+    mySpaceContainer.classList.remove("spaceLevelPersoOn");
 
     displayMySpace = "off";
   }
@@ -145,7 +156,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
   currentSpaceId = spaceId;
   currentSpaceLevel = spaceLevel;
 
-  top.reloadBodyContentPart(getContext() + getHomepage() + "?SpaceId=" + spaceId);
+  spLayout.getBody().getContent().load(getContext() + getHomepage() + "?SpaceId=" + spaceId);
 
   refreshPDCFrame();
   refreshTopFrame();
@@ -162,13 +173,13 @@ function refreshPDCFrame() {
 }
 
 function refreshTopFrame() {
-  top.reloadHeaderPart();
+  spLayout.getHeader().load();
 }
 
 function displayPDCFrame(spaceId, componentId) {
   if (displayContextualPDC) {
     try {
-      top.loadPdcPart({
+      spLayout.getFooter().loadPdc({
         "spaces" : spaceId,
         "componentSearch" : componentId,
         "FromPDCFrame" : "true"
@@ -248,7 +259,7 @@ function openComponent(componentId, componentLevel, componentURL) {
   currentComponentId = componentId;
 
   if (componentURL.substring(0, 11).toLowerCase() !== "javascript:") {
-    top.reloadBodyContentPart(getContext() + componentURL);
+    spLayout.getBody().getContent().load(getContext() + componentURL);
   }
   else {
     eval(componentURL);
@@ -338,7 +349,7 @@ function pdcAxisSearch(axisId) {
     query += "&componentSearch=" + currentComponentId + "&spaces=" + currentSpaceId;
   }
 
-  top.reloadBodyContentPart(query);
+  spLayout.getBody().getContent().load(query);
 }
 
 function pdcValueSearch(valuePath) {
@@ -347,7 +358,7 @@ function pdcValueSearch(valuePath) {
     query += "&componentSearch=" + currentComponentId + "&spaces=" + currentSpaceId;
   }
 
-  top.reloadBodyContentPart(query);
+  spLayout.getBody().getContent().load(query);
 }
 
 function pdcValueExpand(valuePath) {

@@ -178,5 +178,9 @@ public enum SupportedJavaScriptPlugins {
    * External plugin to centralize the management of lists of users and groups on client-side<br/>
    * Please take a look on displayListOfUsersAndGroups.tag
    */
-  listOfUsersAndGroups
+  listOfUsersAndGroups,
+  /**
+   * External plugin to centralize the management of Silverpeas's layout
+   */
+  layout
 }

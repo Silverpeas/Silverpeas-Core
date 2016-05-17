@@ -146,30 +146,30 @@ if (m_MainSessionCtrl == null) {
     display: none;
   }
 
-  #mainLayout {
+  #sp-layout-main {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
   }
 
-  #layoutHeaderPart, #layoutBodyPart, #layoutFooterPart {
+  #sp-layout-header-part, #sp-layout-body-part, #sp-layout-footer-part {
     padding: 0;
     margin: 0;
     border: none;
   }
 
-  #layoutHeaderPart {
+  #sp-layout-header-part {
     width: 100%;
     height: <%=bannerHeight%>;
   }
 
-  #layoutFooterPart {
+  #sp-layout-footer-part {
     width: 100%;
     height: <%=footerHeight%>;
   }
 
-  #layoutBodyPart {
+  #sp-layout-body-part {
     width: 100%;
     display: table;
   }
@@ -186,113 +186,30 @@ if (m_MainSessionCtrl == null) {
 	</script>
 <% } %>
 
-<div id="mainLayout">
-  <div id="layoutHeaderPart"></div>
-  <div id="layoutBodyPart"></div>
-  <div id="layoutFooterPart" class="hidden-part"></div>
+<div id="sp-layout-main">
+  <div id="sp-layout-header-part"></div>
+  <div id="sp-layout-body-part"></div>
+  <div id="sp-layout-footer-part" style="display: none"></div>
 </div>
 <div class="hidden-part" style="height: 0">
   <iframe src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
-  <iframe src="<%=m_sContext%>/Ragenda/jsp/importCalendar" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+  <iframe src="<c:url value='/Ragenda/jsp/importCalendar'/>" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
 </div>
 
 <script type="text/javascript">
-  var mainContext = {
-    headerLayout : document.querySelector("#layoutHeaderPart"),
-    bodyLayout : document.querySelector("#layoutBodyPart"),
-    footerLayout : document.querySelector("#layoutFooterPart")
-  };
-
-  function applyMainFrameAutoSize() {
-    var bodyLayoutHeight = window.innerHeight - mainContext.headerLayout.offsetHeight;
-    <c:if test="${pdcActivated}">
-    bodyLayoutHeight -= mainContext.footerLayout.offsetHeight;
-    </c:if>
-    mainContext.bodyLayout.style.height = bodyLayoutHeight + 'px';
-    if (typeof applyBodyLayoutPartAutoSize !== 'undefined') {
-      applyBodyLayoutPartAutoSize();
-    }
-  }
-
-  function loadPdcPart(urlParameters) {
-    <c:if test="${pdcActivated}">
-    var parameters = extendsObject({
-      "action" : "ChangeSearchTypeToExpert",
-      "SearchPage" : "/admin/jsp/pdcSearchSilverpeasV5.jsp"
-    }, urlParameters);
-    var action = parameters.action;
-    delete parameters.action;
-    var ajaxConfig = sp.ajaxConfig('<c:url value="/RpdcSearch/jsp/"/>' + action)
-        .withParams(parameters);
-    return sp.load(mainContext.footerLayout, ajaxConfig).then(function() {
-      applyMainFrameAutoSize();
-    });
-    </c:if>
-  }
-
-  function showPdcPart() {
-    <c:if test="${pdcActivated}">
-    mainContext.footerLayout.classList.remove('hidden-part');
-    applyMainFrameAutoSize();
-    </c:if>
-  }
-
-  function hidePdcPart() {
-    <c:if test="${pdcActivated}">
-    mainContext.footerLayout.classList.add('hidden-part');
-    applyMainFrameAutoSize();
-    </c:if>
-  }
-
-  function reloadHeaderPart(urlParameters) {
-    return sp.load(mainContext.headerLayout,
-        sp.ajaxConfig('<c:url value="/admin/jsp/TopBarSilverpeasV5.jsp"/>').withParams(
-            urlParameters));
-  }
-
-  function reloadBodyPart(urlParameters) {
-    return sp.load(mainContext.bodyLayout,
-        sp.ajaxConfig('<c:url value="/admin/jsp/bodyPartSilverpeasV5.jsp"/>').withParams(
-            urlParameters));
-  }
-
-  var toggleHeaderPart = function() {
-    var icon = this.querySelector('img');
-    if (mainContext.headerLayout.style.display !== 'none') {
-      mainContext.headerLayout.style.display = 'none';
-      icon.src = "icons/silverpeasV5/extendTopBar.gif";
-    } else {
-      mainContext.headerLayout.style.display = '';
-      icon.src = "icons/silverpeasV5/reductTopBar.gif";
-    }
-    icon.blur();
-    applyMainFrameAutoSize();
-  };
-
-  var toggleMenuPart = function() {
-    var icon = this.querySelector('img');
-    if (bodyContext.menuContainer.style.display !== 'none') {
-      bodyContext.menuContainer.style.display = 'none';
-      icon.src = "icons/silverpeasV5/extend.gif";
-    } else {
-      bodyContext.menuContainer.style.display = '';
-      icon.src = "icons/silverpeasV5/reduct.gif";
-    }
-    icon.blur();
-    applyMainFrameAutoSize();
-  };
-
   (function() {
-    applyMainFrameAutoSize();
-    reloadHeaderPart();
-    reloadBodyPart(<%=frameBottomParams.append('}')%>);
-
-    var timer_resize;
-    window.addEventListener('resize', function() {
-      clearTimeout(timer_resize);
-      timer_resize = setTimeout(function() {
-        applyMainFrameAutoSize();
-      }, 0);
+    if (!top.window.mainFrameOnLoad) {
+      top.window.mainFrameOnLoad = function(event) {
+        sp.log.debug("This is just a demonstration: it is possible to listen to events ('load', 'show', 'hide') dispatched from each part of the layout");
+        sp.log.debug("On footer part could also be listen to events: 'pdcload', 'pdcshow' and 'pdchide'");
+        sp.log.debug("The condition here (please consult the code if you are reading from the browser console!) is to ensure that the listener will not be declared several times.");
+        sp.log.debug("Indeed, because of ajax reloading and according to the location of the event listener attachment, same treatment could be performed several times");
+        // notySuccess("Body content event well performed!");
+      };
+    }
+    initializeSilverpeasLayout(<%=frameBottomParams.append('}')%>);
+    spLayout.getBody().ready(function() {
+      spLayout.getBody().getContent().addEventListener('load', top.window.mainFrameOnLoad);
     });
   })();
 </script>

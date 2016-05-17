@@ -49,7 +49,7 @@ String login		= request.getParameter("Login");
 
 LookHelper helper = LookHelper.getLookHelper(session);
 
-String menuWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
+String navigationWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
 
   StringBuilder paramsForDomainsBar = new StringBuilder().append("{");
   if ("1".equals(request.getParameter("FromTopBar"))) {
@@ -100,29 +100,29 @@ session.removeAttribute("RedirectToSpaceId");
 %>
 <style type="text/css">
 
-  #bodyLayout {
+  #sp-layout-body-part-layout {
     width: 100%;
     flex: 1;
     display: flex;
     flex-direction: row;
   }
 
-  #menuContainer {
+  #sp-layout-body-part-layout-navigation-part {
     position: relative;
     overflow: auto;
-    width: <%=menuWidth%>;
+    width: <%=navigationWidth%>;
   }
 
-  #contentContainer {
+  #sp-layout-body-part-layout-content-part {
     flex: 1;
     height: 100%;
   }
 
-  #redExp {
+  #sp-layout-body-part-layout-toggle-part {
     display: table;
   }
 
-  #redExp div {
+  #sp-layout-body-part-layout-toggle-part div {
     margin: 0;
     padding: 0 2px 0 0;
     border: none;
@@ -130,78 +130,20 @@ session.removeAttribute("RedirectToSpaceId");
     cursor: pointer;
   }
 </style>
-<div id="redExp" style="display: none">
-  <div id="toggleMenu"><img src="icons/silverpeasV5/reduct.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
-  <div id="toggleHeader"><img src="icons/silverpeasV5/reductTopBar.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
+<div id="sp-layout-body-part-layout-toggle-part" style="display: none">
+  <div id="navigation-toggle"><img src="icons/silverpeasV5/reduct.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
+  <div id="header-toggle"><img src="icons/silverpeasV5/reductTopBar.gif" alt="${redExtLabel}" title="${redExtLabel}"/></div>
 </div>
-<div id="bodyLayout">
-  <div id="menuContainer"></div>
-  <div id="contentContainer">
+<div id="sp-layout-body-part-layout">
+  <div id="sp-layout-body-part-layout-navigation-part"></div>
+  <div id="sp-layout-body-part-layout-content-part">
     <iframe src="<%=frameURL%>" marginwidth="0" id="MyMain" name="MyMain" marginheight="0" frameborder="0" scrolling="auto" width="100%" height="100%"></iframe>
   </div>
 </div>
 <script type="text/javascript">
-  var resolveContentFrameLoadPromise;
-  var rejectContentFrameLoadPromise;
-  function newContentFrameLoadPromise() {
-    return new Promise(function(resolve, reject) {
-      resolveContentFrameLoadPromise = resolve;
-      rejectContentFrameLoadPromise = reject;
-    });
-  }
-
-  var bodyContext = {
-    toggleContainer: document.querySelector("#redExp"),
-    bodyLayout: document.querySelector("#bodyLayout"),
-    menuContainer : document.querySelector("#menuContainer"),
-    menuFrame: document.querySelector("#SpacesBar"),
-    contentFrame: document.querySelector("#MyMain"),
-    contentContainer : document.querySelector("#contentContainer")
-  };
-
-  bodyContext.contentFrame.setAttribute('webkitallowfullscreen', 'true');
-  bodyContext.contentFrame.setAttribute('mozallowfullscreen', 'true');
-  bodyContext.contentFrame.setAttribute('allowfullscreen', 'true');
-
-  function applyBodyLayoutPartAutoSize() {
-    bodyContext.bodyLayout.style.height = bodyContext.bodyLayout.parentNode.style.height;
-  }
-
-  function reloadBodyMenuPart(urlParameters) {
-    jQuery.progressMessage();
-    bodyContext.toggleContainer.style.display = 'none';
-    var parameters = extendsObject({
-      "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
-    }, urlParameters);
-    var ajaxConfig = sp.ajaxConfig('<c:url value="/admin/jsp/DomainsBarSilverpeasV5.jsp"/>')
-        .withParams(parameters);
-    return sp.load(bodyContext.menuContainer, ajaxConfig).then(function() {
-      bodyContext.toggleContainer.style.display = '';
-    });
-  }
-
-  function reloadBodyMenuAndHeaderParts(urlParameters) {
-    reloadHeaderPart();
-    reloadBodyMenuPart(urlParameters);
-  }
-
-  function reloadBodyContentPart(url) {
-    jQuery.progressMessage();
-    var promise = newContentFrameLoadPromise();
-    top.MyMain.location.href = url;
-    return promise;
-  }
-
   (function() {
-    newContentFrameLoadPromise();
-    applyBodyLayoutPartAutoSize();
-    reloadBodyMenuPart(<%=paramsForDomainsBar.append('}')%>);
-
-    document.querySelector("#toggleHeader").addEventListener('click', toggleHeaderPart);
-    document.querySelector("#toggleMenu").addEventListener('click', toggleMenuPart);
-    bodyContext.contentFrame.addEventListener('load', function() {
-      resolveContentFrameLoadPromise();
-      jQuery.closeProgressMessage();
+    spLayout.getBody().ready(function() {
+      spLayout.getBody().getNavigation().load(<%=paramsForDomainsBar.append('}')%>);
     });
   })();
 </script>

@@ -28,9 +28,10 @@
  */
 (function($) {
 
-  var __displayFullscreenModalBackground = (top !== window && top.mainContext && top.bodyContext);
+  var __displayFullscreenModalBackground = (top !== window && top.spLayout);
 
   $.popup = {
+    debug : false,
     initialized: false,
     doInitialize: function() {
       if (!$.popup.initialized) {
@@ -581,7 +582,8 @@
           $container.dialog("close");
           $container.dialog("destroy");
         } catch (e) {
-          console.log(e);
+          __logDebug(e);
+          __logDebug("cleaning manually jQuery.ui.dialog");
           var $domToClear = $("div[aria-describedby=spFullscreenModalBackground]", top.document);
           var $overlay = $domToClear.prev();
           if ($overlay.hasClass('ui-widget-overlay')) {
@@ -590,7 +592,7 @@
           $domToClear.remove();
         }
         $container.remove();
-        $(top.bodyContext.contentContainer).css('z-index', '');
+        spLayout.getBody().getContent().setOnBackground();
       }
     };
     this.increase = function() {
@@ -649,7 +651,7 @@
 
       $('form', $dialogInstance).submit(function() {
         if ($container.dialog('isOpen')) {
-          console.log("close from jQuery submit management");
+          __logDebug("close from jQuery submit management");
           $container.dialog("close");
         }
         return true;
@@ -657,14 +659,15 @@
       [].slice.call($dialogInstance[0].querySelectorAll("form"), 0).forEach(function(form) {
         form.addEventListener('submit', function() {
           if ($container.dialog('isOpen')) {
-            console.log("close from HTML5 submit management");
+            __logDebug("close from HTML5 submit management");
             $container.dialog("close");
           }
         });
       });
 
-      $(top.bodyContext.contentContainer).css('z-index', 2001);
+      spLayout.getBody().getContent().setOnForeground();
       $container.dialog("open");
+      $container.dialog("widget").css('top', '-1000px').css('left', '-1000px');
     }
   }
 
@@ -679,14 +682,14 @@
   function __adjustPosition(dialogOptions) {
     var position = dialogOptions.position;
     if (position.my === "center" && position.at === "center" && position.of === window) {
-      var headerHeightOffset = top.mainContext.headerLayout.offsetHeight / 2;
-      var isContentFullWidth = !($(top.bodyContext.contentContainer).position().left);
+      var headerHeightOffset = spLayout.getHeader().getContainer().offsetHeight / 2;
+      var isContentFullWidth = !($(spLayout.getBody().getContent().getContainer()).position().left);
       if (isContentFullWidth) {
-        var menuHeightOffset = top.bodyContext.menuContainer.offsetHeight / 2;
-        position.at = "center center-" + (headerHeightOffset + menuHeightOffset);
+        var navigationHeightOffset = spLayout.getBody().getNavigation().getContainer().offsetHeight / 2;
+        position.at = "center center-" + (headerHeightOffset + navigationHeightOffset);
       } else {
-        var menuWidthOffset = top.bodyContext.menuContainer.offsetWidth / 2;
-        position.at = "center-" + menuWidthOffset + " center-" + headerHeightOffset;
+        var navigationWidthOffset = spLayout.getBody().getNavigation().getContainer().offsetWidth / 2;
+        position.at = "center-" + navigationWidthOffset + " center-" + headerHeightOffset;
       }
     }
     return position;
@@ -716,6 +719,17 @@
       return this._super();
     }
   });
+
+  function __logDebug(message) {
+    if ($.popup.debug) {
+      sp.log.debug("Popup - " + message);
+    }
+  }
+
+  if (__displayFullscreenModalBackground) {
+    __logDebug("cleaning popup from iframe");
+    spFullscreenModalBackgroundContext.clear();
+  }
 
 })(jQuery);
 

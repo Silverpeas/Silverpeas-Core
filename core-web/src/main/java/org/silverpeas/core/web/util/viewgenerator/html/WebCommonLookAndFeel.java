@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
@@ -175,6 +176,8 @@ public class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/es6-promise.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/classList.min.js"));
     code.append(
+        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/customEventIEPolyfill.min.js"));
+    code.append(
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/eventListenerIEPolyfill.min.js"));
     code.append(
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-polyfills.js"));
@@ -198,9 +201,13 @@ public class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
 
+    code.append(includeLayout(new ElementContainer(),
+        LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
+
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includePopup(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeCkeditorAddOns(new ElementContainer(), language).toString()).append(
         STR_NEW_LINE);
@@ -209,14 +216,11 @@ public class WebCommonLookAndFeel {
       code.append(getJavaScriptTag(specificJS));
     }
 
-    if (lookSettings != null
-        && lookSettings.getString("OperationPane").toLowerCase().endsWith("web20")) {
+    if (lookSettings.getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
-      code.append(
-          JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), language)
-              .toString()).append(STR_NEW_LINE);
-      code.append(JavascriptPluginInclusion.includeMylinks(new ElementContainer()).toString())
+      code.append(includeResponsibles(new ElementContainer(), language).toString())
           .append(STR_NEW_LINE);
+      code.append(includeMylinks(new ElementContainer()).toString()).append(STR_NEW_LINE);
     }
 
 

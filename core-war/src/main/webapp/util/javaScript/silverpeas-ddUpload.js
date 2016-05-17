@@ -912,7 +912,7 @@ var dragAndDropUploadEnabled = window.File;
    * @private
    */
   function __logError(message) {
-    console.log("D&D File Upload - ERROR - " + message);
+    sp.log.error("D&D File Upload - ERROR - " + message);
   }
 
   /**
@@ -922,7 +922,7 @@ var dragAndDropUploadEnabled = window.File;
    */
   function __logDebug(message) {
     if (window.dragAndDropUploadDebug) {
-      console.log("D&D File Upload - DEBUG - " + message);
+      sp.log.debug("D&D File Upload - " + message);
     }
   }
 
@@ -964,7 +964,7 @@ function initDragAndDropUploadAndReload(options) {
   }
   return new DragAndDropUpload(extendsObject({
     domSelector : ".dragAndDropUpload", onCompletedUrl : '', onCompletedUrlSuccess : function() {
-      console.log("D&D File Upload - WARNING - no complete URL success function specified");
+      sp.log.warning("D&D File Upload - no complete URL success function specified");
     }
   }, options));
 }

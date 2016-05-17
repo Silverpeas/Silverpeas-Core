@@ -94,7 +94,7 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <%}%>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas.js"></script>
+  <view:script src="/util/javaScript/silverpeas.js"/>
   <script type="text/javascript">
     var counter = 0;
     <%

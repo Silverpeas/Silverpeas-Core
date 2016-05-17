@@ -55,7 +55,7 @@ public class JavascriptBundleProducer {
    * @param language the requested language content.
    * @return the initialized producer instance.
    */
-  public static String fromCoreTemplate(final String pathSuffix, final String templateName,
+  static String fromCoreTemplate(final String pathSuffix, final String templateName,
       final String language) {
     SilverpeasTemplate bundle =
         SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(pathSuffix);
@@ -92,8 +92,19 @@ public class JavascriptBundleProducer {
    */
   public JavascriptBundleProducer add(final SilverpeasBundle bundle, final String... keys) {
     for (String key : keys) {
-      keyMessages.put(key, bundle.getString(key));
+      add(key, bundle.getString(key));
     }
+    return this;
+  }
+
+  /**
+   * Adds given key / value.
+   * @param key the key to add.
+   * @param value the boolean value associated to the key.
+   * @return itself.
+   */
+  public JavascriptBundleProducer add(final String key, final String value) {
+    keyMessages.put(key, "\"" + javaStringToJsString(value) + "\"");
     return this;
   }
 
@@ -116,7 +127,7 @@ public class JavascriptBundleProducer {
     while (keyMessageIt.hasNext()) {
       Map.Entry<String, String> keyMessage = keyMessageIt.next();
       js.append("\"").append(keyMessage.getKey()).append("\":");
-      js.append("\"").append(javaStringToJsString(keyMessage.getValue())).append("\"");
+      js.append(keyMessage.getValue());
       if (keyMessageIt.hasNext()) {
         js.append(",");
       }

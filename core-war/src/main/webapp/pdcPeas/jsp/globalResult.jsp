@@ -220,7 +220,7 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
   function jumpToComponent(componentId) {
     if (<%=refreshEnabled.booleanValue()%>) {
       //Reload menu and header
-      top.reloadBodyMenuAndHeaderParts({
+      spLayout.loadBodyNavigationAndHeaderParts({
         "component_id" : componentId
       });
     }
@@ -228,7 +228,7 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 
   function goToSpace(spaceId) {
     //Reload menu and header
-    top.reloadBodyMenuAndHeaderParts({
+    spLayout.loadBodyNavigationAndHeaderParts({
       "privateDomain" : spaceId
     });
   }

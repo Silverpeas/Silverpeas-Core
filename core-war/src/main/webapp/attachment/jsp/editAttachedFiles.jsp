@@ -181,7 +181,6 @@
           attachmentId + '/switchDownloadAllowedForReaders',
       type : "POST",
       cache : false,
-      contentType : "application/json",
       dataType : "json",
       data : {"allowed" : (allowed) ? allowed : false},
       success : function(data) {

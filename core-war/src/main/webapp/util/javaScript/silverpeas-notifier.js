@@ -125,6 +125,12 @@ function __noty(customOptions) {
   }
 }
 
+(function(){
+  if (top !== window && top.jQuery && typeof top.jQuery.noty === 'object') {
+    top.jQuery.noty.closeAll();
+  }
+})();
+
 /**
  * Helper to display registred messages.
  * @param registredKey
@@ -195,7 +201,7 @@ function notySetupRequestComplete(request) {
       notyRegistredMessages(registredKeyOfMessages);
     }
   }
-};
+}
 
 /**
  * Setup all JQuery Ajax call to handle returns of messages (or technical errors).

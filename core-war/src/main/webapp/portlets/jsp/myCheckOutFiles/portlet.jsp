@@ -49,7 +49,7 @@ function goTo(cUrl, componentId)
 
 function jumpToComponent(componentId) {
 	//Reload menu and header
-  top.reloadBodyMenuAndHeaderParts({
+  spLayout.loadBodyNavigationAndHeaderParts({
     "component_id" : componentId
   });
 }

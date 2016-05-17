@@ -129,7 +129,8 @@ public class JavascriptSettingProducer {
     Iterator<Map.Entry<String, String>> keyMessageIt = keySettings.entrySet().iterator();
     while (keyMessageIt.hasNext()) {
       Map.Entry<String, String> keyMessage = keyMessageIt.next();
-      js.append("\"").append(keyMessage.getKey()).append("\":").append(keyMessage.getValue());
+      js.append("\"").append(keyMessage.getKey()).append("\":");
+      js.append(keyMessage.getValue());
       if (keyMessageIt.hasNext()) {
         js.append(",");
       }

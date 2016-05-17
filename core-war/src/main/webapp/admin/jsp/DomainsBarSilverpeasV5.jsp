@@ -85,11 +85,11 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 }
 %>
 <!-- Add JQuery mask plugin css -->
-<link href="<%=m_sContext%>/util/styleSheets/jquery.loadmask.css" rel="stylesheet" type="text/css" />
+<view:link href="/util/styleSheets/jquery.loadmask.css"/>
 
 <!-- Add jQuery javascript library -->
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
+<view:script src="/util/javaScript/jquery/jquery.loadmask.js"/>
+<view:script src="/util/javaScript/jquery/jquery.bgiframe.min.js"/>
 
 <script type="text/javascript">
 
@@ -140,7 +140,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
     var urlParameters = hasToSerializeForm ?
         jQuery(document.menuSearchForm).serializeFormJSON() : {};
     var url = sp.formatUrl("<%=m_sContext%>/RpdcSearch/jsp/" + action, urlParameters);
-    top.reloadBodyContentPart(url);
+    spLayout.getBody().getContent().load(url);
   }
 
   // Callback methods to navigation.js
@@ -202,7 +202,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
      * Reload bottom frame
      */
     function reloadSpacesBarFrame(tabId) {
-      top.reloadBodyPart({
+      spLayout.getBody().load({
         "UserMenuDisplayMode" : tabId
       });
     }
@@ -391,7 +391,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 </form>
 
 <!-- Custom domains bar javascript -->
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/navigation.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/personalSpace.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
+<view:script src="/util/javaScript/lookV5/navigation.js"/>
+<view:script src="/util/javaScript/lookV5/personalSpace.js"/>
+<view:script src="/util/javaScript/lookV5/login.js"/>
 </div>

@@ -33,6 +33,7 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 
@@ -85,6 +86,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
   private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST = "ddUploadBundle";
   private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD = "silverpeas-ddUpload.js";
+  private static final String SILVERPEAS_LAYOUT = "silverpeas-layout.js";
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
@@ -573,6 +575,27 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent(JavascriptBundleProducer
         .fromCoreTemplate("ddUpload", SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST, language)));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas Layout HTML5 Plugin.
+   * This plugin depends on the associated settings javascript file.
+   * @return the completed parent container.
+   */
+  public static ElementContainer includeLayout(final ElementContainer xhtml,
+      final LookHelper lookHelper) {
+    includeQTip(xhtml);
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("LayoutSettings")
+            .add("layout.header.url", URLUtil.getApplicationURL() + "/admin/jsp/TopBarSilverpeasV5.jsp")
+            .add("layout.body.url", URLUtil.getApplicationURL() + "/admin/jsp/bodyPartSilverpeasV5.jsp")
+            .add("layout.body.navigation.url", URLUtil.getApplicationURL() + "/admin/jsp/DomainsBarSilverpeasV5.jsp")
+            .add("layout.pdc.activated", lookHelper.displayPDCFrame())
+            .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
+            .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
+            .produce()));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_LAYOUT));
     return xhtml;
   }
 

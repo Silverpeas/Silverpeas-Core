@@ -50,6 +50,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import javax.enterprise.util.AnnotationLiteral;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +73,7 @@ public class MainSessionController implements Clipboard {
       new AnnotationLiteral<MainClipboard>() {});
   private final UserPreferences userPreferences;
   private PdcManager pdcManager = null;
+  private HttpSession httpSession = null;
   private String sessionId = null;
   private String userId = null;
   private OrganizationController organizationController = null;
@@ -151,11 +153,13 @@ public class MainSessionController implements Clipboard {
   /**
    * parameter authenticationKey replaced by sUserId
    */
-  public MainSessionController(String authenticationKey, String sessionId) throws Exception {
+  public MainSessionController(String authenticationKey, HttpSession httpSession) throws Exception {
     try {
+      this.httpSession = httpSession;
+      this.sessionId = httpSession.getId();
+      httpSession.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, this);
       // Identify the user
       this.userId = getAdminService().identify(authenticationKey, sessionId, isAppInMaintenance());
-      this.sessionId = sessionId;
       this.userPreferences = PersonalizationServiceProvider.getPersonalizationService()
           .getUserSettings(userId);
 
@@ -174,6 +178,10 @@ public class MainSessionController implements Clipboard {
 
   public String getUserId() {
     return userId;
+  }
+
+  public HttpSession getHttpSession() {
+    return httpSession;
   }
 
   public String getSessionId() {
