@@ -75,11 +75,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public Object clone() {
-    ComponentInst ci = null;
-    try {
-      ci = (ComponentInst) super.clone();
-    } catch (CloneNotSupportedException e) {
-    }
+    ComponentInst ci = new ComponentInst();
     ci.setLocalId(getLocalId());
     ci.setName(name);
     ci.setLabel(getLabel());
