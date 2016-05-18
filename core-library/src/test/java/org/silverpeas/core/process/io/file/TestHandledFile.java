@@ -939,6 +939,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
 
     Thread.sleep(1001);
     writeStringToFile(file1, "titi");
+    Thread.sleep(1001);
     test = getHandledFile(real1).isFileOlder(date);
     assertThat(test, is(false));
     test = getHandledFile(real1).isFileOlder(time);
