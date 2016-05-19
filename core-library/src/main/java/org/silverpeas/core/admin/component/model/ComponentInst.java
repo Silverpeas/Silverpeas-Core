@@ -36,10 +36,10 @@ import java.util.Date;
 import java.util.List;
 
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
-    implements Serializable, Cloneable, Comparable<ComponentInst> {
+    implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
-  public final static String STATUS_REMOVED = "R";
+  public static final String STATUS_REMOVED = "R";
   private String id;
   private String name;
   private String domainFatherId;
@@ -71,11 +71,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     profiles = new ArrayList<>();
     isPublic = false;
     isHidden = false;
-  }
-
-  @Override
-  public int compareTo(ComponentInst o) {
-    return order - o.getOrderNum();
   }
 
   @Override
