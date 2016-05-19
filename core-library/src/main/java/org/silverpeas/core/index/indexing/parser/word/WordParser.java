@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.index.indexing.parser.wordParser;
+package org.silverpeas.core.index.indexing.parser.word;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
 
@@ -38,12 +38,6 @@ import javax.inject.Named;
  */
 @Named("wordParser")
 public class WordParser implements Parser {
-
-  /**
-   * Constructor declaration
-   */
-  public WordParser() {
-  }
 
   /**
    * Method declaration

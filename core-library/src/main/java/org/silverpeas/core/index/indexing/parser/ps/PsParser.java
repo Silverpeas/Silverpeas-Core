@@ -27,7 +27,7 @@
  * Mohammed Hguig
  */
 
-package org.silverpeas.core.index.indexing.parser.psParser;
+package org.silverpeas.core.index.indexing.parser.ps;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,18 +41,14 @@ import org.silverpeas.core.index.indexing.parser.PipedParser;
 import javax.inject.Named;
 
 /**
- * the psParser parse a postscript file
+ * the ps parse a postscript file
  */
 @Named("psParser")
 public class PsParser extends PipedParser {
 
-  public PsParser() {
-  }
-
   /**
    * outPutContent read the text content of a ps file and store it in out to be ready to be indexed
    */
-
   public void outPutContent(Writer out, String path, String encoding)
       throws IOException {
 
@@ -68,8 +64,9 @@ public class PsParser extends PipedParser {
 
       outPutChar(out, buffer);
     } finally {
-      if (buffer != null)
+      if (buffer != null) {
         buffer.close();
+      }
     }
   }
 
@@ -90,6 +87,7 @@ public class PsParser extends PipedParser {
           } else {
             out.write(charr);
           }
+          break;
         case '\n':
           if (last == 1) {
             out.write("");

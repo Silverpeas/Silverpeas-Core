@@ -25,18 +25,16 @@
 package org.silverpeas.core.calendar.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;
 
 public class Priority implements Serializable, Comparable<Priority> {
 
   private static final long serialVersionUID = -5520032042704711631L;
-
-  public static int[] getAllPriorities() {
-    int[] result = { 0, 1, 2, 3 };
-    return result;
-  }
+  private static final int[] PRIORITIES = { 0, 1, 2, 3 };
 
   /**
    * The minimum allowable priority value. Please note that this refers to the case where no
@@ -46,7 +44,7 @@ public class Priority implements Serializable, Comparable<Priority> {
   public static final int MINIMUM_PRIORITY = 0;
 
   /**
-   * The maximum alloable priority value. Please note that this refers to the highest possible
+   * The maximum allowable priority value. Please note that this refers to the highest possible
    * integer value for priority. When interpreting this value it is seen as the lowest priority
    * because the value 1 is the highest priority value.
    */
@@ -54,11 +52,16 @@ public class Priority implements Serializable, Comparable<Priority> {
 
   private int priority = 2;
 
+  public static int[] getAllPriorities() {
+    return PRIORITIES;
+  }
+
   /**
    * This is the default constructor. It is used by Castor. You should probably use the constructor
    * that takes an integer argument in your application code.
    */
   public Priority() {
+    // for Castor
   }
 
   /**
@@ -79,18 +82,12 @@ public class Priority implements Serializable, Comparable<Priority> {
 
   public final void setValue(int newval) throws CalendarException {
     if (newval > MAXIMUM_PRIORITY) {
-      SilverTrace.warn("calendar", "Priority.setValue(int newval)",
-          "calendar_MSG_GREATER_MAXIMUM_PRIORITY",
-          "priority = MAXIMUM_PRIORITY =" + MAXIMUM_PRIORITY);
-      newval = MAXIMUM_PRIORITY;
+      priority = MAXIMUM_PRIORITY;
     } else if (newval < MINIMUM_PRIORITY) {
-      SilverTrace.warn("calendar", "Priority.setValue(int newval)",
-          "calendar_MSG_LOWER_MINIMUM_PRIORITY",
-          "priority = MINIMUM_PRIORITY =" + MINIMUM_PRIORITY);
-      newval = MINIMUM_PRIORITY;
+      priority = MINIMUM_PRIORITY;
+    } else {
+      priority = newval;
     }
-    priority = newval;
-
   }
 
   public int getValue() {
@@ -99,14 +96,31 @@ public class Priority implements Serializable, Comparable<Priority> {
 
   @Override
   public int compareTo(Priority other) {
-    if (other == null)
+    if (other == null) {
       return 1;
-    if (!(other instanceof Priority))
-      return 0;
-    if ((getValue() == 0) && (other.getValue() != 0))
+    }
+    if ((getValue() == 0) && (other.getValue() != 0)) {
       return -1;
-    if ((getValue() != 0) && (other.getValue() == 0))
+    }
+    if ((getValue() != 0) && (other.getValue() == 0)) {
       return 1;
+    }
     return other.getValue() - getValue();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Priority)) {
+      return false;
+    }
+    return compareTo((Priority) o) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getValue()).toHashCode();
   }
 }

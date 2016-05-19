@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
@@ -232,5 +233,25 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
     } else {
       return +1;
     }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ArrayCellText)) {
+      return false;
+    }
+
+    final ArrayCellText that = (ArrayCellText) o;
+
+    return text.equals(that.text);
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getText()).toHashCode();
   }
 }

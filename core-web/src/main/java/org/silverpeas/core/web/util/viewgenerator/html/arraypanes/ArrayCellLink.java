@@ -24,13 +24,15 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
  * @author
  */
-public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Comparable {
+public class ArrayCellLink extends ArrayCell
+    implements SimpleGraphicElement, Comparable {
 
   private String text = null;
   private String alignement = null;
@@ -85,7 +87,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
-   * @param CellAlign
+   * @param alignement
    */
   public void setAlignement(String alignement) {
     this.alignement = alignement;
@@ -96,7 +98,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
-   * @param CellAlign
+   * @param valignement
    */
   public void setValignement(String valignement) {
     this.valignement = valignement;
@@ -110,7 +112,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
-   * @param CellAlign
+   * @param color
    */
   public void setColor(String color) {
     this.color = color;
@@ -142,12 +144,6 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Co
     this.target = target;
   }
 
-  /**
-   * Method declaration
-   * @param other
-   * @return
-   * @see
-   */
   public int compareTo(final java.lang.Object other) {
     if (other instanceof ArrayEmptyCell) {
       return 1;
@@ -159,6 +155,24 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Co
 
     // return this.getText().compareTo(tmp.getText());
     return this.getText().compareToIgnoreCase(tmp.getText());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ArrayCellLink)) {
+      return false;
+    }
+
+    final ArrayCellLink that = (ArrayCellLink) o;
+    return that.getText().equals(((ArrayCellLink) o).getText());
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getText()).hashCode();
   }
 
   /**

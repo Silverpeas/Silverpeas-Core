@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.index.indexing.parser.ooParser;
+package org.silverpeas.core.index.indexing.parser.odf;
 
 /**
  * <p/>
@@ -56,11 +56,6 @@ import javax.inject.Named;
 @Named("openDocumentParser")
 public class OOParser implements Parser {
 
-  /**
-   * Constructor declaration
-   */
-  public OOParser() {
-  }
   private String tempFolder = null;
   private final String TMP_UNZIP_DIR = "tmpUnzipOpenOffice";
   private final Namespace NS_OO = Namespace.getNamespace("office",

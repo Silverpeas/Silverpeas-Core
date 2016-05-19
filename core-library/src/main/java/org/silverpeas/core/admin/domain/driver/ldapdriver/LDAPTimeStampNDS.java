@@ -25,6 +25,7 @@
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.service.AdminException;
 
 public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
@@ -40,6 +41,12 @@ public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
   public int compareTo(Object other) {
     return timeStamp.compareTo(((LDAPTimeStampNDS) other).timeStamp);
   }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(timeStamp).toHashCode();
+  }
+
 
   public void initFromServer(String lds, String baseDN, String filter,
       String fallbackSortBy) throws AdminException {

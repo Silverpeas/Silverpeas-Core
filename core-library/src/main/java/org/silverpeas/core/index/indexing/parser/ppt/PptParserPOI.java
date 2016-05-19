@@ -18,12 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.index.indexing.parser.textParser;
+package org.silverpeas.core.index.indexing.parser.ppt;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.hslf.extractor.PowerPointExtractor;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
 
@@ -32,39 +35,27 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import javax.inject.Named;
 
 /**
- * A TextParser parse a text file without any processing.
+ * a ppt uses POI to extract the text which will be indexed
  *
  * @author $Author: neysseri $
  */
-@Named("plainTextParser")
-public class TextParser implements Parser {
+@Named("powerPointParser")
+public class PptParserPOI implements Parser {
 
-  /**
-   * Constructor declaration
-   */
-  public TextParser() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param path
-   * @param encoding
-   * @return
-   */
   @Override
   public Reader getReader(String path, String encoding) {
     Reader reader = null;
+    InputStream file = null;
     try {
-      InputStream file = new FileInputStream(path);
-      if (encoding == null) {
-        reader = new InputStreamReader(file);
-      } else {
-        reader = new InputStreamReader(file, encoding);
-      }
+      file = new FileInputStream(path);
+      PowerPointExtractor extractor = new PowerPointExtractor(file);
+      String text = extractor.getText(true, true);
+      reader = new StringReader(text);
     } catch (Exception e) {
-      SilverTrace.error("indexing", "TextParser",
-          "indexing.MSG_IO_ERROR_WHILE_READING", path, e);
+      SilverTrace.error("indexing", "PptParserPOI", "indexing.MSG_IO_ERROR_WHILE_READING",
+          path, e);
+    } finally {
+      IOUtils.closeQuietly(file);
     }
     return reader;
   }

@@ -18,15 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.index.indexing.parser.pptParser;
+package org.silverpeas.core.index.indexing.parser.pdf;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.hslf.extractor.PowerPointExtractor;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 import org.silverpeas.core.index.indexing.parser.Parser;
 
@@ -35,30 +37,35 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import javax.inject.Named;
 
 /**
- * a pptParser uses POI to extract the text which will be indexed
- *
- * @author $Author: neysseri $
+ * the pdfParser parse a pdf file
  */
-@Named("powerPointParser")
-public class PptParserPOI implements Parser {
-
-  public PptParserPOI() {
-  }
+@Named("pdfParser")
+public class PdfParser2 implements Parser {
 
   @Override
   public Reader getReader(String path, String encoding) {
     Reader reader = null;
     InputStream file = null;
+    PDDocument document = null;
     try {
       file = new FileInputStream(path);
-      PowerPointExtractor extractor = new PowerPointExtractor(file);
-      String text = extractor.getText(true, true);
+      document = PDDocument.load(file);
+      PDFTextStripper extractor = new PDFTextStripper();
+      String text = extractor.getText(document);
       reader = new StringReader(text);
     } catch (Exception e) {
-      SilverTrace.error("indexing", "PptParserPOI", "indexing.MSG_IO_ERROR_WHILE_READING",
+      SilverTrace.error("indexing", "PdfParser2", "indexing.MSG_IO_ERROR_WHILE_READING",
           path, e);
     } finally {
-      IOUtils.closeQuietly(file);
+      try {
+        if (document != null) {
+          document.close();
+        }
+        IOUtils.closeQuietly(file);
+      } catch (IOException ioe) {
+        SilverTrace.error("indexing", "PdfParser2.getReader()",
+            "indexing.MSG_IO_ERROR_WHILE_CLOSING", path, ioe);
+      }
     }
     return reader;
   }

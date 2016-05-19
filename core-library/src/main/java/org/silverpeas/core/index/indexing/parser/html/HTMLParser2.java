@@ -22,55 +22,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.index.indexing.parser.rtfParser;
+package org.silverpeas.core.index.indexing.parser.html;
 
-import org.silverpeas.core.index.indexing.parser.PipedParser;
+import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.io.IOUtils;
+import net.htmlparser.jericho.Source;
 
 import javax.inject.Named;
-import javax.swing.text.Document;
-import javax.swing.text.rtf.RTFEditorKit;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 
-/**
- * ExcelParser parse an excel file
- * @author $Author: neysseri $
- */
-@Named("rtfParser")
-public class RtfParser extends PipedParser {
+@Named("htmlParser")
+public class HTMLParser2 implements Parser {
 
-  public RtfParser() {
-  }
+  public Reader getReader(String path, String encoding) {
+    Reader reader = null;
+    InputStream file = null;
 
-  public void outPutContent(Writer out, String path, String encoding) throws IOException {
-
-    FileInputStream in = null;
     try {
-      in = new FileInputStream(path);
-      byte[] buffer = new byte[in.available()];
-      in.read(buffer, 0, in.available());
+      file = new FileInputStream(path);
 
-      // RTF always uses ASCII, so we don't need to care about the encoding
-      String input = new String(buffer);
+      Source source = new Source(file);
 
-      String result = null;
-      try {
-        // use build in RTF parser from Swing API
-        RTFEditorKit rtfEditor = new RTFEditorKit();
-        Document doc = rtfEditor.createDefaultDocument();
-        rtfEditor.read(new StringReader(input), doc, 0);
-
-        result = doc.getText(0, doc.getLength());
-      } catch (Exception e) {
-        SilverTrace.warn("indexing", "RtfParser.outPutContent()", "", e);
-      }
-      out.write(result);
+      if (source != null)
+        reader = new StringReader(source.getTextExtractor().toString());
+    } catch (Exception e) {
+      SilverTrace.error("indexing", "HTMLParser2",
+          "indexing.MSG_IO_ERROR_WHILE_READING", path, e);
     } finally {
-      IOUtils.closeQuietly(in);
+      try {
+        file.close();
+      } catch (IOException ioe) {
+        SilverTrace.error("indexing", "HTMLParser2.getReader()",
+            "indexing.MSG_IO_ERROR_WHILE_CLOSING", path, ioe);
+      }
     }
+    return reader;
   }
 }

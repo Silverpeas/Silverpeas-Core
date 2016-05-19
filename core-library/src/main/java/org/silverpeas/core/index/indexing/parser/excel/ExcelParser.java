@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.index.indexing.parser.excelParser;
+package org.silverpeas.core.index.indexing.parser.excel;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,8 +48,6 @@ import javax.inject.Named;
  */
 @Named("excelParser")
 public class ExcelParser extends PipedParser {
-  public ExcelParser() {
-  }
 
   /**
    * Read the text content of a pdf file and store it in out to be ready to be indexed.

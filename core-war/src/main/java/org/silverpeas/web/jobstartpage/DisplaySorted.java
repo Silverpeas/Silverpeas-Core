@@ -24,6 +24,8 @@
 
 package org.silverpeas.web.jobstartpage;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class DisplaySorted implements Comparable<DisplaySorted> {
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_COMPONENT = 1;
@@ -41,6 +43,24 @@ public class DisplaySorted implements Comparable<DisplaySorted> {
 
   public int compareTo(DisplaySorted o) {
     return orderNum - o.orderNum;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof DisplaySorted)) {
+      return false;
+    }
+
+    final DisplaySorted that = (DisplaySorted) o;
+    return compareTo(that) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(orderNum).toHashCode();
   }
 
   public void copy(DisplaySorted src) {

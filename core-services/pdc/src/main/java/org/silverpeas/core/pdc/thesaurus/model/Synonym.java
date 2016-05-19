@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.pdc.thesaurus.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
@@ -39,9 +40,6 @@ public class Synonym extends SilverpeasBean implements Comparable {
   private long idTree;
   private long idTerm;
   private String name;
-
-  public Synonym() {
-  }
 
   public long getIdVoca() {
     return idVoca;
@@ -77,6 +75,22 @@ public class Synonym extends SilverpeasBean implements Comparable {
 
   public int compareTo(Object voca) {
     return this.getName().compareTo(((Synonym) voca).getName());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Synonym)) {
+      return false;
+    }
+    return compareTo(o) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getName()).toHashCode();
   }
 
   public String _getTableName() {

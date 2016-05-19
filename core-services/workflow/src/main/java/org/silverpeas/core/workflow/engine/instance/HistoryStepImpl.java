@@ -27,6 +27,7 @@ package org.silverpeas.core.workflow.engine.instance;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -378,5 +379,23 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
     int stepId = Integer.parseInt(this.id);
     int anotherStepId = Integer.parseInt(anotherStep.getId());
     return stepId - anotherStepId;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof HistoryStepImpl)) {
+      return false;
+    }
+
+    final HistoryStepImpl that = (HistoryStepImpl) o;
+    return compareTo(that) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(this.id).toHashCode();
   }
 }
