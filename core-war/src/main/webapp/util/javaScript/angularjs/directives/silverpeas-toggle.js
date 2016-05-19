@@ -36,7 +36,7 @@
    * @example <div silverpeas-toggle originalClass='myClass'>...</div>
    * (you can replace div by any other HTML element)
    */
-  angular.module('silverpeas.directives').directive('silverpeasToggle', function($timeout) {
+  angular.module('silverpeas.directives').directive('silverpeasToggle', ['$timeout', function($timeout) {
     return {
       templateUrl : webContext + '/util/javaScript/angularjs/directives/silverpeas-toggle.jsp',
       restrict : 'AE',
@@ -76,5 +76,5 @@
         }, 0);
       }
     };
-  });
+  }]);
 })();

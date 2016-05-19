@@ -39,6 +39,7 @@ import org.silverpeas.core.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 public class WebCommonLookAndFeel {
@@ -228,19 +229,23 @@ public class WebCommonLookAndFeel {
   }
 
   private String getCSSLinkTag(String href) {
-    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + href + "\"/>\n";
+    String normalizedUrl = getMinifiedWebResourceUrl(href);
+    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + normalizedUrl + "\"/>\n";
   }
 
   private String getCSSLinkTagWithVersion(String href) {
-    return getCSSLinkTag(URLUtil.appendVersion(href));
+    String normalizedUrl = getMinifiedWebResourceUrl(href);
+    return getCSSLinkTag(URLUtil.appendVersion(normalizedUrl));
   }
 
   private String getJavaScriptTag(String src) {
-    return new script().setType("text/javascript").setSrc(src).toString() + STR_NEW_LINE;
+    String normalizedUrl = getMinifiedWebResourceUrl(src);
+    return new script().setType("text/javascript").setSrc(normalizedUrl).toString() + STR_NEW_LINE;
   }
 
   private String getJavaScriptTagWithVersion(String src) {
-    return getJavaScriptTag(URLUtil.appendVersion(src));
+    String normalizedUrl = getMinifiedWebResourceUrl(src);
+    return getJavaScriptTag(URLUtil.appendVersion(normalizedUrl));
   }
 
   /**

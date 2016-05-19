@@ -47,6 +47,12 @@ public class JavascriptBundleProducer {
   private Map<String, String> keyMessages = new LinkedHashMap<>();
 
   /**
+   * Hidden constructor.
+   */
+  private JavascriptBundleProducer() {
+  }
+
+  /**
    * Gets the javascript bundle content from the string template repository and according to
    * given parameters.
    * @param pathSuffix the path suffix behind the root path "core" of string template repository.
@@ -106,12 +112,6 @@ public class JavascriptBundleProducer {
   public JavascriptBundleProducer add(final String key, final String value) {
     keyMessages.put(key, "\"" + javaStringToJsString(value) + "\"");
     return this;
-  }
-
-  /**
-   * Hidden constructor.
-   */
-  private JavascriptBundleProducer() {
   }
 
   /**

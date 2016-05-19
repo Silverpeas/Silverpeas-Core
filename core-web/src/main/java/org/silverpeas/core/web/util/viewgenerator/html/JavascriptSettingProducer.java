@@ -45,6 +45,12 @@ public class JavascriptSettingProducer {
   private Map<String, String> keySettings = new LinkedHashMap<>();
 
   /**
+   * Hidden constructor.
+   */
+  private JavascriptSettingProducer() {
+  }
+
+  /**
    * Initializes the setting producer by specifying the name of the javascript variable that
    * represents the settings.
    * @param jsSettingVariableName the javascript variable name of the bundle.
@@ -109,12 +115,6 @@ public class JavascriptSettingProducer {
   public JavascriptSettingProducer add(final String key, final Number value) {
     keySettings.put(key, String.valueOf(value));
     return this;
-  }
-
-  /**
-   * Hidden constructor.
-   */
-  private JavascriptSettingProducer() {
   }
 
   /**

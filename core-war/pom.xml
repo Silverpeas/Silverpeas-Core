@@ -201,6 +201,30 @@
     </testResources>
     <plugins>
       <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>yuicompressor-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jslint</goal>
+              <goal>compress</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <jswarn>false</jswarn>
+          <excludes>
+            <exclude>**/*.min.*</exclude>
+            <exclude>**/*-min.*</exclude>
+            <exclude>**/*.min-*</exclude>
+            <exclude>**/*-min-*</exclude>
+            <exclude>**/util/yui/**/*</exclude>
+            <exclude>**/angular.js</exclude>
+            <exclude>**/ckeditor*/**/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>

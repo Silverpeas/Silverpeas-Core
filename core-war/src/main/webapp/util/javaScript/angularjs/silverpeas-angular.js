@@ -106,7 +106,7 @@ var AngularPromise = angular.injector(['ng']).get('$q');
  * 2 - update the HTML DOM by using the method updateHtmlContainingAngularDirectives
  */
 var isCompileDirectiveBrowserCompatible = false;
-angular.module('silverpeas.directives').directive('compileDirective', function($compile) {
+angular.module('silverpeas.directives').directive('compileDirective', ['$compile', function($compile) {
   return {
     template: "<div class='compileDirectiveContainer' style='display: none'></div>",
     replace: true,
@@ -124,7 +124,7 @@ angular.module('silverpeas.directives').directive('compileDirective', function($
           });
     }
   };
-});
+}]);
 
 /**
  * Simple method to update HTML DOM partially with HTML containing angular directives

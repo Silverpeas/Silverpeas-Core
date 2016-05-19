@@ -162,7 +162,7 @@ public class JavascriptPluginInclusion {
     String key = "$jsPlugin$script$" + src;
     if (getRequestCacheService().get(key) == null) {
       getRequestCacheService().put(key, true);
-      return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
+      return new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
     } else {
       return new ElementContainer();
     }
@@ -190,7 +190,8 @@ public class JavascriptPluginInclusion {
       sb.append("jQuery(document).ready(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
       sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
-      sb.append("    jQuery.getScript('").append(appendVersion(src)).append("', function() {");
+      sb.append("    jQuery.getScript('").append(normalizeWebResourceUrl(src))
+          .append("', function() {");
       if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
         sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
       }
@@ -235,7 +236,7 @@ public class JavascriptPluginInclusion {
     if (getRequestCacheService().get(key) == null) {
       getRequestCacheService().put(key, true);
       return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
-          .setHref(appendVersion(href));
+          .setHref(normalizeWebResourceUrl(href));
     } else {
       return new ElementContainer();
     }
@@ -624,7 +625,17 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  private static String appendVersion(String url) {
-    return URLUtil.appendVersion(url);
+  /**
+   * Normalizes the given url in order to handle:
+   * <ul>
+   * <li>js and css minify</li>
+   * <li>version append in order to handle the cache</li>
+   * </ul>
+   * @param url
+   * @return
+   */
+  private static String normalizeWebResourceUrl(String url) {
+    String normalizedUrl = URLUtil.getMinifiedWebResourceUrl(url);
+    return URLUtil.appendVersion(normalizedUrl);
   }
 }
