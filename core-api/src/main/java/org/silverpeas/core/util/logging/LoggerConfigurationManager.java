@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -65,21 +65,19 @@ public class LoggerConfigurationManager {
   private static final String THIS_LOGGER_NAMESPACE = "silverpeas.core.logging";
   private static final String LOGGER_NAMESPACE = "namespace";
   private static final String LOGGER_LEVEL = "level";
-  private static final String NO_SUCH_LOGGER_CONFIGURATION =
-      "No such logger {0} defined for Silverpeas";
   private static final int INITIAL_CAPACITY = 128;
 
   private static Map<String, LoggerConfiguration> configs =
       new ConcurrentHashMap<>(INITIAL_CAPACITY);
+
+  protected LoggerConfigurationManager() {
+  }
 
   private static File getConfigurationHome() {
     Path path =
         Paths.get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
             "util", "logging");
     return path.toFile();
-  }
-
-  protected LoggerConfigurationManager() {
   }
 
   protected Map<String, LoggerConfiguration> getLoggerConfigurations() {
@@ -177,7 +175,7 @@ public class LoggerConfigurationManager {
     if (strLevel != null && !strLevel.trim().isEmpty()) {
       try {
         level = Level.valueOf(strLevel);
-      } catch (Throwable t) {
+      } catch (Exception t) {
         java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
             .log(java.util.logging.Level.SEVERE, t.getMessage(), t);
       }
@@ -223,6 +221,24 @@ public class LoggerConfigurationManager {
     @Override
     public int compareTo(final LoggerConfiguration other) {
       return this.getNamespace().compareTo(other.getNamespace());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof LoggerConfiguration)) {
+        return false;
+      }
+
+      final LoggerConfiguration that = (LoggerConfiguration) o;
+      return compareTo(that) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+      return new HashCodeBuilder().append(getNamespace()).toHashCode();
     }
   }
 
