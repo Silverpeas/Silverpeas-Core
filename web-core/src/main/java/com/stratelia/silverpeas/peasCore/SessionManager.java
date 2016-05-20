@@ -74,6 +74,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user
  * log in, ComponentRequestRouter : when the user access a component. It provides functions to
@@ -567,16 +569,15 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     HTTPSessionInfo si = null;
     // If X-Forwarded-For header exists, we use the IP address contained in it as the client IP address
     // This is the case when Silverpeas is behing a reverse-proxy
-    // Convert the header to InetAddress to avoid user injection
+    final String xForwardedFor = request.getHeader("X-Forwarded-For");
+    final String requestRemoteHost = request.getRemoteHost();
     String anIP;
     try {
-      anIP = InetAddress.getByName(request.getHeader("X-Forwarded-For")).getHostAddress();
+      anIP = InetAddress.getByName(defaultStringIfNotDefined(xForwardedFor, requestRemoteHost))
+          .getHostAddress();
     } catch (Exception ex) {
-      anIP = null;
-    }
-    if (anIP == null) {
-      // If not, we use the IP address given in the request
-      anIP = request.getRemoteHost();
+      // In case of error, simply taking the value from the servlet request
+      anIP = requestRemoteHost;
     }
     try {
       HttpSession session = request.getSession();
