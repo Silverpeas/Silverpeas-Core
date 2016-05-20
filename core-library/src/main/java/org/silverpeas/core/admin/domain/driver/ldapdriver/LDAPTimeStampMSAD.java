@@ -51,6 +51,11 @@ public class LDAPTimeStampMSAD extends AbstractLDAPTimeStamp {
   }
 
   @Override
+  public boolean equals(final Object other) {
+    return compareTo(other) == 0;
+  }
+
+  @Override
   public int hashCode() {
     return new HashCodeBuilder().append(lTimeStamp).toHashCode();
   }

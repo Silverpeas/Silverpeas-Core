@@ -34,10 +34,7 @@ public abstract class AbstractLDAPTimeStamp implements Comparable {
 
   public abstract int compareTo(Object other);
 
-  @Override
-  public boolean equals(final Object other) {
-    return compareTo(other) == 0;
-  }
+  public abstract boolean equals(final Object other);
 
   public abstract int hashCode();
 
