@@ -355,7 +355,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         m_BrothersSpaces[j++] = adminController.getSpaceInstById(sid);
       }
     }
-    Arrays.sort(m_BrothersSpaces);
+    Arrays.sort(m_BrothersSpaces, Comparator.comparing(SpaceInst::getOrderNum));
     return m_BrothersSpaces;
   }
 
@@ -374,7 +374,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     SpaceInst[] aManageableSpaces = vManageableSpaces.toArray(
         new SpaceInst[vManageableSpaces.size()]);
-    Arrays.sort(aManageableSpaces);
+    Arrays.sort(aManageableSpaces, Comparator.comparing(SpaceInst::getOrderNum));
     return aManageableSpaces;
   }
 
@@ -980,7 +980,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         m_BrothersComponents[j++] = theComponent;
       }
     }
-    Arrays.sort(m_BrothersComponents);
+    Arrays.sort(m_BrothersComponents, Comparator.comparing((ComponentInst::getOrderNum)));
     return m_BrothersComponents;
   }
 
@@ -995,7 +995,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     for (ComponentInst theComponent : arc) {
       m_Components[j++] = theComponent;
     }
-    Arrays.sort(m_BrothersComponents);
+    Arrays.sort(m_BrothersComponents, Comparator.comparing(ComponentInst::getOrderNum));
     return m_Components;
   }
 
@@ -1056,7 +1056,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         m_DestBrothersComponents[j++] = theComponent;
       }
     }
-    Arrays.sort(m_BrothersComponents);
+    Arrays.sort(m_BrothersComponents, Comparator.comparing(ComponentInst::getOrderNum));
     return m_DestBrothersComponents;
   }
 
@@ -1064,13 +1064,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     // liste des composants triés ordre alphabétique
     Map<String, WAComponent> resTable = adminController.getAllComponents();
     WAComponent[] componentsModels = resTable.values().toArray(new WAComponent[resTable.size()]);
-    Arrays.sort(componentsModels, new Comparator<WAComponent>() {
-      @Override
-      public int compare(WAComponent o1, WAComponent o2) {
-        String valcomp1 = o1.getSuite() + o1.getLabel().get(I18NHelper.defaultLanguage);
-        String valcomp2 = o2.getSuite() + o2.getLabel().get(I18NHelper.defaultLanguage);
-        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-      }
+    Arrays.sort(componentsModels, (o1, o2) -> {
+      String valcomp1 = o1.getSuite() + o1.getLabel().get(I18NHelper.defaultLanguage);
+      String valcomp2 = o2.getSuite() + o2.getLabel().get(I18NHelper.defaultLanguage);
+      return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
     });
     return componentsModels;
   }

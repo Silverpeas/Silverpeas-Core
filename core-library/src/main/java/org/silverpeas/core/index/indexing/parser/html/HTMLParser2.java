@@ -47,8 +47,9 @@ public class HTMLParser2 implements Parser {
 
       Source source = new Source(file);
 
-      if (source != null)
+      if (source != null) {
         reader = new StringReader(source.getTextExtractor().toString());
+      }
     } catch (Exception e) {
       SilverTrace.error("indexing", "HTMLParser2",
           "indexing.MSG_IO_ERROR_WHILE_READING", path, e);

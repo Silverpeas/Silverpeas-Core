@@ -392,7 +392,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable<ArrayLine> {
       return false;
     }
 
-    final ArrayLine arrayLine = (ArrayLine) o;
     return hashCode() == o.hashCode();
   }
 

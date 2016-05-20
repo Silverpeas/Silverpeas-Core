@@ -24,12 +24,10 @@
 
 package org.silverpeas.core.calendar.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.calendar.service.CalendarException;
+
+import java.io.Serializable;
 
 public class Priority implements Serializable, Comparable<Priority> {
 

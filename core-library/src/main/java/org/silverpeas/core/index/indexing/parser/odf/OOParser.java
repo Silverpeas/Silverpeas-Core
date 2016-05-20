@@ -57,24 +57,24 @@ import javax.inject.Named;
 public class OOParser implements Parser {
 
   private String tempFolder = null;
-  private final String TMP_UNZIP_DIR = "tmpUnzipOpenOffice";
-  private final Namespace NS_OO = Namespace.getNamespace("office",
+  private static final String TMP_UNZIP_DIR = "tmpUnzipOpenOffice";
+  private static final Namespace NS_OO = Namespace.getNamespace("office",
       "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
-  public final Namespace NS_DC = Namespace.getNamespace("dc",
+  public static final Namespace NS_DC = Namespace.getNamespace("dc",
       "http://purl.org/dc/elements/1.1/");
-  private final Namespace NS_OOMETA = Namespace.getNamespace("meta",
+  private static final Namespace NS_OOMETA = Namespace.getNamespace("meta",
       "urn:oasis:names:tc:opendocument:xmlns:meta:1.0");
-  private final Namespace NS_OOTEXT = Namespace.getNamespace("text",
+  private static final Namespace NS_OOTEXT = Namespace.getNamespace("text",
       "urn:oasis:names:tc:opendocument:xmlns:text:1.0");
   // Meta data tags
-  private final String TITLE = "title";
-  private final String SUBJECT = "subject";
-  private final String DESCRIPTION = "description";
-  private final String INITIAL_CREATOR = "initial-creator";
-  private final String KEYWORD = "keyword";
+  private static final String TITLE = "title";
+  private static final String SUBJECT = "subject";
+  private static final String DESCRIPTION = "description";
+  private static final String INITIAL_CREATOR = "initial-creator";
+  private static final String KEYWORD = "keyword";
   // Open Office files needed for indexing
-  private final String contentFile = "content.xml";
-  private final String metaFile = "meta.xml";
+  private static final String contentFile = "content.xml";
+  private static final String metaFile = "meta.xml";
 
   @Override
   public Reader getReader(String path, String encoding) {
