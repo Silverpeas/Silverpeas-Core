@@ -27,6 +27,7 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
@@ -738,7 +739,7 @@ public class SimpleDocument implements Serializable {
     if (getLanguage() != null) {
       jcrPath.append(getVersionMaster().getLanguage()).append('/');
     }
-    jcrPath.append(StringUtil.escapeQuote(getVersionMaster().getFilename()));
+    jcrPath.append(ConverterUtil.escapeIllegalJcrChars(getVersionMaster().getFilename()));
     return jcrPath.toString();
   }
 

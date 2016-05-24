@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
  */
 public class SilverpeasJcrWebdavContext {
 
-  protected static final String WEBDAV_JCR_URL_SUFFIX = "webdav-jcr-url-suffix-";
-  private static final Pattern TOKEN_PATTERN = Pattern.compile(".*/webdav/([a-zA-Z0-9]{16}+)/.*");
+  static final String WEBDAV_JCR_URL_SUFFIX = "webdav-jcr-url-suffix-";
+  private static final Pattern TOKEN_PATTERN = Pattern.compile(".*/webdav/([a-zA-Z0-9]{16}+).*");
 
   private final String documentUrlLocation;
   private final String webDavUrl;
@@ -92,13 +92,17 @@ public class SilverpeasJcrWebdavContext {
     Matcher tokenMatcher = TOKEN_PATTERN.matcher(webDavUrl);
     if (tokenMatcher.matches()) {
       token = tokenMatcher.group(1);
-      clearedWebdavUrl = clearedWebdavUrl.replace("/webdav/" + token, "/webdav");
     }
     if (!token.isEmpty()) {
-      clearedWebdavUrl = clearedWebdavUrl.replaceFirst("/webdav/.*$", "/webdav/") +
+      clearedWebdavUrl = clearedWebdavUrl.replace("/webdav/" + token, "/webdav");
+      boolean webdavUrlContainsFileName = clearedWebdavUrl.matches(".*/webdav/.+");
+      clearedWebdavUrl = clearedWebdavUrl.replaceFirst("/webdav.*$", "/webdav/") +
           getCacheService().get(WEBDAV_JCR_URL_SUFFIX + token, String.class);
-      if (webDavUrl.endsWith("/")) {
-        clearedWebdavUrl = clearedWebdavUrl.replaceFirst("[^/]*$", "");
+      if (!webdavUrlContainsFileName) {
+        clearedWebdavUrl = clearedWebdavUrl.replaceFirst("/[^/]*$", "");
+        if (webDavUrl.endsWith("/")) {
+          clearedWebdavUrl += "/";
+        }
       }
     }
     return new SilverpeasJcrWebdavContext(clearedWebdavUrl, token, webDavUrl);
