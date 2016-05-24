@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
@@ -744,7 +745,7 @@ public class SimpleDocument implements Serializable {
     if (getLanguage() != null) {
       jcrPath.append(getVersionMaster().getLanguage()).append('/');
     }
-    jcrPath.append(StringUtil.escapeQuote(getVersionMaster().getFilename()));
+    jcrPath.append(JcrDataConverter.escapeIllegalJcrChars(getVersionMaster().getFilename()));
     return jcrPath.toString();
   }
 

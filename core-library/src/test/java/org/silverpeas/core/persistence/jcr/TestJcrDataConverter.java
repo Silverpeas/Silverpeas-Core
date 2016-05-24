@@ -1,36 +1,38 @@
 /*
  * Copyright (C) 2000 - 2016 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.jcrutil.converter;
+
+package org.silverpeas.core.persistence.jcr;
 
 import java.text.ParseException;
 import java.util.Calendar;
 
 import org.junit.Test;
-import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class TestConverterUtil {
+public class TestJcrDataConverter {
 
   @Test
   public void testConvertToJcrPath() {
@@ -227,5 +229,22 @@ public class TestConverterUtil {
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
     assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", JcrDataConverter.
         formatDateForXpath(calend.getTime()));
+  }
+
+  @Test
+  public void testEscapeIllegalJcrChars() {
+    assertEquals("/", JcrDataConverter.escapeIllegalJcrChars("/"));
+    assertEquals("/toto", JcrDataConverter.escapeIllegalJcrChars("/toto"));
+    assertEquals("/theme test/sous_theme test",
+        JcrDataConverter.escapeIllegalJcrChars("/theme test/sous_theme test"));
+    assertEquals("/theme test  .", JcrDataConverter.escapeIllegalJcrChars("/theme test||."));
+    assertEquals("/theme test", JcrDataConverter.escapeIllegalJcrChars("/theme test\t\t"));
+    assertEquals("/theme test", JcrDataConverter.escapeIllegalJcrChars("/theme test\r\r"));
+    assertEquals("/theme test", JcrDataConverter.escapeIllegalJcrChars("/theme test\n\n"));
+    assertEquals("t 2E", JcrDataConverter.escapeIllegalJcrChars("t%2E"));
+    assertEquals("theme ok", JcrDataConverter.escapeIllegalJcrChars("[theme:ok]"));
+    assertEquals("/   this   name contains      - illegal    characters",
+        JcrDataConverter.escapeIllegalJcrChars(
+            "/[[[this]]]name contains :\r\n\t - illegal ** characters :: \r\n\t | ''' \"\"\""));
   }
 }
