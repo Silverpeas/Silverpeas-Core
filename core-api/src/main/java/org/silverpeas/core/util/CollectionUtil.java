@@ -127,7 +127,9 @@ public class CollectionUtil {
 
   @SafeVarargs
   public static <T> List<T> asList(T... values) {
-    return new ArrayList<>(Arrays.asList(values));
+    List<T> listWithValues = new ArrayList<>();
+    Collections.addAll(listWithValues, values);
+    return listWithValues;
   }
 
   @SafeVarargs
