@@ -980,7 +980,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         m_BrothersComponents[j++] = theComponent;
       }
     }
-    Arrays.sort(m_BrothersComponents, Comparator.comparing((ComponentInst::getOrderNum)));
+    Arrays.sort(m_BrothersComponents, Comparator.comparing(ComponentInst::getOrderNum));
     return m_BrothersComponents;
   }
 
