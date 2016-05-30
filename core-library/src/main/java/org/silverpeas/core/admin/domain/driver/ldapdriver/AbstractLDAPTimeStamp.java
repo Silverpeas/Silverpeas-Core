@@ -26,14 +26,18 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import org.silverpeas.core.admin.service.AdminException;
 
-abstract public class AbstractLDAPTimeStamp implements Comparable {
+public abstract class AbstractLDAPTimeStamp implements Comparable {
   LDAPSettings driverSettings = null;
   String timeStamp;
 
-  abstract public String toString();
+  public abstract String toString();
 
-  abstract public int compareTo(Object other);
+  public abstract int compareTo(Object other);
 
-  abstract public void initFromServer(String lds, String baseDN, String filter,
+  public abstract boolean equals(final Object other);
+
+  public abstract int hashCode();
+
+  public abstract void initFromServer(String lds, String baseDN, String filter,
       String fallbackSortBy) throws AdminException;
 }

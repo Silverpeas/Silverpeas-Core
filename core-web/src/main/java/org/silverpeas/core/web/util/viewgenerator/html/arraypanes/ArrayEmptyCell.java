@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 /**
@@ -31,13 +32,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
  * @author
  */
 public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
-
-  /**
-   * Constructor declaration
-   * @see
-   */
-  public ArrayEmptyCell() {
-  }
 
   /**
    * Method declaration
@@ -50,6 +44,16 @@ public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
       return -1;
     }
     return 0;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other != null && other instanceof ArrayEmptyCell;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(ArrayEmptyCell.class.toString()).toHashCode();
   }
 
   /**

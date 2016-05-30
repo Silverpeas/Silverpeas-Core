@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -124,7 +125,10 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * transmitted.
    */
   public List<FileItem> getFileItems() {
-    return (fileItems == null ? fileItems = FileUploadUtil.parseRequest(this) : fileItems);
+    if (fileItems == null) {
+      fileItems = FileUploadUtil.parseRequest(this);
+    }
+    return fileItems;
   }
 
   /**
@@ -435,10 +439,10 @@ public class HttpRequest extends HttpServletRequestWrapper {
    *
    * @param enumValue the string value of the expected enum instance.
    * @param enumClass the class of the expected enum instance.
-   * @param <ENUM> the type of the expected enum instance.
+   * @param <E> the type of the expected enum instance.
    * @return the expected enum instance or null if enum has not been well decoded
    */
-  public <ENUM extends Enum> ENUM getParameterAsEnum(String enumValue, Class<ENUM> enumClass) {
+  public <E extends Enum> E getParameterAsEnum(String enumValue, Class<E> enumClass) {
     return asEnum(getParameter(enumValue), enumClass);
   }
 
@@ -503,7 +507,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   @SuppressWarnings({"unchecked", "ConstantConditions"})
-  private <ENUM extends Enum> ENUM asEnum(String enumValue, Class<ENUM> enumClass) {
+  private <E extends Enum> E asEnum(String enumValue, Class<E> enumClass) {
     Method fromMethod = null;
 
     for (Method method : enumClass.getMethods()) {
@@ -519,13 +523,14 @@ public class HttpRequest extends HttpServletRequestWrapper {
       try {
         fromMethod = enumClass.getMethod("valueOf", String.class);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw new SilverpeasRuntimeException(e);
       }
     }
 
     try {
-      return (ENUM) fromMethod.invoke(null, enumValue);
+      return (E) fromMethod.invoke(null, enumValue);
     } catch (Exception ignore) {
+      // ignore this exception as it should never occur
     }
 
     return null;

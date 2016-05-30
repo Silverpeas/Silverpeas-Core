@@ -51,7 +51,7 @@ import java.util.List;
  * The class SpaceInst is the representation in memory of a space
  */
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
-    implements Serializable, Comparable<SpaceInst>, Cloneable {
+    implements Serializable, Cloneable {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
@@ -135,11 +135,6 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
-  }
-
-  @Override
-  public int compareTo(SpaceInst o) {
-    return orderNum - o.orderNum;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.comparator;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
@@ -93,10 +94,10 @@ public abstract class AbstractComplexComparator<C> extends
   public class ValueBuffer {
 
     /** Sens */
-    final private List<Integer> sens = new ArrayList<Integer>();
+    private final List<Integer> sens = new ArrayList<Integer>();
 
     /** Valeur */
-    final private List<Object> values = new ArrayList<Object>();
+    private final List<Object> values = new ArrayList<Object>();
 
     /**
      * Default constructor
@@ -179,6 +180,24 @@ public abstract class AbstractComplexComparator<C> extends
 
       // Identical
       return 0;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o.getClass() != StringWrapper.class)) {
+        return false;
+      }
+
+      final StringWrapper that = (StringWrapper) o;
+      return compareTo(that) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+      return new HashCodeBuilder().append(string).toHashCode();
     }
   }
 }

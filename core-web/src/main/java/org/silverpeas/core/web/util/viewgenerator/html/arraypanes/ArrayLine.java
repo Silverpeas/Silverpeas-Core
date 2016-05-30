@@ -24,20 +24,21 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 /**
  * @author squere
  * @version
  */
-public class ArrayLine implements SimpleGraphicElement, Comparable {
+public class ArrayLine implements SimpleGraphicElement, Comparable<ArrayLine> {
 
   private List<SimpleGraphicElement> cells = null;
   private ArrayPane pane;
@@ -352,20 +353,15 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   /**
-   * Method declaration
-   * @param other
-   * @return
-   * @see
+   * Compares this array line with the specified one by the cell in the same sortable column.
+   * </p>
+   * This comparing function is not about array line equality meaning the following
+   * property <code>(x.compareTo(y)==0) == (x.equals(y))</code> is broken.
    */
-  public int compareTo(final java.lang.Object other) {
+  public int compareTo(final ArrayLine other) {
     if (pane.getColumnToSort() == 0) {
-
       return 0;
     }
-    if (!(other instanceof ArrayLine)) {
-      return 0;
-    }
-    ArrayLine tmp = (ArrayLine) other;
     int sort = pane.getColumnToSort();
 
     if (sort < 0) {
@@ -379,12 +375,37 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
     if (!(cell instanceof Comparable)) {
       return 0;
     }
-    sort = ((Comparable) cell).compareTo(tmp.getCellAt(sort));
+    sort = ((Comparable) cell).compareTo(other.getCellAt(sort));
     if (pane.getColumnToSort() < 0) {
       return -sort;
     } else {
       return sort;
     }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ArrayLine)) {
+      return false;
+    }
+
+    return hashCode() == o.hashCode();
+  }
+
+  /**
+   * Computes the hash code of this ArrayLine. Two same array lines have the same hash code.
+   * @return the hash code of this ArrayLine.
+   */
+  @Override
+  public int hashCode() {
+    HashCodeBuilder builder = new HashCodeBuilder();
+    for (SimpleGraphicElement element : cells) {
+      builder.append(element.hashCode());
+    }
+    return builder.toHashCode();
   }
 
   public void setId(String id) {
