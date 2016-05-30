@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
@@ -38,6 +39,7 @@ import org.silverpeas.core.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 public class WebCommonLookAndFeel {
@@ -175,6 +177,8 @@ public class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/es6-promise.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/classList.min.js"));
     code.append(
+        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/customEventIEPolyfill.min.js"));
+    code.append(
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/eventListenerIEPolyfill.min.js"));
     code.append(
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-polyfills.js"));
@@ -196,10 +200,15 @@ public class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERY_i18N_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
+
+    code.append(includeLayout(new ElementContainer(),
+        LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
 
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includePopup(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeCkeditorAddOns(new ElementContainer(), language).toString()).append(
         STR_NEW_LINE);
@@ -208,14 +217,11 @@ public class WebCommonLookAndFeel {
       code.append(getJavaScriptTag(specificJS));
     }
 
-    if (lookSettings != null
-        && lookSettings.getString("OperationPane").toLowerCase().endsWith("web20")) {
+    if (lookSettings.getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
-      code.append(
-          JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), language)
-              .toString()).append(STR_NEW_LINE);
-      code.append(JavascriptPluginInclusion.includeMylinks(new ElementContainer()).toString())
+      code.append(includeResponsibles(new ElementContainer(), language).toString())
           .append(STR_NEW_LINE);
+      code.append(includeMylinks(new ElementContainer()).toString()).append(STR_NEW_LINE);
     }
 
 
@@ -223,19 +229,23 @@ public class WebCommonLookAndFeel {
   }
 
   private String getCSSLinkTag(String href) {
-    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + href + "\"/>\n";
+    String normalizedUrl = getMinifiedWebResourceUrl(href);
+    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + normalizedUrl + "\"/>\n";
   }
 
   private String getCSSLinkTagWithVersion(String href) {
-    return getCSSLinkTag(URLUtil.appendVersion(href));
+    String normalizedUrl = getMinifiedWebResourceUrl(href);
+    return getCSSLinkTag(URLUtil.appendVersion(normalizedUrl));
   }
 
   private String getJavaScriptTag(String src) {
-    return new script().setType("text/javascript").setSrc(src).toString() + STR_NEW_LINE;
+    String normalizedUrl = getMinifiedWebResourceUrl(src);
+    return new script().setType("text/javascript").setSrc(normalizedUrl).toString() + STR_NEW_LINE;
   }
 
   private String getJavaScriptTagWithVersion(String src) {
-    return getJavaScriptTag(URLUtil.appendVersion(src));
+    String normalizedUrl = getMinifiedWebResourceUrl(src);
+    return getJavaScriptTag(URLUtil.appendVersion(normalizedUrl));
   }
 
   /**
@@ -259,8 +269,8 @@ public class WebCommonLookAndFeel {
         .append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
         .append(" }").append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("function getString(key) { return $.i18n.prop(key); }").append(
-        STR_NEW_LINE);
+    globalJSVariableBuilder.append("function getString(key) { return jQuery.i18n.prop(key); }")
+        .append(STR_NEW_LINE);
     return globalJSVariableBuilder.toString();
   }
 

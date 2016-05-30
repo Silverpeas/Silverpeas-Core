@@ -104,8 +104,7 @@ public class SilverpeasSessionOpener {
       MainSessionController controller;
       if (!sessionInfo.isDefined() || sessionInfo == SessionInfo.AnonymousSession) {
         // the session is a new one, then open it in Silverpeas
-        controller = new MainSessionController(authKey, session.getId());
-        session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
+        controller = new MainSessionController(authKey, session);
         // Get and store password change capabilities
         controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
         if (!controller.getCurrentUserDetail().isDeletedState() &&

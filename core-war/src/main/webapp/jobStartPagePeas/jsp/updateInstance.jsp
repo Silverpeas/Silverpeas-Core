@@ -155,7 +155,6 @@ for (ProfileInst theProfile : m_Profiles) {
 <link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript" src="javascript/messages.js"></script>

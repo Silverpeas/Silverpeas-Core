@@ -68,8 +68,8 @@
   <!-- optimize mobile versions -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="<%=URLUtil.appendVersion(URLUtil.getApplicationURL() + "/util/styleSheets/globalSP_SilverpeasV5.css")%>" rel="stylesheet">
-  <script src="<%=URLUtil.appendVersion(URLUtil.getApplicationURL() + "/util/javaScript/flowplayer/swfobject.js")%>"></script>
+  <view:link href="/util/styleSheets/globalSP_SilverpeasV5.css"/>
+  <view:script src="/util/javaScript/flowplayer/swfobject.js"/>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="${type}Player"/>
   <style type="text/css">

@@ -50,8 +50,7 @@ if (!StringUtil.isDefined(spaceIdFromRedirect)) {
 }
 String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId");
 LocalizationBundle generalMessage			= ResourceLocator.getGeneralLocalizationBundle(language);
-String			topBarParams			= "";
-String			frameBottomParams		= "";
+StringBuilder			frameBottomParams		= new StringBuilder().append("{");
 boolean			login					= StringUtil.getBooleanValue(request.getParameter("Login"));
 
 if (m_MainSessionCtrl == null) {
@@ -89,16 +88,17 @@ if (m_MainSessionCtrl == null) {
 		}
 		helper.setSpaceIdAndSubSpaceId(spaceId);
 
-		frameBottomParams 	= "?SpaceId="+spaceId;
+		frameBottomParams.append("'SpaceId':'").append(spaceId).append("'");
 	} else {
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
-		frameBottomParams 	= "?SpaceId=&ComponentId="+componentIdFromRedirect;
+		frameBottomParams.append("'SpaceId':''").append(",'ComponentId':'")
+        .append(componentIdFromRedirect).append("'");
 	}
 
 	gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
 
 	if (login) {
-		frameBottomParams += "&amp;Login=1";
+		frameBottomParams.append(",'Login':'1'");
 	}
 
 	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame())
@@ -116,76 +116,67 @@ if (m_MainSessionCtrl == null) {
 		<%
 	}
 
-	String bannerHeight = helper.getSettings("bannerHeight", "115");
-	String footerHeight = helper.getSettings("footerHeight", "26");
-	String framesetRows = bannerHeight+",100%,*,*,*";
-	if (helper.displayPDCFrame()) {
-      framesetRows = bannerHeight+",100%,"+footerHeight+",*,*,*";
-	}
+      String bannerHeight = helper.getSettings("bannerHeight", "115") + "px";
+      String footerHeight = helper.getSettings("footerHeight", "26") + "px";
+      if (!helper.displayPDCFrame()) {
+        footerHeight = "0px";
+      }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<c:set var="pdcActivated" value="<%=helper.displayPDCFrame()%>"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/silverpeas.js"></script>
-<script type="text/javascript">
-<!--
-var columntype=""
-var defaultsetting=""
-
-function getCurrentSetting(){
-	if (document.body)
-		return (document.body.cols)? document.body.cols : document.body.rows
-}
-
-function setframevalue(coltype, settingvalue){
-	if (coltype=="rows")
-		document.body.rows=settingvalue
-	else if (coltype=="cols")
-		document.body.cols=settingvalue
-}
-
-function resizeFrame(contractsetting){
-	if (getCurrentSetting()!=defaultsetting)
-		setframevalue(columntype, defaultsetting)
-	else
-		setframevalue(columntype, contractsetting)
-}
-
-function init(){
-	if (!document.all && !document.getElementById) return
-	if (document.body!=null){
-		columntype=(document.body.cols)? "cols" : "rows"
-		defaultsetting=(document.body.cols)? document.body.cols : document.body.rows
-	}
-	else
-		setTimeout("init()",100)
-}
-
-function showPdcFrame() {
-	setframevalue(columntype, "<%=bannerHeight%>,100%,<%=footerHeight%>,*,*,*");
-}
-
-function hidePdcFrame() {
-	setframevalue(columntype, "<%=bannerHeight%>,100%,*,*,*,*");
-}
-
-setTimeout("init()",100);
-
-//-->
-</script>
+<view:looknfeel/>
 <style type="text/css">
-/* Nettoyage des balises */
-* {
-margin: 0px;
-padding: 0px;
-border: none;
-}
+  body {
+    margin: 0;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+  }
+
+  .hidden-part {
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: none;
+  }
+
+  #sp-layout-main {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  #sp-layout-header-part, #sp-layout-body-part, #sp-layout-footer-part {
+    padding: 0;
+    margin: 0;
+    border: none;
+  }
+
+  #sp-layout-header-part {
+    width: 100%;
+    height: <%=bannerHeight%>;
+  }
+
+  #sp-layout-footer-part {
+    width: 100%;
+    height: <%=footerHeight%>;
+  }
+
+  #sp-layout-body-part {
+    width: 100%;
+    display: table;
+  }
 </style>
 <meta name="viewport" content="initial-scale=1.0"/>
 </head>
+<body>
 <% if (attachmentId != null) {
 	session.setAttribute("RedirectToAttachmentId", null);
 	String mapping = (String) session.getAttribute("RedirectToMapping");
@@ -195,19 +186,34 @@ border: none;
 	</script>
 <% } %>
 
-<frameset rows="<%=framesetRows%>" id="mainFramesetId" border="0"> <!-- Do not remove frameset's attribute "border" -->
-	<frame src="TopBarSilverpeasV5.jsp" name="topFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-	<frame src="frameBottomSilverpeasV5.jsp<%=frameBottomParams%>" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-	<% if (helper.displayPDCFrame()) { %>
-		<!--  Content of this frame is processed when DomainsBar is initialized -->
-		<frame src="" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-	<% } %>
-	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-	<frame src="<%=m_sContext%>/Ragenda/jsp/importCalendar" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
-	<noframes>
-		<body>Votre navigateur ne prend pas en charge les frames</body>
-	</noframes>
-</frameset>
+<div id="sp-layout-main">
+  <div id="sp-layout-header-part"></div>
+  <div id="sp-layout-body-part"></div>
+  <div id="sp-layout-footer-part" style="display: none"></div>
+</div>
+<div class="hidden-part" style="height: 0">
+  <iframe src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+  <iframe src="<c:url value='/Ragenda/jsp/importCalendar'/>" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+</div>
+
+<script type="text/javascript">
+  (function() {
+    if (!top.window.mainFrameOnLoad) {
+      top.window.mainFrameOnLoad = function(event) {
+        sp.log.debug("This is just a demonstration: it is possible to listen to events ('load', 'show', 'hide') dispatched from each part of the layout");
+        sp.log.debug("On footer part could also be listen to events: 'pdcload', 'pdcshow' and 'pdchide'");
+        sp.log.debug("The condition here (please consult the code if you are reading from the browser console!) is to ensure that the listener will not be declared several times.");
+        sp.log.debug("Indeed, because of ajax reloading and according to the location of the event listener attachment, same treatment could be performed several times");
+        // notySuccess("Body content event well performed!");
+      };
+    }
+    initializeSilverpeasLayout(<%=frameBottomParams.append('}')%>);
+    spLayout.getBody().ready(function() {
+      spLayout.getBody().getContent().addEventListener('load', top.window.mainFrameOnLoad);
+    });
+  })();
+</script>
+<view:progressMessage/>
+</body>
 </html>
 <% } %>

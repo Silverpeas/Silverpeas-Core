@@ -84,27 +84,12 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
   urlToForgottenPwd = m_sContext+"/CredentialsServlet/LoginQuestion";
 }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
 <!-- Add JQuery mask plugin css -->
-<link href="<%=m_sContext%>/util/styleSheets/jquery.loadmask.css" rel="stylesheet" type="text/css" />
-
-<!-- Add RICO javascript library -->
-<script type="text/javascript" src="<%=m_sContext%>/util/ajax/prototype.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/ajax/rico.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
+<view:link href="/util/styleSheets/jquery.loadmask.css"/>
 
 <!-- Add jQuery javascript library -->
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
-
-<!-- Custom domains bar javascript -->
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/navigation.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/personalSpace.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
+<view:script src="/util/javaScript/jquery/jquery.loadmask.js"/>
+<view:script src="/util/javaScript/jquery/jquery.bgiframe.min.js"/>
 
 <script type="text/javascript">
 
@@ -119,12 +104,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 
 		}
 	}
-
-  function reloadTopBar(reload)
-  {
-    if (reload)
-      top.topFrame.location.href="<%=m_sContext%>/admin/jsp/TopBarSilverpeasV5.jsp";
-  }
 
     function checkSubmitToSearch(ev)
   {
@@ -144,34 +123,24 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
   }
 
   function searchEngine() {
-        if (document.searchForm.query.value !== "")
-        {
-        document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch";
-          document.searchForm.submit();
-        }
+    if (document.menuSearchForm.query.value !== "") {
+      executeSearchActionToBodyPartTarget("AdvancedSearch", true);
+    }
   }
 
   function advancedSearchEngine(){
-    document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert";
-    document.searchForm.submit();
+    executeSearchActionToBodyPartTarget("ChangeSearchTypeToExpert", true);
   }
 
-  var navVisible = true;
-  function resizeFrame()
-  {
-    parent.resizeFrame('10,*');
-    if (navVisible)
-    {
-      document.body.scroll = "no";
-      document.images['expandReduce'].src="icons/silverpeasV5/extend.gif";
-    }
-    else
-    {
-      document.body.scroll = "auto";
-      document.images['expandReduce'].src="icons/silverpeasV5/reduct.gif";
-    }
-    document.images['expandReduce'].blur();
-    navVisible = !navVisible;
+  function lastResultsSearchEngine(){
+    executeSearchActionToBodyPartTarget("LastResults", false);
+  }
+
+  function executeSearchActionToBodyPartTarget(action, hasToSerializeForm) {
+    var urlParameters = hasToSerializeForm ?
+        jQuery(document.menuSearchForm).serializeFormJSON() : {};
+    var url = sp.formatUrl("<%=m_sContext%>/RpdcSearch/jsp/" + action, urlParameters);
+    spLayout.getBody().getContent().load(url);
   }
 
   // Callback methods to navigation.js
@@ -229,21 +198,13 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
         return <%=helper.displayContextualPDC()%>;
     }
 
-    function getTopBarPage()
-    {
-        return "TopBarSilverpeasV5.jsp";
-    }
-
-    function getFooterPage()
-    {
-	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
-    }
-
     /**
      * Reload bottom frame
      */
     function reloadSpacesBarFrame(tabId) {
-       top.bottomFrame.location.href="<%=m_sContext%>/admin/jsp/frameBottomSilverpeasV5.jsp?UserMenuDisplayMode=" + tabId;
+      spLayout.getBody().load({
+        "UserMenuDisplayMode" : tabId
+      });
     }
 
     function getPersonalSpaceLabels()
@@ -281,20 +242,18 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
   <%}%>
 
 </script>
-</head>
-<body class="fondDomainsBar">
-<div id="redExp"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reduct.gif" border="0" name="expandReduce" alt="<fmt:message key="lookSilverpeasV5.reductExtend" />" title="<fmt:message key="lookSilverpeasV5.reductExtend" />"/></a></div>
+<div class="fondDomainsBar">
 <div id="domainsBar">
   <div id="recherche">
     <div id="submitRecherche">
-      <form name="searchForm" action="<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch" method="post" target="MyMain">
+      <form name="menuSearchForm" action="javascript:searchEngine()" method="get">
       <input name="query" size="30" id="query"/>
       <input type="hidden" name="mode" value="clear"/>
       <a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" alt=""/></a>
       </form>
     </div>
         <div id="bodyRecherche">
-            <a href="javascript:advancedSearchEngine()"><fmt:message key="lookSilverpeasV5.AdvancedSearch" /></a> | <a href="<%=m_sContext%>/RpdcSearch/jsp/LastResults" target="MyMain"><fmt:message key="lookSilverpeasV5.LastSearchResults" /></a> | <a href="#" onclick="javascript:SP_openWindow('<%=m_sContext%>/RpdcSearch/jsp/help.jsp', 'Aide', '700', '270','scrollbars=yes, resizable, alwaysRaised');"><fmt:message key="lookSilverpeasV5.Help" /></a>
+            <a href="javascript:advancedSearchEngine()"><fmt:message key="lookSilverpeasV5.AdvancedSearch" /></a> | <a href="javascript:lastResultsSearchEngine()"><fmt:message key="lookSilverpeasV5.LastSearchResults" /></a> | <a href="#" onclick="javascript:SP_openWindow('<%=m_sContext%>/RpdcSearch/jsp/help.jsp', 'Aide', '700', '270','scrollbars=yes, resizable, alwaysRaised');"><fmt:message key="lookSilverpeasV5.Help" /></a>
     </div>
     </div>
   <div id="spaceTransverse"></div>
@@ -430,11 +389,9 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 <form name="clipboardForm" action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
 <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
 </form>
-<!-- Form below is used only to refresh this page according to external link (ie search engine, homepage,...) -->
-<form name="privateDomainsForm" action="DomainsBarSilverpeasV5.jsp" method="get">
-<input type="hidden" name ="component_id"/>
-<input type="hidden" name ="privateDomain"/>
-<input type="hidden" name ="privateSubDomain"/>
-</form>
-</body>
-</html>
+
+<!-- Custom domains bar javascript -->
+<view:script src="/util/javaScript/lookV5/navigation.js"/>
+<view:script src="/util/javaScript/lookV5/personalSpace.js"/>
+<view:script src="/util/javaScript/lookV5/login.js"/>
+</div>

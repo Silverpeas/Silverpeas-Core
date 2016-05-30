@@ -28,7 +28,10 @@
  */
 (function($) {
 
+  var __displayFullscreenModalBackground = (top !== window && top.spLayout);
+
   $.popup = {
+    debug : false,
     initialized: false,
     doInitialize: function() {
       if (!$.popup.initialized) {
@@ -56,14 +59,15 @@
             e.preventDefault();
           }
         });
-      } else {
-        $waiting.dialog("open");
       }
+      $waiting.dialog("open");
     },
     hideWaiting: function() {
       var $waiting = $("#spWaiting");
       if ($waiting.size() > 0) {
         $waiting.dialog("close");
+        $waiting.dialog("destroy");
+        $waiting.remove();
       }
     },
     confirm: function(message, params) {
@@ -460,7 +464,6 @@
    * Be careful, options have to be well initialized before this function call
    */
   function __openPopup($this, options) {
-
     if (!$this.length) {
       return $this;
     }
@@ -516,11 +519,11 @@
       }
 
       // Callback on close
-      if (options.callbackOnClose) {
-        $_this.dialog("option", "close", function(event, ui) {
+      $_this.dialog("option", "close", function(event, ui) {
+        if (options.callbackOnClose) {
           options.callbackOnClose.call(this);
-        });
-      }
+        }
+      });
 
       // Scroll
       if (options.disabledParentScroll) {
@@ -556,9 +559,176 @@
       if (options.isMaxWidth) {
         // If max width is required, resizing and repositioning after the dialog open
         $_this.dialog("widget").css('max-width', width);
-        $_this.dialog({position: {my: "center", at: "center", of: window}});
+        $_this.dialog({position : $_this.dialog('option', 'position')});
       }
     });
+  }
+
+  var spFullscreenModalBackgroundContext = new function() {
+    if (!top.window.__spFullscreenModalBackgroundContext) {
+      top.window.__spFullscreenModalBackgroundContext = {count : 0};
+    }
+    var __localSpFullscreenModalBackgroundContext = {count : 0};
+    this.isValid = function() {
+      return top.window.__spFullscreenModalBackgroundContext.count ===
+          __localSpFullscreenModalBackgroundContext.count;
+    };
+    this.clear = function() {
+      top.window.__spFullscreenModalBackgroundContext.count = 0;
+      __localSpFullscreenModalBackgroundContext.count = 0;
+      var $container = this.getContainer();
+      if ($container.size() > 0) {
+        try {
+          $container.dialog("close");
+          $container.dialog("destroy");
+        } catch (e) {
+          __logDebug(e);
+          __logDebug("cleaning manually jQuery.ui.dialog");
+          var $domToClear = $("div[aria-describedby=spFullscreenModalBackground]", top.document);
+          var $overlay = $domToClear.prev();
+          if ($overlay.hasClass('ui-widget-overlay')) {
+            $overlay.remove();
+          }
+          $domToClear.remove();
+        }
+        $container.remove();
+        spLayout.getBody().getContent().setOnBackground();
+      }
+    };
+    this.increase = function() {
+      top.window.__spFullscreenModalBackgroundContext.count++;
+      __localSpFullscreenModalBackgroundContext.count++;
+    };
+    this.decrease = function() {
+      top.window.__spFullscreenModalBackgroundContext.count--;
+      __localSpFullscreenModalBackgroundContext.count--;
+      if (__localSpFullscreenModalBackgroundContext.count < 0) {
+        this.clear();
+      }
+    };
+    this.getContainer = function() {
+      return $("#spFullscreenModalBackground", top.document);
+    };
+    this.isFirst = function() {
+      return __localSpFullscreenModalBackgroundContext.count === 1;
+    };
+  };
+
+  /**
+   * Private function that centralizes a fullscreen modal background.
+   * Be careful, options have to be well initialized before this function call
+   */
+  function __openFullscreenModalBackground($dialogInstance) {
+    if (!spFullscreenModalBackgroundContext.isValid()) {
+      spFullscreenModalBackgroundContext.clear();
+    }
+    spFullscreenModalBackgroundContext.increase();
+
+    if (spFullscreenModalBackgroundContext.isFirst()) {
+      var $container = $("<div>").attr('id', 'spFullscreenModalBackground').attr('style',
+          'display: none; border: 0; padding: 0; height: 0; width: 0; overflow: hidden;');
+      $(top.document.body).append($container);
+
+      $container.dialog({
+        fullscreenModalBackground : true,
+        closeOnEscape : false,
+        autoOpen : false,
+        modal : true,
+        resizable : false,
+        height : '0px',
+        width : '0px'
+      });
+
+      $container.dialog('widget').find(".ui-dialog-titlebar").hide();
+
+      // Little hack to prevent some unexpected errors when escape key is
+      // pressed during an ajax request
+      $container.dialog("widget").keydown(function(e) {
+        if (e.keyCode === 27) {
+          e.preventDefault();
+        }
+      });
+
+      $('form', $dialogInstance).submit(function() {
+        if ($container.dialog('isOpen')) {
+          __logDebug("close from jQuery submit management");
+          $container.dialog("close");
+        }
+        return true;
+      });
+      [].slice.call($dialogInstance[0].querySelectorAll("form"), 0).forEach(function(form) {
+        form.addEventListener('submit', function() {
+          if ($container.dialog('isOpen')) {
+            __logDebug("close from HTML5 submit management");
+            $container.dialog("close");
+          }
+        });
+      });
+
+      spLayout.getBody().getContent().setOnForeground();
+      $container.dialog("open");
+      $container.dialog("widget").css('top', '-1000px').css('left', '-1000px');
+    }
+  }
+
+  function __closeFullscreenModalBackground() {
+    if (spFullscreenModalBackgroundContext.isFirst() ||
+        !spFullscreenModalBackgroundContext.isValid()) {
+      spFullscreenModalBackgroundContext.clear();
+    }
+    spFullscreenModalBackgroundContext.decrease();
+  }
+
+  function __adjustPosition(dialogOptions) {
+    var position = dialogOptions.position;
+    if (position.my === "center" && position.at === "center" && position.of === window) {
+      var headerHeightOffset = spLayout.getHeader().getContainer().offsetHeight / 2;
+      var isContentFullWidth = !($(spLayout.getBody().getContent().getContainer()).position().left);
+      if (isContentFullWidth) {
+        var navigationHeightOffset = spLayout.getBody().getNavigation().getContainer().offsetHeight / 2;
+        position.at = "center center-" + (headerHeightOffset + navigationHeightOffset);
+      } else {
+        var navigationWidthOffset = spLayout.getBody().getNavigation().getContainer().offsetWidth / 2;
+        position.at = "center-" + navigationWidthOffset + " center-" + headerHeightOffset;
+      }
+    }
+    return position;
+  }
+
+  $.widget("ui.dialog", $.ui.dialog, {
+    open : function() {
+      if (__displayFullscreenModalBackground && !this._isOpen &&
+          !this.options.fullscreenModalBackground) {
+        __adjustPosition(this.options);
+        __openFullscreenModalBackground(this.element);
+      }
+      return this._super();
+    },
+    close : function() {
+      if (__displayFullscreenModalBackground && this._isOpen &&
+          !this.options.fullscreenModalBackground) {
+        __closeFullscreenModalBackground();
+      }
+      return this._super();
+    },
+    destroy : function() {
+      if (__displayFullscreenModalBackground && this._isOpen &&
+          !this.options.fullscreenModalBackground) {
+        __closeFullscreenModalBackground();
+      }
+      return this._super();
+    }
+  });
+
+  function __logDebug(message) {
+    if ($.popup.debug) {
+      sp.log.debug("Popup - " + message);
+    }
+  }
+
+  if (__displayFullscreenModalBackground) {
+    __logDebug("cleaning popup from iframe");
+    spFullscreenModalBackgroundContext.clear();
   }
 
 })(jQuery);
@@ -577,16 +747,16 @@
  */
 function displaySingleFreePopupFrom(url, options) {
   var deferred = new jQuery.Deferred();
-  $.popup.showWaiting();
-  $.ajax({
+  jQuery.popup.showWaiting();
+  jQuery.ajax({
     url: url,
     type: 'GET',
     dataType: 'html',
     cache : false
   }).success(function(data, status, jqXHR) {
-    var $popup = $('#popupHelperContainer');
+    var $popup = jQuery('#popupHelperContainer');
     if ($popup.length == 0) {
-      $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+      $popup = jQuery('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
       $popup.appendTo(document.body);
     }
     $popup.empty();
@@ -597,7 +767,7 @@ function displaySingleFreePopupFrom(url, options) {
     notyError(errorThrown);
     deferred.reject();
   }).always(function(data, status, jqXHR) {
-    $.popup.hideWaiting();
+    jQuery.popup.hideWaiting();
   });
   return deferred.promise();
 }
@@ -606,7 +776,7 @@ function displaySingleFreePopupFrom(url, options) {
  * Closes the single free popup.
  */
 function closeSingleFreePopup() {
-  $('#popupHelperContainer').popup('close');
+  jQuery('#popupHelperContainer').popup('close');
 }
 
 /**
@@ -619,16 +789,16 @@ function closeSingleFreePopup() {
  */
 function displaySingleConfirmationPopupFrom(url, options) {
   var deferred = new jQuery.Deferred();
-  $.popup.showWaiting();
-  $.ajax({
+  jQuery.popup.showWaiting();
+  jQuery.ajax({
     url: url,
     type: 'GET',
     dataType: 'html',
     cache : false
   }).success(function(data, status, jqXHR) {
-    var $popup = $('#popupHelperContainer');
+    var $popup = jQuery('#popupHelperContainer');
     if ($popup.length == 0) {
-      $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+      $popup = jQuery('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
       $popup.appendTo(document.body);
     }
     $popup.empty();
@@ -639,7 +809,7 @@ function displaySingleConfirmationPopupFrom(url, options) {
     notyError(errorThrown);
     deferred.reject();
   }).always(function(data, status, jqXHR) {
-    $.popup.hideWaiting();
+    jQuery.popup.hideWaiting();
   });
   return deferred.promise();
 }
@@ -648,5 +818,5 @@ function displaySingleConfirmationPopupFrom(url, options) {
  * Closes the single confirmation popup.
  */
 function closeSingleConfirmationPopup() {
-  $('#popupHelperContainer').popup('close');
+  jQuery('#popupHelperContainer').popup('close');
 }

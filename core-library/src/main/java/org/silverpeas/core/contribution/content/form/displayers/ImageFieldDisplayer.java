@@ -129,6 +129,8 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
         String thumbnailURL = imageURL;
         if (imageURL != null) {
           thumbnailURL = FileServerUtils.getImageURL(imageURL, size);
+        } else {
+          thumbnailURL = "#";
         }
 
         out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");

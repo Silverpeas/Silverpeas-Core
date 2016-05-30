@@ -30,7 +30,9 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.regex.Pattern;
 
+import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -105,6 +107,8 @@ public class URLUtil {
 
   private static String SILVERPEAS_VERSION = null; // ie 5.14.1-SNAPSHOT
   private static String SILVERPEAS_VERSION_MIN = null;  // ie 5141SNAPSHOT
+
+  private static Pattern MINIFY_FILTER = Pattern.compile(".*(/util/yui/|/ckeditor).*");
 
   public enum Permalink {
     Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
@@ -398,5 +402,22 @@ public class URLUtil {
       return url + "?" + param;
     }
     return url + "&" + param;
+  }
+
+  /**
+   * If activated (web.resource.js.minify = true and/or web.resource.css.minify = true) the given
+   * url is modified in order to target the minified version of js or css.
+   * @param url the url of js or css.
+   * @return if activated, the url of minified js or css resource, the given url otherwise.
+   */
+  public static String getMinifiedWebResourceUrl(final String url) {
+    String minifiedUrl = url;
+    if (!minifiedUrl.matches(".*[-.]min[-.].*") && !MINIFY_FILTER.matcher(url).matches()) {
+      final String suffix = minifiedUrl.endsWith("js") ? "js" : "css";
+      if (getGeneralSettingBundle().getBoolean("web.resource." + suffix + ".get.minified.enabled")) {
+        minifiedUrl = minifiedUrl.replaceAll("[.]" + suffix + "$", "-min." + suffix);
+      }
+    }
+    return minifiedUrl;
   }
 }

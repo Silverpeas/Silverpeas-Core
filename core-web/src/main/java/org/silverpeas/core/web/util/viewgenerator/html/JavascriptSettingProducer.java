@@ -21,12 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.SilverpeasBundle;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -35,58 +33,41 @@ import java.util.Map;
 import static org.silverpeas.core.util.EncodeHelper.javaStringToJsString;
 
 /**
- * This tool permits the creates dynamically javascript bundles that javascript plugins can used
+ * This tool permits the creates dynamically javascript settings that javascript plugins can used
  * easily.<br/>
- * The generated javascript bundle will be an instance of SilverpeasPluginBundle defined into
+ * The generated javascript settings will be an instance of SilverpeasPluginSettings defined into
  * silverpeas.js
  * @author Yohann Chastagnier
  */
-public class JavascriptBundleProducer {
+public class JavascriptSettingProducer {
 
-  private String jsBundleVariableName = "Bundle";
-  private Map<String, String> keyMessages = new LinkedHashMap<>();
+  private String jsSettingVariableName = "Settings";
+  private Map<String, String> keySettings = new LinkedHashMap<>();
 
   /**
    * Hidden constructor.
    */
-  private JavascriptBundleProducer() {
+  private JavascriptSettingProducer() {
   }
 
   /**
-   * Gets the javascript bundle content from the string template repository and according to
-   * given parameters.
-   * @param pathSuffix the path suffix behind the root path "core" of string template repository.
-   * @param templateName the template name (so the filename without the language ("_fr" for
-   * example) and without extension.
-   * @param language the requested language content.
+   * Initializes the setting producer by specifying the name of the javascript variable that
+   * represents the settings.
+   * @param jsSettingVariableName the javascript variable name of the bundle.
    * @return the initialized producer instance.
    */
-  static String fromCoreTemplate(final String pathSuffix, final String templateName,
-      final String language) {
-    SilverpeasTemplate bundle =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(pathSuffix);
-    return bundle
-        .applyFileTemplate(templateName + "_" + DisplayI18NHelper.verifyLanguage(language));
+  public static JavascriptSettingProducer settingVariableName(final String jsSettingVariableName) {
+    return new JavascriptSettingProducer().withSettingVariableName(jsSettingVariableName);
   }
 
   /**
-   * Initializes the bundle producer by specifying the name of the javascript variable that
-   * represents the bundle.
-   * @param jsBundleVariableName the javascript variable name of the bundle.
-   * @return the initialized producer instance.
-   */
-  public static JavascriptBundleProducer bundleVariableName(final String jsBundleVariableName) {
-    return new JavascriptBundleProducer().withBundleVariableName(jsBundleVariableName);
-  }
-
-  /**
-   * Initializes the bundle producer by specifying the name of the javascript variable that
-   * represents the bundle.
-   * @param jsBundleVariableName the javascript variable name of the bundle.
+   * Initializes the setting producer by specifying the name of the javascript variable that
+   * represents the settings.
+   * @param jsSettingVariableName the javascript variable name of the bundle.
    * @return itself.
    */
-  private JavascriptBundleProducer withBundleVariableName(final String jsBundleVariableName) {
-    this.jsBundleVariableName = jsBundleVariableName;
+  private JavascriptSettingProducer withSettingVariableName(final String jsSettingVariableName) {
+    this.jsSettingVariableName = jsSettingVariableName;
     return this;
   }
 
@@ -96,7 +77,7 @@ public class JavascriptBundleProducer {
    * @param keys the requested message keys.
    * @return itself.
    */
-  public JavascriptBundleProducer add(final SilverpeasBundle bundle, final String... keys) {
+  public JavascriptSettingProducer add(final SilverpeasBundle bundle, final String... keys) {
     for (String key : keys) {
       add(key, bundle.getString(key));
     }
@@ -109,8 +90,30 @@ public class JavascriptBundleProducer {
    * @param value the boolean value associated to the key.
    * @return itself.
    */
-  public JavascriptBundleProducer add(final String key, final String value) {
-    keyMessages.put(key, "\"" + javaStringToJsString(value) + "\"");
+  public JavascriptSettingProducer add(final String key, final String value) {
+    keySettings.put(key, "\"" + javaStringToJsString(value) + "\"");
+    return this;
+  }
+
+  /**
+   * Adds given key / value.
+   * @param key the key to add.
+   * @param value the boolean value associated to the key.
+   * @return itself.
+   */
+  public JavascriptSettingProducer add(final String key, final boolean value) {
+    keySettings.put(key, String.valueOf(value));
+    return this;
+  }
+
+  /**
+   * Adds given key / value.
+   * @param key the key to add.
+   * @param value the number value associated to the key.
+   * @return itself.
+   */
+  public JavascriptSettingProducer add(final String key, final Number value) {
+    keySettings.put(key, String.valueOf(value));
     return this;
   }
 
@@ -122,8 +125,8 @@ public class JavascriptBundleProducer {
   @SuppressWarnings("Duplicates")
   public String produce() {
     StringBuilder js = new StringBuilder();
-    js.append("window.").append(jsBundleVariableName).append("=new SilverpeasPluginBundle({");
-    Iterator<Map.Entry<String, String>> keyMessageIt = keyMessages.entrySet().iterator();
+    js.append("window.").append(jsSettingVariableName).append("=new SilverpeasPluginSettings({");
+    Iterator<Map.Entry<String, String>> keyMessageIt = keySettings.entrySet().iterator();
     while (keyMessageIt.hasNext()) {
       Map.Entry<String, String> keyMessage = keyMessageIt.next();
       js.append("\"").append(keyMessage.getKey()).append("\":");

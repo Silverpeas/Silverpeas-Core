@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
@@ -137,7 +138,7 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           includeLang(xhtml);
           break;
         case ticker:
-          includeTicker(xhtml);
+          includeTicker(xhtml, getLanguage());
           break;
         case subscription:
           includeDynamicallySubscription(xhtml, null);
@@ -151,11 +152,18 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case listOfUsersAndGroups:
           includeListOfUsersAndGroups(xhtml, getLanguage());
           break;
+        case layout:
+          includeLayout(xhtml, getLookHelper());
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore
     }
     xhtml.output(getJspContext().getOut());
+  }
+
+  protected LookHelper getLookHelper() {
+    return (LookHelper) getSessionAttribute(LookHelper.SESSION_ATT);
   }
 
   protected String getLanguage() {

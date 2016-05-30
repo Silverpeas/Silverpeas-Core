@@ -33,6 +33,7 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 
@@ -85,6 +86,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
   private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST = "ddUploadBundle";
   private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD = "silverpeas-ddUpload.js";
+  private static final String SILVERPEAS_LAYOUT = "silverpeas-layout.js";
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
@@ -160,7 +162,7 @@ public class JavascriptPluginInclusion {
     String key = "$jsPlugin$script$" + src;
     if (getRequestCacheService().get(key) == null) {
       getRequestCacheService().put(key, true);
-      return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
+      return new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
     } else {
       return new ElementContainer();
     }
@@ -188,7 +190,8 @@ public class JavascriptPluginInclusion {
       sb.append("jQuery(document).ready(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
       sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
-      sb.append("    jQuery.getScript('").append(appendVersion(src)).append("', function() {");
+      sb.append("    jQuery.getScript('").append(normalizeWebResourceUrl(src))
+          .append("', function() {");
       if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
         sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
       }
@@ -233,7 +236,7 @@ public class JavascriptPluginInclusion {
     if (getRequestCacheService().get(key) == null) {
       getRequestCacheService().put(key, true);
       return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
-          .setHref(appendVersion(href));
+          .setHref(normalizeWebResourceUrl(href));
     } else {
       return new ElementContainer();
     }
@@ -305,8 +308,18 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeTicker(final ElementContainer xhtml) {
+  public static ElementContainer includeTicker(final ElementContainer xhtml,
+      final String language) {
     xhtml.addElement(link(jqueryPath + TICKER_CSS));
+    xhtml.addElement(scriptContent(JavascriptBundleProducer
+        .bundleVariableName("TickerBundle")
+        .add(ResourceLocator
+                .getLocalizationBundle("org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+                    language),
+            "lookSilverpeasV5.ticker.date.yesterday",
+            "lookSilverpeasV5.ticker.date.daysAgo",
+            "lookSilverpeasV5.ticker.notifications.permission.request")
+        .produce()));
     xhtml.addElement(script(jqueryPath + TICKER_JS));
     return xhtml;
   }
@@ -326,7 +339,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DATEPICKER));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DATE_UTILS));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DATECHECKER));
-    xhtml.addElement(scriptContent("$.datechecker.settings.language = '" + language + "';"));
+    xhtml.addElement(scriptContent("jQuery.datechecker.settings.language = '" + language + "';"));
     return xhtml;
   }
 
@@ -372,10 +385,10 @@ public class JavascriptPluginInclusion {
       String language) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_RESPONSIBLES));
     StringBuilder responsiblePluginLabels = new StringBuilder();
-    responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
+    responsiblePluginLabels.append("jQuery.responsibles.labels.platformResponsible = '").append(
         ResourceLocator.getGeneralLocalizationBundle(language)
             .getString("GML.platform.responsibles")).append("';");
-    responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
+    responsiblePluginLabels.append("jQuery.responsibles.labels.sendMessage = '").append(
         ResourceLocator.getGeneralLocalizationBundle(language)
             .getString("GML.notification.send")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
@@ -567,6 +580,27 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Includes the Silverpeas Layout HTML5 Plugin.
+   * This plugin depends on the associated settings javascript file.
+   * @return the completed parent container.
+   */
+  public static ElementContainer includeLayout(final ElementContainer xhtml,
+      final LookHelper lookHelper) {
+    includeQTip(xhtml);
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("LayoutSettings")
+            .add("layout.header.url", URLUtil.getApplicationURL() + "/admin/jsp/TopBarSilverpeasV5.jsp")
+            .add("layout.body.url", URLUtil.getApplicationURL() + "/admin/jsp/bodyPartSilverpeasV5.jsp")
+            .add("layout.body.navigation.url", URLUtil.getApplicationURL() + "/admin/jsp/DomainsBarSilverpeasV5.jsp")
+            .add("layout.pdc.activated", lookHelper.displayPDCFrame())
+            .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
+            .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
+            .produce()));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_LAYOUT));
+    return xhtml;
+  }
+
+  /**
    * Includes the Silverpeas Plugin that handles list of users and groups.
    * @return the completed parent container.
    */
@@ -591,7 +625,17 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  private static String appendVersion(String url) {
-    return URLUtil.appendVersion(url);
+  /**
+   * Normalizes the given url in order to handle:
+   * <ul>
+   * <li>js and css minify</li>
+   * <li>version append in order to handle the cache</li>
+   * </ul>
+   * @param url
+   * @return
+   */
+  private static String normalizeWebResourceUrl(String url) {
+    String normalizedUrl = URLUtil.getMinifiedWebResourceUrl(url);
+    return URLUtil.appendVersion(normalizedUrl);
   }
 }

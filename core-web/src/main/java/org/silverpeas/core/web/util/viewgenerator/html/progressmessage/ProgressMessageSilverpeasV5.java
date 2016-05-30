@@ -25,11 +25,11 @@
 package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.div;
-import org.apache.ecs.xhtml.img;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer;
+import org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer;
 
 /**
  * @author neysseri
@@ -47,12 +47,13 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
    */
   @Override
   public String print() {
-    Object progressMessageDone =
-        CacheServiceProvider.getRequestCacheService().get("@progressMessage@");
-    if (progressMessageDone != null) {
+
+    ElementContainer xhtmlRenderer = new ElementContainer();
+    ElementContainer jsPluginRenderer = getXHTMLRenderer();
+    if (StringUtil.isNotDefined(jsPluginRenderer.toString())) {
       return "";
     }
-    CacheServiceProvider.getRequestCacheService().put("@progressMessage@", true);
+
     String message1 = getMultilang().getString("GEF.progressMessage.message1");
     String message2 = getMultilang().getString("GEF.progressMessage.message2");
 
@@ -69,18 +70,18 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
       }
     }
 
-    ElementContainer xhtmlRenderer = getXHTMLRenderer();
-    div progressMessage = new div();
-    progressMessage.setStyle("display: none");
-    progressMessage.setID("gef-progressMessage");
+    xhtmlRenderer.addElement(new script().setType("text/javascript").addElement(
+        JavascriptSettingProducer.settingVariableName("ProgressMessageSettings")
+            .add("progress.message.icon.url", GraphicElementFactory.getIconsPath() + "/inProgress.gif")
+            .produce()));
 
-    progressMessage.addElement(new div(message1).setID("gef-progress-message1"));
-    progressMessage.addElement(new div(message2).setID("gef-progress-message2"));
-    progressMessage.addElement(
-        new img().setSrc(GraphicElementFactory.getIconsPath() + "/inProgress.gif").setAlt(""));
+    xhtmlRenderer.addElement(new script().setType("text/javascript").addElement(
+        JavascriptBundleProducer.bundleVariableName("ProgressMessageBundle")
+            .add("progress.message.1", message1)
+            .add("progress.message.2", message2)
+            .produce()));
 
-    xhtmlRenderer.addElement(progressMessage);
-
+    xhtmlRenderer.addElement(jsPluginRenderer);
     return xhtmlRenderer.toString();
   }
 }

@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.fn.extend({
         smartpaginator: function (options) {
             var settings = $.extend({

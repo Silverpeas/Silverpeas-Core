@@ -47,10 +47,6 @@ String currentSpaceId		= helper.getSpaceId();
 gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
 
 boolean goToFavoriteSpaceOnHomeLink = settings.getBoolean("home.target.favoriteSpace", false);
-String goToHome = "frameBottomSilverpeasV5.jsp?FromTopBar=1";
-if (goToFavoriteSpaceOnHomeLink) {
-  goToHome += "&SpaceId="+m_MainSessionCtrl.getFavoriteSpace();
-}
 
 List<TopItem> topItems = helper.getTopItems();
 
@@ -67,11 +63,6 @@ if (wallPaper == null) {
 boolean outilDisplayed = false;
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>entete</title>
-<view:looknfeel />
 <view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {
@@ -91,16 +82,17 @@ body {
 	background-position: left top;
 }
 </style>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/connectedUsers.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
+<view:script src="/util/javaScript/lookV5/connectedUsers.js"/>
+<view:script src="/util/javaScript/lookV5/tools.js"/>
+<view:script src="/util/javaScript/lookV5/topBar.js"/>
 <script type="text/javascript">
 function goToHome() {
-  top.bottomFrame.location.href = "<%=goToHome%>";
-}
-
-function displayPDCFrame() {
-  return <%=helper.displayPDCFrame()%>;
+  var params = {};
+  params.FromTopBar = "1";
+  <%if (goToFavoriteSpaceOnHomeLink) {%>
+  params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
+  <%}%>
+  spLayout.getBody().load(params);
 }
 
 function getConnectedUsersLabel(nb) {
@@ -115,21 +107,9 @@ function getContext() {
   return "<%=m_sContext%>";
 }
 
-function getDomainsBarPage() {
-	return "DomainsBarSilverpeasV5.jsp";
-}
-
-function getTopBarPage() {
-	return "TopBarSilverpeasV5.jsp";
-}
-
-$(function() {
+(function() {
   setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
-});
-
-function reloadTopBar() {
-	//Silverpeas V4 compatibility
-}
+})();
 
 function getBannerHeight() {
 	return "<%=helper.getSettings("bannerHeight", "115")%>";
@@ -139,11 +119,7 @@ function getFooterHeight() {
 }
 //-->
 </script>
-</head>
-<body>
 <div id="topBar">
-	<div style="position: absolute; right: 0px; top: 0px; background-color: #FFFFFF; width: 100%"><img src="icons/silverpeasV5/px.gif" border="0" height="0" id="space2Expand" align="middle" alt=""/></div>
-	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="middle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
     <div id="backHome">
         <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
 	  <viewTags:displayTicker/>
@@ -225,8 +201,6 @@ function getFooterHeight() {
     </div>
     <% } %>
 </div>
-<form name="searchForm" action="">
+<form name="topBarSearchForm" action="">
 <input type="hidden" name="query"/>
 </form>
-</body>
-</html>

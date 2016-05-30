@@ -171,55 +171,53 @@ QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryPar
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel />
-
 <script type="text/javascript">
-function addValue(selectItem, axisId) {
-  $.progressMessage();
-  var valuePath = selectItem.value;
-  if (valuePath.length > 0) {
-	document.AdvancedSearch.AxisId.value = axisId;
-	document.AdvancedSearch.ValueId.value = valuePath;
-	document.AdvancedSearch.action = "GlobalAddCriteria";
-  } else {
-	document.AdvancedSearch.Ids.value = axisId;
-	document.AdvancedSearch.action = "GlobalDeleteCriteria";
+  function addValue(selectItem, axisId) {
+    var valuePath = selectItem.value;
+    var action;
+    if (valuePath.length > 0) {
+      document.PdcWidgetAdvancedSearch.AxisId.value = axisId;
+      document.PdcWidgetAdvancedSearch.ValueId.value = valuePath;
+      action = "GlobalAddCriteria";
+    } else {
+      document.PdcWidgetAdvancedSearch.Ids.value = axisId;
+      action = "GlobalDeleteCriteria";
+    }
+    executePdcActionToSelfTarget(action);
   }
-  document.AdvancedSearch.target = "_self";
-  document.AdvancedSearch.submit();
-}
 
-function sendQuery() {
-  document.AdvancedSearch.action = "AdvancedSearch";
-  document.AdvancedSearch.target = "MyMain";
-  document.AdvancedSearch.submit();
-}
-
-function raz() {
-  $.progressMessage();
-  document.AdvancedSearch.action = "ResetPDCContext";
-  document.AdvancedSearch.target = "_self";
-  document.AdvancedSearch.submit();
-}
-
-function init() {
-<%
-  if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
-    out.println("parent.showPdcFrame();");
-  } else {
-    out.println("parent.hidePdcFrame();");
+  function sendQuery() {
+    executePdcActionToBodyPartTarget("<c:url value="/RpdcSearch/jsp/AdvancedSearch"/>")
   }
-%>
-}
+
+  function raz() {
+    executePdcActionToSelfTarget("ResetPDCContext");
+  }
+
+  function executePdcActionToBodyPartTarget(baseUrl) {
+    var url = sp.formatUrl(baseUrl, jQuery(document.PdcWidgetAdvancedSearch).serializeFormJSON());
+    spLayout.getBody().getContent().load(url);
+  }
+
+  function executePdcActionToSelfTarget(action) {
+    top.jQuery.progressMessage();
+    spLayout.getFooter().loadPdc(extendsObject({"action" : action},
+        jQuery(document.PdcWidgetAdvancedSearch).serializeFormJSON()))
+        .then(top.jQuery.closeProgressMessage);
+  }
+
+  whenSilverpeasReady(function() {
+    <%
+      if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
+        out.println("spLayout.getFooter().showPdc();");
+      } else {
+        out.println("spLayout.getFooter().hidePdc();");
+      }
+    %>
+  });
 </script>
-</head>
-<body id="pdcFrame" onload="init()">
-<center>
-<form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
+<div id="pdcFrame">
+<form name="PdcWidgetAdvancedSearch" action="#" method="get">
   <input type="hidden" name="AxisId"/>
   <input type="hidden" name="ValueId"/>
   <input type="hidden" name="Ids"/>
@@ -242,10 +240,8 @@ function init() {
 	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20" height="1" alt=""/></td>
 <%
 
-	String axisIcon = resource.getIcon("pdcPeas.icoPrimaryAxis");
 	displayAxisByType(false, resource.getString("pdcPeas.primaryAxis"), primaryAxis, searchContext, Boolean.FALSE, null, resource, null, out);
 	if (secondaryAxis != null){
-		axisIcon = resource.getIcon("pdcPeas.icoSecondaryAxis");
 		displayAxisByType(false, resource.getString("pdcPeas.secondaryAxis"), secondaryAxis, searchContext, Boolean.FALSE, null, resource, null, out);
 	}
 %>
@@ -253,7 +249,4 @@ function init() {
 	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0" height="1" alt=""/></td><td><a href="javaScript:raz()" title="<%=resource.getString("GML.reset")%>"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="<%=resource.getString("GML.reset")%>"/></a></td>
 	</tr></table>
 </form>
-</center>
-<view:progressMessage/>
-</body>
-</html>
+</div>

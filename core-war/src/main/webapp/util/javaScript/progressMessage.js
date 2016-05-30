@@ -22,52 +22,178 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function ($) {
-  var dlg ;
-  var Defaults = function () {};
-  $.extend(Defaults.prototype, {
-    msg1: "useless",
-    msg2: "useless too..."
-  });
+(function () {
+  
+  var $window = top.window;
 
-  $.progressMessage = function (options, callback) {
-    // Pass the options and a callback to execute if affirmative user response.
-    var opts = new Defaults();
-    $.extend(opts, options);
+  /**
+   * This two jQuery methods exists because, for now, showing or hiding the progress message is
+   * done by themselves.
+   */
 
-    dlg = $("#gef-progressMessage")
-          .dialog({
-            autoOpen: false,
-            modal: true,
-            draggable: false,
-            resizable: false,
-            height: 'auto',
-            width: 300,
-            title: $("#gef-progressMessage #gef-progress-message1").text(),
-            close: function () {
-              // Clean up
-              dlg.dialog('destroy');
-            },
-            open: function(event, ui) {
-              $(".ui-dialog-titlebar-close").hide();
-            }
-          });
+  $.progressMessage = function () {
+    if ($window.spProgressMessage) {
+      $window.spProgressMessage.show();
+    }
+  };
+
+  $.closeProgressMessage = function () {
+    if ($window.spProgressMessage) {
+      $window.spProgressMessage.hide();
+    }
+  };
+
+  /**
+   * The instance of the plugin must be attached to the top window.
+   * If the plugin is called from an iframe, then the iframe plugin instance is the reference of
+   * the one of the top window. By this way, all different javascript window instances use the same
+   * plugin instance.
+   * If the plugin, on top window, is already defined, nothing is done.
+   */
+
+  if ($window.spProgressMessage) {
+    if (!window.spProgressMessage) {
+      window.spProgressMessage = $window.spProgressMessage;
+    }
+    return;
+  }
+
+  $window.progressMessageDebug = false;
+
+  var ICON_URL = $window.ProgressMessageSettings.get("progress.message.icon.url");
+
+  var MESSAGE_1 = $window.ProgressMessageBundle.get("progress.message.1");
+  var MESSAGE_2 = $window.ProgressMessageBundle.get("progress.message.2");
+
+  /**
+   * Handling the rendering of the Silverpeas's layout.
+   * @constructor
+   */
+  $window.spProgressMessage = new function() {
+    __logDebug("initializing Silverpeas Progress Message");
+    var ready = false;
+
+    var __hasBeenOpenAtLeastOneTime = false;
+
+    var __getContainer = function() {
+      return $window.document.querySelector("#gef-progressMessage");
+    };
+    var __isOpen = function() {
+      if (!__hasBeenOpenAtLeastOneTime) {
+        return false;
+      }
+      var popup = $window.jQuery(__getContainer());
+      try {
+        return popup.dialog("isOpen");
+      } catch (e) {
+        __logDebug(e);
+        __logDebug("not possible to know if progress message is already open");
+        return false;
+      }
+    }.bind(this);
+
+    this.show = function() {
+      if (!ready) {
+        __logDebug("opening, but not ready");
+        return;
+      }
+      if (__isOpen()) {
+        __logDebug("but already open");
+        return;
+      }
+
+      // Please take a look to the Silverpeas Popup Plugin
+      if ($window.spLayout) {
+        spLayout.getBody().getContent().setOnBackground();
+      }
+
+      var popup = $window.jQuery(__getContainer());
+      popup.dialog({
+        autoOpen : false,
+        modal : true,
+        draggable : false,
+        resizable : false,
+        height : 'auto',
+        width : 300,
+        title : $window.jQuery("#gef-progressMessage #gef-progress-message1").text(),
+        close : function() {
+          // Clean up
+          popup.dialog('destroy');
+        },
+        open : function(event, ui) {
+          $window.jQuery(".ui-dialog-titlebar-close", popup).hide();
+        }
+      });
 
       // Set options, open, and bind callback
-      dlg.dialog('open');
-  }
+      popup.dialog('open');
+      __hasBeenOpenAtLeastOneTime = true;
+    };
+    this.hide = function() {
+      if (!ready) {
+        __logDebug("hidning, but not ready");
+        return;
+      }
+      __logDebug("hiding");
+      if (!__hasBeenOpenAtLeastOneTime) {
+        return;
+      }
+      var popup = $window.jQuery(__getContainer());
+      try {
+        popup.dialog('close');
+      } catch (e) {
+        __logDebug(e);
+        __logDebug("cleaning manually jQuery.ui.dialog");
+      }
+    };
 
-  $.closeProgressMessage = function (options, callback) {
-    // Pass the options and a callback to execute if affirmative user response.
-    var opts = new Defaults();
-    $.extend(opts, options);
-    if (dlg) {
-      dlg.dialog('close');
+    whenSilverpeasReady(function() {
+      var $container = __getContainer();
+      if (!$container) {
+        var $message1 = $window.document.createElement("div");
+        $message1.setAttribute("id", "gef-progress-message1");
+        $message1.innerHTML = MESSAGE_1;
+
+        var $message2 = $window.document.createElement("div");
+        $message2.setAttribute("id", "gef-progress-message2");
+        $message2.innerHTML = MESSAGE_2;
+
+        var $icon = $window.document.createElement("img");
+        $icon.setAttribute("src", ICON_URL);
+        $icon.setAttribute("alt", "");
+
+        $container = $window.document.createElement("div");
+        $container.setAttribute("id", "gef-progressMessage");
+        $container.style.display = 'none';
+        $container.appendChild($message1);
+        $container.appendChild($message2);
+        $container.appendChild($icon);
+        $window.document.body.appendChild($container);
+        __logDebug("DOM initialized");
+      } else {
+        __logError("the container should not exist... please verifying the treatment");
+      }
+      ready = true;
+    });
+
+    /**
+     * Logs errors.
+     * @param message
+     * @private
+     */
+    function __logError(message) {
+      sp.log.error("Progress Message - " + message);
     }
-  }
 
-  $.progressMessage.defaults = function (options) {
-    $.extend(Defaults.prototype, options);
-  }
-
-})(jQuery);
+    /**
+     * Logs debug messages.
+     * @param message
+     * @private
+     */
+    function __logDebug(message) {
+      if ($window.progressMessageDebug) {
+        sp.log.debug("Progress Message - " + message);
+      }
+    }
+  };
+})();

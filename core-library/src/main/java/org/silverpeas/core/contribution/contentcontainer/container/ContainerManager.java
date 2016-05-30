@@ -653,27 +653,17 @@ public class ContainerManager implements java.io.Serializable {
 
     // works on the componentId List
     if (alComponentId != null && alComponentId.size() > 0) {
-      StringBuilder componentIdList = new StringBuilder();
-      boolean first = true;
+      // Having always a clause (-1111) even if all component ids are not handled...
+      sSQLStatement.append(" CML.containerInstanceId IN (-1111");
       for (String component : alComponentId) {
         // Get the containerInstanceId corresponding to the given componentId
         int nContainerInstanceId = this.getContainerInstanceId(component);
         // We need only components in a container
         if (nContainerInstanceId != -1) {
-          if (!first) {
-            componentIdList.append(", ");
-          } else {
-            first = false;
-          }
-
-          componentIdList.append(nContainerInstanceId);
+          sSQLStatement.append(", ").append(nContainerInstanceId);
         }
       }
-      if (!componentIdList.toString().isEmpty()) {
-        sSQLStatement.append(" CML.containerInstanceId IN (")
-            .append(componentIdList.toString())
-            .append(") ");
-      }
+      sSQLStatement.append(") ");
     }
 
     if (alPositions != null && alPositions.size() > 0) {

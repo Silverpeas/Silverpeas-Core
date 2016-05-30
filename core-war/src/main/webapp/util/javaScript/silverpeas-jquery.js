@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -22,35 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
-
-  spLayout.getBody().getNavigation().load({
-    "privateDomain" : spaceId,
-    "privateSubDomain" : subSpaceId,
-    "component_id" : componentId,
-    "FromTopBar" : '1'
-  });
-  spLayout.getBody().getContent().load(url);
-
-  if (reloadPage) {
-    spLayout.getHeader().load({
-      "ComponentId" : componentId,
-      "SpaceId" : spaceId
-    });
-  } else {
-    //unactivate all items
-    var tr = document.getElementById('item' + itemId).parentNode;
-    if (tr.hasChildNodes()) {
-      var children = tr.childNodes;
-      for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-        if (child.id != null && (child.id.substring(0, 4) == "item")) {
-          child.className = "";
+(function($) {
+  $.fn.serializeFormJSON = function() {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+      if (o[this.name]) {
+        if (!o[this.name].push) {
+          o[this.name] = [o[this.name]];
         }
+        o[this.name].push(this.value || '');
+      } else {
+        o[this.name] = this.value || '';
       }
-    }
-
-    //activate item
-    document.getElementById('item' + itemId).className = "activeShortcut";
-  }
-}
+    });
+    return o;
+  };
+})(jQuery);

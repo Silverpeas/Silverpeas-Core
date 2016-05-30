@@ -312,7 +312,7 @@ border: none;
 position:relative;
 height:auto;
 background:#FFF none bottom;
-padding:0 1px 35px 0;
+padding:0 1px 0px 0;
 border-radius: 0 0 12px 0;
 -moz-border-radius: 0 0 12px 0;
 -webkit-border-radius: 0 0 12px 0;
@@ -1041,7 +1041,7 @@ font-size:11px;
 }
 
 
-#redExp {
+#sp-layout-body-part-layout-toggle-part {
     margin-bottom: -8px;
     position: relative;
 }

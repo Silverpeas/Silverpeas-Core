@@ -94,7 +94,7 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <%}%>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas.js"></script>
+  <view:script src="/util/javaScript/silverpeas.js"/>
   <script type="text/javascript">
     var counter = 0;
     <%
@@ -124,8 +124,8 @@
 
     <% if (displayConnectedUsers) { %>
     function refreshTopBar() {
-      if (typeof top.topFrame.setConnectedUsers === 'function') {
-        top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
+      if (typeof top.setConnectedUsers === 'function') {
+        top.setConnectedUsers(<%=nbConnectedUsers%>);
       }
     }
     <% } %>
@@ -145,12 +145,12 @@
     }
 
     //--------------------------------------------------------------------------------------OpenDiscussion
+    var discussionPopup;
     function OpenDiscussion(page, nom, largeur, hauteur, options) {
-      if (!top.scriptFrame.impopup || (top.scriptFrame.impopup.closed)) {
-        top.scriptFrame.impopup = SP_openWindow(page, nom, largeur, hauteur, options);
-      } else {
-        top.scriptFrame.impopup.focus();
+      if (!discussionPopup || (discussionPopup.closed)) {
+        discussionPopup = SP_openWindow(page, nom, largeur, hauteur, options);
       }
+      discussionPopup.focus();
 
       <%
        String messageId = (String) request.getAttribute("MessageID");

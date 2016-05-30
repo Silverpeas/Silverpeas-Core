@@ -7,14 +7,14 @@
 
 #backHome {
      background: url("imgDesign/logo.png") no-repeat scroll 7px 0px transparent;
-     height: 115px;
+     height: 80px;
      left: 0px;
      top: 0px;
      width: 189px;
 }
 
 #backHome img {
-     height: 115px ! important;
+     height: 80px ! important;
      width: 214px ! important;
 }
 
@@ -80,7 +80,9 @@ a:hover {
      color: #7EB73B;
 }
 
-#domainsBar .spaceLevel1 a.spaceURL, #domainsBar .spaceLevel1On a.spaceURL {
+#domainsBar .spaceLevel1 a.spaceURL,
+#domainsBar .spaceLevel1On a.spaceURL ,
+#domainsBar a.spaceURL{
      background: url("imgDesign/bg_menu_level1.png") no-repeat scroll 0px bottom transparent;
      color: #555;
      display: block;
@@ -90,12 +92,16 @@ a:hover {
      padding: 13px 10px 17px  45px;
 }
 
-#domainsBar .spaceLevel1 a.spaceURL:hover {
+#domainsBar .spaceLevel1 a.spaceURL:hover,
+#domainsBar a.spaceURL:hover {
      background: url("imgDesign/bg_menu_level1Hover.png") no-repeat scroll  0px bottom  transparent;
      color: #101010;
 }
 
-#domainsBar .spaceLevel1On a.spaceURL:hover, #domainsBar .spaceLevel1On a.spaceURL {
+#domainsBar .spaceLevel1On a.spaceURL:hover,
+#domainsBar .spaceLevel1On a.spaceURL,
+#domainsBar .spaceLevelPersoOn a.spaceURL,
+#domainsBar .spaceLevelPersoOn a.spaceURL:hover{
      background: url("imgDesign/bg_menu_level1On.png") no-repeat scroll  0px bottom  #FFFFFF;
      color: #101010;
      padding-left: 15px;
@@ -184,11 +190,8 @@ a:hover {
 }
 
 #spacePerso {
-     background: url("imgDesign/espacePerso.gif") repeat-x scroll 0px 0px #F2F2F2;
-     bottom: 0px;
-     left: 0px;
-     position: fixed;
-     width: 100%;
+     background: transparent url();
+     border-right-color: #fff;
 }
 
 #contentSpacespacePerso{
@@ -196,14 +199,12 @@ a:hover {
 }
 
 #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
-     background: url("imgDesign/spacePersoDeco.png") no-repeat scroll right top transparent;
-     color: #FFFFFF;
+     color: #555;
      display: block;
      font-weight: 100;
-     height: 50px;
-     line-height: 50px;
-     padding-left: 11px;
      text-align: left;
+     border: 0;
+     border-color: #FFF;
 }
 
 #domainsBar #spacePerso .browseComponentActiv a {

@@ -386,7 +386,7 @@
       return this.profile.name + " (" + this.profile.userCount + ")";
     },
     isSynchronized : function() {
-      return this.profile.synchronized;
+      return this.profile['synchronized'];
     }
   });
 

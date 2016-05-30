@@ -36,6 +36,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import static org.silverpeas.core.util.URLUtil.appendVersion;
+import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
 
 public class Util {
 
@@ -89,19 +90,22 @@ public class Util {
   }
 
   private static void addSilverpeasScript(StringBuilder includes, String script) {
-    includes.append("<script type=\"text/javascript\" src=\"").append(appendVersion(path + script))
+    String normalizedUrl = getMinifiedWebResourceUrl(path + script);
+    includes.append("<script type=\"text/javascript\" src=\"").append(appendVersion(normalizedUrl))
         .append("\"></script>\n");
   }
 
   private static void addExternalStyleSheet(StringBuilder includes, String webContext,
       String styleSheet) {
+    String normalizedUrl = getMinifiedWebResourceUrl(webContext + styleSheet);
     includes.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"")
-        .append(appendVersion(webContext + styleSheet)).append("\" />\n");
+        .append(appendVersion(normalizedUrl)).append("\" />\n");
   }
 
   private static void addExternalScript(StringBuilder includes, String webContext, String script) {
+    String normalizedUrl = getMinifiedWebResourceUrl(webContext + script);
     includes.append("<script type=\"text/javascript\" src=\"")
-        .append(appendVersion(webContext + script)).append("\"></script>\n");
+        .append(appendVersion(normalizedUrl)).append("\"></script>\n");
   }
 
   public static void getJavascriptChecker(String fieldName,

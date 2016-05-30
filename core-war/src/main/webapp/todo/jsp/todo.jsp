@@ -160,14 +160,10 @@ function goTo(baseURL, Id, Type, componentId) {
 
 function jumpToComponent(componentId) {
 
-	//Reload DomainsBar
-	parent.SpacesBar.document.privateDomainsForm.component_id.value=componentId;
-	parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
-	parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
-	parent.SpacesBar.document.privateDomainsForm.submit();
-
-	//Reload Topbar
-	parent.SpacesBar.reloadTopBar(true);
+	//Reload menu and header
+  spLayout.loadBodyNavigationAndHeaderParts({
+    "component_id" : componentId
+  });
 
 }
 
