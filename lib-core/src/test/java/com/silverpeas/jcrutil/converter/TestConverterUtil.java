@@ -227,4 +227,21 @@ public class TestConverterUtil {
     assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil.
         formatDateForXpath(calend.getTime()));
   }
+
+  @Test
+  public void testEscapeIllegalJcrChars() {
+    assertEquals("/", ConverterUtil.escapeIllegalJcrChars("/"));
+    assertEquals("/toto", ConverterUtil.escapeIllegalJcrChars("/toto"));
+    assertEquals("/theme test/sous_theme test",
+        ConverterUtil.escapeIllegalJcrChars("/theme test/sous_theme test"));
+    assertEquals("/theme test  .", ConverterUtil.escapeIllegalJcrChars("/theme test||."));
+    assertEquals("/theme test", ConverterUtil.escapeIllegalJcrChars("/theme test\t\t"));
+    assertEquals("/theme test", ConverterUtil.escapeIllegalJcrChars("/theme test\r\r"));
+    assertEquals("/theme test", ConverterUtil.escapeIllegalJcrChars("/theme test\n\n"));
+    assertEquals("t 2E", ConverterUtil.escapeIllegalJcrChars("t%2E"));
+    assertEquals("theme ok", ConverterUtil.escapeIllegalJcrChars("[theme:ok]"));
+    assertEquals("/   this   name contains      - illegal    characters",
+        ConverterUtil.escapeIllegalJcrChars(
+            "/[[[this]]]name contains :\r\n\t - illegal ** characters :: \r\n\t | ''' \"\"\""));
+  }
 }

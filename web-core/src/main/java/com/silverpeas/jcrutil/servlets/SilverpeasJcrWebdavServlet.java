@@ -25,7 +25,6 @@ import com.silverpeas.jcrutil.security.impl.WebDavCredentialsProvider;
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 
-import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +38,7 @@ import java.util.logging.Logger;
  * @author mmoquillon
  */
 public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
+  private static final long serialVersionUID = -6749255396944745234L;
 
   private static Logger logger = Logger.getLogger(SilverpeasJcrWebdavServlet.class.getSimpleName());
 
