@@ -25,5 +25,11 @@
 package com.stratelia.silverpeas.notificationManager;
 
 public enum NotificationTemplateKey {
-  notification_receiver_users, notification_receiver_groups, notification_serverurl, notification_link, notification_linkLabel;
+  notification_sendername,
+  notification_senderemail,
+  notification_receiver_users,
+  notification_receiver_groups,
+  notification_serverurl,
+  notification_link,
+  notification_linkLabel;
 }
