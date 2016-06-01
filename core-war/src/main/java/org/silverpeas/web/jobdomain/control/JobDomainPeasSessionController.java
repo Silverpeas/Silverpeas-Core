@@ -53,7 +53,6 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 import org.silverpeas.core.security.encryption.X509Factory;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -68,6 +67,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -316,8 +316,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       try {
         sender.notifyUser(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, notifMetaData);
       } catch (NotificationManagerException e) {
-        SilverTrace.error("JobDomainPeasSessionController", "notifyNewUserAccount",
-            "admin.MSG_ERR_NOTIFY_USER", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }
@@ -1163,8 +1162,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             m_GroupsPath.add(newSubGroup);
           }
         } else {
-          SilverTrace.warn("jobDomainPeas", "JobDomainPeasSessionController.goIntoGroup()",
-              "Security alert", "user id=" + getUserId() + " is trying to access group " + groupId);
+          SilverLogger.getLogger(this)
+              .warn("Security Alert: the user id {0} is attempting to access group id {1}",
+                  getUserId(), groupId);
         }
       }
     } else {
@@ -2050,9 +2050,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       sReport.append("\n\nFin de la synchronisation...");
 
     } catch (JobDomainPeasException e) {
-      SilverTrace.error("JobDomainPeasSessionController",
-          "JobDomainPeasSessionController.synchronizeSilverpeasViaWebService",
-          "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       SynchroDomainReport.error(
           "JobDomainPeasSessionController.synchronizeSilverpeasViaWebService",
           "Problème lors de la synchronisation : " + e.getMessage(), null);

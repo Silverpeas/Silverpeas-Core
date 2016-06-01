@@ -108,16 +108,16 @@ public class Value extends TreeNode implements java.io.Serializable {
   }
 
   public String getStringFullPath(String delimitor) {
-    String fullPath = "";
-    Value value = null;
+    StringBuilder fullPath = new StringBuilder();
+    Value value;
     for (int i = 0; i < pathValues.size(); i++) {
       value = pathValues.get(i);
       if (i != 0) {
-        fullPath += delimitor;
+        fullPath.append(delimitor);
       }
-      fullPath += value.getName();
+      fullPath.append(value.getName());
     }
-    return fullPath;
+    return fullPath.toString();
   }
 
   @Override

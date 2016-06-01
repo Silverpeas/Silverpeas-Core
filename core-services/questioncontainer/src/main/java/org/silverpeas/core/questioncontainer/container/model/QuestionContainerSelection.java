@@ -23,35 +23,22 @@
  */
 package org.silverpeas.core.questioncontainer.container.model;
 
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.SKDException;
+import org.silverpeas.core.clipboard.SilverpeasKeyData;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.clipboard.SKDException;
-import org.silverpeas.core.clipboard.SilverpeasKeyData;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-
 public class QuestionContainerSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = 1311812797166397833L;
-  static public DataFlavor QuestionContainerDetailFlavor;
-
-  static {
-    try {
-      QuestionContainerDetailFlavor = new DataFlavor(
-          Class.forName("QuestionContainerDetail"),
-          "QuestionContainer");
-    } catch (ClassNotFoundException e) {
-      SilverTrace.error("questionContainer", "QuestionContainerSelection",
-          "error when initialize static QuestionContainerDetailFlavor", e);
-      e.printStackTrace();
-    }
-  }
+  public static final DataFlavor QuestionContainerDetailFlavor =
+      new DataFlavor(QuestionContainerDetail.class, "QuestionContainer");
 
   private QuestionContainerDetail m_questionContainer;
 
@@ -103,8 +90,7 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
       keyData.setProperty("BEGINDATE", m_questionContainer.getHeader().getBeginDate());
       keyData.setProperty("ENDDATE", m_questionContainer.getHeader().getEndDate());
     } catch (SKDException e) {
-      SilverTrace.error("questionContainer", "QuestionContainerSelection.getKeyData",
-          "questionContainer.ERROR_KEY_DATA", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return keyData;
   }

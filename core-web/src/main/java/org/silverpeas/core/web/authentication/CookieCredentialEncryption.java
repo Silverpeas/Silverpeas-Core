@@ -76,12 +76,12 @@ public class CookieCredentialEncryption implements CredentialEncryption {
    */
   public String decode(String str, String key, boolean extraCrypt) {
     //
-    String asciiChar_string = "";
+    StringBuilder asciiChar_string = new StringBuilder();
     for (int i = 0; i < key.length(); i++) {
       int asciiCode = key.charAt(i);
-      asciiChar_string += asciiCode;
+      asciiChar_string.append(asciiCode);
     }
-    String prand = asciiChar_string;
+    String prand = asciiChar_string.toString();
 
     int sPos = new Double(Math.floor(prand.length() / 5)).intValue();
     StringBuilder stringMult = new StringBuilder();

@@ -23,6 +23,17 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
+import com.sun.portal.container.EntityID;
+import com.sun.portal.container.PortletType;
+import com.sun.portal.portletcontainer.admin.mbeans.PortletAdmin;
+import com.sun.portal.portletcontainer.admin.mbeans.PortletAdminMBean;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.portlets.portal.PortletAppData;
+import org.silverpeas.core.web.portlets.portal.PortletAppDataImpl;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
+
 import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,17 +44,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-
-import org.silverpeas.core.web.portlets.portal.PortletAppData;
-import org.silverpeas.core.web.portlets.portal.PortletAppDataImpl;
-import org.silverpeas.core.web.portlets.portal.PortletWindowData;
-import org.silverpeas.core.util.StringUtil;
-import com.sun.portal.container.EntityID;
-import com.sun.portal.container.PortletType;
-import com.sun.portal.portletcontainer.admin.mbeans.PortletAdmin;
-import com.sun.portal.portletcontainer.admin.mbeans.PortletAdminMBean;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
  * PortletAdminDataImpl provides concrete implementation of PortletAdminData interface
@@ -132,8 +132,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
             if (StringUtil.isDefined(description))
               portlet.setDescription(description);
           } catch (PortletRegistryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
           }
 
           portlets.add(portlet);

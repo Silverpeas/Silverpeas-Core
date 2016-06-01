@@ -21,15 +21,15 @@
 package org.silverpeas.core.contact.service;
 
 import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.model.ContactRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -222,20 +222,23 @@ public class ContactDAO {
         nodeId = nodePK.getId();
       }
 
-      String selectStatement = "select count(contactId) from " + pubPK.getTableName() + "Father" +
-          " where nodeId = " + nodeId;
+      StringBuilder selectStatement =
+          new StringBuilder("select count(contactId) from ").append(pubPK.getTableName())
+              .append("Father")
+              .append(" where nodeId = ")
+              .append(nodeId);
 
       while (iterator.hasNext()) {
         NodePK nodePK = iterator.next();
         nodeId = nodePK.getId();
-        selectStatement += " or nodeId = " + nodeId;
+        selectStatement.append(" or nodeId = ").append(nodeId);
       }
-      selectStatement += " )";
+      selectStatement.append(" )");
 
       PreparedStatement prepStmt = null;
 
       try {
-        prepStmt = con.prepareStatement(selectStatement);
+        prepStmt = con.prepareStatement(selectStatement.toString());
         rs = prepStmt.executeQuery();
         if (rs.next()) {
           result = rs.getInt(1);
@@ -442,18 +445,18 @@ public class ContactDAO {
       throws SQLException, ParseException {
     ResultSet rs = null;
     String fatherId;
-    String whereClause = "";
+    StringBuilder whereClause = new StringBuilder();
     if (fatherPKs != null) {
       Iterator<NodePK> it = fatherPKs.iterator();
-      whereClause += "(";
+      whereClause.append("(");
 
       while (it.hasNext()) {
         fatherId = it.next().getId();
-        whereClause += " F.nodeId = " + fatherId;
+        whereClause.append(" F.nodeId = ").append(fatherId);
         if (it.hasNext()) {
-          whereClause += " OR ";
+          whereClause.append(" OR ");
         } else {
-          whereClause += " ) ";
+          whereClause.append(" ) ");
         }
       }
     }
@@ -461,7 +464,7 @@ public class ContactDAO {
     String selectStatement =
         "select  P.*, N.nodeId, N.nodeName " + "from " + contactPK.getTableName() + " P, " +
             contactPK.getTableName() + "father F, " + nodePK.getTableName() + " N " + "where " +
-            whereClause +
+            whereClause.toString() +
             " AND F.contactId = P.contactId AND F.nodeId = N.nodeId AND N.instanceId = ?" +
             " AND N.instanceId = P.instanceId ";
 

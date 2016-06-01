@@ -23,18 +23,18 @@
  */
 package org.silverpeas.web.directory.servlets;
 
-import org.silverpeas.web.directory.DirectoryException;
-import org.silverpeas.web.directory.control.DirectorySessionController;
-import org.silverpeas.web.directory.model.DirectoryItemList;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.directory.DirectoryException;
+import org.silverpeas.web.directory.control.DirectorySessionController;
+import org.silverpeas.web.directory.model.DirectoryItemList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -201,7 +201,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
   private void processBreadCrumb(HttpServletRequest request, DirectorySessionController directorySC) {
     int directory = directorySC.getCurrentDirectory();
-    String breadCrumb = directorySC.getString("directory.breadcrumb." + directory);
+    StringBuilder breadCrumb =
+        new StringBuilder(directorySC.getString("directory.breadcrumb." + directory));
     switch (directory) {
       case DirectorySessionController.DIRECTORY_DEFAULT:
       case DirectorySessionController.DIRECTORY_MINE:
@@ -209,44 +210,45 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         break;
 
       case DirectorySessionController.DIRECTORY_COMMON:
-        breadCrumb += " " + directorySC.getCommonUserDetail().getDisplayedName();
+        breadCrumb.append(" ").append(directorySC.getCommonUserDetail().getDisplayedName());
         break;
 
       case DirectorySessionController.DIRECTORY_OTHER:
-        breadCrumb += " " + directorySC.getOtherUserDetail().getDisplayedName();
+        breadCrumb.append(" ").append(directorySC.getOtherUserDetail().getDisplayedName());
         break;
 
       case DirectorySessionController.DIRECTORY_GROUP:
-        breadCrumb += " ";
+        breadCrumb.append(" ");
         boolean firstGroup = true;
         for (Group group : directorySC.getCurrentGroups()) {
           if (!firstGroup) {
-            breadCrumb += " & ";
+            breadCrumb.append(" & ");
           }
-          breadCrumb += group.getName();
+          breadCrumb.append(group.getName());
           firstGroup = false;
         }
         break;
 
       case DirectorySessionController.DIRECTORY_DOMAIN:
-        breadCrumb += " ";
+        breadCrumb.append(" ");
         boolean first = true;
         for (Domain domain : directorySC.getCurrentDomains()) {
           if (!first) {
-            breadCrumb += " & ";
+            breadCrumb.append(" & ");
           }
-          breadCrumb += domain.getName();
+          breadCrumb.append(domain.getName());
           first = false;
         }
         break;
 
       case DirectorySessionController.DIRECTORY_SPACE:
-        breadCrumb += " " + directorySC.getCurrentSpace().getName(directorySC.getLanguage());
+        breadCrumb.append(" ")
+            .append(directorySC.getCurrentSpace().getName(directorySC.getLanguage()));
         break;
 
       default:
         break;
     }
-    request.setAttribute("BreadCrumb", breadCrumb);
+    request.setAttribute("BreadCrumb", breadCrumb.toString());
   }
 }

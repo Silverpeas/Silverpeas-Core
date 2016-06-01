@@ -32,10 +32,10 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -104,8 +104,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
         try {
           value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
         } catch (Exception e) {
-          SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-              "value = " + field.getValue(), e);
+          SilverLogger.getLogger(this).error("Incorrect type for value " + field.getValue(), e);
         }
       } else {
         value = EncodeHelper.convertWhiteSpacesForHTMLDisplay(field.getValue(language));
@@ -123,7 +122,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     if (parameters.containsKey("values") || parameters.containsKey("keys")) {
       Map<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(
           language);
-      String newValue = "";
+      StringBuilder newValue = new StringBuilder();
       if (StringUtil.isDefined(value)) {
         if (value.contains("##")) {
           // Try to display a checkbox list
@@ -132,17 +131,17 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
           while (tokenizer.hasMoreTokens()) {
             t = tokenizer.nextToken();
             t = keyValuePairs.get(t);
-            newValue += t;
+            newValue.append(t);
 
             if (tokenizer.hasMoreTokens()) {
-              newValue += ", ";
+              newValue.append(", ");
             }
           }
         } else {
-          newValue = keyValuePairs.get(value);
+          newValue.append(keyValuePairs.get(value));
         }
       }
-      value = newValue;
+      value = newValue.toString();
     }
     if (StringUtil.isDefined(classe)) {
       html.append("<span ").append(classe).append(">");

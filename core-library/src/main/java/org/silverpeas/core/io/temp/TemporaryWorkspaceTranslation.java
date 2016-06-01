@@ -27,6 +27,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -217,7 +218,7 @@ public class TemporaryWorkspaceTranslation {
       }
       return (T) deserializeFromString(descriptorContent.get(key));
     } catch (RuntimeException e) {
-      e.printStackTrace();
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
     }
   }

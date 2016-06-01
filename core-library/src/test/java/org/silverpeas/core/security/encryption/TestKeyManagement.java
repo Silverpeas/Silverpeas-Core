@@ -210,7 +210,9 @@ public class TestKeyManagement extends ContentEncryptionServiceTest {
 
     @Override
     public void onError(final Map<String, String> content, final CryptoException ex) {
-      fail(ex.getMessage());
+      if (!this.error) {
+        fail(ex.getMessage());
+      }
     }
 
     @Override

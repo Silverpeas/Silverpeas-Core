@@ -517,14 +517,15 @@ public class UnixDESEncryption implements PasswordEncryption {
   }
 
   private static final String crypt(String salt, String original) {
-    while (salt.length() < 2) {
-      salt += "A";
+    StringBuilder computedSalt = new StringBuilder(salt);
+    while (computedSalt.length() < 2) {
+      computedSalt.append("A");
     }
 
     StringBuilder buffer = new StringBuilder("             ");
 
-    char charZero = salt.charAt(0);
-    char charOne = salt.charAt(1);
+    char charZero = computedSalt.charAt(0);
+    char charOne = computedSalt.charAt(1);
 
     buffer.setCharAt(0, charZero);
     buffer.setCharAt(1, charOne);

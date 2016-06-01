@@ -528,7 +528,7 @@ public class IndexManager {
         Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), reader);
         doc.add(field);
       }
-    } catch (Throwable e) {
+    } catch (RuntimeException e) {
       SilverLogger.getLogger(this).error("Failed to parse file " + fileDescription.getPath(), e);
     }
   }

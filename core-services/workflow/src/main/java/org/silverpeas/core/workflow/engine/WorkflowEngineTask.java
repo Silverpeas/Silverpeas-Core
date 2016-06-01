@@ -24,12 +24,12 @@
 package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.event.QuestionEvent;
 import org.silverpeas.core.workflow.api.event.ResponseEvent;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +67,8 @@ public class WorkflowEngineTask implements Runnable {
   static public void addTaskDoneRequest(TaskDoneEvent event) {
     synchronized (requestList) {
       TaskDoneRequest request = new TaskDoneRequest(event);
-      SilverTrace
-          .info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST",
-              request.toString());
+      SilverLogger.getLogger(WorkflowEngineTask.class)
+          .info("Add task done request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -81,9 +80,8 @@ public class WorkflowEngineTask implements Runnable {
   public static void addTaskSavedRequest(TaskSavedEvent event) {
     synchronized (requestList) {
       TaskSavedRequest request = new TaskSavedRequest(event);
-      SilverTrace
-          .info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST",
-              request.toString());
+      SilverLogger.getLogger(WorkflowEngineTask.class)
+          .info("Add task saved request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -95,9 +93,8 @@ public class WorkflowEngineTask implements Runnable {
   static public void addQuestionRequest(QuestionEvent event) {
     synchronized (requestList) {
       QuestionRequest request = new QuestionRequest(event);
-      SilverTrace
-          .info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST",
-              request.toString());
+      SilverLogger.getLogger(WorkflowEngineTask.class)
+          .info("Add question request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -109,9 +106,8 @@ public class WorkflowEngineTask implements Runnable {
   static public void addResponseRequest(ResponseEvent event) {
     synchronized (requestList) {
       ResponseRequest request = new ResponseRequest(event);
-      SilverTrace
-          .info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST",
-              request.toString());
+      SilverLogger.getLogger(WorkflowEngineTask.class)
+          .info("Add response request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -123,9 +119,8 @@ public class WorkflowEngineTask implements Runnable {
   static public void addTimeoutRequest(TimeoutEvent event) {
     synchronized (requestList) {
       TimeoutRequest request = new TimeoutRequest(event);
-      SilverTrace
-          .info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST",
-              request.toString());
+      SilverLogger.getLogger(WorkflowEngineTask.class)
+          .info("Add timeout request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -159,8 +154,8 @@ public class WorkflowEngineTask implements Runnable {
             try {
               request.process();
             } catch (Exception e) {
-              SilverTrace.error("workflowEngine", "WorkflowEngineThread",
-                  "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request.toString(), e);
+              SilverLogger.getLogger(this)
+                  .error("Error while processing request: " + request.toString(), e);
             }
           }
 
@@ -179,14 +174,13 @@ public class WorkflowEngineTask implements Runnable {
 
         }
       }
-    } catch (Throwable error) {
+    } catch (Exception e) {
       /*
        * Keep this log, we really need to know why this thread has been down. Problem can happen
        * when external workflow is not synchronize with current Silverpeas platform version.
        */
-      SilverTrace
-          .fatal("workflowEngine", "WorkflowEngineThread", "Exit from workflow thread loop", error);
-      throw new RuntimeException("End of thread", error);
+      SilverLogger.getLogger(this).error("Exit from workflow thread loop", e);
+      throw new RuntimeException("End of thread", e);
     }
   }
 }

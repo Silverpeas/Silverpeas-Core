@@ -164,18 +164,18 @@ public class ThesaurusService {
    * @see
    */
   private String encode(String name) {
-    String chaine = "";
+    StringBuilder str = new StringBuilder();
 
     for (int i = 0; i < name.length(); i++) {
       switch (name.charAt(i)) {
         case '\'':
-          chaine += "''";
+          str.append("''");
           break;
         default:
-          chaine += name.charAt(i);
+          str.append(name.charAt(i));
       }
     }
-    return chaine;
+    return str.toString();
   }
 
   /**

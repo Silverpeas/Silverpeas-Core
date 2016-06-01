@@ -24,11 +24,10 @@
 
 package org.silverpeas.core.contribution.content.form.form;
 
-import org.silverpeas.core.contribution.content.form.*;
-import org.silverpeas.core.contribution.content.form.*;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
@@ -145,8 +144,7 @@ public class XmlSearchForm extends AbstractForm {
               lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
             }
           } catch (FormException fe) {
-            SilverTrace.error("form", "XmlSearchForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null,
-                fe);
+            SilverLogger.getLogger(this).error(fe.getMessage(), fe);
           }
         }
       }
@@ -167,8 +165,7 @@ public class XmlSearchForm extends AbstractForm {
 
             fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
           } catch (FormException fe) {
-            SilverTrace.error("form", "XmlSearchForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null,
-                fe);
+            SilverLogger.getLogger(this).error(fe.getMessage(), fe);
           }
           if (fieldDisplayer != null) {
             out.println("<tr align=center>");
@@ -181,8 +178,7 @@ public class XmlSearchForm extends AbstractForm {
             try {
               fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
             } catch (FormException fe) {
-              SilverTrace
-                  .error("form", "XmlSearchForm.toString", "form.EX_CANT_GET_FORM", null, fe);
+              SilverLogger.getLogger(this).error(fe.getMessage(), fe);
             }
             out.println("</td>");
             out.println("</tr>");
@@ -287,8 +283,7 @@ public class XmlSearchForm extends AbstractForm {
                     fieldTemplate, pc);
               }
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlSearchForm.display",
-                  "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+              SilverLogger.getLogger(this).error(fe.getMessage(), fe);
             }
           }
         }
@@ -309,9 +304,7 @@ public class XmlSearchForm extends AbstractForm {
               }
               fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlSearchForm.display", "form.EXP_UNKNOWN_DISPLAYER",
-                  null,
-                  fe);
+              SilverLogger.getLogger(this).error(fe.getMessage(), fe);
             }
 
             if (fieldDisplayer != null) {
@@ -329,8 +322,7 @@ public class XmlSearchForm extends AbstractForm {
               try {
                 fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlSearchForm.display",
-                    "form.EX_CANT_GET_FORM", null, fe);
+                SilverLogger.getLogger(this).error(fe.getMessage(), fe);
               }
               out.println("</td>");
               out.println("</tr>");
@@ -353,8 +345,7 @@ public class XmlSearchForm extends AbstractForm {
         jw.write(sw.toString());
       }
     } catch (java.io.IOException fe) {
-      SilverTrace.error("form", "XmlSearchForm.display", "form.EXP_CANT_WRITE",
-          null, fe);
+      SilverLogger.getLogger(this).error(fe.getMessage(), fe);
     }
   }
 
@@ -367,17 +358,17 @@ public class XmlSearchForm extends AbstractForm {
   }
 
   private String getParameterValues(List<FileItem> items, String parameterName) {
-    String values = "";
+    StringBuilder values = new StringBuilder();
     List<FileItem> params = getParameters(items, parameterName);
     FileItem item;
     for (int p = 0; p < params.size(); p++) {
       item = params.get(p);
-      values += item.getString();
+      values.append(item.getString());
       if (p < params.size() - 1) {
-        values += "##";
+        values.append("##");
       }
     }
-    return values;
+    return values.toString();
   }
 
   private FileItem getParameter(List<FileItem> items, String parameterName) {
@@ -454,8 +445,7 @@ public class XmlSearchForm extends AbstractForm {
               }
             }
           } catch (Exception e) {
-            SilverTrace.error("form", "XmlSearchForm.isEmpty",
-                "form.EXP_UNKNOWN_FIELD", null, e);
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
         }
       }

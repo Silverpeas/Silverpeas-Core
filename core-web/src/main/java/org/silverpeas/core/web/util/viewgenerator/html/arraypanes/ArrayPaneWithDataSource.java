@@ -24,15 +24,14 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import java.util.Collections;
-
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPage;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WADataPaginator;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.pagination.WAItem;
+
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.PageContext;
+import java.util.Collections;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -162,10 +161,8 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         page = m_DataSource.getNextPage();
       }
 
-    } catch (Exception x) {
-      SilverTrace.error("viewgenerator",
-          "ArrayPaneWithDataSource.dataSourcePrint()",
-          "viewgenerator.EX_CANT_LOAD_PAGE");
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "";
     }
 
@@ -178,21 +175,25 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     int itemCount = m_DataSource.getItemCount();
     int pageItemCount = page.getItemCount();
 
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
-    result +=
-        "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n";
-    result += "<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\""
-        + getCellSpacing() + "\" cellpadding=\"" + getCellPadding()
-        + "\" border=\"" + getCellBorderWidth() + "\">";
+    result.append("<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 " +
+        "border=0><tr><td>\n");
+    result.append("<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\"")
+        .append(getCellSpacing())
+        .append("\" cellpadding=\"")
+        .append(getCellPadding())
+        .append("\" border=\"")
+        .append(getCellBorderWidth())
+        .append("\">");
     if (getTitle() != null) {
-      result += "<tr>";
-      result += "<td class=\"txttitrecol\" colspan=\"" + columnsCount + "\">";
-      result += getTitle();
-      result += "</td>";
-      result += "</tr>\n";
+      result.append("<tr>");
+      result.append("<td class=\"txttitrecol\" colspan=\"").append(columnsCount).append("\">");
+      result.append(getTitle());
+      result.append("</td>");
+      result.append("</tr>\n");
     }
-    result += "<tr>";
+    result.append("<tr>");
     for (int i = 0; i < columnsCount; i++) {
       ArrayColumn ac = new ArrayColumn(m_DataSource.getHeader()
           .getFieldDisplayName(i), i + 1, this);
@@ -207,13 +208,13 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         }
       }
       if (getRequest() != null) {
-        result += ac.print();
+        result.append(ac.print());
       }
       if (getCellSpacing() == 0) {
-        result += printPseudoColumn();
+        result.append(printPseudoColumn());
       }
     }
-    result += "</tr>\n";
+    result.append("</tr>\n");
     for (int i = 0; i < pageItemCount; i++) {
       WAItem item = null;
 
@@ -222,8 +223,8 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
       } else {
         item = page.getNextItem();
       }
-      result += "<tr id=\"" + i + "\">\n";
-      result = result + "<!-- column count is + " + columnsCount + " -->\n";
+      result.append("<tr id=\"" + i + "\">\n");
+      result.append(result + "<!-- column count is + " + columnsCount + " -->\n");
       for (int j = 0; j < columnsCount; j++) {
         String name = m_DataSource.getHeader().getFieldName(j);
         String value = item.getFieldByName(name);
@@ -236,44 +237,43 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
           if (style != null) {
             ct.setStyleSheet(style);
           }
-          result += ct.print();
+          result.append(ct.print());
         } else {
           ArrayCellLink ct = new ArrayCellLink(value, anchor, m_ArrayLine);
 
           if (style != null) {
             ct.setStyleSheet(style);
           }
-          result += ct.print();
+          result.append(ct.print());
         }
         if (getCellSpacing() == 0) {
-          result += new ArrayEmptyCell().print();
+          result.append(new ArrayEmptyCell().print());
         }
       }
-      result += "</tr>\n";
+      result.append("</tr>\n");
     }
-    result += "</table>\n";
+    result.append("</table>\n");
 
     if (-1 != getState().getMaximumVisibleLine()) {
       String iconPath = getIconsPath();
 
-      result +=
-          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
-              +
-              "<tr align=\"center\" bgcolor=\"#999999\">\n"
-              + "<td><img src=\""
-              + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
-              + "</tr>\n"
-              + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
-              + "<td><img src=\""
-              + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
-              + "</tr>\n"
-              + "<tr align=\"center\"> \n"
-              + "<td class=\"ArrayNavigation\" height=\"20\">";
+      result.append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" " +
+          "class=\"ArrayColumn\">\n")
+          .append("<tr align=\"center\" bgcolor=\"#999999\">\n")
+          .append("<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n")
+          .append("</tr>\n")
+          .append("<tr align=\"center\" bgcolor=\"#FFFFFF\">\n")
+          .append("<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n")
+          .append("</tr>\n")
+          .append("<tr align=\"center\"> \n")
+          .append("<td class=\"ArrayNavigation\" height=\"20\">");
 
       if (pageNumber > 0) {
-        result += "<a class=\"ArrayNavigation\" href=\"";
+        result.append("<a class=\"ArrayNavigation\" href=\"");
         String url = getUrl();
 
         if (!url.contains("?")) {
@@ -283,16 +283,16 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         }
         url += ACTION_PARAMETER_NAME + "=Previous&" + TARGET_PARAMETER_NAME
             + "=" + getName();
-        result += url + "\"><< Pr&eacute;c&eacute;dent </a>  | ";
+        result.append(url).append("\"><< Pr&eacute;c&eacute;dent </a>  | ");
       }
       if (firstItemNumber != lastItemNumber) {
-        result += (firstItemNumber + 1) + " - " + (lastItemNumber);
+        result.append((firstItemNumber + 1)).append(" - ").append(lastItemNumber);
       } else {
-        result += (firstItemNumber + 1);
+        result.append(firstItemNumber + 1);
       }
-      result += " / " + itemCount;
+      result.append(" / ").append(itemCount);
       if (lastItemNumber + 1 < itemCount) {
-        result += " | <a class=\"ArrayNavigation\" href=\"";
+        result.append(" | <a class=\"ArrayNavigation\" href=\"");
         String url = getUrl();
 
         if (!url.contains("?")) {
@@ -302,19 +302,21 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         }
         url += ACTION_PARAMETER_NAME + "=Next&" + TARGET_PARAMETER_NAME + "="
             + getName();
-        result += url + "\">Suivant >></a>";
+        result.append(url).append("\">Suivant >></a>");
       }
 
-      result += "</td>" + "</tr>\n"
-          + "<tr align=\"center\" bgcolor=\"#999999\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
-          + "<tr align=\"center\" bgcolor=\"#666666\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
-          + "</table>";
+      result.append("</td>" + "</tr>\n")
+          .append("<tr align=\"center\" bgcolor=\"#999999\">\n" + "<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n")
+          .append("<tr align=\"center\" bgcolor=\"#666666\">\n" + "<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n")
+          .append("</table>");
 
     }
-    result += "</td></tr></table>\n";
-    return result;
+    result.append("</td></tr></table>\n");
+    return result.toString();
   }
 
   /**
@@ -335,30 +337,35 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     if (getCellSpacing() == 0) {
       columnsCount *= 2;
     }
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
-    result +=
-        "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n";
-    result += "<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\""
-        + getCellSpacing() + "\" cellpadding=\"" + getCellPadding()
-        + "\" border=\"" + getCellBorderWidth() + "\">";
+    result.append(
+        "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 " +
+            "border=0><tr><td>\n");
+    result.append("<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\"")
+        .append(getCellSpacing())
+        .append("\" cellpadding=\"")
+        .append(getCellPadding())
+        .append("\" border=\"")
+        .append(getCellBorderWidth())
+        .append("\">");
     if (getTitle() != null) {
-      result += "<tr>";
-      result += "<td class=\"txttitrecol\" colspan=\"" + columnsCount + "\">";
-      result += getTitle();
-      result += "</td>";
-      result += "</tr>\n";
+      result.append("<tr>");
+      result.append("<td class=\"txttitrecol\" colspan=\"").append(columnsCount).append("\">");
+      result.append(getTitle());
+      result.append("</td>");
+      result.append("</tr>\n");
     }
-    result += "<tr>";
+    result.append("<tr>");
     for (ArrayColumn column : getColumns()) {
-      result += column.print(isXHTML());
+      result.append(column.print(isXHTML()));
       if (getCellSpacing() == 0) {
-        result += printPseudoColumn();
+        result.append(printPseudoColumn());
       }
     }
-    result += "</tr>\n";
+    result.append("</tr>\n");
     if (getLines().isEmpty()) {
-      result += "<tr><td>&nbsp;</td></tr>\n";
+      result.append("<tr><td>&nbsp;</td></tr>\n");
     } else {
       int max = getState().getMaximumVisibleLine();
 
@@ -376,36 +383,36 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
 
       for (int i = first; (i < getLines().size()) && (i < first + max); i++) {
         if (getCellSpacing() == 0) {
-          result += getLines().get(i).printWithPseudoColumns();
+          result.append(getLines().get(i).printWithPseudoColumns());
         } else {
-          result += getLines().get(i).print();
+          result.append(getLines().get(i).print());
         }
         last = i;
       }
     }
-    result += "</table>\n";
+    result.append("</table>\n");
 
     if (-1 != getState().getMaximumVisibleLine()) {
       String iconPath = getIconsPath();
 
-      result +=
-          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
-              +
-              "<tr align=\"center\" bgcolor=\"#999999\">\n"
-              + "<td><img src=\""
-              + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
-              + "</tr>\n"
-              + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
-              + "<td><img src=\""
-              + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
-              + "</tr>\n"
-              + "<tr align=\"center\"> \n"
-              + "<td class=\"ArrayNavigation\" height=\"20\">";
+      result.append(
+          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" " +
+              "class=\"ArrayColumn\">\n")
+          .append("<tr align=\"center\" bgcolor=\"#999999\">\n")
+          .append("<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n")
+          .append("</tr>\n")
+          .append("<tr align=\"center\" bgcolor=\"#FFFFFF\">\n")
+          .append("<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n")
+          .append("</tr>\n")
+          .append("<tr align=\"center\"> \n")
+          .append("<td class=\"ArrayNavigation\" height=\"20\">");
 
       if (first > 0) {
-        result += "<a class=\"ArrayNavigation\" href=\"";
+        result.append("<a class=\"ArrayNavigation\" href=\"");
         String url = getUrl();
 
         if (!url.contains("?")) {
@@ -415,16 +422,16 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         }
         url += ACTION_PARAMETER_NAME + "=Previous&" + TARGET_PARAMETER_NAME
             + "=" + getName();
-        result += url + "\"><< Pr&eacute;c&eacute;dent </a>  | ";
+        result.append(url).append("\"><< Pr&eacute;c&eacute;dent </a>  | ");
       }
       if (first != last) {
-        result += (first + 1) + " - " + (last + 1);
+        result.append(first + 1).append(" - ").append(last + 1);
       } else {
-        result += (first + 1);
+        result.append(first + 1);
       }
-      result += " / " + getLines().size();
+      result.append(" / ").append(getLines().size());
       if (last + 1 < getLines().size()) {
-        result += " | <a class=\"ArrayNavigation\" href=\"";
+        result.append(" | <a class=\"ArrayNavigation\" href=\"");
         String url = getUrl();
 
         if (!url.contains("?")) {
@@ -434,18 +441,20 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         }
         url += ACTION_PARAMETER_NAME + "=Next&" + TARGET_PARAMETER_NAME + "="
             + getName();
-        result += url + "\">Suivant >></a>";
+        result.append(url).append("\">Suivant >></a>");
       }
 
-      result += "</td>" + "</tr>\n"
-          + "<tr align=\"center\" bgcolor=\"#999999\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
-          + "<tr align=\"center\" bgcolor=\"#666666\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
-          + "</table>";
+      result.append("</td>" + "</tr>\n")
+          .append("<tr align=\"center\" bgcolor=\"#999999\">\n" + "<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n</tr>\n")
+          .append("<tr align=\"center\" bgcolor=\"#666666\">\n<td><img src=\"")
+          .append(iconPath)
+          .append("1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n</tr>\n")
+          .append("</table>");
 
     }
-    result += "</td></tr></table>\n";
-    return result;
+    result.append("</td></tr></table>\n");
+    return result.toString();
   }
 }

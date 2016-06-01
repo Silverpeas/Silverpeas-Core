@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -31,9 +32,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -155,8 +155,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
         cols = Integer.valueOf(parameters.get("cols"));
       }
     } catch (NumberFormatException nfe) {
-      SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
-          parameters.get("cols"));
+      SilverLogger.getLogger(this).error("Illegal Parameter cols: {0}", parameters.get("cols"));
       cols = 1;
     }
 
@@ -175,8 +174,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     int nbTokens = getNbHtmlObjectsDisplayed(template, PagesContext);
 
     if (stKeys.countTokens() != stValues.countTokens()) {
-      SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
-          "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
+      SilverLogger.getLogger(this)
+          .error("Illegal Parameters. Key count = {0}, values count = {1}", stKeys.countTokens(),
+              stValues.countTokens());
     } else {
       html.append("<table border=\"0\">");
       int col = 0;
@@ -228,23 +228,23 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
   @Override
   public List<String> update(List<FileItem> items, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String value = "";
+    StringBuilder value = new StringBuilder();
     Iterator<FileItem> iter = items.iterator();
     String parameterName = template.getFieldName();
     while (iter.hasNext()) {
       FileItem item = iter.next();
       if (parameterName.equals(item.getFieldName())) {
-        if (StringUtil.isDefined(value)) {
-          value += "##";
+        if (value.length() > 0) {
+          value.append("##");
         }
-        value += item.getString();
+        value.append(item.getString());
       }
     }
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
+        value.length() == 0) {
       return new ArrayList<>();
     }
-    return update(value, field, template, pageContext);
+    return update(value.toString(), field, template, pageContext);
   }
 
   @Override

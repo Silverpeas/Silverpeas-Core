@@ -20,21 +20,21 @@
  */
 package org.silverpeas.core.web.tools.agenda.view;
 
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.calendar.model.Category;
 import org.silverpeas.core.calendar.model.JournalHeader;
 import org.silverpeas.core.calendar.model.Schedulable;
 import org.silverpeas.core.calendar.model.SchedulableCount;
 import org.silverpeas.core.calendar.model.SchedulableGroup;
 import org.silverpeas.core.calendar.model.SchedulableList;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.tools.agenda.control.AgendaException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -196,9 +196,7 @@ public class AgendaHtmlView {
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "AgendaHtmView.add(Schedulable schedule)",
-          "agenda.MSG_ADD_SCHEDULE_FAILED", "id=" + schedule.getId()
-          + ", name=" + schedule.getName(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -242,7 +240,7 @@ public class AgendaHtmlView {
       calendarHtmlView.setWeekDayStyle("class=\"txtnav\"");
       calendarHtmlView.setMonthDayStyle("class=\"intfdcolor4\"");
       calendarHtmlView.setMonthSelectedDayStyle("class=\"intfdcolor6\"");
-      StringBuffer result = new StringBuffer("");
+      StringBuffer result = new StringBuffer();
 
       result
           .append("\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n");
@@ -272,10 +270,7 @@ public class AgendaHtmlView {
 
       return result.toString();
     } catch (java.text.ParseException e) {
-
-      SilverTrace.warn("agenda",
-          "AgendaHtmView.getHtmlViewByMonth(String startDate)",
-          "agenda.MSG_CANT_GET_VIEW_MONTH", "return= null", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "";
     }
   }
@@ -294,52 +289,51 @@ public class AgendaHtmlView {
     calendarHtmlView.setWeekDayStyle("class=\"txtnav\"");
     calendarHtmlView.setMonthDayStyle("class=\"intfdcolor4\"");
     calendarHtmlView.setMonthSelectedDayStyle("class=\"intfdcolor6\"");
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
-    result += "      <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n";
-    result += "        <tr> \n";
-    result += "          <td> \n";
+    result.append("      <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n");
+    result.append("        <tr> \n");
+    result.append("          <td> \n");
 
-    result
-        += "            <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n";
-    result += "              <tr> \n";
-    result += "                <td class=\"grille\"> \n";
-    result
-        += "                  <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" width=\"100%\">\n";
+    result.append(
+        "            <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
+    result.append("              <tr> \n");
+    result.append("                <td class=\"grille\"> \n");
+    result.append(
+        "                  <table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" " +
+            "width=\"100%\">\n");
     String year = startDate.substring(0, 4);
     int month = 1;
 
     for (int i = 0; i < 3; i++) {
-      result += "<tr>";
+      result.append("<tr>");
       for (int j = 0; j < 4; j++) {
-        result += "<td bgcolor=\"#ffffff\" align=\"left\" valign=\"top\">";
+        result.append("<td bgcolor=\"#ffffff\" align=\"left\" valign=\"top\">");
         try {
           String m = String.valueOf(month);
 
           if (m.length() == 1) {
             m = "0" + m;
           }
-          result += calendarHtmlView.getHtmlView(DateUtil.parse(year + "/" + m
-              + "/01"), agendaSessionController);
+          result.append(calendarHtmlView.getHtmlView(DateUtil.parse(year + "/" + m + "/01"),
+              agendaSessionController));
           month++;
         } catch (java.text.ParseException e) {
-          SilverTrace.warn("agenda",
-              "AgendaHtmView.getHtmlViewByMonth(String startDate)",
-              "agenda.MSG_CANT_GET_VIEW_YEAR", "return= null", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
           return "";
         }
-        result += "</td>\n";
+        result.append("</td>\n");
       }
-      result += "</tr>";
+      result.append("</tr>");
     }
-    result += "                  </table>";
-    result += "                </td>";
-    result += "              </tr>";
-    result += "            </table>";
-    result += "          </td>";
-    result += "        </tr>";
-    result += "      </table>";
-    return result;
+    result.append("                  </table>");
+    result.append("                </td>");
+    result.append("              </tr>");
+    result.append("            </table>");
+    result.append("          </td>");
+    result.append("        </tr>");
+    result.append("      </table>");
+    return result.toString();
   }
 
   /**
@@ -351,82 +345,85 @@ public class AgendaHtmlView {
    */
   public String getHtmlViewByDay(String today) throws AgendaException {
 
-    String result = "";
+    StringBuilder result = new StringBuilder();
     Calendar day = Calendar.getInstance();
 
     try {
       day.setTime(DateUtil.parse(today));
     } catch (java.text.ParseException e) {
-      SilverTrace.warn("agenda",
-          "AgendaHtmView.getHtmlViewByDay(String today)",
-          "agenda.MSG_CANT_GET_VIEW_DAY", "return= null", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "";
     }
     SchedulableList dayList = new SchedulableList(DateUtil.date2SQLDate(day.getTime()), schedules);
 
-    result
-        += "<table border=\"0\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" class=\"grille\">\n";
-    result += "<tr valign=\"top\">";
-    result += "<td>";
-    result
-        += "<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n";
-    result += "  <tr>\n";
-    result += "    <td width=\"100%\">";
+    result.append(
+        "<table border=\"0\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" " +
+            "class=\"grille\">\n");
+    result.append("<tr valign=\"top\">");
+    result.append("<td>");
+    result.append(
+        "<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" " +
+            "cellpadding=\"0\">\n");
+    result.append("  <tr>\n");
+    result.append("    <td width=\"100%\">");
     Vector<Schedulable> all = dayList.getWithoutHourSchedules();
 
-    result
-        += "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">";
+    result.append(
+        "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">");
 
     if (all.size() > 0) {
 
       for (int i = 0; i < all.size(); i++) {
         Schedulable schedule = all.elementAt(i);
-        result += "  <tr>";
+        result.append("  <tr>");
         if (i == 0) {
-          result += "    <td width=\"50\" rowspan=\"" + all.size()
-              + "\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
-          result += "&nbsp;</td>";
+          result.append("    <td width=\"50\" rowspan=\"")
+              .append(all.size())
+              .append("\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">");
+          result.append("&nbsp;</td>");
         }
 
         if (isOtherAgenda) {
           if (schedule.getClassification().isPrivate()) {
-            result += "    <td class=\"privateEvent\" width=\"600\">";
+            result.append("    <td class=\"privateEvent\" width=\"600\">");
           } else {
-            result += "    <td class=\"publicEvent\" width=\"600\">";
+            result.append("    <td class=\"publicEvent\" width=\"600\">");
           }
         } else {
-          result += "    <td class=\"intfdcolor4\" width=\"600\">";
+          result.append("    <td class=\"intfdcolor4\" width=\"600\">");
         }
 
         if (schedule.getClassification().isPublic() || !isOtherAgenda) {
-          result += "      <a href=\"" + "javascript:onClick=viewJournal('"
-              + schedule.getId() + "')\"";
-          result += getInfoBulle(schedule);
-          result += EncodeHelper.javaStringToHtmlString(schedule.getName()) + "</a>";
+          result.append("      <a href=\"" + "javascript:onClick=viewJournal('")
+              .append(schedule.getId())
+              .append("')\"");
+          result.append(getInfoBulle(schedule));
+          result.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
         }
 
-        result += " &nbsp;(" + agendaSessionController.getString("allDay")
-            + ")    </td>";
-        result += "</tr>\n";
+        result.append(" &nbsp;(" + agendaSessionController.getString("allDay"))
+            .append(")    </td>");
+        result.append("</tr>\n");
       }
     } else {
-      result += "  <tr>";
-      result
-          += "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
-      result += "&nbsp;</td>";
-      result += "    <td class=\"intfdcolor4\" width=\"600\">";
-      result += "&nbsp;";
-      result += "    </td>";
-      result += "  </tr>\n";
+      result.append("  <tr>");
+      result.append(
+          "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" " +
+              "valign=\"top\">");
+      result.append("&nbsp;</td>");
+      result.append("    <td class=\"intfdcolor4\" width=\"600\">");
+      result.append("&nbsp;");
+      result.append("    </td>");
+      result.append("  </tr>\n");
     }
-    result += "      </table>\n";
-    result += "    </td>";
-    result += "  </tr>\n";
+    result.append("      </table>\n");
+    result.append("    </td>");
+    result.append("  </tr>\n");
 
-    result += "<tr> ";
-    result
-        += "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>";
-    result += "</tr>\n";
+    result.append("<tr> ");
+    result.append(
+        "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>");
+    result.append("</tr>\n");
 
     int i = BEGINHOUR;
     int maxColumns = 0;
@@ -494,32 +491,33 @@ public class AgendaHtmlView {
 
       if (lastGoOn == null) {
         // ouverture de la table
-        result += "  <tr>";
-        result += "    <td>";
-        result
-            += "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
+        result.append("  <tr>");
+        result.append("    <td>");
+        result.append(
+            "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n");
       } else {
         if (((goOn.size() != 0) && (lastGoOn.size() == 0))
             || ((goOn.size() == 0) && (lastGoOn.size() != 0))) {
-          result += "      </table>\n";
-          result += "    </td>";
-          result += "  </tr>\n";
-          result += "  <tr>";
-          result += "    <td>";
-          result
-              += "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
+          result.append("      </table>\n");
+          result.append("    </td>");
+          result.append("  </tr>\n");
+          result.append("  <tr>");
+          result.append("    <td>");
+          result.append(
+              "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n");
         }
       }
 
-      result += "       <tr>";
-      result
-          += "        <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
-      result += "<a href=\"javascript:onClick=selectHour('" + i + "')\">";
-      result += String.valueOf(i) + "H</a>";
-      result += "        </td>";
+      result.append("       <tr>");
+      result.append(
+          "        <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" " +
+              "valign=\"top\">");
+      result.append("<a href=\"javascript:onClick=selectHour('").append(i).append("')\">");
+      result.append(String.valueOf(i)).append("H</a>");
+      result.append("        </td>");
 
       if (goOn.isEmpty()) {
-        result += "        <td class=\"intfdcolor4\" width=\"600\">&nbsp;</td>";
+        result.append("        <td class=\"intfdcolor4\" width=\"600\">&nbsp;</td>");
         maxColumns = 0;
       } else {
         for (Schedulable schedule : goOn) {
@@ -568,119 +566,138 @@ public class AgendaHtmlView {
               }
             }
 
-            result += "<td width=\"" + (600 / maxColumns)
-                + "\" class=\"" + color + "\" rowspan=\"" + length + "\">";
+            result.append("<td width=\"")
+                .append((600 / maxColumns))
+                .append("\" class=\"")
+                .append(color)
+                .append("\" rowspan=\"")
+                .append(length)
+                .append("\">");
             if (isOtherAgenda) {
               if (schedule.getClassification().isPrivate()) {
                 if (!schedule.getEndHour().equals(schedule.getStartHour())) {
-                  result += schedule.getStartHour() + " - "
-                      + schedule.getEndHour() + "<br/>";
+                  result.append(schedule.getStartHour())
+                      .append(" - ")
+                      .append(schedule.getEndHour())
+                      .append("<br/>");
                 } else {
-                  result += schedule.getStartHour() + "<br/>";
+                  result.append(schedule.getStartHour()).append("<br/>");
                 }
               } else {
-                result += "      <a href=\"javascript:onClick=viewJournal('"
-                    + schedule.getId() + "')\"";
-                result += getInfoBulle(schedule);
+                result.append("      <a href=\"javascript:onClick=viewJournal('")
+                    .append(schedule.getId())
+                    .append("')\"");
+                result.append(getInfoBulle(schedule));
                 if (!schedule.getEndHour().equals(schedule.getStartHour())) {
-                  result += schedule.getStartHour() + " - "
-                      + schedule.getEndHour() + "<br/>";
+                  result.append(schedule.getStartHour())
+                      .append(" - ")
+                      .append(schedule.getEndHour())
+                      .append("<br/>");
                 } else {
-                  result += schedule.getStartHour() + "<br/>";
+                  result.append(schedule.getStartHour()).append("<br/>");
                 }
-                result += EncodeHelper.javaStringToHtmlString(schedule.getName())
-                    + "</a>";
+                result.append(EncodeHelper.javaStringToHtmlString(schedule.getName()))
+                    .append("</a>");
               }
             } else {
-              result += "      <a href=\"javascript:onClick=viewJournal('"
-                  + schedule.getId() + "')\"";
-              result += getInfoBulle(schedule);
+              result.append("      <a href=\"javascript:onClick=viewJournal('")
+                  .append(schedule.getId())
+                  .append("')\"");
+              result.append(getInfoBulle(schedule));
               if (!schedule.getEndHour().equals(schedule.getStartHour())) {
-                result += schedule.getStartHour() + " - "
-                    + schedule.getEndHour() + "<br/>";
+                result.append(schedule.getStartHour())
+                    .append(" - ")
+                    .append(schedule.getEndHour())
+                    .append("<br/>");
               } else {
-                result += schedule.getStartHour() + "<br/>";
+                result.append(schedule.getStartHour()).append("<br/>");
               }
-              result += EncodeHelper.javaStringToHtmlString(schedule.getName())
-                  + "</a>";
+              result.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
             }
-            result += "</td>";
+            result.append("</td>");
           }
         }
         for (int maxColumnsIterator = goOn.size(); maxColumnsIterator < maxColumns;
             maxColumnsIterator++) {
-          result += "        <td class=\"intfdcolor4\" width=\""
-              + (600 / maxColumns) + "\">&nbsp;</td>";
+          result.append("        <td class=\"intfdcolor4\" width=\"")
+              .append((600 / maxColumns))
+              .append("\">&nbsp;</td>");
         }
       }
-      result += "       </tr>\n";
+      result.append("       </tr>\n");
       lastGoOn = goOn;
       i++;
 
     }
-    result += " </table></td></tr>\n";
-    result += "</table>\n";
-    result += "</td>";
+    result.append(" </table></td></tr>\n");
+    result.append("</table>\n");
+    result.append("</td>");
     if (calendarVisible) {
-      result += "<td width=\"100\" class=\"intfdcolor2\">\n";
+      result.append("<td width=\"100\" class=\"intfdcolor2\">\n");
     } else {
-      result += "<td width=\"10\" class=\"intfdcolor2\">\n";
+      result.append("<td width=\"10\" class=\"intfdcolor2\">\n");
     }
 
     // display the calendar
-    result += "<!-- [ CALENDRIER ] --> \n";
-    result += " <table width=\"100%\" border=\"0\" cellpadding=\"1\" cellspacing=\"0\">\n";
-    result += " <tr> \n";
-    result += "  <td>\n";
-    result += "   <table class=\"intfdcolor2\" border=\"0\" cellpadding=\"1\" cellspacing=\"0\">";
-    result += "    <tr> ";
-    result += "     <td align=\"right\" class=\"intfdcolor2\">";
+    result.append("<!-- [ CALENDRIER ] --> \n");
+    result.append(" <table width=\"100%\" border=\"0\" cellpadding=\"1\" cellspacing=\"0\">\n");
+    result.append(" <tr> \n");
+    result.append("  <td>\n");
+    result.append(
+        "   <table class=\"intfdcolor2\" border=\"0\" cellpadding=\"1\" cellspacing=\"0\">");
+    result.append("    <tr> ");
+    result.append("     <td align=\"right\" class=\"intfdcolor2\">");
     if (!calendarVisible) {
-      result
-          += "        <a href=\"javascript:onClick=openCalendar()\"><img src=\"icons/cal_open.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Afficher le calendrier\" title=\"Afficher le calendrier\"/></a> \n";
+      result.append(
+          "        <a href=\"javascript:onClick=openCalendar()\"><img src=\"icons/cal_open.gif\" " +
+              "width=\"16\" height=\"14\" border=\"0\" alt=\"Afficher le calendrier\" " +
+              "title=\"Afficher le calendrier\"/></a> \n");
     } else {
-      result
-          += "        <a href=\"javascript:onClick=closeCalendar()\"><img src=\"icons/croix3.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Fermer le calendrier\" title=\"Fermer le calendrier\"/></a> \n";
+      result.append(
+          "        <a href=\"javascript:onClick=closeCalendar()\"><img src=\"icons/croix3.gif\" " +
+              "width=\"16\" height=\"14\" border=\"0\" alt=\"Fermer le calendrier\" " +
+              "title=\"Fermer le calendrier\"/></a> \n");
     }
-    result += "     </td>";
-    result += "    </tr> ";
+    result.append("     </td>");
+    result.append("    </tr> ");
     if (calendarVisible) {
-      result += "    <tr> ";
-      result += "     <td>";
-      result
-          += "       <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\"> \n";
-      result += "        <tr><td><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n";
-      result += "         <tr>\n";
-      result += "            <td align=\"center\" class=\"txtbigdate\">"
-          + day.get(Calendar.DAY_OF_MONTH);
-      result += "            </td></tr>";
-      result += "            <tr><td align=\"center\" class=\"txtnav3\">"
-          + agendaSessionController.getString("mois" + day.get(Calendar.MONTH));
-      result += "            </td></tr>";
-      result += "            <tr><td align=\"center\" class=\"txtnav3\">"
-          + DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage());
-      result += "            </td></tr>\n";
-      result += "            <tr><td>\n";
+      result.append("    <tr> ");
+      result.append("     <td>");
+      result.append(
+          "       <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\"> " +
+              "\n");
+      result.append("        <tr><td><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
+      result.append("         <tr>\n");
+      result.append("            <td align=\"center\" class=\"txtbigdate\">")
+          .append(day.get(Calendar.DAY_OF_MONTH));
+      result.append("            </td></tr>");
+      result.append("            <tr><td align=\"center\" class=\"txtnav3\">")
+          .append(agendaSessionController.getString("mois" + day.get(Calendar.MONTH)));
+      result.append("            </td></tr>");
+      result.append("            <tr><td align=\"center\" class=\"txtnav3\">")
+          .append(DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage()));
+      result.append("            </td></tr>\n");
+      result.append("            <tr><td>\n");
 
       try {
-        result += (new CalendarHtmlView()).getHtmlView(DateUtil.parse(today),
-            agendaSessionController);
+        result.append(
+            (new CalendarHtmlView()).getHtmlView(DateUtil.parse(today), agendaSessionController));
       } catch (Exception e) {
       }
 
-      result += "             </td></tr>\n";
-      result += "           </table></td></tr>\n";
-      result += "         </table>\n";
-      result += "     </td></tr>\n";
+      result.append("             </td></tr>\n");
+      result.append("           </table></td></tr>\n");
+      result.append("         </table>\n");
+      result.append("     </td></tr>\n");
     }
-    result += "    </table>\n";
-    result += " </td></tr>\n";
-    result += "</table>\n";
+    result.append("    </table>\n");
+    result.append(" </td></tr>\n");
+    result.append("</table>\n");
     // end calendar
-    result += "</td>";
-    result += "</tr>\n";
-    result += "</table>";
-    return result;
+    result.append("</td>");
+    result.append("</tr>\n");
+    result.append("</table>");
+    return result.toString();
 
   }
 
@@ -714,9 +731,7 @@ public class AgendaHtmlView {
     try {
       day.setTime(DateUtil.parse(firstDay));
     } catch (java.text.ParseException e) {
-      SilverTrace.warn("agenda",
-          "AgendaHtmView.getHtmlViewByWeek(String firstDay)",
-          "agenda.MSG_CANT_GET_VIEW_WEKK", "return= null", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "";
     }
 
@@ -911,10 +926,7 @@ public class AgendaHtmlView {
     try {
       day.setTime(DateUtil.parse(firstDay));
     } catch (java.text.ParseException e) {
-      SilverTrace.warn("agenda",
-          "AgendaHtmView.getHtmlViewByWeek(String firstDay)",
-          "agenda.MSG_CANT_GET_VIEW_WEEK", "return= null", e);
-
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return "";
     }
 
@@ -968,9 +980,7 @@ public class AgendaHtmlView {
       long ms = endTime - startTime;
       return (int) (ms / (60000 * 15));
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "AgendaHtmView.getDuration(Schedulable schedule)",
-          "agenda.MSG_CANT_DURATION", "id=" + schedule.getId()
-          + " return=0", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return 0;
     }
   }
@@ -994,9 +1004,7 @@ public class AgendaHtmlView {
       long ms = endTime - startTime;
       return (int) (ms / (60000 * 15));
     } catch (Exception e) {
-      SilverTrace.warn("agenda",
-          "AgendaHtmView.getDuration(SchedulableGroup group)",
-          "agenda.MSG_CANT_DURATION", "return=0", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return 0;
     }
   }

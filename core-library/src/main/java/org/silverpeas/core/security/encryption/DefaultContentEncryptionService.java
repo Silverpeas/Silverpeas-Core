@@ -544,7 +544,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     public void onError(Map<String, String> content, CryptoException ex) {
       try {
         wrapped.onError(content, ex);
-      } catch (Throwable t) {
+      } catch (Exception e) {
       }
       throw new CipherRenewingException(ex);
     }

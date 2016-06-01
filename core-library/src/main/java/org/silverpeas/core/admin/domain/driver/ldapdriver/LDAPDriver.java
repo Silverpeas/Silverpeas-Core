@@ -20,28 +20,26 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.domain.AbstractDomainDriver;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.domain.model.DomainProperty;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.SilverpeasException;
-
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
+import org.silverpeas.core.admin.domain.AbstractDomainDriver;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
@@ -449,14 +447,18 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
-    String extraFilter = "";
+    StringBuilder extraFilter = new StringBuilder();
     for (String propertyName : query.keySet()) {
-      extraFilter += "(" + propertyName + "=" + query.get(propertyName) + ")";
+      extraFilter.append("(")
+          .append(propertyName)
+          .append("=")
+          .append(query.get(propertyName))
+          .append(")");
     }
 
     String ld = LDAPUtility.openConnection(driverSettings);
     try {
-      return userTranslator.getAllUsers(ld, extraFilter);
+      return userTranslator.getAllUsers(ld, extraFilter.toString());
     } finally {
       LDAPUtility.closeConnection(ld);
     }

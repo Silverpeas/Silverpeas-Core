@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.i18n;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -294,7 +294,7 @@ public class I18NHelper {
 
    private static String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
       String selectedTranslation, String userLanguage) {
-    String list = "";
+     StringBuilder list = new StringBuilder();
     String currentTranslation = selectedTranslation;
 
     String onChangeJavascript = "";
@@ -307,57 +307,72 @@ public class I18NHelper {
         }
       }
     }
-    list += "<SELECT name=\"" + HTMLSelectObjectName + "\" "
-        + onChangeJavascript + ">\n";
+     list.append("<SELECT name=\"")
+         .append(HTMLSelectObjectName)
+         .append("\" ")
+         .append(onChangeJavascript)
+         .append(">\n");
     for (I18NLanguage language : toDisplay) {
       String selected = "";
       if (language.getCode().equals(currentTranslation)) {
         selected = "selected";
       }
 
-      list += "<option value=\"" + language.getCode() + '_'
-          + language.getTranslationId() + "\" " + selected + '>'
-          + language.getLabel() + "</option>\n";
+      list.append("<option value=\"")
+          .append(language.getCode())
+          .append('_')
+          .append(language.getTranslationId())
+          .append("\" ")
+          .append(selected)
+          .append('>')
+          .append(language.getLabel())
+          .append("</option>\n");
     }
-    list += "</SELECT>";
+     list.append("</SELECT>");
 
     if (bean != null) {
       String path = URLUtil.getApplicationURL();
       String text = ResourceLocator.getGeneralLocalizationBundle(userLanguage).getString(
           "GML.translationRemove");
 
-      list += "&nbsp;<span id=\"delTranslationLink\">";
+      list.append("&nbsp;<span id=\"delTranslationLink\">");
       if (bean.getTranslations().size() >= 2) {
-        list += "<a href=\"javaScript:document.getElementById('"
-            + HTMLHiddenRemovedTranslationMode
-            + "').value='true';removeTranslation();\"><img src=\""
-            + path
-            + "/util/icons/delete.gif\" border=\"0\" valign=\"absmiddle\" title=\""
-            + text + "\" alt=\"" + text + "\"></a>";
+        list.append("<a href=\"javaScript:document.getElementById('")
+            .append(HTMLHiddenRemovedTranslationMode)
+            .append("').value='true';removeTranslation();\"><img src=\"")
+            .append(path)
+            .append("/util/icons/delete.gif\" border=\"0\" valign=\"absmiddle\" title=\"")
+            .append(text)
+            .append("\" alt=\"")
+            .append(text)
+            .append("\"></a>");
       }
-      list += "</span>";
+      list.append("</span>");
 
-      list += "<input type=\"hidden\" id=\"" + HTMLHiddenRemovedTranslationMode
-          + "\" name=\"" + HTMLHiddenRemovedTranslationMode
-          + "\" value=\"false\">\n";
+      list.append("<input type=\"hidden\" id=\"")
+          .append(HTMLHiddenRemovedTranslationMode)
+          .append("\" name=\"")
+          .append(HTMLHiddenRemovedTranslationMode)
+          .append("\" value=\"false\">\n");
     }
-    return list;
+     return list.toString();
   }
 
   public static String updateHTMLLinks(I18NBean bean) {
-    String javaScript = "";
-
+    StringBuilder javaScript = new StringBuilder();
     Set<String> codes = bean.getTranslations().keySet();
     for (String lang : codes) {
-      javaScript += "document.getElementById(\"translation_" + lang
-          + "\").className = \"\";\n";
-      javaScript += "if (lang == '" + lang + "')\n";
-      javaScript += "{\n";
-      javaScript += "document.getElementById(\"translation_" + lang
-          + "\").className = \"ArrayNavigationOn\";\n";
-      javaScript += "}\n";
+      javaScript.append("document.getElementById(\"translation_")
+          .append(lang)
+          .append("\").className = \"\";\n");
+      javaScript.append("if (lang == '").append(lang).append("')\n");
+      javaScript.append("{\n");
+      javaScript.append("document.getElementById(\"translation_")
+          .append(lang)
+          .append("\").className = \"ArrayNavigationOn\";\n");
+      javaScript.append("}\n");
     }
-    return javaScript;
+    return javaScript.toString();
   }
 
   public static String[] getLanguageAndTranslationId(HttpServletRequest request) {

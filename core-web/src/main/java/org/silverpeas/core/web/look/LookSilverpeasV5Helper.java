@@ -43,6 +43,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
@@ -778,8 +779,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
         homepage.setPublications(getPublicationHelper().getUpdatedPublications(currentSpaceId, 0,
             resources.getInteger("space.homepage.latestpublications.nb", 5)));
       } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
 

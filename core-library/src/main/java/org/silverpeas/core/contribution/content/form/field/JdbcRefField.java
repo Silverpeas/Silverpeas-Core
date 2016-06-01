@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.owasp.encoder.Encode;
 
 public class JdbcRefField extends AbstractField {
 
@@ -141,5 +142,23 @@ public class JdbcRefField extends AbstractField {
     } else {
       return -1;
     }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof JdbcRefField)) {
+      return false;
+    }
+
+    final JdbcRefField that = (JdbcRefField) o;
+    return compareTo(that) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getValue()).toHashCode();
   }
 }

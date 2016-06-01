@@ -432,18 +432,19 @@ public abstract class AbstractTable<T> {
    */
   protected List<T> getMatchingRows(String returnedColumns,
       String[] matchColumns, String[] matchValues) throws UtilException {
-    String query = "select " + returnedColumns + " from " + tableName;
+    StringBuilder query =
+        new StringBuilder("select ").append(returnedColumns).append(" from ").append(tableName);
     List<String> notNullValues = new ArrayList<String>();
 
     String sep = " where ";
     for (int i = 0; i < matchColumns.length; i++) {
       if (matchValues[i] != null) {
-        query += sep + matchColumns[i] + " like ?";
+        query.append(sep).append(matchColumns[i]).append(" like ?");
         sep = " , ";
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query, notNullValues.toArray(new String[notNullValues.size()]));
+    return getRows(query.toString(), notNullValues.toArray(new String[notNullValues.size()]));
   }
 
   /**

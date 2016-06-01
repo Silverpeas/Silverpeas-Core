@@ -382,7 +382,9 @@ public class ProviderSwitch implements ProviderSwitchInterface {
               }
             }
           }
+          break;
         default:
+          break;
       }
     } catch (SilverpeasException ex) {
       throw new SocialNetworkException("ProviderSwitch.getSocialInformationsListOfMyContacts",

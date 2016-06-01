@@ -20,25 +20,13 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.importexport.model.ImportExportException;
-import org.silverpeas.core.importexport.model.RepositoriesType;
-import org.silverpeas.core.importexport.model.RepositoryType;
-import org.silverpeas.core.importexport.report.ImportReportManager;
-import org.silverpeas.core.importexport.report.MassiveReport;
-import org.silverpeas.core.importexport.report.UnitReport;
-import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
-import org.silverpeas.core.importexport.publication.PublicationContentType;
-import org.silverpeas.core.importexport.publication.XMLModelContentType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -48,25 +36,37 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentPK;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.model.RepositoriesType;
+import org.silverpeas.core.importexport.model.RepositoryType;
+import org.silverpeas.core.importexport.publication.PublicationContentType;
+import org.silverpeas.core.importexport.publication.XMLModelContentType;
+import org.silverpeas.core.importexport.report.ImportReportManager;
+import org.silverpeas.core.importexport.report.MassiveReport;
+import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.importexport.versioning.VersioningImportExport;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.mail.extractor.Extractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.mail.extractor.MailAttachment;
 import org.silverpeas.core.mail.extractor.MailExtractor;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -80,7 +80,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider
+    .getAttachmentService;
 import static org.silverpeas.core.contribution.attachment.model.DocumentType.attachment;
 
 /**
@@ -251,8 +252,7 @@ public class RepositoriesTypeManager {
 
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
-      SilverTrace
-          .error("importExport", "RepositoriesTypeManager.importFile", "root.EX_NO_MESSAGE", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.defaultLanguage);
     }
     return pubDetailToSave;
@@ -351,9 +351,7 @@ public class RepositoriesTypeManager {
       extractor = Extractor.getExtractor(file);
       mail = extractor.getMail();
     } catch (Exception e) {
-      SilverTrace.error("importExport",
-          "RepositoriesTypeManager.processMailContent",
-          "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+      SilverLogger.getLogger(this).error("Cannot extract mail data", e);
     }
     if (mail != null) {
       // save mail data into dedicated form
@@ -383,15 +381,19 @@ public class RepositoriesTypeManager {
       fields.add(fieldFROM);
 
       Address[] recipients = mail.getAllRecipients();
-      String to = "";
+      StringBuilder to = new StringBuilder();
       for (Address recipient : recipients) {
         InternetAddress ia = (InternetAddress) recipient;
         if (StringUtil.isDefined(ia.getPersonal())) {
-          to += ia.getPersonal() + " - ";
+          to.append(ia.getPersonal()).append(" - ");
         }
-        to += "<a href=\"mailto:" + ia.getAddress() + "\">" + ia.getAddress() + "</a></br>";
+        to.append("<a href=\"mailto:")
+            .append(ia.getAddress())
+            .append("\">")
+            .append(ia.getAddress())
+            .append("</a></br>");
       }
-      XMLField fieldTO = new XMLField("to", to);
+      XMLField fieldTO = new XMLField("to", to.toString());
       fields.add(fieldTO);
 
       // save form
@@ -432,8 +434,7 @@ public class RepositoriesTypeManager {
               pubDetail.isIndexable());
         }
       } catch (Exception e) {
-        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }

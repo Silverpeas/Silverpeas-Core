@@ -128,11 +128,11 @@ public class FileRepositoryManager {
    */
   public static String getAbsolutePath(String componentId, String[] directoryName) {
     int lg = directoryName.length;
-    String path = getAbsolutePath(componentId);
+    StringBuilder path = new StringBuilder(getAbsolutePath(componentId));
     for (int k = 0; k < lg; k++) {
-      path = path + directoryName[k] + separatorChar;
+      path.append(directoryName[k]).append(separatorChar);
     }
-    return path;
+    return path.toString();
   }
 
   /**

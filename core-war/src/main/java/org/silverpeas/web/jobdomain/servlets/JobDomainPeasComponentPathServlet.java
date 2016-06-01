@@ -24,19 +24,18 @@
 
 package org.silverpeas.web.jobdomain.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.service.OrganizationController;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
 
 public class JobDomainPeasComponentPathServlet extends HttpServlet {
 
@@ -69,17 +68,18 @@ public class JobDomainPeasComponentPathServlet extends HttpServlet {
   }
 
   private String getComponentPath(JobDomainPeasSessionController sc, String componentId) {
-    String componentPath = "";
+    StringBuilder componentPath = new StringBuilder();
 
     OrganizationController orgaController = sc.getOrganisationController();
 
     // Espace > Sous-espaces
     List<SpaceInst> spaceList = orgaController.getSpacePathToComponent(componentId);
     for (SpaceInst space : spaceList) {
-      componentPath += space.getName(sc.getLanguage()) + " > ";
+      componentPath.append(space.getName(sc.getLanguage())).append(" > ");
     }
     // Composant
-    componentPath += orgaController.getComponentInstLight(componentId).getLabel(sc.getLanguage());
-    return componentPath;
+    componentPath.append(
+        orgaController.getComponentInstLight(componentId).getLabel(sc.getLanguage()));
+    return componentPath.toString();
   }
 }

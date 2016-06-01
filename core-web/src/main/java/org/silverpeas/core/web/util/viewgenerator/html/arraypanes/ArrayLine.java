@@ -315,21 +315,21 @@ public class ArrayLine implements SimpleGraphicElement, Comparable<ArrayLine> {
    * @see
    */
   public String print() {
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
     if (StringUtil.isDefined(getId())) {
-      result += "<tr id=\""+getId()+"\">";
+      result.append("<tr id=\"").append(getId()).append("\">");
     } else {
-      result += "<tr>";
+      result.append("<tr>");
     }
     for (SimpleGraphicElement element : cells) {
-      result += element.print();
+      result.append(element.print());
     }
-    result += "</tr>\n";
+    result.append("</tr>\n");
     for (ArrayLine line : sublines) {
-      result += line.print();
+      result.append(line.print());
     }
-    return result;
+    return result.toString();
   }
 
   /**
@@ -337,19 +337,19 @@ public class ArrayLine implements SimpleGraphicElement, Comparable<ArrayLine> {
    * column. This is useful when a 0 cellspacing is used.
    */
   public String printWithPseudoColumns() {
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
-    result += "<tr>\n";
-    result += printPseudoColumn();
+    result.append("<tr>\n");
+    result.append(printPseudoColumn());
     for (SimpleGraphicElement element : cells) {
-      result += element.print();
-      result += printPseudoColumn();
+      result.append(element.print());
+      result.append(printPseudoColumn());
     }
-    result += "</tr>\n";
+    result.append("</tr>\n");
     for (ArrayLine line : sublines) {
-      result += line.printWithPseudoColumns();
+      result.append(line.printWithPseudoColumns());
     }
-    return result;
+    return result.toString();
   }
 
   /**

@@ -23,16 +23,25 @@
 */
 package org.silverpeas.core.admin.persistence;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
-
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.exception.SilverpeasException;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
 * A Table object manages a table in a database.
@@ -447,17 +456,18 @@ public abstract class Table<T> {
    */
   protected List<T> getMatchingRows(String returnedColumns, String[] matchColumns,
           String[] matchValues) throws AdminPersistenceException {
-    String query = "select " + returnedColumns + " from " + tableName;
+    StringBuilder query =
+        new StringBuilder("select ").append(returnedColumns).append(" from ").append(tableName);
     List<String> notNullValues = new ArrayList<String>();
     String sep = " where ";
     for (int i = 0; i < matchColumns.length; i++) {
       if (matchValues[i] != null) {
-        query += sep + matchColumns[i] + " like ?";
+        query.append(sep).append(matchColumns[i]).append(" like ?");
         sep = " , ";
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query, notNullValues);
+    return getRows(query.toString(), notNullValues);
   }
 
   /**

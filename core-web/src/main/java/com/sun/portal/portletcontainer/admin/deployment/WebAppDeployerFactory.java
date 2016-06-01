@@ -67,13 +67,14 @@ public class WebAppDeployerFactory {
         manager = (WebAppDeployer) Class.forName(deploymentManagerClass)
             .newInstance();
       }
-    } catch (Throwable t) {
+    } catch (IOException | ClassNotFoundException | InstantiationException |
+        IllegalAccessException t) {
       System.out.println("Exception: " + t.toString()
           + ". Using DefaultWebAppDeployer");
       try {
         manager = (WebAppDeployer) Class.forName(
             DEFAULT_DEPLOYMENT_MANAGER_CLASS).newInstance();
-      } catch (Throwable t1) {
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException t1) {
         System.out.println("Exception initializing DefaultWebAppDeployer: "
             + t1.toString());
       }

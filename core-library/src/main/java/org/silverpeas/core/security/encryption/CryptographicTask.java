@@ -120,7 +120,7 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
         }
         theContents.update(content);
       }
-    } catch (Throwable ex) {
+    } catch (Exception ex) {
       theContents.onError(content, new CryptoException(ex.getMessage(), ex));
     }
   }

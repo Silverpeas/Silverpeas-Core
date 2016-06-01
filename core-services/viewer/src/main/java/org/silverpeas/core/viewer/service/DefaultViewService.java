@@ -26,6 +26,7 @@ package org.silverpeas.core.viewer.service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.file.FileUtil;
@@ -94,7 +95,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
           try {
             FileUtils.copyFile(viewerContext.getOriginalSourceFile(), pdfFile);
           } catch (IOException e) {
-            e.printStackTrace();
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
         }
 
@@ -154,7 +155,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
         SwfUtil.fromPdfToSwf(pdfSource, swfFile, false);
         jsonConversion = false;
       } catch (Exception e) {
-        e.printStackTrace();
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
         splitMode = true;
       }
     }
@@ -166,7 +167,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
         try {
           JsonPdfUtil.convert(pdfSource, swfFile);
         } catch (Exception e) {
-          e.printStackTrace();
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
           jsonConversion = false;
         }
       }

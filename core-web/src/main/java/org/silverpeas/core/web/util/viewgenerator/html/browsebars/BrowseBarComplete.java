@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.util.List;
@@ -238,8 +239,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     try {
       return getTextBreadCrumb(printBreadCrumb());
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return "";
   }

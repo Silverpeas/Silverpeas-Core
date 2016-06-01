@@ -119,20 +119,22 @@ public class FormSelect extends FormLine {
    * @see
    */
   public String print() {
-    String retour = "\n<td>" + label + "</td>";
+    StringBuilder retour = new StringBuilder("\n<td>").append(label).append("</td>");
 
-    retour = retour + "\n<td><select name=\"" + name + "\" size=\""
-        + String.valueOf(size) + "\">";
+    retour.append("\n<td><select name=\"")
+        .append(name)
+        .append("\" size=\"")
+        .append(String.valueOf(size))
+        .append("\">");
     for (int i = 0; i < nbItems; i++) {
-      retour = retour + "\n<option value=\"" + itemValues.get(i)
-          + "\"";
+      retour.append("\n<option value=\"").append(itemValues.get(i)).append("\"");
       if (itemsSelected.get(i)) {
-        retour = retour + " selected ";
+        retour.append(" selected ");
       }
-      retour = retour + ">" + itemsLabels.get(i) + "</option>";
+      retour.append(">").append(itemsLabels.get(i)).append("</option>");
     }
-    retour = retour + "\n</select></td>";
-    return retour;
+    retour.append("\n</select></td>");
+    return retour.toString();
   }
 
   /**

@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.pdc.pdc.model.AxisHeader;
-import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.index.search.model.AxisFilterNode;
+import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Singleton;
@@ -237,7 +237,7 @@ public class PdcUtilizationDAO {
 
       whereClause = new StringBuilder("where treeId = " + treeId + " and (1=0 "); // on prépare la
       // prochaine clause Where
-      String allCompletPathes = "";
+      StringBuilder allCompletPathes = new StringBuilder();
       // String qui va nous permettre par la suite de récupérer les valeurs ascendantes
       Statement stmt = null;
       ResultSet rs = null;
@@ -247,7 +247,7 @@ public class PdcUtilizationDAO {
         while (rs.next()) {
           String path = rs.getString(1);
           String node = Integer.toString(rs.getInt(2));
-          allCompletPathes += path;
+          allCompletPathes.append(path);
           whereClause.append(" or path like '").append(path).append(node).append("/%'");
           // on construit la clause Where pour le prochain accès en base
         }
@@ -257,7 +257,7 @@ public class PdcUtilizationDAO {
       }
       // ici, on ajoute dans le vecteur devant contenir toutes les valeurs interdites
       // les valeurs qui sont stockées dans le String allCompletPathes
-      StringTokenizer st = new StringTokenizer(allCompletPathes, "/");
+      StringTokenizer st = new StringTokenizer(allCompletPathes.toString(), "/");
       String forbiddenValue = "";
       while (st.hasMoreTokens()) {
         forbiddenValue = st.nextToken();
@@ -312,21 +312,21 @@ public class PdcUtilizationDAO {
       return axisUsed;
     }
 
-    String selectStatement =
+    StringBuilder selectStatement = new StringBuilder(
         "select distinct(A.id), A.RootId, A.Name, A.AxisType, A.AxisOrder, A.description " +
-            "from SB_Pdc_Utilization U, SB_Pdc_Axis A " + "where U.axisId = A.id ";
+            "from SB_Pdc_Utilization U, SB_Pdc_Axis A where U.axisId = A.id ");
 
     // la liste instanceIds n'est jamais nulle
-    selectStatement += "  and U.instanceId IN (";
+    selectStatement.append("  and U.instanceId IN (");
     boolean first = true;
     for (String instanceId : instanceIds) {
       if (!first) {
-        selectStatement += ",";
+        selectStatement.append(",");
       }
-      selectStatement += "'" + instanceId + "'";
+      selectStatement.append("'").append(instanceId).append("'");
       first = false;
     }
-    selectStatement += " ) ";
+    selectStatement.append(" ) ");
 
     AxisFilterNode condition;
     String property;
@@ -342,32 +342,32 @@ public class PdcUtilizationDAO {
 
       if (AxisFilter.NAME.equals(property)) {
         if (first_condition) {
-          selectStatement += " and (A.Name like ? ";
+          selectStatement.append(" and (A.Name like ? ");
           first_condition = false;
         } else {
-          selectStatement += " or A.Name like ? ";
+          selectStatement.append(" or A.Name like ? ");
         }
       } else if (AxisFilter.DESCRIPTION.equals(property)) {
         if (first_condition) {
-          selectStatement += " and (A.description like ? ";
+          selectStatement.append(" and (A.description like ? ");
           first_condition = false;
         } else {
-          selectStatement += " or A.description like ? ";
+          selectStatement.append(" or A.description like ? ");
         }
       }
     }
 
     if (!first_condition) {
-      selectStatement += ") ";
+      selectStatement.append(") ");
     }
-    selectStatement += " order by A.AxisType Asc, A.AxisOrder ASC";
+    selectStatement.append(" order by A.AxisType Asc, A.AxisOrder ASC");
 
 
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt = con.prepareStatement(selectStatement.toString());
       int index = 1;
       for (int i = 0; i < filter.size(); i++) {
         if (i == 0) {

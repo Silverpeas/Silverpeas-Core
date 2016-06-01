@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.process.management;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.process.SilverpeasProcess;
 import org.silverpeas.core.process.check.ProcessCheck;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.LinkedList;
@@ -186,13 +186,10 @@ public class DefaultProcessManagement implements ProcessManagement {
       throws Exception {
     try {
       process.onSuccessful();
-    } catch (final Throwable throwable) {
-
-      // LOG
-      SilverTrace.error("Process", "processManagement.onSuccessful()",
-          "processManagement.ON_SUCCESSFUL_ERROR",
-          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString(),
-          throwable);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this)
+          .error("The process has thrown an exception while processing the successful status " +
+              "(sessionId = " + context.getSession().getId() + ")", e);
     }
   }
 
@@ -216,14 +213,9 @@ public class DefaultProcessManagement implements ProcessManagement {
         fromProcess = context.getProcessInError();
 
         // Error
-        SilverTrace.error(
-            "Process",
-            "processManagement.onFailure()",
-            "processManagement.EX_PROCESS_FAILURE",
-            new StringBuilder("SessionId = ").append(context.getSession().getId())
-                .append(", ioErrorType = ").append(errorType.name())
-                .append(", exceptionClassName = ").append(exception.getClass().getName())
-                .toString(), exception);
+        SilverLogger.getLogger(this).error("The process has failed. Stack info: sessionId = " +
+            context.getSession().getId() + ", ioErrorType = " + errorType.name() +
+            ", exceptionClassName = " + exception.getClass().getName(), exception);
 
         // Treatment
         Exception continueException = null;

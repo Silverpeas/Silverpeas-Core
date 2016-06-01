@@ -27,28 +27,18 @@ package org.silverpeas.core.contribution.publication.model;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-
 public class PublicationSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = -1169335280661356348L;
-  static public DataFlavor PublicationDetailFlavor;
-  static {
-    try {
-      PublicationDetailFlavor = new DataFlavor(
-          Class
-          .forName("org.silverpeas.core.contribution.publication.model.PublicationDetail"),
-          "Publication");
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
+  public static final DataFlavor PublicationDetailFlavor =
+      new DataFlavor(PublicationDetail.class, "Publication");
 
   private PublicationDetail m_pub;
 
@@ -111,8 +101,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
       keyData.setProperty("BEGINDATE", m_pub.getBeginDate().toString());
       keyData.setProperty("ENDDATE", m_pub.getEndDate().toString());
     } catch (SKDException e) {
-      SilverTrace.error("publication", "PublicationSelection.getKeyData",
-          "publication.ERROR_KEY_DATA", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return keyData;
   }

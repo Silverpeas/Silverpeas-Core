@@ -23,20 +23,20 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -266,19 +266,20 @@ public class ExplorerField extends AbstractField {
    * Returns the access path of the object.
    */
   private String getPath(String componentId, String nodeId, String language) {
-    String path = "";
+    StringBuilder path = new StringBuilder();
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
       List<SpaceInst> listSpaces = OrganizationControllerProvider.getOrganisationController()
           .getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
-        path += space.getName(language) + " > ";
+        path.append(space.getName(language)).append(" > ");
       }
 
       // Service
-      path += OrganizationControllerProvider.getOrganisationController().getComponentInstLight(
-          componentId).getLabel(language);
+      path.append(OrganizationControllerProvider.getOrganisationController()
+          .getComponentInstLight(componentId)
+          .getLabel(language));
 
       // Theme > SubTheme
       String pathString = "";
@@ -287,8 +288,7 @@ public class ExplorerField extends AbstractField {
         try {
           nodeService = NodeService.get();
         } catch (Exception e) {
-          SilverTrace.error("form", "ExplorerFieldDisplayer.display",
-              "form.EX_CANT_CREATE_NODEBM_HOME", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
 
         if (nodeService != null) {
@@ -315,10 +315,10 @@ public class ExplorerField extends AbstractField {
         }
       }
       if (pathString.length() > 0) {
-        path += " > " + pathString;
+        path.append(" > ").append(pathString);
       }
     }
 
-    return path;
+    return path.toString();
   }
 }

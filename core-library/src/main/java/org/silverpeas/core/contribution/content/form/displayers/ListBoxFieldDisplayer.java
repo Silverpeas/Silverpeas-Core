@@ -32,7 +32,8 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,10 +80,6 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     String language = PagesContext.getLanguage();
 
-    if (!TextField.TYPE.equals(template.getTypeName())) {
-
-    }
-
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
@@ -108,16 +105,12 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String value = "";
     String keys = "";
     String values;
-    String html = "";
+    StringBuilder html = new StringBuilder();
     String language = PagesContext.getLanguage();
     String cssClass = null;
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
-
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-
-    }
 
     if (!field.isNull()) {
       value = field.getValue(language);
@@ -130,17 +123,26 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       }
     }
     if (StringUtil.isDefined(cssClass)) {
-      html += "<select " + cssClass + " id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+      html.append("<select ")
+          .append(cssClass)
+          .append(" id=\"")
+          .append(fieldName)
+          .append("\" name=\"")
+          .append(fieldName)
+          .append("\"");
     } else {
-      html += "<select id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+      html.append("<select id=\"")
+          .append(fieldName)
+          .append("\" name=\"")
+          .append(fieldName)
+          .append("\"");
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
-      html += " disabled";
+      html.append(" disabled");
     }
 
-    html += " >\n";
-    html += "<option value=\"\"></option>\n";
+    html.append(" >\n").append("<option value=\"\"></option>\n");
     if (parameters.containsKey("keys")) {
       keys = parameters.get("keys");
     }
@@ -158,30 +160,31 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     int nbTokens = stKeys.countTokens();
 
     if (stKeys.countTokens() != stValues.countTokens()) {
-      SilverTrace.error("form", "ListBoxFieldDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
-          "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
+      SilverLogger.getLogger(this)
+          .error("Illegal Parameters. Key count = {0}, values count = {1}", stKeys.countTokens(),
+              stValues.countTokens());
     } else {
       for (int i = 0; i < nbTokens; i++) {
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
 
-        html += "<option ";
+        html.append("<option ");
         if (optKey.equals(value)) {
-          html += "selected=\"selected\" ";
+          html.append("selected=\"selected\" ");
         }
 
-        html += "value=\"" + optKey + "\">" + optValue + "</option>\n";
+        html.append("value=\"").append(optKey).append("\">").append(optValue).append("</option>\n");
       }
     }
 
-    html += "</select>\n";
+    html.append("</select>\n");
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.
         isHidden() && PagesContext.useMandatory()) {
-      html += Util.getMandatorySnippet();
+      html.append(Util.getMandatorySnippet());
     }
 
-    out.println(html);
+    out.println(html.toString());
   }
 
   @Override

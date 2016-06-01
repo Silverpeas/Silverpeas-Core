@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -39,24 +39,24 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEventNotifier;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEventNotifier;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -167,15 +167,9 @@ public class WysiwygManager {
       Iterator<File> i = listImages.iterator();
       int nbImages = listImages.size();
       String[][] images = new String[nbImages][2];
-      SilverTrace
-          .info("wysiwyg", "WysiwygController.getWebsiteImages()", "root.MSG_GEN_PARAM_VALUE",
-              "nbImages=" + nbImages + " path=" + path);
       File image;
       for (int j = 0; j < nbImages; j++) {
         image = i.next();
-        SilverTrace
-            .info("wysiwyg", "WysiwygController.getWebsiteImages()", "root.MSG_GEN_PARAM_VALUE",
-                "image=" + image.getAbsolutePath());
         images[j][0] = finNode2(image.getAbsolutePath(), componentId).replace('\\', '/');
         images[j][1] = image.getName();
       }
@@ -205,9 +199,6 @@ public class WysiwygManager {
       File page;
       for (int j = 0; j < nbPages; j++) {
         page = i.next();
-        SilverTrace
-            .info("wysiwyg", "WysiwygController.getWebsitePages()", "root.MSG_GEN_PARAM_VALUE",
-                "page=" + page.getAbsolutePath());
         pages[j][0] = finNode2(page.getAbsolutePath(), componentId).replace('\\', '/');
         pages[j][1] = page.getName();
       }
@@ -481,10 +472,6 @@ public class WysiwygManager {
     String lang = I18NHelper.checkLanguage(content.getLanguage());
     DocumentType wysiwygType = DocumentType.wysiwyg;
     String fileName = getWysiwygFileName(content.getContributionId().getLocalId(), lang);
-    SilverTrace
-        .info("wysiwyg", "WysiwygController.updateFileAndAttachment()", "root.MSG_GEN_PARAM_VALUE",
-            "fileName=" + fileName + " context=" + wysiwygType + "objectId=" +
-                content.getContributionId().getLocalId());
     SimpleDocument document =
         searchAttachmentDetail(content.getContributionId(), wysiwygType, lang);
     if (document != null) {
@@ -539,10 +526,9 @@ public class WysiwygManager {
       for (SimpleDocument document : documents) {
         AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
       }
-    } catch (AttachmentException exc) {
-      SilverTrace.error("wysiwyg", "WysiwygController.deleteWysiwygAttachments()",
-          "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
-      throw exc;
+    } catch (AttachmentException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      throw e;
     }
   }
 
@@ -659,7 +645,7 @@ public class WysiwygManager {
           finalLanguage = currentLanguage;
         }
       } catch (IOException ex) {
-        SilverTrace.error("wysiwyg", "WysiwygController.load()", "Error loading content", ex);
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       }
     }
     if (StringUtil.isNotDefined(content) && !finalLanguage.equals(currentLanguage)) {
@@ -873,7 +859,7 @@ public class WysiwygManager {
    */
   private String replaceInternalImagesPath(String wysiwygContent, String oldComponentId,
       String oldObjectId, String componentId, String objectId) {
-    String newStr = "";
+    StringBuilder newStr = new StringBuilder();
     if (wysiwygContent.contains("FileServer")) {
       String co = "ComponentId=" + oldComponentId;
       String di = "Directory=Attachment/" + getImagesFileName(oldObjectId);
@@ -887,69 +873,69 @@ public class WysiwygManager {
       // search for "ComponentId=" and replace
       end = wysiwygContent.indexOf(co, begin);
       while (end != -1) {
-        newStr += wysiwygContent.substring(begin, end);
-        newStr += "ComponentId=" + componentId;
+        newStr.append(wysiwygContent.substring(begin, end));
+        newStr.append("ComponentId=").append(componentId);
         begin = end + co.length();
         end = wysiwygContent.indexOf(co, begin);
       }
-      newStr += wysiwygContent.substring(begin, wysiwygContent.length());
-      wysiwygContent = newStr;
-      newStr = "";
+      newStr.append(wysiwygContent.substring(begin, wysiwygContent.length()));
+      wysiwygContent = newStr.toString();
+      newStr = new StringBuilder();
 
       // search for "Directory=Attachment/" and replace
       begin = 0;
       end = wysiwygContent.indexOf(di, begin);
       while (end != -1) {
-        newStr += wysiwygContent.substring(begin, end);
-        newStr += "Directory=Attachment/" + getImagesFileName(objectId);
+        newStr.append(wysiwygContent.substring(begin, end));
+        newStr.append("Directory=Attachment/").append(getImagesFileName(objectId));
         begin = end + di.length();
         end = wysiwygContent.indexOf(di, begin);
       }
-      newStr += wysiwygContent.substring(begin, wysiwygContent.length());
-      wysiwygContent = newStr;
-      newStr = "";
+      newStr.append(wysiwygContent.substring(begin, wysiwygContent.length()));
+      wysiwygContent = newStr.toString();
+      newStr = new StringBuilder();
 
       // search for "Directory=Attachment%2F" and replace
       begin = 0;
       end = wysiwygContent.indexOf(diBis, begin);
       while (end != -1) {
-        newStr += wysiwygContent.substring(begin, end);
-        newStr += "Directory=Attachment%2F" + getImagesFileName(objectId);
+        newStr.append(wysiwygContent.substring(begin, end));
+        newStr.append("Directory=Attachment%2F").append(getImagesFileName(objectId));
         begin = end + diBis.length();
         end = wysiwygContent.indexOf(diBis, begin);
       }
-      newStr += wysiwygContent.substring(begin, wysiwygContent.length());
-      wysiwygContent = newStr;
-      newStr = "";
+      newStr.append(wysiwygContent.substring(begin, wysiwygContent.length()));
+      wysiwygContent = newStr.toString();
+      newStr = new StringBuilder();
 
       // search for "Directory=Attachment\" and replace
       begin = 0;
       end = wysiwygContent.indexOf(diTer, begin);
       while (end != -1) {
-        newStr += wysiwygContent.substring(begin, end);
-        newStr += "Directory=Attachment\\" + getImagesFileName(objectId);
+        newStr.append(wysiwygContent.substring(begin, end));
+        newStr.append("Directory=Attachment\\").append(getImagesFileName(objectId));
         begin = end + diTer.length();
         end = wysiwygContent.indexOf(diTer, begin);
       }
-      newStr += wysiwygContent.substring(begin, wysiwygContent.length());
-      wysiwygContent = newStr;
-      newStr = "";
+      newStr.append(wysiwygContent.substring(begin, wysiwygContent.length()));
+      wysiwygContent = newStr.toString();
+      newStr = new StringBuilder();
 
       // search for "Directory=Attachment%5C" and replace
       begin = 0;
       end = wysiwygContent.indexOf(diQua, begin);
       while (end != -1) {
-        newStr += wysiwygContent.substring(begin, end);
-        newStr += "Directory=Attachment%5C" + getImagesFileName(objectId);
+        newStr.append(wysiwygContent.substring(begin, end));
+        newStr.append("Directory=Attachment%5C" + getImagesFileName(objectId));
         begin = end + diQua.length();
         end = wysiwygContent.indexOf(diQua, begin);
       }
-      newStr += wysiwygContent.substring(begin, wysiwygContent.length());
+      newStr.append(wysiwygContent.substring(begin, wysiwygContent.length()));
     } else {
-      newStr = wysiwygContent;
+      newStr = new StringBuilder(wysiwygContent);
     }
 
-    return newStr;
+    return newStr.toString();
   }
 
   public void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
@@ -1049,9 +1035,8 @@ public class WysiwygManager {
           indexEntry.addLinkedFileId(attachmentId);
         }
       } catch (Exception e) {
-        SilverTrace.warn("wisiwyg", "WysiwygController", "root.MSG_GEN_PARAM_VALUE",
-            "Erreur dans l'indexation d'un fichier joint lié au contenu wysiwyg - attachmentId:" +
-                attachmentId);
+        SilverLogger.getLogger(this)
+            .error("Error while indexing the WYSIWYG content (attachment id {0})", attachmentId);
       }
     }
   }

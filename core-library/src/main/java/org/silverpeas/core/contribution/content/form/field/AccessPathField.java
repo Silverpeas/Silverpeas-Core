@@ -24,21 +24,19 @@
 
 package org.silverpeas.core.contribution.content.form.field;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * An AccessPathField stores the current access path of the form
@@ -94,19 +92,19 @@ public class AccessPathField extends TextField {
    */
   public String getAccessPath(String componentId, String nodeId,
       String contentLanguage) {
-    String currentAccessPath = "";
+    StringBuilder currentAccessPath = new StringBuilder();
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
       List<SpaceInst> listSpaces =  OrganizationControllerProvider
           .getOrganisationController().getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
-        currentAccessPath += space.getName() + " > ";
+        currentAccessPath.append(space.getName()).append(" > ");
       }
 
       // Service
-      currentAccessPath +=  OrganizationControllerProvider.getOrganisationController()
-          .getComponentInstLight(componentId).getLabel();
+      currentAccessPath.append(OrganizationControllerProvider.getOrganisationController()
+          .getComponentInstLight(componentId).getLabel());
 
       // Theme > SubTheme
       String pathString = "";
@@ -115,8 +113,7 @@ public class AccessPathField extends TextField {
         try {
           nodeService = NodeService.get();
         } catch (Exception e) {
-          SilverTrace.error("form", "AccessPathFieldDisplayer.display",
-              "form.EX_CANT_CREATE_NODEBM_HOME");
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
 
         if (nodeService != null) {
@@ -144,10 +141,10 @@ public class AccessPathField extends TextField {
       }
 
       if (pathString.length() > 0) {
-        currentAccessPath += " > " + pathString;
+        currentAccessPath.append(" > ").append(pathString);
       }
     }
 
-    return currentAccessPath;
+    return currentAccessPath.toString();
   }
 }

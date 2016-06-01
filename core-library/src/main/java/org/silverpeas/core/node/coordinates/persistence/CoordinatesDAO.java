@@ -210,7 +210,7 @@ public class CoordinatesDAO {
     ResultSet rs = null;
 
     String fatherPath = "";
-    String whereClause = "";
+    StringBuilder whereClause = new StringBuilder();
     String fatherId = "";
     String rootFatherId = "";
     int axisToMatch = fatherPaths.size();
@@ -227,11 +227,12 @@ public class CoordinatesDAO {
             fatherPath.length());
         // extrait l'id de la racine
         rootFatherId = fatherPath.substring(0, fatherPath.indexOf('/'));
-        whereClause += " nodeId = " + fatherId;
-        whereClause += " or (nodeId = " + rootFatherId
-            + " and coordinatesLeaf = '1') ";
+        whereClause.append(" nodeId = ").append(fatherId);
+        whereClause.append(" or (nodeId = ")
+            .append(rootFatherId)
+            .append(" and coordinatesLeaf = '1') ");
         if (it.hasNext()) {
-          whereClause += " Or ";
+          whereClause.append(" Or ");
         }
       }
     }
@@ -239,7 +240,7 @@ public class CoordinatesDAO {
     String selectStatement = "select coordinatesId, count(*) " + "from "
         + pk.getTableName() + " ";
     if (fatherPaths != null && fatherPaths.size() > 0) {
-      selectStatement += "where " + whereClause;
+      selectStatement += "where " + whereClause.toString();
     }
     selectStatement += " And instanceId = '" + pk.getComponentName() + "' ";
     selectStatement += " GROUP BY coordinatesId";

@@ -24,20 +24,19 @@
 
 package org.silverpeas.web.jobdomain.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.service.OrganizationController;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
 
 public class JobDomainPeasGroupPathServlet extends HttpServlet {
 
@@ -70,7 +69,7 @@ public class JobDomainPeasGroupPathServlet extends HttpServlet {
   }
 
   private String getGroupPath(JobDomainPeasSessionController sc, String groupId) {
-    String groupPath = "";
+    StringBuilder groupPath = new StringBuilder();
 
     OrganizationController orgaController = sc.getOrganisationController();
     Group group = orgaController.getGroup(groupId);
@@ -82,19 +81,19 @@ public class JobDomainPeasGroupPathServlet extends HttpServlet {
 
     // nom du domaine
     if ("-1".equals(domainId)) {// domaine mixte
-      groupPath += sc.getString("JDP.domainMixt");
+      groupPath.append(sc.getString("JDP.domainMixt"));
     } else {
-      groupPath += domain.getName();
+      groupPath.append(domain.getName());
     }
 
     // nom du(des) groupe(s) pères
     List<String> groupList = orgaController.getPathToGroup(groupId);
     for (String elementGroupId : groupList) {
-      groupPath += " > " + orgaController.getGroup(elementGroupId).getName();
+      groupPath.append(" > ").append(orgaController.getGroup(elementGroupId).getName());
     }
 
     // nom du groupe
-    groupPath += " > " + group.getName();
-    return groupPath;
+    groupPath.append(" > ").append(group.getName());
+    return groupPath.toString();
   }
 }

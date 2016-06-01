@@ -21,7 +21,7 @@ public class SilverpeasExceptionLoggingFilter implements Filter {
       final FilterChain chain) throws IOException, ServletException {
     try {
       chain.doFilter(request, response);
-    } catch (Throwable t) {
+    } catch (Exception t) {
       SilverLogger.getLogger("silverpeas.exception.unexpected").error(t.getLocalizedMessage(), t);
       throw t;
     }

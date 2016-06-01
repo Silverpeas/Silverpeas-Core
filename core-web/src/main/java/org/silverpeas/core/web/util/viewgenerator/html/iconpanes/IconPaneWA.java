@@ -58,25 +58,25 @@ public class IconPaneWA extends AbstractIconPane {
    * @see
    */
   public String horizontalPrint() {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     Vector icons = getIcons();
     String spacing = getSpacing();
 
-    result += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>";
+    result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
     if (icons.size() > 0) {
-      result += "<td>";
-      result += ((Icon) icons.elementAt(0)).print();
-      result += "</td>";
+      result.append("<td>");
+      result.append(((Icon) icons.elementAt(0)).print());
+      result.append("</td>");
     }
     for (int i = 1; i < icons.size(); i++) {
-      result += "<td width=\"" + spacing + "\">&nbsp;</td>";
-      result += "<td>";
-      result += ((Icon) icons.elementAt(i)).print();
-      result += "</td>";
+      result.append("<td width=\"").append(spacing).append("\">&nbsp;</td>");
+      result.append("<td>");
+      result.append(((Icon) icons.elementAt(i)).print());
+      result.append("</td>");
     }
-    result += "</tr></table>";
+    result.append("</tr></table>");
 
-    return result;
+    return result.toString();
   }
 
   /**
@@ -85,27 +85,28 @@ public class IconPaneWA extends AbstractIconPane {
    * @see
    */
   public String verticalPrint() {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     Vector icons = getIcons();
     String verticalWidth = getVerticalWidth();
     String spacing = getSpacing();
 
-    result += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\""
-        + verticalWidth + "\">";
+    result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"")
+        .append(verticalWidth)
+        .append("\">");
     if (icons.size() > 0) {
-      result += "<tr><td>";
-      result += ((Icon) icons.elementAt(0)).print();
-      result += "</td></tr>";
+      result.append("<tr><td>");
+      result.append(((Icon) icons.elementAt(0)).print());
+      result.append("</td></tr>");
     }
     for (int i = 1; i < icons.size(); i++) {
-      result += "<tr><td height=\"" + spacing + "\">&nbsp;</td></tr>";
-      result += "<tr><td>";
-      result += ((Icon) icons.elementAt(i)).print();
-      result += "</td></tr>";
+      result.append("<tr><td height=\"" + spacing + "\">&nbsp;</td></tr>");
+      result.append("<tr><td>");
+      result.append(((Icon) icons.elementAt(i)).print());
+      result.append("</td></tr>");
     }
-    result += "</table>";
+    result.append("</table>");
 
-    return result;
+    return result.toString();
   }
 
   /**

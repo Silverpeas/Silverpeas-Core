@@ -44,9 +44,9 @@ public class FormPaneWA extends FormPane {
 
   /**
    * Generic class to display a typical WA form pane.
-   * @param String form name
-   * @param String form action url
-   * @param PageContext form page context
+   * @param nam form name
+   * @param url form action url
+   * @param pc form page context
    */
   public FormPaneWA(String nam, String url, PageContext pc) {
     super(nam, url, pc);
@@ -61,40 +61,40 @@ public class FormPaneWA extends FormPane {
    */
   public String print() {
     int i;
-    String result = "\n<!-- Formulaire genere automatiquement par Activ'Portal -->\n";
+    StringBuilder result = new StringBuilder("\n<!-- Formulaire genere automatiquement par Activ'Portal -->\n");
 
-    result = result + "\n<form name=\"" + name + "\" action=\"" + actionURL
-        + "\" method=\"" + formMethod + "\">";
+    result.append("\n<form name=\"").append(name).append("\" action=\"").append(actionURL)
+        .append("\" method=\"").append(formMethod).append("\">");
 
     // Champs "hidden"
     if (formHiddenFields.size() > 0) {
       for (i = 0; i < formHiddenFields.size(); i++) {
-        result = result + ((FormLine) formHiddenFields.elementAt(i)).print();
+        result.append(((FormLine) formHiddenFields.elementAt(i)).print());
       }
     }
 
     // Champs de saisie du formulaire
     if (formLines.size() > 0) {
-      result = result + "\n<table cellpadding=0 cellspacing=0 border=0>";
+      result.append("\n<table cellpadding=0 cellspacing=0 border=0>");
       for (i = 0; i < formLines.size(); i++) {
-        result = result + "\n<tr>"
-            + ((FormLine) formLines.elementAt(i)).print() + "\n</tr>";
+        result.append("\n<tr>")
+            .append(((FormLine) formLines.elementAt(i)).print()).append("\n</tr>");
       }
-      result = result + "\n</table>";
+      result.append("\n</table>");
     }
 
     // Boutons d'actions
     if (formActionButtons.size() > 0) {
-      result = result + "\n<table cellpadding=0 cellspacing=0 border=0>";
+      result.append("\n<table cellpadding=0 cellspacing=0 border=0>");
       for (i = 0; i < formActionButtons.size(); i++) {
-        result = result + "\n<tr>"
-            + ((FormLine) formActionButtons.elementAt(i)).print() + "\n</tr>";
+        result.append("\n<tr>")
+            .append(((FormLine) formActionButtons.elementAt(i)).print()).append("\n</tr>");
       }
-      result = result + "\n</table>";
+      result.append("\n</table>");
     }
 
-    result = result + "\n</form>";
-    return result;
+    result.append("\n</form>");
+    return result.toString();
   }
 
   /**
@@ -392,73 +392,73 @@ public class FormPaneWA extends FormPane {
   public String printDemo(String trueActionPage, String deleteActionCode,
       String modifyActionCode) {
     int i;
-    String result = "\n<!-- Formulaire genere automatiquement par Activ'Portal -->\n";
+    StringBuilder result = new StringBuilder("\n<!-- Formulaire genere automatiquement par Activ'Portal -->\n");
 
     // Champs "hidden"
     if (formHiddenFields.size() > 0) {
-      result = result + "\n<table width=\"100%\">";
+      result.append("\n<table width=\"100%\">");
       for (i = 0; i < formHiddenFields.size(); i++) {
-        result = result + "\n<tr>"
-            + ((FormLine) formHiddenFields.elementAt(i)).printDemo();
-        result = result + "\n<td>";
+        result.append("\n<tr>")
+            .append(((FormLine) formHiddenFields.elementAt(i)).printDemo());
+        result.append("\n<td>");
         if (((FormLine) formHiddenFields.elementAt(i)).isLocked()) {
-          result = result + "&nbsp;";
+          result.append("&nbsp;");
         } else {
-          result = result + "<a href=\"" + trueActionPage + "&action="
-              + deleteActionCode;
-          result = result + "&params="
-              + ((FormLine) formHiddenFields.elementAt(i)).getName() + "\">"
-              + message.getString("Supprimer") + "</a>";
+          result.append("<a href=\"" + trueActionPage + "&action=")
+              .append(deleteActionCode);
+          result.append("&params=")
+              .append(((FormLine) formHiddenFields.elementAt(i)).getName() + "\">")
+              .append(message.getString("Supprimer") + "</a>");
         }
-        result = result + "\n</td>\n</tr>";
+        result.append("\n</td>\n</tr>");
       }
-      result = result + "\n</table>";
+      result.append("\n</table>");
     }
 
     // Champs de saisie du formulaire
     if (formLines.size() > 0) {
-      result = result + "\n<table width=\"100%\">";
+      result.append("\n<table width=\"100%\">");
       for (i = 0; i < formLines.size(); i++) {
-        result = result + "\n<tr>"
-            + ((FormLine) formLines.elementAt(i)).printDemo();
-        result = result + "\n<td>";
+        result.append("\n<tr>")
+            .append(((FormLine) formLines.elementAt(i)).printDemo());
+        result.append("\n<td>");
         if (((FormLine) formLines.elementAt(i)).isLocked()) {
-          result = result + "&nbsp;";
+          result.append("&nbsp;");
         } else {
-          result = result + "<a href=\"" + trueActionPage + "&action="
-              + deleteActionCode;
-          result = result + "&params="
-              + ((FormLine) formLines.elementAt(i)).getName() + "\">"
-              + message.getString("Supprimer") + "</a>";
+          result.append("<a href=\"" + trueActionPage + "&action=")
+              .append(deleteActionCode);
+          result.append("&params=")
+              .append(((FormLine) formLines.elementAt(i)).getName() + "\">")
+              .append(message.getString("Supprimer") + "</a>");
         }
-        result = result + "\n</td>\n</tr>";
+        result.append("\n</td>\n</tr>");
       }
-      result = result + "\n</table>";
+      result.append("\n</table>");
     }
 
     // Boutons d'actions
     if (formActionButtons.size() > 0) {
-      result = result + "\n<table width=\"100%\">";
+      result.append("\n<table width=\"100%\">");
       for (i = 0; i < formActionButtons.size(); i++) {
-        result = result + "\n<tr>"
-            + ((FormLine) formActionButtons.elementAt(i)).printDemo();
-        result = result + "\n<td>";
+        result.append("\n<tr>")
+            .append(((FormLine) formActionButtons.elementAt(i)).printDemo());
+        result.append("\n<td>");
         if (((FormLine) formActionButtons.elementAt(i)).isLocked()) {
-          result = result + "&nbsp;";
+          result.append("&nbsp;");
         } else {
-          result = result + "<a href=\"" + trueActionPage + "&action="
-              + deleteActionCode;
-          result = result + "&params="
-              + ((FormLine) formActionButtons.elementAt(i)).getName() + "\">"
-              + message.getString("Supprimer") + "</a>";
+          result.append("<a href=\"").append(trueActionPage).append("&action=")
+              .append(deleteActionCode);
+          result.append("&params=")
+              .append(((FormLine) formActionButtons.elementAt(i)).getName() + "\">")
+              .append(message.getString("Supprimer") + "</a>");
         }
-        result = result + "\n</td>\n</tr>";
+        result.append("\n</td>\n</tr>");
       }
-      result = result + "\n</table>";
+      result.append("\n</table>");
     }
 
-    result = result + "\n</form>";
-    return result;
+    result.append("\n</form>");
+    return result.toString();
   }
 
 }

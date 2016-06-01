@@ -30,6 +30,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -171,27 +172,26 @@ public class X509Factory {
     try {
       fis = new FileInputStream(truststoreFile);
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
     try {
       keyStore.load(fis, truststorePwd.toCharArray());
     } catch (NoSuchAlgorithmException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     } catch (CertificateException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
     try {
       if (fis != null)
         fis.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
 
     return keyStore;
@@ -203,29 +203,29 @@ public class X509Factory {
     try {
       fos = new FileOutputStream(truststoreFile);
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
     try {
       keyStore.store(fos, truststorePwd.toCharArray());
     } catch (KeyStoreException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     } catch (NoSuchAlgorithmException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     } catch (CertificateException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
     try {
       fos.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
   }
 }

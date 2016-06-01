@@ -445,11 +445,11 @@ public class HtmlExportGenerator {
         sb.append(EncodeHelper.javaStringToHtmlString(node.getName(language)))
             .append("</option>\n");
       } else {
-        String spaces = "";
+        StringBuilder spaces = new StringBuilder();
         for (int i = 0; i < node.getLevel() - 3; i++) {
-          spaces += "&nbsp;&nbsp;";
+          spaces.append("&nbsp;&nbsp;");
           sb.append("<option value=\"").append(node.getNodePK().getId());
-          sb.append("\" class=\"intfdcolor5\">").append(spaces);
+          sb.append("\" class=\"intfdcolor5\">").append(spaces.toString());
           sb.append(EncodeHelper.javaStringToHtmlString(node.getName(language)));
           sb.append("</option>\n");
         }

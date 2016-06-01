@@ -26,13 +26,13 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.formpanes;
 
-import java.util.Vector;
-import javax.servlet.jsp.PageContext;
-
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
-import org.silverpeas.core.util.Charsets;
+
+import javax.servlet.jsp.PageContext;
+import java.util.Vector;
 
 /**
  * The FormPane interface gives us the skeleton for all funtionnalities we need to display typical
@@ -421,53 +421,52 @@ public abstract class FormPane implements SimpleGraphicElement {
    */
   public String toXML() {
     int i;
-    String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    StringBuilder result = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
-    result = result + "\n\n" + getDTD();
-    result = result + "\n\n<formulaire>";
-    result = result + "\n<name>" + name + "</name>";
-    result = result + "\n<displayName>" + displayName + "</displayName>";
-    result = result + "\n<description>" + description + "</description>";
-    result = result + "\n<reply>" + String.valueOf(reply) + "</reply>";
-    result = result + "\n<utilisateurArchivageDemandes>"
-        + String.valueOf(utilisateurArchivageDemandes)
-        + "</utilisateurArchivageDemandes>";
-    result = result + "\n<publieurArchivageDemandes>"
-        + String.valueOf(publieurArchivageDemandes)
-        + "</publieurArchivageDemandes>";
-    result = result + "\n<utilisateurArchivageReponses>"
-        + String.valueOf(utilisateurArchivageReponses)
-        + "</utilisateurArchivageReponses>";
-    result = result + "\n<publieurArchivageReponses>"
-        + String.valueOf(publieurArchivageReponses)
-        + "</publieurArchivageReponses>";
-    result = result + "\n<utilisateurEnvoiDemandes>"
-        + String.valueOf(utilisateurEnvoiDemandes)
-        + "</utilisateurEnvoiDemandes>";
+    result.append("\n\n").append(getDTD());
+    result.append("\n\n<formulaire>");
+    result.append("\n<name>" + name + "</name>");
+    result.append("\n<displayName>" + displayName + "</displayName>");
+    result.append("\n<description>" + description + "</description>");
+    result.append("\n<reply>" + String.valueOf(reply) + "</reply>");
+    result.append("\n<utilisateurArchivageDemandes>")
+        .append(String.valueOf(utilisateurArchivageDemandes))
+        .append("</utilisateurArchivageDemandes>");
+    result.append("\n<publieurArchivageDemandes>")
+        .append(String.valueOf(publieurArchivageDemandes))
+        .append("</publieurArchivageDemandes>");
+    result.append("\n<utilisateurArchivageReponses>")
+        .append(String.valueOf(utilisateurArchivageReponses))
+        .append("</utilisateurArchivageReponses>");
+    result.append("\n<publieurArchivageReponses>")
+        .append(String.valueOf(publieurArchivageReponses))
+        .append("</publieurArchivageReponses>");
+    result.append("\n<utilisateurEnvoiDemandes>")
+        .append(String.valueOf(utilisateurEnvoiDemandes))
+        .append("</utilisateurEnvoiDemandes>");
 
     // Champs "hidden"
     if (formHiddenFields.size() > 0) {
       for (i = 0; i < formHiddenFields.size(); i++) {
-        result = result + ((FormLine) formHiddenFields.elementAt(i)).toXML();
+        result.append(((FormLine) formHiddenFields.elementAt(i)).toXML());
       }
     }
 
     // Champs de saisie du formulaire
     if (formLines.size() > 0) {
       for (i = 0; i < formLines.size(); i++) {
-        result = result + "\n" + ((FormLine) formLines.elementAt(i)).toXML();
+        result.append("\n" + ((FormLine) formLines.elementAt(i)).toXML());
       }
     }
 
     // Boutons d'actions
     if (formActionButtons.size() > 0) {
       for (i = 0; i < formActionButtons.size(); i++) {
-        result = result + "\n"
-            + ((FormLine) formActionButtons.elementAt(i)).toXML();
+        result.append("\n").append(((FormLine) formActionButtons.elementAt(i)).toXML());
       }
     }
-    result = result + "\n</formulaire>";
-    return toXMLString(result);
+    result.append("\n</formulaire>");
+    return toXMLString(result.toString());
   }
 
   private String toXMLString(String s) {
@@ -482,18 +481,17 @@ public abstract class FormPane implements SimpleGraphicElement {
    * @see
    */
   public String getBuildRequest() {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     int i;
 
     // Champs de saisie du formulaire
     if (formLines.size() > 0) {
       for (i = 0; i < formLines.size(); i++) {
-        result = result
-            + ((FormLine) formLines.elementAt(i)).getDBColumnCreationRequest();
+        result.append(((FormLine) formLines.elementAt(i)).getDBColumnCreationRequest());
       }
     }
 
-    return result;
+    return result.toString();
   }
 
   /**

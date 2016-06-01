@@ -31,7 +31,7 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeSource;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A grammar-based tokenizer constructed with JFlex <p> This should be a good tokenizer for most
@@ -125,9 +125,8 @@ public class SilverTokenizer extends Tokenizer {
 
       try {
         tokenType = scanner.getNextToken();
-      } catch (Error e) {
-        SilverTrace.error("indexing", "SilverTokenizer.incrementToken", "root.MSG_GEN_PARAM_VALUE",
-            "Error while tokenizing content : " + e.getMessage());
+      } catch (IOException|RuntimeException e) {
+        SilverLogger.getLogger(this).error("Error while tokenizing content : " + e.getMessage(), e);
         return false;
       }
 

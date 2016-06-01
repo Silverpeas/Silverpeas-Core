@@ -10,6 +10,18 @@
  */
 package org.monte.media.jpeg;
 
+import com.sun.imageio.plugins.jpeg.JPEGImageReader;
+import org.monte.media.io.ByteArrayImageInputStream;
+import org.monte.media.io.ImageInputStreamAdapter;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
@@ -29,19 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-
-import com.sun.imageio.plugins.jpeg.JPEGImageReader;
-import org.monte.media.io.ByteArrayImageInputStream;
-import org.monte.media.io.ImageInputStreamAdapter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Reads a JPEG image with colors in the CMYK color space.
@@ -224,9 +225,10 @@ public class CMYKJPEGImageReader extends ImageReader {
       if (app2ICCProfile.size() > 0) {
         try {
           profile = ICC_Profile.getInstance(new ByteArrayInputStream(app2ICCProfile.toByteArray()));
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
           // icc profile is corrupt
-          ex.printStackTrace();
+          Logger.getLogger(CMYKJPEGImageReader.class.getName())
+              .log(Level.SEVERE, ex.getMessage(), ex);
         }
       }
 
@@ -367,7 +369,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
    * space. If this parameter is null, a default profile is used.
    * @return a BufferedImage in the RGB color space.
-   * @throws NullPointerException.
+   * @throws NullPointerException
    */
   public static BufferedImage createRGBImageFromYCCK(Raster ycckRaster, ICC_Profile cmykProfile) {
     BufferedImage image;

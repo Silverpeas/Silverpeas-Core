@@ -21,25 +21,25 @@
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.persistence.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.SpaceI18NRow;
+import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.service.cache.TreeCache;
 import org.silverpeas.core.admin.space.SpaceI18N;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceProfileInstManager;
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
-import org.silverpeas.core.admin.persistence.SpaceI18NRow;
-import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -170,8 +170,7 @@ public class SpaceInstManager {
       SpaceRow space = ddManager.getOrganization().space.getSpace(spaceInstLocalId);
 
       if (space == null) {
-        SilverTrace.error("admin", "SpaceInstManager.getSpaceInstById",
-            "admin.EX_ERR_SPACE_NOT_FOUND", "spaceId = " + spaceInstLocalId);
+        SilverLogger.getLogger(this).error("Space {0} not found", spaceInstLocalId);
         return null;
       }
 
@@ -481,7 +480,7 @@ public class SpaceInstManager {
         }
       }
     } catch (AdminPersistenceException e) {
-      e.printStackTrace();
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

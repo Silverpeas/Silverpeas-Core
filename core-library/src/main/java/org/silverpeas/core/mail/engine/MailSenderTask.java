@@ -119,8 +119,7 @@ public class MailSenderTask implements Runnable {
       try {
         currentRequest.process(orderedOneByOneSemaphore);
       } catch (Exception e) {
-        e.printStackTrace();
-        SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
+        SilverLogger.getLogger(MailSenderTask.class).error(e.getMessage(), e);
       }
 
       // Getting the next request if any.

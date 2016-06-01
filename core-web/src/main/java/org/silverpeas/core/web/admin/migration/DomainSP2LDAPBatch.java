@@ -35,6 +35,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -146,7 +147,7 @@ public class DomainSP2LDAPBatch {
             "FIN Migration des groupes du domaine SP vers le domaine mixte...");
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       throw new AdminException("DomainSP2LDAPBatch.processMigration()",
           SilverpeasException.ERROR,
           "Erreur lors de la migration des comptes Silverpeas", e);

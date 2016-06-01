@@ -24,8 +24,13 @@
 
 package org.silverpeas.core.pdc.tree.service;
 
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.index.search.model.AxisFilter;
+import org.silverpeas.core.index.search.model.AxisFilterNode;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
@@ -34,13 +39,7 @@ import org.silverpeas.core.pdc.tree.model.TreeNodePersistence;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.index.search.model.AxisFilter;
-import org.silverpeas.core.index.search.model.AxisFilterNode;
-
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -628,18 +627,18 @@ public class DefaultTreeService implements TreeService {
   }
 
   private String encode(String name) {
-    String chaine = "";
+    StringBuilder str = new StringBuilder();
 
     for (int i = 0; i < name.length(); i++) {
       switch (name.charAt(i)) {
         case '\'':
-          chaine += "''";
+          str.append("''");
           break;
         default:
-          chaine += name.charAt(i);
+          str.append(name.charAt(i));
       }
     }
-    return chaine;
+    return str.toString();
   }
 
   @SuppressWarnings("unchecked")
@@ -923,15 +922,15 @@ public class DefaultTreeService implements TreeService {
     try {
       // récupère la valeur de la colonne path de la table SB_Tree_Tree
       StringTokenizer st = new StringTokenizer(path, "/");
-      String whereClause = "treeId = " + treeId + " and (1=0 ";
+      StringBuilder whereClause =
+          new StringBuilder("treeId = ").append(treeId).append(" and (1=0 ");
       while (st.hasMoreTokens()) {
-        whereClause += " or id = " + st.nextToken();
+        whereClause.append(" or id = ").append(st.nextToken());
       }
-      whereClause += " or id = " + nodePK.getId()
-          + ") order by levelNumber ASC";
+      whereClause.append(" or id = ").append(nodePK.getId()).append(") order by levelNumber ASC");
 
-      @SuppressWarnings("unchecked")
-      Collection<TreeNodePersistence> tree = getDAO().findByWhereClause(con, nodePK, whereClause);
+      @SuppressWarnings("unchecked") Collection<TreeNodePersistence> tree =
+          getDAO().findByWhereClause(con, nodePK, whereClause.toString());
 
       list.addAll(persistence2TreeNode(con, tree));
     } catch (Exception e) {

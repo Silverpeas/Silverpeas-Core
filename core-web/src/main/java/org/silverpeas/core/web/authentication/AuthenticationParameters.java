@@ -152,21 +152,21 @@ public class AuthenticationParameters {
    * @return the String in UpperCase
    */
   private String convert2Alpha(String toConvert) {
-    String alphaString = "";
+    StringBuilder alphaString = new StringBuilder();
     for (int i = 0; i < toConvert.length()
         && alphaString.length() < keyMaxLength; i++) {
       int asciiCode = toConvert.toUpperCase().charAt(i);
       if (asciiCode >= 65 && asciiCode <= 90) {
-        alphaString += toConvert.substring(i, i + 1);
+        alphaString.append(toConvert.substring(i, i + 1));
       }
     }
     // We fill the key to keyMaxLength char. if not enough letters in
     // sessionId.
     if (alphaString.length() < keyMaxLength) {
-      alphaString += "ZFGHZSZHHJNT".substring(0, keyMaxLength
-          - alphaString.length());
+      alphaString.append("ZFGHZSZHHJNT".substring(0, keyMaxLength
+          - alphaString.length()));
     }
-    return alphaString;
+    return alphaString.toString();
   }
 
   private String getCASUser(HttpSession session) {

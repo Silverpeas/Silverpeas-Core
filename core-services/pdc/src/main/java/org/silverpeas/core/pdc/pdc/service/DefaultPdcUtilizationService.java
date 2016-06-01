@@ -281,13 +281,13 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
     try {
       Iterator<String> it = usedAxisIds.iterator();
       String usedAxisId = "";
-      String whereClause = " 0 = 1 ";
+      StringBuilder whereClause = new StringBuilder(" 0 = 1 ");
 
       while (it.hasNext()) {
         usedAxisId = it.next();
-        whereClause += " or " + usedAxisId;
+        whereClause.append(" or " + usedAxisId);
       }
-      dao.removeWhere(new UsedAxisPK("useless"), whereClause);
+      dao.removeWhere(new UsedAxisPK("useless"), whereClause.toString());
     } catch (Exception exce_delete) {
       throw new PdcException("DefaultPdcUtilizationService.deleteUsedAxis",
           SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_USED_AXIS", exce_delete);

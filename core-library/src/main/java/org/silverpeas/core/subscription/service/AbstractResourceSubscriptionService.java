@@ -94,6 +94,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       case COMPONENT:
         subscribers.addAll(getSubscribeService()
             .getSubscribers(ComponentSubscriptionResource.from(componentInstanceId)));
+        break;
     }
 
     return new SubscriptionSubscriberList(subscribers);

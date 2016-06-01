@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.cache.service;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -132,16 +132,16 @@ public class VolatileResourceCacheService {
       ManagedThreadPool.invoke(() -> {
         try {
           current.deleteAllAttachments();
-        } catch (Throwable throwable) {
+        } catch (RuntimeException e) {
           // This treatment must not disturb the server in any case, so nothing is thrown here.
-          SilverTrace.warn("cache", VolatileResourceCacheService.class.getName(),
-              "The clear of volatile cache did not end successfully...");
+          SilverLogger.getLogger(this)
+              .error("The clear of volatile cache did not end successfully...", e);
         }
       });
-    } catch (Throwable throwable) {
+    } catch (RuntimeException e) {
       // This treatment must not disturb the server in any case, so nothing is thrown here.
-      SilverTrace.warn("cache", VolatileResourceCacheService.class.getName(),
-          "The clear of volatile cache did not end successfully...");
+      SilverLogger.getLogger(this)
+          .error("The clear of volatile cache did not end successfully...", e);
     }
   }
 
