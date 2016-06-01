@@ -36,7 +36,7 @@ import org.silverpeas.core.util.DateUtil;
 
 /**
  * A converter of some data handled in the JCR, such as node paths and dates.
- * It converts the data from and fro the JCR world and the Silverpeas wrld.
+ * It converts the data from and for the JCR world and the Silverpeas world.
  *
  * @author Emmanuel Hugonnet
  */
@@ -50,8 +50,7 @@ public class JcrDataConverter {
    * Token used in path.
    */
   public static final String PATH_SEPARATOR = "/";
-  private static final String OPENING_BRACKET = "[";
-  private static final String CLOSING_BRACKET = "]";
+  private static final String ILLEGAL_JCR_CHARACTERS_REGEXP = "[%:\\[\\]*'\"|\t\r\n]";
 
   /**
    * Encodes the JCR path to a Xpath compatible path.
@@ -85,7 +84,7 @@ public class JcrDataConverter {
   }
 
   public static String escapeIllegalJcrChars(String name) {
-    return StringUtil.escapeQuote(name).replace(OPENING_BRACKET, " ").replace(CLOSING_BRACKET, " ");
+    return name.replaceAll(ILLEGAL_JCR_CHARACTERS_REGEXP, " ").trim();
   }
 
   /**

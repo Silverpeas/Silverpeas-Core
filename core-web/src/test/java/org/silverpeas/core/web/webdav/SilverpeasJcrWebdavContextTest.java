@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
@@ -132,6 +133,76 @@ public class SilverpeasJcrWebdavContextTest {
 
     SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
     MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/webdav/document/dummyFileName"));
+    MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+  }
+
+  @Test
+  public void directoryPathShouldBeWellDecoded() {
+    String webdavUrl = createWebdavContext("/repo/webdav/filename.xlsx", AUTH_TOKEN).getWebDavUrl();
+
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/filename.xlsx"));
+    MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+
+    webdavUrl = "/repo/webdav/" + AUTH_TOKEN;
+    context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav"));
+    MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+
+    webdavUrl = "/repo/webdav/" + AUTH_TOKEN + "/";
+    context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/"));
+    MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+  }
+
+  @Test
+  public void noDecodingWhenNoToken() {
+    String webdavUrl = "/repo/webdav/without/token/filename.xlsx";
+
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(),
+        is("/repo/webdav/without/token/filename.xlsx"));
+    MatcherAssert.assertThat(context.getToken(), isEmptyString());
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+
+    webdavUrl = "/repo/webdav/without/token";
+    context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/without/token"));
+    MatcherAssert.assertThat(context.getToken(), isEmptyString());
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+
+    webdavUrl = "/repo/webdav/without/token/";
+    context = getWebdavContext(webdavUrl);
+    MatcherAssert
+        .assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/without/token/"));
+    MatcherAssert.assertThat(context.getToken(), isEmptyString());
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+  }
+
+  @Test
+  public void decodingWithSuccessWhenItExistsSeveralWebdavTokens() {
+    String webdavUrl =
+        createWebdavContext("/repo/webdav/a/b/webdav.xlsx", AUTH_TOKEN).getWebDavUrl();
+
+    SilverpeasJcrWebdavContext context = getWebdavContext(webdavUrl);
+    MatcherAssert
+        .assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/a/b/webdav.xlsx"));
+    MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+
+    webdavUrl = "/repo/webdav/" + AUTH_TOKEN;
+    context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/a/b"));
+    MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
+    MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
+
+    webdavUrl = "/repo/webdav/" + AUTH_TOKEN + "/";
+    context = getWebdavContext(webdavUrl);
+    MatcherAssert.assertThat(context.getJcrDocumentUrlLocation(), is("/repo/webdav/a/b/"));
     MatcherAssert.assertThat(context.getToken(), is(AUTH_TOKEN));
     MatcherAssert.assertThat(context.getWebDavUrl(), is(webdavUrl));
   }

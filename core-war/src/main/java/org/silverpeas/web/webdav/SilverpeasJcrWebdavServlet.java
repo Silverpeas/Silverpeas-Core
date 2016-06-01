@@ -38,6 +38,7 @@ import java.io.IOException;
  * @author mmoquillon
  */
 public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
+  private static final long serialVersionUID = -6749255396944745234L;
 
   @Inject
   private Repository repository;

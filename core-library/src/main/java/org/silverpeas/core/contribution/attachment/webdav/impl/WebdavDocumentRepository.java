@@ -20,6 +20,7 @@
  */
 package org.silverpeas.core.contribution.attachment.webdav.impl;
 
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
@@ -293,7 +294,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     while (fileNodeIt.hasNext()) {
       fileNodeIt.nextNode().remove();
     }
-    String escapedName = StringUtil.escapeQuote(attachment.getFilename());
+    String escapedName = JcrDataConverter.escapeIllegalJcrChars(attachment.getFilename());
     Node fileNode = folder.addNode(escapedName, NT_FILE);
     if (attachment.getEditedBy() != null) {
       fileNode.addMixin(SLV_OWNABLE_MIXIN);
