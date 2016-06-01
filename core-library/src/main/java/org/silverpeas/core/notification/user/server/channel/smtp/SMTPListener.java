@@ -114,6 +114,8 @@ public class SMTPListener extends AbstractListener implements MessageListener {
           SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
 
       templateHeaderFooter.setAttribute(notification_serverurl.toString(), serverUrl);
+      templateHeaderFooter.setAttribute(notification_sendername.toString(), notification.getSenderName());
+      templateHeaderFooter.setAttribute(notification_senderemail.toString(), tmpFromString);
 
       if (hideSmtpHeaderFooter == null) {
         // Header Message
