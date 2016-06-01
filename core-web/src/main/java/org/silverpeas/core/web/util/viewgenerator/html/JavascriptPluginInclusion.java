@@ -586,9 +586,10 @@ public class JavascriptPluginInclusion {
    */
   public static ElementContainer includeLayout(final ElementContainer xhtml,
       final LookHelper lookHelper) {
-    includeQTip(xhtml);
-    xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("LayoutSettings")
+    if (lookHelper != null) {
+      includeQTip(xhtml);
+      xhtml.addElement(scriptContent(JavascriptSettingProducer
+          .settingVariableName("LayoutSettings")
             .add("layout.header.url", URLUtil.getApplicationURL() + "/admin/jsp/TopBarSilverpeasV5.jsp")
             .add("layout.body.url", URLUtil.getApplicationURL() + "/admin/jsp/bodyPartSilverpeasV5.jsp")
             .add("layout.body.navigation.url", URLUtil.getApplicationURL() + "/admin/jsp/DomainsBarSilverpeasV5.jsp")
@@ -596,7 +597,8 @@ public class JavascriptPluginInclusion {
             .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
             .produce()));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_LAYOUT));
+      xhtml.addElement(script(javascriptPath + SILVERPEAS_LAYOUT));
+    }
     return xhtml;
   }
 
