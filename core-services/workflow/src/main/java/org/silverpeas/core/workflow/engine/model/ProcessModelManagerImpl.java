@@ -372,8 +372,8 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       throws WorkflowException {
     Mapping mapping = new Mapping();
     // get configuration files url
-    String mappingFileName = settings.getString("CastorXMLMappingFileURL");
-    String schemaFileName = settings.getString("ProcessModesSchemaFileURL");
+    String mappingFileName = settings.getString("CastorXMLMappingFileURL", null);
+    String schemaFileName = settings.getString("ProcessModesSchemaFileURL", null);
     String strProcessModelFileEncoding = settings.getString("ProcessModelFileEncoding");
     boolean runOnUnix = !FileUtil.isWindows();
     String processPath = getProcessPath(processFileName);
