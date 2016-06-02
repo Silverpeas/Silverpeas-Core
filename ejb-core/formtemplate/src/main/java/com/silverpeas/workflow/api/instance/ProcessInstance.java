@@ -111,6 +111,8 @@ public interface ProcessInstance {
    */
   public DataRecord getFolder() throws WorkflowException;
 
+  public void updateFolder(DataRecord data) throws WorkflowException;
+
   /**
    * @return DataRecord
    */
