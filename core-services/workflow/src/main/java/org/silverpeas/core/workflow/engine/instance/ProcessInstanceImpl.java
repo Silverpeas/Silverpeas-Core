@@ -845,7 +845,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   /**
    * Updates the folder with the data filled within an action.
    */
-  private void updateFolder(DataRecord actionData) throws WorkflowException {
+  public void updateFolder(DataRecord actionData) throws WorkflowException {
     try {
       RecordSet folderSet = getProcessModel().getFolderRecordSet();
 
