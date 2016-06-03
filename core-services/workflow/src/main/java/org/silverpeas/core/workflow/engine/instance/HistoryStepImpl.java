@@ -352,6 +352,11 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
   public void deleteActionRecord() throws WorkflowException {
     ProcessModel model = processInstance.getProcessModel();
 
+    if ("#reAssign#".equals(action)) {
+      // there is no record associated to reassignment action
+      return;
+    }
+
     Action actionObj = model.getAction(action);
     if (actionObj == null) {
       return;
