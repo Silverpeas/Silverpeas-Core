@@ -366,6 +366,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         step.setAction("#reAssign#");
         step.setActionDate(new Date());
         step.setUserRoleName("supervisor");
+        step.setResolvedState("DummyStateFromReassignment");
         step.setActionStatus(0); // To be processed
 
         // add the new step to the processInstance
