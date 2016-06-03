@@ -59,6 +59,7 @@
               description="True if fields must be displayed one per line" %>
 
 <c:set var="isCurrentUserAdmin" value="<%=UserDetail.getCurrentRequester().isAccessAdmin() %>"/>
+<c:set var="isCurrentUserDomainManager" value="<%=UserDetail.getCurrentRequester().isAccessDomainManager() %>"/>
 
 <view:setConstant var="propertyTypeUser" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_USERID"/>
 <view:setConstant var="propertyTypeString" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_STRING"/>
@@ -99,10 +100,10 @@
       <c:set var="propertyValue" value="${user.getValue(propertyName)}"/>
       <div class="field" id="${propertyName}">
         <label class="txtlibform">
-          ${silfn:escapeHtml(user.getSpecificLabel(_language, propertyName))}
+          ${user.getSpecificLabel(_language, propertyName)}
         </label>
         <div class="champs">
-          <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or (isCurrentUserAdmin and user.isPropertyUpdatableByAdmin(propertyName)) or user.isPropertyUpdatableByUser(propertyName))}"/>
+          <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or ((isCurrentUserAdmin or isCurrentUserDomainManager) and user.isPropertyUpdatableByAdmin(propertyName)) or user.isPropertyUpdatableByUser(propertyName))}"/>
           <c:choose>
             <c:when test="${user.getPropertyType(propertyName) eq propertyTypeString}">
               <c:if test="${propertyUpdatable}">
