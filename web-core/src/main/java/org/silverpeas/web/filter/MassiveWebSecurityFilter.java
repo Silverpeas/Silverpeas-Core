@@ -113,7 +113,7 @@ public class MassiveWebSecurityFilter implements Filter {
     SQL_PATTERNS.add(SQL_DELETE_PATTERN);
 
     XSS_PATTERNS = new ArrayList<Pattern>(1);
-    XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*script"));
+    XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|iframe)"));
   }
 
   @Override

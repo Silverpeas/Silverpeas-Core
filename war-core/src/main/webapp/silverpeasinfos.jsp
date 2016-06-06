@@ -1,4 +1,4 @@
-<%--
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %><%--
   Copyright (C) 2000 - 2013 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%
+MainSessionController mainSessionController = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+if (mainSessionController == null || !mainSessionController.getCurrentUserDetail().isAccessAdmin()) {
+  request.getRequestDispatcher("Login.jsp").forward(request, response);
+}
+%>
 
 <c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
 
