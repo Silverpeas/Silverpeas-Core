@@ -34,6 +34,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -75,6 +76,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.silverpeas.util.EncodeHelper.javaStringToHtmlString;
 
 /**
  * @author Nabil Bensalem
@@ -546,9 +549,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "directory");
     for (DirectoryItem item : itemsToDisplay) {
-      template.setAttribute("mail", StringUtil.isDefined(item.getMail()) ? item.getMail() : null);
-      template.setAttribute("phone", item.getPhone());
-      template.setAttribute("fax", item.getFax());
+      template.setAttribute("mail",
+          StringUtil.isDefined(item.getMail()) ? javaStringToHtmlString(item.getMail()) : null);
+      template.setAttribute("phone", javaStringToHtmlString(item.getPhone()));
+      template.setAttribute("fax", javaStringToHtmlString(item.getFax()));
       template.setAttribute("avatar", getAvatarFragment(item));
       template.setAttribute("context", URLManager.getApplicationURL());
       if (item instanceof UserItem) {
@@ -565,7 +569,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
     template.setAttribute("user", user.getUserDetail());
     if (StringUtil.isDefined(user.getUserDetail().getStatus())) {
-      template.setAttribute("status", user.getUserDetail().getStatus());
+      template.setAttribute("status", javaStringToHtmlString(user.getUserDetail().getStatus()));
     } else {
       template.setAttribute("status", null);
     }
@@ -583,7 +587,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       for (String key : keys) {
         String value = userFull.getValue(key);
         if (StringUtil.isDefined(value)) {
-          extra.put(key, value);
+          extra.put(key, javaStringToHtmlString(value));
         }
       }
     }
