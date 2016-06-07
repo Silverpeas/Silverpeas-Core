@@ -25,18 +25,17 @@
 package org.silverpeas.core.admin.domain.driver;
 
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -49,6 +48,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 @Singleton
 @Transactional
@@ -348,8 +349,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     Set<SPUser> addedUsers = new HashSet<>();
     if (group == null || !StringUtil.isDefined(group.getName()) || !StringUtil.isDefined(
         group.getId())) {
-      throw new AdminException("SilverpeasDriver.updateGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_INVALID_GROUP");
+      throw new AdminException(undefined("group"));
     }
 
     // Update the group node

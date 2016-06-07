@@ -244,18 +244,18 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
   }
 
   public String getPath(String separator) {
-    String sPath = "";
+    StringBuilder sPath = new StringBuilder();
     if (path != null) {
-      SpaceInstLight space = null;
+      SpaceInstLight space;
       for (int i = 0; i < path.size(); i++) {
         if (i > 0) {
-          sPath += separator;
+          sPath.append(separator);
         }
         space = path.get(i);
-        sPath += space.getName();
+        sPath.append(space.getName());
       }
     }
-    return sPath;
+    return sPath.toString();
   }
 
   public void setPath(List<SpaceInstLight> path) {

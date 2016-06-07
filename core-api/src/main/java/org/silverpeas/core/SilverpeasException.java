@@ -24,6 +24,7 @@
 package org.silverpeas.core;
 
 import java.security.PrivilegedActionException;
+import java.text.MessageFormat;
 
 /**
  * Exception thrown explicitly by a treatment in Silverpeas to signal a failure in its
@@ -42,9 +43,10 @@ public class SilverpeasException extends Exception {
    * a call to {@link #initCause}.
    * @param message the detail message. The detail message is saved for
    * later retrieval by the {@link #getMessage()} method.
+   * @param parameters message parameters if <code>message</code> is a pattern.
    */
-  public SilverpeasException(final String message) {
-    super(message);
+  public SilverpeasException(final String message, String ... parameters) {
+    super(parameters.length > 0 ? MessageFormat.format(message, parameters):message);
   }
 
   /**

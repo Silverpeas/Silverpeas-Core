@@ -22,7 +22,6 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,6 +29,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A ComponentInstanceTable object manages the ST_ComponentInstance table.
@@ -48,7 +49,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Fetch the current instance row from a resultSet.
-   * @param rs
+   * @param rs result set
    * @return the current instance row from a resultSet.
    * @throws SQLException
    */
@@ -94,9 +95,9 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   }
 
   /**
-   * Returns the instance whith the given id.
-   * @param id
-   * @return the instance whith the given id.
+   * Returns the instance with the given id.
+   * @param id the unique identifier of the component instance
+   * @return the instance with the given id.
    * @throws AdminPersistenceException
    */
   public ComponentInstanceRow getComponentInstance(int id) throws AdminPersistenceException {
@@ -108,7 +109,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns the ComponentInstance of a given user role.
-   * @param userRoleId
+   * @param userRoleId id of user role
    * @return the ComponentInstance of a given user role.
    * @throws AdminPersistenceException
    */
@@ -124,7 +125,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns all the instances in a given space
-   * @param spaceId
+   * @param spaceId the space id
    * @return all the instances in a given space
    * @throws AdminPersistenceException
    */
@@ -140,7 +141,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns all the instance ids in a given space
-   * @param spaceId
+   * @param spaceId the space id
    * @return all the instance ids in a given space
    * @throws AdminPersistenceException
    */
@@ -169,7 +170,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Returns the ComponentInstance whose fields match those of the given sample instance fields.
-   * @param sampleInstance
+   * @param sampleInstance a row with the fields of the component instance
    * @return the ComponentInstance whose fields match those of the given sample instance fields.
    * @throws AdminPersistenceException
    */
@@ -184,15 +185,14 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Inserts in the database a new instance row.
-   * @param instance
+   * @param instance a row with the fields of a component instance
    * @throws AdminPersistenceException
    */
   public void createComponentInstance(ComponentInstanceRow instance)
       throws AdminPersistenceException {
     SpaceRow space = organization.space.getSpace(instance.spaceId);
     if (space == null) {
-      throw new AdminPersistenceException("ComponentInstanceTable.createComponentInstance",
-          SilverpeasException.ERROR, "admin.EX_ERR_SPACE_NOT_FOUND");
+      throw new AdminPersistenceException(unknown("space", String.valueOf(instance.spaceId)));
     }
     insertRow(INSERT_INSTANCE, instance);
   }
@@ -259,7 +259,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Updates in the database an instance row.
-   * @param instance
+   * @param instance the row with the fields of the component instance
    * @throws AdminPersistenceException
    */
   public void updateComponentInstance(ComponentInstanceRow instance)
@@ -274,8 +274,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Check if a named component already exists in given space
-   * @param spaceId
-   * @param name
+   * @param spaceId the space id
+   * @param name the name of a component
    * @throws AdminPersistenceException
    */
   public boolean isComponentIntoBasket(int spaceId, String name) throws AdminPersistenceException {
@@ -289,8 +289,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
       rs = statement.executeQuery();
       return rs.next();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("ComponentInstanceTable.isComponentIntoBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_SELECT", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -301,9 +300,9 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Delete the space and all his component instances.
-   * @param id
-   * @param tempLabel
-   * @param userId
+   * @param id the component id
+   * @param tempLabel the temporary label
+   * @param userId the user id that deletes the space
    * @throws AdminPersistenceException
    */
   public void sendComponentToBasket(int id, String tempLabel, String userId)
@@ -318,8 +317,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
       statement.setInt(5, id);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("ComponentInstanceTable.sendComponentToBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -331,7 +329,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Remove the space from the basket Space will be available again
-   * @param id
+   * @param id the component id
    * @throws AdminPersistenceException
    */
   public void restoreComponentFromBasket(int id) throws AdminPersistenceException {
@@ -344,8 +342,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
       statement.setInt(4, id);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("ComponentInstanceTable.restoreComponentFromBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -397,7 +394,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   /**
    * Delete a component instance and all his user role sets.
-   * @param id
+   * @param id the component instance identifier
    * @throws AdminPersistenceException
    */
   public void removeComponentInstance(int id) throws AdminPersistenceException {

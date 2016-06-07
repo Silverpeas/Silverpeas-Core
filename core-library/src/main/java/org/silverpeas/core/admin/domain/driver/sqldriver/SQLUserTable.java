@@ -24,12 +24,11 @@
 
 package org.silverpeas.core.admin.domain.driver.sqldriver;
 
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -68,9 +67,7 @@ public class SQLUserTable {
       statement.setString(5, drvSettings.trunc(user.getLogin(), 50));
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLUserTable.createUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -87,9 +84,7 @@ public class SQLUserTable {
       statement.setInt(1, userId);
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLUserTable.deleteUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -113,9 +108,7 @@ public class SQLUserTable {
       statement.setInt(5, Integer.parseInt(ud.getSpecificId()));
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLUserTable.updateUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -141,9 +134,7 @@ public class SQLUserTable {
       statement.setInt(2, userId);
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLUserTable.createUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -166,9 +157,7 @@ public class SQLUserTable {
         statement.setInt(2, userId);
         statement.executeUpdate();
       } catch (Exception e) {
-        throw new AdminException("SQLUserTable.updateUserPassword",
-            SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-            + theQuery, e);
+        throw new AdminException(e.getMessage(), e);
       } finally {
         DBUtil.close(statement);
       }
@@ -192,9 +181,7 @@ public class SQLUserTable {
         statement.setInt(2, userId);
         statement.executeUpdate();
       } catch (Exception e) {
-        throw new AdminException("SQLUserTable.updateUserPasswordValid",
-            SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-            + theQuery, e);
+        throw new AdminException(e.getMessage(), e);
       } finally {
         DBUtil.close(statement);
       }
@@ -226,9 +213,7 @@ public class SQLUserTable {
         theResult.add(rs.getInt(1));
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLUserTable.getDirectGroupIdsOfUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -252,8 +237,7 @@ public class SQLUserTable {
         theResult.add(fetchUser(rs));
       }
     } catch (SQLException e) {
-      throw new AdminException("getAllUsers", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -280,9 +264,7 @@ public class SQLUserTable {
         theResult.add(fetchUser(rs));
       }
     } catch (SQLException e) {
-      throw new AdminException("getUsersBySpecificProperty",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -308,9 +290,7 @@ public class SQLUserTable {
         return null;
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLUserTable.getUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -336,9 +316,7 @@ public class SQLUserTable {
         return "";
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLUserTable.getUserSpecificProperty",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -364,9 +342,7 @@ public class SQLUserTable {
           return "";
         }
       } catch (SQLException e) {
-        throw new AdminException("SQLUserTable.getUserPassword",
-            SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-            + theQuery, e);
+        throw new AdminException(e.getMessage(), e);
       } finally {
         DBUtil.close(rs, statement);
       }
@@ -397,9 +373,7 @@ public class SQLUserTable {
           return drvSettings.isUserPasswordAvailable();
         }
       } catch (SQLException e) {
-        throw new AdminException("SQLUserTable.getUserPasswordValid",
-            SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-            + theQuery, e);
+        throw new AdminException(e.getMessage(), e);
       } finally {
         DBUtil.close(rs, statement);
       }

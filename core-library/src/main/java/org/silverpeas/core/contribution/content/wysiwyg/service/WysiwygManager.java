@@ -217,7 +217,6 @@ public class WysiwygManager {
    * @return the path for the nodes.
    */
   String finNode(String path, String componentId) {
-
     int longueur = componentId.length();
     int index = path.lastIndexOf(componentId);
     String chemin = path.substring(index + longueur);
@@ -234,7 +233,6 @@ public class WysiwygManager {
    * @return the path for the nodes.
    */
   String finNode2(String path, String componentId) {
-
     String finNode = doubleAntiSlash(path);
     finNode = finNode(finNode, componentId);
     int index = finNode.indexOf('\\');
@@ -266,7 +264,6 @@ public class WysiwygManager {
         index = pathEnd.indexOf('\\');
       }
 
-
       if (index == -1) {
         return path;
       }
@@ -291,7 +288,7 @@ public class WysiwygManager {
   }
 
   String supprDoubleAntiSlash(String path) {
-    StringBuilder res = new StringBuilder("");
+    StringBuilder res = new StringBuilder();
     int i = 0;
     while (i < path.length()) {
       char car = path.charAt(i);
@@ -315,34 +312,19 @@ public class WysiwygManager {
 
   /* doubleAntiSlash */
   String doubleAntiSlash(String path) {
-    int i = 0;
-    String res = path;
-    boolean ok = true;
-    while (ok) {
-      int j = i + 1;
-      if ((i < res.length()) && (j < res.length())) {
-        char car1 = res.charAt(i);
-        char car2 = res.charAt(j);
-        if (!((car1 == '\\' && car2 == '\\') || (car1 != '\\' && car2 != '\\'))) {
-          String before = res.substring(0, j);
-          String after = res.substring(j);
-          if (!after.startsWith("\\\\") && !before.endsWith("\\\\")) {
-            res = before + '\\' + after;
-            i++;
-          }
+    StringBuilder res = new StringBuilder(path);
+    int k = 0;
+    for (int i = 0, j = 1; i < path.length(); i++, j++) {
+      if (path.charAt(i) == '\\') {
+        boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
+        boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
+        if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
+          res.insert(k+i, '\\');
+          k++;
         }
-      } else {
-        if (i < res.length()) {
-          char car = res.charAt(i);
-          if (car == '\\') {
-            res = res + '\\';
-          }
-        }
-        ok = false;
       }
-      i = i + 2;
     }
-    return res;
+    return res.toString();
   }
 
   /**

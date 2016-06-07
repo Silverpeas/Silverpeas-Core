@@ -23,18 +23,20 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -61,9 +63,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             getGroupAttributes());
       }
       if (memberEntry == null) {
-        throw new AdminException("LDAPGroupAllRoot.getMemberGroupIds",
-            SilverpeasException.ERROR, "admin.EX_ERR_LDAP_USER_ENTRY_ISNULL",
-            "Id=" + memberId + " IsGroup=" + isGroup);
+        throw new AdminException(unknown("LDAP group id", memberId));
       }
       String groupsMemberField = driverSettings.getGroupsMemberField();
       LDAPEntry[] theEntries;

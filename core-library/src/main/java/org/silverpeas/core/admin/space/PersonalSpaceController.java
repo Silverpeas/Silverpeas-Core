@@ -78,7 +78,7 @@ public class PersonalSpaceController {
       UserDetail user = UserDetail.getById(userId);
       LocalizationBundle messages = getMessages(user.getUserPreferences().getLanguage());
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");
-      throw new AdminException(MessageFormat.format(errorText, componentName), false);
+      throw new AdminException(MessageFormat.format(errorText, componentName));
     }
     List<Parameter> parameters = wac.get().getAllParameters();
 

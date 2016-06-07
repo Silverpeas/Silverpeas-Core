@@ -24,10 +24,9 @@
 
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.Schema;
 import org.silverpeas.core.persistence.jdbc.SchemaPool;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 
 /**
  * The OrganizationSchemaPool class manages a pool of OrganizationSchema shared by all the client
@@ -53,8 +52,7 @@ public class OrganizationSchemaPool extends SchemaPool {
     try {
       return (OrganizationSchema) singleton.getInstance();
     } catch (UtilException ue) {
-      throw new AdminPersistenceException("OrganizationSchemaPool.getSchema",
-          SilverpeasException.ERROR, "root.EX_DATASOURCE_INVALID", ue);
+      throw new AdminPersistenceException(ue.getMessage(), ue);
     }
   }
 

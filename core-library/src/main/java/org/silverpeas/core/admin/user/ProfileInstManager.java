@@ -25,15 +25,14 @@
 package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.RightAssignationContext;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.persistence.AdminPersistenceException;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.RightAssignationContext;
+import org.silverpeas.core.admin.user.dao.RoleDAO;
+import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
@@ -42,6 +41,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
 public class ProfileInstManager {
@@ -87,9 +88,7 @@ public class ProfileInstManager {
 
       return sProfileNodeId;
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.createProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_PROFILE", "profile name: '" + profileInst.getName()
-          + "', father component Id: '" + fatherCompLocalId + "'", e);
+      throw new AdminException(failureOnAdding("profile", profileInst.getName()), e);
     }
   }
 
@@ -117,9 +116,7 @@ public class ProfileInstManager {
             "root.EX_RECORD_NOT_FOUND", "sProfileId = " + sProfileId);
       }
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.getProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_SET_PROFILE",
-          "profile Id: '" + sProfileId + "'", e);
+      throw new AdminException(failureOnGetting("profile", sProfileId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -189,9 +186,7 @@ public class ProfileInstManager {
 
       return profileInst;
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.getInheritedProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
-          "instanceId = " + instanceLocalId + ", role = " + roleName, e);
+      throw new AdminException(failureOnGetting("inherited profile", roleName), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -209,9 +204,7 @@ public class ProfileInstManager {
       // delete the profile node
       ddManager.getOrganization().userRole.removeUserRole(idAsInt(profileInst.getId()));
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.deleteProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_PROFILE",
-          "profile Id: '" + profileInst.getId() + "'", e);
+      throw new AdminException(failureOnDeleting("profile", profileInst.getId()), e);
     }
   }
 
@@ -460,9 +453,7 @@ public class ProfileInstManager {
 
       return idAsString(changedUserRole.id);
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.updateProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_PROFILE",
-          "profile Id: '" + profileInst.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("profile", profileInst.getId()), e);
     }
   }
 
@@ -488,8 +479,7 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfileIdsOfUserAndGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -522,8 +512,7 @@ public class ProfileInstManager {
       return roleIds;
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfileIdsOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
     }
   }
 
@@ -551,8 +540,7 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getNodeProfileIdsOfUserAndGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -577,8 +565,7 @@ public class ProfileInstManager {
       return roleNames.toArray(new String[roleNames.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfileNamesOfUserAndGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -607,8 +594,7 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfileIdsOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("profiles of group", sGroupId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -636,18 +622,12 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getNodeProfileIdsOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("profiles of group", groupId), e);
     } finally {
       DBUtil.close(con);
     }
   }
 
-  /**
-   * Converts ProfileInst to UserRoleRow
-   * @param profileInst
-   * @return
-   */
   private UserRoleRow makeUserRoleRow(ProfileInst profileInst) {
     UserRoleRow userRole = new UserRoleRow();
 

@@ -27,13 +27,13 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.TreeMap;
 import java.util.Vector;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * This class manage groups that are described as follows : The group object are root to their
@@ -69,8 +69,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
           driverSettings.getGroupAttributes());
     }
     if (memberEntry == null) {
-      throw new AdminException("LDAPGroupSubTree.getMemberGroupIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_LDAP_USER_ENTRY_ISNULL", "Id=" + memberId + " IsGroup=" + isGroup);
+      throw new AdminException(unknown("LDAP group id", memberId));
     }
     baseGroupDN = LDAPDN.explodeDN(driverSettings.getGroupsSpecificGroupsBaseDN(), false);
     memberDN = LDAPDN.explodeDN(memberEntry.getDN(), false);

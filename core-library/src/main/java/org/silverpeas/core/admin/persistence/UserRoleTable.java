@@ -25,9 +25,8 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,6 +34,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A UserRoleTable object manages the ST_UserRole table.
@@ -211,15 +213,12 @@ public class UserRoleTable extends Table<UserRoleRow> {
   public void createUserRole(UserRoleRow userRole) throws AdminPersistenceException {
     ComponentInstanceRow instance = organization.instance.getComponentInstance(userRole.instanceId);
     if (instance == null) {
-      throw new AdminPersistenceException("UserRoleTable.createUserRole",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_INSTANCE_NOT_FOUND", "instance id : '" + userRole.instanceId + "'");
+      throw new AdminPersistenceException(
+          unknown("component instance", String.valueOf(userRole.instanceId)));
     }
 
     if (userRole.objectId != -1 && !StringUtil.isDefined(userRole.objectType)) {
-      throw new AdminPersistenceException("UserRoleTable.createUserRole",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_OBJECT_TYPE_NOT_SPECIFIED", "objectId = " + userRole.objectId);
+      throw new AdminPersistenceException(undefined("user role type"));
     }
     insertRow(INSERT_USERROLE, userRole);
   }
@@ -320,16 +319,12 @@ public class UserRoleTable extends Table<UserRoleRow> {
     }
     UserRow user = organization.user.getUser(userId);
     if (user == null) {
-      throw new AdminPersistenceException("UserRoleTable.addUserInUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-          "user id : '" + userId + "'");
+      throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
     }
 
     UserRoleRow userRole = getUserRole(userRoleId);
     if (userRole == null) {
-      throw new AdminPersistenceException("UserRoleTable.addUserInUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USERROLE_NOT_FOUND",
-          "user role id : '" + userRoleId + "'");
+      throw new AdminPersistenceException(unknown("user role", String.valueOf(userRoleId)));
     }
 
     int[] params = new int[] { userRoleId, userId };
@@ -347,10 +342,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   public void removeUserFromUserRole(int userId, int userRoleId) throws AdminPersistenceException {
     if (!isUserDirectlyInRole(userId, userRoleId)) {
-      throw new AdminPersistenceException(
-          "UserRoleTable.removeUserFromUserRole", SilverpeasException.ERROR,
-          "admin.EX_ERR_USER_NOT_IN_USERROLE", "userrole id: '" + userRoleId
-          + "', user id: '" + userId + "'");
+      throw new AdminPersistenceException("user " + userId + " isn't in role " + userRoleId);
     }
     int[] params = new int[] { userRoleId, userId };
     SynchroDomainReport.debug("UserRoleTable.removeUserFromUserRole()",
@@ -423,15 +415,12 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
     GroupRow group = organization.group.getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException("UserRoleTable.addGroupInUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND", "group id : '" + groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
     }
 
     UserRoleRow userRole = getUserRole(userRoleId);
     if (userRole == null) {
-      throw new AdminPersistenceException("UserRoleTable.addGroupInUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USERROLE_NOT_FOUND",
-          "user role id : '" + userRoleId + "'");
+      throw new AdminPersistenceException(unknown("role", String.valueOf(userRoleId)));
     }
     int[] params = new int[] { userRoleId, groupId };
     updateRelation(INSERT_A_USERROLE_GROUP_REL, params);
@@ -449,10 +438,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   public void removeGroupFromUserRole(int groupId, int userRoleId) throws AdminPersistenceException {
     if (!isGroupDirectlyInRole(groupId, userRoleId)) {
-      throw new AdminPersistenceException("UserRoleTable.removeGroupFromUserRole",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_IN_USERROLE",
-          "userrole id: '" + userRoleId + "', group id: '" + groupId + "'");
+      throw new AdminPersistenceException("group " + groupId + " isn't in role " + userRoleId);
     }
 
     int[] params = new int[] { userRoleId, groupId };

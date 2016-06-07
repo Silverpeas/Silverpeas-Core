@@ -24,6 +24,10 @@
 
 package org.silverpeas.core.admin.domain.driver.sqldriver;
 
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,11 +35,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * A GroupTable object manages the DomainSQL_Group table.
@@ -92,9 +91,7 @@ public class SQLGroupTable {
       statement.setString(4, drvSettings.trunc(group.getDescription(), 400));
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLGroupTable.createGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -111,9 +108,7 @@ public class SQLGroupTable {
       statement.setInt(1, groupId);
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLGroupTable.deleteGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -133,9 +128,7 @@ public class SQLGroupTable {
       statement.setInt(3, Integer.parseInt(g.getSpecificId()));
       statement.executeUpdate();
     } catch (Exception e) {
-      throw new AdminException("SQLGroupTable.updateGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -160,9 +153,7 @@ public class SQLGroupTable {
         return null;
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupTable.getGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -187,9 +178,7 @@ public class SQLGroupTable {
         return null;
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupTable.getGroupByName",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -213,9 +202,7 @@ public class SQLGroupTable {
       }
       return theResult;
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupTable.getAllGroups",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -249,9 +236,7 @@ public class SQLGroupTable {
       }
       return theResult;
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupTable.getAllGroups",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }

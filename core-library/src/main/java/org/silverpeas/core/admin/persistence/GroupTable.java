@@ -27,7 +27,6 @@ import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
 import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,6 +35,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 /**
  * A GroupTable object manages the ST_Group table.
@@ -62,12 +63,6 @@ public class GroupTable extends Table<GroupRow> {
       "superGroupId, name, description, synchroRule FROM ST_Group WHERE " +
       "superGroupId = ? AND name = ?";
 
-  /**
-   * Fetch the current group row from a resultSet.
-   * @param rs
-   * @return
-   * @throws SQLException
-   */
   protected GroupRow fetchGroup(ResultSet rs) throws SQLException {
     GroupRow g = new GroupRow();
     g.id = rs.getInt("id");
@@ -87,9 +82,9 @@ public class GroupTable extends Table<GroupRow> {
   }
 
   /**
-   * Returns the Group whith the given id.
-   * @param id
-   * @return the Group whith the given id.
+   * Returns the Group with the given id.
+   * @param id group id
+   * @return the Group with the given id.
    * @throws AdminPersistenceException
    */
   public GroupRow getGroup(int id) throws AdminPersistenceException {
@@ -98,8 +93,8 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns Group whith the given specificId and domainId.
-   * @param domainId
-   * @param specificId
+   * @param domainId domain id
+   * @param specificId group specific id
    * @return Group whith the given specificId and domainId.
    * @throws AdminPersistenceException
    */
@@ -115,16 +110,14 @@ public class GroupTable extends Table<GroupRow> {
     if (groups.size() == 1) {
       return groups.get(0);
     }
-    throw new AdminPersistenceException("GroupTable.getGroupBySpecificId",
-        SilverpeasException.ERROR, "admin.EX_ERR_GROUP_SPECIFIC_ID_FOUND_TWICE",
-        "domain Id: '" + domainId + "', specific Id: '" + specificId + "'");
+    throw new AdminPersistenceException(failureOnGetting("group with specific id", specificId));
 
   }
 
   /**
-   * Returns the root Group whith the given name.
-   * @param name
-   * @return the root Group whith the given name.
+   * Returns the root Group with the given name.
+   * @param name group name
+   * @return the root Group with the given name.
    * @throws AdminPersistenceException
    */
   public GroupRow getRootGroup(String name) throws AdminPersistenceException {
@@ -135,15 +128,14 @@ public class GroupTable extends Table<GroupRow> {
     if (groups.size() == 1) {
       return groups.get(0);
     }
-    throw new AdminPersistenceException("GroupTable.getRootGroup", SilverpeasException.ERROR,
-        "admin.EX_ERR_GROUP_NAME_FOUND_TWICE", "group name: '" + name + "'");
+    throw new AdminPersistenceException(failureOnGetting("root group", name));
   }
 
   /**
-   * Returns the Group whith the given name in the given super group.
-   * @param superGroupId
-   * @param name
-   * @return the Group whith the given name in the given super group.
+   * Returns the Group with the given name in the given super group.
+   * @param superGroupId parent group id
+   * @param name name of the group
+   * @return the Group with the given name in the given super group.
    * @throws AdminPersistenceException
    */
   public GroupRow getGroup(int superGroupId, String name) throws AdminPersistenceException {
@@ -157,9 +149,8 @@ public class GroupTable extends Table<GroupRow> {
     if (groups.size() == 1) {
       return groups.get(0);
     }
-    throw new AdminPersistenceException("GroupTable.getGroup", SilverpeasException.ERROR,
-        "admin.EX_ERR_GROUP_NAME_ID_FOUND_TWICE",
-        "group name: '" + name + "', father group id: '" + superGroupId + "'");
+    throw new AdminPersistenceException(
+        failureOnGetting("subgroup " + name, "in group " + superGroupId));
   }
 
   /**
@@ -225,7 +216,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the Groups having a given superGroup.
-   * @param superGroupId
+   * @param superGroupId parent group id
    * @return all the Groups having a given superGroup.
    * @throws AdminPersistenceException
    */
@@ -239,8 +230,8 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the Group ids having a given superGroup.
-   * @param superGroupId
-   * @return
+   * @param superGroupId parent group id
+   * @return an array with the identifiers of the subgroups
    * @throws AdminPersistenceException
    */
   public String[] getDirectSubGroupIds(int superGroupId) throws AdminPersistenceException {
@@ -253,7 +244,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the Root Groups having a given domain id.
-   * @param domainId
+   * @param domainId domain id
    * @return all the Root Groups having a given domain id.
    * @throws AdminPersistenceException
    */
@@ -264,7 +255,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the Root Group Ids having a given domain id.
-   * @param domainId
+   * @param domainId domain id
    * @return all the Root Group Ids having a given domain id.
    * @throws AdminPersistenceException
    */
@@ -280,7 +271,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the Groups having a given domain id.
-   * @param domainId
+   * @param domainId domain id
    * @return all the Groups having a given domain id.
    * @throws AdminPersistenceException
    */
@@ -297,7 +288,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns the superGroup of a given subGroup.
-   * @param subGroupId
+   * @param subGroupId parent group id
    * @return the superGroup of a given subGroup.
    * @throws AdminPersistenceException
    */
@@ -310,7 +301,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the groups of a given user (not recursive).
-   * @param userId
+   * @param userId user id
    * @return all the groups of a given user (not recursive).
    * @throws AdminPersistenceException
    */
@@ -324,7 +315,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the groups in a given userRole (not recursive).
-   * @param userRoleId
+   * @param userRoleId user role id
    * @return all the groups in a given userRole (not recursive).
    * @throws AdminPersistenceException
    */
@@ -338,7 +329,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the group ids in a given spaceUserRole (not recursive).
-   * @param spaceUserRoleId
+   * @param spaceUserRoleId space role id played by a user
    * @return all the group ids in a given spaceUserRole (not recursive).
    * @throws AdminPersistenceException
    */
@@ -353,7 +344,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the groups in a given groupUserRole (not recursive).
-   * @param groupUserRoleId
+   * @param groupUserRoleId group role id
    * @return all the groups in a given groupUserRole (not recursive).
    * @throws AdminPersistenceException
    */
@@ -368,7 +359,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns the Group of a given group user role.
-   * @param groupUserRoleId
+   * @param groupUserRoleId group role id
    * @return the Group of a given group user role.
    * @throws AdminPersistenceException
    */
@@ -382,7 +373,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the group ids in a given groupUserRole (not recursive).
-   * @param groupUserRoleId
+   * @param groupUserRoleId group role id
    * @return all the group ids in a given groupUserRole (not recursive).
    * @throws AdminPersistenceException
    */
@@ -397,7 +388,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns the Group whose fields match those of the given sample group fields.
-   * @param sampleGroup
+   * @param sampleGroup a sample group
    * @return the Group whose fields match those of the given sample group fields.
    * @throws AdminPersistenceException
    */
@@ -409,12 +400,12 @@ public class GroupTable extends Table<GroupRow> {
   }
 
   /**
-   * Returns all the Groups satifying the model that are direct childs of a specific group
-   * @param isRootGroup
-   * @param componentId
-   * @param aRoleId
-   * @param groupModel
-   * @return all the Groups satifying the model that are direct childs of a specific group
+   * Returns all the Groups satisfying the model that are direct childs of a specific group
+   * @param isRootGroup is the groups to search are the root ones
+   * @param componentId the identifier of the component instance to which the groups can access
+   * @param aRoleId the identifiers of the roles the groups has to play
+   * @param groupModel a model of a group
+   * @return all the Groups satisfying the model that are direct childs of a specific group
    * @throws AdminPersistenceException
    */
   public String[] searchGroupsIds(boolean isRootGroup, int componentId, int[] aRoleId,
@@ -494,9 +485,9 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Returns all the Groups satiffying the model
-   * @param groupModel
-   * @param isAnd
-   * @return
+   * @param groupModel a group model
+   * @param isAnd the link operator
+   * @return an array of rows of groups
    * @throws AdminPersistenceException
    */
   public GroupRow[] searchGroups(GroupRow groupModel, boolean isAnd)
@@ -536,7 +527,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Insert a new group row.
-   * @param group
+   * @param group a group
    * @throws AdminPersistenceException
    */
   public void createGroup(GroupRow group) throws AdminPersistenceException {
@@ -544,8 +535,8 @@ public class GroupTable extends Table<GroupRow> {
     if (group.superGroupId != -1) {
       superGroup = getGroup(group.superGroupId);
       if (superGroup == null) {
-        throw new AdminPersistenceException("GroupTable.createGroup", SilverpeasException.ERROR,
-            "admin.EX_ERR_GROUP_NOT_FOUND", "father group id: '" + group.superGroupId + "'");
+        throw new AdminPersistenceException(
+            failureOnAdding("group into parent group", String.valueOf(group.superGroupId)));
       }
     }
     SynchroDomainReport
@@ -582,7 +573,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Updates a group row.
-   * @param group
+   * @param group a group
    * @throws AdminPersistenceException
    */
   public void updateGroup(GroupRow group) throws AdminPersistenceException {
@@ -616,7 +607,7 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Delete the group and all the sub-groups
-   * @param id
+   * @param id a group id
    * @throws AdminPersistenceException
    */
   public void removeGroup(int id) throws AdminPersistenceException {
@@ -683,8 +674,8 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Add an user in this group.
-   * @param userId
-   * @param groupId
+   * @param userId a user id
+   * @param groupId a group id
    * @throws AdminPersistenceException
    */
   public void addUserInGroup(int userId, int groupId) throws AdminPersistenceException {
@@ -693,14 +684,12 @@ public class GroupTable extends Table<GroupRow> {
     }
     UserRow user = organization.user.getUser(userId);
     if (user == null) {
-      throw new AdminPersistenceException("GroupTable.addUserInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_USER_NOT_FOUND", "user id: '" + userId + "'");
+      throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
     }
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException("GroupTable.addUserInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
     }
 
     int[] params = new int[]{groupId, userId};
@@ -713,9 +702,9 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Add an user in this group.
-   * @param userIds
-   * @param groupId
-   * @param checkRelation
+   * @param userIds user ids
+   * @param groupId group ids
+   * @param checkRelation is a relation has to be checked
    * @throws AdminPersistenceException
    */
   public void addUsersInGroup(String[] userIds, int groupId, boolean checkRelation)
@@ -724,8 +713,7 @@ public class GroupTable extends Table<GroupRow> {
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException("GroupTable.addUsersInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
     }
 
     for (String userId1 : userIds) {
@@ -739,9 +727,7 @@ public class GroupTable extends Table<GroupRow> {
       if (!userInGroup) {
         UserRow user = organization.user.getUser(userId);
         if (user == null) {
-          throw new AdminPersistenceException("GroupTable.addUsersInGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-              "user id: '" + userId + "'");
+          throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
         }
 
         int[] params = new int[]{groupId, userId};
@@ -759,15 +745,14 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Removes an user from this group.
-   * @param userId
-   * @param groupId
+   * @param userId user id
+   * @param groupId group id
    * @throws AdminPersistenceException
    */
   public void removeUserFromGroup(int userId, int groupId) throws AdminPersistenceException {
     if (!isUserDirectlyInGroup(userId, groupId)) {
-      throw new AdminPersistenceException("GroupTable.removeUserFromGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP",
-          "group id: '" + groupId + "', user id: '" + userId + "'");
+      throw new AdminPersistenceException(
+          failureOnDeleting("user " + userId, "in group " + groupId));
     }
     int[] params = new int[]{groupId, userId};
     SynchroDomainReport.debug("GroupTable.removeUserFromGroup()",
@@ -782,9 +767,9 @@ public class GroupTable extends Table<GroupRow> {
 
   /**
    * Add an user in this group.
-   * @param userIds
-   * @param groupId
-   * @param checkRelation
+   * @param userIds user ids
+   * @param groupId group id
+   * @param checkRelation is a relation has to be cheched
    * @throws AdminPersistenceException
    */
   public void removeUsersFromGroup(String[] userIds, int groupId, boolean checkRelation)
@@ -792,8 +777,7 @@ public class GroupTable extends Table<GroupRow> {
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException("GroupTable.removeUsersFromGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
     }
 
     for (String userId1 : userIds) {
@@ -812,19 +796,12 @@ public class GroupTable extends Table<GroupRow> {
         updateRelation(DELETE_GROUP_USER_REL, params);
         GroupCache.removeCacheOfUser(Integer.toString(userId));
       } else {
-        throw new AdminPersistenceException("GroupTable.removeUsersFromGroup()",
-            SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP",
-            "group id: '" + groupId + "', user id: '" + userId + "'");
+        throw new AdminPersistenceException(
+            failureOnDeleting("user " + userId, "in group " + groupId));
       }
     }
   }
 
-  /**
-   * Fetch the current group row from a resultSet.
-   * @param rs
-   * @return
-   * @throws SQLException
-   */
   @Override
   protected GroupRow fetchRow(ResultSet rs) throws SQLException {
     return fetchGroup(rs);

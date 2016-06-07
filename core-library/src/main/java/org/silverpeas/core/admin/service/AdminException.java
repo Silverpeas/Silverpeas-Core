@@ -25,59 +25,20 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.exception.SilverpeasException;
+
+import org.silverpeas.core.SilverpeasException;
 
 public class AdminException extends SilverpeasException {
 
-  private static final long serialVersionUID = 1L;
-  private boolean m_bAlreadyPrinted = false;
-
-  public AdminException(boolean bAlreadyPrinted) {
-    super("NoClass", SilverpeasException.ERROR, "");
-    m_bAlreadyPrinted = bAlreadyPrinted;
+  public AdminException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AdminException(String sMessage, boolean bAlreadyPrinted) {
-    super("NoClass", SilverpeasException.ERROR, sMessage);
-    m_bAlreadyPrinted = bAlreadyPrinted;
+  public AdminException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AdminException(Exception e, boolean bAlreadyPrinted) {
-    super("NoClass", SilverpeasException.ERROR, "", e);
-    m_bAlreadyPrinted = bAlreadyPrinted;
-  }
-
-  public boolean isAlreadyPrinted() {
-    return m_bAlreadyPrinted;
-  }
-
-  /**
-   * constructor
-   */
-  public AdminException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  public AdminException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public AdminException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AdminException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * getModule
-   */
-  @Override
-  public String getModule() {
-    return "admin";
+  public AdminException(final Throwable cause) {
+    super(cause);
   }
 }

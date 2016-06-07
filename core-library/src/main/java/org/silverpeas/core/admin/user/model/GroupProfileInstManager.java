@@ -24,13 +24,14 @@
 
 package org.silverpeas.core.admin.user.model;
 
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.persistence.GroupRow;
 import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
-import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 public class GroupProfileInstManager {
   /**
@@ -64,9 +65,7 @@ public class GroupProfileInstManager {
 
       return sProfileId;
     } catch (Exception e) {
-      throw new AdminException("GroupProfileInstManager.addGroupProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_SPACE_PROFILE",
-          "space profile name: '" + groupProfileInst.getName() + "'", e);
+      throw new AdminException(failureOnAdding("group profile", groupProfileInst.getName()), e);
     }
   }
 
@@ -85,10 +84,8 @@ public class GroupProfileInstManager {
         }
         sGroupId = idAsString(group.id);
       } catch (Exception e) {
-        throw new AdminException("GroupProfileInstManager.getGroupProfileInst",
-            SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
-            "space profile Id: '" + sProfileId + "', groupId: '" + sGroupId
-            + "'", e);
+        throw new AdminException(
+            failureOnGetting("profile " + sProfileId, "of group " + sGroupId), e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -143,10 +140,7 @@ public class GroupProfileInstManager {
         }
       }
     } catch (Exception e) {
-      throw new AdminException("GroupProfileInstManager.setGroupProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
-          "space profile Id: '" + sProfileId + "', groupId = '" + sGroupId
-          + "'", e);
+      throw new AdminException("Fail to set profile " + sProfileId + " to group " + sGroupId, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -174,10 +168,7 @@ public class GroupProfileInstManager {
       ddManager.getOrganization().groupUserRole
           .removeGroupUserRole(idAsInt(groupProfileInst.getId()));
     } catch (Exception e) {
-      throw new AdminException(
-          "GroupProfileInstManager.deleteGroupProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACEPROFILE",
-          "space profile Id: '" + groupProfileInst.getId() + "'", e);
+      throw new AdminException(failureOnDeleting("group profile", groupProfileInst.getId()), e);
     }
   }
 
@@ -285,9 +276,7 @@ public class GroupProfileInstManager {
       }
       return groupProfileInst.getId();
     } catch (Exception e) {
-      throw new AdminException("GroupProfileInstManager.updateGroupProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACEPROFILE",
-          "space profile Id: '" + groupProfileInst.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("group profile", groupProfileInst.getId()), e);
     }
   }
 

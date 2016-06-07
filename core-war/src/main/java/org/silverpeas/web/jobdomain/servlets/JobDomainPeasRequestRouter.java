@@ -20,37 +20,36 @@
  */
 package org.silverpeas.web.jobdomain.servlets;
 
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.web.jobdomain.JobDomainPeasException;
-import org.silverpeas.web.jobdomain.JobDomainSettings;
-import org.silverpeas.web.jobdomain.UserRequestData;
-import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.domain.model.Domain;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.exception.SilverpeasTrappedException;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasTrappedException;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.web.jobdomain.JobDomainPeasException;
+import org.silverpeas.web.jobdomain.JobDomainSettings;
+import org.silverpeas.web.jobdomain.UserRequestData;
+import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -113,9 +112,7 @@ public class JobDomainPeasRequestRouter extends
 
     try {
       if (!jobDomainSC.isAccessGranted()) {
-        throw new JobDomainPeasException("JobDomainPeasRequestRouter.getDestination",
-            SilverpeasException.ERROR, "root.EX_BAD_USER_RIGHT", "MODULE JOBDOMAIN : user "
-            + jobDomainSC.getUserId());
+        throw new JobDomainPeasException("Bad right for user {0}", jobDomainSC.getUserId());
       }
       // 1) Performs the action
       // ----------------------

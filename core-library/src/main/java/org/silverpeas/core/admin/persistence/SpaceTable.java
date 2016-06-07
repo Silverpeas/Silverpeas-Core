@@ -29,7 +29,6 @@ import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,6 +37,9 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnDeleting;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A SpaceTable object manages the ST_SPACE table.
@@ -256,8 +258,8 @@ public class SpaceTable extends Table<SpaceRow> {
     if (space.domainFatherId != -1) {
       superSpace = getSpace(space.domainFatherId);
       if (superSpace == null) {
-        throw new AdminPersistenceException("SpaceTable.createSpace", SilverpeasException.ERROR,
-            "admin.EX_ERR_SPACE_NOT_FOUND", "father space id : '" + space.domainFatherId + "'");
+        throw new AdminPersistenceException(
+            unknown("parent space", String.valueOf(space.domainFatherId)));
       }
     }
     insertRow(INSERT_SPACE, space);
@@ -414,8 +416,7 @@ public class SpaceTable extends Table<SpaceRow> {
     // Remove user favorite space
     UserFavoriteSpaceService ufsDAO = UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
     if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(-1, id))) {
-      throw new AdminPersistenceException("SpaceTable.removeSpace()", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_SPACE");
+      throw new AdminPersistenceException(failureOnDeleting("space", String.valueOf(id)));
     }
     updateRelation(DELETE_SPACE, id);
   }
@@ -441,8 +442,7 @@ public class SpaceTable extends Table<SpaceRow> {
       statement.setInt(5, id);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("SpaceTable.sendSpaceToBasket", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -468,9 +468,7 @@ public class SpaceTable extends Table<SpaceRow> {
       rs = statement.executeQuery();
       return rs.next();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("SpaceTable.isSpaceIntoBasket",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_SELECT", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -494,8 +492,7 @@ public class SpaceTable extends Table<SpaceRow> {
       statement.setInt(4, id);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("SpaceTable.removeSpaceFromBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }

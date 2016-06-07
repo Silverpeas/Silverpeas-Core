@@ -92,6 +92,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider
     .getPersonalizationService;
 
@@ -174,9 +175,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if ((m_TargetUserId != null) && (m_TargetUserId.length() > 0)) {
       valret = getOrganisationController().getUserDetail(m_TargetUserId);
       if (valret == null) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.getTargetUserDetail()",
-            SilverpeasException.ERROR, "jobDomainPeas.EX_USER_NOT_AVAILABLE",
-            "UserId=" + m_TargetUserId);
+        throw new JobDomainPeasException(unknown("user", m_TargetUserId));
       }
     }
     return valret;
@@ -188,9 +187,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if ((m_TargetUserId != null) && (m_TargetUserId.length() > 0)) {
       valret = getOrganisationController().getUserFull(m_TargetUserId);
       if (valret == null) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.getTargetUserFull()",
-            SilverpeasException.ERROR, "jobDomainPeas.EX_USER_NOT_AVAILABLE", "UserId="
-            + m_TargetUserId);
+        throw new JobDomainPeasException(unknown("user", m_TargetUserId));
       }
     }
     return valret;
@@ -229,9 +226,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     userRequestData.applyDataOnNewUser(theNewUser);
     String idRet = m_AdminCtrl.addUser(theNewUser);
     if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER");
+      throw new JobDomainPeasException(failureOnAdding("user", theNewUser.getLogin()));
     }
     refresh();
     setTargetUser(idRet);
@@ -264,8 +259,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       try {
         idRet = m_AdminCtrl.updateUserFull(uf);
       } catch (AdminException e) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.createUser()",
-            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", e);
+        throw new JobDomainPeasException(failureOnUpdate("user", uf.getId()), e);
       }
     }
     // regroupement de l'utilisateur dans un groupe
@@ -867,8 +861,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
+      throw new JobDomainPeasException(unknown("user", userRequestData.getId()));
     }
 
     // nom du groupe auquel était rattaché l'utilisateur
@@ -887,9 +880,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
     } catch (AdminException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER",
-          "UserId=" + userRequestData.getId(), e);
+      throw new JobDomainPeasException(failureOnUpdate("user", userRequestData.getId()), e);
     }
     refresh();
     setTargetUser(idRet);
@@ -904,9 +895,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     UserDetail theModifiedUser = m_AdminCtrl.getUserDetail(userRequestData.getId());
     if (theModifiedUser == null) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifySynchronizedUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
+      throw new JobDomainPeasException(unknown("synchronized user", userRequestData.getId()));
     }
     theModifiedUser.setAccessLevel(userRequestData.getAccessLevel());
     theModifiedUser.setUserManualNotificationUserReceiverLimit(
@@ -914,9 +903,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     String idRet = m_AdminCtrl.updateSynchronizedUser(theModifiedUser);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifySynchronizedUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + userRequestData.getId());
+          failureOnUpdate("synchronized user", userRequestData.getId()));
     }
     refresh();
     setTargetUser(idRet);
@@ -927,9 +914,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throws JobDomainPeasException {
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifyUserFull()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
+      throw new JobDomainPeasException(unknown("user", userRequestData.getId()));
     }
 
     theModifiedUser.setAccessLevel(userRequestData.getAccessLevel());
@@ -945,9 +930,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
     } catch (AdminException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUserFull()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER",
-          "UserId=" + userRequestData.getId(), e);
+      throw new JobDomainPeasException(failureOnUpdate("user", userRequestData.getId()), e);
     }
     refresh();
     setTargetUser(idRet);
@@ -1020,9 +1003,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (deleteUser) {
       String idRet = m_AdminCtrl.deleteUser(idUser);
       if (!StringUtil.isDefined(idRet)) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.deleteUser()",
-            SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "UserId="
-            + idUser);
+        throw new JobDomainPeasException(failureOnUpdate("user", idUser));
       }
       if (m_TargetUserId.equals(idUser)) {
         m_TargetUserId = null;
@@ -1048,9 +1029,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = m_AdminCtrl.synchronizeImportUser(targetDomainId, userLogin);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.importUser()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_USER",
-          "userLogin=" + userLogin);
+      throw new JobDomainPeasException(failureOnAdding("synchronized user", userLogin));
     }
     refresh();
     setTargetUser(idRet);
@@ -1087,8 +1066,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = m_AdminCtrl.synchronizeUser(idUser);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.synchroUser()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_USER");
+      throw new JobDomainPeasException(failureOnAdding("synchronize user", idUser));
     }
     refresh();
     setTargetUser(idRet);
@@ -1099,8 +1077,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = m_AdminCtrl.synchronizeRemoveUser(idUser);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.unsynchroUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER");
+      throw new JobDomainPeasException(failureOnDeleting("synchronized user", idUser));
     }
     if (m_TargetUserId.equals(idUser)) {
       m_TargetUserId = null;
@@ -1168,10 +1145,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
     } else {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.setTargetGroup()",
-          SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE",
-          "GroupId=" + groupId);
+      throw new JobDomainPeasException(undefined("group"));
     }
     setTargetUser(null);
   }
@@ -1247,8 +1221,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     if (isParentGroup) {
       if (m_GroupsPath.size() <= 0) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.getTargetGroup()",
-            SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
+        throw new JobDomainPeasException(failureOnGetting("subgroups", ""));
       }
       groups = m_GroupsPath.lastElement().getGroupPage();
     } else { // Domain case
@@ -1265,8 +1238,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     final UserDetail[] usDetails;
     if (isParentGroup) {
       if (m_GroupsPath.isEmpty()) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.getTargetGroup()",
-            SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
+        throw new JobDomainPeasException(failureOnGetting("users of subgroups", ""));
       }
       usDetails = m_GroupsPath.lastElement().getUserPage();
     } else { // Domain case
@@ -1336,8 +1308,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewGroup.setRule(groupRule);
     String idRet = m_AdminCtrl.addGroup(theNewGroup);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.createGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP");
+      throw new JobDomainPeasException(failureOnAdding("group", groupName));
     }
     refresh();
 
@@ -1352,8 +1323,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_GROUP");
+      throw new JobDomainPeasException(unknown("group", idGroup));
     }
     boolean isSynchronizationToPerform =
         StringUtil.isDefined(groupRule) && !groupRule.equalsIgnoreCase(theModifiedGroup.getRule());
@@ -1366,8 +1336,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = m_AdminCtrl.updateGroup(theModifiedGroup);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP");
+      throw new JobDomainPeasException(failureOnUpdate("group", idGroup));
     }
     refresh();
     return isSynchronizationToPerform ? synchroGroup(idRet) : isGroupRoot(idRet);
@@ -1379,14 +1348,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.updateGroupSubUsers()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_GROUP");
+      throw new JobDomainPeasException(unknown("group", idGroup));
     }
     theModifiedGroup.setUserIds(userIds);
     String idRet = m_AdminCtrl.updateGroup(theModifiedGroup);
     if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.updateGroupSubUsers()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP");
+      throw new JobDomainPeasException(failureOnUpdate("group", idGroup));
     }
     refresh();
     return true;
@@ -1397,8 +1364,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = m_AdminCtrl.deleteGroupById(idGroup);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.deleteGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP");
+      throw new JobDomainPeasException(failureOnDeleting("group", idGroup));
     }
     removeGroupFromPath(idGroup);
     refresh();
@@ -1409,8 +1375,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String synchronizationResult = m_AdminCtrl.synchronizeGroup(idGroup);
     if (!StringUtil.isDefined(synchronizationResult)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.synchroGroup()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP");
+      throw new JobDomainPeasException(failureOnAdding("synchronized group", idGroup));
     }
     if (StringUtil.isLong(synchronizationResult)) {
       refresh();
@@ -1437,8 +1402,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = m_AdminCtrl.synchronizeRemoveGroup(idGroup);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.unsynchroGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP");
+      throw new JobDomainPeasException(failureOnDeleting("synchronized group", idGroup));
     }
     removeGroupFromPath(idGroup);
     refresh();
@@ -1451,8 +1415,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     String idRet = m_AdminCtrl.synchronizeImportGroup(targetDomainId,
         groupName);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.importGroup()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP");
+      throw new JobDomainPeasException(failureOnAdding("synchronized group", groupName));
     }
     refresh();
     return true;
@@ -1649,8 +1612,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       DomainServiceProvider.getDomainService(DomainType.EXTERNAL).createDomain(theNewDomain);
       refresh();
     } catch (DomainCreationException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.createDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+      throw new JobDomainPeasException(e);
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.createDomain()",
@@ -1699,8 +1661,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       trappedException.setGoBackPage("displayDomainSQLCreate");
       throw trappedException;
     } catch (DomainCreationException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+      throw new JobDomainPeasException(e);
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.createSQLDomain()",
@@ -1736,9 +1697,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     if (!StringUtil.isDefined(targetDomainId)
         || targetDomainId.equals("-1")) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifyDomain()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
+      throw new JobDomainPeasException(unknown("domain", domainName));
     }
     theNewDomain.setName(domainName);
     theNewDomain.setDescription(domainDescription);
@@ -1749,9 +1708,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewDomain.setTheTimeStamp(domainTimeStamp);
     String idRet = m_AdminCtrl.updateDomain(theNewDomain);
     if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifyDomain()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
+      throw new JobDomainPeasException(failureOnUpdate("domain", domainName));
     }
     refresh();
     return idRet;
@@ -1781,9 +1738,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     if ((targetDomainId == null) || (targetDomainId.equals("-1"))
         || (targetDomainId.equals("0")) || (targetDomainId.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifySQLDomain()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
+      throw new JobDomainPeasException(unknown("domain", domainName));
     }
     theNewDomain.setName(domainName);
     theNewDomain.setDescription(domainDescription);
@@ -1798,8 +1753,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       idRet = m_AdminCtrl.updateDomain(theNewDomain);
       if ((idRet == null) || (idRet.length() <= 0)) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.modifySQLDomain()",
-            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
+        throw new JobDomainPeasException(failureOnUpdate("domain", domainName));
       }
 
       if (JobDomainSettings.usersInDomainQuotaActivated) {
@@ -1825,8 +1779,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       DomainServiceProvider.getDomainService(DomainType.EXTERNAL).deleteDomain(getTargetDomain());
     } catch (DomainDeletionException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.deleteDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e);
+      throw new JobDomainPeasException(e);
     }
   }
 
@@ -1836,8 +1789,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       DomainServiceProvider.getUserDomainQuotaService().remove(
           UserDomainQuotaKey.from(getTargetDomain()));
     } catch (DomainDeletionException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.deleteSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e);
+      throw new JobDomainPeasException(e);
     }
   }
 
@@ -1983,8 +1935,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         listGroupToInsertUpdate = JobDomainPeasDAO.selectGroupSynchroInsertUpdateTableDomain_Group(
             theDomain);
       } catch (SQLException e1) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.synchroSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e1);
+        throw new JobDomainPeasException(e1);
       }
 
       // 2- Traitement Domaine, appel aux webServices
@@ -1996,8 +1947,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         synchroUserWebService = (SynchroUserWebServiceItf) Class.forName(nomClasseWebService).
             newInstance();
       } catch (Exception e) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.synchroSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
+        throw new JobDomainPeasException(
+            failureOnAdding("synchronized domain", theDomain.getName()), e);
       }
 
       synchroUserWebService.startConnection();
@@ -2020,8 +1971,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         listUserToInsertUpdate = JobDomainPeasDAO.selectUserSynchroInsertUpdateTableDomain_User(
             theDomain);
       } catch (SQLException e1) {
-        throw new JobDomainPeasException("JobDomainPeasSessionController.synchroSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e1);
+        throw new JobDomainPeasException(e1);
       }
 
       // 5- Récupère la liste des users à synchroniser (en delete)
@@ -2029,9 +1979,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       try {
         listUserToDelete = JobDomainPeasDAO.selectUserSynchroDeleteTableDomain_User(theDomain);
       } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.synchroSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e1);
+        throw new JobDomainPeasException(e1);
       }
 
       // 6-Traitement users, appel aux webServices
@@ -2104,8 +2052,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       X509Factory.buildP12(user.getId(), user.getLogin(), user.getLastName(), user.getFirstName(),
           user.getDomainId());
     } catch (UtilException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.getP12()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_CANT_GET_P12", e);
+      throw new JobDomainPeasException(e);
     }
   }
 
@@ -2114,8 +2061,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       X509Factory.revocateUserCertificate(user.getId());
     } catch (UtilException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.revocateCertificate()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_CANT_REVOCATE_CERTIFICATE", e);
+      throw new JobDomainPeasException(e);
     }
   }
 

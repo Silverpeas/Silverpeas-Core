@@ -20,23 +20,22 @@
  */
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.component.dao.ComponentDAO;
 import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.dao.ComponentDAO;
+import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.SpaceRow;
-import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.admin.user.ProfileInstManager;
+import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ArrayUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
 @Singleton
@@ -148,9 +148,7 @@ public class ComponentInstManager {
       }
 
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.createComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_COMPONENT",
-          "component name: '" + componentInst.getName() + "'", e);
+      throw new AdminException(failureOnAdding("component", componentInst.getName()), e);
     }
   }
 
@@ -176,9 +174,8 @@ public class ComponentInstManager {
       ddManager.getOrganization().instance
           .sendComponentToBasket(componentInst.getLocalId(), deletedComponentName, userId);
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.sendComponentToBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_REMOVE_COMPONENT",
-          "component name: '" + componentInst.getName() + "'", e);
+      throw new AdminException(
+          failureOnMoving("component", componentInst.getLocalId(), "bin", ""), e);
     }
   }
 
@@ -187,10 +184,7 @@ public class ComponentInstManager {
     try {
       ddManager.getOrganization().instance.restoreComponentFromBasket(localComponentId);
     } catch (Exception e) {
-      throw new AdminException(
-          "ComponentInstManager.restoreComponentFromBasket",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = " + localComponentId, e);
+      throw new AdminException(failureOnRestoring("component", localComponentId), e);
     }
   }
 
@@ -215,9 +209,7 @@ public class ComponentInstManager {
         }
         fatherLocalId = space.id;
       } catch (Exception e) {
-        throw new AdminException("ComponentInstManager.getComponentInst",
-            SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT",
-            "component id: '" + localComponentId + "'", e);
+        throw new AdminException(failureOnGetting("component", String.valueOf(localComponentId)), e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -246,8 +238,7 @@ public class ComponentInstManager {
 
       return componentInstanceRows2ComponentInstLights(componentRows);
     } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getRemovedSpaces",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_REMOVED_SPACES", e);
+      throw new AdminException(failureOnGetting("removed components", ""), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -285,9 +276,7 @@ public class ComponentInstManager {
         }
       }
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getComponentInstName",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT_NAME",
-          "component id: '" + compLocalId + "'", e);
+      throw new AdminException(failureOnGetting("component", compLocalId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -369,9 +358,7 @@ public class ComponentInstManager {
             "root.EX_RECORD_NOT_FOUND", "instanceId = " + compLocalId);
       }
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.setComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_SET_COMPONENT",
-          "component id: '" + compLocalId + "'", e);
+      throw new AdminException(failureOnUpdate("component", compLocalId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -393,9 +380,7 @@ public class ComponentInstManager {
       // delete the component node
       ddManager.getOrganization().instance.removeComponentInstance(componentInst.getLocalId());
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.deleteComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_COMPONENT",
-          "component id: '" + componentInst.getLocalId() + "'", e);
+      throw new AdminException(failureOnDeleting("component", componentInst.getLocalId()), e);
     }
   }
 
@@ -408,9 +393,7 @@ public class ComponentInstManager {
       ddManager.getOrganizationSchema();
       ddManager.getOrganization().instance.updateComponentOrder(compLocalId, orderNum);
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.updateComponentOrder",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "Component Id : '" + compLocalId + "'", e);
+      throw new AdminException(failureOnUpdate("order of component", compLocalId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -426,9 +409,7 @@ public class ComponentInstManager {
       ddManager.getOrganization().instance.updateComponentInheritance(compLocalId,
           inheritanceBlocked);
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.updateComponentOrder",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_COMPONENT_INHERITANCE", "Component Id : '" + compLocalId + "'", e);
+      throw new AdminException(failureOnUpdate("component", compLocalId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -495,9 +476,7 @@ public class ComponentInstManager {
       }
 
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.updateComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "component id: '" + compoInstNew.getLocalId() + "'", e);
+      throw new AdminException(failureOnUpdate("component", compoInstNew.getLocalId()), e);
     }
   }
 
@@ -510,9 +489,8 @@ public class ComponentInstManager {
       // Create the component node
       ddManager.getOrganization().instance.moveComponentInstance(spaceLocalId, componentLocalId);
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.moveComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "spaceId= " + spaceLocalId + " componentId=" + componentLocalId, e);
+      throw new AdminException(
+          failureOnMoving("component", componentLocalId, "space", spaceLocalId), e);
     }
   }
 
@@ -550,11 +528,7 @@ public class ComponentInstManager {
       }
       return compoIds;
     } catch (Exception e) {
-      throw new AdminException(
-          "ComponentInstManager.getAllCompoIdsByComponentName",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
-          "component name: '" + sComponentName + "'", e);
+      throw new AdminException(failureOnGetting("instances of component", sComponentName), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -570,8 +544,7 @@ public class ComponentInstManager {
       return componentIds.toArray(new String[componentIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
+      throw new AdminException(failureOnGetting("component instances in space", spaceId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -586,8 +559,7 @@ public class ComponentInstManager {
       return ComponentDAO.getComponentsInSpace(con, spaceId);
 
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
+      throw new AdminException(failureOnGetting("component instances in space", spaceId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -619,8 +591,8 @@ public class ComponentInstManager {
       }
 
     } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getAllowedRootSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALLOWED_SPACEIDS", e);
+      throw new AdminException(failureOnGetting("component instances of component " + componentName,
+          " accessible to user " + userId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -636,8 +608,7 @@ public class ComponentInstManager {
           .getAllParametersInComponent(compLocalId);
       return (parameters);
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getParameters", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_COMPONENT_PARAMETERS", "componentId = " + compLocalId, e);
+      throw new AdminException(failureOnGetting("parameters of component", compLocalId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }

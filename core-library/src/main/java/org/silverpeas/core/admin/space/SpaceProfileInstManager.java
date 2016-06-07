@@ -20,17 +20,17 @@
  */
 package org.silverpeas.core.admin.space;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.persistence.AdminPersistenceException;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
-import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
 public class SpaceProfileInstManager {
@@ -65,8 +65,7 @@ public class SpaceProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.getSpaceProfileIdsOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("space profiles of user", sUserId), e);
     } finally {
       domainManager.releaseOrganizationSchema();
     }
@@ -95,8 +94,7 @@ public class SpaceProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.getSpaceProfileIdsOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(failureOnGetting("space profiles of group", groupId), e);
     } finally {
       domainManager.releaseOrganizationSchema();
     }
@@ -134,9 +132,7 @@ public class SpaceProfileInstManager {
       }
       return spaceProfileNodeId;
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.addSpaceProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_SPACE_PROFILE",
-          "space profile name: '" + spaceProfileInst.getName() + "'", e);
+      throw new AdminException(failureOnAdding("space profile", spaceProfileInst.getName()), e);
     }
   }
 
@@ -161,10 +157,7 @@ public class SpaceProfileInstManager {
         }
         parentSpaceLocalId = space.id;
       } catch (Exception e) {
-        throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
-            SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
-            "space profile Id: '" + spaceProfileId + "', space Id: '"
-            + parentSpaceLocalId + "'", e);
+        throw new AdminException(failureOnGetting("space profile", spaceProfileId), e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -185,10 +178,7 @@ public class SpaceProfileInstManager {
       }
       return spaceProfileInst;
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
-          "space profile Id: '" + spaceProfileId + "', space Id: '"
-          + parentSpaceLocalId + "'", e);
+      throw new AdminException(failureOnGetting("space profile", spaceProfileId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -232,9 +222,7 @@ public class SpaceProfileInstManager {
       }
       return spaceProfileInst;
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.getInheritedSpaceProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
-          "spaceId = " + spaceLocalId + ", role = " + roleName, e);
+      throw new AdminException(failureOnGetting("space profile", roleName), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -292,9 +280,7 @@ public class SpaceProfileInstManager {
       ddManager.getOrganization().spaceUserRole.removeSpaceUserRole(idAsInt(spaceProfileInst
           .getId()));
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.deleteSpaceProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACEPROFILE", "space profile Id: '"
-          + spaceProfileInst.getId() + "'", e);
+      throw new AdminException(failureOnDeleting("space profile", spaceProfileInst.getId()), e);
     }
   }
 
@@ -407,9 +393,7 @@ public class SpaceProfileInstManager {
 
       return idAsString(changedSpaceUserRole.id);
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.updateSpaceProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACEPROFILE",
-          "space profile Id: '" + spaceProfileInst.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("space profile", spaceProfileInst.getId()), e);
     }
   }
 

@@ -31,75 +31,26 @@
 
 package org.silverpeas.web.jobdomain;
 
-import org.silverpeas.core.exception.SilverpeasException;
+
+import org.silverpeas.core.SilverpeasException;
 
 /**
- * Class declaration
- * @author
+ * Exception when an error is raised from a Silverpeas domain-related job.
  */
 public class JobDomainPeasException extends SilverpeasException {
 
   private static final long serialVersionUID = 3322314537755637519L;
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @see
-   */
-  public JobDomainPeasException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+
+  public JobDomainPeasException(final String message, String ... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @see
-   */
-  public JobDomainPeasException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public JobDomainPeasException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   * @see
-   */
-  public JobDomainPeasException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public JobDomainPeasException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   * @see
-   */
-  public JobDomainPeasException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getModule() {
-    return "jobDomainPeas";
-  }
-
 }

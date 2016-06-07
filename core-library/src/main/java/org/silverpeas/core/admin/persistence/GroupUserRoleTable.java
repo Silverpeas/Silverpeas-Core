@@ -26,11 +26,12 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A GroupUserRoleTable object manages the ST_GroupUserRole table.
@@ -82,10 +83,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
   public void createGroupUserRole(GroupUserRoleRow groupUserRole) throws AdminPersistenceException {
     GroupRow group = organization.group.getGroup(groupUserRole.groupId);
     if (group == null) {
-      throw new AdminPersistenceException(
-          "GroupUserRoleTable.createGroupUserRole", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", "group id : '"
-          + groupUserRole.groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupUserRole.groupId)));
     }
 
     insertRow(INSERT_GROUPUSERROLE, groupUserRole);
@@ -171,17 +169,12 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
     UserRow user = organization.user.getUser(userId);
     if (user == null) {
-      throw new AdminPersistenceException(
-          "GroupUserRoleTable.addUserInGroupUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-          "user id : '" + userId + "'");
+      throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
     }
 
     GroupUserRoleRow groupUserRole = getGroupUserRole(groupUserRoleId);
     if (groupUserRole == null) {
-      throw new AdminPersistenceException("GroupUserRoleTable.addUserInGroupUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUPUSERROLE_NOT_FOUND",
-          "group user role id : '" + groupUserRoleId + "'");
+      throw new AdminPersistenceException(unknown("group role", String.valueOf(groupUserRoleId)));
     }
 
     int[] params = new int[] { groupUserRoleId, userId };
@@ -198,10 +191,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
       throws AdminPersistenceException {
     if (!isUserDirectlyInRole(userId, groupUserRoleId)) {
       throw new AdminPersistenceException(
-          "GroupUserRoleTable.removeUserFromGroupUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP_USERROLE",
-          "group userrole id: '" + groupUserRoleId + "', user id: '" + userId
-          + "'");
+          "user " + userId + " isn't in group role " + groupUserRoleId);
     }
 
     int[] params = new int[] { groupUserRoleId, userId };
@@ -241,18 +231,12 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
     GroupRow group = organization.group.getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException(
-          "GroupUserRoleTable.addGroupInGroupUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
-          "group id : '" + groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
     }
 
     GroupUserRoleRow groupUserRole = getGroupUserRole(groupUserRoleId);
     if (groupUserRole == null) {
-      throw new AdminPersistenceException(
-          "GroupUserRoleTable.addGroupInGroupUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUPUSERROLE_NOT_FOUND",
-          "group userrole id : '" + groupUserRoleId + "'");
+      throw new AdminPersistenceException(unknown("group role", String.valueOf(groupUserRoleId)));
     }
 
     int[] params = new int[] { groupUserRoleId, groupId };
@@ -273,10 +257,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
       throws AdminPersistenceException {
     if (!isGroupDirectlyInRole(groupId, groupUserRoleId)) {
       throw new AdminPersistenceException(
-          "GroupUserRoleTable.removeGroupFromGroupUserRole",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_IN_GROUP_USERROLE", "group userrole id: '"
-          + groupUserRoleId + "', group id: '" + groupId + "'");
+          "The group " + groupId + " isn't in group role " + groupUserRoleId);
     }
 
     int[] params = new int[] { groupUserRoleId, groupId };

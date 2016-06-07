@@ -24,17 +24,16 @@
 
 package org.silverpeas.core.web.admin.migration;
 
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
@@ -148,9 +147,7 @@ public class DomainSP2LDAPBatch {
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      throw new AdminException("DomainSP2LDAPBatch.processMigration()",
-          SilverpeasException.ERROR,
-          "Erreur lors de la migration des comptes Silverpeas", e);
+      throw new AdminException("Fail to migrate the Silverpeas accounts", e);
     }
     SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
         "DEBUT Synchronisation post migration du domaine " + domainLDAP_Id);

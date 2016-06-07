@@ -75,7 +75,6 @@ import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -104,6 +103,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
@@ -389,8 +389,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error(MODULE_ADMIN, "Admin.addSpaceInst", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.addSpaceInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_SPACE", "space name : '" + spaceInst.getName() + "'", e);
+      throw new AdminException(failureOnAdding("space", spaceInst.getName()), e);
     } finally {
       // close connection
       domainDriverManager.releaseOrganizationSchema();
@@ -480,9 +479,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.deleteSpaceInstById", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_SPACE",
-          "user Id : '" + userId + "', space Id : '" + spaceId + "'", e);
+      throw new AdminException(failureOnDeleting("space", spaceId), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -556,8 +553,7 @@ class Admin implements Administration {
       addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.restoreSpaceFromBasket", SilverpeasException.ERROR,
-          "admin.EX_ERR_RESTORE_SPACE_FROM_BASKET", "spaceId = " + spaceId);
+      throw new AdminException(failureOnRestoring("space", spaceId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -568,8 +564,7 @@ class Admin implements Administration {
     try {
       return getSpaceInstById(getDriverSpaceId(spaceId));
     } catch (Exception e) {
-      throw new AdminException("Admin.getSpaceInstById", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_SPACE", " space Id : '" + spaceId + "'", e);
+      throw new AdminException(failureOnGetting("space", spaceId), e);
     }
   }
 
@@ -594,8 +589,7 @@ class Admin implements Administration {
       }
       return spaceManager.copy(spaceInst);
     } catch (Exception e) {
-      throw new AdminException("Admin.getSpaceInstById", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_SPACE", " space Id : '" + spaceId + "'", e);
+      throw new AdminException(failureOnGetting("space", String.valueOf(spaceId)), e);
     }
   }
 
@@ -617,8 +611,7 @@ class Admin implements Administration {
 
       return asDriverSpaceIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getAllSubSpaceIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_ALL_SUBSPACE_IDS", " father space Id : '" + domainFatherId + "'", e);
+      throw new AdminException(failureOnGetting("subspaces of space ", domainFatherId), e);
     }
   }
 
@@ -653,8 +646,7 @@ class Admin implements Administration {
       return spaceInstNew.getId();
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.updateSpaceInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_SPACE", "space Id : '" + spaceInstNew.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("space", spaceInstNew.getId()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -684,8 +676,7 @@ class Admin implements Administration {
       }
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.updateSpaceOrderNum", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_SPACE", "space Id : '" + spaceId + "'", e);
+      throw new AdminException(failureOnUpdate("space", spaceId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -725,8 +716,7 @@ class Admin implements Administration {
       }
     } catch (AdminException e) {
       rollback();
-      throw new AdminException("Admin.updateComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_SPACE", "spaceId = " + space.getId(), e);
+      throw new AdminException(failureOnUpdate("space", space.getId()), e);
     }
   }
 
@@ -736,8 +726,7 @@ class Admin implements Administration {
     try {
       return spaceManager.isSpaceInstExist(domainDriverManager, getDriverSpaceId(spaceId));
     } catch (AdminException e) {
-      throw new AdminException("Admin.isSpaceInstExist", SilverpeasException.ERROR,
-          "admin.EX_ERR_IS_SPACE_EXIST", "space Id : '" + spaceId + "'", e);
+      throw new AdminException(e.getMessage(), e);
     }
   }
 
@@ -750,8 +739,7 @@ class Admin implements Administration {
       driverSpaceIds = getClientSpaceIds(driverSpaceIds);
       return driverSpaceIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getAllSpaceIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
+      throw new AdminException(failureOnGetting("root spaces", ""), e);
     }
   }
 
@@ -793,8 +781,7 @@ class Admin implements Administration {
       driverSpaceIds = getClientSpaceIds(driverSpaceIds);
       return driverSpaceIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getAllSpaceIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
+      throw new AdminException(failureOnGetting("all spaces", ""), e);
     }
   }
 
@@ -804,8 +791,7 @@ class Admin implements Administration {
     try {
       return spaceManager.getRemovedSpaces(domainDriverManager);
     } catch (Exception e) {
-      throw new AdminException("Admin.getRemovedSpaces", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_REMOVED_SPACES", e);
+      throw new AdminException(failureOnGetting("all removed spaces", ""), e);
     }
   }
 
@@ -815,8 +801,7 @@ class Admin implements Administration {
     try {
       return componentManager.getRemovedComponents(domainDriverManager);
     } catch (Exception e) {
-      throw new AdminException("Admin.getRemovedComponents", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_REMOVED_COMPONENTS", e);
+      throw new AdminException(failureOnGetting("all removed components", ""), e);
     }
   }
 
@@ -833,8 +818,8 @@ class Admin implements Administration {
       }
       return asSpaceNames;
     } catch (Exception e) {
-      throw new AdminException("Admin.getSpaceNames", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_SPACE_NAMES", e);
+      throw new AdminException(
+          failureOnGetting("space names of", String.join(", ", asClientSpaceIds)), e);
     }
   }
 
@@ -865,8 +850,7 @@ class Admin implements Administration {
       componentInst.setDomainFatherId(getClientSpaceId(componentInst.getDomainFatherId()));
       return componentInst;
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_COMPONENT", "component Id: '" + sClientComponentId + "'", e);
+      throw new AdminException(failureOnGetting("component", sClientComponentId), e);
     }
   }
 
@@ -877,8 +861,7 @@ class Admin implements Administration {
       int driverComponentId = getDriverComponentId(componentId);
       return componentManager.getComponentInstLight(domainDriverManager, driverComponentId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentInstLight", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_COMPONENT", "component Id: '" + componentId + "'", e);
+      throw new AdminException(failureOnGetting("component", componentId), e);
     }
   }
 
@@ -907,8 +890,7 @@ class Admin implements Administration {
       }
       return componentManager.copy(componentInst);
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_COMPONENT", "component Id: '" + componentId + "'", e);
+      throw new AdminException(failureOnGetting("component", String.valueOf(componentId)), e);
     }
   }
 
@@ -969,8 +951,7 @@ class Admin implements Administration {
       createComponentIndex(component);
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.restoreComponentFromBasket", SilverpeasException.ERROR,
-          "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = " + componentId);
+      throw new AdminException(failureOnRestoring("component", componentId));
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -1105,8 +1086,7 @@ class Admin implements Administration {
       if (e instanceof QuotaException) {
         throw (QuotaException) e;
       }
-      throw new AdminException("Admin.addComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_COMPONENT", "component name: '" + componentInst.getName() + "'", e);
+      throw new AdminException(failureOnAdding("component", componentInst.getName()), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -1244,9 +1224,7 @@ class Admin implements Administration {
         SilverTrace.error(MODULE_ADMIN, "Admin.deleteComponentInst",
             "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.deleteComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_COMPONENT",
-          "component Id: '" + componentId + "'", e);
+      throw new AdminException(failureOnDeleting("component", componentId), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -1270,8 +1248,7 @@ class Admin implements Administration {
           driverComponentId, null));
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.updateComponentOrderNum", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_COMPONENT", "Component Id : '" + componentId + "'", e);
+      throw new AdminException(failureOnUpdate("component", componentId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -1307,8 +1284,7 @@ class Admin implements Administration {
       return componentClientId;
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.updateComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_COMPONENT", "component Id: '" + component.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("component", component.getId()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -1343,8 +1319,7 @@ class Admin implements Administration {
       }
     } catch (AdminException e) {
       rollback();
-      throw new AdminException("Admin.updateComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_COMPONENT", "component Id: '" + component.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("component", component.getId()), e);
     }
   }
 
@@ -1492,8 +1467,9 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.setSpaceProfilesToComponent", SilverpeasException.ERROR,
-          "admin.EX_ERR_SET_PROFILES", e);
+      throw new AdminException(
+          "Fail to set profiles of space " + space.getId() + " to component" + component.getId(),
+          e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -1598,8 +1574,7 @@ class Admin implements Administration {
 
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.moveSpace", SilverpeasException.ERROR,
-          "admin.EX_ERR_MOVE_Space", "spaceId = " + spaceId + ",  fatherId =" + fatherId, e);
+      throw new AdminException("Fail to move space " + spaceId + " into space " + fatherId, e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -1656,9 +1631,8 @@ class Admin implements Administration {
           componentManager.getComponentsInSpace(getDriverSpaceId(spaceId)));
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.moveComponentInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_MOVE_COMPONENT",
-          "spaceId = " + spaceId + " component Id: '" + componentId + " ", e);
+      throw new AdminException("Fail to move component " + componentId + " into space " + spaceId,
+          e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -1818,8 +1792,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.addProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_PROFILE", "profile name: '" + profileInst.getName() + "'", e);
+      throw new AdminException(failureOnAdding("profile", profileInst.getName()), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -1879,8 +1852,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.deleteProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_PROFILE", "profile Id: '" + profileId + "'", e);
+      throw new AdminException(failureOnDeleting("profile", profileId), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -1944,8 +1916,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.updateProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_PROFILE", "profile Id: '" + newProfile.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("profile", newProfile.getId()), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -2018,10 +1989,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.addSpaceProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_SPACE_PROFILE", "space profile name: '" + spaceProfile.getName()
-          + "'",
-          e);
+      throw new AdminException(failureOnAdding("space profile", spaceProfile.getName()), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -2082,8 +2050,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.deleteSpaceProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_SPACEPROFILE", "space profile Id: '" + sSpaceProfileId + "'", e);
+      throw new AdminException(failureOnDeleting("space profile", sSpaceProfileId), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -2160,9 +2127,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.updateSpaceProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_SPACEPROFILE", "space profile Id: '" + newSpaceProfile.getId()
-          + "'", e);
+      throw new AdminException(failureOnUpdate("space profile", newSpaceProfile.getId()), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -2343,8 +2308,7 @@ class Admin implements Administration {
     try {
       return addGroup(group, false);
     } catch (Exception e) {
-      throw new AdminException("Admin.addGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_GROUP", "group name: '" + group.getName() + "'", e);
+      throw new AdminException(failureOnAdding("group", group.getName()), e);
     }
   }
 
@@ -2377,8 +2341,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.addGroup", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.addGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_GROUP", "group name: '" + group.getName() + "'", e);
+      throw new AdminException(failureOnAdding("group", group.getName()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
       if (group.getDomainId() != null && !onlyInSilverpeas) {
@@ -2393,8 +2356,7 @@ class Admin implements Administration {
     try {
       return deleteGroupById(sGroupId, false);
     } catch (Exception e) {
-      throw new AdminException("Admin.deleteGroupById", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_GROUP", "group Id: '" + sGroupId + "'", e);
+      throw new AdminException(failureOnDeleting("group", sGroupId), e);
     }
   }
 
@@ -2407,8 +2369,7 @@ class Admin implements Administration {
       // Get group information
       group = getGroup(sGroupId);
       if (group == null) {
-        throw new AdminException("Admin.deleteGroupById", SilverpeasException.ERROR,
-            "admin.EX_ERR_GROUP_NOT_FOUND", "group Id: '" + sGroupId + "'");
+        throw new AdminException(unknown("group", sGroupId));
       }
       domainDriverManager.startTransaction(false);
       if (group.getDomainId() != null && !onlyInSilverpeas) {
@@ -2439,8 +2400,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.deleteGroupById", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.deleteGroupById", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", "group Id: '" + sGroupId + "'", e);
+      throw new AdminException(failureOnDeleting("group", group.getId()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
       if (group.getDomainId() != null && !onlyInSilverpeas) {
@@ -2454,8 +2414,7 @@ class Admin implements Administration {
     try {
       return updateGroup(group, false);
     } catch (Exception e) {
-      throw new AdminException("Admin.updateGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_GROUP", "group name: '" + group.getName() + "'", e);
+      throw new AdminException(failureOnUpdate("group", group.getId()), e);
     }
   }
 
@@ -2484,8 +2443,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.updateGroup", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.updateGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_GROUP", "group name: '" + group.getName() + "'", e);
+      throw new AdminException(failureOnUpdate("group", group.getId()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
       if (group.getDomainId() != null && !onlyInSilverpeas) {
@@ -2517,8 +2475,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.removeUserFromGroup", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.removeUserFromGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_GROUP", "groupId = " + sGroupId + ", userId = " + sUserId, e);
+      throw new AdminException(failureOnDeleting("user " + sUserId, "in group " + sGroupId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -2547,8 +2504,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.addUserInGroup", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.addUserInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_GROUP", "groupId = " + sGroupId + ", userId = " + sUserId, e);
+      throw new AdminException(failureOnAdding("user " + sUserId, "in group " + sGroupId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -2635,9 +2591,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.addGroupProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_SPACE_PROFILE",
-          "group roleName = " + groupProfileInst.getName(), e);
+      throw new AdminException(failureOnAdding("group profile", groupProfileInst.getName()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
 
@@ -2675,9 +2629,7 @@ class Admin implements Administration {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.deleteGroupProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUPPROFILE",
-          "groupId = " + groupId, e);
+      throw new AdminException(failureOnDeleting("group profile", groupId), e);
     } finally {
       if (startNewTransaction) {
         domainDriverManager.releaseOrganizationSchema();
@@ -2705,9 +2657,7 @@ class Admin implements Administration {
         domainDriverManager.commit();
       } catch (Exception e) {
         rollback();
-        throw new AdminException("Admin.updateGroupProfileInst",
-            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACEPROFILE",
-            "space profile Id: '" + groupProfileInstNew.getId() + "'", e);
+        throw new AdminException(failureOnUpdate("group profile", groupProfileInstNew.getId()), e);
       } finally {
         domainDriverManager.releaseOrganizationSchema();
       }
@@ -2744,8 +2694,7 @@ class Admin implements Administration {
     try {
       domainDriverManager.indexAllGroups(domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.indexGroups",
-          SilverpeasException.ERROR, "admin.CANT_INDEX_GROUPS", "domainId = " + domainId, e);
+      throw new AdminException(failureOnIndexing("groups in domain", domainId), e);
     }
   }
 
@@ -2821,23 +2770,20 @@ class Admin implements Administration {
       try {
         theDomains = domainDriverManager.getAllDomains();
       } catch (Exception e) {
-        throw new AdminException("Admin.getUserIdByLoginAndDomain",
-            SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
-            "login: '" + sLogin + "', domain id: '" + sDomainId + "'", e);
+        throw new AdminException(
+            failureOnGetting("user by login and domain:", sLogin + "/" + sDomainId), e);
       }
       for (int i = 0; i < theDomains.length && valret == null; i++) {
         try {
           valret = userManager.getUserIdByLoginAndDomain(domainDriverManager, sLogin,
               theDomains[i].getId());
         } catch (Exception e) {
-          throw new AdminException("Admin.getUserIdByLoginAndDomain", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN", "login: '" + sLogin + "', domain id: '"
-              + sDomainId + "'", e);
+          throw new AdminException(
+              failureOnGetting("user by login and domain:", sLogin + "/" + sDomainId), e);
         }
       }
       if (valret == null) {
-        throw new AdminException("Admin.getUserIdByLoginAndDomain", SilverpeasException.ERROR,
-            "admin.EX_ERR_USER_NOT_FOUND", "login: '" + sLogin + "', in all domains");
+        throw new AdminException(unknown("in all domains user with login", sLogin));
       }
     } else {
       valret = userManager.getUserIdByLoginAndDomain(domainDriverManager, sLogin, sDomainId);
@@ -2876,8 +2822,7 @@ class Admin implements Administration {
     try {
       return addUser(userDetail, false);
     } catch (Exception e) {
-      throw new AdminException("Admin.addUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_USER", userDetail.getFirstName() + " " + userDetail.getLastName(), e);
+      throw new AdminException(failureOnAdding("user", userDetail.getDisplayedName()), e);
     }
   }
 
@@ -2914,8 +2859,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.addUser", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.addUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_USER", userDetail.getFirstName() + " " + userDetail.getLastName(), e);
+      throw new AdminException(failureOnAdding("user", userDetail.getDisplayedName()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
       if (userDetail.getDomainId() != null && !addOnlyInSilverpeas) {
@@ -2950,9 +2894,8 @@ class Admin implements Administration {
         SilverTrace.error("admin", "Admin.migrateUserFromSilverpeasToAnotherDomain",
             "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.migrateUserFromSilverpeasToAnotherDomain",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_M_USER", userDetail.getFirstName() + " " + userDetail.getLastName(), e);
+      throw new AdminException(
+          failureOnAdding("user " + userDetail.getId(), "in domain " + targetDomainId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -3004,9 +2947,8 @@ class Admin implements Administration {
       user.setStateSaveDate(new Date());
       updateUser(user);
     } catch (Exception e) {
-      throw new AdminException("Admin.updateUserState", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_USER_STATE", "user id : '" + userId + "', state : '" + state.name()
-          + "'", e);
+      throw new AdminException(
+          failureOnUpdate("state of user " + userId, "to " + state.getName()), e);
     }
   }
 
@@ -3017,9 +2959,7 @@ class Admin implements Administration {
       user.setTosAcceptanceDate(DateUtil.getNow());
       updateUser(user);
     } catch (Exception e) {
-      throw new AdminException("Admin.updateTermsOfServiceAcceptanceDate",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER_TOS_ACCEPTANCE_DATE",
-          "user id : '" + userId + "'", e);
+      throw new AdminException(failureOnUpdate("terms of service acceptance for user", userId), e);
     }
   }
 
@@ -3035,8 +2975,7 @@ class Admin implements Administration {
       return deleteUser(sUserId, false);
 
     } catch (Exception e) {
-      throw new AdminException("Admin.deleteUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_USER", "user id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnDeleting("user", sUserId), e);
     }
   }
 
@@ -3053,8 +2992,7 @@ class Admin implements Administration {
 
       user = getUserDetail(sUserId);
       if (user == null) {
-        throw new AdminException("Admin.deleteUser", SilverpeasException.ERROR,
-            "admin.EX_ERR_USER_NOT_FOUND", "user id : '" + sUserId + "'");
+        throw new AdminException(unknown("user", sUserId));
       }
       // Start transaction
       domainDriverManager.startTransaction(false);
@@ -3083,8 +3021,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.deleteUser", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.deleteUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_USER", "user id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnDeleting("user", sUserId), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
       if (transactionStarted) {
@@ -3112,8 +3049,7 @@ class Admin implements Administration {
       return sUserId;
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.updateUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_USER", "user id : '" + user.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("user", user.getId()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -3151,8 +3087,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error("admin", "Admin.updateUserFull", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.updateUserFull", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_USER", "user id : '" + user.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("user", user.getId()), e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
       if (user.getDomainId() != null) {
@@ -3249,8 +3184,7 @@ class Admin implements Administration {
     try {
       return domainDriverManager.getNextDomainId();
     } catch (Exception e) {
-      throw new AdminException("Admin.getNextDomainId", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_DOMAIN", e);
+      throw new AdminException(e.getMessage(), e);
     }
   }
 
@@ -3270,8 +3204,7 @@ class Admin implements Administration {
 
       return id;
     } catch (Exception e) {
-      throw new AdminException("Admin.addDomain", SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_DOMAIN", "domain name : '" + theDomain.getName() + "'", e);
+      throw new AdminException(failureOnAdding("domain", theDomain.getName()), e);
     }
   }
 
@@ -3284,8 +3217,7 @@ class Admin implements Administration {
       DomainCache.removeDomain(domain.getId());
       return domainDriverManager.updateDomain(domain);
     } catch (Exception e) {
-      throw new AdminException("Admin.updateDomain", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_DOMAIN", "domain name : '" + domain.getName() + "'", e);
+      throw new AdminException(failureOnUpdate("domain", domain.getId()), e);
     }
   }
 
@@ -3327,8 +3259,7 @@ class Admin implements Administration {
 
       return domainId;
     } catch (Exception e) {
-      throw new AdminException("Admin.removeDomain", SilverpeasException.ERROR,
-          "admin.MSG_ERR_DELETE_DOMAIN", "domain Id : '" + domainId + "'", e);
+      throw new AdminException(failureOnDeleting("domain", domainId), e);
     }
   }
 
@@ -3339,8 +3270,7 @@ class Admin implements Administration {
     try {
       return domainDriverManager.getAllDomains();
     } catch (Exception e) {
-      throw new AdminException("Admin.getAllDomains",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_DOMAINS", e);
+      throw new AdminException(failureOnGetting("all domains", "in Silverpeas"), e);
     }
   }
 
@@ -3365,8 +3295,7 @@ class Admin implements Administration {
       }
       return domain;
     } catch (Exception e) {
-      throw new AdminException("Admin.getDomain", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'", e);
+      throw new AdminException(failureOnGetting("domain", domainId), e);
     }
   }
 
@@ -3378,9 +3307,7 @@ class Admin implements Administration {
       }
       return DomainDriverManagerProvider.getCurrentDomainDriverManager().getDomainActions(domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getDomainActions",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
-          e);
+      throw new AdminException(failureOnGetting("actions of domain", domainId), e);
     }
   }
 
@@ -3391,9 +3318,7 @@ class Admin implements Administration {
     try {
       return groupManager.getRootGroupsOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getGroupsOfDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
-          e);
+      throw new AdminException(failureOnGetting("root groups of domain", domainId),e);
     }
   }
 
@@ -3404,8 +3329,7 @@ class Admin implements Administration {
     try {
       return groupManager.getSynchronizedGroups(domainDriverManager);
     } catch (Exception e) {
-      throw new AdminException("Admin.getGroupsOfDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", e);
+      throw new AdminException(failureOnGetting("synchronized groups", ""), e);
     }
   }
 
@@ -3416,9 +3340,7 @@ class Admin implements Administration {
     try {
       return groupManager.getRootGroupIdsOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getRootGroupIdsOfDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
-          e);
+      throw new AdminException(failureOnGetting("root groups of domain", domainId), e);
     }
   }
 
@@ -3431,9 +3353,7 @@ class Admin implements Administration {
 
       return userManager.getAllUsersOfGroups(groupIds);
     } catch (Exception e) {
-      throw new AdminException("Admin.getAllUsersOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "Group Id : '" + groupId + "'",
-          e);
+      throw new AdminException(failureOnGetting("all users in group", groupId), e);
     }
   }
 
@@ -3447,9 +3367,7 @@ class Admin implements Administration {
       }
       return userManager.getUsersOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getUsersOfDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
-          e);
+      throw new AdminException(failureOnGetting("all users in domain", domainId), e);
     }
   }
 
@@ -3474,9 +3392,7 @@ class Admin implements Administration {
       }
       return userManager.getUserIdsOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserIdsOfDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
-          e);
+      throw new AdminException(failureOnGetting("all users in domain", domainId), e);
     }
   }
 
@@ -3499,8 +3415,7 @@ class Admin implements Administration {
       // Authenticate the given user
       Map<String, String> loginDomain = domainDriverManager.authenticate(sKey, removeKey);
       if ((!loginDomain.containsKey("login")) || (!loginDomain.containsKey("domainId"))) {
-        throw new AdminException("Admin.authenticate", SilverpeasException.WARNING,
-            "admin.MSG_ERR_AUTHENTICATE_USER", "key : '" + sKey + "'");
+        throw new AdminException(undefined("domain for authentication key " + sKey));
       }
 
       // Get the Silverpeas userId
@@ -3536,9 +3451,7 @@ class Admin implements Administration {
 
       return sUserId;
     } catch (Exception e) {
-      throw new AdminException("Admin.authenticate",
-          SilverpeasException.WARNING, "admin.MSG_ERR_AUTHENTICATE_USER",
-          "key : '" + sKey + "'", e);
+      throw new AdminException("Fail to identify authentication key " + sKey, e);
     }
   }
 
@@ -3552,9 +3465,7 @@ class Admin implements Administration {
     try {
       return groupManager.getDirectGroupsOfUser(domainDriverManager, userId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getDirectGroupsIdsOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
-          "user Id : '" + userId + "'", e);
+      throw new AdminException(failureOnGetting("direct groups of user", userId), e);
     }
   }
 
@@ -3566,8 +3477,7 @@ class Admin implements Administration {
     try {
       return userManager.searchUsers(domainDriverManager, modelUser, isAnd);
     } catch (Exception e) {
-      throw new AdminException("Admin.searchUsers", SilverpeasException.ERROR,
-          "admin.EX_ERR_USER_NOT_FOUND", e);
+      throw new AdminException("Fail to search users", e);
     }
   }
 
@@ -3578,8 +3488,7 @@ class Admin implements Administration {
     try {
       return groupManager.searchGroups(domainDriverManager, modelGroup, isAnd);
     } catch (Exception e) {
-      throw new AdminException("Admin.searchGroups", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", e);
+      throw new AdminException("Fail to search groups", e);
     }
   }
 
@@ -3644,9 +3553,7 @@ class Admin implements Administration {
       }
       return result.toArray(new String[result.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserRootSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("root spaces accessible by user", sUserId), e);
     }
   }
 
@@ -3666,9 +3573,8 @@ class Admin implements Administration {
       return result.toArray(new String[result.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserRootSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(
+          failureOnGetting("subspaces of space " + spaceId, "accessible by user " + sUserId), e);
     }
   }
 
@@ -3724,9 +3630,8 @@ class Admin implements Administration {
 
       return result;
     } catch (Exception e) {
-      throw new AdminException("Admin.getSubSpacesOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SUBSPACES",
-          "userId = " + userId + ", spaceId = " + spaceId, e);
+      throw new AdminException(
+          failureOnGetting("subspaces of space " + spaceId, "accessible by user " + userId), e);
     }
   }
 
@@ -3756,10 +3661,8 @@ class Admin implements Administration {
       }
       return allowedComponents;
     } catch (Exception e) {
-      throw new AdminException("Admin.getAvailCompoInSpace",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_ALLOWED_COMPONENTS", "userId = " + userId + ", spaceId = "
-          + spaceId, e);
+      throw new AdminException(
+          failureOnGetting("components in space " + spaceId, "accessible by user " + userId), e);
     }
   }
 
@@ -3910,9 +3813,7 @@ class Admin implements Administration {
     try {
       return getSpaceInstLight(getDriverSpaceId(sClientSpaceId));
     } catch (Exception e) {
-      throw new AdminException("Admin.getSpaceInstLightById",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE", " space Id : '" + sClientSpaceId
-          + "'", e);
+      throw new AdminException(failureOnGetting("space", sClientSpaceId), e);
     }
   }
 
@@ -3962,9 +3863,7 @@ class Admin implements Administration {
 
       return asManageableSpaceIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getGroupManageableSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "group Id : '" + sGroupId + "'", e);
+      throw new AdminException(failureOnGetting("spaces manageable by group", sGroupId), e);
     }
   }
 
@@ -4014,9 +3913,7 @@ class Admin implements Administration {
       }
       return alManageableSpaceIds.toArray(new String[alManageableSpaceIds.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserManageableSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
     }
   }
 
@@ -4039,9 +3936,7 @@ class Admin implements Administration {
       return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserManageableSpaceRootIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("root spaces manageable by user", sUserId), e);
     }
   }
 
@@ -4073,10 +3968,9 @@ class Admin implements Administration {
       }
       return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getManageableSubSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId + "' Space = "
-          + sParentSpaceId, e);
+      throw new AdminException(
+          failureOnGetting("subspaces of space " + sParentSpaceId,
+              "that are manageable by user" + sUserId), e);
     }
   }
 
@@ -4088,10 +3982,7 @@ class Admin implements Administration {
 
       return groupManager.getManageableGroupIds(sUserId, groupIds);
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserManageableGroupIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_GROUP_IDS", "userId + " + sUserId,
-          e);
+      throw new AdminException(failureOnGetting("groups manageable by user", sUserId), e);
     }
   }
 
@@ -4125,9 +4016,9 @@ class Admin implements Administration {
 
       // return getClientComponentIds(asAvailCompoIds);
     } catch (Exception e) {
-      throw new AdminException("Admin.getAvailCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(
+          failureOnGetting("components in space " + sClientSpaceId,
+              "available to user " + sUserId), e);
     }
   }
 
@@ -4142,9 +4033,7 @@ class Admin implements Administration {
     try {
       return getAllowedComponentIds(userId).contains(componentId);
     } catch (Exception e) {
-      throw new AdminException("Admin.isComponentAvailable",
-          SilverpeasException.ERROR, "admin.EX_ERR_IS_COMPONENT_AVAILABLE",
-          "user Id : '" + userId + "'" + " , component Id : '" + componentId + "'", e);
+      throw new AdminException(failureOnGetting("components available by user", userId), e);
     }
   }
 
@@ -4176,9 +4065,9 @@ class Admin implements Administration {
 
       return asAvailCompoIds.toArray(new String[asAvailCompoIds.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getAvailCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(
+          failureOnGetting("root components in space " + sClientSpaceId,
+              "available to user " + sUserId), e);
     }
   }
 
@@ -4204,9 +4093,8 @@ class Admin implements Administration {
 
       return result;
     } catch (Exception e) {
-      throw new AdminException("Admin.getAvailCompoIdsAtRoot",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("root components in space " + sClientSpaceId,
+          "available to user " + sUserId), e);
     }
   }
 
@@ -4217,9 +4105,7 @@ class Admin implements Administration {
 
       return componentIds.toArray(new String[componentIds.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getAvailCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '" + userId + "'", e);
+      throw new AdminException(failureOnGetting("components available to user", userId), e);
     }
   }
 
@@ -4237,9 +4123,9 @@ class Admin implements Administration {
 
       return componentIds.toArray(new String[componentIds.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getAvailDriverCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(
+          failureOnGetting("components in space " + sClientSpaceId,
+              "available to user " + sUserId), e);
     }
   }
 
@@ -4335,10 +4221,9 @@ class Admin implements Administration {
 
       return alCompoSpace.toArray(new CompoSpace[alCompoSpace.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getCompoForUser",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
-          "user Id : '" + sUserId + "', component name: '" + sComponentName + "'", e);
+      throw new AdminException(
+          failureOnGetting("instances of component " + sComponentName,
+              "available to user " + sUserId), e);
     }
   }
 
@@ -4361,9 +4246,7 @@ class Admin implements Administration {
       }
       return shortIds.toArray(new String[shortIds.size()]);
     } catch (Exception e) {
-      throw new AdminException("Admin.getCompoId", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_AVAILABLE_INSTANCES_OF_COMPONENT",
-          "component name: '" + sComponentName + "'", e);
+      throw new AdminException(failureOnGetting("instances of component", sComponentName), e);
     }
   }
 
@@ -4385,8 +4268,7 @@ class Admin implements Administration {
 
       return asProfilesIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getProfileIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
     }
   }
 
@@ -4468,9 +4350,9 @@ class Admin implements Administration {
 
       return userDetails;
     } catch (Exception e) {
-      throw new AdminException("Admin.getUsers", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "profile : '" + sProfile
-          + "', space Id: '" + sClientSpaceId + "' component Id: '" + sClientComponentId, e);
+      throw new AdminException(
+          failureOnGetting("users with profile " + sProfile,
+              "of the component " + sClientComponentId), e);
     }
   }
 
@@ -4534,9 +4416,7 @@ class Admin implements Administration {
       }
       return userManager.getUsersNumberOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getUsersOfDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
-          e);
+      throw new AdminException(failureOnGetting("user count in domain", domainId), e);
     }
   }
 
@@ -4570,8 +4450,7 @@ class Admin implements Administration {
       connection.setAutoCommit(bAutoCommit);
       return connection;
     } catch (Exception e) {
-      throw new AdminException("Admin.openConnection", SilverpeasException.FATAL,
-          "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new AdminException(failureOnOpeningConnectionTo("database"), e);
     }
   }
 
@@ -4784,9 +4663,7 @@ class Admin implements Administration {
         SynchroGroupReport.error("admin.synchronizeGroup",
             "Error during the processing of synchronization rule of group '" + groupId + "': " +
                 e.getMessage(), null);
-        throw new AdminException("Admin.synchronizeGroup",
-            SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP",
-            "groupId : '" + groupId + "'", e);
+        throw new AdminException("Fail to synchronize group " + groupId, e);
       } finally {
         if (!scheduledMode) {
           SynchroGroupReport.stopSynchro();
@@ -4932,9 +4809,8 @@ class Admin implements Administration {
       // the
       // same
       // restriction as for the directories...)
-      throw new AdminException("Admin.synchronizeImportGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_PARENT_NOT_PRESENT",
-          "group name : '" + groupKey + "'");
+      throw new AdminException("Fail to synchronize imported group " + groupKey
+          + " in domain " + domainId);
     }
     // The group is a root group or have a known parent
     gr.setSuperGroupId(parentId);
@@ -5057,8 +4933,7 @@ class Admin implements Administration {
       return userId;
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.synchronizeUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_USER", "user id : '" + userId + "'", e);
+      throw new AdminException("Fail to synchronize user " + userId, e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
     }
@@ -5205,9 +5080,8 @@ class Admin implements Administration {
         }
         SynchroDomainReport.error("admin.synchronizeSilverpeasWithDomain",
             "Problème lors de la synchronisation : " + e.getMessage(), null);
-        throw new AdminException("Admin.synchronizeSilverpeasWithDomain",
-            SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN",
-            "domain id : '" + sDomainId + "'\nReport:" + sReport, e);
+        throw new AdminException(
+            "Fail to synchronize domain " + sDomainId + ". Report: " + sReport, e);
       } finally {
         SynchroDomainReport.stopSynchro();// Fin de synchro avec la Popup d'affichage
         // Reset the cache
@@ -5336,9 +5210,8 @@ class Admin implements Administration {
     } catch (Exception e) {
       SynchroDomainReport.error("admin.synchronizeUsers", "Problem during synchronization of users : "
           + e.getMessage(), null);
-      throw new AdminException("admin.synchronizeUsers",
-          SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
-          "domainId : '" + domainId + "'\nReport:" + sReport, e);
+      throw new AdminException("Fail to synchronize domain " + domainId
+          + ". Report: " + sReport, e);
     }
   }
 
@@ -5526,9 +5399,8 @@ class Admin implements Administration {
     } catch (Exception e) {
       SynchroDomainReport.error("admin.synchronizeGroups",
           "Problème lors de la synchronisation des groupes : " + e.getMessage(), null);
-      throw new AdminException("admin.synchronizeGroups", SilverpeasException.ERROR,
-          "admin.EX_ERR_SYNCHRONIZE_DOMAIN_GROUPS",
-          "domain id : '" + domainId + "'\nReport:" + sReport, e);
+      throw new AdminException("Fails to synchronize groups in domain " + domainId
+          + ".Report: " + sReport, e);
     }
   }
 
@@ -5743,8 +5615,7 @@ class Admin implements Administration {
       }
       return userManager.searchUsersIds(domainDriverManager, userIds, modelUser);
     } catch (Exception e) {
-      throw new AdminException("Admin.searchUsersIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_USER_NOT_FOUND", e);
+      throw new AdminException("Fail to search users", e);
     }
   }
 
@@ -5960,8 +5831,7 @@ class Admin implements Administration {
       return groupManager.searchGroupsIds(domainDriverManager, isRootGroup,
           getDriverComponentId(componentId), profileId, modelGroup);
     } catch (Exception e) {
-      throw new AdminException("Admin.searchGroupsIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND", e);
+      throw new AdminException("Fail to search groups", e);
     }
   }
 
@@ -5973,8 +5843,7 @@ class Admin implements Administration {
     try {
       OrganizationSchemaPool.releaseConnections();
     } catch (Exception e) {
-      throw new AdminException("Admin.resetAllDBConnections",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
+      throw new AdminException(failureOnClosingConnectionTo("organization schema pool"), e);
     }
   }
 
@@ -6012,8 +5881,7 @@ class Admin implements Administration {
     try {
       domainDriverManager.indexAllUsers(domainId);
     } catch (Exception e) {
-      throw new AdminException("Admin.indexUsers",
-          SilverpeasException.ERROR, "admin.CANT_INDEX_USERS", "domainId = " + domainId, e);
+      throw new AdminException(failureOnIndexing("users in domain", domainId), e);
     }
   }
 
@@ -6239,8 +6107,8 @@ class Admin implements Administration {
       String id = matcher.group(2);
       return getProfilesByObject(id, type, instanceId);
     }
-    throw new AdminPersistenceException("Admin.getProfileInstFor", SilverTrace.TRACE_LEVEL_ERROR,
-        "Bad resource identifier: " + resourceId);
+    throw new AdminPersistenceException(
+        failureOnGetting("profiles on resource " + resourceId, "of component " + instanceId));
   }
 
   /**
@@ -6252,8 +6120,7 @@ class Admin implements Administration {
           DomainDriverManagerProvider.getCurrentDomainDriverManager();
       return spaceProfileManager.getSpaceProfileIdsOfUserType(domainDriverManager, sUserId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getSpaceProfileIdsOfUserType", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("space profiles of user", sUserId), e);
     }
   }
 
@@ -6266,8 +6133,7 @@ class Admin implements Administration {
           DomainDriverManagerProvider.getCurrentDomainDriverManager();
       return spaceProfileManager.getSpaceProfileIdsOfGroupType(domainDriverManager, groupId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getSpaceProfileIdsOfGroupType", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_PROFILES", "group Id : '" + groupId + "'", e);
+      throw new AdminException(failureOnGetting("space profiles of group", groupId), e);
     }
   }
 
@@ -6280,8 +6146,7 @@ class Admin implements Administration {
     try {
       return profileManager.getProfileIdsOfUser(sUserId, Collections.EMPTY_LIST);
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentProfileIdsOfUserType", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_GROUP_COMPONENT_PROFILES", "user Id : '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("component profiles of user", sUserId), e);
     }
   }
 
@@ -6294,8 +6159,7 @@ class Admin implements Administration {
     try {
       return profileManager.getProfileIdsOfGroup(groupId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentProfileIdsOfGroupType", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_GROUP_COMPONENT_PROFILES", "group Id : '" + groupId + "'", e);
+      throw new AdminException(failureOnGetting("component profiles of group", groupId), e);
     }
   }
 
@@ -6309,9 +6173,7 @@ class Admin implements Administration {
       // retrieve value from database
       return profileManager.getAllComponentObjectProfileIdsOfUser(userId, Collections.EMPTY_LIST);
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentObjectProfileIdsOfUserType",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + userId + "'",
-          e);
+      throw new AdminException(failureOnGetting("component profiles of user", userId), e);
     }
   }
 
@@ -6324,9 +6186,7 @@ class Admin implements Administration {
       // retrieve value from database
       return profileManager.getAllComponentObjectProfileIdsOfGroup(sGroupId);
     } catch (Exception e) {
-      throw new AdminException("Admin.getComponentObjectProfileIdsOfGroupType",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
-          "group Id : '" + sGroupId + "'", e);
+      throw new AdminException(failureOnGetting("component profiles of group", sGroupId), e);
     }
   }
 
@@ -6526,8 +6386,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverTrace.error(MODULE_ADMIN, "Admin.addSpaceInst", "root.EX_ERR_ROLLBACK", e1);
       }
-      throw new AdminException("Admin.assignRightsFromSourceToTarget", SilverpeasException.ERROR,
-          "admin.EX_ERR_ASSIGN_RIGHTS", e);
+      throw new AdminException("Fail to assign rights", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
