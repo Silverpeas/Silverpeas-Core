@@ -401,9 +401,25 @@ if (typeof SilverpeasClass === 'undefined') {
     var Surrogate = function() {};
     Surrogate.prototype = parent.prototype;
     child.prototype = new Surrogate();
-    child.prototype.parent = parent.prototype;
-    for (var key in childPrototype) {
-      child.prototype[key] = childPrototype[key];
+    for (var prop in childPrototype) {
+      var childProtoTypeValue = childPrototype[prop];
+      var parentProtoTypeValue = parent.prototype[prop];
+      if (typeof childProtoTypeValue !== 'function' || !parentProtoTypeValue) {
+        child.prototype[prop] = childProtoTypeValue;
+        continue;
+      }
+      child.prototype[prop] = (function(parentMethod, childMethod) {
+        var _super = function() {
+          return parentMethod.apply(this, arguments);
+        };
+        return function() {
+          var __super = this._super, returnedValue;
+          this._super = _super;
+          returnedValue = childMethod.apply(this, arguments);
+          this._super = __super;
+          return returnedValue;
+        };
+      })(parentProtoTypeValue, childProtoTypeValue);
     }
     return child;
   };

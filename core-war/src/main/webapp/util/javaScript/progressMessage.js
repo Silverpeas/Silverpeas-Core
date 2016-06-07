@@ -24,7 +24,7 @@
 
 (function () {
   
-  var $window = top.window;
+  var $window = top.spLayout ? top.window : window;
 
   /**
    * This two jQuery methods exists because, for now, showing or hiding the progress message is

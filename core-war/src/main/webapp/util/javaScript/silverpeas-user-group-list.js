@@ -367,7 +367,7 @@
 
   var UserItem = Item.extend({
     initialize : function(profile, instance) {
-      this.parent.initialize.call(this, profile, instance);
+      this._super(profile, instance);
       this.element = __createUserElement(this);
       this.handledIds = this.instance.context.currentUserIds;
     },
@@ -378,7 +378,7 @@
 
   var UserGroupItem = Item.extend({
     initialize : function(profile, instance) {
-      this.parent.initialize.call(this, profile, instance);
+      this._super(profile, instance);
       this.element = __createGroupElement(this);
       this.handledIds = this.instance.context.currentGroupIds;
     },

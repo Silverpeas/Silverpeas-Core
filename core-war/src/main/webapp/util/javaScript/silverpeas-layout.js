@@ -124,7 +124,7 @@
   // Body Part
   var BodyPart = Part.extend({
     initialize : function(mainLayout, partSelectors) {
-      this.parent.initialize.call(this, mainLayout, partSelectors.body);
+      this._super(mainLayout, partSelectors.body);
       this.partSelectors = partSelectors;
     },
     resize : function() {
@@ -184,7 +184,7 @@
   // Toggle Part
   var BodyTogglePart = Part.extend({
     initialize : function(mainLayout, partSelector) {
-      this.parent.initialize.call(this, mainLayout, partSelector);
+      this._super(mainLayout, partSelector);
       this.headerToggle = $window.document.querySelector("#header-toggle");
       this.navigationToggle = $window.document.querySelector("#navigation-toggle");
 
@@ -294,7 +294,7 @@
           $window.document.addEventListener(normalizedEventName, listener);
           break;
         default:
-          this.parent.addEventListener.call(this, eventName, listener);
+          this._super(eventName, listener);
       }
     }
   });
