@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.webapi.upload;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
-import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.io.upload.UploadSessionFile;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 
@@ -94,6 +95,7 @@ public class FileUploadResource extends RESTWebService {
         RequestParameterDecoder.decode(getHttpRequest(), FileUploadVerifyData.class);
     checkMaximumFileSize(fileUploadVerifyData.getName(), fileUploadVerifyData.getSize());
     checkAuthorizedMimeTypes(fileUploadVerifyData.getName());
+    checkSpecificComponentVerifications(fileUploadVerifyData, null);
     return Response.ok().build();
   }
 
@@ -223,6 +225,8 @@ public class FileUploadResource extends RESTWebService {
         checkMaximumFileSize(fileUploadData.getName(), uploadSessionFile.getServerFile().length());
         // Mime-Type verified on real data
         checkAuthorizedMimeTypes(uploadSessionFile.getServerFile().getPath());
+        // Specific component instance verification
+        checkSpecificComponentVerifications(null, uploadSessionFile.getServerFile());
       } catch (Exception e) {
         uploadSession.remove(fileUploadData.getFullPath());
         throw e;
@@ -280,6 +284,30 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
+   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br/>
+   * If no defined value is returned by {@link #getComponentId()}, nothing is verified.
+   * @param fileUploadData the file upload data (filled when file has not been yet uploaded).
+   * @param uploadedFile the uploaded file.
+   */
+  private void checkSpecificComponentVerifications(FileUploadVerifyData fileUploadData,
+      File uploadedFile) {
+    String componentInstanceId = getComponentId();
+    if (StringUtil.isDefined(componentInstanceId)) {
+      try {
+        Optional<ComponentInstanceFileUploadVerification> verification =
+            ComponentInstanceFileUploadVerification.get(componentInstanceId);
+        if (fileUploadData != null) {
+          verification.ifPresent(i -> i.verify(componentInstanceId, fileUploadData));
+        } else {
+          verification.ifPresent(i -> i.verify(componentInstanceId, uploadedFile));
+        }
+      } catch (Exception e) {
+        throw new WebApplicationException(e, Response.Status.PRECONDITION_FAILED);
+      }
+    }
+  }
+
+  /**
    * Builds a JSON representation of the given uploaded file.
    * @param uploadSessionFile the uploaded file into current session.
    * @return a builder of the JSON representation of the uploaded file (more information on
@@ -306,7 +334,7 @@ public class FileUploadResource extends RESTWebService {
       FileUploadData fileToDelete = FileUploadData.from(getHttpServletRequest());
       if (StringUtil.isDefined(fileToDelete.getFullPath())) {
         if (!uploadSession.remove(fileToDelete.getFullPath())) {
-          SilverTrace.error("upload", "FileUploadResource.delete()", "",
+          SilverLogger.getLogger(this).error(
               "Trying to delete non existing file with session id '" + uploadSession.getId() +
                   "' and fullPath '" + fileToDelete.getFullPath() + "'");
         }

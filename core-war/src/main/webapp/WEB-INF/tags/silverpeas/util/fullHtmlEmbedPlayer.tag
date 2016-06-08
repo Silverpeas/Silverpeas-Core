@@ -69,9 +69,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <view:link href="/util/styleSheets/globalSP_SilverpeasV5.css"/>
-  <view:script src="/util/javaScript/flowplayer/swfobject.js"/>
   <view:includePlugin name="jquery"/>
-  <view:includePlugin name="${type}Player"/>
+  <view:script src="/util/javaScript/silverpeas.js"/>
+  <view:includePlugin name="mediaPlayer"/>
   <style type="text/css">
     body {
       border: none;
@@ -106,88 +106,59 @@
       height: 100px;
       width: 100%;
     }
+
+    video {
+      height: 100%;
+      width: 100%;
+    }
   </style>
 
   <script type="text/javascript">
-    var context = {
-      useFlash : false
-    };
     $(document).ready(function() {
       var $window = $(window);
-      var isHtml5NotSupported = !document.createElement('${type}').canPlayType ||
-          !document.createElement('${type}').canPlayType('${mimeType}');
-      context.useFlash = isHtml5NotSupported || swfobject.getFlashPlayerVersion().major;
-      <c:choose>
-      <c:when test="${type eq 'video'}">
-      var $videoContainer = jQuery('#videoContainer');
-      if (context.useFlash) {
-        var $flashVideoContainer = $('<div>', {
-          'id' : 'flashVideoContainer'
-        });
-        $videoContainer.replaceWith($flashVideoContainer);
-        $flashVideoContainer.videoPlayer({
-          container : {
-            width : $window.width() + 'px',
-            height : $window.height() + 'px'
-          },
-          clip : {
-            url : '${silfn:escapeJs(url)}',
-            posterUrl : '${silfn:escapeJs(posterUrl)}',
-            mimeType : '${silfn:escapeJs(mimeType)}'
-            <c:if test="${not empty autoPlay and autoPlay}">,
-            autoPlay : ${autoPlay}
-            </c:if>
-          }
-          <c:if test="${not empty backgroundColor}">,
-          canvas : {
-            backgroundColor : '${backgroundColor}'
-          }
+      var $mediaContainer = $('<div>', {
+        'id' : 'mediaContainer'
+      });
+
+      var config =  {
+        container : {
+          width : $window.width() + 'px',
+          height : $window.height() + 'px'
+        },
+        clip : {
+          url : '${silfn:escapeJs(url)}',
+          posterUrl : '${silfn:escapeJs(posterUrl)}',
+          mimeType : '${silfn:escapeJs(mimeType)}'
+          <c:if test="${not empty autoPlay and autoPlay}">,
+          autoPlay : ${autoPlay}
           </c:if>
-        });
-      } else {
-        // HTML5 video
-        $videoContainer.css('width', $window.width());
-        $videoContainer.css('height', $window.height());
-        $videoContainer.show();
+        }
+        <c:if test="${not empty backgroundColor}">,
+        canvas : {
+          backgroundColor : '${backgroundColor}'
+        }
+        </c:if>
+      };
+
+      if (!window.spMediaPlayer) {
+        return;
       }
-      </c:when>
-      <c:when test="${type eq 'audio'}">
-      var $audioBeforeContainer = jQuery('#audioBeforeContainer');
-      var $audioContainer = jQuery('#audioContainer');
-      if (context.useFlash) {
+
+      var mediaType = "${type}";
+      if (mediaType === "video") {
+
+        var $videoContainer = jQuery('#videoContainer');
+        $videoContainer.replaceWith($mediaContainer);
+        spMediaPlayer.loadVideoPlayer($mediaContainer[0], config);
+
+      } else if (mediaType === "audio") {
+
+        var $audioContainer = jQuery('#audioContainer');
+        var $audioBeforeContainer = jQuery('#audioBeforeContainer');
         $audioBeforeContainer.remove();
-        var $flashAudioContainer = $('<div>', {
-          'id' : 'flashAudioContainer'
-        });
-        $audioContainer.replaceWith($flashAudioContainer);
-        $flashAudioContainer.audioPlayer({
-          container : {
-            width : $window.width() + 'px',
-            height : $window.height() + 'px'
-          },
-          clip : {
-            url : '${silfn:escapeJs(url)}.mp3',
-            posterUrl : '${silfn:escapeJs(posterUrl)}',
-            mimeType : '${silfn:escapeJs(mimeType)}'
-            <c:if test="${not empty autoPlay and autoPlay}">,
-            autoPlay : ${autoPlay}
-            </c:if>
-          }
-          <c:if test="${not empty backgroundColor}">,
-          canvas : {
-            backgroundColor : '${backgroundColor}'
-          }
-          </c:if>
-        });
-      } else {
-        // HTML5 audio + mp3 support
-        $audioBeforeContainer.css('width', $window.width());
-        $audioBeforeContainer.css('height', $window.height());
-        $audioBeforeContainer.show();
-        $audioContainer.show();
+        $audioContainer.replaceWith($mediaContainer);
+        spMediaPlayer.loadAudioPlayer($mediaContainer[0], config);
       }
-      </c:when>
-      </c:choose>
     });
   </script>
 </head>
@@ -206,7 +177,7 @@
     </div>
     <div id="audioContainer" style="display: none">
       <audio preload="auto" controls>
-      <source type="${mimeType}" src="${url}"/>
+        <source type="${mimeType}" src="${url}"/>
       </audio>
     </div>
   </c:when>

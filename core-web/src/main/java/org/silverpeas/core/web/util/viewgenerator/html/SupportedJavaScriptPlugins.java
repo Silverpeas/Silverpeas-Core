@@ -33,15 +33,11 @@ public enum SupportedJavaScriptPlugins {
    */
   jquery,
   /**
-   * JQuery plugin to play musics.
+   * Silverpeas plugin to play videos and sounds.
    */
-  audioPlayer,
+  mediaPlayer,
   /**
-   * JQuery plugin to play videos.
-   */
-  videoPlayer,
-  /**
-   * JQuery plugin to print out embed container for media playing.
+   * Silverpeas media player (video and musics).
    */
   embedPlayer,
   /**

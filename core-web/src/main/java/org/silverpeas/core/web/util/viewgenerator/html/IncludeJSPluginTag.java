@@ -59,11 +59,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case embedPlayer:
           includeEmbedPlayer(xhtml);
           break;
-        case audioPlayer:
-          includeAudioPlayer(xhtml);
-          break;
-        case videoPlayer:
-          includeVideoPlayer(xhtml);
+        case mediaPlayer:
+          includeMediaPlayer(xhtml);
           break;
         case qtip:
           includeQTip(xhtml);
