@@ -250,7 +250,7 @@
                   <c:set var="title" value="${currentAttachment.filename}" />
                 </c:when>
                 <c:otherwise>
-                  <c:set var="title" value="${currentAttachment.title}" />
+                  <c:set var="title" value="${silfn:escapeHtml(currentAttachment.title)}" />
                 </c:otherwise>
               </c:choose>
               <c:choose>

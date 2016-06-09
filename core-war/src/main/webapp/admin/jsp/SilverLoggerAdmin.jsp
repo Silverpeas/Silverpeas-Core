@@ -3,6 +3,7 @@
 <%@ page import="org.silverpeas.core.util.logging.LogsAccessor" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
 
     Copyright (C) 2000 - 2015 Silverpeas
@@ -37,6 +38,11 @@
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+
+  UserDetail currentUser = UserDetail.getCurrentRequester();
+  if (currentUser == null || !currentUser.isAccessAdmin()) {
+    request.getRequestDispatcher("../../Login.jsp").forward(request, response);
+  }
 
   List<String> loggingLevels = new ArrayList<>();
   for (Level level : Level.values()) {

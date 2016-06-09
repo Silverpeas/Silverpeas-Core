@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %><%--
   Copyright (C) 2000 - 2013 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-
+<%
+  UserDetail currentUser = UserDetail.getCurrentRequester();
+  if (currentUser == null || !currentUser.isAccessAdmin()) {
+    request.getRequestDispatcher("../../Login.jsp").forward(request, response);
+  }
+%>
 <c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
 
 <html>

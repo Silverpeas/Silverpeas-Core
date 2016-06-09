@@ -23,7 +23,38 @@
  */
 package org.silverpeas.web.directory.control;
 
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.model.DomainProperties;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.ContactPK;
+import org.silverpeas.core.contact.service.ContactService;
+import org.silverpeas.core.index.search.SearchEngineProvider;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.model.ContactItem;
 import org.silverpeas.web.directory.model.DirectoryItem;
@@ -31,37 +62,6 @@ import org.silverpeas.web.directory.model.DirectoryItemList;
 import org.silverpeas.web.directory.model.DirectoryUserItem;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 import org.silverpeas.web.directory.model.UserItem;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.domain.model.DomainProperties;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.contact.service.ContactService;
-import org.silverpeas.core.contact.model.CompleteContact;
-import org.silverpeas.core.contact.model.ContactPK;
-import org.silverpeas.core.index.search.SearchEngineProvider;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -74,6 +74,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.silverpeas.core.util.EncodeHelper.javaStringToHtmlString;
 
 /**
  * @author Nabil Bensalem
@@ -537,9 +539,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "directory");
     for (DirectoryItem item : itemsToDisplay) {
-      template.setAttribute("mail", StringUtil.isDefined(item.getMail()) ? item.getMail() : null);
-      template.setAttribute("phone", item.getPhone());
-      template.setAttribute("fax", item.getFax());
+      template.setAttribute("mail",
+          StringUtil.isDefined(item.getMail()) ? javaStringToHtmlString(item.getMail()) : null);
+      template.setAttribute("phone", javaStringToHtmlString(item.getPhone()));
+      template.setAttribute("fax", javaStringToHtmlString(item.getFax()));
       template.setAttribute("avatar", getAvatarFragment(item));
       template.setAttribute("context", URLUtil.getApplicationURL());
       if (item instanceof UserItem) {
@@ -556,7 +559,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
     template.setAttribute("user", user.getUserDetail());
     if (StringUtil.isDefined(user.getUserDetail().getStatus())) {
-      template.setAttribute("status", user.getUserDetail().getStatus());
+      template.setAttribute("status", javaStringToHtmlString(user.getUserDetail().getStatus()));
     } else {
       template.setAttribute("status", null);
     }
@@ -574,7 +577,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       for (String key : keys) {
         String value = userFull.getValue(key);
         if (StringUtil.isDefined(value)) {
-          extra.put(key, value);
+          extra.put(key, javaStringToHtmlString(value));
         }
       }
     }
