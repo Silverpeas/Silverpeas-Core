@@ -28,6 +28,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.Test;
+import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 
 import java.io.File;
@@ -88,6 +89,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     final HandledFile test = fileHandler.getHandledFile(BASE_PATH_TEST, realComponentPath, "file");
     final File expected = getFile(realComponentPath, "file");
     assertFileNames(test.getFile(), expected);
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_ONLY));
   }
 
   @Test
@@ -482,6 +484,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     assertThat(expected.exists(), is(false));
     fileHandler.copyFile(otherFile, fileHandler.getHandledFile(BASE_PATH_TEST, test));
     assertThat(expected.exists(), is(true));
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
 
     // Copy from existing handled file (in subdirectory) to handled file and
     // verify existence in session
@@ -490,6 +493,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     assertThat(expected.exists(), is(false));
     fileHandler.copyFile(BASE_PATH_TEST, getFile(sessionComponentPath, otherFile.getName()), test);
     assertThat(expected.exists(), is(true));
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
 
     // Copy handled file to output stream open in session and verify existence in session
     test = getFile(realComponentPath, "b", otherFile.getName());
@@ -502,6 +506,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
       closeQuietly(os);
     }
     assertThat(expected.exists(), is(true));
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
 
     // Copy file from URL to handled file and verify existence in session
     test = getFile(realComponentPath, "c", otherFile.getName());
@@ -511,6 +516,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
         toURLs(new File[] { getFile(sessionComponentPath, otherFile.getName()) })[0],
         BASE_PATH_TEST, test);
     assertThat(expected.exists(), is(true));
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
   }
 
   /*
@@ -805,6 +811,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     fileHandler.moveFile(BASE_PATH_TEST, real, realDest);
 
     // Verify after move
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
     assertThat(real.exists(), is(true));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
     assertThat(readFileToString(real), is("root_file_1"));
@@ -813,6 +820,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     assertThat(readFileToString(sessionDest), is("root_file_1"));
 
     // Verify the moving of not handled file to handled file
+    assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_WRITE));
     assertThat(real.exists(), is(true));
     assertThat(session.exists(), is(false));
     fileHandler.moveFile(otherFile, fileHandler.getHandledFile(BASE_PATH_TEST, real));

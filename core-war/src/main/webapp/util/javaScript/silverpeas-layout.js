@@ -43,7 +43,7 @@
     $window.LayoutSettings = new SilverpeasPluginSettings();
   }
 
-  $window.layoutDebug = false;
+  var layoutDebug = false;
 
   var HEADER_PART_URL = $window.LayoutSettings.get("layout.header.url");
   var BODY_PART_URL = $window.LayoutSettings.get("layout.body.url");
@@ -355,7 +355,7 @@
    * @private
    */
   function __logDebug(message) {
-    if ($window.layoutDebug) {
+    if (layoutDebug) {
       sp.log.debug("Layout - " + message);
     }
   }

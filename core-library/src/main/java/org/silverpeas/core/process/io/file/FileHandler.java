@@ -296,7 +296,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   public void copyFile(final File srcFile, final HandledFile destFile) throws Exception {
-    FileUtils.copyFile(srcFile, destFile.getFile());
+    FileUtils.copyFile(srcFile, getFileForWriting(destFile.getBasePath(), destFile.getFile()));
   }
 
   /**
@@ -586,7 +586,7 @@ public class FileHandler extends AbstractFileHandler {
    * @see FileUtils
    */
   public void moveFile(final File srcFile, final HandledFile destFile) throws Exception {
-    FileUtils.moveFile(srcFile, destFile.getFile());
+    FileUtils.moveFile(srcFile, getFileForWriting(destFile.getBasePath(), destFile.getFile()));
   }
 
   /**

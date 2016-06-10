@@ -82,7 +82,7 @@ public class MessageFilter implements Filter {
           httpResponse.setHeader(HTTP_MESSAGEKEY, null);
         }
 
-        // Remove from cache the registred key of messages (if any)
+        // Remove from cache the registered key of messages (if any)
         MessageManager.destroy();
       }
     }

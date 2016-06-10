@@ -48,6 +48,11 @@
 	text-align: center;
       }
     </style>
+    <script type="text/javascript">
+      function dataStorageQuotaExceptionComponentLink() {
+        top.spLayout.getBody().getContent().load('${exception.fromComponentUrl}');
+      }
+    </script>
   </head>
   <body>
     <div class="page">
@@ -65,7 +70,7 @@
               <view:templateParam name="spaceName" value="${exception.space.name}" />
               <view:templateParam name="isPersonalSpace" value="${exception.space.personalSpace}" />
               <view:templateParam name="fromComponentName" value="${exception.fromComponent.label}" />
-              <view:templateParam name="fromComponentUrl" value="${exception.fromComponentUrl}" />
+              <view:templateParam name="fromComponentUrl" value="javascript:dataStorageQuotaExceptionComponentLink()" />
             </view:applyTemplate>
           </div>
         </div>

@@ -58,7 +58,7 @@
     return;
   }
 
-  $window.progressMessageDebug = false;
+  var progressMessageDebug = false;
 
   var ICON_URL = $window.ProgressMessageSettings.get("progress.message.icon.url");
 
@@ -191,7 +191,7 @@
      * @private
      */
     function __logDebug(message) {
-      if ($window.progressMessageDebug) {
+      if (progressMessageDebug) {
         sp.log.debug("Progress Message - " + message);
       }
     }

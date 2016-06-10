@@ -89,6 +89,25 @@ function notyError(text, customOptions) {
 }
 
 /**
+ * Helper to display a Silverpeas error notification.
+ * @param text
+ */
+function notySevere(text, customOptions) {
+  var options = {
+    text: text,
+    timeout: false,
+    closeWith: ['button'], // ['click', 'button', 'hover']
+    type: 'severe',
+    modal: true,
+    layout: 'center'
+  };
+  if (customOptions) {
+    extendsObject(options, customOptions);
+  }
+  return __noty(options);
+}
+
+/**
  * Helper to display a Silverpeas debug notification.
  * @param text
  */
@@ -121,6 +140,13 @@ function __noty(customOptions) {
     dismissQueue: true
   }, customOptions);
   if (options.text) {
+
+    if (typeof customOptions.text === 'string' && customOptions.text.indexOf('<body>')) {
+      var $message = document.createElement("div");
+      $message.innerHTML = customOptions.text;
+      customOptions.text = $message.innerHTML;
+    }
+
     return noty(options);
   }
 }

@@ -31,7 +31,7 @@ var dragAndDropUploadEnabled = window.File;
     window.DragAndDropUploadBundle = new SilverpeasPluginBundle();
   }
 
-  window.dragAndDropUploadDebug = false;
+  var dragAndDropUploadDebug = false;
 
   // Web Context
   if (!webContext) {
@@ -174,8 +174,10 @@ var dragAndDropUploadEnabled = window.File;
       __logDebug("Closing monitor notifier...");
       if (monitorCtx.notyInstance) {
         monitorCtx.notyInstanceReady.then(function() {
-          monitorCtx.notyInstance.close();
-          monitorCtx.notyInstance = undefined;
+          if (monitorCtx.notyInstance) {
+            monitorCtx.notyInstance.close();
+            monitorCtx.notyInstance = undefined;
+          }
         });
       }
     };
@@ -340,6 +342,7 @@ var dragAndDropUploadEnabled = window.File;
         }.bind(this), function(request) {
           __logDebug("performUploadEnd - error for session '" + this.id);
           console.log(Error(request.statusText));
+          notySevere(request.responseText);
           jQuery.closeProgressMessage();
         }.bind(this));
 
@@ -921,7 +924,7 @@ var dragAndDropUploadEnabled = window.File;
    * @private
    */
   function __logDebug(message) {
-    if (window.dragAndDropUploadDebug) {
+    if (dragAndDropUploadDebug) {
       sp.log.debug("D&D File Upload - " + message);
     }
   }

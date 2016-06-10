@@ -49,6 +49,11 @@
       text-align: center;
     }
   </style>
+  <script type="text/javascript">
+    function forbiddenFileExceptionComponentLink() {
+      top.spLayout.getBody().getContent().load('${exception.fromComponentUrl}');
+    }
+  </script>
 </head>
 <body>
 <div class="page">
@@ -69,7 +74,7 @@
           <view:templateParam name="isAuthorized" value="${exception.componentFileFilterParameter.authorization}"/>
           <view:templateParam name="forbiddenFileName" value="${exception.forbiddenFileName}"/>
           <view:templateParam name="fromComponentName" value="${exception.componentFileFilterParameter.component.label}"/>
-          <view:templateParam name="fromComponentUrl" value="${exception.fromComponentUrl}"/>
+          <view:templateParam name="fromComponentUrl" value="javascript:forbiddenFileExceptionComponentLink()"/>
         </view:applyTemplate>
       </div>
     </div>

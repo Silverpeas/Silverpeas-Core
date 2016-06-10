@@ -492,7 +492,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
           notySetupRequestComplete.call(this, xhr);
-          if (xhr.status == 200) {
+          if (xhr.status < 400) {
             resolve(xhr);
           } else {
             reject(xhr);
