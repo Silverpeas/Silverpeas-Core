@@ -193,7 +193,7 @@ public class DefaultOrganizationController implements OrganizationController {
     try {
       return getAdminService().getAllComponents();
     } catch (Exception e) {
-      if (!(e instanceof AdminException && ((AdminException) e).isAlreadyPrinted())) {
+      if (!(e instanceof AdminException)) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
       return new HashMap<>();

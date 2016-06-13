@@ -37,7 +37,6 @@ import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -56,6 +55,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.util.CollectionUtil.intersection;
 import static org.silverpeas.core.util.CollectionUtil.union;
@@ -405,7 +405,7 @@ class GroupSynchronizationRule {
         }
       } catch (Exception e) {
         if (e instanceof AdminException) {
-          Exception cause = ((AdminException) e).getNested();
+          Throwable cause = e.getCause();
           if (cause instanceof LDAPLocalException ||
               cause instanceof org.ietf.ldap.LDAPLocalException) {
             reportInfo("admin.getUserIdsBySpecificProperty",
@@ -414,8 +414,7 @@ class GroupSynchronizationRule {
             throw (AdminException) e;
           }
         } else {
-          throw new AdminException("GroupSynchronizationRule.getUserIdsBySpecificProperty",
-              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+          throw new AdminException(failureOnGetting("users by property", propertyName), e);
         }
       }
     }

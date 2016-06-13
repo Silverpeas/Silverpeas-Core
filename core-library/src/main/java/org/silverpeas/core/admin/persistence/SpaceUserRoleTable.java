@@ -25,13 +25,15 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A SpaceUserRoleTable object manages the ST_SpaceUserRole table.
@@ -88,9 +90,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     }
 
     throw new AdminPersistenceException(
-        "SpaceUserRoleTable.getSpaceUserRole", SilverpeasException.ERROR,
-        "admin.EX_ERR_SPACEUSERROLE_NAME_SPACEID_FOUND_TWICE", "space id : '"
-        + spaceId + "', space userrole name: '" + roleName + "'");
+        failureOnGetting("user role " + roleName, "for space " + spaceId));
   }
 
   static final private String SELECT_SPACEUSERROLE_BY_ROLENAME = "select "
@@ -176,10 +176,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   public void createSpaceUserRole(SpaceUserRoleRow spaceUserRole) throws AdminPersistenceException {
     SpaceRow space = organization.space.getSpace(spaceUserRole.spaceId);
     if (space == null) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.createSpaceUserRole", SilverpeasException.ERROR,
-          "admin.EX_ERR_SPACE_NOT_FOUND", "space id : '"
-          + spaceUserRole.spaceId + "'");
+      throw new AdminPersistenceException(unknown("space", String.valueOf(spaceUserRole.spaceId)));
     }
 
     insertRow(INSERT_SPACEUSERROLE, spaceUserRole);
@@ -263,18 +260,12 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     }
     UserRow user = organization.user.getUser(userId);
     if (user == null) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.addUserInSpaceUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-          "user id : '" + userId + "'");
+      throw new AdminPersistenceException(unknown("user", String.valueOf(spaceUserRoleId)));
     }
 
     SpaceUserRoleRow spaceUserRole = getSpaceUserRole(spaceUserRoleId);
     if (spaceUserRole == null) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.addUserInSpaceUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_SPACEUSERROLE_NOT_FOUND",
-          "space user role id : '" + spaceUserRoleId + "'");
+      throw new AdminPersistenceException(unknown("space role", String.valueOf(spaceUserRoleId)));
     }
 
     int[] params = new int[] { spaceUserRoleId, userId };
@@ -290,11 +281,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   public void removeUserFromSpaceUserRole(int userId, int spaceUserRoleId)
       throws AdminPersistenceException {
     if (!isUserDirectlyInRole(userId, spaceUserRoleId)) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.removeUserFromSpaceUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_SPACE_USERROLE",
-          "space userrole id: '" + spaceUserRoleId + "', user id: '" + userId
-          + "'");
+      throw new AdminPersistenceException("user " + userId + " isn't in role " + spaceUserRoleId);
     }
 
     int[] params = new int[] { spaceUserRoleId, userId };
@@ -347,18 +334,12 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
 
     GroupRow group = organization.group.getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.addGroupInSpaceUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
-          "group id : '" + groupId + "'");
+      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
     }
 
     SpaceUserRoleRow spaceUserRole = getSpaceUserRole(spaceUserRoleId);
     if (spaceUserRole == null) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.addGroupInSpaceUserRole",
-          SilverpeasException.ERROR, "admin.EX_ERR_SPACEUSERROLE_NOT_FOUND",
-          "space userrole id : '" + spaceUserRoleId + "'");
+      throw new AdminPersistenceException(unknown("space role", String.valueOf(spaceUserRoleId)));
     }
 
     int[] params = new int[] { spaceUserRoleId, groupId };
@@ -374,11 +355,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   public void removeGroupFromSpaceUserRole(int groupId, int spaceUserRoleId)
       throws AdminPersistenceException {
     if (!isGroupDirectlyInRole(groupId, spaceUserRoleId)) {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.removeGroupFromSpaceUserRole",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_IN_SPACE_USERROLE", "space userrole id: '"
-          + spaceUserRoleId + "', group id: '" + groupId + "'");
+      throw new AdminPersistenceException("group " + groupId + " isn't in role " + spaceUserRoleId);
     }
 
     int[] params = new int[] { spaceUserRoleId, groupId };

@@ -20,36 +20,35 @@
  */
 package org.silverpeas.web.jobstartpage.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.ParameterList;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
-import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.util.memory.MemoryUnit;
-import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
+import org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
@@ -401,10 +400,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           jobStartPageSC.copyComponent(objectId);
         }
       } catch (Exception e) {
-        throw new AdminException(
-            "JobStartPagePeasRequestRouter.getDestination()",
-            SilverpeasException.ERROR, "jobStartPagePeas.CANT_COPY_COMPONENT",
-            e);
+        throw new AdminException("Fail to copy " + objectType + " " + objectId, e);
       }
       destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)
           + "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -418,8 +414,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           jobStartPageSC.cutComponent(objectId);
         }
       } catch (Exception e) {
-        throw new AdminException("JobStartPagePeasRequestRouter.getDestination()",
-            SilverpeasException.ERROR, "jobStartPagePeas.CANT_CUT_ITEM", e);
+        throw new AdminException("Fail to cut " + objectType + " " + objectId, e);
       }
       destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)
           + "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -428,8 +423,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       try {
         jobStartPageSC.paste(options);
       } catch (Exception e) {
-        throw new AdminException("JobStartPagePeasRequestRouter.getDestination()",
-            SilverpeasException.ERROR, "jobStartPagePeas.CANT_PAST_COMPONENT", e);
+        throw new AdminException("Pasting failure", e);
       }
       refreshNavBar(jobStartPageSC, request);
       if (StringUtil.isDefined(jobStartPageSC.getManagedSpaceId())) {
@@ -468,7 +462,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       HttpRequest request) throws Exception {
     String destination = null;
 
-    if (function.equals("StartPageInfo")) {
+    if ("StartPageInfo".equals(function)) {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace courant
 
       if (spaceint1 == null) {
@@ -521,7 +515,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("SousEspace", request.getParameter("SousEspace"));
       request.setAttribute("spaceTemplates", jobStartPageSC.getAllSpaceTemplates());
       request.setAttribute("brothers", jobStartPageSC.getBrotherSpaces(true));
-      request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
+      request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
       destination = "/jobStartPagePeas/jsp/createSpace.jsp";
     } else if (function.equals("SetSpaceTemplateProfile")) {
       String spaceTemplate = request.getParameter("SpaceTemplate");
@@ -559,9 +553,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
       request.setAttribute("Space", spaceint1);
       request.setAttribute("Translation", translation);
-      request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-          JobStartPagePeasSettings.isInheritanceEnable));
-      request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
+      request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+      request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
 
       destination = "/jobStartPagePeas/jsp/updateSpace.jsp";
     } else if (function.equals("EffectiveUpdateSpace")) {
@@ -673,8 +666,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("Space", spaceint1);
       request.setAttribute("SpaceLookHelper", jobStartPageSC.getSpaceLookHelper());
       request.setAttribute("SpaceExtraInfos", jobStartPageSC.getManagedSpace());
-      request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-          JobStartPagePeasSettings.isInheritanceEnable));
+      request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
 
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
@@ -730,8 +722,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
    *
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param jobStartPageSC
-   * @param request
+   * @param jobStartPageSC the controller
+   * @param request the incoming request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -761,15 +753,15 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         request.setAttribute("CurrentSpaceId", jobStartPageSC.getSpaceId());
         request.setAttribute("CurrentSubSpaceId", jobStartPageSC.getSubSpaceId());
       } else if ("/jobStartPagePeas/jsp/welcome.jsp".equals(destination)) {
-        request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
-        request.setAttribute("globalMode", Boolean.valueOf(jobStartPageSC.isAppInMaintenance()));
+        request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
+        request.setAttribute("globalMode", jobStartPageSC.isAppInMaintenance());
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
         request.setAttribute("IsBasketEnable", JobStartPagePeasSettings.isBasketEnable);
       } else if ("/jobStartPagePeas/jsp/startPageInfo.jsp".equals(destination)) {
         SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace
         // courant
-        request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
-        request.setAttribute("FirstPageType", Integer.valueOf(spaceint1.getFirstPageType()));
+        request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
+        request.setAttribute("FirstPageType", spaceint1.getFirstPageType());
         request.setAttribute("Description", spaceint1.getDescription());
         String spaceId = jobStartPageSC.getManagedSpaceId();
         request.setAttribute("currentSpaceId", spaceId);
@@ -811,8 +803,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
               getAllUsers()));
         }
         request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
-        request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-            JobStartPagePeasSettings.isInheritanceEnable));
+        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
 
         String profileHelp = jobStartPageSC.getManagedProfileHelp(compoint1.getName());
         request.setAttribute("ProfileHelp", profileHelp);

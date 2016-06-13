@@ -1544,9 +1544,9 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       if (e instanceof AdminException &&
-          ((AdminException) e).getNested() instanceof GroupSynchronizationRule.Error) {
+          ((AdminException) e).getCause() instanceof GroupSynchronizationRule.Error) {
         GroupSynchronizationRule.Error error =
-            (GroupSynchronizationRule.Error) ((AdminException) e).getNested();
+            (GroupSynchronizationRule.Error) ((AdminException) e).getCause();
         if (error instanceof GroupSynchronizationRule.GroundRuleError) {
           return error.getHandledMessage() + "|" +
               ((GroupSynchronizationRule.GroundRuleError) error).getBaseRulePart();

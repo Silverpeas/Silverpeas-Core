@@ -75,7 +75,7 @@ class AbstractAuthenticationVerifier {
    * Gets a user from its credentials.
    * @param credential
    * @return
-   * @throws org.silverpeas.authentication.exception.AuthenticationException
+   * @throws org.silverpeas.core.security.authentication.exception.AuthenticationException
    */
   protected static UserDetail getUserByCredential(AuthenticationCredential credential) {
     try {

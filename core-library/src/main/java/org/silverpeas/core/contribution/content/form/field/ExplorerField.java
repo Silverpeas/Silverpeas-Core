@@ -282,7 +282,7 @@ public class ExplorerField extends AbstractField {
           .getLabel(language));
 
       // Theme > SubTheme
-      String pathString = "";
+      StringBuilder pathString = new StringBuilder();
       if (nodeId != null) {
         NodeService nodeService = null;
         try {
@@ -304,12 +304,13 @@ public class ExplorerField extends AbstractField {
                 } else {
                   nodeName = nodeInPath.getName();
                 }
-                pathString += nodeName + " > ";
+                pathString.append(nodeName).append(" > ");
               }
             }
 
-            if (StringUtil.isDefined(pathString)) {
-              pathString = pathString.substring(0, pathString.length() - 3); // remove last '>'
+            if (pathString.length() > 0) {
+              // remove last ' > '
+              pathString.delete(pathString.length() - 3, pathString.length());
             }
           }
         }

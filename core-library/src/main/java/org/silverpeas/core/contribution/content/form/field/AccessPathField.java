@@ -32,7 +32,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
@@ -107,7 +106,7 @@ public class AccessPathField extends TextField {
           .getComponentInstLight(componentId).getLabel());
 
       // Theme > SubTheme
-      String pathString = "";
+      StringBuilder pathString = new StringBuilder();
       if (nodeId != null) {
         NodeService nodeService = null;
         try {
@@ -128,14 +127,14 @@ public class AccessPathField extends TextField {
                 } else {
                   nodeName = nodeInPath.getName();
                 }
-                pathString += EncodeHelper.javaStringToHtmlString(nodeName) + " > ";
+                pathString.append(EncodeHelper.javaStringToHtmlString(nodeName)).append(" > ");
               }
             }
 
-            if (StringUtil.isDefined(pathString)) {
-              pathString = pathString.substring(0, pathString.length() - 3); // remove
-            } // last
-            // '>'
+            if (pathString.length() > 0) {
+              // remove the last ' > ' characters
+              pathString.delete(pathString.length() - 3, pathString.length());
+            }
           }
         }
       }

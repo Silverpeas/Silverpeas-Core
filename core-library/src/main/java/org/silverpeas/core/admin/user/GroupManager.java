@@ -20,27 +20,26 @@
 */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.user.dao.GroupDAO;
-import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
-import org.silverpeas.core.admin.user.dao.UserDAO;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.persistence.AdminPersistenceException;
 import org.silverpeas.core.admin.persistence.GroupRow;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.dao.GroupDAO;
+import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
+import org.silverpeas.core.admin.user.dao.UserDAO;
+import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -50,6 +49,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
 public class GroupManager {
@@ -109,8 +110,7 @@ public class GroupManager {
       }
       return groups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getGroupsMatchingCriteria",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+      throw new AdminException("Fail to search groups matching criteria", e);
     } finally {
       DBUtil.close(connection);
     }
@@ -138,8 +138,7 @@ public class GroupManager {
           onGroupIds(groupIds.toArray(new String[groupIds.size()])));
       return userCount;
     } catch (SQLException e) {
-      throw new AdminException("GroupManager.getGroupsMatchingCriteria",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(connection);
     }
@@ -159,9 +158,7 @@ public class GroupManager {
       ddManager.getOrganizationSchema();
       ddManager.getOrganization().group.addUserInGroup(idAsInt(sUserId), idAsInt(sGroupId));
     } catch (Exception e) {
-      throw new AdminException("GroupManager.removeUserFromGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS",
-              "User Id: '" + sUserId + "' GroupId = '" + sGroupId + "'", e);
+      throw new AdminException(failureOnAdding("user " + sUserId, "in group " + sGroupId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -181,10 +178,7 @@ public class GroupManager {
       ddManager.getOrganizationSchema();
       ddManager.getOrganization().group.removeUserFromGroup(idAsInt(sUserId), idAsInt(sGroupId));
     } catch (Exception e) {
-      throw new AdminException("GroupManager.removeUserFromGroup", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_GROUPS", "User Id: '" + sUserId + "' GroupId = '" + sGroupId
-              + "'",
-              e);
+      throw new AdminException(failureOnDeleting("user " + sUserId, "in group " + sGroupId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -210,9 +204,7 @@ public class GroupManager {
       }
       return groups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getDirectGroupsOfUser",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS",
-              "User Id: '" + sUserId + "'", e);
+      throw new AdminException(failureOnGetting("direct groups of user", sUserId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -263,10 +255,8 @@ public class GroupManager {
               idAsInt(sDomainId), sSpecificId);
       return idAsString(gr.id);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getGroupIdBySpecificIdAndDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP",
-              "group specific Id: '" + sSpecificId + "', domain Id: '" + sDomainId
-              + "'", e);
+      throw new AdminException(
+          failureOnGetting("groups by specific id and domain", sSpecificId + "/" + sDomainId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -289,8 +279,7 @@ public class GroupManager {
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getAllGroupIds",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUP_IDS", e);
+      throw new AdminException(failureOnGetting("all groups", ""), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -312,8 +301,7 @@ public class GroupManager {
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getAllRootGroupIds",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ROOT_GROUP_IDS", e);
+      throw new AdminException(failureOnGetting("all root groups", ""), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -342,8 +330,7 @@ public class GroupManager {
       }
       return rootGroups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getAllRootGroupIds",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ROOT_GROUP_IDS", e);
+      throw new AdminException(failureOnGetting("all root groups", ""), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -368,9 +355,7 @@ public class GroupManager {
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getAllSubGroupIds",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_CHILDREN_GROUP_IDS",
-              "father group Id: '" + superGroupId + "'", e);
+      throw new AdminException(failureOnGetting("all subgroups of group", superGroupId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -397,9 +382,7 @@ public class GroupManager {
 
       return path;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getPathToGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_PATH_TO_GROUP",
-              "groupId = " + groupId, e);
+      throw new AdminException(failureOnGetting("path to group", groupId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -429,9 +412,7 @@ public class GroupManager {
 
       return (group.length > 0);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.isGroupExist",
-              SilverpeasException.ERROR, "admin.EX_ERR_IS_GROUP_EXIST",
-              "group name: '" + sName + "'", e);
+      throw new AdminException(failureOnGetting("all groups matching name", sName), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -445,8 +426,7 @@ public class GroupManager {
       return group;
 
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", e);
+      throw new AdminException(failureOnGetting("group", groupId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -481,9 +461,7 @@ public class GroupManager {
 
       return group;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Id: '"
-              + sGroupId + "'", e);
+      throw new AdminException(failureOnGetting("group", sGroupId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -502,9 +480,8 @@ public class GroupManager {
       con = DBUtil.openConnection();
       return getSubGroupIds(con, superGroupId);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getAllSubGroupIdsRecursively",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_CHILDREN_GROUP_IDS",
-              "father group Id: '" + superGroupId + "'", e);
+      throw new AdminException(failureOnGetting("recursively all subgroups of group", superGroupId),
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -550,9 +527,7 @@ public class GroupManager {
       }
       return group;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getGroupByNameInDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Name: '"
-              + sGroupName + "'", e);
+      throw new AdminException(failureOnGetting("group by name", sGroupName), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -582,9 +557,7 @@ public class GroupManager {
       }
       return groups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getRootGroupsOfDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN",
-              "domain Id: '" + sDomainId + "'", e);
+      throw new AdminException(failureOnGetting("root groups in domain", sDomainId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -609,8 +582,7 @@ public class GroupManager {
       }
       return groups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getRootGroupsOfDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN", e);
+      throw new AdminException(failureOnGetting("synchronized groups", ""), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -636,9 +608,7 @@ public class GroupManager {
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getRootGroupIdsOfDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN",
-              "domain Id: '" + sDomainId + "'", e);
+      throw new AdminException(failureOnGetting("root groups in domain", sDomainId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -673,9 +643,7 @@ public class GroupManager {
               "Récupération de " + grs.length + " groupes du domaine LDAP dans la base");
       return groups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getGroupsOfDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN",
-              "domain Id: '" + sDomainId + "'", e);
+      throw new AdminException(failureOnGetting("groups in domain", sDomainId), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -709,8 +677,7 @@ public class GroupManager {
       return ddManager.getOrganization().group.searchGroupsIds(isRootGroup,
               componentId, aRoleId, model);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.searchGroupsIdsInGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN", e);
+      throw new AdminException("Fail to search groups", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -751,8 +718,7 @@ public class GroupManager {
       }
       return groups;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.searchGroups",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN", e);
+      throw new AdminException("Fail to search group", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -824,8 +790,7 @@ public class GroupManager {
     } catch (Exception e) {
       SynchroDomainReport.error("GroupManager.addGroup()", "problème lors de l'ajout du groupe "
               + group.getName() + " - " + e.getMessage(), null);
-      throw new AdminException("GroupManager.addGroup", SilverpeasException.ERROR,
-              "admin.EX_ERR_ADD_GROUP", "group name: '" + group.getName() + "'", e);
+      throw new AdminException(failureOnAdding("group", group.getName()), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -859,9 +824,7 @@ public class GroupManager {
       SynchroDomainReport.error("GroupManager.deleteGroupById()",
               "problème lors de la suppression du groupe " + group.getName()
               + " - " + e.getMessage(), null);
-      throw new AdminException("GroupManager.deleteGroupById",
-              SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "group Id: '"
-              + group.getId() + "'", e);
+      throw new AdminException(failureOnDeleting("group", group.getId()), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -967,9 +930,7 @@ public class GroupManager {
       SynchroDomainReport.error("GroupManager.updateGroup()",
               "problème lors de la maj du groupe " + group.getName() + " - "
               + e.getMessage(), null);
-      throw new AdminException("GroupManager.updateGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "group Id: '"
-              + group.getId() + "'", e);
+      throw new AdminException(failureOnUpdate("group", group.getId()), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -1006,8 +967,7 @@ public class GroupManager {
       }
       return aAdminGroupInst;
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getAdminOrganization",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_ADMIN_ORGANIZATION", e);
+      throw new AdminException(failureOnGetting("admin organization", ""), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -1042,9 +1002,7 @@ public class GroupManager {
 
       return groupDao.getManageableGroupIds(con, userId, groupIds);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getManageableGroupIds",
-              SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_MANAGEABLE_GROUP_IDS", e);
+      throw new AdminException(failureOnGetting("groups manageable by user", userId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -1057,9 +1015,7 @@ public class GroupManager {
 
       return groupDao.getNBUsersDirectlyInGroup(con, groupId);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getNBUsersDirectlyInGroup",
-              SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_OF_GROUP", e);
+      throw new AdminException(failureOnGetting("user count in group", groupId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -1072,9 +1028,7 @@ public class GroupManager {
 
       return groupDao.getUsersDirectlyInGroup(con, groupId);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getUsersDirectlyInGroup",
-              SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_OF_GROUP", e);
+      throw new AdminException(failureOnGetting("users in group", groupId), e);
     } finally {
       DBUtil.close(con);
     }

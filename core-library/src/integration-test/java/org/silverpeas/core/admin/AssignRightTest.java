@@ -406,7 +406,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, null, USER_A, WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -419,7 +419,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, "", USER_A, WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -432,7 +432,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, "   ", USER_A, WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -445,7 +445,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, "null", USER_A, WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -458,7 +458,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, USER_A, null, WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -471,7 +471,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, USER_A, "", WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -484,7 +484,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, USER_A, "   ", WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }
@@ -497,7 +497,7 @@ public class AssignRightTest  {
       administrationService
           .assignRightsFromGroupToUser(COPY, USER_A, "null", WITH_RIGHT_OBJECTS, AUTHOR);
     } catch (AdminException e) {
-      if (e.getNested() instanceof IllegalArgumentException) {
+      if (e.getCause() instanceof IllegalArgumentException) {
         return;
       }
     }

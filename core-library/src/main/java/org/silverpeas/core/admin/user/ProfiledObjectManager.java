@@ -24,13 +24,12 @@
 
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.admin.user.dao.RoleDAO;
-import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -64,9 +63,7 @@ public class ProfiledObjectManager {
       asProfileIds = ddManager.getOrganization().userRole.getAllUserRoleIdsOfObject(
           objectId, objectType, componentId);
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfiles",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE", "objectId = "
-          + objectId + ", componentId = " + componentId, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -102,8 +99,7 @@ public class ProfiledObjectManager {
       return roleNames.toArray(new String[roleNames.size()]);
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getUserProfileNames",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -135,8 +131,7 @@ public class ProfiledObjectManager {
       return objectProfiles;
 
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getUserProfileNames",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -153,9 +148,7 @@ public class ProfiledObjectManager {
       asProfileIds = ddManager.getOrganization().userRole
           .getAllObjectUserRoleIdsOfInstance(componentId);
     } catch (Exception e) {
-      throw new AdminException("ProfiledObjectManager.getProfiles",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE",
-          "componentId = " + componentId, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }

@@ -24,11 +24,10 @@ import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +38,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnDeleting;
 
 /**
  * A UserTable object manages the ST_User table.
@@ -137,9 +138,9 @@ public class UserTable extends Table<UserRow> {
     if (users.size() == 1) {
       return users.get(0);
     }
-    throw new AdminPersistenceException("Usertable.getUserBySpecificId", SilverpeasException.ERROR,
-        "admin.EX_ERR_LOGIN_FOUND_TWICE",
-        "domain id : '" + domainId + "', user specific Id: '" + specificId + "'");
+    throw new AdminPersistenceException(
+        "more than one user is found with the specific id " + specificId + " in domain " +
+            domainId);
   }
 
   static final private String SELECT_USER_BY_SPECIFICID_AND_LOGIN =
@@ -196,9 +197,9 @@ public class UserTable extends Table<UserRow> {
     if (users.size() == 1) {
       return users.get(0);
     }
-    throw new AdminPersistenceException("Usertable.getUserByLogin", SilverpeasException.ERROR,
-        "admin.EX_ERR_LOGIN_FOUND_TWICE",
-        "domain id : '" + domainId + "', user login: '" + login + "'");
+    throw new AdminPersistenceException(
+        "more than one user is found with the login " + login + " in domain " +
+            domainId);
   }
 
   static final private String SELECT_USER_BY_DOMAINID_AND_LOGIN = "select " + USER_COLUMNS +
@@ -682,8 +683,7 @@ public class UserTable extends Table<UserRow> {
         .info("UserTable.removeUser()", "Delete " + user.login + " from user favorite space table");
     UserFavoriteSpaceService ufsDAO = UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
     if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(id, -1))) {
-      throw new AdminPersistenceException("UserTable.removeUser()", SilverpeasException.ERROR,
-          "admin.EX_ERR_DELETE_USER");
+      throw new AdminPersistenceException(failureOnDeleting("user", String.valueOf(id)));
     }
 
     SynchroDomainReport.debug("UserTable.removeUser()",

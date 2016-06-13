@@ -29,7 +29,6 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions
@@ -284,8 +283,7 @@ public class LDAPSettings implements DriverSettings {
       }
       return new LDAPUser();
     } catch (Exception e) {
-      throw new AdminException("LDAPSettings.newLDAPUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_CANT_INSTANCIATE_USER_CLASS", usersType, e);
+      throw new AdminException(e.getMessage(), e);
     }
   }
 
@@ -369,8 +367,7 @@ public class LDAPSettings implements DriverSettings {
     try {
       return (AbstractLDAPGroup) Class.forName(groupsType).newInstance();
     } catch (Exception e) {
-      throw new AdminException("LDAPSettings.newLDAPGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_CANT_INSTANCIATE_GROUP_CLASS", groupsType, e);
+      throw new AdminException(e.getMessage(), e);
     }
   }
 

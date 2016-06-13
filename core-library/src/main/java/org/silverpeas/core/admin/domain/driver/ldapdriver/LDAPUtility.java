@@ -20,20 +20,6 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.exception.SilverpeasException;
-
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
@@ -44,6 +30,18 @@ import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.controls.LDAPSortControl;
 import com.novell.ldap.controls.LDAPSortKey;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
@@ -52,10 +50,12 @@ import com.novell.ldap.controls.LDAPSortKey;
  */
 public class LDAPUtility {
 
-  public final static int MAX_NB_RETRY_CONNECT = 10;
-  public final static int MAX_NB_RETRY_TIMELIMIT = 5;
-  public final static String BASEDN_SEPARATOR = ";;";
-  final static Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
+  public static final MessageFormat LDAP_ERROR = new MessageFormat("LDAP Error #{0}: {1}");
+
+  public static final int MAX_NB_RETRY_CONNECT = 10;
+  public static final int MAX_NB_RETRY_TIMELIMIT = 5;
+  public static final String BASEDN_SEPARATOR = ";;";
+  static final Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
   static int connexionsLastId = 0;
 
   /**
@@ -180,8 +180,7 @@ public class LDAPUtility {
             "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId + " Error LDAP #"
             + e.getResultCode() + " " + e.getLDAPErrorMessage(), ee);
       }
-      throw new AdminException("LDAPUtility.openConnection",
-          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "Host : "
+      throw new AdminException("Connection error with Host : "
           + driverSettings.getLDAPHost() + " Port : " + driverSettings.getLDAPPort()
           + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN() + " ProtocolVer : "
           + driverSettings.getLDAPProtocolVer(), e);
@@ -203,11 +202,9 @@ public class LDAPUtility {
       try {
         toClose.disconnect();
       } catch (LDAPException e) {
-        throw new AdminException("LDAPUtility.closeConnection",
-            SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL",
-            "ConnectionId=" + connectionId + " Error LDAP #"
-            + Integer.toString(e.getResultCode()) + " "
-            + e.getLDAPErrorMessage(), e);
+        throw new AdminException("Fail to close connection " + connectionId + ". " +
+            LDAP_ERROR.format(
+                new Object[]{Integer.toString(e.getResultCode()), e.getLDAPErrorMessage()}), e);
       }
     }
   }
@@ -269,10 +266,8 @@ public class LDAPUtility {
           break;
         }
       } catch (LDAPReferralException re) {
-        throw new AdminException("LDAPUtility.getFirstEntryFromSearch",
-            SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
-            + Integer.toString(re.getResultCode()) + " "
-            + re.getLDAPErrorMessage(), re);
+        throw new AdminException(LDAP_ERROR.format(
+            new Object[]{Integer.toString(re.getResultCode()), re.getLDAPErrorMessage()}), re);
       } catch (LDAPException e) {
         if (LDAPUtility.recoverConnection(lds, e)) {
           return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
@@ -550,10 +545,8 @@ public class LDAPUtility {
     } catch (LDAPReferralException re) {
       SynchroDomainReport.error("LDAPUtility.search1000Plus()",
           "Référence (referral) retournée mais pas suivie !", re);
-      throw new AdminException("LDAPUtility.search1000Plus",
-          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
-          + Integer.toString(re.getResultCode()) + " "
-          + re.getLDAPErrorMessage(), re);
+      throw new AdminException(LDAP_ERROR.format(
+          new Object[]{Integer.toString(re.getResultCode()), re.getLDAPErrorMessage()}), re);
     } catch (LDAPException e) {
       SynchroDomainReport.debug("LDAPUtility.search1000Plus()",
           "Une exception générale est survenue : #" + e.getResultCode() + " "
@@ -561,10 +554,8 @@ public class LDAPUtility {
       if (LDAPUtility.recoverConnection(lds, e)) {
         return search1000Plus(lds, baseDN, scope, filter, varToSort, args);
       } else {
-        throw new AdminException("LDAPUtility.search1000Plus",
-            SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "#"
-            + Integer.toString(e.getResultCode()) + " "
-            + e.getLDAPErrorMessage(), e);
+        throw new AdminException(LDAP_ERROR.format(
+            new Object[]{Integer.toString(e.getResultCode()), e.getLDAPErrorMessage()}), e);
       }
     }
     return entriesVector.toArray(new LDAPEntry[entriesVector.size()]);

@@ -1,0 +1,256 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.core;
+
+import java.text.MessageFormat;
+
+/**
+ * It defines the patterns of the common messages to pass with Silverpeas exceptions when an error
+ * is occurring during a treatment in Silverpeas.
+ * @author mmoquillon
+ */
+public class SilverpeasExceptionMessages {
+
+  private static final MessageFormat ADDING_FAILURE = new MessageFormat("Fail to add {0} {1}");
+  private static final MessageFormat UPDATE_FAILURE = new MessageFormat("Fail to update {0} {1}");
+  private static final MessageFormat DELETION_FAILURE = new MessageFormat("Fail to delete {0} {1}");
+  private static final MessageFormat GETTING_FAILURE = new MessageFormat("Fail to get {0} {1}");
+  private static final MessageFormat MOVE_FAILURE =
+      new MessageFormat("Fail to move {0} {1} to {2} {3}");
+  private static final MessageFormat RESTORATION_FAILURE =
+      new MessageFormat("Fail to restore {0} {1}");
+  private static final MessageFormat VALIDATION_FAILURE =
+      new MessageFormat("Fail to validate {0} {1}");
+
+  private static final MessageFormat INDEXATION_FAILURE =
+      new MessageFormat("Fail to index {0} {1}");
+  private static final MessageFormat UNINDEXATION_FAILURE =
+      new MessageFormat("Fail to unindex {0} {1}");
+
+  private static final MessageFormat CONNECION_OPENING_FAILURE =
+      new MessageFormat("Fail to open connection to {0}");
+  private static final MessageFormat CONNECION_CLOSING_FAILURE =
+      new MessageFormat("Fail to close connection to {0}");
+  private static final MessageFormat CONNECTION_FAILURE =
+      new MessageFormat("Fail to connect/access {0}");
+
+  private static final MessageFormat UNAVAILABLE_RESOURCE = new MessageFormat("{0} {1} not found");
+  private static final MessageFormat UNDEFINED_RESOURCE =
+      new MessageFormat("{0} identifier not defined");
+
+  private SilverpeasExceptionMessages() {
+
+  }
+
+
+  /**
+   * Computes a message about the failure to add a given resource with the specified
+   * identifier.
+   * </p>
+   * This message is for when an exception has been caught during the adding of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnAdding(String resource, Object id) {
+    return ADDING_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to update a given resource with the specified
+   * identifier.
+   * </p>
+   * This message is for when an exception has been caught during the update of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnUpdate(String resource, Object id) {
+    return UPDATE_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to delete a given resource with the specified
+   * identifier.
+   * </p>
+   * This message is for when an exception has been caught during the deletion of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnDeleting(String resource, Object id) {
+    return DELETION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to move a given resource with the specified
+   * identifier to the specified target with the specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the move of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @param target a resource into which the resource is moved (a bin, a folder, a space, ...)
+   * @param targetId an identifier of the target (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnMoving(String resource, Object id, String target, Object targetId) {
+    return MOVE_FAILURE.format(new Object[]{resource, id, target, targetId});
+  }
+
+  /**
+   * Computes a message about the failure to restore a given resource with the specified
+   * identifier.
+   * </p>
+   * This message is for when an exception has been caught during the restoration of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnRestoring(String resource, Object id) {
+    return RESTORATION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to get a given resource with the specified
+   * identifier.
+   * </p>
+   * This message is for when an exception has been caught during the getting of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnGetting(String resource, Object id) {
+    return GETTING_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to open a connection against a given service.
+   * </p>
+   * This message is for when an exception has been caught while opening a connection to the
+   * given service.
+   * @param service the service concerned by the connection.
+   * @return an exception message.
+   */
+  public static String failureOnOpeningConnectionTo(String service) {
+    return CONNECION_OPENING_FAILURE.format(service);
+  }
+
+  /**
+   * Computes a message about the failure to close a connection with a given service.
+   * </p>
+   * This message is for when an exception has been caught while closing a connection with the
+   * given service.
+   * @param service the service concerned by the connection.
+   * @return an exception message.
+   */
+  public static String failureOnClosingConnectionTo(String service) {
+    return CONNECION_CLOSING_FAILURE.format(service);
+  }
+
+  /**
+   * Computes a message about the failure of a connection with a given service.
+   * </p>
+   * This message is for when an exception has been caught while connecting or accessing an
+   * external service.
+   * @param service the service concerned by the connection.
+   * @return an exception message.
+   */
+  public static String failureOnConnecting(String service) {
+    return CONNECTION_FAILURE.format(service);
+  }
+
+  /**
+   * Computes a message about the failure to validate the correctness of a given resource with the
+   * specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the validation of the correctness
+   * of a resource in Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnValidating(String resource, Object id) {
+    return VALIDATION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to index the given resource with the
+   * specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the indexation of a resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnIndexing(String resource, Object id) {
+    return INDEXATION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to unindex the given resource with the
+   * specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the deletion on the index
+   * of a resource in Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnUnindexing(String resource, Object id) {
+    return UNINDEXATION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about an unknown resource with the specified identifier.
+   * </p>
+   * Usually, this message is passed into an exception when the resource required to perform a
+   * treatment doesn't exist or isn't found in a peculiar context. It's not necessary resulted from
+   * an exception (in that case, we prefer {@code failureOnGetting} message).
+   * @param resource the resource concerned by the issue; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String unknown(String resource, Object id) {
+    return UNAVAILABLE_RESOURCE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about an asked undefined resource. A resource is undefined when its
+   * identifier is either empty or null.
+   * @param resource the resource concerned by the issue; for example a user, a file, ...
+   * @return an exception message.
+   */
+  public static String undefined(String resource) {
+    return UNDEFINED_RESOURCE.format(resource);
+  }
+
+}
+  

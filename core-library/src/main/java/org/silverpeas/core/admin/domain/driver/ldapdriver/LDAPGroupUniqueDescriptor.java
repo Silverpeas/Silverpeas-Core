@@ -26,11 +26,12 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.Vector;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -61,9 +62,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
           driverSettings.getGroupAttributes());
     }
     if (memberEntry == null) {
-      throw new AdminException("LDAPGroupUniqueDescriptor.getMemberGroupIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_USER_ENTRY_ISNULL",
-          "Id=" + memberId + " IsGroup=" + isGroup);
+      throw new AdminException(unknown("LDAP group id", memberId));
     }
     theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
         driverSettings.getScope(),

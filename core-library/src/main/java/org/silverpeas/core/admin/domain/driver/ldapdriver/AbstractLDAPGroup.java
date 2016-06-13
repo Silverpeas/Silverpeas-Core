@@ -22,16 +22,18 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 /**
  * This class manage one particular group. It is a base class to derive from. The child classes
@@ -274,8 +276,7 @@ abstract public class AbstractLDAPGroup {
     Group groupInfos = new Group();
 
     if (groupEntry == null) {
-      throw new AdminException("AbstractLDAPGroup.translateGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
+      throw new AdminException(undefined("LDAP group entry"));
     }
 
     // We don't set : GroupParentID, DomainId and Id...
@@ -319,8 +320,7 @@ abstract public class AbstractLDAPGroup {
     ArrayList<String> allUserIds = new ArrayList<>();
 
     if (groupEntries.isEmpty()) {
-      throw new AdminException("AbstractLDAPGroup.translateGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
+      throw new AdminException(undefined("LDAP group entries"));
     }
 
     boolean first = true;

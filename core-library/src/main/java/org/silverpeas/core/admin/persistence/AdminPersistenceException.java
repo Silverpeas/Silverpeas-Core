@@ -28,22 +28,15 @@ import org.silverpeas.core.admin.service.AdminException;
 
 public class AdminPersistenceException extends AdminException {
 
-  public AdminPersistenceException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AdminPersistenceException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AdminPersistenceException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AdminPersistenceException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AdminPersistenceException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AdminPersistenceException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AdminPersistenceException(final Throwable cause) {
+    super(cause);
   }
 }

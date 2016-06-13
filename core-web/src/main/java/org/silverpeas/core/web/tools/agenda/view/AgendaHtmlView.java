@@ -1023,15 +1023,15 @@ public class AgendaHtmlView {
       return ">";
     }
 
-    String categs = "";
-    for (Category categorie : categories) {
-      categs += categorie.getName() + "&nbsp;";
+    StringBuilder cat = new StringBuilder();
+    for (Category category : categories) {
+      cat.append(category.getName()).append("&nbsp;");
     }
 
     StringBuilder result = new StringBuilder("onmouseover=\"return overlib('");
     result.append(EncodeHelper.javaStringToJsString(EncodeHelper
         .javaStringToHtmlParagraphe(EncodeHelper.javaStringToHtmlString(schedule.getDescription()))));
-    result.append("',CAPTION,'").append(EncodeHelper.javaStringToJsString(categs)).append(
+    result.append("',CAPTION,'").append(EncodeHelper.javaStringToJsString(cat.toString())).append(
         "');\" onmouseout=\"return nd();\">");
     return result.toString();
   }

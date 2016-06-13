@@ -23,25 +23,25 @@
  */
 package org.silverpeas.core.webapi.admin.delegate;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.PersonalSpaceController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.admin.tools.AbstractTool;
+import org.silverpeas.core.webapi.admin.tools.ToolDelegate;
+import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.webapi.admin.tools.AbstractTool;
-import org.silverpeas.core.webapi.admin.tools.ToolDelegate;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
-
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.space.PersonalSpaceController;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * @author Yohann Chastagnier
@@ -110,8 +110,7 @@ public class AdminPersonalWebDelegate {
 
     // Unknown or already used component
     if (component == null) {
-      throw new AdminException("AdminPersonalWebDelegate.useComponent", SilverpeasException.ERROR,
-          "root.EX_UNKNOWN_COMPONENT_OR_COMPONENT_ALREADY_USED");
+      throw new AdminException(unknown("component", componentName));
     }
 
     // User's component registration
@@ -136,8 +135,7 @@ public class AdminPersonalWebDelegate {
 
     // Unknown used component
     if (component == null) {
-      throw new AdminException("AdminPersonalWebDelegate.discardComponent",
-          SilverpeasException.ERROR, "root.EX_UNKNOWN_COMPONENT_ID");
+      throw new AdminException(unknown("component", componentName));
     }
 
     // User's component unregistration
@@ -150,10 +148,10 @@ public class AdminPersonalWebDelegate {
   }
 
   /**
-   * Gets all components that can be handled in personnal space but not used yet.
+   * Gets all components that can be handled in personal space but not used yet.
    * Notice that components of this result are cached at this method call as this set of
    * delegate methods is instantiated for each web service http request.
-   * @return
+   * @return a map of components
    */
   private Map<String, WAComponent> getCachedNotUsedComponents() {
     if (indexedNotUsedComponents == null) {
@@ -169,10 +167,10 @@ public class AdminPersonalWebDelegate {
   }
 
   /**
-   * Gets used components instanciated in the user personal space.
+   * Gets used components instantiated in the user personal space.
    * Notice that components of this result are cached at this method call as this set of
    * delegate methods is instantiated for each web service http request.
-   * @return
+   * @return a map of components
    */
   private Map<String, ComponentInst> getCachedUsedComponents() {
     if (indexedUsedComponents == null) {
@@ -191,7 +189,7 @@ public class AdminPersonalWebDelegate {
    * Gets used tools in the user personal space.
    * Notice that tools of this result are cached at this method call as this set of
    * delegate methods is instantiated for each web service http request.
-   * @return
+   * @return a map of abstract tools
    */
   private Map<String, AbstractTool> getCachedUsedTools() {
     if (indexedUsedTools == null) {
@@ -209,7 +207,7 @@ public class AdminPersonalWebDelegate {
   }
 
   /**
-   * @param component
+   * @param component a component
    * @return if the WAComponent is already used in the user personal space or not.
    */
   private boolean isComponentUsed(final WAComponent component) {
@@ -229,8 +227,8 @@ public class AdminPersonalWebDelegate {
    * Easy way to instance the look service provider.
    * @param user the user detail
    * @param userPreference the user preference
-   * @param lookDelegate
-   * @return
+   * @param lookDelegate a delegate of the Web look
+   * é@return a delegate
    */
   public static AdminPersonalWebDelegate getInstance(final UserDetail user,
       final UserPreferences userPreference, final LookWebDelegate lookDelegate) {

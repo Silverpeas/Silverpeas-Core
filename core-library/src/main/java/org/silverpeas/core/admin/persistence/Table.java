@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.Schema;
 
@@ -169,8 +168,7 @@ public abstract class Table<T> {
       rs = select.executeQuery();
       return getUniqueRow(rs);
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -194,8 +192,7 @@ public abstract class Table<T> {
       rs = select.executeQuery();
       return getUniqueRow(rs);
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -260,8 +257,7 @@ public abstract class Table<T> {
       rs = select.executeQuery();
       return getIds(rs);
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -325,8 +321,7 @@ public abstract class Table<T> {
       rs = select.executeQuery();
       return getRows(rs);
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -395,12 +390,8 @@ public abstract class Table<T> {
         return rs.getInt(1);
       }
       return 0;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", e);
     } catch (Exception e) {
-      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -430,12 +421,8 @@ public abstract class Table<T> {
         return rs.getInt(1);
       }
       return 0;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", e);
     } catch (Exception e) {
-      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -489,8 +476,7 @@ public abstract class Table<T> {
       rs = select.executeQuery();
       return getInteger(rs);
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getInteger",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -503,8 +489,7 @@ public abstract class Table<T> {
     }
     result = fetchRow(rs);
     if (rs.next()) { // more then one row !
-      throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
-              "admin.EX_ERR_NOT_UNIQUE_ROW");
+      throw new AdminPersistenceException("SQL row not unique");
     }
     return result;
   }
@@ -531,8 +516,7 @@ public abstract class Table<T> {
     }
     int result = rs.getInt(1);
     if (rs.next()) { // more then one row !
-      throw new AdminPersistenceException("Table.getInteger", SilverpeasException.ERROR,
-              "admin.EX_ERR_NOT_UNIQUE_ROW");
+      throw new AdminPersistenceException("SQL row not unique");
     }
     return result;
   }
@@ -547,8 +531,7 @@ public abstract class Table<T> {
       return rowsCount;
     } catch (SQLException e) {
       SynchroDomainReport.error("Table.insertRow()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException("Table.insertRow", SilverpeasException.ERROR,
-              "root.EX_RECORD_INSERTION_FAILED", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -564,8 +547,7 @@ public abstract class Table<T> {
       return rowsCount;
     } catch (SQLException e) {
       SynchroDomainReport.error("Table.updateRow()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException("Table.updateRow",
-              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -579,8 +561,7 @@ public abstract class Table<T> {
       rowsCount = statement.executeUpdate();
       return rowsCount;
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -600,8 +581,7 @@ public abstract class Table<T> {
       return rowsCount;
     } catch (SQLException e) {
       SynchroDomainReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -623,8 +603,7 @@ public abstract class Table<T> {
       return rowsCount;
     } catch (SQLException e) {
       SynchroDomainReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE", e);
+      throw new AdminPersistenceException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }

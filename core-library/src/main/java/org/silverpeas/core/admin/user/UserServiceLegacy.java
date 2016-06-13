@@ -24,34 +24,36 @@
 
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnAdding;
+import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 @Singleton
 public class UserServiceLegacy implements UserService {
@@ -81,9 +83,7 @@ public class UserServiceLegacy implements UserService {
     // Generate user login
     String login = generateLogin(admin, domainId, email);
     if (login == null) {
-      throw new AdminException(
-          "SilverpeasAdminServiceLegacy.createGuestUser",
-          SilverpeasException.ERROR, "admin.EX_NO_LOGIN_AVAILABLE");
+      throw new AdminException(undefined("user login"));
     }
 
     // Generate password
@@ -101,9 +101,7 @@ public class UserServiceLegacy implements UserService {
     String userId = admin.addUser(user);
 
     if (!StringUtil.isDefined(userId)) {
-      throw new AdminException(
-          "SilverpeasAdminServiceLegacy.createGuestUser",
-          SilverpeasException.ERROR, "admin.EX_ADD_USER_FAILED");
+      throw new AdminException(failureOnAdding("user", firstName + " " + lastName));
     }
 
     // Update UserFull informations
@@ -113,9 +111,7 @@ public class UserServiceLegacy implements UserService {
       uf.setPassword(password);
       userId = admin.updateUserFull(uf);
       if (!StringUtil.isDefined(userId)) {
-        throw new AdminException(
-            "SilverpeasAdminServiceLegacy.createGuestUser",
-            SilverpeasException.ERROR, "admin.EX_ADD_USER_FAILED");
+        throw new AdminException(failureOnAdding("user", firstName + " " + lastName));
       }
     }
 
@@ -216,8 +212,7 @@ public class UserServiceLegacy implements UserService {
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
-      throw new AdminException("SilverpeasAdminServiceLegacy.notifyUser",
-          SilverpeasException.ERROR, "EX_SEND_NOTIFICATION_FAILED", e);
+      throw new AdminException("Fail to notify users", e);
     }
   }
 

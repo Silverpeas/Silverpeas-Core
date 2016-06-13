@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.admin.domain.driver.sqldriver;
 
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * A GroupTable object manages the DomainSQL_Group table.
@@ -64,8 +63,7 @@ public class SQLGroupUserRelTable {
         theResult.add(Integer.toString(rs.getInt(1)));
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.getDirectUserIdsOfGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -91,8 +89,7 @@ public class SQLGroupUserRelTable {
         theResult.add(Integer.toString(rs.getInt(1)));
       }
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.getDirectGroupIdsOfUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -114,8 +111,7 @@ public class SQLGroupUserRelTable {
       statement.setInt(2, userId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.createGroupUserRel", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -136,8 +132,7 @@ public class SQLGroupUserRelTable {
       statement.setInt(2, userId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.removeGroupUserRel", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -156,8 +151,7 @@ public class SQLGroupUserRelTable {
       statement.setInt(1, userId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.removeAllUserRel", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -176,8 +170,7 @@ public class SQLGroupUserRelTable {
       statement.setInt(1, groupId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.removeAllGroupRel", SilverpeasException.ERROR,
-          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(statement);
     }
@@ -202,8 +195,7 @@ public class SQLGroupUserRelTable {
       rs = statement.executeQuery();
       return rs.next();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.isUserDirectlyInGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
+      throw new AdminException(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, statement);
     }

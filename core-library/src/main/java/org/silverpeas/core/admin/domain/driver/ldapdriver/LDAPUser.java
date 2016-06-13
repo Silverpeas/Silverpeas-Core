@@ -22,21 +22,22 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
-import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 /**
  * This class reads user infos from the LDAP DB and translate it into the UserDetail format
@@ -297,8 +298,7 @@ public class LDAPUser {
     UserDetail userInfos = new UserDetail();
 
     if (userEntry == null) {
-      throw new AdminException("LDAPUser.translateUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_LDAP_USER_ENTRY_ISNULL");
+      throw new AdminException(undefined("LDAP user entry"));
     }
 
     // Set the AdminUser informations

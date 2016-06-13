@@ -337,8 +337,7 @@ public class LDAPDriver extends AbstractDomainDriver {
           .modify(userFullDN, modifications.toArray(new LDAPModification[modifications.size()]));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new AdminException("LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
-          "admin.EX_LDAP_ACCESS_ERROR", ex);
+      throw new AdminException("LDAP access error", ex);
     } finally {
       try {
         if (ld != null) {
