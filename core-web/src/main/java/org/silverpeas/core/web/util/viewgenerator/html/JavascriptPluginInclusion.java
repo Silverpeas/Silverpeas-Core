@@ -53,6 +53,7 @@ import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombinati
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLUtil.getApplicationURL() + "/util/javaScript/";
+  private static final String flashPath = URLUtil.getApplicationURL() + "/util/flash/";
   private static final String stylesheetPath =
       URLUtil.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
@@ -68,9 +69,11 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
   private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
-  private static final String SILVERPEAS_AUDIO_PLAYER = "silverpeas-player-audio.js";
-  private static final String SILVERPEAS_VIDEO_PLAYER = "silverpeas-player-video.js";
-  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.13.min.js";
+  private static final String SILVERPEAS_MEDIA_PLAYER = "silverpeas-media-player.js";
+  private static final String FLOWPLAYER_CSS = "flowplayer-6.0.5/skin/playful.css";
+  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-6.0.5.min.js";
+  private static final String FLOWPLAYER_SWF = "flowplayer/flowplayer-6.0.5.swf";
+  private static final String FLOWPLAYER_SWF_HLS = "flowplayer/flowplayerhls-6.0.5.swf";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String SILVERPEAS_TIP = "silverpeas-tip.js";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
@@ -263,15 +266,15 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeAudioPlayer(final ElementContainer xhtml) {
+  public static ElementContainer includeMediaPlayer(final ElementContainer xhtml) {
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("MediaPlayerSettings")
+        .add("media.player.flowplayer.swf", flashPath + FLOWPLAYER_SWF)
+        .add("media.player.flowplayer.swf.hls", flashPath + FLOWPLAYER_SWF_HLS)
+        .produce()));
+    xhtml.addElement(link(stylesheetPath + FLOWPLAYER_CSS));
     xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_AUDIO_PLAYER));
-    return xhtml;
-  }
-
-  public static ElementContainer includeVideoPlayer(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_VIDEO_PLAYER));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_MEDIA_PLAYER));
     return xhtml;
   }
 

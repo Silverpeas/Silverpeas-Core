@@ -154,7 +154,7 @@ var dragAndDropUploadEnabled = window.File;
   var DragAndDropUploadMonitor = function(uploadInstance) {
     var monitorCtx = {};
     this.show = function() {
-      if (!monitorCtx.notyInstance) {
+      if (this.isClosed()) {
         monitorCtx.notyInstanceReady = new Promise(function(resolve, reject) {
           this.resolveNotyDisplayed = resolve;
         }.bind(this));
@@ -170,15 +170,24 @@ var dragAndDropUploadEnabled = window.File;
         });
       }
     };
+    this.isClosed = function() {
+      return !monitorCtx.notyInstance;
+    };
     this.close = function() {
       __logDebug("Closing monitor notifier...");
-      if (monitorCtx.notyInstance) {
+      __logDebug("Verifying if monitor notifier is closed...");
+      if (!this.isClosed()) {
         monitorCtx.notyInstanceReady.then(function() {
-          if (monitorCtx.notyInstance) {
+          __logDebug("Verifying if monitor notifier is closed...");
+          if (!this.isClosed()) {
             monitorCtx.notyInstance.close();
             monitorCtx.notyInstance = undefined;
+          } else {
+            __logDebug("Monitor is already closed.");
           }
-        });
+        }.bind(this));
+      } else {
+        __logDebug("Monitor is already closed.");
       }
     };
     this.reset = function() {
@@ -289,6 +298,19 @@ var dragAndDropUploadEnabled = window.File;
         }
       }
     }.bind(this);
+    this.clear = function() {
+      uploadInstance.monitor.reset();
+      firstDropPerformed = false;
+      firstLoadPending = false;
+      firstLoadCompleted = false;
+      nbFilePerformed = 0;
+      this.id = '';
+      this.severalFilesToUpload = false;
+      this.existsAtLeastOneFolder = false;
+      this.filesToSend = [];
+      this.currentSending = [];
+      this.processedFiles = [];
+    };
     this.push = function(file) {
       __logDebug("Pushing '" + file.fullPath + "' in file sending queue...");
 
@@ -444,12 +466,17 @@ var dragAndDropUploadEnabled = window.File;
             sendMonitor.unregister();
 
             // An error has been captured during the send
-            console.log(params.error);
-            console.log(params.sentFile);
-            internalQueue.push(function() {
-              delete this.currentSending[file.fullPath];
-              _consume();
-            }.bind(this));
+            if (params.abortRequired) {
+              __logDebug("_send - sending aborted by client on file '" + file.fullPath + "'");
+              this.clear();
+            } else {
+              console.log(params.error);
+              console.log(params.sentFile);
+              internalQueue.push(function() {
+                delete this.currentSending[file.fullPath];
+                _consume();
+              }.bind(this));
+            }
 
             return Promise.reject(params);
           }.bind(this));
@@ -608,6 +635,9 @@ var dragAndDropUploadEnabled = window.File;
           // Reject case
           uploadInstance.context.currentUploadSession = false;
           uploadInstance.monitor.close();
+          return Promise.reject({
+            "sentFile" : file, "error" : "sending aborted...", "abortRequired" : true
+          });
         });
       }.bind(this), __error);
     }.bind(this);
