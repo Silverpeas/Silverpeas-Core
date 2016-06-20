@@ -20,12 +20,12 @@
  */
 package org.silverpeas.core.web.tools.agenda.view;
 
-import org.silverpeas.core.calendar.model.Category;
-import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.core.calendar.model.Schedulable;
-import org.silverpeas.core.calendar.model.SchedulableCount;
-import org.silverpeas.core.calendar.model.SchedulableGroup;
-import org.silverpeas.core.calendar.model.SchedulableList;
+import org.silverpeas.core.personalorganizer.model.Category;
+import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.model.Schedulable;
+import org.silverpeas.core.personalorganizer.model.SchedulableCount;
+import org.silverpeas.core.personalorganizer.model.SchedulableGroup;
+import org.silverpeas.core.personalorganizer.model.SchedulableList;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.EncodeHelper;

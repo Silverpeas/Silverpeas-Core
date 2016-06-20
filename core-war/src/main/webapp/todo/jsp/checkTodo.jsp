@@ -35,8 +35,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.core.calendar.model.Attendee"%>
-<%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Attendee"%>
+<%@ page import="org.silverpeas.core.personalorganizer.model.ToDoHeader"%>
 <%@ page import="org.silverpeas.web.todo.control.ToDoSessionController"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>

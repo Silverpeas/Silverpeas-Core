@@ -35,7 +35,7 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
