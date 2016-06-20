@@ -25,7 +25,7 @@
 package org.silverpeas.core.web.tools.agenda;
 
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 
 import javax.inject.Inject;
 import javax.inject.Named;

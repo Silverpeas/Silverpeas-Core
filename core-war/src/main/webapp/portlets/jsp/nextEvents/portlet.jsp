@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="org.silverpeas.core.calendar.model.Schedulable"%>
+<%@page import="org.silverpeas.core.personalorganizer.model.Schedulable"%>
 <%@page import="org.owasp.encoder.Encode"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>

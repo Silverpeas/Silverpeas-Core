@@ -28,7 +28,7 @@
 package org.silverpeas.web.todo;
 
 import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.web.todo.control.TodoException;
 
 import javax.inject.Inject;

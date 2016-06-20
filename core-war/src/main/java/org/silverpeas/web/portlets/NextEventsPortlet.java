@@ -29,7 +29,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaAccess;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.calendar.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.portlet.*;

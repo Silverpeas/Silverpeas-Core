@@ -47,7 +47,7 @@ public class WorkflowTest {
         .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-calendar")
+        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer")
         .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.workflow")
             .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF"))
         .build();
