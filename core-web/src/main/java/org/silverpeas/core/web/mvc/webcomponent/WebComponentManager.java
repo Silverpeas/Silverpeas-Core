@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.annotation.AnnotationUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -101,7 +101,7 @@ public class WebComponentManager {
       }
 
       // Retrieving the class of the web context associated to the given resource.
-      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass = AnnotationUtil
+      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass = ClassAnnotationUtil
           .searchParameterizedTypeFrom(WebComponentRequestContext.class,
               webComponentControllerClass);
       try {

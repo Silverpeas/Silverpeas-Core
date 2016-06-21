@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.persistence.datasource.repository;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.util.ArgumentAssertion;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.datasource.model.Entity;
+import org.silverpeas.core.util.ArgumentAssertion;
 
 /**
  * This class permits to give details about operation actions (save action for now), especially the
@@ -45,7 +45,7 @@ public class OperationContext {
   private boolean updatingInCaseOfCreation = false;
 
   // The user
-  private UserDetail user = null;
+  private User user = null;
 
   /**
    * Creates an empty instance.
@@ -61,7 +61,7 @@ public class OperationContext {
    * @return
    */
   public static OperationContext fromUser(String userId) {
-    return fromUser(UserDetail.getById(userId));
+    return fromUser(User.getById(userId));
   }
 
   /**
@@ -69,7 +69,7 @@ public class OperationContext {
    * @param user
    * @return
    */
-  public static OperationContext fromUser(UserDetail user) {
+  public static OperationContext fromUser(User user) {
     return new OperationContext().withUser(user);
   }
 
@@ -95,7 +95,7 @@ public class OperationContext {
    * @param user
    * @return
    */
-  private OperationContext withUser(UserDetail user) {
+  private OperationContext withUser(User user) {
     this.user = user;
     return this;
   }
@@ -133,7 +133,7 @@ public class OperationContext {
    * Gets the user behind the operation.
    * @return
    */
-  public UserDetail getUser() {
+  public User getUser() {
     return user;
   }
 

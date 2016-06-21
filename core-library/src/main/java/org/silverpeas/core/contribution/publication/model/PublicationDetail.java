@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.publication.model;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -564,8 +564,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(getCreatorId());
+  public User getCreator() {
+    return User.getById(getCreatorId());
   }
 
   public int getImportance() {
@@ -1182,7 +1182,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @return true if the user can access this publication, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<PublicationPK> accessController =
         AccessControllerProvider.getAccessController(PublicationAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getPK());
@@ -1197,7 +1197,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @param user a user in Silverpeas.
    * @return true if the user can access this publication, false otherwise.
    */
-  public boolean canBeModifiedBy(final UserDetail user) {
+  public boolean canBeModifiedBy(final User user) {
     AccessController<PublicationPK> accessController =
         AccessControllerProvider.getAccessController(PublicationAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getPK(),

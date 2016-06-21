@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.comment.model;
 
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.Date;
 
@@ -149,7 +150,7 @@ public class Comment implements SilverpeasContent {
     return date;
   }
 
-  public UserDetail getOwnerDetail() {
+  public User getOwnerDetail() {
     return getCreator();
   }
 
@@ -177,7 +178,7 @@ public class Comment implements SilverpeasContent {
   }
 
   @Override
-  public UserDetail getCreator() {
+  public User getCreator() {
     if (ownerDetail == null || !ownerDetail.isFullyDefined()) {
       ownerDetail = UserDetail.getById(String.valueOf(owner_id));
     }
@@ -221,7 +222,7 @@ public class Comment implements SilverpeasContent {
    * @return true if the user can access this comment, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());

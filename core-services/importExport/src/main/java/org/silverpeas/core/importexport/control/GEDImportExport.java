@@ -20,6 +20,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -874,9 +875,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setComponentId(componentId);
 
       // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      UserDetail userDetail = publicationDetail.getCreator();
-      if (userDetail != null) {
-        String nomPrenomCreator = userDetail.getDisplayedName().trim();
+      User creator = publicationDetail.getCreator();
+      if (creator != null) {
+        String nomPrenomCreator = creator.getDisplayedName();
         publicationDetail.setCreatorName(nomPrenomCreator);
       }
     } catch (Exception ex) {

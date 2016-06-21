@@ -1,4 +1,4 @@
-<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ tag import="org.silverpeas.core.admin.user.model.User" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -44,34 +44,34 @@
 <%-- Creator --%>
 <%@ attribute name="createDate" required="false" type="java.util.Date"
               description="The date of create" %>
-<%@ attribute name="createdBy" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
+<%@ attribute name="createdBy" required="false" type="org.silverpeas.core.admin.user.model.User"
               description="The user responsible of the create" %>
 <%@ attribute name="createdById" required="false" type="java.lang.String"
               description="The user id responsible of the create" %>
 <c:if test="${createdBy == null && silfn:isDefined(createdById)}">
-  <c:set var="createdBy" value="<%=UserDetail.getById(createdById)%>"/>
+  <c:set var="createdBy" value="<%=User.getById(createdById)%>"/>
 </c:if>
 
 <%-- Updater --%>
 <%@ attribute name="updateDate" required="false" type="java.util.Date"
               description="The date of update" %>
-<%@ attribute name="updatedBy" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
+<%@ attribute name="updatedBy" required="false" type="org.silverpeas.core.admin.user.model.User"
               description="The user responsible of the update" %>
 <%@ attribute name="updatedById" required="false" type="java.lang.String"
               description="The user id responsible of the update" %>
 <c:if test="${updatedBy == null && silfn:isDefined(updatedById)}">
-  <c:set var="updatedBy" value="<%=UserDetail.getById(updatedById)%>"/>
+  <c:set var="updatedBy" value="<%=User.getById(updatedById)%>"/>
 </c:if>
 
 <%-- Publisher --%>
 <%@ attribute name="publishDate" required="false" type="java.util.Date"
               description="The date of publishing" %>
-<%@ attribute name="publishedBy" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
+<%@ attribute name="publishedBy" required="false" type="org.silverpeas.core.admin.user.model.User"
               description="The user who have published " %>
 <%@ attribute name="publishedById" required="false" type="java.lang.String"
               description="The user id who have published" %>
 <c:if test="${publishedBy == null && silfn:isDefined(publishedById)}">
-  <c:set var="publishedBy" value="<%=UserDetail.getById(publishedById)%>"/>
+  <c:set var="publishedBy" value="<%=User.getById(publishedById)%>"/>
 </c:if>
 
 <%-- Permalink --%>

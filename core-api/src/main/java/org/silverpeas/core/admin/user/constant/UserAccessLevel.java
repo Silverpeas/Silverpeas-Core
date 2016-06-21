@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * User: Yohann Chastagnier Date: 18/01/13
+ * @author  Yohann Chastagnier
  */
 public enum UserAccessLevel {
 

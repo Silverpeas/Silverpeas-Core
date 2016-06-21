@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -59,7 +59,7 @@ public class ContributionValidation implements Serializable {
   private String validationBy;
 
   @Transient
-  private UserDetail validator;
+  private User validator;
 
   /**
    * Is that the status of the contribution is draft?
@@ -145,10 +145,10 @@ public class ContributionValidation implements Serializable {
    * Gets the validator of the contribution.
    * @return a user detail object that represents the validator of the contribution.
    */
-  public UserDetail getValidator() {
+  public User getValidator() {
     if (StringUtil.isDefined(validationBy)) {
       if (validator == null || !validationBy.equals(validator.getId())) {
-        validator = UserDetail.getById(validationBy);
+        validator = User.getById(validationBy);
       }
     } else {
       validator = null;
@@ -160,7 +160,7 @@ public class ContributionValidation implements Serializable {
    * Sets the validator of the contribution.
    * @param validator the validator of the contribution.
    */
-  public void setValidator(final UserDetail validator) {
+  public void setValidator(final User validator) {
     this.validator = validator;
     validationBy = ((validator != null) ? validator.getId() : null);
   }
@@ -185,7 +185,7 @@ public class ContributionValidation implements Serializable {
    * @param validator the validator that emitted this validation.
    * @param validationDate the date at which this validation was done.
    */
-  public ContributionValidation(final ContributionStatus status, final UserDetail validator,
+  public ContributionValidation(final ContributionStatus status, final User validator,
       final Date validationDate) {
     setStatus(status);
     this.validationBy = validator.getId();
@@ -201,7 +201,7 @@ public class ContributionValidation implements Serializable {
    * @param validationDate the date at which this validation was done.
    * @param comment the comment about validation done by the validator.
    */
-  public ContributionValidation(final ContributionStatus status, final UserDetail validator,
+  public ContributionValidation(final ContributionStatus status, final User validator,
       final Date validationDate, String comment) {
     this(status, validator, validationDate);
     this.validationComment = comment;

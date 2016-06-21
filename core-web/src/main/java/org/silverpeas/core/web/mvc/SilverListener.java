@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.web.mvc;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.InMemoryCacheService;
 
@@ -99,7 +99,7 @@ public class SilverListener
           if (mainSessionController != null &&
               mainSessionController.getCurrentUserDetail() != null) {
             InMemoryCacheService cache = new InMemoryCacheService();
-            cache.put(UserDetail.CURRENT_REQUESTER_KEY,
+            cache.put(User.CURRENT_REQUESTER_KEY,
                 mainSessionController.getCurrentUserDetail());
             CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
           }

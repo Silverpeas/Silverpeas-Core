@@ -24,11 +24,10 @@
 package org.silverpeas.core.util.annotation;
 
 import org.junit.Test;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
-import javax.persistence.Table;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
@@ -42,61 +41,6 @@ import static org.hamcrest.Matchers.*;
  * Date: 22/10/13
  */
 public class AnnotationUtilTest {
-
-  @Test
-  public void getClassThatDeclaresTableAnnotationFromAbstractEntity() {
-    Class<?> identifiedClass =
-        AnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, AbstractEntity.class);
-    assertThat(identifiedClass, notNullValue());
-    assertThat(identifiedClass.getName(), is(AbstractEntity.class.getName()));
-    assertThat(identifiedClass.getAnnotation(Table.class).name(), is("st_abstract_entity"));
-  }
-
-  @Test
-  public void getClassThatDeclaresTableAnnotationFromConcreteEntity() {
-    Class<?> identifiedClass =
-        AnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, ConcreteEntity.class);
-    assertThat(identifiedClass, notNullValue());
-    assertThat(identifiedClass.getName(), is(AbstractEntity.class.getName()));
-    assertThat(identifiedClass.getAnnotation(Table.class).name(), is("st_abstract_entity"));
-  }
-
-  @Test
-  public void getClassThatDeclaresTableAnnotationFromAbstractWikispeed() {
-    Class identifiedClass =
-        AnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, AbstractWikispeed.class);
-    assertThat(identifiedClass, nullValue());
-  }
-
-  @Test
-  public void getEngineParameterizedTypeFromAbstractHierarchy() {
-    Class engineType =
-        AnnotationUtil.searchParameterizedTypeFrom(Engine.class, AbstractWikispeed.class);
-    assertThat(engineType, notNullValue());
-    assertThat(engineType.getName(), is(ElectricEngine.class.getName()));
-  }
-
-  @Test
-  public void getEngineParameterizedTypeFromInterfaceHierarchy() {
-    Class engineType = AnnotationUtil.searchParameterizedTypeFrom(Engine.class, Wikispeed.class);
-    assertThat(engineType, notNullValue());
-    assertThat(engineType.getName(), is(ElectricEngine.class.getName()));
-  }
-
-  @Test
-  public void getModelParameterizedTypeFromAbstractHierarchy() {
-    Class engineType =
-        AnnotationUtil.searchParameterizedTypeFrom(Model.class, AbstractWikispeed.class);
-    assertThat(engineType, notNullValue());
-    assertThat(engineType.getName(), is(SedanModel.class.getName()));
-  }
-
-  @Test
-  public void getModelParameterizedTypeFromInterfaceHierarchy() {
-    Class engineType = AnnotationUtil.searchParameterizedTypeFrom(Model.class, Wikispeed.class);
-    assertThat(engineType, notNullValue());
-    assertThat(engineType.getName(), is(SedanModel.class.getName()));
-  }
 
   @Test
   @SuppressWarnings("unchecked")

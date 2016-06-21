@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,23 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution;
 
-import org.silverpeas.core.contribution.model.ContributionValidation;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+package org.silverpeas.core.admin.user;
+
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
+
+import javax.inject.Singleton;
 
 /**
- * A validable contribution is an object that represents a contribution which can be validated.
- * This interface defines all methods that must be implemented in order to obtain differents
- * contribution types that can be handled by a same mechanism.
  * @author Yohann Chastagnier
  */
-public interface ValidableContribution extends SilverpeasContent {
+@Singleton
+public class DefaultUserProvider implements UserProvider {
 
-  /**
-   * Gets the contribution validation instance.
-   * @return a contribution validation object.
-   * @see ContributionValidation
-   */
-  ContributionValidation getValidation();
+  @Override
+  public User getById(final String userId) {
+    return OrganizationController.get().getUserDetail(userId);
+  }
 }

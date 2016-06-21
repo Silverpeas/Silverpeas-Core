@@ -200,7 +200,7 @@ public enum SilverpeasRole {
     SilverpeasRole greatestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
     if (greatestOfCurrentUser == null) {
       Collection<SilverpeasRole> roles = from(getOrganisationController()
-          .getUserProfiles(UserDetail.getCurrentRequester().getId(), componentInstanceId));
+          .getUserProfiles(User.getCurrentRequester().getId(), componentInstanceId));
       roles.remove(SilverpeasRole.Manager);
       greatestOfCurrentUser = SilverpeasRole.getGreatestFrom(roles);
       cache.put(cacheKey, greatestOfCurrentUser);

@@ -36,7 +36,6 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -45,6 +44,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -56,7 +56,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnAdding;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 @Singleton
-public class UserServiceLegacy implements UserService {
+public class UserRegistrationServiceLegacy implements UserRegistrationService {
 
   LocalizationBundle multilang = null;
 
@@ -197,8 +197,8 @@ public class UserServiceLegacy implements UserService {
 
       notifyUser(notifMetaData, null);
     } catch (Exception e) {
-      SilverTrace.error("socialNetwork", "UserServiceLegacy.sendCredentialsToUser",
-          "EX_SEND_NOTIFICATION_FAILED", "userId=" + user.getId(), e);
+      SilverLogger.getLogger(this)
+          .error("cannot send notification for userId={0}", new String[]{user.getId()}, e);
     }
   }
 
@@ -228,7 +228,4 @@ public class UserServiceLegacy implements UserService {
     Administration admin = AdministrationServiceProvider.getAdminService();
     admin.updateUser(userDetail);
   }
-
-
-
 }
