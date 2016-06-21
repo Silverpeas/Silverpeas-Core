@@ -20,9 +20,8 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.admin.user.UserService;
-import org.silverpeas.core.admin.user.UserServiceProvider;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.UserRegistrationService;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +47,7 @@ public class RegisterHandler extends FunctionHandler {
 
     if (settings.isUserSelfRegistrationEnabled()) {
       try {
-        UserService service = UserServiceProvider.getUserService();
+        UserRegistrationService service = UserRegistrationService.get();
         service.registerUser(firstName, lastName, email, domainId);
       } catch (AdminException e) {
         return "/admin/jsp/registrationFailed.jsp";

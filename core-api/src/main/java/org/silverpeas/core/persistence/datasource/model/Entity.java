@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 
 import java.util.Date;
 
@@ -72,14 +72,14 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFI
    * (if "created by" is a known user id)
    * @return
    */
-  UserDetail getCreator();
+  User getCreator();
 
   /**
    * Sets the user which has created the entity (in the persistence environment).
    * @param creator
    * @return
    */
-  ENTITY setCreator(UserDetail creator);
+  ENTITY setCreator(User creator);
 
   /**
    * Gets the last date and time of the entity update (in the persistence environment).
@@ -98,14 +98,14 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFI
    * (if "last updated by" is a known user id)
    * @return
    */
-  UserDetail getLastUpdater();
+  User getLastUpdater();
 
   /**
    * Sets the last user which has updated the entity (in the persistence environment).
    * @param updater
    * @return
    */
-  ENTITY setLastUpdater(UserDetail updater);
+  ENTITY setLastUpdater(User updater);
 
   /**
    * Gets the version of the entity (in the persistence environment).

@@ -23,49 +23,49 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
-import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -562,8 +562,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(getCreatorId());
+  public User getCreator() {
+    return User.getById(getCreatorId());
   }
 
   public int getImportance() {
@@ -1162,7 +1162,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @return true if the user can access this publication, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<PublicationPK> accessController =
         AccessControllerProvider.getAccessController(PublicationAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getPK());
@@ -1177,7 +1177,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @param user a user in Silverpeas.
    * @return true if the user can access this publication, false otherwise.
    */
-  public boolean canBeModifiedBy(final UserDetail user) {
+  public boolean canBeModifiedBy(final User user) {
     AccessController<PublicationPK> accessController =
         AccessControllerProvider.getAccessController(PublicationAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getPK(),

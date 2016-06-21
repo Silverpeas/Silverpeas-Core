@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.notification.user.client;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -439,7 +440,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param user recipient that must be added
    */
   public void addUserRecipient(UserRecipient user) {
-    if (UserDetail.isActivatedStateFor(user.getUserId())) {
+    if (User.isActivatedStateFor(user.getUserId())) {
       userRecipients.add(user);
     }
   }

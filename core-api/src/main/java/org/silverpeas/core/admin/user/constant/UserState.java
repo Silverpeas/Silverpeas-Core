@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,15 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.admin.user.constant;
 
-package org.silverpeas.core.admin.user;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-import org.silverpeas.core.util.ServiceProvider;
+/**
+ * @author Yohann Chastagnier
+ */
+public enum UserState {
+  UNKNOWN,
+  VALID,
+  BLOCKED,
+  DEACTIVATED,
+  EXPIRED,
+  DELETED;
 
-public class UserServiceProvider {
-
-  public static UserService getUserService() {
-    return ServiceProvider.getService(UserService.class);
+  @JsonValue
+  public String getName() {
+    return name();
   }
 
+  @JsonCreator
+  public static UserState from(String name) {
+    if (name != null) {
+      for (UserState userAccountStatus : UserState.values()) {
+        if (name.equals(userAccountStatus.name())) {
+          return userAccountStatus;
+        }
+      }
+    }
+    return UNKNOWN;
+  }
 }

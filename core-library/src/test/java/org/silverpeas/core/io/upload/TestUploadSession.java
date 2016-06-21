@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.upload;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -84,7 +85,7 @@ public class TestUploadSession {
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
 
     si = new SessionInfo(null, null);
-    getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
+    getSessionCacheService().put(User.CURRENT_REQUESTER_KEY, new UserDetail());
   }
 
   @SuppressWarnings("unchecked")

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.comment;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
@@ -302,7 +303,7 @@ public class CommentEntity implements WebEntity {
     this.resourceId = comment.getForeignKey().getId();
     this.text = comment.getMessage();
     this.textForHtml = Encode.forHtml(comment.getMessage());
-    this.author = UserProfileEntity.fromUser(comment.getCreator());
+    this.author = UserProfileEntity.fromUser((UserDetail) comment.getCreator());
     //we don't even know the language of the current user (the currentUserLanguage attribute has
     // not been yet initialized
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.defaultLanguage);

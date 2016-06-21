@@ -26,13 +26,11 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.StatusService;
@@ -44,9 +42,9 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.Collator;
@@ -61,9 +59,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 import static org.silverpeas.core.util.StringUtil.areStringEquals;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
-public class UserDetail implements Serializable, Comparable<UserDetail> {
-  public static final String CURRENT_REQUESTER_KEY =
-      UserDetail.class.getName() + "_CURRENT_REQUESTER";
+public class UserDetail implements User {
 
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
@@ -102,7 +98,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the detail about the user with the specified identifier or null if no such user exists.
    */
   public static UserDetail getById(String userId) {
-    return getOrganisationController().getUserDetail(userId);
+    return (UserDetail) User.getById(userId);
   }
 
   /**
@@ -110,16 +106,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the detail about the user above described.
    */
   public static UserDetail getCurrentRequester() {
-    return CacheServiceProvider.getSessionCacheService()
-        .get(CURRENT_REQUESTER_KEY, UserDetail.class);
-  }
-
-  /**
-   * @see #isActivatedState()
-   */
-  public static boolean isActivatedStateFor(String userId) {
-    UserDetail userDetail = getById(userId);
-    return userDetail != null && userDetail.isActivatedState();
+    return (UserDetail) User.getCurrentRequester();
   }
 
   /**
@@ -269,15 +256,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.expirationDate = expirationDate;
   }
 
-  /**
-   * Please use {@link UserDetail#isValidState()} to retrieve user validity information.
-   * Please use {@link UserDetail#isDeletedState()} to retrieve user deletion information.
-   * Please use {@link UserDetail#isBlockedState()} to retrieve user blocked information.
-   * Please use {@link UserDetail#isDeactivatedState()} to retrieve user deactivated information.
-   * Please use {@link UserDetail#isExpiredState()} to retrieve user expiration information.
-   * This method returns the stored state information but not the functional information.
-   * @return the state of the user (account)
-   */
+  @Override
   public UserState getState() {
     return state;
   }
@@ -290,9 +269,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.state = state != null ? state : UserState.from(null);
   }
 
-  /**
-   * @return the date of the user creation
-   */
+  @Override
   public Date getCreationDate() {
     return creationDate;
   }
@@ -304,9 +281,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.creationDate = creationDate;
   }
 
-  /**
-   * @return the date of the last user save
-   */
+  @Override
   public Date getSaveDate() {
     return saveDate;
   }
@@ -318,9 +293,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.saveDate = saveDate;
   }
 
-  /**
-   * @return the version of the last save
-   */
+  @Override
   public int getVersion() {
     return version;
   }
@@ -332,9 +305,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.version = version;
   }
 
-  /**
-   * @return the date of last user state save (when it changes)
-   */
+  @Override
   public Date getStateSaveDate() {
     return stateSaveDate;
   }
@@ -346,10 +317,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.stateSaveDate = stateSaveDate;
   }
 
-  /**
-   * Get user id as stored in database
-   * @return
-   */
+  @Override
   public String getId() {
     return this.id;
   }
@@ -378,10 +346,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.specificId = specificId;
   }
 
-  /**
-   * Get user's domain id
-   * @return user's domain id
-   */
+  @Override
   public String getDomainId() {
     return domainId;
   }
@@ -394,10 +359,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     this.domainId = domainId;
   }
 
-  /**
-   * Get user's login
-   * @return user's login
-   */
+  @Override
   public String getLogin() {
     return this.login;
   }
@@ -414,10 +376,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
   }
 
-  /**
-   * Get user's first name
-   * @return user's first name
-   */
+  @Override
   public String getFirstName() {
     return firstName;
   }
@@ -434,10 +393,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
   }
 
-  /**
-   * Get user's last name
-   * @return user's last name
-   */
+  @Override
   public String getLastName() {
     return lastName;
   }
@@ -466,18 +422,12 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
   }
 
-  /**
-   * Get user's email
-   * @return
-   */
+  @Override
   public String geteMail() {
     return this.eMail;
   }
 
-  /**
-   * Get user's access level
-   * @return
-   */
+  @Override
   public UserAccessLevel getAccessLevel() {
     return accessLevel;
   }
@@ -524,100 +474,74 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return (isAccessPdcManager() || isAccessAdmin() || isAccessDomainManager());
   }
 
+  @Override
   public boolean isAccessAdmin() {
     return UserAccessLevel.ADMINISTRATOR.equals(accessLevel);
   }
 
+  @Override
   public boolean isAccessDomainManager() {
     return UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(accessLevel);
   }
 
+  @Override
   public boolean isAccessSpaceManager() {
     return UserAccessLevel.SPACE_ADMINISTRATOR.equals(accessLevel);
   }
 
+  @Override
   public boolean isAccessPdcManager() {
     return UserAccessLevel.PDC_MANAGER.equals(accessLevel);
   }
 
+  @Override
   public boolean isAccessUser() {
     return UserAccessLevel.USER.equals(accessLevel);
   }
 
+  @Override
   public boolean isAccessGuest() {
     return UserAccessLevel.GUEST.equals(accessLevel);
   }
 
+  @Override
   public boolean isAccessUnknown() {
     return UserAccessLevel.UNKNOWN.equals(accessLevel);
   }
 
-  /**
-   * This method indicates if the user is activated. The returned value is a combination of
-   * following method call result :
-   * <ul>
-   * <li>not {@link #isAnonymous()}</li>
-   * <li>and not {@link #isDeletedState()}</li>
-   * <li>and not {@link #isDeactivatedState()}</li>
-   * </ul>
-   * @return true id the user is an activated one, false otherwise.
-   */
+  @Override
   public boolean isActivatedState() {
     return !isAnonymous() && !isDeletedState() && !isDeactivatedState();
   }
 
-  /**
-   * This method is the only one able to indicate the user validity state. Please do not use
-   * {@link UserDetail#getState()} to retrieve user validity information.
-   * @return
-   */
+  @Override
   public boolean isValidState() {
     return isAnonymous() || (!UserState.UNKNOWN.equals(state) && !isDeletedState()
         && !isBlockedState() && !isDeactivatedState() && !isExpiredState());
   }
 
-  /**
-   * This method is the only one able to indicate the user deletion state. Please do not use
-   * {@link UserDetail#getState()} to retrieve user deletion information.
-   * @return
-   */
+  @Override
   public boolean isDeletedState() {
     return UserState.DELETED.equals(state);
   }
 
-  /**
-   * This method is the only one able to indicate the user blocked state. Please do not use
-   * {@link UserDetail#getState()} to retrieve user blocked information.
-   * @return
-   */
+  @Override
   public boolean isBlockedState() {
     return UserState.BLOCKED.equals(state);
   }
 
-  /**
-   * This method is the only one able to indicate the user deactivated state. Please do not use
-   * {@link UserDetail#getState()} to retrieve user deactivated information.
-   *
-   * @return
-   */
+  @Override
   public boolean isDeactivatedState() {
     return UserState.DEACTIVATED.equals(state);
   }
 
-  /**
-   * This method is the only one able to indicate the user expiration state. Please do not use
-   * {@link UserDetail#getState()} to retrieve user expiration information.
-   * @return true if user is expired.
-   */
+  @Override
   public boolean isExpiredState() {
     return UserState.EXPIRED.equals(state) || (getExpirationDate() != null && getExpirationDate().
         compareTo(DateUtil.getDate()) < 0);
   }
 
-  /**
-   * Is the user is the anonymous one?
-   * @return true if he's the anonymous user.
-   */
+  @Override
   public boolean isAnonymous() {
     return getId() != null && getId().equals(getAnonymousUserId());
   }
@@ -633,10 +557,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
           .getUserDetail(getAnonymousUserId());
     }
     return anonymousUser;
-  }
-
-  public String getDisplayedName() {
-    return (getFirstName() + " " + getLastName()).trim();
   }
 
   @Override
@@ -673,22 +593,13 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * Dump user values to the trace system
    */
   public void traceUser() {
-
-    SilverTrace
-        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : " + specificId);
-    SilverTrace
-        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : " + domainId);
-
-    SilverTrace
-        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : " + firstName);
-    SilverTrace
-        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : " + lastName);
-
-
+    SilverLogger.getLogger(this)
+        .info("User data:\nspecificId = {0}\ndomainId = {1}\nfirstName = {2}\nlastName = {3}",
+            specificId, domainId, firstName, lastName);
   }
 
   @Override
-  public int compareTo(UserDetail other) {
+  public int compareTo(User other) {
     Collator collator = Collator.getInstance();
     String myLastName = getLastName().toLowerCase(I18NHelper.defaultLocale);
     String otherLastName = other.getLastName().toLowerCase(I18NHelper.defaultLocale);
@@ -706,6 +617,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return result;
   }
 
+  @Override
   public String getAvatar() {
     String avatar = getAvatarFileName();
     if (isAvatarPersonnalized()) {
@@ -714,6 +626,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return "/directory/jsp/icons/avatar.png";
   }
 
+  @Override
   public String getSmallAvatar() {
     String avatar = getAvatar();
     if (avatar.startsWith(AVATAR_BASEURI)) {
@@ -722,7 +635,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return avatar;
   }
 
-  public boolean isAvatarPersonnalized() {
+  private boolean isAvatarPersonnalized() {
     return new File(FileRepositoryManager.getAvatarPath(), getAvatarFileName()).exists();
   }
 
@@ -738,6 +651,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return propertyValue + "." + AVATAR_EXTENSION;
   }
 
+  @Override
   public String getStatus() {
     StatusService statusService = ServiceProvider.getService(StatusService.class);
     String status =
@@ -748,18 +662,12 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return "";
   }
 
-  /**
-   * Gets the preferences of this user.
-   * @return the user preferences.
-   */
+  @Override
   public final UserPreferences getUserPreferences() {
     return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getId());
   }
 
-  /**
-   * Is this user connected to Silverpeas?
-   * @return true if the user is currently connected to Silverpeas, false otherwise.
-   */
+  @Override
   public boolean isConnected() {
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     return sessionManagement.isUserConnected(this);
@@ -782,16 +690,21 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return isAnonymousUserExist() && getAnonymousUserId().equals(userId);
   }
 
+  @Override
   public boolean isFullyDefined() {
     return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin()) &&
         StringUtil.isDefined(getLastName());
   }
 
-  /**
-   * Gets the duration of the current user session since its last registered login date.
-   * @return the formatted duration of the current user session, or empty string if the user is not
-   * connected.
-   */
+  @Override
+  public String getDisplayedName() {
+    // At a first read, this override is useless. In fact, JSTL is not able for now to find
+    // default method implementations, so this override is just to get available the method from
+    // JSP pages...
+    return User.super.getDisplayedName();
+  }
+
+  @Override
   public String getDurationOfCurrentSession() {
     if (isConnected()) {
       return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
@@ -814,7 +727,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId())) ||
           (invitation.getInvitation(Integer.parseInt(userId), Integer.parseInt(getId())) != null);
     } catch (Exception e) {
-      SilverTrace.warn("admin", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
+      SilverLogger.getLogger(this)
+          .warn("not possible to verify relation with or invitation of userId ''{0}'' ({0})",
+              userId, e.getMessage());
     }
     return false;
   }

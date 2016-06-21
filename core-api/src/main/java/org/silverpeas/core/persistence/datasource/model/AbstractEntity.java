@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.persistence.datasource.model;
 
-import org.silverpeas.core.util.ArgumentAssertion;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.util.ArgumentAssertion;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Transient;
 import java.sql.Timestamp;
@@ -51,10 +51,10 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
     implements Cloneable, Entity<ENTITY, IDENTIFIER_TYPE> {
 
   @Transient
-  private UserDetail createdByUser;
+  private User createdByUser;
 
   @Transient
-  private UserDetail lastUpdatedByUser;
+  private User lastUpdatedByUser;
 
   /**
    * Sets the id of the entity.
@@ -111,10 +111,10 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   protected abstract ENTITY setLastUpdateDate(Date lastUpdateDate);
 
   @Override
-  public UserDetail getCreator() {
+  public User getCreator() {
     if (StringUtil.isDefined(getCreatedBy())) {
       if (createdByUser == null || !getCreatedBy().equals(createdByUser.getId())) {
-        createdByUser = UserDetail.getById(getCreatedBy());
+        createdByUser = User.getById(getCreatedBy());
       }
     } else {
       createdByUser = null;
@@ -123,16 +123,16 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   }
 
   @Override
-  public ENTITY setCreator(final UserDetail creator) {
+  public ENTITY setCreator(final User creator) {
     createdByUser = creator;
     return setCreatedBy((createdByUser != null) ? createdByUser.getId() : null);
   }
 
   @Override
-  public UserDetail getLastUpdater() {
+  public User getLastUpdater() {
     if (StringUtil.isDefined(getLastUpdatedBy())) {
       if (lastUpdatedByUser == null || !getLastUpdatedBy().equals(lastUpdatedByUser.getId())) {
-        lastUpdatedByUser = UserDetail.getById(getLastUpdatedBy());
+        lastUpdatedByUser = User.getById(getLastUpdatedBy());
       }
     } else {
       lastUpdatedByUser = getCreator();
@@ -141,7 +141,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   }
 
   @Override
-  public ENTITY setLastUpdater(final UserDetail updater) {
+  public ENTITY setLastUpdater(final User updater) {
     lastUpdatedByUser = updater;
     return setLastUpdatedBy((lastUpdatedByUser != null) ? lastUpdatedByUser.getId() : null);
   }

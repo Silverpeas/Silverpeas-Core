@@ -29,8 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
- * User: Yohann Chastagnier
- * Date: 18/01/13
+ * @author Yohann Chastagnier
  */
 public class UserAccessLevelTest {
 

@@ -24,7 +24,8 @@
 
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -74,7 +75,7 @@ public interface SilverpeasContent extends Serializable {
    * Gets the author that has created this content.
    * @return the detail about the user that created this content.
    */
-  UserDetail getCreator();
+  User getCreator();
 
   /**
    * Gets the date at which this content was created.
@@ -112,5 +113,5 @@ public interface SilverpeasContent extends Serializable {
    * @param user a user in Silverpeas.
    * @return true if the user can access this content, false otherwise.
    */
-  boolean canBeAccessedBy(UserDetail user);
+  boolean canBeAccessedBy(User user);
 }

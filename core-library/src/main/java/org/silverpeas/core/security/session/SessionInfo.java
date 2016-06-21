@@ -20,6 +20,7 @@
  */
 package org.silverpeas.core.security.session;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.InMemoryCacheService;
@@ -64,7 +65,7 @@ public class SessionInfo {
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
     this.idleTimestamp = 0;
-    this.cache.put(UserDetail.CURRENT_REQUESTER_KEY, user);
+    this.cache.put(User.CURRENT_REQUESTER_KEY, user);
     CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
   }
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.After;
 import org.junit.Before;
@@ -57,7 +58,7 @@ public class CurrentUserNotificationContextTest {
   public void setup() {
     currentUser = spy(new UserDetail());
     CacheServiceProvider.getRequestCacheService().clear();
-    CacheServiceProvider.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
+    CacheServiceProvider.getRequestCacheService().put(User.CURRENT_REQUESTER_KEY, currentUser);
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, SettingBundle.class, "settings");
     // By default, a user is not an anonymous one
