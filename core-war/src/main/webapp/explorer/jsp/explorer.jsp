@@ -24,24 +24,18 @@
 
 --%>
 
-<%@page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
+<%@page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator "%>
+<%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-
-<%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -93,109 +87,85 @@ boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("De
 	padding-top: 10px;
 }
 </style>
-<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery.jstree.js"></script>
+  <view:script src="/util/javaScript/jquery/jstree.min.js"/>
+  <view:link href="/util/javaScript/jquery/themes/default/style.min.css"/>
+  <view:link href="/util/javaScript/jquery/themes/default/explorer.css"/>
 <script type="text/javascript">
 $(function () {
-	// TO CREATE AN INSTANCE
-	// select the tree container using jQuery
-	$("#explorer")
-		// call `.jstree` with the options object
-		.jstree({
-			"core" : {
-				"load_open" : true
-			},
-			"json_data" : {
-				"ajax" : {
-	                "type": 'GET',
-	                "url": function (node) {
-	                    var nodeId = "";
-	                    var url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer/scope/<%=scope%>";
-	                    if (node != -1) {
-				url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer";
-	                        nodeId = node.attr('id');
-	                        url += "/componentid/"+node.attr('instanceId')+"/id/" + nodeId;
-	                    }
-	                    return url;
-	                },
-	                "success": function (new_data) {
-	                    return new_data;
-	                }
-	            }
-			},
-			"types" : {
-				"valid_children" : [ "default" ],
-				types : {
-					<% if (dedicatedToWriters) { %>
-					"user" : {
-						"max_children"	: -1,
-						"max_depth"		: -1,
-						"valid_children": "all",
+  // TO CREATE AN INSTANCE
+  // select the tree container using jQuery
+  $("#explorer").jstree({
+    "core" : {
+      force_text : false,
+      "data" : {
+        "url" : function(node) {
+          var nodeId = "";
+          var url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer/scope/<%=scope%>";
+          if (node && node.id !== '#') {
+            url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer";
+            nodeId = node.id;
+            url += "/componentid/" + node.original.attr['instanceId'] + "/id/" + nodeId;
+          }
+          return url;
+        }, "success" : function(new_data) {
+          new_data.children = true;
+          return new_data;
+        }
+      },
+      "check_callback" : false,
+      "themes" : {
+        "dots" : false,
+        "icons" : true
+      },
+      "multiple" : false
+    },
+    "types" : {
+      "default" : {
+        "valid_children" : ["default"]
+      },
+      <% if (dedicatedToWriters) { %>
+      "user" : {
+        "max_children" : -1,
+        "max_depth" : -1,
+        "icon" : "silverpeas-locked"
+      }, <% } %>
+      "user-root" : {
+        "max_children" : -1,
+        "max_depth" : -1,
+        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
+      },
+      "admin-root" : {
+        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
+      },
+      "publisher-root" : {
+        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
+      },
+      "writer-root" : {
+        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
+      }
+    },
+    // the `plugins` array allows you to configure the active plugins on this instance
+    "plugins" : ["types"]
+  });
 
-						"icon" : {
-							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/javaScript/jquery/themes/default/d.png",
-							"position" : "-56px -37px"
-						},
-
-						// Bound functions - you can bind any other function here (using boolean or function)
-						"hover_node" 	: false,
-						"select_node"	: false
-					},
-					<% } %>
-					"user-root" : {
-						"max_children"	: -1,
-						"max_depth"		: -1,
-						"valid_children": "all",
-
-						"icon" : {
-							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-						},
-
-						// Bound functions - you can bind any other function here (using boolean or function)
-						"hover_node" 	: false,
-						"select_node"	: false
-					},
-					"admin-root" : {
-						"icon" : {
-							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-						}
-					},
-					"publisher-root" : {
-						"icon" : {
-							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-						}
-					},
-					"writer-root" : {
-						"icon" : {
-							"image" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-						}
-					}
-				}
-			},
-			"themes" : {
-				"theme" : "default",
-				"dots" : false,
-				"icons" : true
-			},
-			// the `plugins` array allows you to configure the active plugins on this instance
-			"plugins" : ["themes","json_data","ui","types"]
-		});
-	$("#explorer").bind("select_node.jstree", function (e, data) {
-		// data.inst is the instance which triggered this event
-		var path = data.inst.get_path(data.rslt.obj, false);
-		var newPath = "";
-		for (i = 0; i<path.length; i++) {
-			if (i != 0) {
-				newPath += " > ";
-			}
-			newPath += path[i];
-		}
-		$("#explicitPath").val(newPath);
-		<% if ("path".equals(resultType)) { %>
-			$("#result").val(data.rslt.obj.attr("path"));
-		<% } else { %>
-			$("#result").val(data.rslt.obj.attr("instanceId")+"-"+data.rslt.obj.attr("id"));
-		<% } %>
-	});
+  $("#explorer").on("select_node.jstree", function(e, data) {
+    if (data.node.type !== 'user' && data.node.type !== 'user-root') {
+      var path = data.instance.get_path(data.node.id, false, false);
+      var newPath = "";
+      for (i = 0; i < path.length; i++) {
+        if (i != 0) {
+          newPath += " > ";
+        }
+        newPath += path[i];
+      }
+      $("#explicitPath").val(newPath);
+      <% if ("path".equals(resultType)) { %>
+      $("#result").val(data.node.original.attr["path"]);
+      <% } else { %>
+      $("#result").val(data.node.original.attr["instanceId"] + "-" + data.node.id);
+      <% } %>
+    }
+  });
 });
 
 function setPath() {

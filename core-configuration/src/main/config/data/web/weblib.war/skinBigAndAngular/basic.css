@@ -36,7 +36,7 @@
 
 
 body {
-	background:#FFF url() fixed no-repeat;
+	background:#FFF fixed no-repeat;
 	font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
 	color:#082E4A;
 }
@@ -357,7 +357,7 @@ display: none;
 }
 
 .spaceLevel1On .browseSpace #favdiv a{
-background:transparent url();
+background:transparent;
 padding:0;
 border:0;
 }
@@ -407,7 +407,7 @@ padding:7px 10px 9px 70px;
 border-bottom:1px solid #c6c6c6;
 }
 .spaceLevel1On .browseSpace .browseSpace .browseComponent a{
-background:transparent url();
+background:transparent;
 
 }
 .spaceLevel1On .browseSpace .browseSpace .browseComponent img.browseIconComponent,
@@ -424,7 +424,7 @@ padding:7px 10px 9px 92px;
 border-bottom:1px solid #c6c6c6;
 }
 .spaceLevel1On .browseSpace .browseSpace .browseSpace .browseComponent a {
-background:transparent url();
+background:transparent;
 }
 .spaceLevel1On .browseSpace .browseSpace .browseSpace .browseComponent img.browseIconComponent,
 .spaceLevel1On .browseSpace .browseSpace .browseSpace .browseComponentActiv img.browseIconComponent{
@@ -564,7 +564,7 @@ text-transform:uppercase;
 border-radius: 5px;
 -moz-border-radius: 5px;
 -webkit-border-radius: 5px;
-border-color: 1px solid #FFFFFF;
+border: 1px solid #FFFFFF;
 margin:2px;
 }
 
@@ -575,7 +575,7 @@ margin:2px;
 #agenda #navigation, #agenda #agendaView, #agenda #footer{
 border-radius:0;
 border:0;
-background-image:url();
+/*background-image:url();*/
 }
 
 .listinUsers .message_list li.intfdcolor {
@@ -589,7 +589,7 @@ padding-left:10px;
 }
 
 #blog #blogContainer #bandeau {
-background:transparent url();
+background:transparent;
 }
 
 
@@ -627,7 +627,7 @@ box-shadow:5px 5px 10px #DDDDDD;
 	border-bottom: 0px solid #CCCCCC;
 	color:#ec8601;
 	font-family:"Century Gothic","Trebuchet MS",Arial, sans serif;
-	text-transform:normal;
+	text-transform:none;
 	font-variant: normal;
 	font-weight:100;
 	margin-bottom: 0px;
@@ -647,7 +647,7 @@ list-style-image:url(imgDesign/puce.png);
 
 #portletPages dl.sort dt {
 line-height:20px;
-background:#FFF url();
+background:#FFF;
 border:0;
 }
 
@@ -726,7 +726,7 @@ display: none;
 .milieuBoutonV5 a,
 a.milieuBoutonV5,
 button{
-background-image:url();
+/*background-image:url();*/
 background-color:#7eb73b ;
 background:#7eb73b linear-gradient(#7eb73b, #6fa800) 0 0 repeat scroll;
     border: 1px solid #6fa800;
@@ -747,7 +747,7 @@ div.buttonPane .button {
 
 
 button.ui-button.ui-widget {
-background-image:url();
+/*background-image:url();*/
 background-color:#7eb73b ;
 background:#7eb73b linear-gradient(#7eb73b, #6fa800) 0 0 repeat scroll;
     border: 1px solid #6fa800;
@@ -759,14 +759,14 @@ background:#7eb73b linear-gradient(#7eb73b, #6fa800) 0 0 repeat scroll;
 }
 
 .ui-dialog-titlebar button.ui-button.ui-widget{
-background: url("images/ui-bg_glass_100_f6f6f6_1x400.png") repeat-x scroll 50% 50% #F6F6F6;
+background: /*url("images/ui-bg_glass_100_f6f6f6_1x400.png")*/ repeat-x scroll 50% 50% #F6F6F6;
     border: 1px solid #CCCCCC;
     color: #1C94C4;
     font-weight: bold;
 }
 
 .ui-dialog-titlebar button.ui-button.ui-widget:hover {
-    background: url("images/ui-bg_glass_100_fdf5ce_1x400.png") repeat-x scroll 50% 50% #FDF5CE;
+    background: /*url("images/ui-bg_glass_100_fdf5ce_1x400.png")*/ repeat-x scroll 50% 50% #FDF5CE;
     border: 1px solid #FBCB09;
     color: #C77405;
     font-weight: bold;
@@ -1084,13 +1084,13 @@ color:#666;
 		width: auto;
 	}
 	.rightContent .attachments {
-		min-width:auto;
+		width:auto;
 	}
 	.principalContent {
 	margin-right: 0;
 	margin-top: 10px;
 	}
 	.header h4 {
-	min-width: auto;
+	width: auto;
 	}
 }

@@ -42,18 +42,22 @@ public class NodeEntity implements WebEntity {
   private static final long serialVersionUID = -5740937039604775733L;
   @XmlElement(defaultValue = "")
   private URI uri;
+  @XmlElement(defaultValue = "")
+  private String id;
   @XmlElement(required = true)
-  private String data;
-  @XmlElement(required = true)
-  private NodeAttrEntity attr;
+  private String text;
+  @XmlElement(defaultValue = "folder")
+  private NodeType type = NodeType.FOLDER;
   @XmlElement
   private NodeEntity[] children;
   @XmlElement(defaultValue = "")
   private URI childrenURI;
+  @XmlElement(required = true)
+  private NodeAttrEntity attr;
   @XmlElement
   private NodeTranslationEntity[] translations;
-  @XmlElement(required = true)
-  private String state = "closed";
+  @XmlElement
+  private NodeStateEntity state = new NodeStateEntity();
 
   public NodeEntity() {
   }
@@ -89,9 +93,18 @@ public class NodeEntity implements WebEntity {
     this.uri = uri;
   }
 
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
+  }
+
   private NodeEntity(final NodeDetail node, URI uri, String lang) {
-    this.data = Encode.forHtml(node.getName(lang));
+    this.text = Encode.forHtml(node.getName(lang));
     this.uri = uri;
+    this.id = node.getNodePK().getId();
     this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
 
     // set translations
@@ -144,12 +157,20 @@ public class NodeEntity implements WebEntity {
     return children;
   }
 
-  public final void setData(String data) {
-    this.data = data;
+  public final void setText(String text) {
+    this.text = text;
   }
 
-  public String getData() {
-    return data;
+  public String getText() {
+    return text;
+  }
+
+  public NodeType getType() {
+    return type;
+  }
+
+  public final void setType(final NodeType type) {
+    this.type = type;
   }
 
   public final void setAttr(NodeAttrEntity attr) {
@@ -160,11 +181,11 @@ public class NodeEntity implements WebEntity {
     return attr;
   }
 
-  public void setState(String state) {
+  public void setState(NodeStateEntity state) {
     this.state = state;
   }
 
-  public String getState() {
+  public NodeStateEntity getState() {
     return state;
   }
 

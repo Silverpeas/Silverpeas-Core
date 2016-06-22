@@ -89,7 +89,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 
 <!-- Add jQuery javascript library -->
 <view:script src="/util/javaScript/jquery/jquery.loadmask.js"/>
-<view:script src="/util/javaScript/jquery/jquery.bgiframe.min.js"/>
 
 <script type="text/javascript">
 

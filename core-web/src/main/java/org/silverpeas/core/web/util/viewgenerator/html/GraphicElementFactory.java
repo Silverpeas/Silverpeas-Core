@@ -97,11 +97,11 @@ public class GraphicElementFactory {
   private String currentLookName = null;
   private MainSessionController mainSessionController = null;
   public static final String defaultLookName = "Initial";
-  protected static final String JQUERY_JS = "jquery-1.10.2.min.js";
-  protected static final String JQUERYUI_JS = "jquery-ui-1.10.3.custom.min.js";
-  protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.10.3.custom.css";
+  protected static final String JQUERY_JS = "jquery-2.2.4.min.js";
+  protected static final String JQUERYUI_JS = "jquery-ui.min.js";
+  protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui.min.css";
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
-  protected static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
+  protected static final String JQUERY_i18N_JS = "jquery.i18n.properties.min.js";
   public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
 
   static {

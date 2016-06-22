@@ -47,8 +47,6 @@ public class NodeAttrEntity {
   @XmlElement(defaultValue = "")
   private URI childrenURI;
   @XmlElement(defaultValue = "")
-  private String rel = "folder";
-  @XmlElement(defaultValue = "")
   private String nbItems;
   @XmlElement(defaultValue = "")
   private String status;
@@ -142,14 +140,6 @@ public class NodeAttrEntity {
 
   public URI getChildrenURI() {
     return childrenURI;
-  }
-
-  public void setRel(String rel) {
-    this.rel = rel;
-  }
-
-  public String getRel() {
-    return rel;
   }
 
   public void setNbItems(String nbItems) {

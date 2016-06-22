@@ -24,16 +24,16 @@
 
 package org.silverpeas.web.node.servlets;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.servlets.RestRequest;
 
 import javax.inject.Inject;
@@ -51,7 +51,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
 
 public class GetNodes extends HttpServlet {
 
@@ -98,7 +99,7 @@ public class GetNodes extends HttpServlet {
       if (availableComponentIds.size() == 1) {
         // only one instance is available, root must be expanded by default
         NodeDetail node = getRoot(availableComponentIds.get(0), mainSessionCtrl);
-        writer.write(getNodeAsJSTreeObject(node, mainSessionCtrl, "open"));
+        writer.write(getNodeAsJSTreeObject(node, mainSessionCtrl, "selected,opened"));
       } else {
         // at least two instances are available, only root of instances have to be displayed
         List<NodeDetail> nodes = new ArrayList<>();
@@ -182,9 +183,14 @@ public class GetNodes extends HttpServlet {
   private String getListAsJSONArray(Collection<NodeDetail> nodes, MainSessionController session) {
     return JSONCodec.encodeArray(jsonNodeDetails -> {
       for (NodeDetail node : nodes) {
-        jsonNodeDetails.addJSONObject(
-            root -> root.put("data", node.getName(session.getFavoriteLanguage()))
-                .put("attr", getJsonAttr(node, session)).put("state", "closed"));
+        jsonNodeDetails.addJSONObject(root -> {
+          root.put("text", node.getName(session.getFavoriteLanguage()))
+              .put("id", node.getNodePK().getId())
+              .putJSONObject("attr", getJsonAttr(node))
+              .putJSONObject("state", getJsonState("closed"))
+              .put("type", getNodeType(node, session));
+          return root;
+        });
       }
       return jsonNodeDetails;
     });
@@ -192,26 +198,39 @@ public class GetNodes extends HttpServlet {
 
   private String getNodeAsJSTreeObject(NodeDetail node, MainSessionController session,
       String state) {
-    return JSONCodec.encodeObject(
-        jsonNode -> jsonNode.put("data", node.getName(session.getFavoriteLanguage()))
-            .put("attr", getJsonAttr(node, session)).put("state", state));
+    return JSONCodec.encodeObject(jsonNode -> {
+      jsonNode.put("text", node.getName(session.getFavoriteLanguage()))
+          .put("id", node.getNodePK().getId())
+          .put("type", getNodeType(node, session))
+          .putJSONObject("attr", getJsonAttr(node))
+          .putJSONObject("state", getJsonState(state));
+      return jsonNode;
+    });
   }
 
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJsonAttr(NodeDetail node,
-      MainSessionController session) {
-    return nodeAttr -> {
-      nodeAttr.addJSONObject(o -> {
-        o.put("id", node.getNodePK().getId()).put("instanceId", node.getNodePK().getInstanceId());
-        String role = getRole(session, node);
-        if (node.getNodePK().isRoot()) {
-          role += "-root";
-        }
-        o.put("rel", role);
-        o.put("path", node.getFullPath());
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getJsonState(String state) {
+    return o -> {
+        o.put("selected", state.contains("selected"));
+        o.put("opened", state.contains("opened"));
         return o;
-      });
-      return nodeAttr;
     };
+  }
+
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getJsonAttr(NodeDetail node) {
+    return o -> {
+      o.put("id", node.getNodePK().getId())
+          .put("instanceId", node.getNodePK().getInstanceId())
+          .put("path", node.getFullPath());
+      return o;
+    };
+  }
+
+  private String getNodeType(NodeDetail node, MainSessionController session) {
+    String role = getRole(session, node);
+    if (node.getNodePK().isRoot()) {
+      role += "-root";
+    }
+    return role;
   }
 
   private boolean isRightsEnabled(MainSessionController session, String componentId) {

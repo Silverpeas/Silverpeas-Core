@@ -46,7 +46,7 @@
     },
     showWaiting: function() {
       var $waiting = $("#spWaiting");
-      if ($waiting.size() === 0) {
+      if ($waiting.length === 0) {
         $waiting = $("<div>").attr('id', 'spWaiting').attr('style',
                 'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
         $(document.body).append($waiting);
@@ -64,7 +64,7 @@
     },
     hideWaiting: function() {
       var $waiting = $("#spWaiting");
-      if ($waiting.size() > 0) {
+      if ($waiting.length > 0) {
         $waiting.dialog("close");
         $waiting.dialog("destroy");
         $waiting.remove();
@@ -577,7 +577,7 @@
       top.window.__spFullscreenModalBackgroundContext.count = 0;
       __localSpFullscreenModalBackgroundContext.count = 0;
       var $container = this.getContainer();
-      if ($container.size() > 0) {
+      if ($container.length > 0) {
         try {
           $container.dialog("close");
           $container.dialog("destroy");
@@ -585,11 +585,15 @@
           __logDebug(e);
           __logDebug("cleaning manually jQuery.ui.dialog");
           var $domToClear = $("div[aria-describedby=spFullscreenModalBackground]", top.document);
-          var $overlay = $domToClear.prev();
-          if ($overlay.hasClass('ui-widget-overlay')) {
-            $overlay.remove();
+          if ($domToClear.length) {
+            var zIndexToTarget = "" + ($domToClear[0].style.zIndex - 1);
+            $(".ui-widget-overlay", top.document).each(function(i, overlay) {
+              if (overlay.style.zIndex === zIndexToTarget) {
+                $(overlay).remove();
+              }
+            });
+            $domToClear.remove();
           }
-          $domToClear.remove();
         }
         $container.remove();
         spLayout.getBody().getContent().setOnBackground();

@@ -121,7 +121,7 @@ public class JavascriptPluginInclusion {
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
-  private static final String JQUERY_MIGRATION = "jquery-migrate-1.2.1.min.js";
+  private static final String JQUERY_MIGRATION = "jquery-migrate-1.4.1.min.js";
   private static final String JQUERY_SVG = "raphael.min.js";
   private static final String JQUERY_GAUGE = "justgage.min.js";
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
@@ -280,7 +280,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
+    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".min.css"));
     xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
     xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_TIP));

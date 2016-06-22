@@ -244,7 +244,7 @@
       return promise;
     },
     setOnForeground : function() {
-      this.getContainer().style.zIndex = 2001;
+      this.getContainer().style.zIndex = 3000;
     },
     setOnBackground : function() {
       this.getContainer().style.zIndex = '';
