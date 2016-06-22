@@ -33,6 +33,7 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
@@ -590,12 +591,13 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeLayout(final ElementContainer xhtml,
       final LookHelper lookHelper) {
     if (lookHelper != null) {
+      LayoutConfiguration layout = lookHelper.getLayoutConfiguration();
       includeQTip(xhtml);
       xhtml.addElement(scriptContent(JavascriptSettingProducer
           .settingVariableName("LayoutSettings")
-            .add("layout.header.url", URLUtil.getApplicationURL() + "/admin/jsp/TopBarSilverpeasV5.jsp")
-            .add("layout.body.url", URLUtil.getApplicationURL() + "/admin/jsp/bodyPartSilverpeasV5.jsp")
-            .add("layout.body.navigation.url", URLUtil.getApplicationURL() + "/admin/jsp/DomainsBarSilverpeasV5.jsp")
+            .add("layout.header.url", URLUtil.getApplicationURL() + layout.getHeaderURL())
+            .add("layout.body.url", URLUtil.getApplicationURL() + layout.getBodyURL())
+            .add("layout.body.navigation.url", URLUtil.getApplicationURL() + layout.getBodyNavigationURL())
             .add("layout.pdc.activated", lookHelper.displayPDCFrame())
             .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")

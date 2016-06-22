@@ -165,4 +165,6 @@ public abstract class LookHelper {
 
   public abstract UserDetail getUserDetail();
 
+  public abstract LayoutConfiguration getLayoutConfiguration();
+
 }
