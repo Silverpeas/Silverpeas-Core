@@ -192,7 +192,7 @@ if (m_MainSessionCtrl == null) {
   <div id="sp-layout-footer-part" style="display: none"></div>
 </div>
 <div class="hidden-part" style="height: 0">
-  <iframe src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+  <iframe src="../../clipboard/jsp/Idle.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
   <iframe src="<c:url value='/Ragenda/jsp/importCalendar'/>" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
 </div>
 
