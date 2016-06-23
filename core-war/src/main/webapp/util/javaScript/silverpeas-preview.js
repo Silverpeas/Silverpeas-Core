@@ -150,7 +150,7 @@
 
     // Initializing the resulting html container
     var $baseContainer = $("#documentPreview");
-    if ($baseContainer.size() === 0) {
+    if ($baseContainer.length === 0) {
       $baseContainer = $("<div>")
               .attr('id', 'documentPreview')
               .css('display', 'block')

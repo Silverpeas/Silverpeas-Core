@@ -99,7 +99,7 @@
 
   function renderFullCalendar(target) {
     var calendar = target.data(CALENDAR_KEY);
-
+    calendar.currentDate = moment(calendar.currentDate);
     var options = {
       header: false,
       monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
@@ -119,20 +119,22 @@
         week: $.i18n.prop("GML.week"),
         day: $.i18n.prop("GML.day")
       },
-      minHour: 8,
+      minTime: "08:00:00",
       allDayText: '',
       allDayDefault: false,
-      ignoreTimezone: true,
+      timezone: false,
       timeFormat: 'HH:mm{ - HH:mm}',
-      axisFormat: 'HH:mm',
-      columnFormat: {
-        agendaWeek: 'ddd d'
+      slotLabelFormat: 'HH:mm',
+      views: {
+        agendaWeek: {
+          columnFormat: 'ddd DD'
+        }
       },
       firstDay: calendar.firstDayOfWeek - 1,
       defaultView: getFullCalendarView(calendar.view),
-      dayClick: function(date, allDay, jsEvent, view) {
+      dayClick: function(date, jsEvent, view) {
         if (calendar.onday) {
-          var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
+          var dayDate = date.format("YYYY-MM-DD[T]HH:mm");
           calendar.onday(dayDate);
         }
       },

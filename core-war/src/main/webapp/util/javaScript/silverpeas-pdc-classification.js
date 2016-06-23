@@ -706,7 +706,7 @@
             title: settings.inheritedPositionsLabel,
             deletion: false
           };
-          $('.field input[value="' + newClassification.modifiable + '"]:radio').attr('checked', true);
+          $('.field input[value="' + newClassification.modifiable + '"]:radio').prop('checked', true);
         } else {
           newParameters = {
             title: settings.positionsLabel,

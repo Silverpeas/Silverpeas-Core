@@ -188,6 +188,8 @@ public class WebCommonLookAndFeel {
         ("';").append(STR_NEW_LINE).append(addGlobalJSVariable(
         language)).append("</script>\n");
 
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
+        GraphicElementFactory.MOMENT_JS));
     code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERY_JS));

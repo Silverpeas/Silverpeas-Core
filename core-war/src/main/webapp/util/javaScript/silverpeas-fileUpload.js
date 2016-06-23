@@ -292,7 +292,7 @@
     var $fileInput = $('<input>', {
       multiple: params.options.multiple,
       type: 'file',
-      size: 40
+      length: 40
     }).addClass('dragAndDrop');
     $form.append($fileInput);
     $fileInputs.append($form);
@@ -745,7 +745,7 @@
       id: dummyBaseId + '-title',
       name: dummyBaseId + '-title',
       maxLength: 150,
-      size: 40,
+      length: 40,
       placeholder: params.options.labels.title
     });
     if (!isFileAPI) {

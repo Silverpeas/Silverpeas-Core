@@ -167,7 +167,7 @@
 
     // Initializing the resulting html container
     var $baseContainer = $("#documentView");
-    if ($baseContainer.size() == 0) {
+    if ($baseContainer.length == 0) {
       $baseContainer = $("<div>")
                         .attr('id', 'documentView')
                         .css('display', 'block')
