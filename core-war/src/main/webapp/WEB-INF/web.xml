@@ -68,6 +68,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </description>
     <filter-name>CharacterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>encoding</param-name>
       <param-value>UTF-8</param-value>
@@ -84,6 +85,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </description>
     <filter-name>HttpServletRequestDecoration</filter-name>
     <filter-class>org.silverpeas.web.filter.HttpServletRequestDecoration</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <description>
@@ -91,6 +93,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </description>
     <filter-name>SilverpeasExceptionLoggingFilter</filter-name>
     <filter-class>org.silverpeas.web.filter.SilverpeasExceptionLoggingFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <!-- MessageFilter Filter -->
@@ -100,6 +103,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </description>
     <filter-name>MessageFilter</filter-name>
     <filter-class>org.silverpeas.core.web.filter.MessageFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <description>
@@ -108,6 +112,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </description>
     <filter-name>SessionSynchronizerTokenValidator</filter-name>
     <filter-class>org.silverpeas.web.token.SessionSynchronizerTokenValidator</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <description>
@@ -116,6 +121,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </description>
     <filter-name>InternetExplorerAntiCompatibilityFilter</filter-name>
     <filter-class>org.silverpeas.web.filter.InternetExplorerAntiCompatibilityFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <!-- PortletAppEngine Filter -->
@@ -134,6 +140,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <!-- MassiveWebSecurityFilter Filter -->
     <filter-name>MassiveWebSecurityFilter</filter-name>
     <filter-class>org.silverpeas.core.web.filter.MassiveWebSecurityFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
 
   <filter-mapping>
@@ -641,6 +648,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>TokenWebPageUpdater</servlet-name>
     <servlet-class>org.silverpeas.web.token.ProtectedWebPageUpdater</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>CommonServerSentEvents</servlet-name>
+    <servlet-class>org.silverpeas.core.webapi.notification.sse.CommonServerSentEventServlet</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
@@ -1048,6 +1060,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>OutlookSyncCalendarServlet</servlet-name>
     <url-pattern>/ImportCalendar/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>CommonServerSentEvents</servlet-name>
+    <url-pattern>/sse/common</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

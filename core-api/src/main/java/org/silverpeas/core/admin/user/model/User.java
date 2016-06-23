@@ -76,6 +76,19 @@ public interface User extends Serializable, Comparable<User> {
   String getDomainId();
 
   /**
+   * Indicates if the user is restricted to access the resource in its own domain only.
+   * @return true if it's restricted, false otherwise.
+   */
+  boolean isDomainRestricted();
+
+  /**
+   * Indicates if the user has admin account and is restricted to access the resource in its own
+   * domain only.
+   * @return true if it's restricted, false otherwise.
+   */
+  boolean isDomainAdminRestricted();
+
+  /**
    * Gets the user login.
    * @return user login as string.
    */

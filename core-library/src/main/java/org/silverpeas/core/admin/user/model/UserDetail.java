@@ -453,16 +453,14 @@ public class UserDetail implements User {
     return getOrganisationController().getDomain(getDomainId());
   }
 
-  /**
-   * Is the specified user is restricted to access the resource in its own domain?
-   * @return true if he's restricted in its own domain, false otherwise.
-   */
+  @Override
   public boolean isDomainRestricted() {
     return (DomainProperties.areDomainsNonVisibleToOthers() ||
         (DomainProperties.areDomainsVisibleOnlyToDefaultOne() &&
             !DomainProperties.isDefaultDomain(getDomainId()))) && !isAccessAdmin();
   }
 
+  @Override
   public boolean isDomainAdminRestricted() {
     return (!DomainProperties.areDomainsVisibleToAll() &&
         (!isAccessAdmin()) &&

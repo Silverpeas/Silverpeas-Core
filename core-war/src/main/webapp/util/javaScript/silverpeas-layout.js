@@ -376,6 +376,20 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
       "bodyContent" : "#sp-layout-body-part-layout-content-part",
       "footer" : "#sp-layout-footer-part"
     };
+    window.spServerEventSource = new function() {
+      var serverEventSource = new EventSource(webContext + '/sse/common');
+      var listeners = [];
+      this.addEventListener = function(serverEventName, listener, listenerId) {
+        if (listenerId) {
+          var oldListener = listeners[listenerId];
+          if (oldListener) {
+            serverEventSource.removeEventListener(serverEventName, oldListener);
+          }
+          listeners[listenerId] = listener;
+        }
+        serverEventSource.addEventListener(serverEventName, listener);
+      };
+    };
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();
     return spLayout.getBody().load(bodyLoadParameters);

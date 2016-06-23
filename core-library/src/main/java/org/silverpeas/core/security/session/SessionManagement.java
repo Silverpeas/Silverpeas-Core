@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.session;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +54,7 @@ public interface SessionManagement {
    * @param user a user from whom all the distinct connected users are visible.
    * @return Collection of session information.
    */
-  Collection<SessionInfo> getDistinctConnectedUsersList(UserDetail user);
+  Collection<SessionInfo> getDistinctConnectedUsersList(User user);
 
   /**
    * Gets the count of users that are connected to Silverpeas.
@@ -65,7 +66,7 @@ public interface SessionManagement {
    * @param user the user from whom all the users to count are visible.
    * @return the count of connected users
    */
-  int getNbConnectedUsersList(UserDetail user);
+  int getNbConnectedUsersList(User user);
 
   /**
    * Gets information about the specified user session.

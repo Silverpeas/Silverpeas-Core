@@ -26,10 +26,11 @@ package org.silverpeas.core.web.mvc;
 
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
@@ -107,11 +108,11 @@ public class SilverListener
 
   // Clear session informations
   private void remove(HttpSessionEvent event) {
+    final String sessionId = event.getSession().getId();
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-    sessionManagement.closeSession(event.getSession().getId());
-    SilverTrace
-        .info("peasCore", "SilverListener.sessionDestroyed", "peasCore.MSG_END_OF_HTTPSESSION",
-            "ID=" + event.getSession().getId());
+    sessionManagement.closeSession(sessionId);
+    SilverLogger.getLogger(this).info("Session with id {0} has just been closed", sessionId);
+    ServerEventDispatcherTask.unregisterBySessionId(sessionId);
   }
 
   /**
