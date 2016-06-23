@@ -85,7 +85,6 @@
 <head>
 	<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <title><fmt:message key="GML.popupTitle"/></title>
-	<view:includePlugin name="jquery"/>
 	<view:includePlugin name="qtip"/>
 
     <script type="text/javascript">

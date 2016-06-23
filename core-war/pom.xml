@@ -219,7 +219,6 @@
             <exclude>**/*.min-*</exclude>
             <exclude>**/*-min-*</exclude>
             <exclude>**/util/yui/**/*</exclude>
-            <exclude>**/angular.js</exclude>
             <exclude>**/ckeditor*/**/*</exclude>
           </excludes>
         </configuration>
