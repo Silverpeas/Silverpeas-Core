@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.mail.engine;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import java.util.concurrent.Semaphore;
  * mail sending request.<br/>
  * Priority is given to synchronous mail sending request.
  */
-public class MailSenderTask implements Runnable {
+public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
 
   /**
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
@@ -49,7 +49,7 @@ public class MailSenderTask implements Runnable {
    * When the list is empty, then the thread is killed. It will be instantiated again on the next
    * mail to send.
    */
-  private static final List<Request> requestList = new ArrayList<>();
+  private static final List<Request<MailProcessContext>> requestList = new ArrayList<>();
 
   /**
    * All the requests are processed by a single background thread. This thread is built and started
@@ -57,6 +57,13 @@ public class MailSenderTask implements Runnable {
    */
   private static boolean running = false;
   private static Semaphore orderedOneByOneSemaphore = new Semaphore(1, true);
+
+  /**
+   * The constructor is private : only one MailSenderThread will be created to process all the
+   * request.
+   */
+  private MailSenderTask() {
+  }
 
   /**
    * Builds and starts the thread which will process all the requests. This method is synchronized
@@ -71,7 +78,7 @@ public class MailSenderTask implements Runnable {
 
   /**
    * Add a mail to send.
-   * @param mailToSend
+   * @param mailToSend a mail to send.
    */
   public static void addMailToSend(MailToSend mailToSend) {
     AddMailToSendRequest addMailToSendRequest = new AddMailToSendRequest(mailToSend);
@@ -83,105 +90,67 @@ public class MailSenderTask implements Runnable {
     } else {
       // The sending is performed synchronously
       try {
-        addMailToSendRequest.process(orderedOneByOneSemaphore);
+        addMailToSendRequest.process(new MailProcessContext(orderedOneByOneSemaphore));
       } catch (Exception e) {
         SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
       }
     }
   }
 
-  /**
-   * The constructor is private : only one MailSenderThread will be created to process all the
-   * request.
-   */
-  private MailSenderTask() {
-  }
-
-  /**
-   * Process all the requests. This method should be private but is already declared public in the
-   * base class Thread.
-   */
   @Override
-  public void run() {
-
-
-    Request currentRequest = nextRequest();
-
-    // The loop condition must be verified on a private attribute of run method (not on the static
-    // running attribute) in order to avoid concurrent access.
-    while (currentRequest != null) {
-      CacheServiceProvider.clearAllThreadCaches();
-
-        /*
-         * Each request is processed out of the synchronized block so the others threads (which put
-         * the requests) will not be blocked.
-         */
-      try {
-        currentRequest.process(orderedOneByOneSemaphore);
-      } catch (Exception e) {
-        SilverLogger.getLogger(MailSenderTask.class).error(e.getMessage(), e);
-      }
-
-      // Getting the next request if any.
-      currentRequest = nextRequest();
-    }
-
-
+  protected List<Request<MailProcessContext>> getRequestList() {
+    return requestList;
   }
 
-  /**
-   * Gets the next request.
-   * @return the next request.
-   */
-  private Request nextRequest() {
-    synchronized (requestList) {
-      final Request nextRequest;
-      if (!requestList.isEmpty()) {
+  @Override
+  protected void taskIsEnding() {
+    running = false;
+  }
 
-        nextRequest = requestList.remove(0);
-      } else {
-        nextRequest = null;
-        running = false;
-      }
-      return nextRequest;
-    }
+  @Override
+  protected MailProcessContext getProcessContext() {
+    return new MailProcessContext(orderedOneByOneSemaphore);
   }
 }
 
-/**
- * Each request must define a method called process which will process the request with a given
- * MailSendingManager.
- */
-interface Request {
-  public void process(final Semaphore orderedOneByOneSemaphore) throws InterruptedException;
+class MailProcessContext implements AbstractRequestTask.ProcessContext {
+  private final Semaphore semaphore;
+
+  MailProcessContext(final Semaphore semaphore) {
+    this.semaphore = semaphore;
+  }
+
+  Semaphore getSemaphore() {
+    return semaphore;
+  }
 }
 
 /**
  * Permits to add a request of adding a mail to send.
  */
-class AddMailToSendRequest implements Request {
+class AddMailToSendRequest implements AbstractRequestTask.Request<MailProcessContext> {
   private final MailToSend mailToSend;
 
   /**
    * Constructor declaration
-   * @param mailToSend
+   * @param mailToSend the mail to send.
    */
-  public AddMailToSendRequest(MailToSend mailToSend) {
+  AddMailToSendRequest(MailToSend mailToSend) {
     this.mailToSend = mailToSend;
   }
 
   /**
    * As {@link MailSenderTask} can send a mail synchronously or asynchronously, this method is
    * synchronized to ensure that one send is performed at a same time laps.
-   * @param orderedOneByOneSemaphore
+   * @param context the context of the request processing.
    */
   @Override
-  public void process(final Semaphore orderedOneByOneSemaphore) throws InterruptedException {
+  public void process(final MailProcessContext context) throws InterruptedException {
     try {
-      orderedOneByOneSemaphore.acquire();
+      context.getSemaphore().acquire();
       MailSenderProvider.get().send(mailToSend);
     } finally {
-      orderedOneByOneSemaphore.release();
+      context.getSemaphore().release();
     }
   }
 }
