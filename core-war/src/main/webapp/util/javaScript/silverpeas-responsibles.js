@@ -262,21 +262,21 @@
     if (isPopup && !$.popup) {
       $.ajax({
         url: webContext + "/util/javaScript/silverpeas-popup.js",
-        async: false,
+        //async: false, warning: async will be removed in a future version
         dataType: "script"
       });
     }
     if (typeof User === 'undefined') {
       $.ajax({
         url: webContext + "/util/javaScript/angularjs/services/silverpeas-profile.js",
-        async: false,
+        //async: false, warning: async will be removed in a future version
         dataType: "script"
       });
     }
     if (!$.messageMe) {
       $.ajax({
         url: webContext + "/util/javaScript/silverpeas-messageme.js",
-        async: false,
+        //async: false, warning: async will be removed in a future version
         dataType: "script"
       });
     }
@@ -318,7 +318,7 @@
     // url, type, dataType are missing.
     var options = {
       cache: false,
-      async: false,
+      //async: false, warning: async will be removed in a future version
       success: function(data) {
         result = data;
       },

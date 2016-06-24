@@ -63,36 +63,40 @@ function editLink(id) {
   $("#linkFormId").attr('action', 'UpdateLink');
 
   var ajaxUrl = webContext + '/services/mylinks/' + id;
-  jQuery.ajax({
-    url: ajaxUrl,
-    type: 'GET',
-    contentType: "application/json",
-    cache: false,
-    dataType: "json",
-    async: false,
-    success: function(result) {
-      if ( window.console && window.console.log ) {
-        console.log("Update mylink identifier = #" + result.linkId);
+  new Promise(function(resolve, reject) {
+    jQuery.ajax({
+      url: ajaxUrl,
+      type: 'GET',
+      contentType: "application/json",
+      cache: false,
+      dataType: "json",
+      success: function(result) {
+        if ( window.console && window.console.log ) {
+          console.log("Update mylink identifier = #" + result.linkId);
+        }
+        $("#hiddenLinkId").val(result.linkId);
+        $("#urlId").val(result.url);
+        $("#nameId").val(result.name);
+        $("#descriptionId").val(result.description);
+        $("#visibleId").prop('checked', result.visible);
+        $("#popupId").prop('checked', result.popup);
+        updateLinkPopup();
+        resolve();
+      },
+      error:function(request, textStatus, errorThrown) {
+        if ( window.console && window.console.log ) {
+          console.log("request.status=" + request.status);
+          console.log("Cannot edit link because " + textStatus + ", error :" + errorThrown);
+        }
+        if (request.status == 403) {
+          // maybe an attack
+        }
+        resolve();
       }
-      $("#hiddenLinkId").val(result.linkId);
-      $("#urlId").val(result.url);
-      $("#nameId").val(result.name);
-      $("#descriptionId").val(result.description);
-      $("#visibleId").prop('checked', result.visible);
-      $("#popupId").prop('checked', result.popup);
-      updateLinkPopup();
-    },
-    error:function(request, textStatus, errorThrown) {
-      if ( window.console && window.console.log ) {
-        console.log("request.status=" + request.status);
-        console.log("Cannot edit link because " + textStatus + ", error :" + errorThrown);
-      }
-      if (request.status == 403) {
-        // maybe an attack
-      }
-    }
-  });
-  $.closeProgressMessage();
+    });
+  }).then(function() {
+    $.closeProgressMessage();
+  })
 }
 
 function saveArrayLinesOrder(e, ui) {

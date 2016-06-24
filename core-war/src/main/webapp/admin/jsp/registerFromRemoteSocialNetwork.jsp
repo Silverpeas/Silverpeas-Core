@@ -147,64 +147,69 @@ function stripInitialWhitespace (s) {
     return s.substring (i, s.length);
 }
 
-function emailExists(email) {
-	var exists = false;
-	$.ajax({
-		  url: "<c:url value="/MailExists"/>?email="+escape(email),
-		  async: false
-		}).done(function(data) {
-			if (data.indexOf('MailExists') != -1) {
-				exists = true;
-			}
-			else {
-				exists = false;
-			}
-		});
-	return exists;
+function checkIsNotEmpty(text) {
+  return new Promise(function(resolve, reject) {
+    resolve(!isWhitespace(text));
+  });
+}
+
+function checkEmailIsCorrectlyFormatted(src) {
+  return new Promise(function(resolve, reject) {
+    var regex = /^[a-z0-9A-Z\_\.\-]{1,}[\@@]{1}[a-z0-9A-Z\_\.\-]*[a-z0-9A-Z]{1}[\.]{1}[a-zA-Z]{2,6}$/;
+    resolve(!isEmpty(src) && src.match(regex) != null);
+  });
+}
+
+function checkEmailDoesNotExist(email) {
+  return new Promise(function(resolve, reject) {
+    $.get("<c:url value="/MailExists"/>?email=" + escape(email),
+        function(data) {
+          console.info("Check if " + email + " exists: " + data);
+          resolve(data.indexOf('MailExists') == -1);
+        });
+  });
 }
 
 function checkForm()
 {
-	var form = document.getElementById("EDform");
-	var errorMsg = "";
-    var errorNb = 0;
+  var form = document.getElementById("EDform");
+  var errorMsg = "";
+  var lastName = stripInitialWhitespace(form.elements["lastName"].value);
+  var firstName = stripInitialWhitespace(form.elements["firstName"].value);
+  var email = stripInitialWhitespace(form.elements["email"].value);
 
-	var lastName = stripInitialWhitespace(form.elements["lastName"].value);
-	var firstName = stripInitialWhitespace(form.elements["firstName"].value);
-    var email = stripInitialWhitespace(form.elements["email"].value);
-
-    if (isWhitespace(firstName)) {
-		errorMsg+=" - <fmt:message key="registration.firstNameRequired"/>\n";
-		errorNb++;
-     }
-
-    if (isWhitespace(lastName)) {
-		errorMsg+=" - <fmt:message key="registration.lastNameRequired"/>\n";
-		errorNb++;
-     }
-
-    if (isWhitespace(email)) {
-		errorMsg+=" - <fmt:message key="registration.emailRequired"/>\n";
-		errorNb++;
+  function checkResult(result, errorMessage) {
+    if (!result) {
+      errorMsg += ' - ' + errorMessage + '\n';
     }
+  }
 
-    else if (!checkEmail(email)) {
-		errorMsg+=" - <fmt:message key="registration.emailBadSyntax"/>\n";
-        errorNb++;
-    }
-
-    else if (emailExists(email)) {
-		errorMsg+=" - <fmt:message key="registration.alreadyRegistered"/>\n<fmt:message key="registration.pleaseConnectWithSvpAccount"/>";
-        errorNb++;
-    }
-
-    if (errorNb>0) {
-        window.alert(errorMsg);
-        return false;
-    }
-
-    form.action='<c:url value="/SocialNetworkLogin" />';
-	form.submit();
+  checkIsNotEmpty(firstName)
+      .then(function(result) {
+        checkResult(result, "<fmt:message key='registration.firstNameRequired'/>");
+        return checkIsNotEmpty(lastName);
+      })
+      .then(function(result) {
+        checkResult(result, "<fmt:message key='registration.lastNameRequired'/>");
+        return checkIsNotEmpty(email)
+      })
+      .then(function(result) {
+        checkResult(result, "<fmt:message key='registration.lastNameRequired'/>");
+        return checkEmailIsCorrectlyFormatted(email);
+      })
+      .then(function(result) {
+        checkResult(result, "<fmt:message key='registration.emailBadSyntax'/>");
+        return checkEmailDoesNotExist(email)
+      })
+      .then(function(result) {
+        checkResult(result, "<fmt:message key='registration.alreadyRegistered'/>\n<fmt:message key='registration.pleaseConnectWithSvpAccount'/>");
+        if (errorMsg.length > 0) {
+          window.alert(errorMsg);
+        } else {
+          form.action='<c:url value="/CredentialsServlet/Register" />';
+          form.submit();
+        }
+      });
 }
 
 function checkSubmit(ev)
@@ -214,7 +219,6 @@ function checkSubmit(ev)
       checkForm();
     }
 }
--->
 </script>
 
 </head>

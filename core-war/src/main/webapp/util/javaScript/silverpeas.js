@@ -649,7 +649,7 @@ if (typeof window.sp === 'undefined') {
           jQuery(target).html(request.responseText);
           resolve()
         }, function(request) {
-          sp.log.error(request.status + " " + xhr.statusText);
+          sp.log.error(request.status + " " + request.statusText);
           reject();
         });
       });

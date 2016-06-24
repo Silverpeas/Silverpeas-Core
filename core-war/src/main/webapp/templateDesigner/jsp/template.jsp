@@ -62,7 +62,6 @@ function openFieldWindow(url, displayer) {
 	} else {
 		$.ajax({
 			url: url,
-			async: false,
 			type: "GET",
 			dataType: "html",
 			success: function(data) {
@@ -90,7 +89,6 @@ $(document).ready(function(){
 			$.ajax({
 				url: webContext+"/AjaxTemplateDesigner/SortFields",
 				data: data,
-				async: false,
 				cache : false,
 				type: "POST",
 				dataType: "text",

@@ -765,7 +765,6 @@
         $.ajax({
           url: translationsUrl,
           type: "GET",
-          async: false,
           cache: false,
           success: function(data) {
             if (data.length > 1) {
@@ -810,7 +809,6 @@
                   url: deleteUrl,
                   type: "DELETE",
                   cache: false,
-                  async: false,
                   success: function(data) {
                     $deferred.resolve();
                   },
@@ -843,7 +841,6 @@
                 url: deleteUrl,
                 type: "DELETE",
                 cache: false,
-                async: false,
                 success: function(data) {
                   reloadIncludingPage();
                   $this.dialog("close");
@@ -870,7 +867,6 @@
                 url: deleteUrl,
                 type: "DELETE",
                 cache: false,
-                async: false,
                 success: function(data) {
                   reloadIncludingPage();
                   $this.dialog("close");

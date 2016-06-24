@@ -1,5 +1,5 @@
 /**
- * Enrichs the XMLHttpRequest object by adding a method to ask when sending a request: onsend.
+ * Enriches the XMLHttpRequest object by adding a method to ask when sending a request: onsend.
  */
 function enrichXMLHttpRequest() {
   if(!XMLHttpRequest.prototype._open) {
