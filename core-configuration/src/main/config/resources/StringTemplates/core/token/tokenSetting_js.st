@@ -8,7 +8,7 @@ function enrichXMLHttpRequest() {
       this.url = url;
       this._open.apply(this, arguments);
     };
-
+    
     XMLHttpRequest.prototype._send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(data) {
       if(this.onsend != null) {

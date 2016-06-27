@@ -131,6 +131,7 @@ if (m_MainSessionCtrl == null) {
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
 <view:looknfeel/>
+<view:script src="/util/javaScript/jquery/jquery-migrate-1.4.1.min.js"/>
 <style type="text/css">
   body {
     margin: 0;
