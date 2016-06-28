@@ -1,0 +1,31 @@
+@import url('jquery/fullcalendar.min.css.css');
+
+.fc-widget-header {
+  font-size:11px;
+  color:#666;
+  background-color:#ECECEC;
+}
+
+.fc-widget-content {
+  cursor: pointer;
+}
+
+.fc-event {
+  font-size:1em;
+  line-height:1.25em;
+  cursor: pointer;
+  min-height:12px;
+  border-color:#536ca6;
+  border-style:solid;
+  color: #fff;
+  background-color: #536ca6;
+}
+
+.fc-day-grid .fc-other-month {
+  background-color:#ECECEC;
+}
+
+.fc-day-grid .fc-event-time {
+  font-weight: normal;
+  padding-right: 2px;
+}
