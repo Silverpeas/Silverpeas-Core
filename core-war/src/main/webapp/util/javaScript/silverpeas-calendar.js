@@ -102,6 +102,7 @@
     calendar.currentDate = moment(calendar.currentDate);
     var options = {
       header: false,
+      contentHeight:550,
       monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
         $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
         $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
