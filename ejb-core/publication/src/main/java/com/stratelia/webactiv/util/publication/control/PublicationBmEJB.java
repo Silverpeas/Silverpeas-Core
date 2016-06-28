@@ -35,6 +35,7 @@ import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -65,6 +66,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import org.apache.commons.collections.ListUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.publication.notification.PublicationNotificationService;
 import org.silverpeas.rating.ContributionRatingPK;
@@ -1884,6 +1886,35 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return PublicationDAO.getDraftsByUser(con, userId);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getDraftsByUser()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED", "userId = "
+          + userId, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public List<PublicationDetail> removeUserFromTargetValidators(String userId) {
+    Connection con = getConnection();
+    try {
+      List<PublicationDetail> publications = PublicationDAO.getByTargetValidatorId(con, userId);
+      for (PublicationDetail publication : publications) {
+        // remove given user to users list
+        String[] userIds = StringUtil.split(publication.getTargetValidatorId(), ',');
+        String[] newUserIds = ArrayUtil.removeElement(userIds, userId);
+        if (newUserIds != null && !ArrayUtil.isEmpty(newUserIds)) {
+          publication.setTargetValidatorId(StringUtil.join(newUserIds, ','));
+        } else {
+          publication.setTargetValidatorId(null);
+        }
+
+        // store updated data (without given user)
+        PublicationDAO.updateTargetValidatorIds(con, publication);
+      }
+
+      return publications;
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDraftsByUser()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED", "userId = "
