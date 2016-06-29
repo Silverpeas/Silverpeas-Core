@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.StringUtil;
 import org.owasp.encoder.Encode;
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
@@ -225,12 +226,14 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
       } else if ("DELMSG".equals(message)) {
         String messageId = request.getParameter("messageID");
         String messageType = request.getParameter("messageTYPE");
-        if ("SERVER".equals(messageType)) {
-          com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory.del(
-              messageId);
-        } else if ("POPUP".equals(messageType)) {
-          com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(
-              messageId);
+        if (StringUtil.isDefined(messageId)) {
+          if ("SERVER".equals(messageType)) {
+            com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory.del
+                (messageId);
+          } else if ("POPUP".equals(messageType)) {
+            com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del
+                (messageId);
+          }
         }
       }
     }

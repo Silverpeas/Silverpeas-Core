@@ -719,8 +719,10 @@ public class Admin {
       // commit the transactions
       domainDriverManager.commit();
       cache.opUpdateSpace(spaceInstNew);
-      TreeCache.getSpaceInstLight(spaceInstNew.getId()).setInheritanceBlocked(spaceInstNew.
-          isInheritanceBlocked());
+      SpaceInstLight spaceInCache = TreeCache.getSpaceInstLight(spaceInstNew.getId());
+      if (spaceInCache != null) {
+        spaceInCache.setInheritanceBlocked(spaceInstNew.isInheritanceBlocked());
+      }
       // Update space in TreeCache
       SpaceInstLight spaceLight = spaceManager.getSpaceInstLightById(domainDriverManager,
           getDriverSpaceId(spaceInstNew.getId()));
