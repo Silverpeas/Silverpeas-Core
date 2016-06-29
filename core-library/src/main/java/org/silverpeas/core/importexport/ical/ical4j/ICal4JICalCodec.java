@@ -34,7 +34,10 @@ import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TextList;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
@@ -68,10 +71,17 @@ public class ICal4JICalCodec implements ICalCodec {
     if (events == null || events.isEmpty()) {
       throw new IllegalArgumentException("The calendar events must be defined to encode them");
     }
+
     Calendar calendarIcs = new Calendar();
     calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.1//FR"));
     calendarIcs.getProperties().add(Version.VERSION_2_0);
     calendarIcs.getProperties().add(CalScale.GREGORIAN);
+
+    // adding VTimeZone component (mandatory with Outlook)
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+    VTimeZone tz = registry.getTimeZone("Europe/Paris").getVTimeZone();
+    calendarIcs.getComponents().add(tz);
+
     List<VEvent> iCalEvents = new ArrayList<>();
     ByteArrayOutputStream output = new ByteArrayOutputStream(10240);
     for (CalendarEvent event : events) {
