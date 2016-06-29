@@ -23,8 +23,11 @@
  */
 package org.silverpeas.core.io.upload;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
@@ -39,6 +42,11 @@ public class TestUploadSessionFile {
 
   @Rule
   public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+
+  @Before
+  public void setup() {
+    new SessionInfo(null, new UserDetail());
+  }
 
   @Test
   public void createInstance() {

@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.test.rule;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -41,8 +43,7 @@ import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.io.File;
 
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Yohann Chastagnier
@@ -76,6 +77,7 @@ public class CommonAPI4Test implements TestRule {
 
   protected void beforeEvaluate(final TestContext context) {
     reset(TestBeanContainer.getMockedBeanContainer());
+    userProvider();
     systemWrapper();
     loggerConfigurationManager();
     silverTrace();
@@ -110,6 +112,13 @@ public class CommonAPI4Test implements TestRule {
   private void silverTrace() {
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
         .thenReturn(new TestSilverpeasTrace());
+  }
+
+  private void userProvider() {
+    StubbedUserProvider userProvider = mock(StubbedUserProvider.class);
+    doCallRealMethod().when(userProvider).getCurrentRequester();
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class))
+        .thenReturn(userProvider);
   }
 
   private void systemWrapper() {
@@ -159,6 +168,13 @@ public class CommonAPI4Test implements TestRule {
     public StubbedLoggerConfigurationManager() {
       super();
       loadAllConfigurationFiles();
+    }
+  }
+
+  private abstract class StubbedUserProvider implements UserProvider {
+    @Override
+    public User getCurrentRequester() {
+      return UserProvider.super.getCurrentRequester();
     }
   }
 }

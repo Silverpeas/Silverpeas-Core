@@ -59,18 +59,17 @@ import org.silverpeas.core.util.logging.SilverLogger;
  * }
  * </code>
  * <p/>
- * User: Yohann Chastagnier
- * Date: 07/11/13
+ * @author Yohann Chastagnier
  */
 public class MessageManager {
 
-  private static SimpleCache applicationCache;
+  private static SimpleCache applicationCache =
+      CacheServiceProvider.getApplicationCacheService().getCache();
 
   /**
    * Initialize the manager in order to be used everywhere in treatments.
    */
   public static String initialize() {
-    applicationCache = CacheServiceProvider.getApplicationCacheService().getCache();
     String registeredKey = applicationCache.add(new MessageContainer());
     CacheServiceProvider.getRequestCacheService()
         .getCache()
