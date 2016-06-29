@@ -24,6 +24,7 @@
 package org.silverpeas.core.cache.service;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
  * Service to manage session caches.
@@ -33,7 +34,7 @@ import org.silverpeas.core.admin.user.model.User;
  * a session cache belongs to a given user and should be initialized at the user session opening.
  * @author mmoquillon
  */
-public class SessionCacheService {
+public class SessionCacheService implements CacheService {
 
   private static final String CURRENT_REQUESTER_KEY = User.class.getName() + "_CURRENT_REQUESTER";
   private static final String CURRENT_SESSION_KEY = "@SessionCache@";
@@ -44,10 +45,10 @@ public class SessionCacheService {
    * @param user a Silverpeas user for which a session has to be opened.
    * @return the session cache.
    */
-  public SimpleCacheService newSessionCache(User user) {
-    InMemoryCacheService sessionCache = new InMemoryCacheService();
+  public SimpleCache newSessionCache(User user) {
+    InMemoryCache sessionCache = new InMemoryCache();
     sessionCache.put(CURRENT_REQUESTER_KEY, user);
-    CacheServiceProvider.getRequestCacheService().put(CURRENT_SESSION_KEY, sessionCache);
+    CacheServiceProvider.getRequestCacheService().getCache().put(CURRENT_SESSION_KEY, sessionCache);
     return sessionCache;
   }
 
@@ -59,21 +60,22 @@ public class SessionCacheService {
    * @throws IllegalArgumentException if the specified cache isn't a session cache already
    * initialized by the session cache management mechanism.
    */
-  public void setCurrentSessionCache(SimpleCacheService sessionCache) {
+  public void setCurrentSessionCache(SimpleCache sessionCache) {
     if (sessionCache.get(CURRENT_REQUESTER_KEY) == null) {
       throw new IllegalArgumentException(
           "Attempt to set a non session cache as the current session cache");
     }
-    CacheServiceProvider.getRequestCacheService().put(CURRENT_SESSION_KEY, sessionCache);
+    CacheServiceProvider.getRequestCacheService().getCache().put(CURRENT_SESSION_KEY, sessionCache);
   }
 
   /**
    * Gets the cache mapped with the current user session.
    * @return the current session cache.
    */
-  public SimpleCacheService getCurrentSessionCache() {
+  public SimpleCache getCurrentSessionCache() {
     return CacheServiceProvider.getRequestCacheService()
-        .get(CURRENT_SESSION_KEY, InMemoryCacheService.class);
+        .getCache()
+        .get(CURRENT_SESSION_KEY, InMemoryCache.class);
   }
 
   /**
@@ -82,12 +84,28 @@ public class SessionCacheService {
    * @throws IllegalArgumentException if the specified cache isn't a session cache correctly
    * initialized.
    */
-  public User getUser(SimpleCacheService sessionCache) {
+  public User getUser(SimpleCache sessionCache) {
     User user = sessionCache.get(CURRENT_REQUESTER_KEY, User.class);
     if (user == null) {
       throw new IllegalArgumentException("A non session cache is passed as argument");
     }
     return user;
+  }
+
+  /**
+   * Gets the cache mapped with the current user session.
+   * @return the current session cache.
+   * @see SessionCacheService#getCurrentSessionCache()
+   */
+  @Override
+  public SimpleCache getCache() {
+    return getCurrentSessionCache();
+  }
+
+  @Override
+  public void clearAllCaches() {
+    throw new UnsupportedOperationException(
+        "clearing explicitly all session caches isn't supported");
   }
 }
   

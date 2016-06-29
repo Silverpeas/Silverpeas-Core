@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.webdav;
 
 import org.apache.jackrabbit.webdav.util.EncodeUtil;
-import org.silverpeas.core.cache.service.CacheService;
+import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 
 import java.util.regex.Matcher;
@@ -145,7 +145,7 @@ public class SilverpeasJcrWebdavContext {
     return token;
   }
 
-  private static CacheService getCacheService() {
-    return CacheServiceProvider.getApplicationCacheService();
+  private static Cache getCacheService() {
+    return CacheServiceProvider.getApplicationCacheService().getCache();
   }
 }

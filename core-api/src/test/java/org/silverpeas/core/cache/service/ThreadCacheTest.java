@@ -24,6 +24,7 @@
 package org.silverpeas.core.cache.service;
 
 import org.junit.Test;
+import org.silverpeas.core.cache.service.ThreadCache;
 
 import java.util.logging.Logger;
 
@@ -34,9 +35,9 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-public class ThreadCacheServiceTest {
+public class ThreadCacheTest {
   private static final Logger logger = Logger.getAnonymousLogger();
-  private static final ThreadCacheService service = new ThreadCacheService();
+  private static final ThreadCache service = new ThreadCache();
   private static final String Object1 = "";
   private static final Object Object2 = new Object();
 

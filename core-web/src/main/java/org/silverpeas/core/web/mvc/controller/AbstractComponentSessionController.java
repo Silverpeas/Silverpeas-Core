@@ -24,28 +24,28 @@
 
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.security.authorization.ComponentAccessController;
+import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.web.panel.GenericPanel;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.security.authorization.ComponentAccessController;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.panel.GenericPanel;
+import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.io.UnsupportedEncodingException;
@@ -470,11 +470,13 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   public Collection<SilverpeasRole> getSilverpeasUserRoles() {
     String currentKey = getComponentId() + "_user_roles";
     Collection<SilverpeasRole> roles =
-        (Collection<SilverpeasRole>) CacheServiceProvider.getRequestCacheService().get(currentKey);
+        (Collection<SilverpeasRole>) CacheServiceProvider.getRequestCacheService()
+            .getCache()
+            .get(currentKey);
     if (roles == null) {
       roles = SilverpeasRole.from(context.getCurrentProfile());
       roles.remove(SilverpeasRole.Manager);
-      CacheServiceProvider.getRequestCacheService().put(currentKey, roles);
+      CacheServiceProvider.getRequestCacheService().getCache().put(currentKey, roles);
     }
     return roles;
   }

@@ -80,7 +80,9 @@ public class OperationContext {
    * @return
    */
   public static OperationContext getFromCache() {
-    return CacheServiceProvider.getRequestCacheService().get(CACHE_KEY, OperationContext.class);
+    return CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(CACHE_KEY, OperationContext.class);
   }
 
   /**
@@ -143,7 +145,7 @@ public class OperationContext {
    * The call of this method is automatically done by technical JPA tools.
    */
   public void putIntoCache() {
-    CacheServiceProvider.getRequestCacheService().put(CACHE_KEY, this);
+    CacheServiceProvider.getRequestCacheService().getCache().put(CACHE_KEY, this);
   }
 
   /**

@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class VolatileResourceCacheServiceTest {
+public class VolatileResourceCacheTest {
 
   private VolatileResourceCacheService instance = new VolatileResourceCacheService();
 

@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.user.service;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.cache.service.SimpleCacheService;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -59,8 +59,9 @@ public interface UserProvider {
    */
   default User getCurrentRequester() {
     User requester = null;
-    SessionCacheService sessionCacheService = CacheServiceProvider.getSessionCacheService();
-    SimpleCacheService sessionCache = sessionCacheService.getCurrentSessionCache();
+    SessionCacheService sessionCacheService =
+        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
+    SimpleCache sessionCache = sessionCacheService.getCurrentSessionCache();
     if (sessionCache != null) {
       requester = sessionCacheService.getUser(sessionCache);
     }

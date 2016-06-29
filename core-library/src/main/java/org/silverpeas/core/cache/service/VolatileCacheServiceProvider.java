@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.cache.service;
 
+import org.silverpeas.core.cache.model.SimpleCache;
+
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 
 /**
@@ -45,7 +47,7 @@ public class VolatileCacheServiceProvider {
    * @return the volatile resource cache linked to the current user session.
    */
   public static VolatileResourceCacheService getSessionVolatileResourceCacheService() {
-    SimpleCacheService sessionCache = getSessionCacheService().getCurrentSessionCache();
+    SimpleCache sessionCache = getSessionCacheService().getCache();
     VolatileResourceCacheService volatileResourceCacheService =
         sessionCache.get(VolatileResourceCacheService.class.getName(),
             VolatileResourceCacheService.class);

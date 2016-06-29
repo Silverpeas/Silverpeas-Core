@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.Element;
@@ -164,8 +165,8 @@ public class JavascriptPluginInclusion {
    */
   public static Element script(String src) {
     String key = "$jsPlugin$script$" + src;
-    if (getRequestCacheService().get(key) == null) {
-      getRequestCacheService().put(key, true);
+    if (getRequestCacheService().getCache().get(key) == null) {
+      getRequestCacheService().getCache().put(key, true);
       return new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
     } else {
       return new ElementContainer();
@@ -188,8 +189,9 @@ public class JavascriptPluginInclusion {
   private static String generateDynamicPluginLoading(String src, String jqPluginName,
       String jsCallbackContentOnSuccessfulLoad, String jsCallback) {
     String key = "$jsDynamicPlugin$script$" + src;
-    if (getRequestCacheService().get(key) == null) {
-      getRequestCacheService().put(key, true);
+    SimpleCache cache = getRequestCacheService().getCache();
+    if (cache.get(key) == null) {
+      cache.put(key, true);
       StringBuilder sb = new StringBuilder();
       sb.append("jQuery(document).ready(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
@@ -222,8 +224,9 @@ public class JavascriptPluginInclusion {
    */
   private static Element scriptContent(String content) {
     String key = "$jsPlugin$scriptContent$" + StringUtil.truncate(content, 150);
-    if (getRequestCacheService().get(key) == null) {
-      getRequestCacheService().put(key, true);
+    SimpleCache cache = getRequestCacheService().getCache();
+    if (cache.get(key) == null) {
+      cache.put(key, true);
       return new script().setType(JAVASCRIPT_TYPE).addElement(content);
     } else {
       return new ElementContainer();
@@ -237,8 +240,9 @@ public class JavascriptPluginInclusion {
    */
   public static Element link(String href) {
     String key = "$jsPlugin$css$" + href;
-    if (getRequestCacheService().get(key) == null) {
-      getRequestCacheService().put(key, true);
+    SimpleCache cache = getRequestCacheService().getCache();
+    if (cache.get(key) == null) {
+      cache.put(key, true);
       return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
           .setHref(normalizeWebResourceUrl(href));
     } else {

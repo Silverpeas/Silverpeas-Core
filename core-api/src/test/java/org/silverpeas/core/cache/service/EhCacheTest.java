@@ -27,6 +27,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.core.cache.service.EhCache;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -35,13 +36,13 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 11/09/13
  */
-public class EhCacheServiceTest {
+public class EhCacheTest {
   private static final String Object1 = "";
   private static final Object Object2 = new Object();
 
   @Before
   public void setup() {
-    Cache cache = new EhCacheService(10).getCache();
+    Cache cache = new EhCache(10).getCache();
     for (Object key : cache.getKeys()) {
       cache.remove(key);
     }
@@ -61,7 +62,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testClear() {
-    EhCacheService service = new EhCacheService(0);
+    EhCache service = new EhCache(0);
     service.add(Object1);
     service.add(Object2);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
@@ -71,7 +72,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testGet() {
-    EhCacheService service = new EhCacheService(0);
+    EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     String uniqueKey1 = service.add(Object1);
     assertThat(service.get("dummy"), nullValue());
@@ -83,7 +84,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testAdd() {
-    EhCacheService service = new EhCacheService(0);
+    EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     String uniqueKey1 = service.add(Object1);
     String uniqueKey2 = service.add(Object2);
@@ -95,7 +96,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testAddWithExplicitLiveExpirency() throws InterruptedException {
-    final EhCacheService service = new EhCacheService(0);
+    final EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     service.add(Object1, 1);
     service.add(Object2, 10);
@@ -110,7 +111,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testAddWithSameKeyAndWithExplicitIdleExpirency() throws InterruptedException {
-    final EhCacheService service = new EhCacheService(0);
+    final EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     service.add(Object1, 10, 1);
     assertWithExplicitIdleExpirency(service);
@@ -118,7 +119,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testPut() {
-    EhCacheService service = new EhCacheService(0);
+    EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     service.put("A", Object1);
     service.put("B", Object2);
@@ -127,7 +128,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testPutWithSameKey() {
-    EhCacheService service = new EhCacheService(0);
+    EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     service.put("A", Object1);
     service.put("A", Object2);
@@ -136,7 +137,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testPutWithSameKeyAndWithExplicitLiveExpirency() throws InterruptedException {
-    final EhCacheService service = new EhCacheService(0);
+    final EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     service.put("A", Object1, 10);
     service.put("A", Object2, 1);
@@ -147,13 +148,13 @@ public class EhCacheServiceTest {
 
   @Test
   public void testPutWithSameKeyAndWithExplicitIdleExpirency() throws InterruptedException {
-    final EhCacheService service = new EhCacheService(0);
+    final EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     service.put("A", Object1, 10, 1);
     assertWithExplicitIdleExpirency(service);
   }
 
-  public void assertWithExplicitIdleExpirency(EhCacheService service) throws InterruptedException {
+  public void assertWithExplicitIdleExpirency(EhCache service) throws InterruptedException {
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
     String key = (String) service.getCache().getKeys().get(0);
     for (int i = 0; i < 4; i++) {
@@ -167,7 +168,7 @@ public class EhCacheServiceTest {
 
   @Test
   public void testRemove() {
-    EhCacheService service = new EhCacheService(0);
+    EhCache service = new EhCache(0);
     assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
     String uniqueKey1 = service.add(Object1);
     String uniqueKey2 = service.add(Object2);

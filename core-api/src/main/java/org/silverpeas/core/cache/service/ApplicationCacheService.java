@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,40 +23,36 @@
  */
 package org.silverpeas.core.cache.service;
 
-import java.util.UUID;
+import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.core.util.ResourceLocator;
 
 /**
- * Implementation of the CacheService that uses EhCache API.
- * User: Yohann Chastagnier
- * Date: 11/09/13
+ * A service to handle a cache whose lifetime is over the whole application runtime.
+ * @author mmoquillon
  */
-public abstract class AbstractCacheService extends AbstractSimpleCacheService
-    implements CacheService {
+public class ApplicationCacheService implements CacheService {
 
-  // In seconds, 12 hours (60seconds x 60minutes x 12hours)
-  private final static int DEFAULT_TIME_TO_IDLE = 60 * 60 * 12;
+  private Cache cache;
 
-  @Override
-  public String add(final Object value, final int timeToLive) {
-    String uniqueKey = UUID.randomUUID().toString();
-    put(uniqueKey, value, timeToLive);
-    return uniqueKey;
+  protected ApplicationCacheService() {
+
   }
 
   @Override
-  public String add(final Object value, final int timeToLive, final int timeToIdle) {
-    String uniqueKey = UUID.randomUUID().toString();
-    put(uniqueKey, value, timeToLive, timeToIdle);
-    return uniqueKey;
+  public Cache getCache() {
+    if (cache == null) {
+      int nbMaxElements = ResourceLocator.getGeneralSettingBundle().
+          getInteger("application.cache.common.nbMaxElements", 0);
+      if (nbMaxElements < 0) {
+        nbMaxElements = 0;
+      }
+      cache = new EhCache(nbMaxElements);
+    }
+    return cache;
   }
 
   @Override
-  public void put(final Object key, final Object value) {
-    put(key, value, 0);
-  }
-
-  @Override
-  public void put(final Object key, final Object value, final int timeToLive) {
-    put(key, value, timeToLive, DEFAULT_TIME_TO_IDLE);
+  public void clearAllCaches() {
+    cache.clear();
   }
 }

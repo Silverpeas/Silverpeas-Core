@@ -40,10 +40,12 @@ public class CurrentUserNotificationContext {
    */
   public static CurrentUserNotificationContext getCurrentUserNotificationContext() {
     CurrentUserNotificationContext current = CacheServiceProvider.getRequestCacheService()
+        .getCache()
         .get(CurrentUserNotificationContext.class.getName(), CurrentUserNotificationContext.class);
     if (current == null) {
       current = new CurrentUserNotificationContext();
       CacheServiceProvider.getRequestCacheService()
+          .getCache()
           .put(CurrentUserNotificationContext.class.getName(), current);
     }
     return current;

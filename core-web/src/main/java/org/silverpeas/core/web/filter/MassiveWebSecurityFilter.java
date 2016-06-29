@@ -265,7 +265,7 @@ public class MassiveWebSecurityFilter implements Filter {
    */
   private synchronized Pattern getSqlTableNamesPattern() {
     Pattern pattern = (SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY != null) ?
-        CacheServiceProvider.getApplicationCacheService()
+        CacheServiceProvider.getApplicationCacheService().getCache()
             .get(SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY, Pattern.class) : null;
     if (pattern == null) {
       StringBuilder sbPattern = new StringBuilder("(");
@@ -279,7 +279,7 @@ public class MassiveWebSecurityFilter implements Filter {
 
       pattern = Pattern.compile("(?i)" + sbPattern.toString());
       SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY =
-          CacheServiceProvider.getApplicationCacheService().add(pattern);
+          CacheServiceProvider.getApplicationCacheService().getCache().add(pattern);
     }
     return pattern;
   }

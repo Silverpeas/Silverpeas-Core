@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,60 +23,31 @@
  */
 package org.silverpeas.core.cache.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
- * User: Yohann Chastagnier
- * Date: 25/10/13
+ * A service that uses the local thread to store a cache.
+ * </p>
+ * BE VERY VERY CAREFULLY: into web application with thread pool management, the thread is never
+ * killed and the cache is then never cleared. So you have to clear explicitly the cache with
+ * the {©ode ThreadCacheService#clearAllCaches()} method.
+ * @author mmoquillon
  */
-public class ThreadCacheService extends AbstractSimpleCacheService {
+public class ThreadCacheService implements CacheService {
 
-  private final ThreadLocal<Map<Object, Object>> cache = new ThreadLocal<Map<Object, Object>>();
+  private ThreadCache cache = new ThreadCache();
 
-  /**
-   * Gets the cache.
-   * @return
-   */
-  protected Map<Object, Object> getCache() {
-    Map<Object, Object> threadCache = cache.get();
-    if (threadCache == null) {
-      threadCache = new HashMap<Object, Object>();
-      cache.set(threadCache);
-    }
-    return threadCache;
+  protected ThreadCacheService() {
+
   }
 
   @Override
-  public void clear() {
-    cache.set(null);
+  public SimpleCache getCache() {
+    return cache;
   }
 
   @Override
-  public Object get(final Object key) {
-    return getCache().get(key);
-  }
-
-  @Override
-  public Object remove(final Object key) {
-    Object value = get(key);
-    if (value != null) {
-      getCache().remove(key);
-    }
-    return value;
-  }
-
-  @Override
-  public <T> T remove(final Object key, final Class<T> classType) {
-    T value = get(key, classType);
-    if (value != null) {
-      getCache().remove(key);
-    }
-    return value;
-  }
-
-  @Override
-  public void put(final Object key, final Object value) {
-    getCache().put(key, value);
+  public void clearAllCaches() {
+    cache.clear();
   }
 }
