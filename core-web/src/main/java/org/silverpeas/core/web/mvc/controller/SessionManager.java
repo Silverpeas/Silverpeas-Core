@@ -20,7 +20,9 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -510,9 +512,11 @@ public class SessionManager implements SessionManagement {
 
   @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest request) {
-    CacheServiceProvider.getSessionCacheService()
-        .put(User.CURRENT_REQUESTER_KEY, UserDetail.getAnonymousUser());
     SessionInfo sessionInfo = SessionInfo.AnonymousSession;
+    if (!sessionInfo.isDefined()) {
+      throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
+    }
+    CacheServiceProvider.getSessionCacheService().setCurrentSessionCache(sessionInfo.getCache());
     sessionInfo.setIPAddress(request.getRemoteHost());
     return sessionInfo;
   }

@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 public class DefaultUserProvider implements UserProvider {
 
   @Override
-  public User getById(final String userId) {
+  public User getUser(final String userId) {
     return OrganizationController.get().getUserDetail(userId);
   }
 }
