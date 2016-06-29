@@ -1,6 +1,9 @@
 package org.silverpeas.core.web.look;
 
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Nicolas Eysseric
@@ -18,17 +21,20 @@ public class DefaultLayoutConfiguration implements LayoutConfiguration {
 
   @Override
   public String getHeaderURL() {
-    return headerURL;
+    return defaultStringIfNotDefined(headerURL,
+        settings.getString("layout.header.url", "/admin/jsp/TopBarSilverpeasV5.jsp"));
   }
 
   @Override
   public String getBodyURL() {
-    return bodyURL;
+    return defaultStringIfNotDefined(bodyURL,
+        settings.getString("layout.body.url", "/admin/jsp/bodyPartSilverpeasV5.jsp"));
   }
 
   @Override
   public String getBodyNavigationURL() {
-    return bodyNavigationURL;
+    return defaultStringIfNotDefined(bodyNavigationURL,
+        settings.getString("layout.body.navigation.url", "/admin/jsp/DomainsBarSilverpeasV5.jsp"));
   }
 
   public void setHeaderURL(String url) {

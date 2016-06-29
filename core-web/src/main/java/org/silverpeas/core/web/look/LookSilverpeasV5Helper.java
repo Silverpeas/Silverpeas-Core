@@ -262,11 +262,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   }
 
   private void initLayoutConfiguration() {
-    DefaultLayoutConfiguration layoutConfiguration = new DefaultLayoutConfiguration(this.resources);
-    layoutConfiguration.setHeaderURL("/admin/jsp/TopBarSilverpeasV5.jsp");
-    layoutConfiguration.setBodyURL("/admin/jsp/bodyPartSilverpeasV5.jsp");
-    layoutConfiguration.setBodyNavigationURL("/admin/jsp/DomainsBarSilverpeasV5.jsp");
-    this.layoutConfiguration = layoutConfiguration;
+    this.layoutConfiguration = new DefaultLayoutConfiguration(this.resources);
   }
 
   @Override
