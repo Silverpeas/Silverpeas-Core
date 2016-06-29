@@ -24,32 +24,30 @@
 
 package org.silverpeas.web.clipboard.control;
 
+import org.owasp.encoder.Encode;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.util.ResourceLocator;
 
 /**
  * A servlet ClipboardSessionControler acts as a proxy for a ClipboardBm EJB.
@@ -195,12 +193,14 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
       } else if ("DELMSG".equals(message)) {
         String messageId = request.getParameter("messageID");
         String messageType = request.getParameter("messageTYPE");
-        if ("SERVER".equals(messageType)) {
-          SilverMessageFactory.del(
-              messageId);
-        } else if ("POPUP".equals(messageType)) {
-          org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory.del(
-              messageId);
+        if (StringUtil.isDefined(messageId)) {
+          if ("SERVER".equals(messageType)) {
+            org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory
+                .del(messageId);
+          } else if ("POPUP".equals(messageType)) {
+            org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory
+                .del(messageId);
+          }
         }
       }
     }

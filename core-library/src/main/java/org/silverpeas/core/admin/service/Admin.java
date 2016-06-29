@@ -632,8 +632,10 @@ class Admin implements Administration {
       // commit the transactions
       domainDriverManager.commit();
       cache.opUpdateSpace(spaceInstNew);
-      TreeCache.getSpaceInstLight(spaceInstNew.getLocalId()).setInheritanceBlocked(spaceInstNew.
-          isInheritanceBlocked());
+      SpaceInstLight spaceInCache = TreeCache.getSpaceInstLight(spaceInstNew.getLocalId());
+      if (spaceInCache != null) {
+        spaceInCache.setInheritanceBlocked(spaceInstNew.isInheritanceBlocked());
+      }
       // Update space in TreeCache
       SpaceInstLight spaceLight = spaceManager.getSpaceInstLightById(domainDriverManager,
           getDriverSpaceId(spaceInstNew.getId()));
