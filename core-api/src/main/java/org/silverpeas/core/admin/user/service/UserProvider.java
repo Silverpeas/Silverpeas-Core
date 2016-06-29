@@ -25,6 +25,9 @@
 package org.silverpeas.core.admin.user.service;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.SimpleCacheService;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -32,6 +35,8 @@ import org.silverpeas.core.util.ServiceProvider;
  * @author Yohann Chastagnier
  */
 public interface UserProvider {
+
+  String CURRENT_REQUESTER_KEY = User.class.getName() + "_CURRENT_REQUESTER";
 
   /**
    * Gets the instance of the implementation of the interface.
@@ -42,9 +47,23 @@ public interface UserProvider {
   }
 
   /**
-   * Gets a user from an identifier.
+   * Gets a user from the specified identifier.
    * @param userId a user identifier as string.
    * @return a user instance of {@link User}.
    */
-  User getById(String userId);
+  User getUser(String userId);
+
+  /**
+   * Gets the user that is behind the current request in Silverpeas.
+   * @return a user instance of {@link User}.
+   */
+  default User getCurrentRequester() {
+    User requester = null;
+    SessionCacheService sessionCacheService = CacheServiceProvider.getSessionCacheService();
+    SimpleCacheService sessionCache = sessionCacheService.getCurrentSessionCache();
+    if (sessionCache != null) {
+      requester = sessionCacheService.getUser(sessionCache);
+    }
+    return requester;
+  }
 }

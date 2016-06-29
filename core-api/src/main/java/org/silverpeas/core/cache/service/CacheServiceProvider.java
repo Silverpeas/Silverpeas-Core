@@ -33,6 +33,7 @@ public class CacheServiceProvider {
   private static final CacheServiceProvider instance = new CacheServiceProvider();
   private final SimpleCacheService threadCacheService;
   private final SimpleCacheService requestCacheService;
+  private final SessionCacheService sessionCacheService = new SessionCacheService();
   private CacheService cacheService;
 
   /**
@@ -58,39 +59,33 @@ public class CacheServiceProvider {
   }
 
   /**
-   * Gets a useful volatile cache : after the end of the current thread execution, the associated
+   * Gets a useful volatile cache: after the end of the current thread execution, the associated
    * cache is trashed.
-   * BE VERY VERY VERY CAREFULLY : into web application with thread pool management,
+   * BE VERY VERY VERY CAREFULLY: into web application with thread pool management,
    * the thread is never killed and this cache is never cleared. If you want the cache cleared
-   * after a end of request, please use {@link #getRequestCacheService()}.
-   * @return a cache associated to the current thread
+   * after the end of the request, please use {@link #getRequestCacheService()}.
+   * @return a cache associated to the current thread.
    */
   public static SimpleCacheService getThreadCacheService() {
     return getInstance().threadCacheService;
   }
 
   /**
-   * Gets a useful cache in relation with a request : after the end of the request execution,
+   * Gets a useful cache in relation with a request: after the end of the request execution,
    * the associated cache is trashed.
-   * @return a cache associated to the current request
+   * @return a cache associated to the current request.
    */
   public static SimpleCacheService getRequestCacheService() {
     return getInstance().requestCacheService;
   }
 
   /**
-   * Gets a useful cache in relation with a session : after the end of the session,
-   * the associated cache is trashed. If no session cache exists,
-   * then the request cache is returned.
-   * @return a cache associated to the current session, or a request if no session one.
+   * Gets a useful cache in relation with a session: after the end of the session,
+   * the associated cache is trashed. If no session cache exists, then it is created and returned.
+   * @return a cache associated to the current session.
    */
-  public static SimpleCacheService getSessionCacheService() {
-    InMemoryCacheService simpleCacheService = getInstance().requestCacheService
-        .get("@SessionCache@", InMemoryCacheService.class);
-    if (simpleCacheService != null) {
-      return simpleCacheService;
-    }
-    return getRequestCacheService();
+  public static SessionCacheService getSessionCacheService() {
+    return getInstance().sessionCacheService;
   }
 
   /**

@@ -24,15 +24,13 @@
 
 package org.silverpeas.core.web.mvc;
 
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.InMemoryCacheService;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -89,8 +87,8 @@ public class SilverListener
         SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(httpSession.getId());
         if (sessionInfo.isDefined()) {
-          CacheServiceProvider.getRequestCacheService()
-              .put("@SessionCache@", sessionInfo.getCache());
+          CacheServiceProvider.getSessionCacheService()
+              .setCurrentSessionCache(sessionInfo.getCache());
         } else {
           // Anonymous management
           MainSessionController mainSessionController =
@@ -98,10 +96,8 @@ public class SilverListener
                   MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
           if (mainSessionController != null &&
               mainSessionController.getCurrentUserDetail() != null) {
-            InMemoryCacheService cache = new InMemoryCacheService();
-            cache.put(User.CURRENT_REQUESTER_KEY,
-                mainSessionController.getCurrentUserDetail());
-            CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
+            CacheServiceProvider.getSessionCacheService()
+                .newSessionCache(mainSessionController.getCurrentUserDetail());
           }
         }
       }

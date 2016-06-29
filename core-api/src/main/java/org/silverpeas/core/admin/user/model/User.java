@@ -27,7 +27,6 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.personalization.UserPreferences;
 
 import java.io.Serializable;
@@ -39,15 +38,13 @@ import java.util.Date;
  */
 public interface User extends Serializable, Comparable<User> {
 
-  String CURRENT_REQUESTER_KEY = User.class.getName() + "_CURRENT_REQUESTER";
-
   /**
    * Gets the detail about the specified user.
    * @param userId the unique identifier of the user to get.
    * @return the detail about the user with the specified identifier or null if no such user exists.
    */
   static User getById(String userId) {
-    return UserProvider.get().getById(userId);
+    return UserProvider.get().getUser(userId);
   }
 
   /**
@@ -63,7 +60,7 @@ public interface User extends Serializable, Comparable<User> {
    * @return the {@link User} instance of current requester.
    */
   static User getCurrentRequester() {
-    return CacheServiceProvider.getSessionCacheService().get(CURRENT_REQUESTER_KEY, User.class);
+    return UserProvider.get().getCurrentRequester();
   }
 
   /**

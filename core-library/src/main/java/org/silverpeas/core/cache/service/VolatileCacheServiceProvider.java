@@ -45,11 +45,13 @@ public class VolatileCacheServiceProvider {
    * @return the volatile resource cache linked to the current user session.
    */
   public static VolatileResourceCacheService getSessionVolatileResourceCacheService() {
-    VolatileResourceCacheService volatileResourceCacheService = getSessionCacheService()
-        .get(VolatileResourceCacheService.class.getName(), VolatileResourceCacheService.class);
+    SimpleCacheService sessionCache = getSessionCacheService().getCurrentSessionCache();
+    VolatileResourceCacheService volatileResourceCacheService =
+        sessionCache.get(VolatileResourceCacheService.class.getName(),
+            VolatileResourceCacheService.class);
     if (volatileResourceCacheService == null) {
       volatileResourceCacheService = new VolatileResourceCacheService();
-      getSessionCacheService()
+      sessionCache
           .put(VolatileResourceCacheService.class.getName(), volatileResourceCacheService);
     }
     return volatileResourceCacheService;

@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SimpleCacheService;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag;
 
 import javax.ws.rs.core.UriBuilder;
@@ -75,11 +76,13 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> get(
       WEB_COMPONENT_REQUEST_CONTEXT context) {
     String cacheKey = "NavigationContext@" + context.getComponentUriBase();
+    SimpleCacheService sessionCache =
+        CacheServiceProvider.getSessionCacheService().getCurrentSessionCache();
     NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext =
-        CacheServiceProvider.getSessionCacheService().get(cacheKey, NavigationContext.class);
+        sessionCache.get(cacheKey, NavigationContext.class);
     if (navigationContext == null) {
-      navigationContext = new NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>(context);
-      CacheServiceProvider.getSessionCacheService().put(cacheKey, navigationContext);
+      navigationContext = new NavigationContext<>(context);
+      sessionCache.put(cacheKey, navigationContext);
     } else {
       navigationContext.webComponentRequestContext = context;
     }
