@@ -45,9 +45,6 @@
 
   var layoutDebug = false;
 
-  var HEADER_PART_URL = $window.LayoutSettings.get("layout.header.url");
-  var BODY_PART_URL = $window.LayoutSettings.get("layout.body.url");
-  var BODY_NAVIGATION_PART_URL = $window.LayoutSettings.get("layout.body.navigation.url");
   var PDC_ACTIVATED = $window.LayoutSettings.get("layout.pdc.activated");
   var PDC_URL_BASE = $window.LayoutSettings.get("layout.pdc.baseUrl");
   var PDC_DEFAULT_ACTION = $window.LayoutSettings.get("layout.pdc.action.default");
@@ -114,8 +111,9 @@
   var HeaderPart = Part.extend({
     load : function(urlParameters) {
       __logDebug("loading header part");
+      var headerPartURL = $window.LayoutSettings.get("layout.header.url");
       return sp.load(this.getContainer(),
-          sp.ajaxConfig(HEADER_PART_URL).withParams(urlParameters)).then(function() {
+          sp.ajaxConfig(headerPartURL).withParams(urlParameters)).then(function() {
         this.dispatchEvent("load");
       }.bind(this));
     }
@@ -142,8 +140,9 @@
     load : function(urlParameters) {
       __logDebug("loading body part");
       applyReadyBehaviorOn(this);
+      var bodyPartURL = $window.LayoutSettings.get("layout.body.url");
       return sp.load(this.getContainer(),
-          sp.ajaxConfig(BODY_PART_URL).withParams(urlParameters)).then(function() {
+          sp.ajaxConfig(bodyPartURL).withParams(urlParameters)).then(function() {
           __logDebug("... initializing the context of body part instance");
         this.rootLayout = $window.document.querySelector(this.partSelectors.bodyNavigationAndContentLayout);
         this.resize();
@@ -226,7 +225,8 @@
       var parameters = extendsObject({
         "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
       }, urlParameters);
-      var ajaxConfig = sp.ajaxConfig(BODY_NAVIGATION_PART_URL).withParams(parameters);
+      var bodyNavigationPartURL = $window.LayoutSettings.get("layout.body.navigation.url");
+      var ajaxConfig = sp.ajaxConfig(bodyNavigationPartURL).withParams(parameters);
       return sp.load(this.getContainer(), ajaxConfig).then(function() {
         this.getMainLayout().getBody().getToggles().show();
         this.dispatchEvent("load");

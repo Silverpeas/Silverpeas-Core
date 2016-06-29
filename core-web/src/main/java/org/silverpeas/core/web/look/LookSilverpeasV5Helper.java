@@ -87,6 +87,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   private boolean enableUFSContainsState = false;
   private HttpSession session = null;
   private String currentLookName = null;
+  private LayoutConfiguration layoutConfiguration;
 
   /*
    * (non-Javadoc)
@@ -223,6 +224,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
           getMainSessionController().getFavoriteLanguage());
     }
     initProperties();
+    initLayoutConfiguration();
     getTopItems();
   }
 
@@ -257,6 +259,15 @@ public class LookSilverpeasV5Helper extends LookHelper {
       init(getGraphicElementFactory().getFavoriteLookSettings());
       currentLookName = spaceLook;
     }
+  }
+
+  private void initLayoutConfiguration() {
+    this.layoutConfiguration = new DefaultLayoutConfiguration(this.resources);
+  }
+
+  @Override
+  public LayoutConfiguration getLayoutConfiguration() {
+    return layoutConfiguration;
   }
 
   @Override
