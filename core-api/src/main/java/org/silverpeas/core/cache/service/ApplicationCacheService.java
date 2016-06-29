@@ -53,6 +53,6 @@ public class ApplicationCacheService implements CacheService {
 
   @Override
   public void clearAllCaches() {
-    cache.clear();
+    getCache().clear();
   }
 }

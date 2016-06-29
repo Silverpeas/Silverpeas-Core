@@ -14,7 +14,7 @@ public class LibCoreCommonAPI4Test extends CommonAPI4Test {
   }
 
   private void clearCacheData() {
-    CacheServiceProvider.getRequestCacheService().clear();
-    CacheServiceProvider.getThreadCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
   }
 }

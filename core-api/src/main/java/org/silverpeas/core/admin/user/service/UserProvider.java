@@ -36,8 +36,6 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public interface UserProvider {
 
-  String CURRENT_REQUESTER_KEY = User.class.getName() + "_CURRENT_REQUESTER";
-
   /**
    * Gets the instance of the implementation of the interface.
    * @return an implementation of {@link UserProvider}.

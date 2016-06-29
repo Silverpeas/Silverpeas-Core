@@ -313,7 +313,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
 
   @Override
   protected void onInstantiation(final TestWebComponentRequestContext context) {
-    Object called = CacheServiceProvider.getSessionCacheService().get("onInstantiationCalled");
+    Object called = CacheServiceProvider.getSessionCacheService().getCache().get("onInstantiationCalled");
     if (called == null) {
       context.getNavigationContext()
           .addListener(new AbstractNavigationContextListener<TestWebComponentRequestContext>() {
