@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,49 +23,24 @@
  */
 package org.silverpeas.core.cache.service;
 
+import org.silverpeas.core.cache.model.SimpleCache;
+
 /**
- * User: Yohann Chastagnier
- * Date: 11/09/13
+ * A service working on caches.
+ * @author mmoquillon
  */
-public interface CacheService extends SimpleCacheService {
+public interface CacheService {
 
   /**
-   * Adds a value and generate a unique key to retrieve later the value.
-   * After the given time, the value is trashed.
-   * @param value
-   * @param timeToLive 0 = unlimited
-   * @return
+   * Gets a cache from this service.
+   * @return either a new cache or a single one according to the policy of the service about the
+   * cache(s) on which it works.
    */
-  String add(Object value, int timeToLive);
+  <T extends SimpleCache> T getCache();
 
   /**
-   * Adds a value and generate a unique key to retrieve later the value.
-   * After the given live time, the value is trashed.
-   * After the given idle time, the value is trashed.
-   * @param value
-   * @param timeToLive 0 = unlimited
-   * @param timeToIdle 0 = unlimited
-   * @return
+   * Clears all the caches on which this service works.
    */
-  String add(Object value, int timeToLive, int timeToIdle);
+  void clearAllCaches();
 
-  /**
-   * Puts a value for a given key.
-   * After the given time, the value is trashed.
-   * @param key
-   * @param value
-   * @param timeToLive 0 = unlimited
-   */
-  void put(Object key, Object value, int timeToLive);
-
-  /**
-   * Puts a value for a given key.
-   * After the given time, the value is trashed.
-   * After the given idle time, the value is trashed.
-   * @param key
-   * @param value
-   * @param timeToLive
-   * @param timeToIdle 0 = unlimited
-   */
-  void put(Object key, Object value, int timeToLive, int timeToIdle);
 }

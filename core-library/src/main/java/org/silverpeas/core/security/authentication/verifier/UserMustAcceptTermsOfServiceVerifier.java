@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
-
+import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationUserMustAcceptTermsOfService;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +46,10 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
   private static TermsOfServiceAcceptanceFrequency globalAcceptanceFrequency;
 
   // In seconds, 10 minutes (60seconds x 10minutes)
-  private final static int LIVE_10_MINUTES = 60 * 10;
+  private static final int LIVE_10_MINUTES = 60 * 10;
+
+  private static final Cache applicationCache =
+      CacheServiceProvider.getApplicationCacheService().getCache();
 
   static {
     globalAcceptanceFrequency = TermsOfServiceAcceptanceFrequency
@@ -86,7 +90,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
       throws AuthenticationUserMustAcceptTermsOfService {
     if (isTermsOfServiceAcceptanceDateIsExpired()) {
       // Caching for 10 minutes
-      tosToken = CacheServiceProvider.getApplicationCacheService().add(this, LIVE_10_MINUTES);
+      tosToken = applicationCache.add(this, LIVE_10_MINUTES);
       throw new AuthenticationUserMustAcceptTermsOfService();
     }
     return this;
@@ -135,8 +139,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    * @return
    */
   protected static synchronized UserMustAcceptTermsOfServiceVerifier get(String tosToken) {
-    UserMustAcceptTermsOfServiceVerifier verifier = CacheServiceProvider
-        .getApplicationCacheService()
+    UserMustAcceptTermsOfServiceVerifier verifier = applicationCache
         .get(tosToken, UserMustAcceptTermsOfServiceVerifier.class);
     if (verifier == null) {
       verifier = new UserMustAcceptTermsOfServiceVerifier(null);
@@ -150,7 +153,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    */
   private static synchronized void clearCache(String tosToken) {
     if (tosToken != null) {
-      CacheServiceProvider.getApplicationCacheService().remove(tosToken);
+      applicationCache.remove(tosToken);
     }
   }
 }

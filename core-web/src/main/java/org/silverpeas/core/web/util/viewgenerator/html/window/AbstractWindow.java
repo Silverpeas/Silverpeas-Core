@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.window;
 
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -382,8 +383,8 @@ public abstract class AbstractWindow implements Window {
       result.append("<div class=\"sp_goToTop\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
           "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     } else {
-      Object includePopupResizeJsDone =
-          CacheServiceProvider.getRequestCacheService().get("@includePopupResizeJsDone@");
+      SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+      Object includePopupResizeJsDone = cache.get("@includePopupResizeJsDone@");
       if (includePopupResizeJsDone == null) {
         StringBuilder popupResizeJs = new StringBuilder();
         popupResizeJs.append("jQuery(document.body).ready(");
@@ -392,7 +393,7 @@ public abstract class AbstractWindow implements Window {
         popupResizeJs.append("});");
         result.append(new script().setType("text/javascript").addElement(popupResizeJs.toString())
             .toString());
-        CacheServiceProvider.getRequestCacheService().put("@includePopupResizeJsDone@", true);
+        cache.put("@includePopupResizeJsDone@", true);
       }
     }
     if (StringUtil.isDefined(contextualDiv)) {

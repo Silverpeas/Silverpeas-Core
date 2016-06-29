@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.cache.service;
+package org.silverpeas.core.cache.model;
 
 /**
  * User: Yohann Chastagnier
  * Date: 11/09/13
  */
-public interface SimpleCacheService {
+public interface SimpleCache {
 
   /**
    * Clear the content of the cache.

@@ -23,20 +23,23 @@
  */
 package org.silverpeas.core.cache.service;
 
+import org.silverpeas.core.cache.model.AbstractSimpleCache;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Cache managed in memory.
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-public class InMemoryCacheService extends AbstractSimpleCacheService {
+class InMemoryCache extends AbstractSimpleCache {
 
-  private final Map<Object, Object> cache = new HashMap<Object, Object>();
+  private final Map<Object, Object> cache = new HashMap<>();
 
   /**
    * Gets the cache.
-   * @return
+   * @return the underlying cache used for its implementation.
    */
   protected Map<Object, Object> getCache() {
     return cache;

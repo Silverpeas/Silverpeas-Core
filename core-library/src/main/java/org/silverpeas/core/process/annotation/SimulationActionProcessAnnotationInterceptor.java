@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.process.annotation;
 
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.ActionType;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.AnnotationUtil;
 import org.silverpeas.core.util.annotation.Language;
@@ -80,7 +80,9 @@ public class SimulationActionProcessAnnotationInterceptor {
       Map<Class<Annotation>, List<Object>> annotatedParametersValues) throws Exception {
 
     // Simulation is processed only if no simulation is already working
-    if (CacheServiceProvider.getRequestCacheService().get(SIMULATION_PROCESS_PERFORMED) == null) {
+    if (CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(SIMULATION_PROCESS_PERFORMED) == null) {
       try {
 
         // Master annotation
@@ -148,7 +150,9 @@ public class SimulationActionProcessAnnotationInterceptor {
           }
 
           // Indicating that a functional check has been performed
-          CacheServiceProvider.getRequestCacheService().put(SIMULATION_PROCESS_PERFORMED, true);
+          CacheServiceProvider.getRequestCacheService()
+              .getCache()
+              .put(SIMULATION_PROCESS_PERFORMED, true);
         } else {
           SilverTrace.warn("Process", "SimulationActionProcessAnnotationInterceptor.intercept()",
               "intercepted method '" + context.getMethod().getName() +
@@ -167,7 +171,9 @@ public class SimulationActionProcessAnnotationInterceptor {
 
         // Removing the flag indicating that a functional check has been performed (out of the
         // service)
-        CacheServiceProvider.getRequestCacheService().remove(SIMULATION_PROCESS_PERFORMED);
+        CacheServiceProvider.getRequestCacheService()
+            .getCache()
+            .remove(SIMULATION_PROCESS_PERFORMED);
       }
     }
 

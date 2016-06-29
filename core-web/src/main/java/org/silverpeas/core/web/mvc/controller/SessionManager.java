@@ -21,35 +21,34 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionValidationContext;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.admin.domain.model.DomainProperties;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.VolatileResourceCacheService;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.admin.domain.model.DomainProperties;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.VolatileResourceCacheService;
-import org.silverpeas.core.io.upload.UploadSession;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
@@ -516,7 +515,8 @@ public class SessionManager implements SessionManagement {
     if (!sessionInfo.isDefined()) {
       throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
     }
-    CacheServiceProvider.getSessionCacheService().setCurrentSessionCache(sessionInfo.getCache());
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
+        sessionInfo.getCache());
     sessionInfo.setIPAddress(request.getRemoteHost());
     return sessionInfo;
   }

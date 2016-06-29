@@ -23,59 +23,40 @@
  */
 package org.silverpeas.core.cache.service;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
+import org.silverpeas.core.cache.model.AbstractSimpleCache;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Implementation of the CacheService that uses EhCache API. User: Yohann Chastagnier Date: 11/09/13
+ * User: Yohann Chastagnier
+ * Date: 25/10/13
  */
-public final class EhCacheService extends AbstractCacheService {
+class ThreadCache extends AbstractSimpleCache {
 
-  private final static String CACHE_NAME = "SILVERPEAS_COMMON_EH_CACHE";
-
-  private final CacheManager cacheManager;
-
-  /**
-   * Initialization of the service using EhCache API.
-   *
-   * @param nbMaxElements
-   */
-  EhCacheService(int nbMaxElements) {
-    cacheManager = CacheManager.getInstance();
-    if (!cacheManager.cacheExists(CACHE_NAME)) {
-      cacheManager.addCache(new Cache(new CacheConfiguration(CACHE_NAME, nbMaxElements)));
-    } else {
-      // Resizing dynamically the cache that already exists
-      getCache().getCacheConfiguration().setMaxEntriesLocalHeap(nbMaxElements);
-    }
-  }
+  private final ThreadLocal<Map<Object, Object>> cache = new ThreadLocal<>();
 
   /**
    * Gets the cache.
-   *
-   * @return
+   * @return the underlying cache used for its implementation.
    */
-  Cache getCache() {
-    return cacheManager.getCache(CACHE_NAME);
+  protected Map<Object, Object> getCache() {
+    Map<Object, Object> threadCache = cache.get();
+    if (threadCache == null) {
+      threadCache = new HashMap<>();
+      cache.set(threadCache);
+    }
+    return threadCache;
   }
 
   @Override
   public void clear() {
-    Cache cache = getCache();
-    for (Object key : cache.getKeys()) {
-      cache.remove(key);
-    }
+    cache.set(null);
   }
 
   @Override
   public Object get(final Object key) {
-    Element element = getCache().get(key);
-    if (element == null) {
-      return null;
-    }
-    return element.getObjectValue();
+    return getCache().get(key);
   }
 
   @Override
@@ -97,11 +78,7 @@ public final class EhCacheService extends AbstractCacheService {
   }
 
   @Override
-  public void put(final Object key, final Object value, final int timeToLive,
-      final int timeToIdle) {
-    Element element = new Element(key, value);
-    element.setTimeToLive(timeToLive);
-    element.setTimeToIdle(timeToIdle);
-    getCache().put(element);
+  public void put(final Object key, final Object value) {
+    getCache().put(key, value);
   }
 }

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.cache.service;
+package org.silverpeas.core.cache.model;
 
 import java.util.UUID;
 
@@ -29,7 +29,7 @@ import java.util.UUID;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-public abstract class AbstractSimpleCacheService implements SimpleCacheService {
+public abstract class AbstractSimpleCache implements SimpleCache {
 
   @SuppressWarnings("unchecked")
   @Override

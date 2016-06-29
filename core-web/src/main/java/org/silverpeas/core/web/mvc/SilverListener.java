@@ -25,6 +25,7 @@
 package org.silverpeas.core.web.mvc;
 
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -87,7 +88,7 @@ public class SilverListener
         SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(httpSession.getId());
         if (sessionInfo.isDefined()) {
-          CacheServiceProvider.getSessionCacheService()
+          ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
               .setCurrentSessionCache(sessionInfo.getCache());
         } else {
           // Anonymous management
@@ -96,7 +97,7 @@ public class SilverListener
                   MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
           if (mainSessionController != null &&
               mainSessionController.getCurrentUserDetail() != null) {
-            CacheServiceProvider.getSessionCacheService()
+            ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
                 .newSessionCache(mainSessionController.getCurrentUserDetail());
           }
         }
@@ -117,6 +118,6 @@ public class SilverListener
    * Clears the cache associated to the request.
    */
   private void clearRequestCache() {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().getCache().clear();
   }
 }

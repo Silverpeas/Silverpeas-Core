@@ -23,30 +23,22 @@
  */
 package org.silverpeas.core.cache.service;
 
-import org.silverpeas.core.util.ResourceLocator;
-
 /**
+ * A provider of different kinds of cache services available in Silverpeas.
  * @author Yohann Chastagnier
  */
 public class CacheServiceProvider {
 
   private static final CacheServiceProvider instance = new CacheServiceProvider();
-  private final SimpleCacheService threadCacheService;
-  private final SimpleCacheService requestCacheService;
-  private final SessionCacheService sessionCacheService = new SessionCacheService();
-  private CacheService cacheService;
+  private final CacheService sessionCacheService = new SessionCacheService();
+  private final CacheService threadCacheService = new ThreadCacheService();
+  private final CacheService requestCacheService = new ThreadCacheService();
+  private final CacheService applicationCacheService = new ApplicationCacheService();
 
   /**
    * Initialization of service instances
    */
   private CacheServiceProvider() {
-
-    // Thread cache
-    threadCacheService = new ThreadCacheService();
-
-    // Request cache
-    requestCacheService = new ThreadCacheService();
-
     // Common cache is lazily initialized because resource locator need CacheServiceProvider...
   }
 
@@ -66,7 +58,7 @@ public class CacheServiceProvider {
    * after the end of the request, please use {@link #getRequestCacheService()}.
    * @return a cache associated to the current thread.
    */
-  public static SimpleCacheService getThreadCacheService() {
+  public static CacheService getThreadCacheService() {
     return getInstance().threadCacheService;
   }
 
@@ -75,7 +67,7 @@ public class CacheServiceProvider {
    * the associated cache is trashed.
    * @return a cache associated to the current request.
    */
-  public static SimpleCacheService getRequestCacheService() {
+  public static CacheService getRequestCacheService() {
     return getInstance().requestCacheService;
   }
 
@@ -84,7 +76,7 @@ public class CacheServiceProvider {
    * the associated cache is trashed. If no session cache exists, then it is created and returned.
    * @return a cache associated to the current session.
    */
-  public static SessionCacheService getSessionCacheService() {
+  public static CacheService getSessionCacheService() {
     return getInstance().sessionCacheService;
   }
 
@@ -93,17 +85,7 @@ public class CacheServiceProvider {
    * @return an applicative cache service
    */
   public static CacheService getApplicationCacheService() {
-    CacheService cacheService = getInstance().cacheService;
-    if (cacheService == null) {
-      int nbMaxElements = ResourceLocator.getGeneralSettingBundle().
-          getInteger("application.cache.common.nbMaxElements", 0);
-      if (nbMaxElements < 0) {
-        nbMaxElements = 0;
-      }
-      cacheService = new EhCacheService(nbMaxElements);
-      getInstance().cacheService = cacheService;
-    }
-    return cacheService;
+    return getInstance().applicationCacheService;
   }
 
   /**
@@ -114,7 +96,7 @@ public class CacheServiceProvider {
    * </ul>
    */
   public static void clearAllThreadCaches() {
-    getThreadCacheService().clear();
-    getRequestCacheService().clear();
+    getThreadCacheService().clearAllCaches();
+    getRequestCacheService().clearAllCaches();
   }
 }

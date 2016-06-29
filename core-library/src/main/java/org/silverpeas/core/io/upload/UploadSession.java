@@ -276,7 +276,7 @@ public class UploadSession {
    * @return an upload session instance if any, null otherwise.
    */
   private static UploadSession getSessionFromCache(String uploadSessionId) {
-    return CacheServiceProvider.getSessionCacheService().getCurrentSessionCache()
+    return CacheServiceProvider.getSessionCacheService().getCache()
         .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSessionId, UploadSession.class);
   }
 
@@ -288,16 +288,16 @@ public class UploadSession {
   @SuppressWarnings("unchecked")
   private static void registerSessionInCache(UploadSession uploadSession) {
     Set<String> sessionIds = CacheServiceProvider.getSessionCacheService()
-        .getCurrentSessionCache()
+        .getCache()
         .get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds == null) {
       sessionIds = new HashSet<>();
       CacheServiceProvider.getSessionCacheService()
-          .getCurrentSessionCache()
+          .getCache()
           .put(SESSION_CACHE_KEY, sessionIds);
     }
     sessionIds.add(uploadSession.uploadSessionId);
-    CacheServiceProvider.getSessionCacheService().getCurrentSessionCache()
+    CacheServiceProvider.getSessionCacheService().getCache()
         .put(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession.getId(), uploadSession);
   }
 
@@ -309,11 +309,11 @@ public class UploadSession {
   @SuppressWarnings("unchecked")
   private static void removeSessionFromCache(UploadSession uploadSession) {
     Set<String> sessionIds = CacheServiceProvider.getSessionCacheService()
-        .getCurrentSessionCache()
+        .getCache()
         .get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds != null) {
       sessionIds.remove(uploadSession.getId());
-      CacheServiceProvider.getSessionCacheService().getCurrentSessionCache()
+      CacheServiceProvider.getSessionCacheService().getCache()
           .remove(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession.getId());
     }
   }

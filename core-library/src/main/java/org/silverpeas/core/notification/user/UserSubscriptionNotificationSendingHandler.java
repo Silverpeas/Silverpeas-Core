@@ -24,7 +24,6 @@
 package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +57,7 @@ public class UserSubscriptionNotificationSendingHandler {
           .getBooleanValue(request.getHeader(
               UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM));
       if (fromParameters || fromHeaders) {
-        getRequestCacheService().put(SENDING_NOT_ENABLED_KEY, true);
+        getRequestCacheService().getCache().put(SENDING_NOT_ENABLED_KEY, true);
       }
     }
   }
@@ -68,9 +67,11 @@ public class UserSubscriptionNotificationSendingHandler {
    * @return true if enabled, false otherwise.
    */
   public static boolean isEnabledForCurrentRequest() {
-    Boolean notEnabled = getRequestCacheService().get(SENDING_NOT_ENABLED_KEY, Boolean.class);
+    Boolean notEnabled =
+        getRequestCacheService().getCache().get(SENDING_NOT_ENABLED_KEY, Boolean.class);
     if (notEnabled == null) {
-      notEnabled = getThreadCacheService().get(SENDING_NOT_ENABLED_JMS_WAY_KEY, Boolean.class);
+      notEnabled =
+          getThreadCacheService().getCache().get(SENDING_NOT_ENABLED_JMS_WAY_KEY, Boolean.class);
     }
     return notEnabled == null || !notEnabled;
   }
