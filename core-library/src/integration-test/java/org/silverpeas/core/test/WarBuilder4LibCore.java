@@ -372,13 +372,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addCommonBasicUtilities();
     addBundleBaseFeatures();
     addCommonUserBeans();
-    if (!contains(AbstractJpaEntity.class)) {
-      addClasses(ResourceIdentifier.class);
-      addPackages(true, "org.silverpeas.core.admin.user.constant");
-      addPackages(true, "org.silverpeas.core.persistence.datasource.model");
-      addPackages(true, "org.silverpeas.core.persistence.datasource.repository");
-      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
-    }
     return this;
   }
 
