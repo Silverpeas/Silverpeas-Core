@@ -27,7 +27,7 @@ package org.silverpeas.core.notification.sse;
 /**
  * @author Yohann Chastagnier
  */
-public class TestServerEventA extends AbstractServerEvent {
+public class TestServerEventA extends AbstractServerEventTest {
 
   private static ServerEventName EVENT_NAME = () -> "EVENT_A";
 

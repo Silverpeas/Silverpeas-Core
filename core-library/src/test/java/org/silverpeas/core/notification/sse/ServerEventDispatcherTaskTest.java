@@ -46,8 +46,8 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
     assertThat(asyncContextMap.size(), is(0));
-    assertThat(lastServerEvents, hasSize(0));
-    verifyZeroInteractions(mockedServerEvent);
+    assertThat(getStoredServerEvents(), hasSize(1));
+    verify(mockedServerEvent, atLeast(1)).getId();
   }
 
   @Test
@@ -57,7 +57,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     ServerEvent mockedServerEvent = newMockedServerEvent(null, null);
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
-    assertThat(lastServerEvents, contains(mockedServerEvent));
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream, is("retry: 5000\nid: 0\n\n"));
   }
@@ -69,7 +69,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     ServerEvent mockedServerEvent = newMockedServerEvent("EVENT_NAME", null);
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
-    assertThat(lastServerEvents, contains(mockedServerEvent));
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_NAME\n\n"));
   }
@@ -81,7 +81,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     ServerEvent mockedServerEvent = newMockedServerEvent("", "");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
-    assertThat(lastServerEvents, contains(mockedServerEvent));
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream, is("retry: 5000\nid: 0\n\n"));
   }
@@ -111,7 +111,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
         newMockedServerEvent("EVENT_ONE_LINE", "This is a line of data");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
-    assertThat(lastServerEvents, contains(mockedServerEvent));
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream,
         is("retry: 5000\nid: 0\nevent: EVENT_ONE_LINE\ndata: This is a line of data\n\n"));
@@ -125,7 +125,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
         newMockedServerEvent("EVENT_ONE_LINE", "Line 1\nLine 2\n\n\nLine 3");
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
-    assertThat(lastServerEvents, contains(mockedServerEvent));
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_ONE_LINE\n" +
         "data: Line 1\ndata: Line 2\ndata: \ndata: \ndata: Line 3\n\n"));
@@ -140,7 +140,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
             .putJSONArray("array", jsonArray -> jsonArray.add("unit").add("test"))));
     ServerEventDispatcherTask.dispatch(mockedServerEvent);
     pause();
-    assertThat(lastServerEvents, contains(mockedServerEvent));
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_ONE_LINE\n" +
         "data: {\"unitTest\":true,\"array\":[\"unit\",\"test\"]}\n\n"));

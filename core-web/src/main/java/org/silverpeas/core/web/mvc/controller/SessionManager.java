@@ -29,7 +29,7 @@ import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.core.notification.sse.CommonServerEventNotifier;
+import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -104,7 +104,7 @@ public class SessionManager implements SessionManagement {
   @Inject
   private Scheduler scheduler;
   @Inject
-  private CommonServerEventNotifier commonServerEventNotifier;
+  private DefaultServerEventNotifier defaultServerEventNotifier;
 
   /**
    * Prevent the class from being instantiate (private)
@@ -233,7 +233,7 @@ public class SessionManager implements SessionManagement {
       userNotificationSessions.remove(si.getSessionId());
       si.onClosed();
 
-      commonServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si.getUserDetail()));
+      defaultServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si.getUserDetail()));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
@@ -511,7 +511,7 @@ public class SessionManager implements SessionManagement {
       si = new HTTPSessionInfo(session, anIP, user);
       openSession(si);
       userDataSessions.put(si.getSessionId(), si);
-      commonServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(si.getUserDetail()));
+      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(si.getUserDetail()));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }

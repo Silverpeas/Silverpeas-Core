@@ -25,17 +25,21 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+import org.silverpeas.core.notification.sse.behavior.KeepAlwaysStoring;
+import org.silverpeas.core.notification.sse.behavior.StoreLastOnly;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
@@ -48,17 +52,18 @@ import static java.text.MessageFormat.format;
  */
 public class ServerEventDispatcherTask extends AbstractRequestTask {
 
-  private static final ConcurrentMap<SilverpeasAsyncContext, SilverpeasAsyncContext> asyncContexts =
-      new ConcurrentHashMap<>();
+  private static final Set<SilverpeasAsyncContext> contexts = new LinkedHashSet<>(2000);
 
   /**
    * Please consult {@link AbstractRequestTask} documentation.
    */
   private static final List<Request> requestList = new ArrayList<>();
+
   /**
-   * Indicator that represents the simple state of the task running.
+   * A store of server events.
    */
-  private static final List<ServerEvent> lastServerEvents = new ArrayList<>();
+  private static final ServerEventStore serverEventStore = new ServerEventStore();
+
   /**
    * Indicator that represents the simple state of the task running.
    */
@@ -82,37 +87,16 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   }
 
   /**
-   * Cleaning expired server events which the first sent data is too far in the past.
-   */
-  private static void cleanExpiredServerEvents() {
-    long expiredTime = System.currentTimeMillis() - (Math.max(ServerEvent.CLIENT_RETRY * 4, 40000));
-    synchronized (lastServerEvents) {
-      Iterator<ServerEvent> it = lastServerEvents.iterator();
-      while (it.hasNext()) {
-        ServerEvent serverEvent = it.next();
-        final long lifetime = serverEvent.getFirstSentDate().getTime() - expiredTime;
-        if (lifetime <= 0) {
-          it.remove();
-          SilverLogger.getLogger(ServerEventDispatchRequest.class).debug(
-              () -> format("Removing expired {0} lifetime of {1}ms", serverEvent.toString(),
-                  (lifetime * -1)));
-        } else {
-          break;
-        }
-      }
-    }
-  }
-
-  /**
    * Unregister an {@link SilverpeasAsyncContext} instance.
-   * @param asyncContext the instance to unregister.
+   * @param context the instance to unregister.
    */
-  static void unregisterAsyncContext(SilverpeasAsyncContext asyncContext) {
-    SilverpeasAsyncContext context = asyncContexts.remove(asyncContext);
-    if (context != null) {
-      SilverLogger.getLogger(ServerEventDispatcherTask.class).debug(
-          () -> format("Unregistering {0}, handling now {1} async context(s)", context.toString(),
-              asyncContexts.size()));
+  static void unregisterAsyncContext(SilverpeasAsyncContext context) {
+    synchronized (contexts) {
+      if (contexts.remove(context)) {
+        SilverLogger.getLogger(ServerEventDispatcherTask.class).debug(
+            () -> format("Unregistering {0}, handling now {1} async context(s)", context.toString(),
+                contexts.size()));
+      }
     }
   }
 
@@ -121,54 +105,52 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param sessionId an identifier od a session.
    */
   public static void unregisterBySessionId(String sessionId) {
-    final List<SilverpeasAsyncContext> asyncContextsToRemove = new ArrayList<>();
-    asyncContexts.entrySet().stream().forEach(entry -> {
-      if (sessionId.equals(entry.getKey().getSessionId())) {
-        asyncContextsToRemove.add(entry.getKey());
-      }
-    });
-    asyncContextsToRemove.forEach(ServerEventDispatcherTask::unregisterAsyncContext);
+    final List<SilverpeasAsyncContext> contextsToRemove = new ArrayList<>();
+    synchronized (contexts) {
+      contexts.stream().forEach(context -> {
+        if (sessionId.equals(context.getSessionId())) {
+          contextsToRemove.add(context);
+        }
+      });
+    }
+    contextsToRemove.forEach(ServerEventDispatcherTask::unregisterAsyncContext);
   }
 
   /**
    * Register an {@link SilverpeasAsyncContext} instance.<br/>
    * If the instance is already registered, nothing is again registered.
-   * @param asyncContext the instance to register.
+   * @param context the instance to register.
    */
-  public static void registerAsyncContext(SilverpeasAsyncContext asyncContext) {
-    asyncContexts.compute(asyncContext, (ac, oldSilverpeasContext) -> {
+  public static void registerAsyncContext(SilverpeasAsyncContext context) {
+    serverEventStore.cleanExpired();
+    synchronized (contexts) {
+      contexts.add(context);
       SilverLogger.getLogger(ServerEventDispatcherTask.class).debug(
-          () -> format("Registering {0}, handling now {1} async contexts", ac.toString(),
-              (asyncContexts.size() + 1)));
-      return asyncContext;
-    });
+          () -> format("Registering {0}, handling now {1} async contexts", context.toString(),
+              contexts.size()));
+    }
   }
 
   /**
    * Sends server events which the id is higher than the given one.
+   * @param request the request linked to the given response.
    * @param response the response on which the server events must be sent.
    * @param lastServerEventId the last identifier performed by the client.
    * @param receiver the receiver.
    * @return the last server event identifier sent or the given one if nothing has been sent.
    * @throws IOException
    */
-  public static long sendLastServerEventsFromId(HttpServletResponse response,
-      long lastServerEventId, final User receiver) throws IOException {
-    List<ServerEvent> serverEventsToSendAgain = new ArrayList<>();
-    synchronized (lastServerEvents) {
-      if (!lastServerEvents.isEmpty()) {
-        serverEventsToSendAgain.addAll(lastServerEvents.stream()
-            .filter(lastServerEvent -> lastServerEvent.getId().compareTo(lastServerEventId) > 0)
-            .collect(Collectors.toList()));
-      }
-    }
+  public static long sendLastServerEventsFromId(final HttpServletRequest request,
+      HttpServletResponse response, long lastServerEventId, final User receiver)
+      throws IOException {
+    List<ServerEvent> serverEventsToSendAgain = serverEventStore.getFromId(lastServerEventId);
     if (serverEventsToSendAgain.isEmpty()) {
       return lastServerEventId;
     }
     for (ServerEvent serverEventToSendAgain : serverEventsToSendAgain) {
       SilverLogger.getLogger(ServerEventDispatcherTask.class)
           .debug(() -> format("Sending not consumed {0}", serverEventToSendAgain.toString()));
-      serverEventToSendAgain.send(response, receiver);
+      serverEventToSendAgain.send(request, response, receiver);
     }
     return serverEventsToSendAgain.get(serverEventsToSendAgain.size() - 1).getId();
   }
@@ -184,7 +166,6 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       requestList.add(serverEventDispatchRequest);
       startIfNotAlreadyDone();
     }
-    cleanExpiredServerEvents();
   }
 
   @Override
@@ -212,35 +193,161 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
     @Override
     public void process(Object context) throws InterruptedException {
-      if (asyncContexts.isEmpty()) {
-        return;
-      }
       SilverLogger.getLogger(this)
           .debug(() -> format("Sending {0}", serverEventToDispatch.toString()));
-      final Long serverEventId = serverEventToDispatch.getId();
-      asyncContexts.keySet().parallelStream().forEach(asyncContext -> {
+      final List<SilverpeasAsyncContext> safeContexts;
+      synchronized (contexts) {
+        safeContexts = contexts.stream().collect(Collectors.toList());
+      }
+      safeContexts.parallelStream().forEach(asyncContext -> {
         try {
+          HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
           HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
           final Long lastServerEventId = asyncContext.getLastServerEventId();
+          final Long serverEventId = serverEventToDispatch.getId();
           if (lastServerEventId != null && serverEventId != null &&
               lastServerEventId < (serverEventId - 1)) {
-            SilverLogger.getLogger(this).debug(
-                () -> format("Some events have not been received for {0}, from id {1} to {2}",
-                    asyncContext.toString(), lastServerEventId, (serverEventId - 1)));
-            sendLastServerEventsFromId(response, lastServerEventId, asyncContext.getUser());
+            sendLastServerEventsFromId(request, response, lastServerEventId,
+                asyncContext.getUser());
             asyncContext.setLastServerEventId(null);
           }
-          serverEventToDispatch.send(response, asyncContext.getUser());
+          serverEventToDispatch.send(request, response, asyncContext.getUser());
         } catch (IOException e) {
           SilverLogger.getLogger(ServerEventDispatchRequest.this).error("Can not send SSE", e);
           unregisterAsyncContext(asyncContext);
         }
       });
-      if (serverEventId != null) {
-        synchronized (lastServerEvents) {
-          lastServerEvents.add(serverEventToDispatch);
+      serverEventStore.add(serverEventToDispatch);
+    }
+  }
+
+  /**
+   * Handles a store of server events.
+   */
+  static class ServerEventStore {
+    private final List<StoredServerEvent> store = new ArrayList<>();
+
+    /**
+     * Cleaning expired server events (lifetime of 40000ms maximum).
+     */
+    void cleanExpired() {
+      long currentTime = System.currentTimeMillis();
+      long maxLifeTime = Math.max(ServerEvent.CLIENT_RETRY * 4, 40000);
+      synchronized (store) {
+        Iterator<StoredServerEvent> it = store.iterator();
+        while (it.hasNext()) {
+          StoredServerEvent item = it.next();
+          if (item.getServerEvent() instanceof KeepAlwaysStoring) {
+            continue;
+          }
+          final long lifetime = currentTime - item.getStoreTime();
+          if (lifetime >= maxLifeTime) {
+            it.remove();
+            SilverLogger.getLogger(this).debug(
+                () -> format("Removing expired {0} lifetime of {1}ms",
+                    item.getServerEvent().toString(), lifetime));
+          } else {
+            break;
+          }
+        }
+        SilverLogger.getLogger(this)
+            .debug(() -> format("Size of the server event store (after clean): {0}", store.size()));
+      }
+    }
+
+    /**
+     * Gets server events from the store which the id is higher than the given one.
+     * @param lastServerEventId the last identifier performed by the client.
+     * @return a list of {@link ServerEvent} instances.
+     * @throws IOException
+     */
+    List<ServerEvent> getFromId(long lastServerEventId) throws IOException {
+      List<ServerEvent> serverEventsToSendAgain = new ArrayList<>();
+      synchronized (store) {
+        if (!store.isEmpty()) {
+          serverEventsToSendAgain.addAll(store.stream()
+              .filter(item -> item.getServerEvent().getId().compareTo(lastServerEventId) > 0)
+              .map(StoredServerEvent::getServerEvent).collect(Collectors.toList()));
         }
       }
+      return serverEventsToSendAgain;
+    }
+
+    /**
+     * Add the given {@link ServerEvent} into the store.
+     * @param serverEvent the server event to store.
+     */
+    public void add(final ServerEvent serverEvent) {
+      synchronized (store) {
+        if (serverEvent.getId() != null && !(serverEvent instanceof IgnoreStoring)) {
+          if (serverEvent instanceof StoreLastOnly) {
+            removeAll(((StoreLastOnly) serverEvent));
+          }
+          store.add(new StoredServerEvent(serverEvent));
+          SilverLogger.getLogger(this)
+              .debug(() -> format("Add {0} into the store (size={1})", serverEvent, store.size()));
+        }
+      }
+    }
+
+    /**
+     * Removes from the store all the stored server events which the type is compatible with the
+     * given one.
+     * @param storeLastOnly the server event class to identifying for removing.
+     */
+    private void removeAll(StoreLastOnly storeLastOnly) {
+      synchronized (store) {
+        Class<?> classToIdentify = storeLastOnly.getClass();
+        Iterator<StoredServerEvent> it = store.iterator();
+        while (it.hasNext()) {
+          StoredServerEvent item = it.next();
+          if (classToIdentify.isInstance(item.getServerEvent())) {
+            it.remove();
+            SilverLogger.getLogger(this).debug(
+                () -> format("Remove {0} from the store (size={1})", item.getServerEvent(),
+                    store.size()));
+            break;
+          }
+        }
+      }
+    }
+
+    /**
+     * Clears the store.
+     */
+    public void clear() {
+      synchronized (store) {
+        store.clear();
+      }
+    }
+  }
+
+  /**
+   * Represents a server event into the store.
+   */
+  private static class StoredServerEvent {
+    private final long storeTime;
+    private final ServerEvent serverEvent;
+
+    private StoredServerEvent(final ServerEvent serverEvent) {
+      this.storeTime = System.currentTimeMillis();
+      this.serverEvent = serverEvent;
+    }
+
+    /**
+     * Gets the time of the storing of the server event.
+     * @return a time as long (EPOCH time).
+     */
+    long getStoreTime() {
+      return storeTime;
+    }
+
+    /**
+     * Gets the server event.
+     * @return a server event.
+     */
+    ServerEvent getServerEvent() {
+      return serverEvent;
     }
   }
 }

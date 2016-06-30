@@ -22,41 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.notification.sse;
+package org.silverpeas.core.notification.sse.behavior;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.AbstractServerEvent;
-import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+import org.silverpeas.core.notification.sse.ServerEvent;
+import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 
 /**
+ * If an event implements this interface, it will not be stored into the store handled by {@link
+ * ServerEventDispatcherTask} in charge of dispatching all {@link ServerEvent}.
  * @author Yohann Chastagnier
  */
-class InitializationServerEvent extends AbstractServerEvent implements IgnoreStoring {
-
-  private static ServerEventName EVENT_NAME = () -> "OPEN_EVENT_SOURCE";
-
-  private final User emitter;
-
-  /**
-   * Hidden constructor.
-   * @param emitter the emitter of the event.
-   */
-  private InitializationServerEvent(final User emitter) {
-    this.emitter = emitter;
-    withData("Initializing a new server event source.");
-  }
-
-  static InitializationServerEvent createFor(final User emitter) {
-    return new InitializationServerEvent(emitter);
-  }
-
-  @Override
-  public ServerEventName getName() {
-    return EVENT_NAME;
-  }
-
-  @Override
-  public boolean isConcerned(final User receiver) {
-    return emitter.equals(receiver);
-  }
-}
+public interface IgnoreStoring {}

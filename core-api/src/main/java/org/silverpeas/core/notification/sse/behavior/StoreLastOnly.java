@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -22,23 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.notification.sse;
+package org.silverpeas.core.notification.sse.behavior;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import org.silverpeas.core.notification.sse.ServerEvent;
+import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 
 /**
+ * If an event implements this interface, the last added will be stored and the previous one will
+ * be cleaned from the store handled by {@link ServerEventDispatcherTask} in charge of dispatching
+ * all {@link ServerEvent}.
  * @author Yohann Chastagnier
  */
-@Singleton
-public class TestServerEventListenerA extends CDIServerEventListener<TestServerEventA> {
-
-  @Inject
-  TestServerEventBucket bucket;
-
-  @Override
-  public void on(final TestServerEventA event) {
-    bucket.listened("'A' EVENT LISTENER", event);
-    ServerEventDispatcherTask.dispatch(event);
-  }
-}
+public interface StoreLastOnly {}

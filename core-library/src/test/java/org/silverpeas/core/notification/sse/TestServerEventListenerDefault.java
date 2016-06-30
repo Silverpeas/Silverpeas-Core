@@ -24,14 +24,20 @@
 
 package org.silverpeas.core.notification.sse;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
- * A common implementation that handles a common BUS of server event dispatching.
  * @author Yohann Chastagnier
  */
-public class CommonServerEventTaskListener extends CDIServerEventListener<AbstractServerEvent> {
+@Singleton
+public class TestServerEventListenerDefault extends CDIServerEventListener<AbstractServerEvent> {
+
+  @Inject
+  TestServerEventBucket bucket;
 
   @Override
   public void on(final AbstractServerEvent event) {
-    ServerEventDispatcherTask.dispatch(event);
+    bucket.listened("'DEFAULT' EVENT LISTENER", event);
   }
 }

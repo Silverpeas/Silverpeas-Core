@@ -48,14 +48,17 @@ import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unr
 public class SilverpeasAsyncContext implements AsyncContext {
 
   private final AsyncContext wrappedInstance;
+  private final String sessionId;
   private final User user;
   private Long lastServerEventId;
 
   /**
    * Hidden constructor.
    */
-  private SilverpeasAsyncContext(final AsyncContext wrappedInstance, final User user) {
+  private SilverpeasAsyncContext(final AsyncContext wrappedInstance, final String sessionId,
+      final User user) {
     this.wrappedInstance = wrappedInstance;
+    this.sessionId = sessionId;
     this.user = user;
   }
 
@@ -69,7 +72,10 @@ public class SilverpeasAsyncContext implements AsyncContext {
     if (asyncContext instanceof SilverpeasAsyncContext) {
       return (SilverpeasAsyncContext) asyncContext;
     }
-    final SilverpeasAsyncContext context = new SilverpeasAsyncContext(asyncContext, user);
+    final String userSessionId =
+        ((HttpServletRequest) asyncContext.getRequest()).getSession(false).getId();
+    final SilverpeasAsyncContext context =
+        new SilverpeasAsyncContext(asyncContext, userSessionId, user);
     context.addListener(new AsyncListener() {
       @Override
       public void onComplete(final AsyncEvent event) throws IOException {
@@ -111,7 +117,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * @return a session identifier as string.
    */
   public String getSessionId() {
-    return ((HttpServletRequest) getRequest()).getSession(false).getId();
+    return sessionId;
   }
 
   /**
@@ -130,6 +136,10 @@ public class SilverpeasAsyncContext implements AsyncContext {
     return lastServerEventId;
   }
 
+  /**
+   * Sets the last server event identifier.
+   * @param lastServerEventId a last event identifier as long, can be null.
+   */
   public void setLastServerEventId(final Long lastServerEventId) {
     this.lastServerEventId = lastServerEventId;
   }
@@ -214,8 +224,9 @@ public class SilverpeasAsyncContext implements AsyncContext {
   @Override
   public String toString() {
     ToStringBuilder tsb = new ToStringBuilder(this, SHORT_PREFIX_STYLE);
+    tsb.append("on", getRequestURI());
     tsb.append("sessionId", getSessionId());
-    tsb.append("userId", getUser());
+    tsb.append("userId", getUser().getId());
     tsb.append("timeout", getTimeout());
     if (getLastServerEventId() != null) {
       tsb.append("lastServerEventId", getLastServerEventId());

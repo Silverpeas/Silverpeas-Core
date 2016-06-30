@@ -26,27 +26,36 @@ package org.silverpeas.core.webapi.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.AbstractServerEvent;
+import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 
 /**
  * @author Yohann Chastagnier
  */
-class RetryServerEvent extends AbstractServerEvent {
+class RetryServerEvent extends AbstractServerEvent implements IgnoreStoring {
 
-  private static ServerEventName EVENT_NAME = () -> "RETRY_COMMON_BUS";
+  private static ServerEventName EVENT_NAME = () -> "RETRY_EVENT_SOURCE";
 
   private final User emitter;
+  private final Long lastServerEventId;
 
   /**
    * Hidden constructor.
    * @param emitter the emitter of the event.
+   * @param lastServerEventId the server event identifier the WEB client has performed.
    */
-  private RetryServerEvent(final User emitter) {
+  private RetryServerEvent(final User emitter, final Long lastServerEventId) {
     this.emitter = emitter;
+    this.lastServerEventId = lastServerEventId;
     withData("Event source retry a new connection successfully.");
   }
 
-  static RetryServerEvent createFor(final User emitter) {
-    return new RetryServerEvent(emitter);
+  static RetryServerEvent createFor(final User emitter, final Long lastServerEventId) {
+    return new RetryServerEvent(emitter, lastServerEventId);
+  }
+
+  @Override
+  public Long getId() {
+    return lastServerEventId;
   }
 
   @Override

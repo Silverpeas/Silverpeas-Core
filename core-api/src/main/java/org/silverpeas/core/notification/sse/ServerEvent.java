@@ -27,6 +27,7 @@ package org.silverpeas.core.notification.sse;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
@@ -81,12 +82,6 @@ public interface ServerEvent {
   String getData(final User receiver);
 
   /**
-   * Gets the date of the first send.
-   * @return a date as {@link Date}.
-   */
-  Date getFirstSentDate();
-
-  /**
    * Indicates if the given receiver is concerned by the event. If not, the event is not sent.
    * @param receiver a potential receiver.
    * @return true if given receiver is concerned, false otherwise.
@@ -100,11 +95,12 @@ public interface ServerEvent {
    * .<br/>
    * If {@link #isConcerned(User)} indicates that the given receiver is not concerned, nothing is
    * sent.
+   * @param request
    * @param response the response on which the event will be pushed.
    * @param receiver the user concerned. The {@link User} instance is given to the
-   * {@link #getData(User)} method in order to produce dynamic data according to the receiver.
+ * {@link #getData(User)} method in order to produce dynamic data according to the receiver.
    */
-  default void send(HttpServletResponse response, final User receiver) throws IOException {
+  default void send(final HttpServletRequest request, HttpServletResponse response, final User receiver) throws IOException {
     if (!isConcerned(receiver)) {
       return;
     }

@@ -26,7 +26,8 @@ package org.silverpeas.core.web.mvc.controller.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.sse.AbstractServerEvent;
+import org.silverpeas.core.notification.sse.CommonServerEvent;
+import org.silverpeas.core.notification.sse.behavior.KeepAlwaysStoring;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.JSONCodec;
@@ -35,7 +36,7 @@ import org.silverpeas.core.util.JSONCodec;
  * This server event is sent on successful user session opening and on user session ending.
  * @author Yohann Chastagnier.
  */
-public class UserSessionServerEvent extends AbstractServerEvent {
+public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysStoring {
 
   private static ServerEventName EVENT_NAME = () -> "USER_SESSION";
 

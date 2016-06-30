@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -22,41 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.notification.sse;
+package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.AbstractServerEvent;
-import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
+ * A common implementation that extends {@link CDIServerEventNotifier}.<br/>
+ * Any treatment of Silverpeas has just to use this implementation in order to notify on a server
+ * event.
  * @author Yohann Chastagnier
  */
-class InitializationServerEvent extends AbstractServerEvent implements IgnoreStoring {
-
-  private static ServerEventName EVENT_NAME = () -> "OPEN_EVENT_SOURCE";
-
-  private final User emitter;
+public class DefaultServerEventNotifier extends CDIServerEventNotifier<AbstractServerEvent> {
 
   /**
-   * Hidden constructor.
-   * @param emitter the emitter of the event.
+   * Gets an instance of server event notifier.
+   * @return an instance (not a singleton).
    */
-  private InitializationServerEvent(final User emitter) {
-    this.emitter = emitter;
-    withData("Initializing a new server event source.");
-  }
-
-  static InitializationServerEvent createFor(final User emitter) {
-    return new InitializationServerEvent(emitter);
-  }
-
-  @Override
-  public ServerEventName getName() {
-    return EVENT_NAME;
-  }
-
-  @Override
-  public boolean isConcerned(final User receiver) {
-    return emitter.equals(receiver);
+  public static DefaultServerEventNotifier get() {
+    return ServiceProvider.getService(DefaultServerEventNotifier.class);
   }
 }

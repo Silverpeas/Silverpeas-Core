@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,20 +24,23 @@
 
 package org.silverpeas.core.notification.sse;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 /**
+ * It is an abstract extension of a {@link AbstractServerEvent}.<br/>
+ * This is the base implementation for all events which will be handled by common server event
+ * notifying.
  * @author Yohann Chastagnier
  */
-@Singleton
-public class TestServerEventListenerCommon extends CDIServerEventListener<AbstractServerEvent> {
+public abstract class CommonServerEvent extends AbstractServerEvent {
 
-  @Inject
-  TestServerEventBucket bucket;
+  private static final List<String> EVENT_SOURCE_URIS = singletonList("/sse/common");
 
   @Override
-  public void on(final AbstractServerEvent event) {
-    bucket.listened("'COMMON' EVENT LISTENER", event);
+  public List<String> getEventSourceURIs() {
+    return EVENT_SOURCE_URIS;
   }
 }

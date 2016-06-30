@@ -30,14 +30,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.sse.ServerEventDispatcherTask.ServerEventStore;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -47,10 +49,11 @@ import static org.mockito.Mockito.*;
  */
 class AbstractServerEventDispatcherTaskTest {
 
+  final static String EVENT_SOURCE_REQUEST_URI = "/handled";
   private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
-  Map<AsyncContext, AsyncContext> asyncContextMap;
-  List<ServerEvent> lastServerEvents;
+  Set<AsyncContext> asyncContextMap;
+  private ServerEventStore serverEventStore;
 
   @Rule
   public CommonAPI4Test getCommonAPI4Test() {
@@ -61,12 +64,12 @@ class AbstractServerEventDispatcherTaskTest {
   @After
   @SuppressWarnings("unchecked")
   public void setup() throws Exception {
-    asyncContextMap = (Map<AsyncContext, AsyncContext>) FieldUtils
-        .readDeclaredStaticField(ServerEventDispatcherTask.class, "asyncContexts", true);
-    lastServerEvents = (List<ServerEvent>) FieldUtils
-        .readDeclaredStaticField(ServerEventDispatcherTask.class, "lastServerEvents", true);
+    asyncContextMap = (Set<AsyncContext>) FieldUtils
+        .readDeclaredStaticField(ServerEventDispatcherTask.class, "contexts", true);
+    serverEventStore = (ServerEventStore) FieldUtils
+        .readDeclaredStaticField(ServerEventDispatcherTask.class, "serverEventStore", true);
     asyncContextMap.clear();
-    lastServerEvents.clear();
+    serverEventStore.clear();
     FieldUtils.writeDeclaredStaticField(AbstractServerEvent.class, "idCounter", 0L, true);
   }
 
@@ -77,13 +80,20 @@ class AbstractServerEventDispatcherTaskTest {
     return mock;
   }
 
+  List<ServerEvent> getStoredServerEvents() throws Exception {
+    return serverEventStore.getFromId(-1);
+  }
+
   SilverpeasAsyncContext newMockedAsyncContext(final String sessionId) throws Exception {
     SilverpeasAsyncContext mock = mock(SilverpeasAsyncContext.class);
+    HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
     HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
     PrintWriter mockedPrintWriter = mock(PrintWriter.class);
+    when(mock.getRequest()).thenReturn(mockedRequest);
     when(mock.getResponse()).thenReturn(mockedResponse);
     when(mock.getSessionId()).thenReturn(sessionId);
     when(mock.getLastServerEventId()).thenReturn(null);
+    when(mockedRequest.getRequestURI()).thenReturn(EVENT_SOURCE_REQUEST_URI);
     when(mockedResponse.getWriter()).thenReturn(mockedPrintWriter);
     when(mockedPrintWriter.append(anyString())).thenReturn(mockedPrintWriter);
     return mock;
@@ -95,12 +105,13 @@ class AbstractServerEventDispatcherTaskTest {
 
   String getSentServerEventStream(final AsyncContext mockedAsyncContext, final int nbPerform)
       throws IOException {
-    verify(mockedAsyncContext, times(nbPerform)).getResponse();
-    verify(mockedAsyncContext.getResponse(), times(nbPerform)).getWriter();
+    verify(mockedAsyncContext, atLeast(nbPerform)).getRequest();
+    verify(mockedAsyncContext, atLeast(nbPerform)).getResponse();
+    verify(mockedAsyncContext.getResponse(), atLeast(nbPerform)).getWriter();
     ArgumentCaptor<String> requestContentCaptor = ArgumentCaptor.forClass(String.class);
-    verify(mockedAsyncContext.getResponse().getWriter(), times(nbPerform))
+    verify(mockedAsyncContext.getResponse().getWriter(), atLeast(nbPerform))
         .append(requestContentCaptor.capture());
-    verify(mockedAsyncContext.getResponse(), times(nbPerform)).flushBuffer();
+    verify(mockedAsyncContext.getResponse(), atLeast(nbPerform)).flushBuffer();
     StringBuilder result = new StringBuilder();
     requestContentCaptor.getAllValues().forEach(result::append);
     return result.toString();

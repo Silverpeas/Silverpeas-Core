@@ -24,64 +24,9 @@
 
 package org.silverpeas.core.webapi.notification.sse;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.SilverpeasAsyncContext;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static java.text.MessageFormat.format;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.registerAsyncContext;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask
-    .sendLastServerEventsFromId;
-import static org.silverpeas.core.notification.sse.SilverpeasAsyncContext.wrap;
-
 /**
+ * In charge of EventSource opened on {@code /common/sse} URI.
  * @author Yohann Chastagnier
  */
-public class CommonServerSentEventServlet extends SilverpeasAuthenticatedHttpServlet {
-
-  @Override
-  protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
-      throws ServletException, IOException {
-
-    final User sessionUser = getMainSessionController(request).getCurrentUserDetail();
-
-    if (!"text/event-stream".equals(request.getHeader("Accept"))) {
-      final String errorMessage = "Server Sent Servlet accepts only 'test/event-stream' requests";
-      SilverLogger.getLogger(this).error(errorMessage);
-      throwHttpForbiddenError(errorMessage);
-    }
-
-    SilverLogger.getLogger(this)
-        .debug("Asking for a common server sent event communication (sessionUser={0})",
-            sessionUser.getId());
-
-    // An initial response
-    Long lastServerEventId = null;
-    try {
-      lastServerEventId = Long.valueOf(request.getHeader("Last-Event-ID"));
-    } catch (NumberFormatException ignore) {
-    }
-    if (lastServerEventId != null) {
-      SilverLogger.getLogger(this).debug(
-          () -> format("Sending emitted events since disconnection for sessionId {0}",
-              request.getSession(false).getId()));
-      RetryServerEvent.createFor(sessionUser).send(response, sessionUser);
-      lastServerEventId = sendLastServerEventsFromId(response, lastServerEventId, sessionUser);
-    } else {
-      InitializationServerEvent.createFor(sessionUser).send(response, sessionUser);
-    }
-
-    // Start Async processing
-    final SilverpeasAsyncContext asyncContext = wrap(request.startAsync(), sessionUser);
-    final int timeout = (request.getSession(false).getMaxInactiveInterval() * 1000) / 10;
-    asyncContext.setTimeout(Math.max(timeout, 60000));
-    asyncContext.setLastServerEventId(lastServerEventId);
-    registerAsyncContext(asyncContext);
-  }
+public class CommonServerSentEventServlet extends SilverpeasServerSentEventServlet {
 }

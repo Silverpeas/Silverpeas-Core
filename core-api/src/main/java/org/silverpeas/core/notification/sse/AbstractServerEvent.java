@@ -28,9 +28,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
@@ -46,11 +48,18 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 public abstract class AbstractServerEvent implements ServerEvent {
 
   private static long idCounter = 0;
-
   private long id = -1;
   private String data = StringUtil.EMPTY;
   private Function<User, String> dynamicData = null;
-  private Date firstSent = null;
+
+  /**
+   * Gets the Event Source URI on which the event is handled.<br/>
+   * If empty, then the event must be sent on all Event Sources.
+   * @return an URI as string.
+   */
+  public List<String> getEventSourceURIs() {
+    return Collections.emptyList();
+  }
 
   @Override
   public Long getId() {
@@ -63,11 +72,6 @@ public abstract class AbstractServerEvent implements ServerEvent {
   @Override
   public String getData(final User receiver) {
     return dynamicData == null ? data : dynamicData.apply(receiver);
-  }
-
-  @Override
-  public Date getFirstSentDate() {
-    return firstSent;
   }
 
   /**
@@ -87,7 +91,8 @@ public abstract class AbstractServerEvent implements ServerEvent {
    * Sets a functional interface which will produced the data as string by taking into account a
    * given {@link User} which is the current user for which the server event will be send. @param
    * dynamicData functional interface which will be played at each call of {@link
-   * ServerEvent#send(HttpServletResponse, User)} method. The functional interface provides one
+   * ServerEvent#send(HttpServletRequest, HttpServletResponse, User)} method. The functional
+   * interface provides one
    * parameter: {@link User}, the user for which the server event will be sent. It produces the
    * data to send.<br/>
    * If a functional interface is given, data eventually set by {@link #withData(String)} are
@@ -101,10 +106,20 @@ public abstract class AbstractServerEvent implements ServerEvent {
   }
 
   @Override
-  public void send(final HttpServletResponse response, final User receiver) throws IOException {
-    ServerEvent.super.send(response, receiver);
-    if (firstSent == null) {
-      firstSent = new Date();
+  public void send(final HttpServletRequest request, final HttpServletResponse response,
+      final User receiver) throws IOException {
+    List<String> eventSourceURIs = getEventSourceURIs();
+    boolean aimedEventSource = eventSourceURIs.isEmpty();
+    if (!aimedEventSource) {
+      for (String eventSourceURI : eventSourceURIs) {
+        if (request.getRequestURI().endsWith(eventSourceURI)) {
+          aimedEventSource = true;
+          break;
+        }
+      }
+    }
+    if (aimedEventSource) {
+      ServerEvent.super.send(request, response, receiver);
     }
   }
 
@@ -113,9 +128,6 @@ public abstract class AbstractServerEvent implements ServerEvent {
     ToStringBuilder tsb = new ToStringBuilder(this, SHORT_PREFIX_STYLE);
     tsb.append("id", getId());
     tsb.append("name", getName().asString());
-    if (getFirstSentDate() != null) {
-      tsb.append("firstSentDate", getFirstSentDate());
-    }
     return tsb.toString();
   }
 }

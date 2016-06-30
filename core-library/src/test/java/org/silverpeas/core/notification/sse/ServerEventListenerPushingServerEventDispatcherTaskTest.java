@@ -46,8 +46,8 @@ import static org.hamcrest.Matchers.*;
  * @author Yohann Chastagnier
  */
 @RunWith(CdiRunner.class)
-@AdditionalClasses({TestServerEventBucket.class, TestServerEventListenerCommon.class,
-    TestServerEventListenerA.class})
+@AdditionalClasses({TestServerEventBucket.class, TestServerEventListenerDefault.class,
+    TestServerEventListener.class})
 public class ServerEventListenerPushingServerEventDispatcherTaskTest
     extends AbstractServerEventDispatcherTaskTest {
 
@@ -55,10 +55,10 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   TestServerEventBucket bucket;
 
   @Inject
-  TestServerEventNotifierA testServerEventNotifierA;
+  TestServerEventNotifier testServerEventNotifier;
 
   @Inject
-  CommonServerEventNotifier commonServerEventNotifier;
+  DefaultServerEventNotifier defaultServerEventNotifier;
 
   @Before
   @After
@@ -72,29 +72,48 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
     TestServerEventA serverEventA = new TestServerEventA();
     SilverLogger.getLogger(this).info("'A' NOTIFY - EVENT 'A'");
-    testServerEventNotifierA.notify(serverEventA);
+    testServerEventNotifier.notify(serverEventA);
     pause();
-    assertThat(lastServerEvents, contains(serverEventA));
+    assertThat(getStoredServerEvents(), contains(serverEventA));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\n\n"));
     assertThat(bucket.getServerEvents(), contains(serverEventA, serverEventA));
   }
 
   @Test
-  public void notifyOneServerEventAAndOneBFromAWhenOneAsyncContext() throws Exception {
+  public void notifyTwoATwoBTwoCTwoDFromAWhenOneAsyncContext() throws Exception {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext("SESSION_ID");
     ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
     TestServerEventA serverEventA = new TestServerEventA();
     TestServerEventB serverEventB = new TestServerEventB();
+    TestServerEventCNotHandled serverEventC = new TestServerEventCNotHandled();
+    TestServerEventDEventSourceURI serverEventD = new TestServerEventDEventSourceURI();
     SilverLogger.getLogger(this).info("'A' NOTIFY - EVENT 'A'");
-    testServerEventNotifierA.notify(serverEventA);
+    testServerEventNotifier.notify(serverEventA);
+    SilverLogger.getLogger(this).info("'A' NOTIFY - EVENT 'A'");
+    testServerEventNotifier.notify(serverEventA);
     SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'B'");
-    commonServerEventNotifier.notify(serverEventB);
+    defaultServerEventNotifier.notify(serverEventB);
+    SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'B'");
+    defaultServerEventNotifier.notify(serverEventB);
+    SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'C' (not handled)");
+    defaultServerEventNotifier.notify(serverEventC);
+    SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'C' (not handled)");
+    defaultServerEventNotifier.notify(serverEventC);
+    SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'D' (event source URI)");
+    defaultServerEventNotifier.notify(serverEventD);
+    SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'D' (event source URI)");
+    defaultServerEventNotifier.notify(serverEventD);
     pause();
-    assertThat(lastServerEvents, contains(serverEventA));
+    assertThat(getStoredServerEvents(), contains(serverEventA, serverEventA, serverEventC));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
-    assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\n\n"));
-    assertThat(bucket.getServerEvents(), contains(serverEventA, serverEventA, serverEventB));
+    assertThat(eventStream,
+        is("retry: 5000\nid: 0\nevent: EVENT_A\n\nretry: 5000\nid: 0\nevent: EVENT_A\n\nretry: " +
+            "5000\nid: 2\nevent: EVENT_D\n\nretry: 5000\nid: 2\nevent: EVENT_D\n\n"));
+    assertThat(bucket.getServerEvents(),
+        contains(serverEventA, serverEventA, serverEventA, serverEventA, serverEventB, serverEventB,
+            serverEventC, serverEventC, serverEventC, serverEventC, serverEventD, serverEventD,
+            serverEventD, serverEventD));
   }
 
   @Test
@@ -108,11 +127,11 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     TestServerEventA serverEventA = new TestServerEventA().withData("Some data!");
     TestServerEventB serverEventB = new TestServerEventB();
     SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'B'");
-    commonServerEventNotifier.notify(serverEventB);
+    defaultServerEventNotifier.notify(serverEventB);
     SilverLogger.getLogger(this).info("'A' NOTIFY - EVENT 'A'");
-    testServerEventNotifierA.notify(serverEventA);
+    testServerEventNotifier.notify(serverEventA);
     pause();
-    assertThat(lastServerEvents, contains(serverEventA));
+    assertThat(getStoredServerEvents(), contains(serverEventA));
     for (AsyncContext asyncContext : mockedAsyncContexts) {
       String eventStream = getSentServerEventStream(asyncContext);
       assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: Some data!\n\n"));
@@ -139,9 +158,9 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     final int nbSend = 10;
     for (int i = 0; i < nbSend; i++) {
       SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'B'");
-      commonServerEventNotifier.notify(serverEventB);
+      defaultServerEventNotifier.notify(serverEventB);
       SilverLogger.getLogger(this).info("'A' NOTIFY - EVENT 'A'");
-      testServerEventNotifierA.notify(serverEventA);
+      testServerEventNotifier.notify(serverEventA);
       expectedBucketContent.add(serverEventB);
       expectedBucketContent.add(serverEventA);
       expectedBucketContent.add(serverEventA);
@@ -150,7 +169,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     }
     assertThat(expectedBucketContent, hasSize(nbSend * 3));
     pause();
-    assertThat(lastServerEvents, contains(
+    assertThat(getStoredServerEvents(), contains(
         expectedLastServerEvents.toArray(new ServerEvent[expectedLastServerEvents.size()])));
     for (AsyncContext asyncContext : mockedAsyncContexts) {
       String eventStream = getSentServerEventStream(asyncContext, nbSend);
@@ -179,9 +198,9 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
       TestServerEventA serverEventA = new TestServerEventA().withData("Data \n A " + i);
       TestServerEventB serverEventB = new TestServerEventB().withData("Data B " + i);
       SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'B'");
-      commonServerEventNotifier.notify(serverEventB);
+      defaultServerEventNotifier.notify(serverEventB);
       SilverLogger.getLogger(this).info("'COMMON' NOTIFY - EVENT 'A'");
-      commonServerEventNotifier.notify(serverEventA);
+      defaultServerEventNotifier.notify(serverEventA);
       expectedBucketContent.add(serverEventB);
       expectedBucketContent.add(serverEventA);
       expectedBucketContent.add(serverEventA);
@@ -190,7 +209,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     }
     assertThat(expectedBucketContent, hasSize(nbSend * 3));
     pause();
-    assertThat(lastServerEvents, contains(
+    assertThat(getStoredServerEvents(), contains(
         expectedLastServerEvents.toArray(new ServerEvent[expectedLastServerEvents.size()])));
     for (AsyncContext asyncContext : mockedAsyncContexts) {
       String eventStream = getSentServerEventStream(asyncContext, nbSend);

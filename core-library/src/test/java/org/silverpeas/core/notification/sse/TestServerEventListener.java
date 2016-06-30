@@ -24,9 +24,21 @@
 
 package org.silverpeas.core.notification.sse;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * @author Yohann Chastagnier
  */
-public class TestServerEventNotifierA extends
-    CDIServerEventNotifier<TestServerEventA> {
+@Singleton
+public class TestServerEventListener extends CDIServerEventListener<AbstractServerEventTest> {
+
+  @Inject
+  TestServerEventBucket bucket;
+
+  @Override
+  public void on(final AbstractServerEventTest event) {
+    bucket.listened("'TEST' EVENT LISTENER", event);
+    ServerEventDispatcherTask.dispatch(event);
+  }
 }

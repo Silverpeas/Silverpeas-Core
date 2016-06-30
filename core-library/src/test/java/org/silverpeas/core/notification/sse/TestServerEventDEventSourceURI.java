@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,21 +24,32 @@
 
 package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+import org.silverpeas.core.util.CollectionUtil;
+
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.notification.sse.AbstractServerEventDispatcherTaskTest
+    .EVENT_SOURCE_REQUEST_URI;
+import static org.silverpeas.core.util.CollectionUtil.asList;
 
 /**
- * A common implementation that extends {@link CDIServerEventNotifier}.<br/>
- * Any treatment of Silverpeas has just to use this implementation in order to notify on a server
- * event.
  * @author Yohann Chastagnier
  */
-public class CommonServerEventNotifier extends CDIServerEventNotifier<AbstractServerEvent> {
+class TestServerEventDEventSourceURI extends AbstractServerEventTest implements IgnoreStoring {
 
-  /**
-   * Gets an instance of server event notifier.
-   * @return an instance (not a singleton).
-   */
-  public static CommonServerEventNotifier get() {
-    return ServiceProvider.getService(CommonServerEventNotifier.class);
+  private static final List<String> EVENT_SOURCE_URIS =
+      asList(EVENT_SOURCE_REQUEST_URI, "/other/uri");
+  private static ServerEventName EVENT_NAME = () -> "EVENT_D";
+
+  @Override
+  public ServerEventName getName() {
+    return EVENT_NAME;
+  }
+
+  @Override
+  public List<String> getEventSourceURIs() {
+    return EVENT_SOURCE_URIS;
   }
 }
