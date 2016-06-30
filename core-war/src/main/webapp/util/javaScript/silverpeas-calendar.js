@@ -118,13 +118,14 @@
         today: $.i18n.prop("GML.Today"),
         month: $.i18n.prop("GML.month"),
         week: $.i18n.prop("GML.week"),
-        day: $.i18n.prop("GML.day")
+          day: $.i18n.prop("GML.day")
       },
       minTime: "08:00:00",
       allDayText: '',
       allDayDefault: false,
       timezone: false,
-      timeFormat: 'HH:mm{ - HH:mm}',
+      timeFormat: 'HH:mm',
+      displayEventEnd: true,
       slotLabelFormat: 'HH:mm',
       views: {
         agendaWeek: {

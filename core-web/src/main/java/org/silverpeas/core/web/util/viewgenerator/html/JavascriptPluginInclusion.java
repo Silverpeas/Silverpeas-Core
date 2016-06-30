@@ -83,7 +83,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
   private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
-  private static final String STYLESHEET_CALENDAR = "fullcalendar.min.css";
+  private static final String STYLESHEET_JQUERY_CALENDAR = "fullcalendar.min.css";
+  private static final String STYLESHEET_SILVERPEAS_CALENDAR = "silverpeas-calendar.css";
   private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
@@ -443,7 +444,8 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeCalendar(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + STYLESHEET_CALENDAR));
+    xhtml.addElement(link(jqueryCssPath + STYLESHEET_JQUERY_CALENDAR));
+    xhtml.addElement(link(stylesheetPath + STYLESHEET_SILVERPEAS_CALENDAR));
     xhtml.addElement(script(jqueryPath + JQUERY_CALENDAR));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_CALENDAR));
     return xhtml;
