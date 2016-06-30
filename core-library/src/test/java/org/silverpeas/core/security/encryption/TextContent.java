@@ -1,7 +1,7 @@
 package org.silverpeas.core.security.encryption;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.DateTime;
 
 import java.util.HashMap;
@@ -20,13 +20,13 @@ public class TextContent implements SilverpeasContent {
 
   private String id;
   private String componentInstanceId;
-  private UserDetail author;
+  private User author;
   private DateTime creationDate;
   private String title;
   private String description;
   private String text;
 
-  public TextContent(String id, String componentInstanceId, UserDetail author) {
+  public TextContent(String id, String componentInstanceId, User author) {
     this.id = id;
     this.componentInstanceId = componentInstanceId;
     this.author = author;
@@ -84,7 +84,7 @@ public class TextContent implements SilverpeasContent {
    * @return the detail about the user that created this content.
    */
   @Override
-  public UserDetail getCreator() {
+  public User getCreator() {
     return this.author;
   }
 
@@ -128,7 +128,7 @@ public class TextContent implements SilverpeasContent {
   }
 
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     return true;
   }
 

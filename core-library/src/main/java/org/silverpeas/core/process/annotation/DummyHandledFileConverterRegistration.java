@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.process.annotation;
 
-import org.silverpeas.core.util.annotation.AnnotationUtil;
+import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class DummyHandledFileConverterRegistration {
    */
   private static Class<? extends SimulationElement> getSourceElementType(
       DummyHandledFileConverter converter) {
-    return AnnotationUtil
+    return ClassAnnotationUtil
         .searchParameterizedTypeFrom(SimulationElement.class, converter.getClass());
   }
 

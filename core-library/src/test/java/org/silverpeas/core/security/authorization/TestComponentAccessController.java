@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
@@ -95,6 +96,7 @@ public class TestComponentAccessController {
     });
 
     final UserDetail user = new UserDetail();
+    when(UserProvider.get().getUser(anyString())).thenReturn(user);
     when(controller.getUserDetail(anyString())).thenReturn(user);
     when(controller.isToolAvailable(toolId)).thenReturn(true);
     when(controller.getComponentParameterValue(publicFilesComponentId, "publicFiles"))
@@ -468,7 +470,7 @@ public class TestComponentAccessController {
    */
   private void assertGetUserRolesAndIsUserAuthorized(String instanceId,
       boolean expectedUserAuthorization, SilverpeasRole... expectedUserRoles) {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     Set<SilverpeasRole> componentUserRole =
         instance.getUserRoles(userId, instanceId, accessControlContext);
     if (expectedUserRoles.length > 0) {
@@ -488,6 +490,7 @@ public class TestComponentAccessController {
     } else {
       user.setAccessLevel(UserAccessLevel.USER);
     }
+    when(UserProvider.get().getUser(userId)).thenReturn(user);
     when(controller.getUserDetail(userId)).thenReturn(user);
     for (String instanceId : new String[]{publicComponentIdWithUserRole,
         publicFilesComponentIdWithUserRole, componentId, componentIdWithTopicRigths,

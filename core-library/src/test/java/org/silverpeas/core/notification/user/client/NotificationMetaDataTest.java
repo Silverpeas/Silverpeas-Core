@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -69,6 +70,8 @@ public class NotificationMetaDataTest {
     // Organization controller
     final OrganizationController mockedOrganizationController =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
+    when(UserProvider.get().getUser(anyString())).thenAnswer(
+        invocation -> new UserDetail());
     when(mockedOrganizationController.getUserDetail(anyString())).thenAnswer(
         invocation -> new UserDetail());
     when(mockedOrganizationController.getGroup(anyString())).thenAnswer(invocation -> {

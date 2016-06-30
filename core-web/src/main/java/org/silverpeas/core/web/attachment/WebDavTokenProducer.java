@@ -20,9 +20,9 @@
  */
 package org.silverpeas.core.web.attachment;
 
+import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheService;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
@@ -46,10 +46,10 @@ public class WebDavTokenProducer {
    */
   public static String generateToken(UserDetail user, String documentId) {
     String token = generateToken();
-    CacheService cacheService = getCacheService();
-    cacheService.put(token, user); // 12h by default of TTL
+    Cache cache = getCacheService();
+    cache.put(token, user); // 12h by default of TTL
     String documentTokenKey = MessageFormat.format(DOCUMENT_TOKEN_PATTERN, user.getId(), documentId);
-    cacheService.put(documentTokenKey, token);
+    cache.put(documentTokenKey, token);
     return token;
   }
 
@@ -63,18 +63,18 @@ public class WebDavTokenProducer {
    */
   public static void deleteToken(UserDetail user, String documentId) throws
                                                                      IllegalArgumentException {
-    CacheService cacheService = getCacheService();
+    Cache cache = getCacheService();
     String documentTokenKey = MessageFormat.format(DOCUMENT_TOKEN_PATTERN, user.getId(), documentId);
-    String token = (String) cacheService.get(documentTokenKey);
+    String token = (String) cache.get(documentTokenKey);
     if (token != null) {
-      UserDetail actualUser = (UserDetail) cacheService.get(token);
+      UserDetail actualUser = (UserDetail) cache.get(token);
       if (actualUser == null || !actualUser.getId().equals(user.getId())) {
         throw new IllegalArgumentException("No token for user " + user.getId() +
             " to access document " + documentId);
       }
       SilverpeasJcrWebdavContext.clearFromToken(token);
-      cacheService.remove(token);
-      cacheService.remove(documentTokenKey);
+      cache.remove(token);
+      cache.remove(documentTokenKey);
     }
   }
 
@@ -83,7 +83,7 @@ public class WebDavTokenProducer {
     return StringUtil.asBase64(parts[parts.length - 1].getBytes());
   }
 
-  private static CacheService getCacheService() {
-    return CacheServiceProvider.getApplicationCacheService();
+  private static Cache getCacheService() {
+    return CacheServiceProvider.getApplicationCacheService().getCache();
   }
 }

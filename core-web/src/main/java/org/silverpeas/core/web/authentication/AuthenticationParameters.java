@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
@@ -188,7 +189,7 @@ public class AuthenticationParameters {
 
   /**
    * Internal server method of user authentication. This method consists to use {@link
-   * org.silverpeas.core.cache.service.CacheService}. The module that must authenticate a user by this
+   * Cache}. The module that must authenticate a user by this
    * way have to set a token value to the request attribute "internalAuthToken". The token has to be
    * a key of the common cache that references a {@link UserDetail}
    * @param request
@@ -197,8 +198,9 @@ public class AuthenticationParameters {
   private UserDetail getUserByInternalAuthToken(HttpServletRequest request) {
     String internalAuthToken = (String) request.getAttribute("internalAuthToken");
     if (StringUtil.isDefined(internalAuthToken)) {
-      if (CacheServiceProvider.getApplicationCacheService().get(internalAuthToken) instanceof UserDetail) {
-        return (UserDetail) CacheServiceProvider.getApplicationCacheService().remove(internalAuthToken);
+      Cache cache = CacheServiceProvider.getApplicationCacheService().getCache();
+      if (cache.get(internalAuthToken) instanceof UserDetail) {
+        return (UserDetail) cache.remove(internalAuthToken);
       }
     }
     return null;

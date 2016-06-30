@@ -27,7 +27,7 @@
 <%@tag import="org.silverpeas.core.admin.service.OrganizationController"%>
 <%@tag import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@tag import="java.util.List"%>
-<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ tag import="org.silverpeas.core.admin.user.model.User" %>
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>

@@ -23,24 +23,26 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.SettingBundle;
 
-import static org.silverpeas.core.notification.user.client.CurrentUserNotificationContext
-    .getCurrentUserNotificationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.silverpeas.core.notification.user.client.CurrentUserNotificationContext
+    .getCurrentUserNotificationContext;
 
 public class CurrentUserNotificationContextTest {
 
@@ -56,8 +58,9 @@ public class CurrentUserNotificationContextTest {
   @Before
   public void setup() {
     currentUser = spy(new UserDetail());
-    CacheServiceProvider.getRequestCacheService().clear();
-    CacheServiceProvider.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(currentUser);
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, SettingBundle.class, "settings");
     // By default, a user is not an anonymous one
@@ -66,11 +69,12 @@ public class CurrentUserNotificationContextTest {
     final OrganizationController mockedOrganizationController =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
     when(mockedOrganizationController.getUserDetail(anyString())).thenReturn(new UserDetail());
+    when(UserProvider.get().getUser(anyString())).thenReturn(new UserDetail());
   }
 
   @After
   public void tearDown() {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
   }
 
   /*
@@ -82,7 +86,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     getCurrentUserNotificationContext().checkManualUserNotification(null);
   }
 
@@ -90,7 +94,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationEnabled()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(1);
     getCurrentUserNotificationContext().checkManualUserNotification(null);
   }
@@ -99,7 +103,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
   }
 
@@ -107,7 +111,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationEnabled()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(1);
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
   }
@@ -115,13 +119,13 @@ public class CurrentUserNotificationContextTest {
   @Test
   public void checkManualUserNotificationWithNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
   public void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabled() throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(2);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(2));
   }
@@ -130,7 +134,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimit()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
   }
@@ -139,7 +143,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getDefaultUserOne(4));
   }

@@ -35,7 +35,7 @@
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="_socialBundle"/>
 
 <%-- TAG attributes --%>
-<%@ attribute name="user" required="false" type="org.silverpeas.core.admin.user.model.UserDetail"
+<%@ attribute name="user" required="false" type="org.silverpeas.core.admin.user.model.User"
               description="the user associated to the display choice" %>
 <%@ attribute name="userPreferences" required="false" type="org.silverpeas.core.personalization.UserPreferences"
               description="the user preferences associated to the display choice" %>

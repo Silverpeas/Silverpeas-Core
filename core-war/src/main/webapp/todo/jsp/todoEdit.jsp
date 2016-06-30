@@ -27,10 +27,10 @@
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.calendar.model.Attendee"%>
-<%@ page import="org.silverpeas.core.calendar.model.Classification" %>
-<%@ page import="org.silverpeas.core.calendar.model.Priority" %>
-<%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Attendee"%>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Classification" %>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Priority" %>
+<%@ page import="org.silverpeas.core.personalorganizer.model.ToDoHeader"%>
 <%@ page import="org.silverpeas.web.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>

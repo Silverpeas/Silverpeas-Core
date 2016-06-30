@@ -77,7 +77,7 @@ public class WebComponentRequestRouterTest {
     SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
 
     WebComponentManager.managedWebComponentRouters.clear();
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     reset(getOrganisationController(),
         AbstractTestWebComponentGenericController.getResourceLocatorMock());
   }
@@ -240,7 +240,7 @@ public class WebComponentRequestRouterTest {
     public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
       InMemoryCacheService sessionCache = CacheServiceProvider.getRequestCacheService()
           .get("@SessionCache@", InMemoryCacheService.class);
-      CacheServiceProvider.getRequestCacheService().clear();
+      CacheServiceProvider.getRequestCacheService().clearAllCaches();
       CacheServiceProvider.getRequestCacheService().put("@SessionCache@",
           (sessionCache != null ? sessionCache : new InMemoryCacheService()));
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);

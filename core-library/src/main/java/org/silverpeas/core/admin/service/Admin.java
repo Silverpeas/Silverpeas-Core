@@ -2728,7 +2728,7 @@ class Admin implements Administration {
   @Override
   public UserDetail[] getUserDetails(String[] userIds) {
     if (userIds == null) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
 
     List<UserDetail> users = new ArrayList<>(userIds.length);
@@ -3363,7 +3363,7 @@ class Admin implements Administration {
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       if (domainId != null && "-1".equals(domainId)) {
-        return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+        return new UserDetail[0];
       }
       return userManager.getUsersOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
@@ -4370,11 +4370,11 @@ class Admin implements Administration {
     Group theGroup = getGroup(sGroupId);
 
     if (theGroup == null) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
     String[] usersIds = theGroup.getUserIds();
     if (usersIds == null || usersIds.length <= 0) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
     if (sUserLastNameFilter == null || sUserLastNameFilter.length() <= 0) {
       return getUserDetails(usersIds);

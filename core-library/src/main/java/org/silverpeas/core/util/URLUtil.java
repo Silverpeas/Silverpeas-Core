@@ -245,12 +245,12 @@ public class URLUtil {
   }
 
   public static void setCurrentServerUrl(HttpServletRequest request) {
-    CacheServiceProvider.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService().getCache()
         .put(URLUtil.class.getName() + ".currentServerURL", getServerURL(request));
   }
 
   public static String getCurrentServerURL() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheServiceProvider.getRequestCacheService().getCache()
         .get(URLUtil.class.getName() + ".currentServerURL", String.class);
   }
 

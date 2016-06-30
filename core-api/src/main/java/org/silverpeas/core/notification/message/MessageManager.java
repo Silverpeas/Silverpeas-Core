@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.notification.message;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -58,18 +59,21 @@ import org.silverpeas.core.util.logging.SilverLogger;
  * }
  * </code>
  * <p/>
- * User: Yohann Chastagnier
- * Date: 07/11/13
+ * @author Yohann Chastagnier
  */
 public class MessageManager {
+
+  private static SimpleCache applicationCache =
+      CacheServiceProvider.getApplicationCacheService().getCache();
 
   /**
    * Initialize the manager in order to be used everywhere in treatments.
    */
   public static String initialize() {
-    String registeredKey =
-        CacheServiceProvider.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceProvider.getRequestCacheService().put(MessageManager.class, registeredKey);
+    String registeredKey = applicationCache.add(new MessageContainer());
+    CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .put(MessageManager.class, registeredKey);
     return registeredKey;
   }
 
@@ -77,7 +81,7 @@ public class MessageManager {
    * Clear out the thread cache the registred key referenced.
    */
   public static void destroy() {
-    CacheServiceProvider.getRequestCacheService().remove(MessageManager.class);
+    CacheServiceProvider.getRequestCacheService().getCache().remove(MessageManager.class);
   }
 
   /**
@@ -142,14 +146,16 @@ public class MessageManager {
    * Remove out of the cache the message container referenced by the given key
    */
   public static void clear(String registredKey) {
-    CacheServiceProvider.getApplicationCacheService().remove(registredKey);
+    applicationCache.remove(registredKey);
   }
 
   /**
    * Get the key that permits to get the MessageContainer registred for the thread.
    */
   public static String getRegistredKey() {
-    return CacheServiceProvider.getRequestCacheService().get(MessageManager.class, String.class);
+    return CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(MessageManager.class, String.class);
   }
 
   /**
@@ -189,8 +195,7 @@ public class MessageManager {
    * @return
    */
   public static MessageContainer getMessageContainer(String registredKey) {
-    return CacheServiceProvider.getApplicationCacheService()
-        .get(registredKey, MessageContainer.class);
+    return applicationCache.get(registredKey, MessageContainer.class);
   }
 
   /**

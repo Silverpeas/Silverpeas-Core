@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.contribution;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.ContributionValidation;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 /**
  * A validable contribution is an object that represents a contribution which can be validated.
  * This interface defines all methods that must be implemented in order to obtain differents
  * contribution types that can be handled by a same mechanism.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public interface ValidableContribution extends SilverpeasContent {
 

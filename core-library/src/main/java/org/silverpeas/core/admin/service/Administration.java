@@ -61,7 +61,7 @@ public interface Administration {
   String ADMIN_COMPONENT_ID = "ADMIN";
   String basketSuffix = " (Restauré)";
 
-  public static Administration get() {
+  static Administration get() {
     return ServiceProvider.getService(Administration.class);
   }
 

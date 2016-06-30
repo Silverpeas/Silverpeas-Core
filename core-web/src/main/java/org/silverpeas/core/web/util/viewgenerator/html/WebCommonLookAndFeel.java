@@ -176,6 +176,7 @@ public class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/array.generics.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/es6-promise.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/classList.min.js"));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/eventsource.min.js"));
     code.append(
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/customEventIEPolyfill.min.js"));
     code.append(

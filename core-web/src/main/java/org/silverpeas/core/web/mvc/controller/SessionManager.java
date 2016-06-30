@@ -20,34 +20,39 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionValidationContext;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.domain.model.DomainProperties;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.VolatileResourceCacheService;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.upload.UploadSession;
+import org.silverpeas.core.notification.sse.CommonServerEventNotifier;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.admin.domain.model.DomainProperties;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.VolatileResourceCacheService;
-import org.silverpeas.core.io.upload.UploadSession;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.notification.UserSessionServerEvent;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -87,17 +92,19 @@ public class SessionManager implements SessionManagement {
   private long adminSessionTimeout = 1200000; // 20mn
   // Timestamp of execution of the scheduled job in ms
   private long scheduledSessionManagementTimeStamp = 60000; // 1mn
-  // Client refresh intervall in ms (see Clipboard Session Controller)
+  // Client refresh interval in ms (see Clipboard Session Controller)
   private long maxRefreshInterval = 90000; // 1mn30
   // Contains all current sessions
-  private final Map<String, SessionInfo> userDataSessions = new HashMap<String, SessionInfo>(100);
+  private final Map<String, SessionInfo> userDataSessions = new HashMap<>(100);
   // Contains the session when notified
-  private final List<String> userNotificationSessions = new ArrayList<String>(100);
+  private final List<String> userNotificationSessions = new ArrayList<>(100);
   private LocalizationBundle messages = null;
   @Inject
   private SilverStatisticsManager myStatisticsManager = null;
   @Inject
   private Scheduler scheduler;
+  @Inject
+  private CommonServerEventNotifier commonServerEventNotifier;
 
   /**
    * Prevent the class from being instantiate (private)
@@ -225,6 +232,8 @@ public class SessionManager implements SessionManagement {
       userDataSessions.remove(si.getSessionId());
       userNotificationSessions.remove(si.getSessionId());
       si.onClosed();
+
+      commonServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si.getUserDetail()));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
@@ -273,12 +282,13 @@ public class SessionManager implements SessionManagement {
    *
    * @return Collection of HTTPSessionInfo
    * @author dlesimple
+   * @param user
    */
   @Override
   public Collection<org.silverpeas.core.security.session.SessionInfo> getDistinctConnectedUsersList(
-      UserDetail user) {
+      User user) {
     Map<String, org.silverpeas.core.security.session.SessionInfo> distinctConnectedUsersList
-        = new HashMap<String, org.silverpeas.core.security.session.SessionInfo>();
+        = new HashMap<>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
       UserDetail sessionUser = si.getUserDetail();
@@ -318,7 +328,7 @@ public class SessionManager implements SessionManagement {
    * @author dlesimple
    */
   @Override
-  public int getNbConnectedUsersList(UserDetail user) {
+  public int getNbConnectedUsersList(User user) {
     return getDistinctConnectedUsersList(user).size();
   }
 
@@ -334,7 +344,7 @@ public class SessionManager implements SessionManagement {
   private synchronized void doSessionManagement(Date currentDate) {
     try {
       long currentTime = currentDate.getTime();
-      List<SessionInfo> expiredSessions = new ArrayList<SessionInfo>(userDataSessions.size());
+      List<SessionInfo> expiredSessions = new ArrayList<>(userDataSessions.size());
 
       Collection<SessionInfo> allSI = userDataSessions.values();
       for (SessionInfo si : allSI) {
@@ -420,7 +430,7 @@ public class SessionManager implements SessionManagement {
     } catch (SchedulerException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
-    Collection<SessionInfo> allSI = new ArrayList<SessionInfo>(userDataSessions.values());
+    Collection<SessionInfo> allSI = new ArrayList<>(userDataSessions.values());
     for (SessionInfo si : allSI) {
       removeSession(si);
     }
@@ -501,6 +511,7 @@ public class SessionManager implements SessionManagement {
       si = new HTTPSessionInfo(session, anIP, user);
       openSession(si);
       userDataSessions.put(si.getSessionId(), si);
+      commonServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(si.getUserDetail()));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
@@ -509,9 +520,12 @@ public class SessionManager implements SessionManagement {
 
   @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest request) {
-    CacheServiceProvider.getSessionCacheService()
-        .put(UserDetail.CURRENT_REQUESTER_KEY, UserDetail.getAnonymousUser());
     SessionInfo sessionInfo = SessionInfo.AnonymousSession;
+    if (!sessionInfo.isDefined()) {
+      throw new SilverpeasRuntimeException("No Anonymous Session was configured!");
+    }
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
+        sessionInfo.getCache());
     sessionInfo.setIPAddress(request.getRemoteHost());
     return sessionInfo;
   }

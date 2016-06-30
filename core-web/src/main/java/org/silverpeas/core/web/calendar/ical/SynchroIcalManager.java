@@ -23,7 +23,7 @@ package org.silverpeas.core.web.calendar.ical;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 

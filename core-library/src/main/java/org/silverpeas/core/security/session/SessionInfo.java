@@ -21,9 +21,9 @@
 package org.silverpeas.core.security.session;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.InMemoryCacheService;
-import org.silverpeas.core.cache.service.SimpleCacheService;
+import org.silverpeas.core.cache.service.SessionCacheService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class SessionInfo {
   private long lastAccessTimestamp;
   private final Map<String, Object> attributes = new HashMap<String, Object>();
   private long idleTimestamp;
-  private final InMemoryCacheService cache = new InMemoryCacheService();
+  private SimpleCache cache;
 
   private static SessionInfo getAnonymousSession() {
     UserDetail anonymousUser = UserDetail.getAnonymousUser();
@@ -64,8 +64,10 @@ public class SessionInfo {
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
     this.idleTimestamp = 0;
-    this.cache.put(UserDetail.CURRENT_REQUESTER_KEY, user);
-    CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
+    if (user != null) {
+      cache = ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(
+          user);
+    }
   }
 
   /**
@@ -206,7 +208,7 @@ public class SessionInfo {
    * Provides a cache associated to the current session.
    * @return
    */
-  public SimpleCacheService getCache() {
+  public SimpleCache getCache() {
     return cache;
   }
 }

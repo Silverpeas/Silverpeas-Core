@@ -15,7 +15,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>silverpeas-core-calendar</artifactId>
+      <artifactId>silverpeas-core-personalorganizer</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

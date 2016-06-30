@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.annotation.AnnotationUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -87,8 +88,8 @@ public class WebComponentManager {
 
     // If the request is already managed, then bypassing the treatment of this method. This
     // avoids to override the context of subcalls of HTTP servlet methods.
-    if (CacheServiceProvider.getRequestCacheService()
-        .get(WebComponentRequestContext.class.getName()) == null) {
+    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    if (cache.get(WebComponentRequestContext.class.getName()) == null) {
 
       // Getting the manager associated to the type of the given resource.
       WebComponentManager webComponentManager =
@@ -101,7 +102,7 @@ public class WebComponentManager {
       }
 
       // Retrieving the class of the web context associated to the given resource.
-      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass = AnnotationUtil
+      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass = ClassAnnotationUtil
           .searchParameterizedTypeFrom(WebComponentRequestContext.class,
               webComponentControllerClass);
       try {
@@ -111,8 +112,7 @@ public class WebComponentManager {
         webComponentContext.setHttpMethodClass(httpMethodClass);
         webComponentContext.setRequest(request);
         webComponentContext.setResponse(response);
-        CacheServiceProvider.getRequestCacheService()
-            .put(WebComponentRequestContext.class.getName(), webComponentContext);
+        cache.put(WebComponentRequestContext.class.getName(), webComponentContext);
       } catch (Exception e) {
         throw new IllegalArgumentException(
             "Constructor (Class, HttpRequest, HttpServletResponse) doesn't exist...", e);
@@ -325,7 +325,7 @@ public class WebComponentManager {
 
     // Retrieving the web component request context
     WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext =
-        (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService()
+        (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService().getCache()
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 

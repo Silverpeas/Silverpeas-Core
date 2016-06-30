@@ -79,7 +79,7 @@ public class FileUtil implements MimeTypes {
 
     // Request caching in order to increase significantly the performance about file parsing
     String cacheKey = MIME_TYPE_CACHE_KEY_PREFIX + fileName;
-    String cachedMimeType = getRequestCacheService().get(cacheKey, String.class);
+    String cachedMimeType = getRequestCacheService().getCache().get(cacheKey, String.class);
     if (StringUtil.isDefined(cachedMimeType)) {
       return cachedMimeType;
     }
@@ -133,7 +133,7 @@ public class FileUtil implements MimeTypes {
     }
 
     // The computed mime type is put into the request cache (performance)
-    getRequestCacheService().put(cacheKey, mimeType);
+    getRequestCacheService().getCache().put(cacheKey, mimeType);
     return mimeType;
   }
 
