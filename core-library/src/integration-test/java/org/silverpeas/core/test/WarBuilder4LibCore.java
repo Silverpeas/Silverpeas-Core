@@ -92,6 +92,8 @@ import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
@@ -267,7 +269,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
     if (!contains(MimeTypes.class)) {
-      addClasses(FileUtil.class, Mail.class, MimeTypes.class,
+      addClasses(FileUtil.class, Mail.class, MimeTypes.class, MetaData.class, Definition.class,
           RelativeFileAccessException.class, MetadataExtractor.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");

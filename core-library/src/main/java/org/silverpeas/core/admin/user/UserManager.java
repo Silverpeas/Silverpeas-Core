@@ -114,7 +114,7 @@ public class UserManager {
    */
   public UserDetail[] getAllUsersOfGroups(List<String> groupIds) throws AdminException {
     if (groupIds == null || groupIds.isEmpty()) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
     Connection con = null;
     try {

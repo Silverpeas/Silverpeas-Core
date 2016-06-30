@@ -119,7 +119,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    return new UserDetail[0];
   }
 
   @Override
@@ -354,12 +354,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   @Override
   public UserDetail[] getUsersBySpecificProperty(String propertyName, String value)
           throws Exception {
-    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    return new UserDetail[0];
   }
 
   @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
-    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    return new UserDetail[0];
   }
 
   @Override

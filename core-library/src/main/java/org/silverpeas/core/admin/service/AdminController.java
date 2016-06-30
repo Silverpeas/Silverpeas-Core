@@ -869,7 +869,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getAllUsersOfGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
   }
 
@@ -882,7 +882,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getUsersOfDomain(domainId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
   }
 
@@ -1202,7 +1202,7 @@ public class AdminController implements java.io.Serializable {
       if (asUserIds != null) {
         return admin.getUserDetails(asUserIds);
       }
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;
