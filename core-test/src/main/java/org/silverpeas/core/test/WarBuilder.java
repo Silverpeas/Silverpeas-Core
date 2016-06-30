@@ -241,6 +241,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
             "Filling '" + persistenceXml.getPath() + "'\nwith content:\n" + persistenceXmlContent);
         logInfo("Adding completed META-INF/persistence.xml");
         addAsResource("META-INF/" + persistenceXml.getName(), "META-INF/persistence.xml");
+      } else {
+        addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
       }
       if (!webParts.isEmpty()) {
         String webXmlContent;
