@@ -24,10 +24,8 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class ArrayUtil extends ArrayUtils {
 
-  public static final UserDetail[] EMPTY_USER_DETAIL_ARRAY = new UserDetail[0];
 }

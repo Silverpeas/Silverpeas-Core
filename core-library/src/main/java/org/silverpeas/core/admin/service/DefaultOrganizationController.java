@@ -59,8 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
-import static org.silverpeas.core.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
 
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement,
@@ -648,7 +647,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllUsersOfGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
   }
 
@@ -659,7 +658,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getPathToGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return new ArrayList<String>();
+      return new ArrayList<>();
     }
   }
 
