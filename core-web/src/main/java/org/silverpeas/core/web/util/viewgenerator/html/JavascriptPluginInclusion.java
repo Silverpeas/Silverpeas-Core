@@ -43,6 +43,7 @@ import java.text.MessageFormat;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
+import static org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScriptPlugins.ticker;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -170,6 +171,21 @@ public class JavascriptPluginInclusion {
     } else {
       return new ElementContainer();
     }
+  }
+
+  /**
+   * Centralization of the generation of a promise.
+   * @param plugin the plugin using the tool.
+   * @param promiseContent the content that must be included (this content must handle the resolve
+   * and the reject calls).
+   * @return the promise as string.
+   */
+  private static String generatePromise(SupportedJavaScriptPlugins plugin, String promiseContent) {
+    String promise = "window." + plugin.name() + "Promise";
+    promise += "=new Promise(function(resolve, reject){";
+    promise += promiseContent;
+    promise += "});";
+    return promise;
   }
 
   /**
@@ -323,7 +339,8 @@ public class JavascriptPluginInclusion {
             "lookSilverpeasV5.ticker.date.daysAgo",
             "lookSilverpeasV5.ticker.notifications.permission.request")
         .produce()));
-    xhtml.addElement(script(jqueryPath + TICKER_JS));
+    xhtml.addElement(scriptContent(generatePromise(ticker,
+        generateDynamicPluginLoading(jqueryPath + TICKER_JS, "tickerPlugin", "resolve();", null))));
     return xhtml;
   }
 
@@ -641,7 +658,7 @@ public class JavascriptPluginInclusion {
    * @param url
    * @return
    */
-  private static String normalizeWebResourceUrl(String url) {
+  public static String normalizeWebResourceUrl(String url) {
     String normalizedUrl = URLUtil.getMinifiedWebResourceUrl(url);
     return URLUtil.appendVersion(normalizedUrl);
   }

@@ -40,19 +40,23 @@
       sendMessage: ''
     },
     renderSpaceResponsibles: function(target, userId, spaceId, onlySpaceManagers) {
-      __loadMissingPlugins(false);
-      var data = __getResponsibles(true, spaceId);
-      $(target).empty();
-      __prepareContent($(target), userId, true, data.usersAndGroupsRoles, onlySpaceManagers);
-      __loadUserZoomPlugins();
+      __loadMissingPlugins(false).then(function() {
+        $(target).empty();
+        __getResponsibles(true, spaceId).then(function(data) {
+          __prepareContent($(target), userId, true, data.usersAndGroupsRoles, onlySpaceManagers);
+          __loadUserZoomPlugins();
+        });
+      });
     },
     displaySpaceResponsibles: function(userId, spaceId) {
-      __loadMissingPlugins(true);
-      __display(userId, true, spaceId);
+      __loadMissingPlugins(true).then(function() {
+        __display(userId, true, spaceId);
+      });
     },
     displayComponentResponsibles: function(userId, componentId) {
-      __loadMissingPlugins(true);
-      __display(userId, false, componentId);
+      __loadMissingPlugins(true).then(function() {
+        __display(userId, false, componentId);
+      });
     }
   };
 
@@ -65,25 +69,33 @@
    */
   function __display(userId, isSpace, id) {
     var $display = $('#responsible-popup-content');
-    var data = __getResponsibles(isSpace, id);
-    if (!isSpace && $.isEmptyObject(data.usersAndGroupsRoles)) {
-      // No responsible founded, so searching on space on which component is attached ...
-      var spaceOfComponent = __getJSonData(data.parentURI);
-      if (spaceOfComponent && spaceOfComponent.id) {
-        isSpace = true;
-        id = spaceOfComponent.id;
-        data = __getResponsibles(isSpace, id);
+    __getResponsibles(isSpace, id).then(function(data) {
+      if (!isSpace && $.isEmptyObject(data.usersAndGroupsRoles)) {
+        // No responsible founded, so searching on space on which component is attached ...
+        __getJSonData(data.parentURI).then(function(spaceOfComponent) {
+          if (spaceOfComponent && spaceOfComponent.id) {
+            __getResponsibles(true, spaceOfComponent.id).then(function(data) {
+              __render($display, data, true, userId);
+            });
+          } else {
+            __render($display, data, isSpace, userId);
+          }
+        });
+      } else {
+        __render($display, data, isSpace, userId);
       }
-    }
+    });
+  }
 
+  function __render($display, data, isSpace, userId) {
     var title = $('<div>').append($('.space-or-component-responsibles-operation').text() +
-            " ").append($('<b>').append(data.label)).html();
+        " ").append($('<b>').append(data.label)).html();
     if ($display.length !== 0) {
       $display.dialog('destroy');
       $display.remove();
     }
     $display = $('<div>', {id: 'responsible-popup-content'}).css('display',
-            'none').appendTo(document.body);
+        'none').appendTo(document.body);
     __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles, false);
     __loadUserZoomPlugins();
 
@@ -104,16 +116,20 @@
   function __getResponsibles(isSpace, id) {
     var result = cache[(isSpace ? 'space-' : 'component-') + id];
     if (!result) {
-      var spaceOrComponent = __getJSonData(webServiceContext + '/' +
-              (isSpace ? 'spaces' : 'components') + '/' + id);
-      var usersAndGroupsRoles = __getJSonData(spaceOrComponent.usersAndGroupsRolesURI + '?roles=' +
-              (isSpace ? 'Manager' : 'admin'));
-      result = {
-        usersAndGroupsRoles: usersAndGroupsRoles
-      };
-      $.extend(result, spaceOrComponent);
+      return __getJSonData(
+          webServiceContext + '/' + (isSpace ? 'spaces' : 'components') + '/' + id).then(
+          function(spaceOrComponent) {
+            return __getJSonData(spaceOrComponent.usersAndGroupsRolesURI + '?roles=' +
+                (isSpace ? 'Manager' : 'admin')).then(function(usersAndGroupsRoles) {
+              result = {
+                usersAndGroupsRoles : usersAndGroupsRoles
+              };
+              $.extend(result, spaceOrComponent);
+              return result;
+            });
+          });
     }
-    return result;
+    return Promise.resolve(result);
   }
 
   /**
@@ -129,21 +145,22 @@
     var $newLine = null;
     $.each(['Manager', 'admin'], function(index, role) {
       var usersAndGroups = usersAndGroupsRoles[role];
-      var dataOfUsers = __getAllDataOfUsers(usersAndGroups);
-      if (dataOfUsers.length > 0) {
-        $target.append($newLine);
-        if (isSpace) {
-          var $div = $('<div>', {'id':'space-admins'});
-          $target.append($div);
-          $div.append($('<h5>', {
-            'class': 'textePetitBold title-list-responsible-user'
-          }).append(usersAndGroups.label));
-          __prepareRoleResponsibles($div, userId, dataOfUsers);
-        } else {
-          __prepareRoleResponsibles($target, userId, dataOfUsers);
+      __getAllDataOfUsers(usersAndGroups).then(function(dataOfUsers) {
+        if (dataOfUsers.length > 0) {
+          $target.append($newLine);
+          if (isSpace) {
+            var $div = $('<div>', {'id':'space-admins'});
+            $target.append($div);
+            $div.append($('<h5>', {
+              'class': 'textePetitBold title-list-responsible-user'
+            }).append(usersAndGroups.label));
+            __prepareRoleResponsibles($div, userId, dataOfUsers);
+          } else {
+            __prepareRoleResponsibles($target, userId, dataOfUsers);
+          }
+          $newLine = $('<br/>');
         }
-        $newLine = $('<br/>');
-      }
+      });
     });
     if (!onlySpaceManagers && isSpace) {
       User.get({
@@ -206,39 +223,68 @@
    * @private
    */
   function __getAllDataOfUsers(usersAndGroups) {
-    var dataOfUsers = [];
-    var uriOfUsers = [];
     if (usersAndGroups) {
+      var promises = [];
+      var dataOfUsers = [];
+      var uriOfUsers = [];
 
       // Users
       if (usersAndGroups.users && usersAndGroups.users.length > 0) {
-        $.each(usersAndGroups.users, function(index, userUri) {
-          if ($.inArray(userUri, uriOfUsers) < 0) {
-            uriOfUsers.push(userUri);
-            dataOfUsers.push(__getJSonData(userUri));
-          }
-        });
+        var userPromises = [];
+        promises.push(new Promise(function(resolve, reject) {
+          $.each(usersAndGroups.users, function(index, userUri) {
+            if ($.inArray(userUri, uriOfUsers) < 0) {
+              uriOfUsers.push(userUri);
+              userPromises.push(new Promise(function(resolve, reject) {
+                __getJSonData(userUri).then(function(user) {
+                  dataOfUsers.push(user);
+                  resolve();
+                });
+              }));
+            }
+          });
+          Promise.all(userPromises).then(function() {
+            resolve();
+          });
+        }));
       }
 
       // Groups
       if (usersAndGroups.groups && usersAndGroups.groups.length > 0) {
-        $.each(usersAndGroups.groups, function(index, groupUri) {
-          var group = __getJSonData(groupUri);
-          if (group) {
-            $.each(__getJSonData(group.usersUri), function(index, user) {
-              if ($.inArray(user.uri, uriOfUsers) < 0) {
-                uriOfUsers.push(user.uri);
-                dataOfUsers.push(user);
-              }
-            });
-          }
-        });
+        var groupPromises = [];
+        promises.push(new Promise(function(resolve, reject) {
+          $.each(usersAndGroups.groups, function(index, groupUri) {
+            groupPromises.push(new Promise(function(resolve, reject) {
+              __getJSonData(groupUri).then(function(group) {
+                if (group) {
+                  __getJSonData(group.usersUri).then(function(users) {
+                    $.each(users, function(index, user) {
+                      if ($.inArray(user.uri, uriOfUsers) < 0) {
+                        uriOfUsers.push(user.uri);
+                        dataOfUsers.push(user);
+                      }
+                    });
+                    resolve();
+                  });
+                } else {
+                  resolve();
+                }
+              })
+            }));
+          });
+          Promise.all(groupPromises).then(function() {
+            resolve();
+          });
+        }));
       }
 
       // Sorting users by their names
-      dataOfUsers.sort(__sortByName);
+      return Promise.all(promises).then(function() {
+        dataOfUsers.sort(__sortByName);
+        return dataOfUsers;
+      });
     }
-    return dataOfUsers;
+    return Promise.resolve([]);
   }
 
   /**
@@ -259,27 +305,30 @@
    * @private
    */
   function __loadMissingPlugins(isPopup) {
+    var promises = [];
     if (isPopup && !$.popup) {
-      $.ajax({
-        url: webContext + "/util/javaScript/silverpeas-popup.js",
-        //async: false, warning: async will be removed in a future version
-        dataType: "script"
-      });
+      promises.push(new Promise(function(resolve, reject) {
+        $.getScript(webContext + "/util/javaScript/silverpeas-popup.js", function() {
+          resolve();
+        });
+      }));
     }
     if (typeof User === 'undefined') {
-      $.ajax({
-        url: webContext + "/util/javaScript/angularjs/services/silverpeas-profile.js",
-        //async: false, warning: async will be removed in a future version
-        dataType: "script"
-      });
+      promises.push(new Promise(function(resolve, reject) {
+        $.getScript(webContext + "/util/javaScript/angularjs/services/silverpeas-profile.js",
+            function() {
+              resolve();
+            });
+      }));
     }
     if (!$.messageMe) {
-      $.ajax({
-        url: webContext + "/util/javaScript/silverpeas-messageme.js",
-        //async: false, warning: async will be removed in a future version
-        dataType: "script"
-      });
+      promises.push(new Promise(function(resolve, reject) {
+        $.getScript(webContext + "/util/javaScript/silverpeas-messageme.js", function() {
+          resolve();
+        });
+      }));
     }
+    return Promise.all(promises);
   }
 
   /**
@@ -312,28 +361,27 @@
    * request.
    */
   function __performAjaxRequest(settings) {
-    var result = {};
+    return new Promise(function(resolve, reject) {
+      // Default options.
+      // url, type, dataType are missing.
+      var options = {
+        cache : false,
+        success : function(data) {
+          resolve(data);
+        },
+        error : function(jqXHR, textStatus, errorThrown) {
+          reject();
+          window.console &&
+          window.console.log('Silverpeas Responsible JQuery Plugin - ERROR - ' + errorThrown);
+        }
+      };
 
-    // Default options.
-    // url, type, dataType are missing.
-    var options = {
-      cache: false,
-      //async: false, warning: async will be removed in a future version
-      success: function(data) {
-        result = data;
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        window.console &&
-                window.console.log('Silverpeas Responsible JQuery Plugin - ERROR - ' + errorThrown);
-      }
-    };
+      // Adding settings
+      options = $.extend(options, settings);
 
-    // Adding settings
-    options = $.extend(options, settings);
-
-    // Ajax request
-    $.ajax(options);
-    return result;
+      // Ajax request
+      $.ajax(options);
+    });
   }
 
 })(jQuery);

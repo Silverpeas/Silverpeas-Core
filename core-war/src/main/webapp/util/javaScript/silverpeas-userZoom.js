@@ -25,7 +25,8 @@
 (function($) {
 
   /**
-   * The structure with information about the current tooltip rendered with some data on a given user:
+   * The structure with information about the current tooltip rendered with some data on a given
+   * user:
    * - the HTML element as the current rendered tooltip,
    * - the current user session within which the WEB page with this plugin is used,
    * - the HTML element as parent for all the defined tooltip, that is the target for the plugin,
@@ -232,13 +233,17 @@
       return this;
 
     if (!$.userZoom.initialized) {
+      $.userZoom.initialized = true;
       $.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/org/silverpeas/social/multilang/',
         language: '$$', /* by default the language of the user in the current session */
-        mode: 'map'
+        mode: 'map',
+        async: true,
+        callback: function() {
+          $.userZoom.initialize();
+        }
       });
-      $.userZoom.initialize();
     }
 
     return this.each(function() {
@@ -288,7 +293,8 @@
   }
 
   /**
-   * Marking that the rendering of the popin associated to the given target is done (diplayed or not).
+   * Marking that the rendering of the popin associated to the given target is done (diplayed or
+   * not).
    * @param target the aimed target.
    * @private
    */

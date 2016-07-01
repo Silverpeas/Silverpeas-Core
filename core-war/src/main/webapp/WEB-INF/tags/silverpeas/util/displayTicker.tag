@@ -119,7 +119,6 @@ var tickerNews = [];
     $.ajax({
       url : webContext + '/services/news/ticker',
       type : "GET",
-      async : true,
       dataType : "json",
       cache : false,
       success : function(data) {
@@ -174,7 +173,9 @@ var tickerNews = [];
     });
   }
 
-  worker();
+  window.tickerPromise.then(function() {
+    worker();
+  });
 })(jQuery);
 </script>
 <div id="ticker" style="display: none">

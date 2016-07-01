@@ -2133,6 +2133,55 @@
     </attribute>
   </tag>
   <tag>
+    <description>
+      DYNAMIC SCRIPT LOADING HTML TAG
+      Handles the dynamic loading of a JavaScript source file.
+      The name of a promise must be set (a unique one) if some JavaScript treatments needs to be
+      performed after a successful loading.
+    </description>
+    <name>loadScript</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.LoadScriptTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        Specify the script src without the webContext. The webContext is automatically
+        added to the src. If already filled, the webContext is not added again.
+        If the webContext is not the default one, it can be set by applicationContext attribute.
+      </description>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The name of the promise if some treatments needs to be performed after a successful script
+        load.
+      </description>
+      <name>jsPromiseName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The scope to which the jsPromiseName must be declared. If nothing is given the scope is
+        local: 'var '. Typically it can be given JavaScript Object Instance name to attach the
+        promise to it: 'window" for example!
+      </description>
+      <name>jsPromiseScope</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>applicationContext</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>LINK HTML TAG OVERRIDE</description>
     <name>link</name>
     <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.LinkTag</tag-class>

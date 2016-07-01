@@ -80,8 +80,9 @@ body {
 	background-position: left top;
 }
 </style>
-<view:script src="/util/javaScript/lookV5/tools.js"/>
-<view:script src="/util/javaScript/lookV5/topBar.js"/>
+<view:loadScript src="/util/javaScript/lookV5/tools.js"/>
+<view:loadScript src="/util/javaScript/lookV5/topBar.js"/>
+<view:loadScript src="/util/javaScript/lookV5/connectedUsers.js" jsPromiseName="connectedUsersPromise"/>
 <script type="text/javascript">
 function goToHome() {
   var params = {};
@@ -111,7 +112,7 @@ function getFooterHeight() {
 	return "<%=helper.getSettings("footerHeight", "26")%>";
 }
 
-jQuery.getScript('/silverpeas/util/javaScript/lookV5/connectedUsers.js', function(){
+connectedUsersPromise.then(function(){
   setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
 });
 </script>

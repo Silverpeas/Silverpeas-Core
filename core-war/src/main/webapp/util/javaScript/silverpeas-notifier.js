@@ -171,7 +171,6 @@ function notyRegistredMessages(registredKey) {
       type: 'GET',
       dataType: 'json',
       cache: false,
-      async: true,
       success: function(result) {
         if (result && result.messages) {
           jQuery.each(result.messages, function(index, message) {

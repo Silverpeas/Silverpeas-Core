@@ -41,14 +41,17 @@
       return this;
 
     if (!$.messageMe.initialized) {
+      $.messageMe.initialized = true;
       $.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/org/silverpeas/social/multilang/',
         language: '$$', /* by default the language of the user in the current session */
-        mode: 'map'
+        mode: 'map',
+        async: true,
+        callback: function() {
+          prepareMessagingPopup();
+        }
       });
-      prepareMessagingPopup();
-      $.messageMe.initialized = true;
     }
 
     return this.each(function() {
