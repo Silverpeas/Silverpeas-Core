@@ -27,7 +27,6 @@ package org.silverpeas.core.test;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.IdentifiableResource;
-import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
@@ -65,6 +64,7 @@ import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.admin.user.DefaultUserProvider;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -90,7 +90,6 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.WithNested;
-import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetaData;
@@ -100,7 +99,6 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationSending
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -224,7 +222,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addCommonUserBeans() {
     if (!contains(UserDetail.class)) {
-      addClasses(UserDetail.class, UserAccessLevel.class, UserState.class);
+      addClasses(UserDetail.class, UserAccessLevel.class, UserState.class,
+          DefaultUserProvider.class);
     }
     if (!contains(UserFull.class)) {
       addClasses(UserFull.class);
