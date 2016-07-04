@@ -88,8 +88,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 <view:link href="/util/styleSheets/jquery.loadmask.css"/>
 
 <!-- Add jQuery javascript library -->
-<view:script src="/util/javaScript/jquery/jquery.loadmask.js"/>
-<view:script src="/util/javaScript/jquery/jquery.bgiframe.min.js"/>
+<view:loadScript src="/util/javaScript/jquery/jquery.loadmask.js"/>
 
 <script type="text/javascript">
 
@@ -391,7 +390,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 </form>
 
 <!-- Custom domains bar javascript -->
-<view:script src="/util/javaScript/lookV5/navigation.js"/>
-<view:script src="/util/javaScript/lookV5/personalSpace.js"/>
-<view:script src="/util/javaScript/lookV5/login.js"/>
+<view:loadScript src="/util/javaScript/lookV5/navigation.js"/>
+<view:loadScript src="/util/javaScript/lookV5/personalSpace.js"/>
+<view:loadScript src="/util/javaScript/lookV5/login.js"/>
 </div>

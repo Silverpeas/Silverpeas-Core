@@ -43,6 +43,7 @@ import java.text.MessageFormat;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
+import static org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScriptPlugins.ticker;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -83,7 +84,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
   private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
-  private static final String STYLESHEET_CALENDAR = "fullcalendar.css";
+  private static final String STYLESHEET_JQUERY_CALENDAR = "fullcalendar.min.css";
+  private static final String STYLESHEET_SILVERPEAS_CALENDAR = "silverpeas-calendar.css";
   private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
@@ -121,7 +123,6 @@ public class JavascriptPluginInclusion {
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
-  private static final String JQUERY_MIGRATION = "jquery-migrate-1.2.1.min.js";
   private static final String JQUERY_SVG = "raphael.min.js";
   private static final String JQUERY_GAUGE = "justgage.min.js";
   private static final String SILVERPEAS_GAUGE = "silverpeas-gauge.js";
@@ -170,6 +171,21 @@ public class JavascriptPluginInclusion {
     } else {
       return new ElementContainer();
     }
+  }
+
+  /**
+   * Centralization of the generation of a promise.
+   * @param plugin the plugin using the tool.
+   * @param promiseContent the content that must be included (this content must handle the resolve
+   * and the reject calls).
+   * @return the promise as string.
+   */
+  private static String generatePromise(SupportedJavaScriptPlugins plugin, String promiseContent) {
+    String promise = "window." + plugin.name() + "Promise";
+    promise += "=new Promise(function(resolve, reject){";
+    promise += promiseContent;
+    promise += "});";
+    return promise;
   }
 
   /**
@@ -280,8 +296,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
-    xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
+    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".min.css"));
     xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_TIP));
     return xhtml;
@@ -324,7 +339,8 @@ public class JavascriptPluginInclusion {
             "lookSilverpeasV5.ticker.date.daysAgo",
             "lookSilverpeasV5.ticker.notifications.permission.request")
         .produce()));
-    xhtml.addElement(script(jqueryPath + TICKER_JS));
+    xhtml.addElement(scriptContent(generatePromise(ticker,
+        generateDynamicPluginLoading(jqueryPath + TICKER_JS, "tickerPlugin", "resolve();", null))));
     return xhtml;
   }
 
@@ -445,7 +461,8 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeCalendar(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + STYLESHEET_CALENDAR));
+    xhtml.addElement(link(jqueryCssPath + STYLESHEET_JQUERY_CALENDAR));
+    xhtml.addElement(link(stylesheetPath + STYLESHEET_SILVERPEAS_CALENDAR));
     xhtml.addElement(script(jqueryPath + JQUERY_CALENDAR));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_CALENDAR));
     return xhtml;
@@ -641,7 +658,7 @@ public class JavascriptPluginInclusion {
    * @param url
    * @return
    */
-  private static String normalizeWebResourceUrl(String url) {
+  public static String normalizeWebResourceUrl(String url) {
     String normalizedUrl = URLUtil.getMinifiedWebResourceUrl(url);
     return URLUtil.appendVersion(normalizedUrl);
   }

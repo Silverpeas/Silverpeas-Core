@@ -228,7 +228,7 @@
     TipManager.simpleHelp($('#record-count-help'), "<fmt:message key='logging.admin.help.LogRecordCount'/>");
 
     var $logger = $('#logger');
-    var namespace = $logger.find('option:first-child').attr('selected', 'selected').val();
+    var namespace = $logger.find('option:first-child').prop('selected', true).val();
     $('#level').val(loggerConfigurations.configurationOf(namespace).level);
     updateDefaultLevelState(namespace);
 

@@ -1,5 +1,5 @@
 /**
- * Enrichs the XMLHttpRequest object by adding a method to ask when sending a request: onsend.
+ * Enriches the XMLHttpRequest object by adding a method to ask when sending a request: onsend.
  */
 function enrichXMLHttpRequest() {
   if(!XMLHttpRequest.prototype._open) {
@@ -8,7 +8,7 @@ function enrichXMLHttpRequest() {
       this.url = url;
       this._open.apply(this, arguments);
     };
-
+    
     XMLHttpRequest.prototype._send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(data) {
       if(this.onsend != null) {

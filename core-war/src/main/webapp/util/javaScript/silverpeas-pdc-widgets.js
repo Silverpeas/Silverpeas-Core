@@ -920,7 +920,7 @@ function removePosition(position, positions) {
   }
 
   function refreshAxis(settings, selectedPositions) {
-    $('option[value="0"]').attr('selected', true);
+    $('option[value="0"]').prop('selected', true);
     selectedPositions.clear();
     if (settings.multiValuation) {
       for (var i = 0; i < settings.axis.length; i++) {
@@ -985,11 +985,11 @@ function removePosition(position, positions) {
         var option =
                 $('<option>').attr('value', valueIndex).html(valueText).appendTo(axisValuesSelection);
         if (aValue.ascendant) {
-          option.attr('value', 'A').attr('disabled', true).addClass("intfdcolor51");
+          option.attr('value', 'A').prop('disabled', true).addClass("intfdcolor51");
         }
         if (anAxis.invariantValue && anAxis.invariantValue !== aValue.id) {
           selectedPositions.put(0, anAxis.id, aValue);
-          option.attr('disabled', true);
+          option.prop('disabled', true);
         }
 
         // in the case of a duplicate select, disable any options that were previously selected for the
@@ -998,15 +998,15 @@ function removePosition(position, positions) {
           for (var ipos = 0; ipos < selectedPositions.size(); ipos++) {
             var selectedValue = selectedPositions.at(ipos, anAxis.id);
             if (selectedValue && aValue === selectedValue) {
-              option.attr('disabled', true);
+              option.prop('disabled', true);
               break;
             }
           }
         }
         var selectedAxisValue = selectedPositions.at(0, anAxis.id);
         if (selectedPositions.size() === 1 && selectedAxisValue &&
-                aValue.id === selectedAxisValue.id && !option.attr('disabled')) {
-          option.attr('selected', true);
+                aValue.id === selectedAxisValue.id && !option.prop('disabled')) {
+          option.prop('selected', true);
         }
       }
     });
@@ -1058,9 +1058,9 @@ function removePosition(position, positions) {
             if (j !== i) {
               if (previousValue) {
                 var index = anAxis.values.indexOf(previousValue);
-                $("select[id=" + idPrefix + j + "] option[value='" + index + "']").attr('disabled', false);
+                $("select[id=" + idPrefix + j + "] option[value='" + index + "']").prop('disabled', false);
               }
-              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").attr('disabled', true);
+              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").prop('disabled', true);
             }
             j++;
           }
@@ -1096,7 +1096,7 @@ function removePosition(position, positions) {
     renderValues(anAxis, axisValuesSelection, settings, selectedPositions);
 
     if (anAxis.mandatory) {
-      option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
+      option.prop('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
       $('<img>', {
         src: settings.mandatoryAxisIcon,
         alt: settings.mandatoryAxisLegend,
@@ -1115,7 +1115,7 @@ function removePosition(position, positions) {
 
     var aSelectedPosition = selectedPositions.at(i, anAxis.id);
     if (!aSelectedPosition) {
-      option.attr('selected', true);
+      option.prop('selected', true);
     } else if (aSelectedPosition.synonyms && aSelectedPosition.synonyms.length > 0) {
       $('<span>').html('<i>' + selectedPositions.at(i, anAxis.id).synonyms.join(', ') + '</i>&nbsp;').appendTo($axisDiv);
     }

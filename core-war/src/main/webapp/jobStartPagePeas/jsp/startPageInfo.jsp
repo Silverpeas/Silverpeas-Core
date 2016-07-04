@@ -227,31 +227,41 @@ function recoverRights() {
 
 function showPasteOptions() {
 	// Display copy options only if there is at least one copied compliant app (ignore cut/paste)
-	<% for (String componentName : copiedComponentNames) { %>
-	$.ajax({
-		url: webContext+'/<%=componentName%>/jsp/copyApplicationDialog.jsp',
-		async: false,
-		type: "GET",
-		dataType: "html",
-		success: function(data) {
-			  $('#pasteOptions').html(data);
-			}
-		});
-	<% } %>
+  new Promise(function(resolve, reject) {
+    <% if (copiedComponentNames.isEmpty() ){ %>
+      resolve();
+    <% } else {
+    for (String componentName : copiedComponentNames) { %>
+    $.ajax({
+      url: webContext+'/<%=componentName%>/jsp/copyApplicationDialog.jsp',
+      type: "GET",
+      dataType: "html",
+      success: function(data) {
+        $('#pasteOptions').html(data);
+        resolve();
+      },
+      error: function() {
+        resolve();
+      }
+    });
+    <% }
+     } %>
+  }).then(function() {
+    if ($('#pasteOptions').is(':empty')) {
+      $.progressMessage();
+      location.href="Paste";
+    } else {
+      $('#pasteOptionsDialog').popup('validation', {
+        title : "<%=resource.getString("JSPP.copyoptions.dialog.title")%>",
+        callback : function() {
+          $.progressMessage();
+          document.pasteForm.submit();
+          return true;
+        }
+      });
+    }
+  });
 
-	if ($('#pasteOptions').is(':empty')) {
-		$.progressMessage();
-		location.href="Paste";
-	} else {
-		$('#pasteOptionsDialog').popup('validation', {
-			title : "<%=resource.getString("JSPP.copyoptions.dialog.title")%>",
-		    callback : function() {
-		      $.progressMessage();
-		      document.pasteForm.submit();
-		      return true;
-		    }
-		});
-	}
 }
 //-->
 </script>

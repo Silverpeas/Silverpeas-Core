@@ -49,7 +49,7 @@ function addComponent(name) {
           var newEntry = getPersonalSpaceElement(data.id, 1, "personalComponent", "component",
               false, data.url, data.label);
           jQuery(newEntry).insertBefore('#addComponent');
-          if (jQuery("#availables li").size() == 0) {
+          if (jQuery("#availables li").length == 0) {
             jQuery("#addComponent").remove();
           }
         } else {

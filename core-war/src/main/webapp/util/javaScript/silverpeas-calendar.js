@@ -35,24 +35,26 @@
 
   var CALENDAR_KEY = 'calendar';
 
+  var silverpeasCalendarPromise;
+
+
   /**
-   * The Silverpeas calendar plugin accepts as parameter an object representing the calendar to render
-   * and that is defined by the following attributes:
+   * The Silverpeas calendar plugin accepts as parameter an object representing the calendar to
+   * render and that is defined by the following attributes:
    * {
    *   view: a value among 'yearly', 'monthly', 'weekly' (by default the view is set at 'monthly'),
    *   weekends: a boolean indicating whether the week-ends has to be displayed (by default false),
    *   firstDayOfWeek: a number indicating the first day of weeks: 1 for sunday, 2 for monday, ...
    *     (by default set at monday),
-   *   currentDate: the date that indicates the time window to render in the calendar according to its
-   *     view rule (usualy the first day in the time window): for a weekly view, the time window is
-   *     the week in which the date is, for a monthly view, the time window is the month in which
-   *     the date is, and so on.
-   *   events: either an URI at which the events can be fetched or an array of events, all ordered by date.
-   *   onday: a function that will invoked when an emtpy day in the calendar view is clicked and with
-   *     as parameter the clicked date in the format "yyyy-MM-dd'T'HH:mm",
-   *   onevent: a function that will invoked when an event is clicked in the calendar view and with
-   *     as parameters the clicked event (the object that is passed by the function mapped with the
-   *     events attribute)
+   *   currentDate: the date that indicates the time window to render in the calendar according to
+   * its view rule (usualy the first day in the time window): for a weekly view, the time window is
+   * the week in which the date is, for a monthly view, the time window is the month in which the
+   * date is, and so on. events: either an URI at which the events can be fetched or an array of
+   * events, all ordered by date. onday: a function that will invoked when an emtpy day in the
+   * calendar view is clicked and with as parameter the clicked date in the format
+   * "yyyy-MM-dd'T'HH:mm", onevent: a function that will invoked when an event is clicked in the
+   * calendar view and with as parameters the clicked event (the object that is passed by the
+   * function mapped with the events attribute)
    * }
    * By default the onday and onevent attributes aren't defined. They are taken into account only
    * in the yearly, monthly and weekly views. Theses callbacks must accept one parameter: a date in
@@ -60,17 +62,28 @@
    */
   $.fn.calendar = function(calendar) {
 
+    var _self = this;
+
     if (!this.length || !calendar)
       return this;
 
+    silverpeasCalendarPromise = new Promise(function(resolve, reject) {
+      _self.resolvePromise = resolve;
+      _self.rejectPromise = reject;
+    });
+
     if (!$.calendar.initialized) {
+      $.calendar.initialized = true;
       $.i18n.properties({
         name: 'generalMultilang',
         path: webContext + '/services/bundles/org/silverpeas/multilang/',
         language: '$$', /* by default the language of the user in the current session */
-        mode: 'map'
+        mode: 'map',
+        async: true,
+        callback: function() {
+          _self.resolvePromise();
+        }
       });
-      $.calendar.initialized = true;
     }
 
     return this.each(function() {
@@ -98,72 +111,77 @@
   }
 
   function renderFullCalendar(target) {
-    var calendar = target.data(CALENDAR_KEY);
-
-    var options = {
-      header: false,
-      monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
-        $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
-        $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
-      dayNames: [$.i18n.prop("GML.jour1"), $.i18n.prop("GML.jour2"), $.i18n.prop("GML.jour3"), $.i18n.prop("GML.jour4"),
-        $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
-      dayNamesShort: [$.i18n.prop("GML.shortJour1"), $.i18n.prop("GML.shortJour2"), $.i18n.prop("GML.shortJour3"),
-        $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
-      buttonText: {
-        prev: '&nbsp;&#9668;&nbsp;', // left triangle
-        next: '&nbsp;&#9658;&nbsp;', // right triangle
-        prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-        nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-        today: $.i18n.prop("GML.Today"),
-        month: $.i18n.prop("GML.month"),
-        week: $.i18n.prop("GML.week"),
-        day: $.i18n.prop("GML.day")
-      },
-      minHour: 8,
-      allDayText: '',
-      allDayDefault: false,
-      ignoreTimezone: true,
-      timeFormat: 'HH:mm{ - HH:mm}',
-      axisFormat: 'HH:mm',
-      columnFormat: {
-        agendaWeek: 'ddd d'
-      },
-      firstDay: calendar.firstDayOfWeek - 1,
-      defaultView: getFullCalendarView(calendar.view),
-      dayClick: function(date, allDay, jsEvent, view) {
-        if (calendar.onday) {
-          var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
-          calendar.onday(dayDate);
-        }
-      },
-      eventClick: function(calEvent, jsEvent, view) {
-        if (calendar.onevent) {
-          calendar.onevent(calEvent);
-        }
-      },
-      eventMouseover: function(calEvent, jsEvent, view) {
-        if (calendar.oneventmouseover) {
-          calendar.oneventmouseover(calEvent);
-        }
-      },
-      events: calendar.events,
-      weekends: calendar.weekends
-    };
-
-    if (calendar.allDaySlot !== 'undefined') {
-      options.allDaySlot = calendar.allDaySlot;
-    }
-
-    if (calendar.eventrender) {
-      options.eventRender = function(calEvent, $element, view) {
-        calendar.eventrender(calEvent, $element);
+    silverpeasCalendarPromise.then(function() {
+      var calendar = target.data(CALENDAR_KEY);
+      calendar.currentDate = moment(calendar.currentDate);
+      var options = {
+        header: false,
+        contentHeight:550,
+        monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
+          $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
+          $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
+        dayNames: [$.i18n.prop("GML.jour1"), $.i18n.prop("GML.jour2"), $.i18n.prop("GML.jour3"), $.i18n.prop("GML.jour4"),
+          $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
+        dayNamesShort: [$.i18n.prop("GML.shortJour1"), $.i18n.prop("GML.shortJour2"), $.i18n.prop("GML.shortJour3"),
+          $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
+        buttonText: {
+          prev: '&nbsp;&#9668;&nbsp;', // left triangle
+          next: '&nbsp;&#9658;&nbsp;', // right triangle
+          prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+          nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+          today: $.i18n.prop("GML.Today"),
+          month: $.i18n.prop("GML.month"),
+          week: $.i18n.prop("GML.week"),
+          day: $.i18n.prop("GML.day")
+        },
+        minTime: "08:00:00",
+        allDayText: '',
+        allDayDefault: false,
+        timezone: false,
+        timeFormat: 'HH:mm',
+        displayEventEnd: true,
+        slotLabelFormat: 'HH:mm',
+        views: {
+          agendaWeek: {
+            columnFormat: 'ddd DD'
+          }
+        },
+        firstDay: calendar.firstDayOfWeek - 1,
+        defaultView: getFullCalendarView(calendar.view),
+        dayClick: function(date, jsEvent, view) {
+          if (calendar.onday) {
+            var dayDate = date.format("YYYY-MM-DD[T]HH:mm");
+            calendar.onday(dayDate);
+          }
+        },
+        eventClick: function(calEvent, jsEvent, view) {
+          if (calendar.onevent) {
+            calendar.onevent(calEvent);
+          }
+        },
+        eventMouseover: function(calEvent, jsEvent, view) {
+          if (calendar.oneventmouseover) {
+            calendar.oneventmouseover(calEvent);
+          }
+        },
+        events: calendar.events,
+        weekends: calendar.weekends
       };
-    }
 
-    target.fullCalendar(options);
+      if (calendar.allDaySlot !== 'undefined') {
+        options.allDaySlot = calendar.allDaySlot;
+      }
 
-    target.fullCalendar('gotoDate', calendar.currentDate);
+      if (calendar.eventrender) {
+        options.eventRender = function(calEvent, $element, view) {
+          calendar.eventrender(calEvent, $element);
+        };
+      }
 
+      target.fullCalendar(options);
+
+      target.fullCalendar('gotoDate', calendar.currentDate);
+    });
   }
 
   function getFullCalendarView(view) {

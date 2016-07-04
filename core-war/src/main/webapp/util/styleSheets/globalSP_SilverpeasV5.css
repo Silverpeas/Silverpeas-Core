@@ -3782,28 +3782,13 @@ caption {
 }
 
 #publicProfileContenu {
-  margin-left:210px;
+  margin-left:220px;
 }
-
-#publicProfileContenu #gef-tabs,
-#publicProfileContenu form,
-#publicProfileContenu center,
-#publicProfileContenu .tab-content,
-#contactProfil,
-#newsFeedProfil,
-#invitationProfil {
-  float:left;
-  width:100%;}
 
 #publicProfileContenu  address { font-style:normal;}
 
-/* IMAGE  bg_tri.png � chercher dans corps dans fleche */
 .sousNavBulle, .container-filter {
   background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
-  float:left;
-  margin:0 auto;
-  text-align:left;
-  width:100%;
   color:#26334A;
   font-size:11px;
   padding:5px 0 14px;
@@ -3812,7 +3797,6 @@ caption {
   margin:0;
   padding:0 5px 0;
 }
-
 
 .sousNavBulle a {
   border:1px solid #CECECE;

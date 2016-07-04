@@ -200,9 +200,6 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 <% } %>
 <view:script src="/util/javaScript/checkForm.js"/>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-<!--[if IE 6]>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
-<![endif]-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
@@ -402,7 +399,6 @@ function markAsRead(id) {
     //$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
     $.ajax({
       url: '<%=m_context%>/SearchEngineAjaxServlet',
-      async: false,
       data: { Action: 'markAsRead',
         id:id},
       success: function(data){

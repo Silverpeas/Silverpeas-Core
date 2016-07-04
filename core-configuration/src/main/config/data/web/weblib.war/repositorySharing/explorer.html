@@ -24,20 +24,22 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link href="smartpaginator.css" rel="stylesheet" type="text/css" />
-<link type="text/css" rel="stylesheet" href="repositorySharing.css" />
-<link href="ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript" src="jquery.i18n.properties-min-1.0.9.js"></script>
-<script type="text/javascript" src="jquery.jstree.js"></script>
-<script type="text/javascript" src="smartpaginator.js"></script>
-<script type="text/javascript" src="sharing.js"></script>
-<style type="text/css">
-.ui-widget {
-	font-size: 11px;
-}
-</style>
+  <link href="smartpaginator.css" rel="stylesheet" type="text/css"/>
+  <link type="text/css" rel="stylesheet" href="repositorySharing.css"/>
+  <link href="ui-lightness/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+  <link href="themes/default/style.min.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="jquery-2.2.4.min.js"></script>
+  <script type="text/javascript" src="jquery-migrate-1.4.1.min.js"></script>
+  <script type="text/javascript" src="jquery-ui.min.js"></script>
+  <script type="text/javascript" src="jquery.i18n.properties.min.js"></script>
+  <script type="text/javascript" src="jstree.min.js"></script>
+  <script type="text/javascript" src="smartpaginator.js"></script>
+  <script type="text/javascript" src="sharing.js"></script>
+  <style type="text/css">
+    .ui-widget {
+      font-size: 11px;
+    }
+  </style>
 
 <script type="text/javascript">
 
@@ -64,74 +66,62 @@ $(function () {
 			loadTreeview(sharing.webApplicationRootUri);
 		  }, 'json');
 
-	function loadTreeview(rootUri) {
-		// TO CREATE AN INSTANCE
-		// select the tree container using jQuery
-		$("#explorer")
-			// call `.jstree` with the options object
-			.jstree({
-				"core" : {
-					"load_open" : true
-				},
-				"json_data" : {
-					"ajax" : {
-						"type": 'GET',
-						"url": function (node) {
-							var nodeId = "";
-							//var url = $("#uri").val();
-							var url = rootUri;
-							if (node != -1) {
-								url = node.attr("childrenURI");
-								//alert(url);
-							}
-							return url;
-						},
-						"success": function (new_data) {
-							try {
-								// init breadcrumb
-								$("#breadcrumb .path").html(new_data.data);
-								// store instanceId
-								$("#instanceId").val(new_data.attr.componentId);
-								// display publications
-								displayPublications(new_data.attr.id, new_data.attr.componentId);
-							} catch (e) {
-							}
-							return new_data;
-						}
-					}
-				},
-				"themes" : {
-					"theme" : "default",
-					"dots" : false,
-					"icons" : true
-				},
-				// the `plugins` array allows you to configure the active plugins on this instance
-				"plugins" : ["themes","json_data","ui"]
-			});
+  function loadTreeview(rootUri) {
+    $("#explorer").jstree({
+      "core" : {
+        force_text : false, "data" : {
+          "url" : function(node) {
+            var nodeId = "";
+            //var url = $("#uri").val();
+            var url = rootUri;
+            if (node && node.id !== '#') {
+              url = node.original.attr["childrenURI"];
+              //alert(url);
+            }
+            return url;
+          }, "success" : function(new_data) {
+            try {
+              // init breadcrumb
+              $("#breadcrumb .path").html(new_data.data);
+              // store instanceId
+              $("#instanceId").val(new_data.attr.componentId);
+              // display publications
+              displayPublications(new_data.attr.id, new_data.attr.componentId);
+            } catch (e) {
+            }
+            return new_data;
+          }
+        }, "check_callback" : false, "themes" : {
+          "dots" : false, "icons" : true
+        }, "multiple" : false
+      }, // the `plugins` array allows you to configure the active plugins on this instance
+      "plugins" : []
+    })
 
-			$("#explorer").bind("select_node.jstree", function (e, data) {
-				// data.inst is the instance which triggered this event
-				// display breadcrumb
-				var path = data.inst.get_path(data.rslt.obj, false);
-				var newPath = "";
-				for (i = 0; i<path.length; i++) {
-					if (i != 0) {
-						newPath += " > ";
-					}
-					newPath += path[i];
-				}
-				$("#breadcrumb .path").html(newPath);
+    $("#explorer").on("ready.jstree", function(event, data) {
+      var root = data.instance.get_node('#0');
+      data.instance.select_node(root);
+    }).on("select_node.jstree", function(e, data) {
+      // data.inst is the instance which triggered this event
+      // display breadcrumb
+      var path = data.instance.get_path(data.node.id, false, false);
+      var newPath = "";
+      for (i = 0; i < path.length; i++) {
+        if (i != 0) {
+          newPath += " > ";
+        }
+        newPath += path[i];
+      }
+      $("#breadcrumb .path").html(newPath);
 
-				//open folder in treeview
-				var nodeId = $(data.rslt.obj).attr('id');
-				var idSelector = "#"+nodeId;
-				$.jstree._reference(idSelector).open_node(idSelector);
+      //open folder in treeview
+      data.instance.open_node(data.node);
 
-				hideZipPanel();
+      hideZipPanel();
 
-				// display publications
-				displayPublications(data.rslt.obj.attr("id"), data.rslt.obj.attr("componentId"));
-			});
+      // display publications
+      displayPublications(data.node.id, data.node.original.attr["componentId"]);
+    });
 	}
 
 	function displayPublications(nodeId, instanceId) {
@@ -219,6 +209,7 @@ $(function () {
 		// load bundles
 		jQuery.i18n.properties({
 			name:'messages',
+			language: '$$', /* by default the language of the user in the current session */
 			path:'bundle/',
 			mode:'map'
 		});

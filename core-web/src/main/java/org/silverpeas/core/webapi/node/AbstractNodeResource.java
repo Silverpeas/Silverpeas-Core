@@ -62,7 +62,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
       uri = super.getUriInfo().getRequestUri();
     }
     NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
-    entity.setState("open");
+    entity.getState().setOpened(true);
     // in non authenticated mode, special nodes are unavailable
     entity.setChildren(removeSpecialNodes(entity.getChildren()));
     return entity;

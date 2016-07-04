@@ -113,7 +113,7 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
 
         builder.append("<script type=\"text/javascript\" src=\"").append(
             contextName).append(
-            "/util/javaScript/jquery/jquery-1.5.min.js\"></script>");
+            "/util/javaScript/jquery/jquery-2.2.4.min.js\"></script>");
       }
       // displays the styles used to represent the icon component
       if (displayIconsStyles) {

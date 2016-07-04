@@ -1,0 +1,6 @@
+/* Peculiar CSS for being use when exploring a GED from an folder browser field */
+.silverpeas-locked {
+  background-image:url(d.png);
+  background-repeat:repeat-y;
+  background-position:-56px -37px;
+}

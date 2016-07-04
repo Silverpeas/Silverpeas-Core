@@ -29,8 +29,6 @@
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.core.web.look.TopItem"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -82,9 +80,9 @@ body {
 	background-position: left top;
 }
 </style>
-<view:script src="/util/javaScript/lookV5/connectedUsers.js"/>
-<view:script src="/util/javaScript/lookV5/tools.js"/>
-<view:script src="/util/javaScript/lookV5/topBar.js"/>
+<view:loadScript src="/util/javaScript/lookV5/tools.js"/>
+<view:loadScript src="/util/javaScript/lookV5/topBar.js"/>
+<view:loadScript src="/util/javaScript/lookV5/connectedUsers.js" jsPromiseName="connectedUsersPromise"/>
 <script type="text/javascript">
 function goToHome() {
   var params = {};
@@ -107,17 +105,16 @@ function getContext() {
   return "<%=m_sContext%>";
 }
 
-(function() {
-  setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
-})();
-
 function getBannerHeight() {
 	return "<%=helper.getSettings("bannerHeight", "115")%>";
 }
 function getFooterHeight() {
 	return "<%=helper.getSettings("footerHeight", "26")%>";
 }
-//-->
+
+connectedUsersPromise.then(function(){
+  setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
+});
 </script>
 <div id="topBar">
     <div id="backHome">
