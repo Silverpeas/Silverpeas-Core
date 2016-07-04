@@ -25,7 +25,7 @@
 package com.silverpeas.export.ical;
 
 import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 import org.junit.Test;
@@ -33,14 +33,14 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
 /**
- * Unit tests on datable objects.
+ * Unit tests on temporal objects.
  */
 public class DatableTest {
 
   @Test
   public void aDateTimeToISO8601() {
     java.util.Date now = new java.util.Date();
-    SimpleDateFormat format = new SimpleDateFormat(Datable.ISO_8601_PATTERN);
+    SimpleDateFormat format = new SimpleDateFormat(Temporal.ISO_8601_PATTERN);
     String expected = format.format(now);
 
     DateTime dateTime = new DateTime(now);
@@ -52,7 +52,7 @@ public class DatableTest {
   @Test
   public void aDateTimeToICal() {
     java.util.Date now = new java.util.Date();
-    SimpleDateFormat format = new SimpleDateFormat(Datable.ICAL_PATTERN);
+    SimpleDateFormat format = new SimpleDateFormat(Temporal.ICAL_PATTERN);
     String expected = format.format(now);
 
     DateTime dateTime = new DateTime(now);
@@ -64,7 +64,7 @@ public class DatableTest {
   @Test
   public void aDateTimeInUTCToICal() {
     java.util.Date now = new java.util.Date();
-    SimpleDateFormat format = new SimpleDateFormat(Datable.ICAL_UTC_PATTERN);
+    SimpleDateFormat format = new SimpleDateFormat(Temporal.ICAL_UTC_PATTERN);
     format.setTimeZone(TimeZone.getTimeZone("UTC"));
     String expected = format.format(now);
 

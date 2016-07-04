@@ -34,7 +34,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.silverpeas.core.date.DatableMatcher.*;
+import static org.silverpeas.core.date.TemporalMatcher.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static java.util.Calendar.*;
@@ -221,7 +221,7 @@ public class DateTimeTest {
 
   @Test
   public void isDefinedNotDefined() {
-    Datable date = new DateTime(DateUtil.getNow());
+    Temporal date = new DateTime(DateUtil.getNow());
     assertThat(date.isDefined(), is(true));
     assertThat(date.isNotDefined(), is(false));
 

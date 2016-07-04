@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.importexport.ical.ical4j;
 
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.importexport.EncodingException;
-import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.DateTime;
 import java.text.ParseException;
@@ -47,7 +47,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws EncodingException if the encoding fails.
    */
-  public net.fortuna.ical4j.model.Date encode(final Datable<?> aDate) throws EncodingException {
+  public net.fortuna.ical4j.model.Date encode(final Temporal<?> aDate) throws EncodingException {
     return encode(aDate, false);
   }
 
@@ -57,7 +57,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws EncodingException if the encoding fails.
    */
-  public net.fortuna.ical4j.model.Date encodeInUTC(final Datable<?> aDate) throws EncodingException {
+  public net.fortuna.ical4j.model.Date encodeInUTC(final Temporal<?> aDate) throws EncodingException {
     return encode(aDate, true);
   }
 
@@ -71,18 +71,18 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws EncodingException if the encoding fails.
    */
-  public net.fortuna.ical4j.model.Date encode(final Datable<?> aDate, boolean inUTC) throws
+  public net.fortuna.ical4j.model.Date encode(final Temporal<?> aDate, boolean inUTC) throws
       EncodingException {
     net.fortuna.ical4j.model.Date iCal4JDate = null;
     try {
-      if (aDate instanceof DateTime) {
+      if (aDate.isTimeSupported()) {
         if (inUTC) {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICalInUTC());
         } else {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICal());
           ((net.fortuna.ical4j.model.DateTime)iCal4JDate).setTimeZone(getTimeZone(aDate));
         }
-      } else if (aDate instanceof Date) {
+      } else if (!aDate.isTimeSupported()) {
         iCal4JDate = new net.fortuna.ical4j.model.Date(aDate.toICal());
       }
     } catch (ParseException ex) {
@@ -91,7 +91,7 @@ public class ICal4JDateCodec {
     return iCal4JDate;
   }
 
-  private TimeZone getTimeZone(final Datable<?> date) {
+  private TimeZone getTimeZone(final Temporal<?> date) {
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     return registry.getTimeZone(date.getTimeZone().getID());
   }

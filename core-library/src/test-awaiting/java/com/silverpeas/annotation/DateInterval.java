@@ -25,7 +25,7 @@
 package com.silverpeas.annotation;
 
 import org.silverpeas.core.annotation.constraint.DateRange;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 
 /**
  * Objects representing an interval of dates. It is aiming for tests on the DateRangeValidator
@@ -34,15 +34,15 @@ import org.silverpeas.core.date.Datable;
 @DateRange(startDate="from", endDate="to")
 public class DateInterval {
 
-  private Datable<?> from;
-  private Datable<?> to;
+  private Temporal<?> from;
+  private Temporal<?> to;
 
   /**
    * Constructs a new interval from the two specified dates.
    * @param startDate the start date of the interval.
    * @param endDate the end date of the interval.
    */
-  public DateInterval(final Datable<?> startDate, final Datable<?> endDate) {
+  public DateInterval(final Temporal<?> startDate, final Temporal<?> endDate) {
     this.from = startDate;
     this.to = endDate;
   }
@@ -51,7 +51,7 @@ public class DateInterval {
    * Gets the start date of the interval.
    * @return the interval start date.
    */
-  public Datable<?> getStartDate() {
+  public Temporal<?> getStartDate() {
     return from;
   }
 
@@ -59,7 +59,7 @@ public class DateInterval {
    * Gets the end date of the interval.
    * @return the interval end date.
    */
-  public Datable<?> getEndDate() {
+  public Temporal<?> getEndDate() {
     return to;
   }
 

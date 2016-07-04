@@ -29,7 +29,7 @@ import org.hamcrest.Factory;
 import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.RecurrencePeriod;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import com.silverpeas.calendar.CalendarEventCategories;
 import org.silverpeas.core.date.Date;
 import com.silverpeas.calendar.DayOfWeek;
@@ -194,12 +194,12 @@ public class CalendarEventMatcher extends TypeSafeMatcher<String> {
     return weekday;
   }
 
-  private String asIcalDate(final Datable<?> aDate) {
+  private String asIcalDate(final Temporal<?> aDate) {
     String icalDate;
-    if (aDate instanceof Date) {
-      icalDate = ";VALUE=DATE:";
-    } else {
+    if (aDate.isTimeSupported()) {
       icalDate = ";TZID=" + aDate.getTimeZone().getID() + ":";
+    } else {
+      icalDate = ";VALUE=DATE:";
     }
     icalDate += aDate.toICal();
     return icalDate;

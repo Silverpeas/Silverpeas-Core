@@ -33,7 +33,7 @@ import java.util.TimeZone;
 /**
  * A date and time.
  */
-public class DateTime extends AbstractDateDatable<DateTime> {
+public class DateTime extends AbstractDateTemporal<DateTime> {
 
   private static final long serialVersionUID = -2562622075317046753L;
   private TimeZone timeZone = TimeZone.getDefault();
@@ -149,6 +149,11 @@ public class DateTime extends AbstractDateDatable<DateTime> {
   @Override
   public TimeZone getTimeZone() {
     return this.timeZone;
+  }
+
+  @Override
+  public boolean isTimeSupported() {
+    return true;
   }
 
   @Override

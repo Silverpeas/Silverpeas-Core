@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,12 +49,12 @@ public class CalendarEventRecurrence {
   /**
    * A constant that defines a specific value for no recurrence end date.
    */
-  public static final Datable<?> NO_RECURRENCE_END_DATE = null;
+  public static final Temporal<?> NO_RECURRENCE_END_DATE = null;
   private RecurrencePeriod frequency;
   private int count = NO_RECURRENCE_COUNT;
-  private Datable<?> endDate = NO_RECURRENCE_END_DATE;
+  private Temporal<?> endDate = NO_RECURRENCE_END_DATE;
   private List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
-  private List<Datable<?>> exceptionDates = new ArrayList<Datable<?>>();
+  private List<Temporal<?>> exceptionDates = new ArrayList<Temporal<?>>();
 
   /**
    * Creates a new event recurrence from the specified frequency.
@@ -91,11 +91,11 @@ public class CalendarEventRecurrence {
   /**
    * Excludes from this recurrence rule the occurrences of the event starting at the specified
    * dates.
-   * @param datables a list of dates at which the occurrences to exclude start.
+   * @param temporals a list of dates at which the occurrences to exclude start.
    * @return itself.
    */
-  public CalendarEventRecurrence excludeEventOccurrencesStartingAt(final Datable<?> ... datables) {
-    this.exceptionDates.addAll(Arrays.asList(datables));
+  public CalendarEventRecurrence excludeEventOccurrencesStartingAt(final Temporal<?>... temporals) {
+    this.exceptionDates.addAll(Arrays.asList(temporals));
     return this;
   }
 
@@ -181,7 +181,7 @@ public class CalendarEventRecurrence {
    * @param endDate the end date of the recurrence.
    * @return itself.
    */
-  public CalendarEventRecurrence upTo(final Datable<?> endDate) {
+  public CalendarEventRecurrence upTo(final Temporal<?> endDate) {
     this.count = 0;
     this.endDate = endDate.clone();
     return this;
@@ -209,8 +209,8 @@ public class CalendarEventRecurrence {
    * defined.
    * @return the recurrence end date or null if no such terminaison is defined.
    */
-  public Datable<?> getEndDate() {
-    Datable<?> date = NO_RECURRENCE_END_DATE;
+  public Temporal<?> getEndDate() {
+    Temporal<?> date = NO_RECURRENCE_END_DATE;
     if (this.endDate != NO_RECURRENCE_END_DATE) {
       date = endDate.clone();
     }
@@ -233,7 +233,7 @@ public class CalendarEventRecurrence {
    * from this recurrence rule. They are the exception in the application of the recurrence rule.
    * @return an unmodifiable list of datables.
    */
-  public List<Datable<?>> getExceptionDates() {
+  public List<Temporal<?>> getExceptionDates() {
     return Collections.unmodifiableList(exceptionDates);
   }
 

@@ -21,7 +21,7 @@
 package org.silverpeas.core.web.calendar.ical;
 
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.ExporterProvider;
@@ -227,11 +227,11 @@ public class ExportIcalManager {
     Collection<JournalHeader> schedulables = getSchedulableCalendar(fromDate, toDate);
     for (JournalHeader schedulable : schedulables) {
       // creates an event corresponding to the current schedulable object
-      Datable<?> eventStartDate = DateUtil.asDatable(schedulable.getStartDate(),
+      Temporal<?> eventStartDate = DateUtil.asTemporal(schedulable.getStartDate(),
           StringUtil.isDefined(schedulable.getStartHour()));
-      Datable<?> eventEndDate = DateUtil.asDatable(schedulable.getEndDate(),
+      Temporal<?> eventEndDate = DateUtil.asTemporal(schedulable.getEndDate(),
           StringUtil.isDefined(schedulable.getEndHour()));
-      CalendarEvent event = anEventAt((Datable) eventStartDate, eventEndDate).
+      CalendarEvent event = anEventAt((Temporal) eventStartDate, eventEndDate).
           identifiedBy("event", schedulable.getId()).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());

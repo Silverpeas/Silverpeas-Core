@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.date.period;
 
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -292,7 +292,7 @@ public class Period implements Comparable, Serializable, Cloneable {
   }
 
   /**
-   * Gets the begin date of the period represented as a {@link Datable}.
+   * Gets the begin date of the period represented as a {@link Temporal}.
    * (see {@link #getBeginDate()} for more details).
    * @return
    */
@@ -317,7 +317,7 @@ public class Period implements Comparable, Serializable, Cloneable {
   }
 
   /**
-   * Gets the end date of the period represented as a {@link Datable}.
+   * Gets the end date of the period represented as a {@link Temporal}.
    * (see {@link #getEndDate()} for more details).
    * @return
    */

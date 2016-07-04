@@ -25,24 +25,23 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.annotation.constraint.DateRange;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.Date;
 
-import java.io.Serializable;
 import java.net.URL;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * The event in a calendar. An event in the calendar is described by a starting and an ending date
  * and a name. The start and end dates in an event must be in the same type (either a date or a
- * datable).
+ * temporal).
  */
 @DateRange(startDate = "startDate", endDate = "endDate")
 public class CalendarEvent implements Plannable {
   private static final long serialVersionUID = 1L;
 
-  private Datable<?> startDate;
-  private Datable<?> endDate;
+  private Temporal<?> startDate;
+  private Temporal<?> endDate;
   private String title = "";
   private String description = "";
   private String location = "";
@@ -59,7 +58,7 @@ public class CalendarEvent implements Plannable {
    * @param startDate the start date of the event.
    * @return a calendar event.
    */
-  public static <T extends Datable<?>> CalendarEvent anEventAt(final T startDate) {
+  public static <T extends Temporal<?>> CalendarEvent anEventAt(final T startDate) {
     return new CalendarEvent().startingAt(startDate).endingAt(startDate);
   }
 
@@ -72,7 +71,7 @@ public class CalendarEvent implements Plannable {
    * the event ends up.
    * @return a calendar event.
    */
-  public static <T extends Datable<?>> CalendarEvent anEventAt(final T startDate, final T endDate) {
+  public static <T extends Temporal<?>> CalendarEvent anEventAt(final T startDate, final T endDate) {
     return new CalendarEvent().startingAt(startDate).endingAt(endDate);
   }
 
@@ -98,7 +97,7 @@ public class CalendarEvent implements Plannable {
    * @param endDate the event end date.
    * @return itself.
    */
-  public CalendarEvent endingAt(Datable<?> endDate) {
+  public CalendarEvent endingAt(Temporal<?> endDate) {
     this.endDate = endDate.clone();
     return this;
   }
@@ -159,7 +158,7 @@ public class CalendarEvent implements Plannable {
    * @param startDate the new event start date.
    * @return itself.
    */
-  public CalendarEvent startingAt(Datable<?> startDate) {
+  public CalendarEvent startingAt(Temporal<?> startDate) {
     this.startDate = startDate.clone();
     return this;
   }
@@ -201,7 +200,7 @@ public class CalendarEvent implements Plannable {
    * Gets the date at which this event ends.
    * @return the end date of this event.
    */
-  public Datable<?> getEndDate() {
+  public Temporal<?> getEndDate() {
     return endDate.clone();
   }
 
@@ -225,7 +224,7 @@ public class CalendarEvent implements Plannable {
    * Gets the date at which this event should starts
    * @return the start date of the event.
    */
-  public Datable<?> getStartDate() {
+  public Temporal<?> getStartDate() {
     return startDate.clone();
   }
 
@@ -289,7 +288,7 @@ public class CalendarEvent implements Plannable {
    * @return true if this event is occurring on all its day(s).
    */
   public boolean isOnAllDay() {
-    return this.startDate instanceof Date || this.endDate instanceof Date;
+    return !this.startDate.isTimeSupported() || !this.endDate.isTimeSupported();
   }
 
   public CalendarEvent identifiedBy(String appId, String eventId) {

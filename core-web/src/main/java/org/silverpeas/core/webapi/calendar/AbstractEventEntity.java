@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.calendar;
 
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -91,7 +91,7 @@ public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> impl
    * @param url
    */
   protected AbstractEventEntity(final String type, final String instanceId, final String id,
-      final String title, final String description, final Datable start, final Datable end,
+      final String title, final String description, final Temporal start, final Temporal end,
       final String url) {
     this.type = type;
     this.instanceId = instanceId;
