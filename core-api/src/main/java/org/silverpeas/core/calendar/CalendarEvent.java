@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.annotation.constraint.DateRange;
 import org.silverpeas.core.date.Datable;
 import org.silverpeas.core.date.Date;
@@ -39,7 +38,7 @@ import static org.silverpeas.core.util.StringUtil.*;
  * datable).
  */
 @DateRange(startDate = "startDate", endDate = "endDate")
-public class CalendarEvent implements Serializable {
+public class CalendarEvent implements Plannable {
   private static final long serialVersionUID = 1L;
 
   private Datable<?> startDate;
@@ -291,13 +290,6 @@ public class CalendarEvent implements Serializable {
    */
   public boolean isOnAllDay() {
     return this.startDate instanceof Date || this.endDate instanceof Date;
-  }
-
-  public CalendarEvent from(SilverpeasContent content) {
-    identifiedBy(content.getComponentInstanceId(), content.getId());
-    this.title = content.getTitle();
-    this.description = content.getDescription();
-    return this;
   }
 
   public CalendarEvent identifiedBy(String appId, String eventId) {

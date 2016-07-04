@@ -23,10 +23,8 @@
  */
 
 /**
- * Provides the objects for handling and scheduling events in a calendar in Silverpeas.
- * The calendar event scheduling is modelled from the concepts on which the iCal specification is
- * built.
- * This packages provides also classes to represent a date and a date time in Silverpeas as the
- * dates in the Java API is poor and useless.
+ * Provides the Calendar and Event Planning Engine. This engine defines an API to handle calendars
+ * and to plan events on calendars. The API is modelled after the concepts of the iCal
+ * specification.
  */
 package org.silverpeas.core.calendar;

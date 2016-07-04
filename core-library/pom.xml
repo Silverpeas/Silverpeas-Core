@@ -133,10 +133,6 @@
       <artifactId>pdfbox</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mnode.ical4j</groupId>
-      <artifactId>ical4j</artifactId>
-    </dependency>
-    <dependency>
       <groupId>ecs</groupId>
       <artifactId>ecs</artifactId>
     </dependency>
