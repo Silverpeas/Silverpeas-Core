@@ -766,6 +766,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     clone.setInheritanceBlocked(inheritanceBlocked);
     clone.setLook(look);
     clone.setName(getName());
+    clone.setLanguage(getLanguage());
     clone.setPersonalSpace(isPersonalSpace);
 
     // clone profiles
