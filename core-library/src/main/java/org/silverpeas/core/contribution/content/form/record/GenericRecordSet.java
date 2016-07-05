@@ -46,6 +46,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,39 +194,114 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   /**
+<<<<<<< HEAD:core-library/src/main/java/org/silverpeas/core/contribution/content/form/record/GenericRecordSet.java
    * Deletes the given DataRecord and set to null its id.
+=======
+   * Deletes the given DataRecord and its associated data in all languages.
+   * @deprecated use delete(String objectId) instead
+   * @param record
+>>>>>>> 16523fa... fixing bug #8101:lib-core/src/main/java/com/silverpeas/form/record/GenericRecordSet.java
    * @throws FormException when the record doesn't have the required template., when the record has
    * an unknown id, when the delete fail.
    */
   @Override
   public void delete(DataRecord record) throws FormException {
     if (record != null) {
-
-      ForeignPK foreignPK = new ForeignPK(record.getId(), recordTemplate.getInstanceId());
-
-      // remove files managed by WYSIWYG fields
-      WysiwygFCKFieldDisplayer.removeContents(foreignPK);
-
-      // remove form documents registred into JCR
-      List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(foreignPK, DocumentType.form, null);
-      for (SimpleDocument doc : documents) {
-        AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
-      }
-
-      List<String> languages =
-          getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, record.getId());
-      for (String lang : languages) {
-        DataRecord aRecord = getRecord(record.getId(), lang);
-        // remove data in database
-        getGenericRecordSetManager().deleteRecord(recordTemplate, aRecord);
-      }
+      delete(record.getId());
     }
   }
 
+  /**
+   * Deletes the given DataRecord and its associated data in the given language.
+   */
+  private void delete(DataRecord record, String language) throws FormException {
+    if (record != null) {
+      ForeignPK foreignPK = new ForeignPK(record.getId(), recordTemplate.getInstanceId());
+
+      // remove files managed by WYSIWYG fields
+      WysiwygFCKFieldDisplayer.removeContents(foreignPK, getWYSIWYGFieldNames(record), language);
+
+      // remove form documents registered into record but stored into JCR
+      List<String> attachmentIds = getFileFieldsValues(record);
+      for (String attachmentId : attachmentIds) {
+        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
+            .searchDocumentById(new SimpleDocumentPK(attachmentId, recordTemplate.getInstanceId()),
+                null);
+        if (doc != null) {
+          AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc, false);
+        }
+      }
+
+      // remove data in database
+      // the record is associated to one language
+      getGenericRecordSetManager().deleteRecord(recordTemplate, record);
+    }
+  }
+
+  /**
+   * Deletes all form data for the given objectId in all languages
+   */
   public void delete(String objectId) throws FormException {
-    DataRecord data = getRecord(objectId);
-    delete(data);
+    List<String> languages =
+        getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, objectId);
+    for (String lang : languages) {
+      delete(objectId, lang);
+    }
+  }
+
+  /**
+   * Deletes form data for the given objectId in the given language only
+   */
+  public void delete(String objectId, String language) throws FormException {
+    DataRecord data = getRecord(objectId, language);
+    if (data != null && data.getLanguage().equals(language)) {
+      // do not fallback on others languages
+      delete(data, language);
+    }
+  }
+
+  private List<String> getWYSIWYGFieldNames(DataRecord data) {
+    List<String> wysiwygFieldNames = new ArrayList<String>();
+    if (data != null) {
+      String[] fieldNames = data.getFieldNames();
+      for (String fieldName : fieldNames) {
+        try {
+          Field field = data.getField(fieldName);
+          if (field != null) {
+            FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
+            if (fieldTemplate != null) {
+              String fieldDisplayerName = fieldTemplate.getDisplayerName();
+              if ("wysiwyg".equals(fieldDisplayerName)) {
+                wysiwygFieldNames.add(fieldName);
+              }
+            }
+          }
+        } catch (FormException fe) {
+          SilverTrace
+              .error("form", "GenericRecordSet.getWYSIWYGFieldNames", "form.EXP_UNKNOWN_FIELD", fe);
+        }
+      }
+    }
+    return wysiwygFieldNames;
+  }
+
+  private List<String> getFileFieldsValues(DataRecord data) {
+    List<String> fileFieldsValues = new ArrayList<String>();
+    if (data != null) {
+      String[] fieldNames = data.getFieldNames();
+      for (String fieldName : fieldNames) {
+        try {
+          Field field = data.getField(fieldName);
+          if (field != null && "file".equals(field.getTypeName())) {
+            fileFieldsValues.add(field.getStringValue());
+          }
+        } catch (FormException fe) {
+          SilverTrace
+              .error("form", "GenericRecordSet.getFileFieldsValues", "form.EXP_UNKNOWN_FIELD", fe);
+        }
+      }
+    }
+    return fileFieldsValues;
   }
 
   @Override

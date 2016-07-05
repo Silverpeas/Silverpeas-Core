@@ -23,6 +23,14 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import net.htmlparser.jericho.Source;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -32,38 +40,29 @@ import org.silverpeas.core.contribution.content.form.GalleryHelper;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import net.htmlparser.jericho.Source;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control
+    .DynamicValueReplacement;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -199,8 +198,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
 
-      StringBuilder stringBuilder = new StringBuilder();
-
       // Storage file : HTML select building
       List<ComponentInstLight> fileStorage = null;
       boolean showFileStorages = true;
@@ -211,7 +208,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         fileStorage = WysiwygController.getStorageFile();
         if (!fileStorage.isEmpty()) {
           out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          stringBuilder = new StringBuilder();
+          StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
               "\" name=\"storageFile\" onchange=\"openStorageFileManager").append(
               FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
@@ -237,7 +234,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           if (fileStorage == null || fileStorage.isEmpty()) {
             out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
           }
-          stringBuilder = new StringBuilder();
+          StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"images_").append(fieldName).append(
               "\" name=\"images\" onchange=\"choixImage").append(
               FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
@@ -266,7 +263,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
               (listImages == null || listImages.isEmpty())) {
             out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
           }
-          stringBuilder = new StringBuilder();
+          StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
               "\" name=\"galleryFile\" onchange=\"openGalleryFileManager").append(
               fieldNameFunction).append("();this.selectedIndex=0\">");
@@ -306,7 +303,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
       out.println("<script type=\"text/javascript\">");
 
-      stringBuilder = new StringBuilder();
+      StringBuilder stringBuilder = new StringBuilder();
       String configFile = settings.getString("configFile", URLUtil.getApplicationURL()
           + "/wysiwyg/jsp/ckeditor/silverconfig.js");
 
@@ -729,14 +726,22 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     return getPath(componentId) + getFileName(fieldName, objectId, language);
   }
 
-  public static void removeContents(ForeignPK pk) {
+  /*
+  * Remove content on disk of WYSIWYG fields in given language
+  * @param pk the PK of contribution
+  * @param fieldNames list of name of fields to delete
+  * @param language the language to delete
+  */
+  public static void removeContents(ForeignPK pk, List<String> fieldNames, String language) {
     String fromPath = getPath(pk.getInstanceId());
     File directory = new File(fromPath);
     if (directory.exists()) {
-      Collection<File> files =
-          FileUtils.listFiles(directory, new PrefixFileFilter(pk.getId() + "_"), null);
-      for (File file : files) {
-        FileUtils.deleteQuietly(file);
+      for (String fieldName : fieldNames) {
+        String filePath = getFile(pk.getInstanceId(), pk.getId(), fieldName, language);
+        File file = new File(filePath);
+        if (file != null && file.exists()) {
+          FileUtils.deleteQuietly(file);
+        }
       }
     }
   }

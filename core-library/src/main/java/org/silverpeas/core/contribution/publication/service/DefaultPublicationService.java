@@ -369,8 +369,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
               .getPublicationTemplate(detail.getPK().getInstanceId() + ':' + infoId);
           RecordSet set = pubTemplate.getRecordSet();
-          DataRecord data = set.getRecord(detail.getPK().getId(), detail.getLanguage());
-          set.delete(data);
+          set.delete(detail.getPK().getId(), detail.getLanguage());
         }
       }
 

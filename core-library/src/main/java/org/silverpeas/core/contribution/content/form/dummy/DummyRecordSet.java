@@ -103,6 +103,10 @@ public class DummyRecordSet implements RecordSet {
   }
 
   @Override
+  public void delete(String objectId, String language) throws FormException {
+  }
+
+  @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
       String cloneComponentId, Map<String, String> attachmentIds) throws FormException {
   }

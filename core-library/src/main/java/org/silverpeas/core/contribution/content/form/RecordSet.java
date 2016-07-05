@@ -38,22 +38,22 @@ public interface RecordSet {
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.
    */
-  public RecordTemplate getRecordTemplate();
+  RecordTemplate getRecordTemplate();
 
   /**
    * Returns an empty DataRecord built on the RecordTemplate. This record is not yet managed by this
    * RecordSet. This is only an empty record which must be filled and saved in order to become a
    * DataRecord of this RecordSet.
    */
-  public DataRecord getEmptyRecord() throws FormException;
+  DataRecord getEmptyRecord() throws FormException;
 
   /**
    * Returns the DataRecord with the given id.
    * @throws FormException when the id is unknown.
    */
-  public DataRecord getRecord(String id) throws FormException;
+  DataRecord getRecord(String id) throws FormException;
 
-  public DataRecord getRecord(String recordId, String language)
+  DataRecord getRecord(String recordId, String language)
       throws FormException;
 
   /**
@@ -62,38 +62,48 @@ public interface RecordSet {
    * @throws FormException when the record doesn't have the required template or when the record
    * has an unknown id or when the insert or update fail.
    */
-  public void save(DataRecord record) throws FormException;
+  void save(DataRecord record) throws FormException;
 
   /**
    * Index the given DataRecord into the indexEntry. formName looks like allFields (ie template
    * filename allFields.xml without extension)
    * @throws FormException
    */
-  public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
+  void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException;
 
   /**
-   * Deletes the given DataRecord and set to null its id.
-   * @throws FormException when the record doesn't have the required template or when the record
-   * has an unknown id or when the delete fail.
+   * Deletes the given DataRecord and its associated data in all languages.
+   * @deprecated use delete(String objectId) instead
+   * @throw FormException when the record doesn't have the required template.
+   * @throw FormException when the record has an unknown id.
+   * @throw FormException when the delete fail.
    */
-  public void delete(DataRecord record) throws FormException;
+  void delete(DataRecord record) throws FormException;
 
-  public void delete(String objectId) throws FormException;
+  /**
+   * Deletes all form data for the given objectId in all languages
+   */
+  void delete(String objectId) throws FormException;
 
-  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+  /**
+   * Deletes form data for the given objectId in the given language only
+   */
+  void delete(String objectId, String language) throws FormException;
+
+  void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
       Map<String, String> oldAndNewFileIds) throws FormException;
 
-  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+  void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
       throws FormException;
 
   /**
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.
    */
-  public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
+  void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
       String cloneComponentId, Map<String, String> attachmentIds) throws FormException;
 
-  public void merge(String fromExternalId, String fromComponentId, String toExternalId,
+  void merge(String fromExternalId, String fromComponentId, String toExternalId,
       String toComponentId, Map<String, String> attachmentIds) throws FormException;
 
 }
