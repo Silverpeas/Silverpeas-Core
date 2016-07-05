@@ -80,6 +80,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     ci.setName(name);
     ci.setLabel(getLabel());
     ci.setDescription(getDescription());
+    ci.setLanguage(getLanguage());
     ci.setDomainFatherId(domainFatherId);
     ci.setOrderNum(order);
     ci.setPublic(isPublic);

@@ -5896,7 +5896,10 @@ class Admin implements Administration {
         clone();
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
-    String lang = I18NHelper.defaultLanguage;
+    String lang = newCompo.getLanguage();
+    if (StringUtil.isNotDefined(lang)) {
+      lang = I18NHelper.defaultLanguage;
+    }
     // Creation
     newCompo.setLocalId(-1);
     newCompo.setDomainFatherId(destinationSpace.getId());
@@ -5998,14 +6001,18 @@ class Admin implements Administration {
       newSpace.setOrderNum(newBrotherIds.size());
       newSpace.setCreateDate(new Date());
       newSpace.setCreatorUserId(pasteDetail.getUserId());
-      newSpace.setLanguage(I18NHelper.defaultLanguage);
+      String lang = oldSpace.getLanguage();
+      if (StringUtil.isNotDefined(lang)) {
+        lang = I18NHelper.defaultLanguage;
+      }
+      newSpace.setLanguage(lang);
 
       // Rename if spaceName already used in the destination space
       List<SpaceInstLight> subSpaces = new ArrayList<>();
       for (String subSpaceId : newBrotherIds) {
         subSpaces.add(getSpaceInstLight(getDriverSpaceId(subSpaceId)));
       }
-      String name = renameSpace(newSpace.getName(I18NHelper.defaultLanguage), subSpaces);
+      String name = renameSpace(newSpace.getName(lang), subSpaces);
       newSpace.setName(name);
 
       // Remove inherited profiles from cloned space
