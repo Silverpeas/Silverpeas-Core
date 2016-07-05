@@ -93,14 +93,23 @@ public interface RecordSet {
       throws FormException;
 
   /**
-   * Deletes the given DataRecord and set to null its id.
+   * Deletes the given DataRecord and its associated data in all languages.
+   * @deprecated use delete(String objectId) instead
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the delete fail.
    */
   public void delete(DataRecord record) throws FormException;
 
+  /**
+   * Deletes all form data for the given objectId in all languages
+   */
   public void delete(String objectId) throws FormException;
+
+  /**
+   * Deletes form data for the given objectId in the given language only
+   */
+  public void delete(String objectId, String language) throws FormException;
 
   public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
       Map<String, String> oldAndNewFileIds) throws FormException;
