@@ -24,11 +24,51 @@
 package org.silverpeas.core.calendar;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 
 /**
- * A plannable object is an object that can be plannified on a calendar and that can be serialized
+ * A plannable object is an object that can be planned on a calendar and that can be serialized
  * on a data source.
  * @author mmoquillon
  */
 public interface Plannable extends Serializable {
+
+  /**
+   * Gets the unique identifier of this plannable object.
+   * @return
+   */
+  String getId();
+
+  /**
+   * Gets the date and the time in from UTC/Greenwich at which this plannable object starts on the
+   * timeline. If the event is on all the day(s), then the time is meaningless and it is then
+   * recommended to get the local date from the returned date time.
+   * @return a date and time in UTC/Greenwich.
+   */
+  OffsetDateTime getStartDateTime();
+
+  /**
+   * Gets the date and the time in from UTC/Greenwich at which this plannable object ends on the
+   * timeline. If the event is on all the day(s), then the time is meaningless and it is then
+   * recommended to get the local date from the returned date time.
+   * @return a date and time in UTC/Greenwich.
+   */
+  OffsetDateTime getEndDateTime();
+
+  /**
+   * Does this plannable object extend over all the day(s)? In the case it is on all the day(s)
+   * from the start date to the end date, the time in the date time returned by the methods
+   * {@link Plannable#getStartDateTime()} and {@link Plannable#getEndDateTime()} is meaningless and
+   * shouldn't be taken into account.
+   * @return true if this plannable object extend over all the day(s) between its start date and
+   * its end date.
+   */
+  boolean isOnAllDay();
+
+  /**
+   * Gets the title of this plannable object. A title is a short resume or the subject of the
+   * plannable object.
+   * @return a short text about the reason of this plannable object.
+   */
+  String getTitle();
 }

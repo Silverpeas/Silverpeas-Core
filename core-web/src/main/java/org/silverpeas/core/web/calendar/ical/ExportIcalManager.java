@@ -20,37 +20,38 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.date.Temporal;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.ExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.web.tools.agenda.control.AgendaException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
 import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
 
@@ -227,12 +228,15 @@ public class ExportIcalManager {
     Collection<JournalHeader> schedulables = getSchedulableCalendar(fromDate, toDate);
     for (JournalHeader schedulable : schedulables) {
       // creates an event corresponding to the current schedulable object
-      Temporal<?> eventStartDate = DateUtil.asTemporal(schedulable.getStartDate(),
-          StringUtil.isDefined(schedulable.getStartHour()));
-      Temporal<?> eventEndDate = DateUtil.asTemporal(schedulable.getEndDate(),
-          StringUtil.isDefined(schedulable.getEndHour()));
-      CalendarEvent event = anEventAt((Temporal) eventStartDate, eventEndDate).
-          identifiedBy("event", schedulable.getId()).
+      OffsetDateTime startDateTime =
+          OffsetDateTime.ofInstant(schedulable.getStartDate().toInstant(),
+              TimeZone.getDefault().toZoneId());
+      OffsetDateTime endDateTime = OffsetDateTime.ofInstant(schedulable.getEndDate().toInstant(),
+          TimeZone.getDefault().toZoneId());
+      boolean allDay = StringUtil.isDefined(schedulable.getStartHour()) &&
+          StringUtil.isDefined(schedulable.getEndHour());
+      CalendarEvent event = anEventAt(startDateTime, endDateTime, allDay);
+      event.identifiedBy("event", schedulable.getId()).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());
 

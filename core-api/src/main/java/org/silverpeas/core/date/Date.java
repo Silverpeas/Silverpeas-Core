@@ -26,6 +26,9 @@ package org.silverpeas.core.date;
 
 import org.silverpeas.core.util.DateUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -137,6 +140,14 @@ public class Date extends AbstractDateTemporal<Date> {
   @Override
   public String toICalInUTC() {
     return toICal();
+  }
+
+  /**
+   * Gets the {@link LocalDate} representation of this Silverpeas date.
+   * @return the local date of this date.
+   */
+  public LocalDate toLocalDate() {
+    return LocalDateTime.ofInstant(toInstant(), getTimeZone().toZoneId()).toLocalDate();
   }
 
   /**

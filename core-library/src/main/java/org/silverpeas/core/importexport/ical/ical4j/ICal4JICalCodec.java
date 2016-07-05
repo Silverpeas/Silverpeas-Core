@@ -85,8 +85,8 @@ public class ICal4JICalCodec implements ICalCodec {
     List<VEvent> iCalEvents = new ArrayList<>();
     ByteArrayOutputStream output = new ByteArrayOutputStream(10240);
     for (CalendarEvent event : events) {
-      Date startDate = iCal4JDateCodec.encode(event.getStartDate());
-      Date endDate = iCal4JDateCodec.encode(event.getEndDate());
+      Date startDate = iCal4JDateCodec.encode(event.getStartDateTime());
+      Date endDate = iCal4JDateCodec.encode(event.getEndDateTime());
       VEvent iCalEvent;
       if (event.isOnAllDay() && startDate.equals(endDate)) {
         iCalEvent = new VEvent(startDate, event.getTitle());

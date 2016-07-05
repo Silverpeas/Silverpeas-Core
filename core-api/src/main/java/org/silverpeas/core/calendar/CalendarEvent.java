@@ -26,10 +26,15 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.annotation.constraint.DateRange;
 import org.silverpeas.core.date.Temporal;
-import org.silverpeas.core.date.Date;
 
 import java.net.URL;
-import static org.silverpeas.core.util.StringUtil.*;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The event in a calendar. An event in the calendar is described by a starting and an ending date
@@ -40,8 +45,9 @@ import static org.silverpeas.core.util.StringUtil.*;
 public class CalendarEvent implements Plannable {
   private static final long serialVersionUID = 1L;
 
-  private Temporal<?> startDate;
-  private Temporal<?> endDate;
+  private OffsetDateTime startDateTime;
+  private OffsetDateTime endDateTime;
+  private boolean allDay = false;
   private String title = "";
   private String description = "";
   private String location = "";
@@ -54,25 +60,50 @@ public class CalendarEvent implements Plannable {
   private String id = "";
 
   /**
-   * Creates a new calendar event starting and ending at the specified date.
-   * @param startDate the start date of the event.
-   * @return a calendar event.
-   */
-  public static <T extends Temporal<?>> CalendarEvent anEventAt(final T startDate) {
-    return new CalendarEvent().startingAt(startDate).endingAt(startDate);
-  }
-
-  /**
-   * Creates a new calendar event starting at the specified start date and ending at the specified
-   * end date.
+   * Creates a new calendar event that is on all the days between the two specified dates.
    * @param startDate the start date of the event. The start date defines the inclusive date at
    * which the event starts.
    * @param endDate the end date of the event. The end date defines the non-inclusive date at which
-   * the event ends up.
-   * @return a calendar event.
+   * the event ends up. An end date equal to the start date means the event occurs all the day.
+   * @return a calendar event extending on all the day(s) between the two specified dates.
    */
-  public static <T extends Temporal<?>> CalendarEvent anEventAt(final T startDate, final T endDate) {
-    return new CalendarEvent().startingAt(startDate).endingAt(endDate);
+  public static CalendarEvent anEventOn(final LocalDate startDate, final LocalDate endDate) {
+    return new CalendarEvent().between(startDate, endDate);
+  }
+
+  /**
+   * Creates a new calendar event starting at the specified start date time and ending at the
+   * specified end date time.
+   * @param startDateTime the start date time of the event. The start date time defines the
+   * inclusive date and time at which the event starts.
+   * @param endDateTime the end date time of the event. The end date time defines the non-inclusive
+   * date and time at which the event ends up.
+   * @return a calendar event occurring between the two date times.
+   */
+  public static CalendarEvent anEventAt(final OffsetDateTime startDateTime,
+      OffsetDateTime endDateTime) {
+    return new CalendarEvent().between(startDateTime, endDateTime);
+  }
+
+  /**
+   * Creates a new calendar event starting at the specified start date time and ending at the
+   * specified end date time.
+   * @param startDateTime the start date time of the event. The start date time defines either the
+   * inclusive date or the inclusive date and time at which the event starts.
+   * @param endDateTime the end date time of the event. The end date time defines either the
+   * non-inclusive date or the non-inclusive date and time at which the event ends up.
+   * @param allDay a boolean indicating if the event is on all the day(s). If true, the time part
+   * of the specified date times aren't taken into account; only the date is meaningful.
+   * @return a calendar event either occurring between the two date times or extending on all of
+   * the day(s) between them.
+   */
+  public static CalendarEvent anEventAt(final OffsetDateTime startDateTime,
+      OffsetDateTime endDateTime, boolean allDay) {
+    if (allDay) {
+      return new CalendarEvent().between(startDateTime.toLocalDate(), endDateTime.toLocalDate());
+    } else {
+      return new CalendarEvent().between(startDateTime, endDateTime);
+    }
   }
 
   /**
@@ -87,18 +118,6 @@ public class CalendarEvent implements Plannable {
       throw new IllegalArgumentException("The accessLevel parameter isn't defined!");
     }
     this.accessLevel = accessLevel;
-    return this;
-  }
-
-  /**
-   * Sets an end date to this event. By default, the event end date is non inclusive and it is set
-   * to the start date. For a recurring event, the end date is the one for each occurrences of the
-   * event.
-   * @param endDate the event end date.
-   * @return itself.
-   */
-  public CalendarEvent endingAt(Temporal<?> endDate) {
-    this.endDate = endDate.clone();
     return this;
   }
 
@@ -154,16 +173,6 @@ public class CalendarEvent implements Plannable {
   }
 
   /**
-   * Modifies the start date of this event.
-   * @param startDate the new event start date.
-   * @return itself.
-   */
-  public CalendarEvent startingAt(Temporal<?> startDate) {
-    this.startDate = startDate.clone();
-    return this;
-  }
-
-  /**
    * Gets the attendees to this event.
    * @return the attendees to this event.
    */
@@ -197,14 +206,6 @@ public class CalendarEvent implements Plannable {
   }
 
   /**
-   * Gets the date at which this event ends.
-   * @return the end date of this event.
-   */
-  public Temporal<?> getEndDate() {
-    return endDate.clone();
-  }
-
-  /**
    * Gets the title of this event.
    * @return the event title or an empty string if the event has no title.
    */
@@ -218,14 +219,6 @@ public class CalendarEvent implements Plannable {
    */
   public int getPriority() {
     return priority;
-  }
-
-  /**
-   * Gets the date at which this event should starts
-   * @return the start date of the event.
-   */
-  public Temporal<?> getStartDate() {
-    return startDate.clone();
   }
 
   /**
@@ -288,7 +281,7 @@ public class CalendarEvent implements Plannable {
    * @return true if this event is occurring on all its day(s).
    */
   public boolean isOnAllDay() {
-    return !this.startDate.isTimeSupported() || !this.endDate.isTimeSupported();
+    return allDay;
   }
 
   public CalendarEvent identifiedBy(String appId, String eventId) {
@@ -300,6 +293,30 @@ public class CalendarEvent implements Plannable {
     return id;
   }
 
+  @Override
+  public OffsetDateTime getStartDateTime() {
+    return this.startDateTime;
+  }
+
+  @Override
+  public OffsetDateTime getEndDateTime() {
+    return this.endDateTime;
+  }
+
   private CalendarEvent() {
+  }
+
+  private CalendarEvent between(LocalDate startDate, LocalDate endDate) {
+    this.startDateTime = startDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    this.endDateTime = endDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    this.allDay = true;
+    return this;
+  }
+
+  private CalendarEvent between(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
+    this.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    this.allDay = false;
+    return this;
   }
 }

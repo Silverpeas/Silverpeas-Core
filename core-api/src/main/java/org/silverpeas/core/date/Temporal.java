@@ -115,7 +115,7 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
 
   /**
    * Is this temporal supports the time unit?
-   * @return true if this temporal supports the time unit. Time and data time should return true
+   * @return true if this temporal supports the time unit. Time and date time should return true
    * here whereas date should return false.
    */
   boolean isTimeSupported();

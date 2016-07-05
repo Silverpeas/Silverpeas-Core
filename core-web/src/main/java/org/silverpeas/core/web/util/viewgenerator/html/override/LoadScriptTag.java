@@ -95,8 +95,8 @@ public class LoadScriptTag extends TagSupport {
   public static String generateDynamicScriptLoading(final String src, final String jsPromiseName,
       final String jsPromiseScope) {
     String key = "$jsDynamic$script$" + src;
-    if (getRequestCacheService().get(key) == null) {
-      getRequestCacheService().put(key, true);
+    if (getRequestCacheService().getCache().get(key) == null) {
+      getRequestCacheService().getCache().put(key, true);
       if (StringUtil.isNotDefined(jsPromiseName)) {
         return "jQuery.getScript('" + normalizeWebResourceUrl(src) + "');";
       }
