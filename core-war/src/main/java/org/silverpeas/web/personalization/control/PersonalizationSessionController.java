@@ -24,23 +24,24 @@
 
 package org.silverpeas.web.personalization.control;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Properties;
-
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.personalization.bean.DelayedNotificationBean;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Properties;
 
 /**
  * Class declaration
@@ -495,18 +496,20 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
   public void saveChannels(String selectedChannels) throws PeasCoreException {
     String[] channels = selectedChannels.split(",");
-    int notifAddressId = 0;
-    try {
-      int userId = Integer.parseInt(getUserId());
-      notificationManager.deleteAllAddress(userId);
-      for (final String channel : channels) {
-        notifAddressId = Integer.parseInt(channel);
-        notificationManager.addAddress(notifAddressId, userId);
+    if (!ArrayUtil.isEmpty(channels)) {
+      int notifAddressId = 0;
+      try {
+        int userId = Integer.parseInt(getUserId());
+        notificationManager.deleteAllAddress(userId);
+        for (final String channel : channels) {
+          notifAddressId = Integer.parseInt(channel);
+          notificationManager.addAddress(notifAddressId, userId);
+        }
+      } catch (NotificationManagerException e) {
+        throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
+            SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
+            "aNotifAddressId=" + notifAddressId, e);
       }
-    } catch (NotificationManagerException e) {
-      throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
-          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
-          "aNotifAddressId=" + notifAddressId, e);
     }
   }
 
