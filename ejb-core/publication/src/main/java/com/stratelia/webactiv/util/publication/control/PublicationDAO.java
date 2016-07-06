@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -2194,6 +2195,47 @@ public class PublicationDAO {
       DBUtil.close(rs, prepStmt);
     }
     return publications;
+  }
+
+  public static List<PublicationDetail> getByTargetValidatorId(Connection con, String userId)
+      throws SQLException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("select * from sb_publication_publi ");
+    sb.append("where pubTargetValidatorId is not null");
+
+    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(sb.toString());
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        String targetValidatorIds = rs.getString("pubTargetValidatorId");
+        String[] userIds = StringUtil.split(targetValidatorIds, ',');
+        if (ArrayUtil.contains(userIds, userId)) {
+          publications.add(resultSet2PublicationDetail(rs, null));
+        }
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return publications;
+  }
+
+  public static void updateTargetValidatorIds(Connection con, PublicationDetail detail)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(
+          "update SB_Publication_Publi set pubtargetvalidatorid = ? where pubid = ? and instanceid = ? ");
+      prepStmt.setString(1, detail.getTargetValidatorId());
+      prepStmt.setInt(2, Integer.parseInt(detail.getPK().getId()));
+      prepStmt.setString(3, detail.getPK().getInstanceId());
+
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
   }
 }
 

@@ -449,4 +449,11 @@ public interface PublicationBm {
    * @return all PublicationDetail in state 'Draft' according to given userId
    */
   Collection<PublicationDetail> getDraftsByUser(String userId);
+
+  /**
+   * Remove given userId from publication validators where it appears.
+   * @param userId id of the user to remove
+   * @return a List of PublicationPK on which userId have been removed to.
+   */
+  public List<PublicationDetail> removeUserFromTargetValidators(String userId);
 }
