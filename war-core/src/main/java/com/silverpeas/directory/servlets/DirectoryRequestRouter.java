@@ -39,6 +39,7 @@ import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,14 +69,14 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         "root.MSG_GEN_PARAM_VALUE", "User=" + directorySC.getUserId() + " Function=" + function);
 
     try {
+      List<String> lDomainIds = processDomains(request, directorySC);
+
       DirectoryItemList users = new DirectoryItemList();
       if (function.equalsIgnoreCase("Main")) {
 
         String groupId = request.getParameter("GroupId");
         String groupIds = request.getParameter("GroupIds");
         String spaceId = request.getParameter("SpaceId");
-        String domainId = request.getParameter("DomainId");
-        String domainIds = request.getParameter("DomainIds");
         String userId = request.getParameter("UserId");
 
         String sort = request.getParameter("Sort");
@@ -92,11 +93,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           users = directorySC.getAllUsersByGroups(lGroupIds);
         } else if (StringUtil.isDefined(spaceId)) {
           users = directorySC.getAllUsersBySpace(spaceId);
-        } else if (StringUtil.isDefined(domainId)) {
-          users = directorySC.getAllUsersByDomain(domainId);
-        } else if (StringUtil.isDefined(domainIds)) {
-          List<String> lDomainIds = Arrays.asList(StringUtil.split(domainIds, ','));
-          users = directorySC.getAllUsersByDomains(lDomainIds);
+        } else if (!lDomainIds.isEmpty()) {
+          users = directorySC.getAllUsersByDomains();
         } else if (StringUtil.isDefined(userId)) {
           users = directorySC.getAllContactsOfUser(userId);
         } else {
@@ -250,5 +248,21 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         break;
     }
     request.setAttribute("BreadCrumb", breadCrumb);
+  }
+
+  private List<String> processDomains(HttpServletRequest request,
+      DirectorySessionController directorySC) {
+    String domainId = request.getParameter("DomainId");
+    String domainIds = request.getParameter("DomainIds");
+    List<String> lDomainIds = new ArrayList<String>();
+    if (StringUtil.isDefined(domainId)) {
+      lDomainIds.add(domainId);
+    } else if (StringUtil.isDefined(domainIds)) {
+      lDomainIds = Arrays.asList(StringUtil.split(domainIds, ','));
+    }
+    if (!lDomainIds.isEmpty()) {
+      directorySC.setCurrentDomains(lDomainIds);
+    }
+    return lDomainIds;
   }
 }
