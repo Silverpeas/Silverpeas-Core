@@ -38,6 +38,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.component.ComponentHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,7 +227,8 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    DirectoryItemList usersOfDomainCalledItems = directoryDSC.getAllUsersByDomain("3");
+    directoryDSC.setCurrentDomains(Arrays.asList("3"));
+    DirectoryItemList usersOfDomainCalledItems = directoryDSC.getAllUsersByDomains();
     // All users By domain
     assertNotNull(usersOfDomainCalledItems);
     assertEquals(3, usersOfDomainCalledItems.size());
