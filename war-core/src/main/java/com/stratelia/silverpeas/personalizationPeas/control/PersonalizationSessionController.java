@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
 
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
@@ -494,19 +495,21 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   }
 
   public void saveChannels(String selectedChannels) throws PeasCoreException {
-    String[] channels = selectedChannels.split(",");
-    int notifAddressId = 0;
-    try {
-      int userId = Integer.parseInt(getUserId());
-      notificationManager.deleteAllAddress(userId);
-      for (int i = 0; i < channels.length; i++) {
-        notifAddressId = Integer.parseInt(channels[i]);
-        notificationManager.addAddress(notifAddressId, userId);
+    String[] channels = StringUtil.split(selectedChannels, ',');
+    if (!ArrayUtil.isEmpty(channels)) {
+      int notifAddressId = 0;
+      try {
+        int userId = Integer.parseInt(getUserId());
+        notificationManager.deleteAllAddress(userId);
+        for (int i = 0; i < channels.length; i++) {
+          notifAddressId = Integer.parseInt(channels[i]);
+          notificationManager.addAddress(notifAddressId, userId);
+        }
+      } catch (NotificationManagerException e) {
+        throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
+            SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
+            "aNotifAddressId=" + notifAddressId, e);
       }
-    } catch (NotificationManagerException e) {
-      throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
-          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
-          "aNotifAddressId=" + notifAddressId, e);
     }
   }
 
