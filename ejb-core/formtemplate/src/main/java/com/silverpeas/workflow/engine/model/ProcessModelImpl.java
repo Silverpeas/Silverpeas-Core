@@ -112,7 +112,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
 
   /**
    * Set the id of this process model
-   * @param name process model id
+   * @param modelId process model id
    */
   public void setModelId(String modelId) {
     this.modelId = modelId;
@@ -458,7 +458,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
+   * @param language label's language
    * @param role role for which the label is
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
@@ -500,7 +500,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
 
   /**
    * Get description in specific language for the given role
-   * @param lang description's language
+   * @param language description's language
    * @param role role for which the description is
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
@@ -687,24 +687,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       return null;
     }
 
-    try {
-      if (StringUtil.isDefined(action.getForm().getHTMLFileName())) {
-        HtmlForm form = new HtmlForm(action.getForm().toRecordTemplate(roleName, lang));
-        form.setFileName(WorkflowHub.getProcessModelManager().getProcessModelDir() +
-            action.getForm().getHTMLFileName());
-        form.setName(action.getForm().getName());
-        form.setTitle(action.getForm().getTitle(roleName, lang));
-        return form;
-      } else {
-        XmlForm xmlForm = new XmlForm(action.getForm().toRecordTemplate(roleName, lang));
-        xmlForm.setName(action.getForm().getName());
-        xmlForm.setTitle(action.getForm().getTitle(roleName, lang));
-        return xmlForm;
-      }
-    } catch (FormException e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
-          action.getForm().getName(), e);
-    }
+    return getConcreteForm(action.getForm(), roleName, lang, false);
   }
 
   /**
@@ -724,25 +707,37 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     }
 
     if (action != null) {
-      if (action.getForm() == null) {
-        return null;
-      } else {
-        form = action.getForm();
-      }
+      form = action.getForm();
     } else {
       form = getForm(name, roleName);
-      if (form == null) {
-        return null;
-      }
     }
 
+    if (form == null) {
+      return null;
+    }
+
+    return getConcreteForm(form, roleName, lang, true);
+  }
+
+  private com.silverpeas.form.Form getConcreteForm(Form form, String roleName, String lang,
+      boolean readOnly) throws WorkflowException {
     try {
-      XmlForm xmlForm = new XmlForm(form.toRecordTemplate(roleName, lang, true));
-      xmlForm.setTitle(form.getTitle(roleName, lang));
-      return xmlForm;
+      if (StringUtil.isDefined(form.getHTMLFileName())) {
+        HtmlForm htmlForm = new HtmlForm(form.toRecordTemplate(roleName, lang));
+        htmlForm.setFileName(WorkflowHub.getProcessModelManager().getProcessModelDir() +
+            form.getHTMLFileName());
+        htmlForm.setName(form.getName());
+        htmlForm.setTitle(form.getTitle(roleName, lang));
+        return htmlForm;
+      } else {
+        XmlForm xmlForm = new XmlForm(form.toRecordTemplate(roleName, lang, readOnly));
+        xmlForm.setName(form.getName());
+        xmlForm.setTitle(form.getTitle(roleName, lang));
+        return xmlForm;
+      }
     } catch (FormException e) {
       throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
-          action.getForm().getName(), e);
+          form.getName(), e);
     }
   }
 
