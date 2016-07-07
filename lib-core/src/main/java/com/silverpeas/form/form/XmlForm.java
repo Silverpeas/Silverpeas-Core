@@ -166,17 +166,7 @@ public class XmlForm extends AbstractForm {
         }
 
         if (displayField && (record == null || (record != null && field != null))) {
-          FieldDisplayer fieldDisplayer = null;
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-          } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
-          }
-
+          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
           if (fieldDisplayer != null) {
             String aClass = "class=\"txtlibform\"";
             if (StringUtil.isDefined(fieldClass)) {
@@ -284,9 +274,6 @@ public class XmlForm extends AbstractForm {
     for (FieldTemplate fieldTemplate : listFields) {
       if (fieldTemplate != null) {
         String fieldName = fieldTemplate.getFieldName();
-        String fieldType = fieldTemplate.getTypeName();
-        String fieldDisplayerName = fieldTemplate.getDisplayerName();
-
         Field field = null;
         if (record != null) {
           try {
@@ -297,19 +284,9 @@ public class XmlForm extends AbstractForm {
         }
 
         if (record == null || (record != null && field != null)) {
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-
-            FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType,
-                fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
-            }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.getLastFieldIndex", "form.EXP_UNKNOWN_DISPLAYER",
-                null, fe);
+          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+          if (fieldDisplayer != null) {
+            lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
           }
         }
       }
@@ -326,10 +303,6 @@ public class XmlForm extends AbstractForm {
       }
     }
     return lastNotEmptyField;
-  }
-
-  private TypeManager getTypeManager() {
-    return TypeManager.getInstance();
   }
 
   private boolean isWYSIWYGFieldDefined(String fieldName, PagesContext pc) {
