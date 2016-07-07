@@ -28,6 +28,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
@@ -65,6 +66,17 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
    */
   public Field getField(String fieldName) throws FormException {
     return getField(template.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Field getField(String fieldName, int occurrence) {
+    try {
+      return getField(fieldName);
+    } catch (FormException e) {
+      SilverTrace
+          .error("workflow", "ProcessInstanceDataRecord.getField", "form.EX_CANT_GET_FIELD", e);
+    }
+    return null;
   }
 
   /**
