@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -107,7 +107,7 @@ public abstract class AbstractForm implements Form {
    * Prints the javascripts which will be used to control the new values given to the data record
    * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
    * field type and constraints. The RecordTemplate gives the local label too. Never throws an
-   * Exception but log a silvertrace and writes an empty string when :
+   * Exception but log a a trace and writes an empty string when :
    * <UL>
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.
@@ -302,26 +302,24 @@ public abstract class AbstractForm implements Form {
     for (FieldTemplate fieldTemplate : fieldTemplates) {
       // Have to check if field is not readonly, if so no need to update
       if (!fieldTemplate.isReadOnly()) {
-        if (fieldTemplate != null) {
-          String fieldName = fieldTemplate.getFieldName();
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
-          try {
-            if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-            if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
-              FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-              if (fieldDisplayer != null) {
-                for (int occ=0; occ<fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
-                  attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName, occ),
-                      fieldTemplate, pagesContext));
-                }
+        String fieldName = fieldTemplate.getFieldName();
+        String fieldType = fieldTemplate.getTypeName();
+        String fieldDisplayerName = fieldTemplate.getDisplayerName();
+        try {
+          if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
+            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+          }
+          if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
+            FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+            if (fieldDisplayer != null) {
+              for (int occ=0; occ<fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
+                attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName, occ),
+                    fieldTemplate, pagesContext));
               }
             }
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       } else {
         SilverLogger.getLogger(this).info("Field {0} is ignored as it is read only",
@@ -486,6 +484,20 @@ public abstract class AbstractForm implements Form {
 
   public boolean isViewForm() {
     return this.viewForm;
+  }
+
+  protected FieldDisplayer getFieldDisplayer(FieldTemplate fieldTemplate) {
+    try {
+      String fieldDisplayerName = fieldTemplate.getDisplayerName();
+      String fieldType = fieldTemplate.getTypeName();
+      if (!StringUtil.isDefined(fieldDisplayerName)) {
+        fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+      }
+      return getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+    } catch (FormException fe) {
+      SilverLogger.getLogger(this).error("getting a field displayer instance", fe);
+    }
+    return null;
   }
 
 }

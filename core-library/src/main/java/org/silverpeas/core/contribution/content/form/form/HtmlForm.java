@@ -32,10 +32,9 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.BufferedReader;
@@ -46,6 +45,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -91,8 +92,7 @@ public class HtmlForm extends AbstractForm {
         m_HtmlFile.close();
         m_HtmlFile = null;
       } catch (IOException e) {
-        SilverTrace.error("form", "HtmlForm.closeHtmlFile",
-            "form.EX_CANT_CLOSE_FILE", "fileName = [" + m_FileName + "]", e);
+        SilverLogger.getLogger(this).error(failureOnClosingFile(m_FileName), e);
         throw e;
       }
     }
@@ -171,13 +171,13 @@ public class HtmlForm extends AbstractForm {
     }
     // Testing end of file
     if (currentLine == null) {
-      SilverTrace.error("form", "HtmlForm.processTag", "form.EX_END_OF_FILE");
+      SilverLogger.getLogger(this).error("end of file");
       return;
     }
     // Testing begin tag
     int beginPos = currentLine.indexOf(TAG_BEGIN);
     if (beginPos != 0) {
-      SilverTrace.error("form", "HtmlForm.processTag", "form.EX_TAG_NOT_FOUND");
+      SilverLogger.getLogger(this).error("TAG not found");
       return;
     }
     // Search for end tag
@@ -185,7 +185,7 @@ public class HtmlForm extends AbstractForm {
     while (endPos == -1) {
       String newLine = m_HtmlFile.readLine();
       if (newLine == null) {
-        SilverTrace.error("form", "HtmlForm.processTag", "form.EX_END_OF_FILE");
+        SilverLogger.getLogger(this).error("end of file");
         return;
       }
       currentLine += newLine;
@@ -214,15 +214,21 @@ public class HtmlForm extends AbstractForm {
       String currentFieldName = fieldName;
       if (field != null) {
         boolean fieldFound = false;
-        for (FieldTemplate fieldTemplate : getFieldTemplates()) {
+        boolean workflowPrintForm = false;
+        if (currentFieldName.indexOf('.') != -1) {
+          // fieldName can be as 'folder.nature' (case of workflow printForm)
           currentFieldName = currentFieldName.substring(currentFieldName.indexOf('.') + 1,
               currentFieldName.length());
+          workflowPrintForm = true;
+        }
+        for (FieldTemplate fieldTemplate : getFieldTemplates()) {
           if (fieldTemplate != null
               && fieldTemplate.getFieldName().equalsIgnoreCase(currentFieldName)) {
-            String fieldType = fieldTemplate.getTypeName();
-            String fieldDisplayerName = fieldTemplate.getDisplayerName();
-            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
-                fieldType, fieldDisplayerName);
+            if (workflowPrintForm) {
+              ((GenericFieldTemplate) fieldTemplate).setDisplayerName("simpletext");
+              ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
+            }
+            FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
             if (fieldDisplayer != null) {
               if (!fieldTemplate.isRepeatable()) {
                 field = getSureField(fieldTemplate, record, 0);
@@ -255,7 +261,7 @@ public class HtmlForm extends AbstractForm {
         }
       }
     } catch (FormException fe) {
-      SilverTrace.error("form", "HtmlForm.display", "form.EXP_UNKNOWN_FIELD", fieldName);
+      SilverLogger.getLogger(this).error(failureOnRendering("fieldName", fieldName));
     }
   }
 
@@ -266,6 +272,8 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    */
   private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) {
+    // fieldName can be as 'folder.nature' (case of workflow printForm)
+    fieldName = fieldName.substring(fieldName.indexOf('.') + 1, fieldName.length());
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
       if (fieldTemplate != null && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
         out.print(fieldTemplate.getLabel(pc.getLanguage()));
@@ -285,10 +293,12 @@ public class HtmlForm extends AbstractForm {
    */
   @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
+    String recordId = "";
     try {
+      recordId = record.getId();
       jw.write(toString(pagesContext, record));
     } catch (IOException fe) {
-      SilverTrace.error("form", "HtmlForm.display", "form.EXP_CANT_WRITE", null, fe);
+      SilverLogger.getLogger(this).error(failureOnRendering("record data", recordId), fe);
     }
   }
 
@@ -313,9 +323,9 @@ public class HtmlForm extends AbstractForm {
       parseFile(out);
       out.flush();
     } catch (FileNotFoundException fe) {
-      SilverTrace.error("form", "HtmlForm.toString", "form.EX_CANT_OPEN_FILE", null, fe);
+      SilverLogger.getLogger(this).error(failureOnOpeningFile("from record"), fe);
     } catch (IOException fe) {
-      SilverTrace.error("form", "HtmlForm.toString", "form.EXP_CANT_WRITE", null, fe);
+      SilverLogger.getLogger(this).error(failureOnRendering("record data for HTML layer", ""), fe);
     }
     return new String(buffer.toByteArray(), Charsets.UTF_8);
   }

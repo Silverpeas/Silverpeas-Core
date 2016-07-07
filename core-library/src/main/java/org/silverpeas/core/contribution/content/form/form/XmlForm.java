@@ -23,19 +23,30 @@
  */
 package org.silverpeas.core.contribution.content.form.form;
 
-import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.AbstractForm;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.JdbcRefField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnRendering;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -149,7 +160,7 @@ public class XmlForm extends AbstractForm {
           try {
             field = record.getField(fieldName);
           } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+            SilverLogger.getLogger(this).error(unknown("fieldName", fieldName), fe);
           }
         }
 
@@ -162,18 +173,8 @@ public class XmlForm extends AbstractForm {
           }
         }
 
-        if (displayField && (record == null || (record != null && field != null))) {
-          FieldDisplayer fieldDisplayer = null;
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-          } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
-          }
-
+        if (displayField && record != null && field != null) {
+          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
           if (fieldDisplayer != null) {
             String aClass = "class=\"txtlibform\"";
             if (StringUtil.isDefined(fieldClass)) {
@@ -195,7 +196,8 @@ public class XmlForm extends AbstractForm {
               try {
                 fieldDisplayer.display(out, field, fieldTemplate, pc);
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
+                SilverLogger.getLogger(this)
+                    .error(failureOnRendering("field", field.getName()), fe);
               }
             } else {
               boolean isWriting = !"simpletext".equals(fieldTemplate.getDisplayerName())
@@ -222,7 +224,8 @@ public class XmlForm extends AbstractForm {
                 try {
                   fieldDisplayer.display(out, field, fieldTemplate, pc);
                 } catch (FormException fe) {
-                  SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
+                  SilverLogger.getLogger(this)
+                      .error(failureOnRendering("field", field.getName()), fe);
                 }
                 out.println("</li>");
               }
@@ -281,32 +284,19 @@ public class XmlForm extends AbstractForm {
     for (FieldTemplate fieldTemplate : listFields) {
       if (fieldTemplate != null) {
         String fieldName = fieldTemplate.getFieldName();
-        String fieldType = fieldTemplate.getTypeName();
-        String fieldDisplayerName = fieldTemplate.getDisplayerName();
-
         Field field = null;
         if (record != null) {
           try {
             field = record.getField(fieldName);
           } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+            SilverLogger.getLogger(this).error(unknown("fieldName", fieldName), fe);
           }
         }
 
         if (record == null || field != null) {
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-
-            FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType,
-                fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
-            }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.getLastFieldIndex", "form.EXP_UNKNOWN_DISPLAYER",
-                null, fe);
+          FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+          if (fieldDisplayer != null) {
+            lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
           }
         }
       }
@@ -323,10 +313,6 @@ public class XmlForm extends AbstractForm {
       }
     }
     return lastNotEmptyField;
-  }
-
-  private TypeManager getTypeManager() {
-    return TypeManager.getInstance();
   }
 
   private boolean isWYSIWYGFieldDefined(String fieldName, PagesContext pc) {

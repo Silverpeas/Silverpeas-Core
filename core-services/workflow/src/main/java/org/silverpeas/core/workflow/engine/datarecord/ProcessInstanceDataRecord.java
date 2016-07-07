@@ -26,8 +26,11 @@ package org.silverpeas.core.workflow.engine.datarecord;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 /**
  * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
@@ -65,6 +68,16 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
    */
   public Field getField(String fieldName) throws FormException {
     return getField(template.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Field getField(String fieldName, int occurrence) {
+    try {
+      return getField(fieldName);
+    } catch (FormException e) {
+      SilverLogger.getLogger(this).error(failureOnGetting("fieldName", fieldName), e);
+    }
+    return null;
   }
 
   /**
