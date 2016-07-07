@@ -2101,13 +2101,14 @@ public class PublicationDAO {
       throws SQLException {
     StringBuilder sb = new StringBuilder();
     sb.append("select * from sb_publication_publi ");
-    sb.append("where pubTargetValidatorId is not null");
+    sb.append("where pubTargetValidatorId like ?");
 
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(sb.toString());
+      prepStmt.setString(1, "%" + userId + "%");
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         String targetValidatorIds = rs.getString("pubTargetValidatorId");
