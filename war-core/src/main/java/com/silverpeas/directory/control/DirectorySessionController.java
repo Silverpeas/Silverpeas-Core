@@ -214,6 +214,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return ids;
   }
 
+  public void setCurrentDomains(List<String> domainIds) {
+    currentDomains = new ArrayList<Domain>();
+    for (String domainId : domainIds) {
+      currentDomains.add(getOrganisationController().getDomain(domainId));
+    }
+    setCurrentDirectory(DIRECTORY_DOMAIN);
+  }
+
   private DirectoryItemList getUsersOfCurrentUserDomain() {
     String currentUserDomainId = getUserDetail().getDomainId();
     DirectoryItemList allItems = getAllUsersSorted();
@@ -285,7 +293,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       
       if (plainSearchResults != null && !plainSearchResults.isEmpty()) {
         DirectoryItemList allUsers = lastAllListUsersCalled;
-        if (globalSearch) {
+        if (globalSearch || currentDirectory == DIRECTORY_DOMAIN) {
           // forcing to get all users to re-init list of visible users
           allUsers = getUsers();
         }
@@ -416,23 +424,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * return All user of Domain Id="domainId"
-   * @param domainId:the ID of Domain
-   * @see
+   * return All users of current domains
    */
-  public DirectoryItemList getAllUsersByDomain(String domainId) {
-    List<String> domainIds = new ArrayList<String>();
-    domainIds.add(domainId);
-    return getAllUsersByDomains(domainIds);
-  }
-
-  public DirectoryItemList getAllUsersByDomains(List<String> domainIds) {
-    setCurrentDirectory(DIRECTORY_DOMAIN);
+  public DirectoryItemList getAllUsersByDomains() {
     setCurrentQuery(null);
-    currentDomains = new ArrayList<Domain>();
-    for (String domainId : domainIds) {
-      currentDomains.add(getOrganisationController().getDomain(domainId));
-    }
     return getUsers();
   }
 
