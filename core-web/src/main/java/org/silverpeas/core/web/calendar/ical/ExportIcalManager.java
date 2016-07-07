@@ -23,6 +23,7 @@ package org.silverpeas.core.web.calendar.ical;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.PlannableAccessLevel;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.ExportDescriptor;
@@ -241,7 +242,8 @@ public class ExportIcalManager {
           withDescription(schedulable.getDescription());
 
       // set access level (confidential, private or public) and the event priority
-      event.withAccessLevel(schedulable.getClassification().getString());
+      event.withAccessLevel(
+          PlannableAccessLevel.valueOf(schedulable.getClassification().getString().toUpperCase()));
       event.withPriority(schedulable.getPriority().getValue());
 
       // set the categories in which the event is

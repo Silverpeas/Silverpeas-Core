@@ -28,7 +28,12 @@ import java.time.OffsetDateTime;
 
 /**
  * A plannable object is an object that can be planned on a calendar and that can be serialized
- * on a data source.
+ * on a data source. A plannable object is defined in the timeline by a start date time and
+ * by an end date time with a precision of one minute. According to the type of the plannable
+ * object, the end date time can be undefined. When a plannable object is created, the temporal
+ * type of the event's end must be the same temporal type that the event's start, and the
+ * plannable object should convert them into a date time with a precision of one minute when
+ * accessing them.
  * @author mmoquillon
  */
 public interface Plannable extends Serializable {
@@ -40,17 +45,21 @@ public interface Plannable extends Serializable {
   String getId();
 
   /**
-   * Gets the date and the time in from UTC/Greenwich at which this plannable object starts on the
-   * timeline. If the event is on all the day(s), then the time is meaningless and it is then
-   * recommended to get the local date from the returned date time.
+   * Gets the date and the time in UTC/Greenwich at which this plannable object starts on the
+   * timeline. In the case of an event on all the day(s), the time is set at midnight. Nevertheless,
+   * in a such event, the time is meaningless and it is then recommended to get the local date from
+   * the returned date time.
    * @return a date and time in UTC/Greenwich.
    */
   OffsetDateTime getStartDateTime();
 
   /**
-   * Gets the date and the time in from UTC/Greenwich at which this plannable object ends on the
-   * timeline. If the event is on all the day(s), then the time is meaningless and it is then
-   * recommended to get the local date from the returned date time.
+   * Gets the date and the time in UTC/Greenwich at which this plannable object ends on the
+   * timeline. In the case of an event on all the day(s), the time is set at 23 hours and 59
+   * minutes. Nevertheless, in a such event, the time is meaningless and it is then recommended to
+   * get the local date from the returned date time. According to the type of the plannable object,
+   * the end date time can be undefined; in this case, it must be indicated as such in the
+   * implemented method's documentation.
    * @return a date and time in UTC/Greenwich.
    */
   OffsetDateTime getEndDateTime();
