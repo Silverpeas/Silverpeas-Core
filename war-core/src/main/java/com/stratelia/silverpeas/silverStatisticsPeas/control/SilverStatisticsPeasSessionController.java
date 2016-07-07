@@ -23,6 +23,7 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -174,11 +175,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public UserAccessLevel getUserProfile() {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.getUserProfile()", "root.MSG_GEN_ENTER_METHOD");
+    if (getUserDetail().isAccessAdmin()) {
+      return getUserDetail().getAccessLevel();
+    }
     UserAccessLevel userProfile = getUserDetail().getAccessLevel();
     AdminController ac = new AdminController(getUserId());
-    String[] manageableSpaceRootIds = ac.getUserManageableSpaceRootIds(getUserId());
-    if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile)
-        && manageableSpaceRootIds != null && manageableSpaceRootIds.length > 0) {
+    String[] manageableSpaceIds = ac.getUserManageableSpaceIds(getUserId());
+    if (!ArrayUtil.isEmpty(manageableSpaceIds)) {
       userProfile = UserAccessLevel.SPACE_ADMINISTRATOR;
     }
     SilverTrace.info("silverStatisticsPeas",
