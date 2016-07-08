@@ -32,7 +32,6 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.Charsets;
@@ -217,15 +216,21 @@ public class HtmlForm extends AbstractForm {
       String currentFieldName = fieldName;
       if (field != null) {
         boolean fieldFound = false;
-        for (FieldTemplate fieldTemplate : getFieldTemplates()) {
+        boolean workflowPrintForm = false;
+        if (currentFieldName.indexOf('.') != -1) {
+          // fieldName can be as 'folder.nature' (case of workflow printForm)
           currentFieldName = currentFieldName.substring(currentFieldName.indexOf('.') + 1,
               currentFieldName.length());
+          workflowPrintForm = true;
+        }
+        for (FieldTemplate fieldTemplate : getFieldTemplates()) {
           if (fieldTemplate != null
               && fieldTemplate.getFieldName().equalsIgnoreCase(currentFieldName)) {
-            String fieldType = fieldTemplate.getTypeName();
-            String fieldDisplayerName = fieldTemplate.getDisplayerName();
-            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
-                fieldType, fieldDisplayerName);
+            if (workflowPrintForm) {
+              ((GenericFieldTemplate) fieldTemplate).setDisplayerName("simpletext");
+              ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
+            }
+            FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
             if (fieldDisplayer != null) {
               if (!fieldTemplate.isRepeatable()) {
                 field = getSureField(fieldTemplate, record, 0);
@@ -270,6 +275,8 @@ public class HtmlForm extends AbstractForm {
    * @throws IOException if an error occurs while printing the field label.
    */
   private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) {
+    // fieldName can be as 'folder.nature' (case of workflow printForm)
+    fieldName = fieldName.substring(fieldName.indexOf('.') + 1, fieldName.length());
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
       if (fieldTemplate != null && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
         out.print(fieldTemplate.getLabel(pc.getLanguage()));

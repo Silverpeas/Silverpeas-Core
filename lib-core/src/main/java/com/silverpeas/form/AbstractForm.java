@@ -505,4 +505,19 @@ public abstract class AbstractForm implements Form {
     return this.viewForm;
   }
 
+  protected FieldDisplayer getFieldDisplayer(FieldTemplate fieldTemplate) {
+    try {
+      String fieldDisplayerName = fieldTemplate.getDisplayerName();
+      String fieldType = fieldTemplate.getTypeName();
+      if (!StringUtil.isDefined(fieldDisplayerName)) {
+        fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+      }
+      return getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+    } catch (FormException fe) {
+      SilverTrace
+          .error("form", "AbstractForm.getFieldDisplayer", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+    }
+    return null;
+  }
+
 }
