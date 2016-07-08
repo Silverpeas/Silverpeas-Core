@@ -191,9 +191,6 @@ public class AuthenticationService {
           key = authenticateByLoginAndDomain(userCredential);
         }
       } catch (AuthenticationException ex) {
-        SilverTrace.error(module, "AuthenticationService.authenticate()",
-            "authentication.EX_USER_REJECTED",
-            "DomainId=" + userCredential.getDomainId() + ";User=" + userCredential.getLogin(), ex);
         String errorCause = ERROR_AUTHENTICATION_FAILURE;
         Exception nested = ex.getNested();
         if (nested != null) {
@@ -223,6 +220,12 @@ public class AuthenticationService {
         } else if (ex instanceof AuthenticationUserAccountDeactivatedException) {
           errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
         }
+
+        SilverTrace.error(module, "AuthenticationService.authenticate()",
+            "authentication.EX_USER_REJECTED",
+            "DomainId=" + userCredential.getDomainId() + ", Login=" + userCredential.getLogin() +
+                ", ErrorCode=" + errorCause);
+
         return errorCause;
       }
     }
