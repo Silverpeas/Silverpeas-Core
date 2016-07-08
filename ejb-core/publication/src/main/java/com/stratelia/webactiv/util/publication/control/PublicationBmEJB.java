@@ -359,8 +359,7 @@ public class PublicationBmEJB implements PublicationBm {
           PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
               .getPublicationTemplate(detail.getPK().getInstanceId() + ':' + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
-          DataRecord data = set.getRecord(detail.getPK().getId(), detail.getLanguage());
-          set.delete(data);
+          set.delete(detail.getPK().getId(), detail.getLanguage());
         }
       }
       SilverTrace.info("publication", "PublicationBmEJB.setDetail()", "root.MSG_GEN_PARAM_VALUE",

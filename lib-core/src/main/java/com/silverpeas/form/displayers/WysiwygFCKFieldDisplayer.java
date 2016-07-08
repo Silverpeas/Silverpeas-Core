@@ -43,7 +43,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -58,7 +57,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -726,14 +724,22 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     return getPath(componentId) + getFileName(fieldName, objectId, language);
   }
 
-  public static void removeContents(ForeignPK pk) {
+  /*
+  * Remove content on disk of WYSIWYG fields in given language
+  * @param pk the PK of contribution
+  * @param fieldNames list of name of fields to delete
+  * @param language the language to delete
+  */
+  public static void removeContents(ForeignPK pk, List<String> fieldNames, String language) {
     String fromPath = getPath(pk.getInstanceId());
     File directory = new File(fromPath);
     if (directory.exists()) {
-      Collection<File> files =
-          FileUtils.listFiles(directory, new PrefixFileFilter(pk.getId() + "_"), null);
-      for (File file : files) {
-        FileUtils.deleteQuietly(file);
+      for (String fieldName : fieldNames) {
+        String filePath = getFile(pk.getInstanceId(), pk.getId(), fieldName, language);
+        File file = new File(filePath);
+        if (file != null && file.exists()) {
+          FileUtils.deleteQuietly(file);
+        }
       }
     }
   }
