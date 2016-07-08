@@ -247,7 +247,7 @@ public class AuthenticationSQL extends Authentication {
       // the password doesn't match the digest. It is then possible the digest was a pure MD5 one!
       String actualDigest = CryptMD5.encrypt(password);
       if (!actualDigest.equals(digest)) {
-        throw new AuthenticationBadCredentialException("AuthenticationSQL.doChangePassword()",
+        throw new AuthenticationBadCredentialException("AuthenticationSQL.checkPassword()",
             SilverpeasException.ERROR, "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
       }
     }
