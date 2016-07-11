@@ -1028,6 +1028,24 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.targetValidatorId = targetValidatorId;
   }
 
+  public String getTargetValidatorNames() {
+    String validatorNames = "";
+    String[] validatorIds = getTargetValidatorIds();
+    if (validatorIds != null) {
+      for (String validatorId : validatorIds) {
+        if (StringUtil.isDefined(validatorNames)) {
+          validatorNames += ", ";
+        }
+        validatorNames += UserDetail.getById(validatorId).getDisplayedName();
+      }
+    }
+    return validatorNames;
+  }
+
+  public String[] getTargetValidatorIds() {
+    return StringUtil.split(getTargetValidatorId(), ',');
+  }
+
   public String getCloneId() {
     return cloneId;
   }
