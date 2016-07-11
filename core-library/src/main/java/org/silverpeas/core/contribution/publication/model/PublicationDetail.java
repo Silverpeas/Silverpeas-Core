@@ -23,49 +23,49 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
-import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -76,6 +76,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.split;
 
 /**
  * This object contains the description of a publication
@@ -986,19 +987,21 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getTargetValidatorNames() {
-    String[] validatorIds = getTargetValidatorIds();
     String validatorNames = "";
-    for (String validatorId : validatorIds) {
-      if (StringUtil.isDefined(validatorNames)) {
-        validatorNames += ", ";
+    String[] validatorIds = getTargetValidatorIds();
+    if (validatorIds != null) {
+      for (String validatorId : validatorIds) {
+        if (isDefined(validatorNames)) {
+          validatorNames += ", ";
+        }
+        validatorNames += UserDetail.getById(validatorId).getDisplayedName();
       }
-      validatorNames += UserDetail.getById(validatorId).getDisplayedName();
     }
     return validatorNames;
   }
 
   public String[] getTargetValidatorIds() {
-    return StringUtil.split(getTargetValidatorId(), ',');
+    return split(getTargetValidatorId(), ',');
   }
 
   public String getCloneId() {
