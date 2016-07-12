@@ -194,13 +194,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   /**
-<<<<<<< HEAD:core-library/src/main/java/org/silverpeas/core/contribution/content/form/record/GenericRecordSet.java
-   * Deletes the given DataRecord and set to null its id.
-=======
    * Deletes the given DataRecord and its associated data in all languages.
-   * @deprecated use delete(String objectId) instead
-   * @param record
->>>>>>> 16523fa... fixing bug #8101:lib-core/src/main/java/com/silverpeas/form/record/GenericRecordSet.java
+   * @deprecated use delete(String objectId) instead.
+   * @param record the record to delete entirely.
    * @throws FormException when the record doesn't have the required template., when the record has
    * an unknown id, when the delete fail.
    */
