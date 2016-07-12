@@ -167,4 +167,6 @@ public abstract class LookHelper {
 
   public abstract LayoutConfiguration getLayoutConfiguration();
 
+  public abstract void initLayoutConfiguration();
+
 }

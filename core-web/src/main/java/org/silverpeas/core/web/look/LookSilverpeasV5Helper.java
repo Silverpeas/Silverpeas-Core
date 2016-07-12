@@ -261,7 +261,8 @@ public class LookSilverpeasV5Helper extends LookHelper {
     }
   }
 
-  private void initLayoutConfiguration() {
+  @Override
+  public void initLayoutConfiguration() {
     this.layoutConfiguration = new DefaultLayoutConfiguration(this.resources);
   }
 
