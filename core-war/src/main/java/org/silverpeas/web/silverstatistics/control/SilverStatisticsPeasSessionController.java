@@ -35,6 +35,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -172,11 +173,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     SilverTrace
         .info("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getUserProfile()",
             "root.MSG_GEN_ENTER_METHOD");
+    if (getUserDetail().isAccessAdmin()) {
+      return getUserDetail().getAccessLevel();
+    }
     UserAccessLevel userProfile = getUserDetail().getAccessLevel();
     AdminController ac = ServiceProvider.getService(AdminController.class);
-    String[] manageableSpaceRootIds = ac.getUserManageableSpaceRootIds(getUserId());
-    if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile) &&
-        manageableSpaceRootIds != null && manageableSpaceRootIds.length > 0) {
+    String[] manageableSpaceIds = ac.getUserManageableSpaceIds(getUserId());
+    if (!ArrayUtil.isEmpty(manageableSpaceIds)) {
       userProfile = UserAccessLevel.SPACE_ADMINISTRATOR;
     }
     SilverTrace
