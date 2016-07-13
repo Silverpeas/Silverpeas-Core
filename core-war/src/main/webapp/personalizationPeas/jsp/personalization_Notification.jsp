@@ -51,6 +51,7 @@
 <fmt:message key="arrayPane_Adresse" var="addressColumn"/>
 <fmt:message key="arrayPane_Operations" var="operationsColumn"/>
 <fmt:message key="GML.validate" var="buttonValidationLabel"/>
+<fmt:message key="notifications.channel.none.warning" var="noChannelWarning"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -88,10 +89,15 @@ function testNotification(id) {
 }
 
 function sendChoiceChannel() {
-  document.channelForm.SelectedChannels.value = getChannels();
-  document.channelForm.SelectedFrequency.value = getFrequency();
-  document.channelForm.action = "SaveChannels";
-  document.channelForm.submit();
+  var selectedChannels = getChannels();
+  if (StringUtil.isNotDefined(selectedChannels)) {
+    notyWarning("${noChannelWarning}");
+  } else {
+    document.channelForm.SelectedChannels.value = selectedChannels;
+    document.channelForm.SelectedFrequency.value = getFrequency();
+    document.channelForm.action = "SaveChannels";
+    document.channelForm.submit();
+  }
 }
 
 function getChannels() {
