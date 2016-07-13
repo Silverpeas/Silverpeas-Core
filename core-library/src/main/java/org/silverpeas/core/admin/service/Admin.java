@@ -3913,7 +3913,7 @@ class Admin implements Administration {
             new Integer[alDriverManageableSpaceIds.size()]);
         cache.putManageableSpaceIds(sUserId, asManageableSpaceIds);
       }
-      return alManageableSpaceIds.toArray(new String[alManageableSpaceIds.size()]);
+      return Arrays.stream(asManageableSpaceIds).map(String::valueOf).toArray(String[]::new);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);
     }
