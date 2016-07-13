@@ -59,6 +59,15 @@ public class SilverpeasExceptionMessages {
   private static final MessageFormat UNDEFINED_RESOURCE =
       new MessageFormat("{0} identifier not defined");
 
+  private static final MessageFormat RENDERING_FAILURE =
+      new MessageFormat("Fail to render {0} {1}");
+
+  private static final MessageFormat OPENING_FILE_FAILURE =
+      new MessageFormat("Fail to open file {0}");
+  private static final MessageFormat CLOSING_FILE_FAILURE =
+      new MessageFormat("Fail to close file {0}");
+
+
   private SilverpeasExceptionMessages() {
 
   }
@@ -226,6 +235,46 @@ public class SilverpeasExceptionMessages {
    */
   public static String failureOnUnindexing(String resource, Object id) {
     return UNINDEXATION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to render the given resource with the
+   * specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the rendering of resource in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnRendering(String resource, Object id) {
+    return RENDERING_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to open the given resource with the
+   * specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the opening of file in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @return an exception message.
+   */
+  public static String failureOnOpeningFile(String resource) {
+    return OPENING_FILE_FAILURE.format(new Object[]{resource});
+  }
+
+  /**
+   * Computes a message about the failure to close the given resource with the
+   * specified identifier.
+   * </p>
+   * This message is for when an exception has been caught during the closing of file in
+   * Silverpeas.
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @return an exception message.
+   */
+  public static String failureOnClosingFile(String resource) {
+    return CLOSING_FILE_FAILURE.format(new Object[]{resource});
   }
 
   /**
