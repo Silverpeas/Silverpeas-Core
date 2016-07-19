@@ -56,6 +56,7 @@ import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
@@ -1126,9 +1127,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
               groupId))) {
         Group targetGroup = m_AdminCtrl.getGroupById(groupId);
         // Add user access control for security purpose
-        if (UserAccessLevel.ADMINISTRATOR.equals(getUserAccessLevel()) ||
-            m_AdminCtrl.isDomainManagerUser(getUserId(), targetGroup.getDomainId()) ||
-            isGroupManagerOnGroup(groupId)) {
+        if (isUserAuthorizedToManageGroup(targetGroup)) {
           if (GroupNavigationStock.isGroupValid(targetGroup)) {
             List<String> manageableGroupIds = null;
             if (isOnlyGroupManager() && !isGroupManagerOnGroup(groupId)) {
@@ -1148,6 +1147,24 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException(undefined("group"));
     }
     setTargetUser(null);
+  }
+
+  private boolean isUserAuthorizedToManageGroup(Group group) {
+    if (getUserDetail().isAccessAdmin() ||
+        m_AdminCtrl.isDomainManagerUser(getUserId(), group.getDomainId())) {
+      return true;
+    }
+
+    // check if current user is manager of this group or one of its descendants
+    Group[] groups = new Group[1];
+    groups[0] = group;
+    Group[] allowedGroups = filterGroupsToGroupManager(groups);
+    if (!ArrayUtil.isEmpty(allowedGroups)) {
+      return true;
+    }
+
+    // check if current user is manager of at least one parent group
+    return isGroupManagerOnGroup(group.getId());
   }
 
   public Group getTargetGroup() throws JobDomainPeasException {
@@ -1520,8 +1537,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return getTargetGroup() != null && isGroupManagerOnGroup(getTargetGroup().getId());
   }
 
-  public boolean isGroupManagerOnGroup(String groupId)
-      throws JobDomainPeasException {
+  public boolean isGroupManagerOnGroup(String groupId) {
     List<String> manageableGroupIds = getUserManageableGroupIds();
     if (manageableGroupIds.contains(groupId)) {
       // Current user is directly manager of group
