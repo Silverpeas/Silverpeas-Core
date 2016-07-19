@@ -20,35 +20,23 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
-import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
-import org.silverpeas.core.contribution.publication.dao.PublicationI18NDAO;
-import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.coordinates.service.CoordinatesService;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.coordinates.model.CoordinatePK;
-import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
+import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
+import org.silverpeas.core.contribution.publication.dao.PublicationI18NDAO;
 import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
+import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -56,25 +44,37 @@ import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
-import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
+import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.admin.component.ComponentHelper;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.coordinates.model.CoordinatePK;
+import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.coordinates.service.CoordinatesService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -1797,6 +1797,35 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       throw new PublicationRuntimeException("DefaultPublicationService.getDraftsByUser()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED",
           "userId = " + userId, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public List<PublicationDetail> removeUserFromTargetValidators(String userId) {
+    Connection con = getConnection();
+    try {
+      List<PublicationDetail> publications = PublicationDAO.getByTargetValidatorId(con, userId);
+      for (PublicationDetail publication : publications) {
+        // remove given user to users list
+        String[] userIds = StringUtil.split(publication.getTargetValidatorId(), ',');
+        String[] newUserIds = ArrayUtil.removeElement(userIds, userId);
+        if (newUserIds != null && !ArrayUtil.isEmpty(newUserIds)) {
+          publication.setTargetValidatorId(StringUtil.join(newUserIds, ','));
+        } else {
+          publication.setTargetValidatorId(null);
+        }
+
+        // store updated data (without given user)
+        PublicationDAO.updateTargetValidatorIds(con, publication);
+      }
+
+      return publications;
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getDraftsByUser()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED", "userId = "
+          + userId, e);
     } finally {
       DBUtil.close(con);
     }

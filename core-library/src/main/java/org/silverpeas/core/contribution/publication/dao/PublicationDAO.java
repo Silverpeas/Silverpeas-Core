@@ -24,6 +24,21 @@
 
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
+import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,21 +55,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 
 /**
  * This is the Publication Data Access Object.
@@ -2095,5 +2095,47 @@ public class PublicationDAO {
       DBUtil.close(rs, prepStmt);
     }
     return publications;
+  }
+
+  public static List<PublicationDetail> getByTargetValidatorId(Connection con, String userId)
+      throws SQLException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("select * from sb_publication_publi ");
+    sb.append("where pubTargetValidatorId like ?");
+
+    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(sb.toString());
+      prepStmt.setString(1, "%" + userId + "%");
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        String targetValidatorIds = rs.getString("pubTargetValidatorId");
+        String[] userIds = StringUtil.split(targetValidatorIds, ',');
+        if (ArrayUtil.contains(userIds, userId)) {
+          publications.add(resultSet2PublicationDetail(rs, null));
+        }
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return publications;
+  }
+
+  public static void updateTargetValidatorIds(Connection con, PublicationDetail detail)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(
+          "update SB_Publication_Publi set pubtargetvalidatorid = ? where pubid = ? and instanceid = ? ");
+      prepStmt.setString(1, detail.getTargetValidatorId());
+      prepStmt.setInt(2, Integer.parseInt(detail.getPK().getId()));
+      prepStmt.setString(3, detail.getPK().getInstanceId());
+
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
   }
 }
