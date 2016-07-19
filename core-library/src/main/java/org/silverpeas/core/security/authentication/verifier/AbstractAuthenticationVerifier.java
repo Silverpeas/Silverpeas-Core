@@ -81,10 +81,7 @@ class AbstractAuthenticationVerifier {
     try {
       return UserDetail.getById(AdministrationServiceProvider.getAdminService()
           .getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
-    } catch (AdminException e) {
-      SilverTrace.error("authentication", "AbstractAuthenticationVerifier.getUser()",
-          "authentication.EX_GET_USER",
-          "Login=" + credential.getLogin() + ", domainId=" + credential.getDomainId(), e);
+    } catch (AdminException ignore) {
       return null;
     }
   }
