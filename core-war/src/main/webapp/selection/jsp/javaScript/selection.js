@@ -43,14 +43,28 @@ function Selection(multiselection, pageSize) {
   this.page = function(pagenumber) {
     startpage = (pagenumber - 1) * pagesize;
   };
+
+  this.remove = function(item) {
+    var index = this.indexOf(item);
+    this.items.splice(index, 1);
+    console.info("items = " + this.items.length + " and startpage = " + startpage);
+    if (startpage >= this.items.length && startpage > 0) {
+      console.info("change page");
+      this.page(startpage / pagesize);
+    }
+  };
 }
 
 Selection.prototype.add = function(item) {
   if (this.multipleSelection) {
-    if (item instanceof Array)
-      this.items = item;
-    else
+    if (item instanceof Array) {
+      for (var i = 0; i < item.length; i++) {
+        this.items.push(item[i]);
+      } 
+    }
+    else {
       this.items.push(item);
+    }
   } else {
     this.items.splice(0, 1);
     this.items[0] = (item instanceof Array ? item[0] : item);
@@ -64,6 +78,7 @@ Selection.prototype.remove = function(item) {
 
 Selection.prototype.clear = function() {
   this.items = [];
+  this.page(1);
 };
 
 Selection.prototype.indexOf = function(item) {
