@@ -995,7 +995,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         if (isDefined(validatorNames)) {
           validatorNames += ", ";
         }
-        validatorNames += UserDetail.getById(validatorId).getDisplayedName();
+        validatorNames += User.getById(validatorId).getDisplayedName();
       }
     }
     return validatorNames;
