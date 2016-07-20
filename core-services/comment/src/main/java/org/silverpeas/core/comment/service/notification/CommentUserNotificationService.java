@@ -22,22 +22,24 @@
 package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentUserNotification;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -71,6 +73,10 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
 
   @Inject
   private CommentService commentService;
+
+  @Inject
+  @Any
+  private Instance<ApplicationService<?>> applicationServiceInstances;
 
   @Override
   public void onCreation(final CommentEvent event) throws Exception {
@@ -108,8 +114,8 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
       try {
         service[0] = ServiceProvider.getService(componentServiceName);
       } catch (IllegalStateException ex) {
-        final Set<ApplicationService> availableServices =
-            ServiceProvider.getAllServices(ApplicationService.class);
+        final Set<ApplicationService> availableServices = new LinkedHashSet<>();
+        applicationServiceInstances.forEach(availableServices::add);
         availableServices.stream().filter(s -> s.isRelatedTo(instanceId)).findFirst()
             .ifPresent(s -> service[0] = s);
       }

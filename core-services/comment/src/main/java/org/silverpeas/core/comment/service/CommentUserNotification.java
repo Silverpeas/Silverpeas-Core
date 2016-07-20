@@ -35,6 +35,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.Collection;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.Set;
 
@@ -87,7 +88,12 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
 
   @Override
   protected String getTitle() {
-    String subject = componentMessages.getString(getBundleSubjectKey());
+    String subject;
+    try {
+      subject = componentMessages.getString(getBundleSubjectKey());
+    } catch (MissingResourceException mre) {
+      subject = "";
+    }
     if (!isDefined(subject)) {
       subject =
           commentService.getComponentMessages(componentMessages.getLocale().getLanguage())

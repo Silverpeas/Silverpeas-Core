@@ -62,6 +62,13 @@ public final class ServiceProvider {
   }
 
   /**
+   * Gets an instance of all implementations of mandatory given type and qualifier if any.<br/>
+   * Please be attentive about that this method does not return result when trying to get
+   * instance implementations of interfaces which are dealing with typed types
+   * (ApplicationService<T> for example).<br/>
+   * To deal with this kind of interfaces, please use the
+   * {@link javax.enterprise.inject.Instance} method. An example can be found into core-library
+   * project at ApplicationServiceTest class.
    * @see BeanContainer#getAllBeansByType(Class, java.lang.annotation.Annotation...)
    */
   public static <T> Set<T> getAllServices(Class<T> type, Annotation... qualifiers) {
