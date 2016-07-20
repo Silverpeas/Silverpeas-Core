@@ -406,4 +406,8 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, getId());
   }
+
+  public String getInternalLink() {
+    return URLUtil.getURL(getName(), "", getId()) + "Main";
+  }
 }

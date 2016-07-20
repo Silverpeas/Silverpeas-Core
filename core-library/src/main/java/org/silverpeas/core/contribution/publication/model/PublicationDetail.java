@@ -66,6 +66,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.URLUtil;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -1243,5 +1244,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public boolean isAlias() {
     return alias;
+  }
+
+  public String getPermalink() {
+    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getId());
   }
 }

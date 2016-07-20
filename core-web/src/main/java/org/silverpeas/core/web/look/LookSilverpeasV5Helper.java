@@ -915,4 +915,8 @@ public class LookSilverpeasV5Helper extends LookHelper {
     }
     return null;
   }
+
+  public SettingBundle getSettingsBundle() {
+    return this.resources;
+  }
 }
