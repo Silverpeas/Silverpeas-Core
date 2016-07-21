@@ -622,6 +622,7 @@
    * Private function that centralizes a fullscreen modal background.
    * Be careful, options have to be well initialized before this function call
    */
+  var __lastRegisteredHandler;
   function __openFullscreenModalBackground($dialogInstance) {
     if (!spFullscreenModalBackgroundContext.isValid()) {
       spFullscreenModalBackgroundContext.clear();
@@ -653,22 +654,29 @@
         }
       });
 
-      $('form', $dialogInstance).submit(function() {
+      // Handling HTML forms in order to close the dialog on submit action.
+      // As jQuery Handles only jQuery triggering, jQuery method and the standard one must be
+      // managed.
+      var $forms = $('form', $dialogInstance);
+      var forms = $dialogInstance[0].querySelectorAll("form");
+      if (__lastRegisteredHandler) {
+        $forms.unbind('submit', __lastRegisteredHandler);
+        [].slice.call(forms, 0).forEach(function(form) {
+          form.removeEventListener('submit', __lastRegisteredHandler);
+        });
+      }
+      __lastRegisteredHandler = function() {
         if ($container.dialog('isOpen')) {
-          __logDebug("close from jQuery submit management");
           $container.dialog("close");
         }
         return true;
-      });
-      [].slice.call($dialogInstance[0].querySelectorAll("form"), 0).forEach(function(form) {
-        form.addEventListener('submit', function() {
-          if ($container.dialog('isOpen')) {
-            __logDebug("close from HTML5 submit management");
-            $container.dialog("close");
-          }
-        });
+      };
+      $forms.bind('submit', __lastRegisteredHandler);
+      [].slice.call(forms, 0).forEach(function(form) {
+        form.addEventListener('submit', __lastRegisteredHandler);
       });
 
+      // Displaying the dialog.
       spLayout.getBody().getContent().setOnForeground();
       $container.dialog("open");
       $container.dialog("widget").css('top', '-1000px').css('left', '-1000px');
