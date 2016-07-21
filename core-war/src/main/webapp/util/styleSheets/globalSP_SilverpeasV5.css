@@ -5816,3 +5816,39 @@ a.navigation-button {
   font-size: inherit;
   background-color: #DDD;
 }
+
+.sm-map, .sm-map ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 1em 0 1em 2em;
+}
+
+ul.sm-map {
+  margin-left: 0;
+}
+
+.sm-map > li {
+  padding: 0;
+  margin: 0 0 2em 1em;
+}
+
+.sm-map li.app {
+  display: inline-block;
+  font-weight: 100;
+  margin-right: 2em;
+}
+
+.sm-map li.app img {
+  margin: 0 0.5em 0 0;
+}
+
+.sm-map li.space {
+  display: block;
+  font-weight: bold;
+  margin-top: 2em;
+}
+
+.sm-map li.space:before {
+  content: '\2022';
+  color: #EC8601;
+}

@@ -176,7 +176,8 @@
               class="txtnav"><%=message.getString("SpaceCollaboration")%></span></td>
         </tr>
         <tr>
-          <td valign="top">
+          <td>
+            <ul class="sm-map">
             <%
               if (m_asPrivateDomainsIds != null) {
                 for (int nK = 0; nK < m_asPrivateDomainsIds.length; nK++) {
@@ -185,12 +186,13 @@
                   if (spaceInst.isRoot()) {
                     pageContext.setAttribute("currentSpaceId", m_asPrivateDomainsIds[nK]);
             %>
-            <view:map spaceId="${pageScope.currentSpaceId}"/>
+            <view:map spaceId="${pageScope.currentSpaceId}" displayAppIcon="true" displayAppsFirst="true"/>
             <%
                   }
                 }
               }
             %>
+            </ul>
           </td>
         </tr>
       </table>
