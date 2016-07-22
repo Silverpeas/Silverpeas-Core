@@ -260,7 +260,7 @@ if (!window.currentPopupResize) {
 
       // Setting if necessary new sizes and new position
       context.attempt += 1;
-      if (context.attempt <= 100 &&
+      if (context.attempt <= 1 &&
           (wWidthBefore !== wWidth || wHeightBefore !== wHeight || wHeight <= 200)) {
         log("modify attempt " + context.attempt);
         if (wHeight > 200) {
