@@ -51,13 +51,13 @@ input {
   background-color:#FFF;
   font-family: "Verdana", "Arial", sans-serif;
   border:1px solid #999;
-	color:#333;
-	font-size:1em;
-	padding:5px 0.5em;
-    -webkit-transition: all 0.30s ease-in-out;
-    -moz-transition: all 0.30s ease-in-out;
-    -ms-transition: all 0.30s ease-in-out;
-    -o-transition: all 0.30s ease-in-out;
+  color:#333;
+  font-size:1em;
+  padding:5px 0.5em;
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
   outline: none;
 }
 
@@ -84,7 +84,7 @@ textarea {
   background-color:#FFF;
   font-family: "Verdana", "Arial", sans-serif;
   font-size: 1em;
-	color:#333;
+  color:#333;
   border: 1px solid #999;
 }
 
@@ -920,13 +920,12 @@ Style Utilise par le ViewGenerator
 
 /* Objet Button */
 a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a , button.button{
-	background-color:#7eb73b;
+  background-color:#7eb73b;
   color:#FFF;
-  height: 20px;
 }
 
 a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:hover , button.button:hover {
-	background-color:#75af30;
+  background-color:#75af30;
 }
 
 /* pour encadrer les boutons et remplacer la balise center utilis?e dans les anciennes pages */
@@ -942,26 +941,26 @@ a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:ho
   width: 5px;
 }
 .milieuOngletOn a, .milieuOngletOff a, .milieuOngletOn span, .milieuOngletOff span {
-    display: block;
-    margin-right: 4px;
-    border-radius: 8px 8px 0 0;
-    padding: 8px 10px 6px;
+  display: block;
+  margin-right: 4px;
+  border-radius: 8px 8px 0 0;
+  padding: 8px 10px 6px;
 }
 .sousOnglets,.milieuOngletOn a,.milieuOngletOff a:hover,.milieuOngletOn span {
-	background-color:#7eb73b;
-	color:#fff
+  background-color:#7eb73b;
+  color:#fff
 }
 .sousOnglets {
   height: 2px;
 }
 .milieuOngletOff a,.milieuOngletOff span {
-	background-color:#d6d7d9
+  background-color:#d6d7d9
 }
 .milieuOngletOff a {
-	color:#666
+  color:#666
 }
 .milieuOngletOff a:hover {
-	color:#fff
+  color:#fff
 }
 
 /* Objet frame */
@@ -1449,24 +1448,24 @@ a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:ho
 /*- [ portlet LastApplication BEGIN] --------------------------- */
 
 .listing-portlet-lastApplication {
-	list-style-type:none;
-	margin:0;
-	padding:0;
+  list-style-type:none;
+  margin:0;
+  padding:0;
 }
 
 .listing-portlet-lastApplication li {
-	padding:0;
-	margin:0;
+  padding:0;
+  margin:0;
 }
 
 .listing-portlet-lastApplication li img.iconComponent{
-	float:left;
-	margin:-2px 4px 0 0;
+  float:left;
+  margin:-2px 4px 0 0;
 }
 
 .listing-portlet-lastApplication .lineResult .location {
-		margin:0 0 0 20px;
-		display:block;
+  margin:0 0 0 20px;
+  display:block;
 }
 
 /*- [ portlet LastApplication END] --------------------------- */
@@ -1475,91 +1474,91 @@ a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:ho
 /*- [ portlet MyContact BEGIN] --------------------------- */
 
 #portlet-myContact  .listing {
-	list-style-type:none;
-	padding:0;
-	margin:0;
-	list-style-image:none;
+  list-style-type:none;
+  padding:0;
+  margin:0;
+  list-style-image:none;
 }
 #portlet-myContact  .listing li{
-	float:left;
-	width:48.5%;
-	margin:0 0 1% 1%;
-	background-color:#FFF;
-	position:relative;
-	border:1px solid #f0f0f0
+  float:left;
+  width:48.5%;
+  margin:0 0 1% 1%;
+  background-color:#FFF;
+  position:relative;
+  border:1px solid #f0f0f0
 }
 #portlet-myContact  .listing li.offline{
-	opacity:0.6
+  opacity:0.6
 }
 #portlet-myContact  .listing li img.avatar{
-	float:left;
-	margin:2%;
-	width:25px
+  float:left;
+  margin:2%;
+  width:25px
 }
 #portlet-myContact  .listing li .userName{
-	font-size:1.2em;
-	overflow:hidden;
-	position:absolute;
-	white-space:nowrap;
-	top:3px;
-	left:33px;
-	right:43px;
+  font-size:1.2em;
+  overflow:hidden;
+  position:absolute;
+  white-space:nowrap;
+  top:3px;
+  left:33px;
+  right:43px;
 }
 #portlet-myContact  .listing li .userStatut {
-	overflow:hidden;
-	height:16px;
-	position:absolute;
-	top:21px;
-	left:33px;
-	right:10px;
+  overflow:hidden;
+  height:16px;
+  position:absolute;
+  top:21px;
+  left:33px;
+  right:10px;
 }
 #portlet-myContact  .listing li .userStatut p{
-	color:#9f9f9f;
-	font-style:italic;
-	padding:0;
-	margin:0;
-	font-size:1em;
+  color:#9f9f9f;
+  font-style:italic;
+  padding:0;
+  margin:0;
+  font-size:1em;
 }
 #portlet-myContact  .listing li .contact-user {
-	overflow:hidden;
-	position:absolute;
-	top:3px;
-	right:5px;
+  overflow:hidden;
+  position:absolute;
+  top:3px;
+  right:5px;
 }
 #portlet-myContact  .listing li .accessTchat-user {
-	overflow:hidden;
-	position:absolute;
-	top:3px;
-	right:26px;
+  overflow:hidden;
+  position:absolute;
+  top:3px;
+  right:26px;
 }
 #portlet-myContact  .listing li .contact-user img,
 #portlet-myContact  .listing li .accessTchat-user img{
-	width:12px;
-	border:0
+  width:12px;
+  border:0
 }
 /*- [ portlet MyContact END] --------------------------- */
 
 /*- [ portlet MyFeed BEGIN] --------------------------- */
 #portlet-myFeed {
-	 max-height: 350px;
-    overflow: auto;
+  max-height: 350px;
+  overflow: auto;
 }
 
 #portlet-myFeed .profilPhoto img{
-	width:25px;
+  width:25px;
 }
 
 #portlet-myFeed .profilPhoto{
-	width:25px;
-	max-height:30px;
-	overflow:hidden;
-	float:left;
-	margin-right:7px;
-	background-color:#FFF;
+  width:25px;
+  max-height:30px;
+  overflow:hidden;
+  float:left;
+  margin-right:7px;
+  background-color:#FFF;
 }
 
 #portlet-myFeed .detail{
-	display:none;
+  display:none;
 }
 
 
@@ -1568,15 +1567,15 @@ a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:ho
 }
 
 #portlet-myFeed hr{
-	margin:0 0 3px ;
-	height:0;
-	line-height:0;
-	padding:0;
+  margin:0 0 3px ;
+  height:0;
+  line-height:0;
+  padding:0;
 }
 #portlet-myFeed p{
-	margin:0;
-	padding:5px 0 7px;
-	line-height:1em;
+  margin:0;
+  padding:5px 0 7px;
+  line-height:1em;
 }
 
 #portlet-myFeed .status {
@@ -1586,22 +1585,22 @@ a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:ho
 }
 
 #portlet-myFeed .status .detail{
-	display:inline;
-	font-weight:bold;
+  display:inline;
+  font-weight:bold;
 }
 #portlet-myFeed .relationship {
-	position:relative;
+  position:relative;
 }
 #portlet-myFeed .relationship.detail{
-	display:block;
-	position:absolute;
-	top:3px;
-	right:0;
-	padding:0;
+  display:block;
+  position:absolute;
+  top:3px;
+  right:0;
+  padding:0;
 }
 #portlet-myFeed .relationship.detail .profilPhoto,
 #portlet-myFeed .relationship.detail .profilPhoto img{
-	width:16px;
+  width:16px;
 }
 
 #portlet-myFeed .publication ,
@@ -1973,6 +1972,10 @@ div.silverpeas-toggle {
 #gef-progress-message2 {
   margin-top: 15px;
   color: #999;
+}
+
+.ui-widget-overlay {
+  background-image: none;
 }
 
 .ui-widget-header {
@@ -2451,7 +2454,7 @@ caption {
   margin-left:220px;
 }
 #publicProfileContenu .fields {
-	clear: none;
+  clear: none;
 }
 
 /* IMAGE  bg_tri.png ? chercher dans corps dans fleche */
@@ -2582,7 +2585,7 @@ caption {
   color:#26334A;
 }
 
-#newsFeedProfil	.a_new {
+#newsFeedProfil  .a_new {
   min-height:50px;
   height:auto;
 }
@@ -3749,12 +3752,12 @@ li.application  .applicationName {
 #results_userPanel,
 #selected_userPanel,
 #filter_userPanel {
-	height:100%;
-	overflow:auto;
+  height:100%;
+  overflow:auto;
 }
 
 #selected_userPanel .inlineMessage {
-	margin: 3%;
+  margin: 3%;
 }
 
 #filter_userPanel {
@@ -4229,9 +4232,9 @@ input.search:focus {
   left:33%;
 }
 
-.userzoom-tooltip-interaction-accessProfil 	span,
-.userzoom-tooltip-interaction-accessTchat 	span,
-.userzoom-tooltip-interaction-accessNotification 	span{
+.userzoom-tooltip-interaction-accessProfil   span,
+.userzoom-tooltip-interaction-accessTchat   span,
+.userzoom-tooltip-interaction-accessNotification   span{
   background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
   display:block;
   height:24px;
@@ -4239,15 +4242,15 @@ input.search:focus {
   padding-left:32px;
 }
 
-.userzoom-tooltip-interaction-accessTchat 	span{
+.userzoom-tooltip-interaction-accessTchat   span{
   background-image:url(../icons/talk2user.gif)
 }
 
-.userzoom-tooltip-interaction-accessNotification 	span{
+.userzoom-tooltip-interaction-accessNotification   span{
   background-image:url(../icons/email.gif)
 }
 
-.userzoom-tooltip-interaction-accessTchat.disabled		span{
+.userzoom-tooltip-interaction-accessTchat.disabled    span{
   background-image:url(../icons/talk2user-disabled.gif);
   color:#bbb;
   cursor:default;
@@ -4812,7 +4815,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 
 .ui-dialog .filedset-ui-dialog.validity legend {
   padding-left:30px;
-	background: url("../icons/calendar_2.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
+  background: url("../icons/calendar_2.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
 }
 
 .ui-dialog .filedset-ui-dialog{
@@ -4913,49 +4916,49 @@ ul.tagit li.tagit-choice a.tagit-close {
 /*******************************/
 
 #quickinfo-app-portlet {
-	background-color:transparent;
+  background-color:transparent;
 }
 
 /*******************************/
 /***** portlet : News        ***/
 /*******************************/
 .portlet-content ul.listing-actuality-portlet {
-	list-style-type:none;
-	list-style-image:none;
-	padding:0;
-	margin:0;
+  list-style-type:none;
+  list-style-image:none;
+  padding:0;
+  margin:0;
 }
 .listing-actuality-portlet li{
-	clear:left;
-	position:relative;
-	margin-bottom:2em;
-	cursor:pointer;
+  clear:left;
+  position:relative;
+  margin-bottom:2em;
+  cursor:pointer;
 }
 .listing-actuality-portlet h3 {
-	margin:0;
-	padding:0;
+  margin:0;
+  padding:0;
 }
 .listing-actuality-portlet h3 a{
-	font-size:1em;
+  font-size:1em;
 }
 .listing-actuality-portlet p{
-	color:#8f8f8f;
-	padding:0;
-	margin:0.25em 0;
+  color:#8f8f8f;
+  padding:0;
+  margin:0.25em 0;
 }
 .listing-actuality-portlet .actuality-illustration {
-	width:210px;
-	float:left;
-	margin:0 0.5em 0.5em 0;
+  width:210px;
+  float:left;
+  margin:0 0.5em 0.5em 0;
 }
 
 .listing-actuality-portlet .actuality-info-fonctionality {
-	background-color:#FFF;
-	position:absolute;
-	top:14px;
-	left:0;
-	display:inline;
-	padding:0.25em;
+  background-color:#FFF;
+  position:absolute;
+  top:14px;
+  left:0;
+  display:inline;
+  padding:0.25em;
 }
 
 .listing-actuality-portlet .actuality-date-label,
@@ -4964,86 +4967,86 @@ ul.tagit li.tagit-choice a.tagit-close {
 .slider-actuality-portlet  .actuality-date-label,
 .slider-actuality-portlet  .actuality-source,
 .slider-actuality-portlet  .sp-path {
-	display:none;
+  display:none;
 }
 
 .listing-actuality-portlet .actuality-without-illustration .actuality-info-fonctionality {
-	position:relative;
-	top:inherit;
-	left:inherit;
-	display:inline;
-	padding:0.25em;
-	float:right;
+  position:relative;
+  top:inherit;
+  left:inherit;
+  display:inline;
+  padding:0.25em;
+  float:right;
 }
 
 .listing-actuality-portlet .actuality-info-fonctionality img{
-	vertical-align:bottom;
+  vertical-align:bottom;
 }
 
 .portlet-content ul.slider-actuality-portlet  {
-	padding:0;
-	margin:0;
-	list-style-type:none;
-	text-align:center;
+  padding:0;
+  margin:0;
+  list-style-type:none;
+  text-align:center;
 }
 
 .portlet-content ul.slider-actuality-portlet li div.content-actuality-illustration {
-	padding:0;
-	margin:0;
-	background-color:#bbbbbb;
-	text-align:center;
-	box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1);
+  padding:0;
+  margin:0;
+  background-color:#bbbbbb;
+  text-align:center;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1);
 }
 
 .portlet-content ul.slider-actuality-portlet .actuality-illustration {
-	height:284px;
-	width:auto;
-	margin:0 auto;
-	float:none;
+  height:284px;
+  width:auto;
+  margin:0 auto;
+  float:none;
 }
 
 .portlet-content ul.slider-actuality-portlet .actuality-date {
-	position:absolute;
-	top:298px;
-	left:10px;
-	color:#1c94d4
+  position:absolute;
+  top:298px;
+  left:10px;
+  color:#1c94d4
 }
 
 .portlet-content ul.slider-actuality-portlet .actuality-nb-commentaires {
-	position:absolute;
-	right:10px;
-	top:298px;
+  position:absolute;
+  right:10px;
+  top:298px;
 }
 
 .portlet-content .actuality-nb-commentaires img {
-	border:0;
-	vertical-align:text-top;
-	display: inline;
+  border:0;
+  vertical-align:text-top;
+  display: inline;
   float: none;
 }
 
 .portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-date,
 .portlet-content ul.slider-actuality-portlet .actuality-without-illustration .actuality-nb-commentaires {
-	top:10px;
+  top:10px;
 }
 
 .portlet-content ul.slider-actuality-portlet .actuality-title  {
-	padding:2.2em 10px 0em;
-	margin:0;
-	text-align:left;
+  padding:2.2em 10px 0em;
+  margin:0;
+  text-align:left;
 }
 .portlet-content ul.slider-actuality-portlet .actuality-teasing  {
-	text-align:left;
-	color:#8f8f8f;
-	font-size:1.1em;
-	padding:0.5em 10px 1em;
-	margin:0 ;
+  text-align:left;
+  color:#8f8f8f;
+  font-size:1.1em;
+  padding:0.5em 10px 1em;
+  margin:0 ;
 }
 .portlet-content ul.slider-actuality-portlet .actuality-title  a{
-	font-size:1.2em;
+  font-size:1.2em;
 }
 .portlet-content ul.slider-actuality-portlet .actuality-title  a:hover{
-	color:#1c94d4
+  color:#1c94d4
 }
 
 /*******************************/
@@ -5095,29 +5098,29 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 
 h2.wysiwyg-title1 {
-	border-left:3px solid #2a2a2a ;
-	color:#2a2a2a;
-	font-size:1.4em;
-	padding:0 6px;
+  border-left:3px solid #2a2a2a ;
+  color:#2a2a2a;
+  font-size:1.4em;
+  padding:0 6px;
 }
 h3.wysiwyg-title2{
-	border-left:3px solid #7eb73b ;
-	color:#7eb73b;
-	font-size:1.2em;
-	padding:0 6px;
+  border-left:3px solid #7eb73b ;
+  color:#7eb73b;
+  font-size:1.2em;
+  padding:0 6px;
 }
 
 strong.wysiwyg-focus {
-	background-color:#2a2a2a ;
-	color:#FFF;
+  background-color:#2a2a2a ;
+  color:#FFF;
 }
 
 p.wysiwyg-important{
-	background-color: #F5F5F5;
-	border-radius: 0 10px 0 10px;
-	padding: 9.5px;
-	border:1px solid #ebebeb;
-	font-size:1.1em;
+  background-color: #F5F5F5;
+  border-radius: 0 10px 0 10px;
+  padding: 9.5px;
+  border:1px solid #ebebeb;
+  font-size:1.1em;
 }
 
 blockquote {
@@ -5129,7 +5132,7 @@ blockquote {
 }
 
 .container-wysiwyg {
-	width:95%;
+  width:95%;
 }
 
 .wysiwyg-fileStorage {
@@ -5143,7 +5146,7 @@ blockquote {
 
 /* Default forms look n feel */
 .forms .form-border {
-	border:1px solid #CCC;
+  border:1px solid #CCC;
 }
 
 .forms .form-title {
@@ -5155,19 +5158,19 @@ blockquote {
 }
 
 .forms .legend {
-	padding: 10px 0px 0px 10px;
+  padding: 10px 0px 0px 10px;
 }
 
 .forms .fields .fieldInput {
-	display:inline-block;
+  display:inline-block;
   padding: 0 0 0 15px;
 }
 .forms .fields .fieldInput p {
-	margin-top:0;
+  margin-top:0;
 }
 
 .forms.mode-design .fields label {
-	background: url("../icons/grippy_large.png") repeat-y scroll 0 0 rgba(0, 0, 0, 0);
+  background: url("../icons/grippy_large.png") repeat-y scroll 0 0 rgba(0, 0, 0, 0);
     cursor: move;
 }
 
@@ -5186,61 +5189,61 @@ blockquote {
 .forms .field .fieldInput input,
 .forms .field .fieldInput textarea,
 .forms .field .fieldInput select {
-	width:auto;
+  width:auto;
 }
 
 .forms .fields {
-	clear: none;
-	margin: 0;
-	padding: 0;
+  clear: none;
+  margin: 0;
+  padding: 0;
 }
 
 .forms .fields > li{
-	padding:10px 0 5px 0;
-	margin:0;
-	position:relative;
-	display:block;
-	float:inherit;
-	width:100%;
-	min-height: 28px;
+  padding:10px 0 5px 0;
+  margin:0;
+  position:relative;
+  display:block;
+  float:inherit;
+  width:100%;
+  min-height: 28px;
 }
 
 /* design and edition modes */
 form .forms .fields > li:nth-child(odd) {
-	background-color:#fffce7;
-	border-bottom:1px solid #ccc;
+  background-color:#fffce7;
+  border-bottom:1px solid #ccc;
 }
 form .forms .fields > li:nth-child(even) {
-	background-color:#f6f6f6;
-	border-bottom:1px solid #ccc;
+  background-color:#f6f6f6;
+  border-bottom:1px solid #ccc;
 }
 
 /* view mode */
 .forms .fields > li:nth-child(odd) {
-	background-color:#f9f9f9;
-	border-bottom:1px solid #ddd;
+  background-color:#f9f9f9;
+  border-bottom:1px solid #ddd;
 }
 .forms .fields > li:nth-child(even) {
-	background-color:#f6f6f6;
-	border-bottom:1px solid #ddd;
+  background-color:#f6f6f6;
+  border-bottom:1px solid #ddd;
 }
 .forms .field .actions {
-	position:absolute;
-	top:10px;
-	right:1%;
+  position:absolute;
+  top:10px;
+  right:1%;
 }
 
 .forms .field ul.repeatable-field-list {
-	list-style-type: none;
-	padding-left: 0px;
+  list-style-type: none;
+  padding-left: 0px;
 }
 
 .forms .actions img{
-	border:0;
+  border:0;
 }
 
 .forms .field-occurrence-hidden {
-	display: none;
+  display: none;
 }
 
 /*******************************/
@@ -5249,17 +5252,17 @@ form .forms .fields > li:nth-child(even) {
 
 #identity-main .field,
 #identity-manual-notification .field {
-	clear:left;
-	width: 96%;
+  clear:left;
+  width: 96%;
 }
 
 #profil-groups-belong #form-row-desc,
 #profil-groups-belong #form-row-rule {
- 	width:98%
+   width:98%
 }
 
 .skinFieldset .fields  {
-	padding:0;
+  padding:0;
 }
 
 #identity-main legend {
@@ -5267,7 +5270,7 @@ form .forms .fields > li:nth-child(even) {
 }
 
 #profil table.tableArrayPane {
-	margin:10px;
+  margin:10px;
 }
 
 #profil-groups-belong legend {
@@ -5283,17 +5286,17 @@ form .forms .fields > li:nth-child(even) {
 }
 
 #affected-profil .champ-ui-dialog img{
-	border:0;
-	vertical-align:bottom
+  border:0;
+  vertical-align:bottom
 }
 
 #affected-profil input[type="radio"]{
-	vertical-align:bottom;
-	background-color:transparent
+  vertical-align:bottom;
+  background-color:transparent
 }
 
 #profil .ui-dialog #sourceRightsName{
-	width:88%;
+  width:88%;
 }
 
 /**** Surchage plugin jquery rate it ****/
@@ -5345,90 +5348,90 @@ div.silverpeas-rating {
 
 /**** Fragment User Card *****/
 div.user-card {
-	border: 1px solid #CCC;
-	background-color:#f6f6f6;
-	width:292px;
-	display:inline-block;
-	padding:4px;
-	vertical-align:top;
-	margin:0 8px 8px 0;
+  border: 1px solid #CCC;
+  background-color:#f6f6f6;
+  width:292px;
+  display:inline-block;
+  padding:4px;
+  vertical-align:top;
+  margin:0 8px 8px 0;
 }
 
 div.user-card .avatar{
-	float:left;
-	width:60px;
-	overflow:hidden;
-	border:1px solid #eaeaea;
-	background-color:#FFF;
+  float:left;
+  width:60px;
+  overflow:hidden;
+  border:1px solid #eaeaea;
+  background-color:#FFF;
 }
 
 div.user-card .avatar img{
-	width:60px;
+  width:60px;
 }
 
 div.user-card .field{
-	float:left;
-	width:220px;
-	padding:0 4px 2px 6px;
+  float:left;
+  width:220px;
+  padding:0 4px 2px 6px;
 }
 
 div.user-card .userToZoom{
-	color:#000;
-	font-weight:bold;
+  color:#000;
+  font-weight:bold;
 }
 
 div.user-card .field{
-	color:#444;
+  color:#444;
 }
 
 /**** Thumbnail service */
 #thumbnailPreviewAndActions {
-	background-color:#EEEEEE;
-	border:1px solid #DDDDDD;
-	float:left;
-	margin-left:0;
-	padding:3px;
-	margin-bottom: 3px;
+  background-color:#EEEEEE;
+  border:1px solid #DDDDDD;
+  float:left;
+  margin-left:0;
+  padding:3px;
+  margin-bottom: 3px;
 }
 
 #thumbnailPreview {
-	float: left;
+  float: left;
 }
 
 #thumbnailPreview #thumbnail {
-	height: 50px;
-	border:1px solid #DDDDDD;
+  height: 50px;
+  border:1px solid #DDDDDD;
 }
 
 #thumbnailActions {
-	float: left;
-	margin-left: 4px;
+  float: left;
+  margin-left: 4px;
 }
 
 #thumbnailActions a {
-	margin-bottom: 5px;
-	display: block;
+  margin-bottom: 5px;
+  display: block;
 }
 
 #thumbnailInputs {
-	clear: both;
+  clear: both;
 }
 
 #thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select,
 #thumbnailActions img {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 
 /****** Ticker ******/
 #topBar #desktop-notifications-permission {
-	background: url('../../util/icons/cog.png') no-repeat scroll 0 0 transparent;
+  background: url('../../util/icons/cog.png') no-repeat scroll 0 0 transparent;
   line-height: 17px;
   padding-left: 20px;
-	position: absolute;
-	right: 0;
-	top:1px;
-	padding-right:1em;
-	font-weight:bold;
+  position: absolute;
+  right: 0;
+  top:1px;
+  padding-right:1em;
+  font-weight:bold;
 }
 
 #topBar #ticker {
@@ -5453,7 +5456,7 @@ div.user-card .field{
 }
 
 #sp-ticker {
-	display:block;
+  display:block;
 }
 
 #sp-ticker .ticker {
@@ -5466,24 +5469,24 @@ div.user-card .field{
 }
 
 #sp-ticker .ticker-title {
-	padding-top: 2px;
-	padding-left:1em;
-	color: #333;
-	font-weight: bold;
-	background-color: transparent;
-	text-transform: uppercase;
+  padding-top: 2px;
+  padding-left:1em;
+  color: #333;
+  font-weight: bold;
+  background-color: transparent;
+  text-transform: uppercase;
 }
 #sp-ticker .ticker-content {
-	margin: 0px;
-	padding-top: 3px;
-	position: absolute;
-	color: #333;
-	font-weight: 100;
-	background-color: transparent;
-	overflow: hidden;
-	white-space: nowrap;
-	line-height: 1.2em;
-	padding-left:1em;
+  margin: 0px;
+  padding-top: 3px;
+  position: absolute;
+  color: #333;
+  font-weight: 100;
+  background-color: transparent;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.2em;
+  padding-left:1em;
 }
 
 /*********************** advanced search help *********************/
@@ -5587,23 +5590,23 @@ iframe.embed {
 
 /***  Admin - ComponentInfo***/
 .general-info img.icons-application{
-	float:left;
-	margin:0 1em 0 0;
+  float:left;
+  margin:0 1em 0 0;
 }
 .general-info img.applicationInfo {
-	height:12px;
-	vertical-align:baseline;
+  height:12px;
+  vertical-align:baseline;
 }
 .general-info div{
-	padding:0.5em 0;
+  padding:0.5em 0;
 }
 .principalContent .inlineMessage {
-	margin-left:0;
-	margin-right:0;
+  margin-left:0;
+  margin-right:0;
 }
 .principalContent  .title-principal {
-	padding:0;
-	margin:0 0 1em 0;
+  padding:0;
+  margin:0 0 1em 0;
 }
 a.navigation-button {
   background-color: #f4f4f4;
@@ -5617,13 +5620,13 @@ a.navigation-button {
 
 #backToApplication a.navigation-button,
 #goToApplication a.navigation-button {
-	display:block;
-	text-align:center;
-	margin-bottom:0.5em;
+  display:block;
+  text-align:center;
+  margin-bottom:0.5em;
 }
 
 #infoInstance .inlineMessage {
-	text-align:left;
+  text-align:left;
 }
 
 #backToApplication a.navigation-button span,
@@ -5720,7 +5723,7 @@ a.navigation-button {
   }
   .attachments {
     min-width: 230px;
-	}
+  }
   .header h4 {
     min-width: 210px;
    }
@@ -5731,15 +5734,15 @@ a.navigation-button {
     margin-right: 245px;
   }
    #directory .aff_colonnes li {
-	float:none;
-	width:auto;
+  float:none;
+  width:auto;
   }
   .fields .explorePanel  span, .fields .emptyList span{
-		text-indent:-3000px;
-	}
-	.fields .emptyList {
-		right:50px
-	}
+    text-indent:-3000px;
+  }
+  .fields .emptyList {
+    right:50px
+  }
 }
 
 @media only screen and (max-width: 600px), only screen and (max-device-width: 600px) {
