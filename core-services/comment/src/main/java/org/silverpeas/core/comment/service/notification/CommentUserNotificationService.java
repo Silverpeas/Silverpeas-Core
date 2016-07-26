@@ -114,10 +114,11 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
       try {
         service[0] = ServiceProvider.getService(componentServiceName);
       } catch (IllegalStateException ex) {
-        final Set<ApplicationService> availableServices = new LinkedHashSet<>();
-        applicationServiceInstances.forEach(availableServices::add);
-        availableServices.stream().filter(s -> s.isRelatedTo(instanceId)).findFirst()
-            .ifPresent(s -> service[0] = s);
+        applicationServiceInstances.forEach(applicationService -> {
+          if (service[0] == null && applicationService.isRelatedTo(instanceId)) {
+            service[0] = applicationService;
+          }
+        });
       }
       if (service[0] != null) {
         services.put(componentServiceName, service[0]);

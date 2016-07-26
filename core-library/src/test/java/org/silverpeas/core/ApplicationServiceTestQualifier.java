@@ -24,35 +24,17 @@
 
 package org.silverpeas.core;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
+import javax.inject.Qualifier;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 
-import javax.inject.Singleton;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * Annotation to verify the Qualifier behaviour.
  * @author Yohann Chastagnier
  */
-@ApplicationServiceTestQualifier
-@Singleton
-public class TestApplicationServiceImpl2 implements ApplicationService<TestResource2> {
-
-  @Override
-  public TestResource2 getContentById(final String contentId) {
-    return null;
-  }
-
-  @Override
-  public SettingBundle getComponentSettings() {
-    return null;
-  }
-
-  @Override
-  public LocalizationBundle getComponentMessages(final String language) {
-    return null;
-  }
-
-  @Override
-  public boolean isRelatedTo(final String instanceId) {
-    return false;
-  }
-}
+@Qualifier
+@Documented
+@Retention(RUNTIME)
+public @interface ApplicationServiceTestQualifier {}

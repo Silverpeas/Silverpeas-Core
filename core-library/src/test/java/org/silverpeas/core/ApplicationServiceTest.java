@@ -24,14 +24,12 @@
 
 package org.silverpeas.core;
 
-import org.apache.deltaspike.core.api.literal.SingletonLiteral;
 import org.jglue.cdiunit.AdditionalClasses;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.TestQualifier;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Any;
@@ -39,7 +37,6 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,9 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * This Unit test shows a simple method to fetch all implementations of an interface which is
@@ -113,7 +108,7 @@ public class ApplicationServiceTest {
   public void getInstanceOfTypedInterfaceByQualifier() {
     assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
     Instance<ApplicationService<?>> precised = anyApplicationServiceInstanceGetter.select(
-        new AnnotationLiteral<TestQualifier>() {});
+        new AnnotationLiteral<ApplicationServiceTestQualifier>() {});
     assertThat(precised.isAmbiguous(), is(false));
   }
 
