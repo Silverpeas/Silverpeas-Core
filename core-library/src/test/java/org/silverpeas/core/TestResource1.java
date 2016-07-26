@@ -24,6 +24,7 @@
 
 package org.silverpeas.core;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
@@ -74,7 +75,7 @@ public class TestResource1 implements SilverpeasContent {
   }
 
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     return false;
   }
 }
