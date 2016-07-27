@@ -24,15 +24,18 @@
 
 package org.silverpeas.core.calendar;
 
+import java.time.DayOfWeek;
+
 /**
- * The day of week occurrence represents an nth occurrence of the day in a week, a month or in a
- * year. Such objects are mainly used to represent a rule in an event recurrence.
+ * The occurrence of a day of week represents the nth occurrence of a day of week in a month or
+ * in a year within a recurrence rule of a plannable object. For example, the third tuesday
+ * in the month.
  */
 public class DayOfWeekOccurrence {
 
   /**
-   * A constant that defines a specific value for all the occurrences of the represented day in a
-   * week, a month or a year.
+   * A constant that defines a specific value for all the occurrences of the represented day of
+   * week in a week, a month or a year.
    */
   public static final int ALL_OCCURRENCES = 0;
 
@@ -41,11 +44,9 @@ public class DayOfWeekOccurrence {
 
   /**
    * Creates an instance of DayOfWeekOccurrence representing the nth occurrence of the specified day
-   * of week in a month or a year.
-   * @param nth the nth occurrence of the specified day of week. It accepts negative numbers. A
-   * positive value means the nth occurrence of the day of week encountered in the month or in the
-   * year, whereas a negative value means the nth occurrence back from the end of the month or of
-   * the year.
+   * of week in a month or in a year.
+   * @param nth a positive number indicating the nth occurrence of the specified day of week,
+   * id est the nth occurrence of the day of week encountered in the month or in the year.
    * @param dayOfWeek the day of week.
    * @return a DayOfWeekOccurrence instance.
    */
@@ -55,7 +56,7 @@ public class DayOfWeekOccurrence {
 
   /**
    * Creates an instance of DayOfWeekOccurrence representing all the occurrences of the specified
-   * day of week in a week, a month or a year.
+   * day of week in a week, in a month or in a year.
    * @param dayOfWeek the day of week.
    * @return a DayOfWeekOccurrence instance.
    */

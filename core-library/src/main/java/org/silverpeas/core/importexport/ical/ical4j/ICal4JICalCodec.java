@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -167,7 +168,7 @@ public class ICal4JICalCodec implements ICalCodec {
   }
 
   private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
-    List<Temporal<?>> exceptionDates = recurrence.getExceptionDates();
+    List<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
         .collect(Collectors.toCollection(DateList::new));
     return new ExDate(exDatesList);

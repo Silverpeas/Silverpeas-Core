@@ -32,6 +32,7 @@ import org.silverpeas.core.importexport.EncodingException;
 
 import javax.inject.Singleton;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -45,6 +46,7 @@ public class ICal4JDateCodec {
 
   private static final String ICAL_UTC_PATTERN = "yyyyMMdd'T'HHmmss'Z'";
   private static final String ICAL_LOCAL_PATTERN = "yyyyMMdd'T'HHmmss";
+  private static final String ICAL_DATE_PATTERN = "yyyyMMdd";
 
   /**
    * Encodes a Silverpeas date into an iCal4J date.
@@ -84,6 +86,21 @@ public class ICal4JDateCodec {
     try {
       return new net.fortuna.ical4j.model.DateTime(
           DateTimeFormatter.ofPattern(ICAL_LOCAL_PATTERN).format(dateTime), getTimeZone(dateTime));
+    } catch (ParseException e) {
+      throw new EncodingException(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Encodes a date into an iCal4J date.
+   * @param date a date.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encode(final LocalDate date) throws EncodingException {
+    try {
+      return new net.fortuna.ical4j.model.Date(
+          DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).format(date));
     } catch (ParseException e) {
       throw new EncodingException(e.getMessage(), e);
     }

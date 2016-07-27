@@ -34,7 +34,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * An event belongs to a calendar and it is by the calendar an event can be created.
+ * An event is created for a period of time but it is effective only when setting on the timeline
+ * by adding it to a given calendar.
  * @author mmoquillon
  */
 public class CalendarEventCreationTest {

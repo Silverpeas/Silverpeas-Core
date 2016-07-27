@@ -35,6 +35,7 @@ import net.fortuna.ical4j.model.WeekDay;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 
 import static org.silverpeas.core.calendar.CalendarEventRecurrence.*;
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
@@ -65,8 +66,8 @@ public class ICal4JRecurrenceCodec {
       }
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
-      } else if (eventRecurrence.getEndDate() != NO_RECURRENCE_END_DATE) {
-        Date endDate = iCal4JDateCodec.encodeInUTC(eventRecurrence.getEndDate());
+      } else if (eventRecurrence.getEndDate().isPresent()) {
+        Date endDate = iCal4JDateCodec.encode(eventRecurrence.getEndDate().get());
         recur.setUntil(endDate);
       }
       for (DayOfWeekOccurrence dayOfWeekOccurrence : eventRecurrence.getDaysOfWeek()) {
