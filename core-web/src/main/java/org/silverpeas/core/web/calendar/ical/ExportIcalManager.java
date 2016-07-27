@@ -23,7 +23,8 @@ package org.silverpeas.core.web.calendar.ical;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.PlannableAccessLevel;
+import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.ExportDescriptor;
@@ -53,8 +54,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
-
-import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
 
 /**
  * @author dle
@@ -236,14 +235,20 @@ public class ExportIcalManager {
           TimeZone.getDefault().toZoneId());
       boolean allDay = StringUtil.isDefined(schedulable.getStartHour()) &&
           StringUtil.isDefined(schedulable.getEndHour());
-      CalendarEvent event = anEventAt(startDateTime, endDateTime, allDay);
+      CalendarEvent event;
+      if (allDay) {
+        event = CalendarEvent.on(
+            Period.between(startDateTime.toLocalDate(), endDateTime.toLocalDate()));
+      } else {
+        event = CalendarEvent.on(Period.between(startDateTime, endDateTime));
+      }
       event.identifiedBy("event", schedulable.getId()).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());
 
       // set access level (confidential, private or public) and the event priority
-      event.withAccessLevel(
-          PlannableAccessLevel.valueOf(schedulable.getClassification().getString().toUpperCase()));
+      event.withVisibilityLevel(
+          VisibilityLevel.valueOf(schedulable.getClassification().getString().toUpperCase()));
       event.withPriority(schedulable.getPriority().getValue());
 
       // set the categories in which the event is

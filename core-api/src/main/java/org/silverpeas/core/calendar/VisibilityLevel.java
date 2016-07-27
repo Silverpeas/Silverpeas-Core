@@ -24,23 +24,23 @@
 package org.silverpeas.core.calendar;
 
 /**
- * Predefined access level of a plannable object.
+ * Predefined visibility level of a plannable object.
  * @author mmoquillon
  */
-public enum PlannableAccessLevel {
+public enum VisibilityLevel {
 
   /**
-   * The plannable object can be accessed by all.
+   * The plannable object can be visible by all.
    */
   PUBLIC,
   /**
-   * The plannable object can be only accessed by the stakeholders. Nevertheless it can be shared
-   * to some other persons.
+   * The plannable object can be only visible by the stakeholders. Nevertheless it can be shared
+   * to some other persons when done explicitly by one of the stakeholder.
    */
   PRIVATE,
   /**
-   * The plannable object can be only accessed by the stakeholders and it is confidential, meaning
-   * it shouldn't be accessed by no one other than the stakeholders.
+   * The plannable object can be only visible by the stakeholders and it is confidential, meaning
+   * it shouldn't be visible by no one other than the stakeholders.
    */
   CONFIDENTIAL
 }

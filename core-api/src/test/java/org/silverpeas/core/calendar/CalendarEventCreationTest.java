@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.junit.Test;
+import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -49,7 +50,7 @@ public class CalendarEventCreationTest {
   public void createADefaultNewEventOnAllDay() {
     LocalDate today = LocalDate.now();
     CalendarEvent event =
-        CalendarEvent.anEventOn(today).withTitle(EVENT_TITLE).withDescription(EVENT_DESCRIPTION);
+        CalendarEvent.on(today).withTitle(EVENT_TITLE).withDescription(EVENT_DESCRIPTION);
     assertThat(event.getStartDateTime(), is(today.atStartOfDay().atOffset(ZoneOffset.UTC)));
     assertThat(event.getEndDateTime(), is(today.atTime(23, 59).atOffset(ZoneOffset.UTC)));
     assertTitleAndDescriptionOf(event);
@@ -60,7 +61,7 @@ public class CalendarEventCreationTest {
   public void createADefaultNewEventOnSeveralDays() {
     LocalDate today = LocalDate.now();
     LocalDate dayAfterTomorrow = today.plusDays(2);
-    CalendarEvent event = CalendarEvent.anEventOn(today, dayAfterTomorrow)
+    CalendarEvent event = CalendarEvent.on(Period.between(today, dayAfterTomorrow))
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION);
     assertThat(event.getStartDateTime(), is(today.atStartOfDay().atOffset(ZoneOffset.UTC)));
@@ -73,7 +74,7 @@ public class CalendarEventCreationTest {
   public void createADefaultNewEventAtAGivenDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     OffsetDateTime inThreeHours = now.plusHours(3);
-    CalendarEvent event = CalendarEvent.anEventAt(now, inThreeHours)
+    CalendarEvent event = CalendarEvent.on(Period.between(now, inThreeHours))
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION);
     assertThat(event.getStartDateTime(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
@@ -86,18 +87,18 @@ public class CalendarEventCreationTest {
   public void createADefaultNewEventWithEndDateBeforeStartDate() {
     LocalDate now = LocalDate.now();
     LocalDate yesterday = now.minusDays(1);
-    CalendarEvent.anEventOn(now, yesterday);
+    CalendarEvent.on(Period.between(now, yesterday));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void createADefaultNewEventWithEndDateTimeBeforeStartDateTime() {
     OffsetDateTime now = OffsetDateTime.now();
     OffsetDateTime yesterday = now.minusDays(1);
-    CalendarEvent.anEventAt(now, yesterday);
+    CalendarEvent.on(Period.between(now, yesterday));
   }
 
   private void assertDefaultValuesOf(CalendarEvent event) {
-    assertThat(event.getAccessLevel(), is(PlannableAccessLevel.PUBLIC));
+    assertThat(event.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
     assertThat(event.getAttendees().isEmpty(), is(true));
     assertThat(event.getCategories().isEmpty(), is(true));
     assertThat(event.getRecurrence(), is(CalendarEventRecurrence.NO_RECURRENCE));

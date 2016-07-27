@@ -25,11 +25,11 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.annotation.constraint.DateRange;
+import org.silverpeas.core.date.Period;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 /**
  * The event in a calendar. An event in the calendar is described by a starting and an ending date
@@ -40,14 +40,12 @@ import java.time.ZoneOffset;
 public class CalendarEvent implements Plannable {
   private static final long serialVersionUID = 1L;
 
-  private OffsetDateTime startDateTime;
-  private OffsetDateTime endDateTime;
-  private boolean allDay = false;
+  private Period period;
   private String title = "";
   private String description = "";
   private String location = "";
   private URL url = null;
-  private PlannableAccessLevel accessLevel = PlannableAccessLevel.PUBLIC;
+  private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
   private int priority = 0;
   private CalendarEventRecurrence recurrence = CalendarEventRecurrence.NO_RECURRENCE;
   private final CalendarEventCategories categories = new CalendarEventCategories();
@@ -55,70 +53,32 @@ public class CalendarEvent implements Plannable {
   private String id = "";
 
   /**
-   * Creates a new calendar event that is on all the days between the two specified dates.
-   * @param day the day on all which the event will occur.
-   * @return a calendar event extending on all the specified day.
+   * Creates a new calendar event that is spanning on the specified period of time.
+   * @param period the period on which the event occurs.
+   * @return a calendar event occurring on the specified period.
    */
-  public static CalendarEvent anEventOn(final LocalDate day) {
-    return new CalendarEvent().between(day, day);
+  public static CalendarEvent on(Period period) {
+    return new CalendarEvent(period);
   }
 
   /**
-   * Creates a new calendar event that is on all the days between the two specified dates.
-   * @param startDay the start date of the event. The start date defines the inclusive date at
-   * which the event starts.
-   * @param endDay the end date of the event. The end date defines the inclusive date at which
-   * the event ends up. An end date equal to the start date means the event occurs all the day.
-   * @return a calendar event extending on all the day(s) between the two specified dates.
+   * Creates a new calendar event that is on all the specified day.
+   * @param day the day on which the event will occur.
+   * @return a calendar event spanning on all the specified day.
    */
-  public static CalendarEvent anEventOn(final LocalDate startDay, final LocalDate endDay) {
-    return new CalendarEvent().between(startDay, endDay);
+  public static CalendarEvent on(final LocalDate day) {
+    return new CalendarEvent(Period.between(day, day));
   }
 
   /**
-   * Creates a new calendar event starting at the specified start date time and ending at the
-   * specified end date time.
-   * @param startDateTime the start date time of the event. The start date time defines the
-   * inclusive date and time at which the event starts.
-   * @param endDateTime the end date time of the event. The end date time defines the inclusive
-   * date and time at which the event ends up.
-   * @return a calendar event occurring between the two date times.
-   */
-  public static CalendarEvent anEventAt(final OffsetDateTime startDateTime,
-      OffsetDateTime endDateTime) {
-    return new CalendarEvent().between(startDateTime, endDateTime);
-  }
-
-  /**
-   * Creates a new calendar event starting at the specified start date time and ending at the
-   * specified end date time.
-   * @param startDateTime the start date time of the event. The start date time defines either the
-   * inclusive date or the inclusive date and time at which the event starts.
-   * @param endDateTime the end date time of the event. The end date time defines either the
-   * inclusive date or the inclusive date and time at which the event ends up.
-   * @param allDay a boolean indicating if the event is on all the day(s). If true, the time part
-   * of the specified date times aren't taken into account; only the date is meaningful.
-   * @return a calendar event either occurring between the two date times or extending on all of
-   * the day(s) between them.
-   */
-  public static CalendarEvent anEventAt(final OffsetDateTime startDateTime,
-      OffsetDateTime endDateTime, boolean allDay) {
-    if (allDay) {
-      return new CalendarEvent().between(startDateTime.toLocalDate(), endDateTime.toLocalDate());
-    } else {
-      return new CalendarEvent().between(startDateTime, endDateTime);
-    }
-  }
-
-  /**
-   * Specifies the access level to this event. In generally, it defines the intention of the user
-   * about the access on the event he accepts to give. Usual values are PUBLIC, PRIVATE or
-   * CONFIDENTIAL for example. By default, the access level is PUBLIC.
-   * @param accessLevel the new access level to this event.
+   * Specifies the visibility level to this event. In generally, it defines the intention of the
+   * user about the visibility on the event he accepts to give. Usual values are PUBLIC, PRIVATE or
+   * CONFIDENTIAL for example. By default, the visibility level is PUBLIC.
+   * @param accessLevel the new visibility level to this event.
    * @return itself.
    */
-  public CalendarEvent withAccessLevel(PlannableAccessLevel accessLevel) {
-    this.accessLevel = accessLevel;
+  public CalendarEvent withVisibilityLevel(VisibilityLevel accessLevel) {
+    this.visibilityLevel = accessLevel;
     return this;
   }
 
@@ -190,11 +150,11 @@ public class CalendarEvent implements Plannable {
   }
 
   /**
-   * Gets the classification of this event.
-   * @return the classification of this event.
+   * Gets the visibility level of this event.
+   * @return the visibility level of this event.
    */
-  public PlannableAccessLevel getAccessLevel() {
-    return accessLevel;
+  public VisibilityLevel getVisibilityLevel() {
+    return visibilityLevel;
   }
 
   /**
@@ -282,7 +242,7 @@ public class CalendarEvent implements Plannable {
    * @return true if this event is occurring on all its day(s).
    */
   public boolean isOnAllDay() {
-    return allDay;
+    return period.isInDays();
   }
 
   public CalendarEvent identifiedBy(String appId, String eventId) {
@@ -296,43 +256,15 @@ public class CalendarEvent implements Plannable {
 
   @Override
   public OffsetDateTime getStartDateTime() {
-    return this.startDateTime;
+    return this.period.getStartDateTime();
   }
 
   @Override
   public OffsetDateTime getEndDateTime() {
-    return this.endDateTime;
+    return this.period.getEndDateTime();
   }
 
-  private CalendarEvent() {
-  }
-
-  private CalendarEvent between(LocalDate startDate, LocalDate endDate) {
-    checkPeriod(startDate, endDate);
-    this.startDateTime = startDate.atStartOfDay().atOffset(ZoneOffset.UTC);
-    this.endDateTime = endDate.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC);
-    this.allDay = true;
-    return this;
-  }
-
-  private CalendarEvent between(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
-    checkPeriod(startDateTime, endDateTime);
-    this.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
-    this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
-    this.allDay = false;
-    return this;
-  }
-
-  private static void checkPeriod(final OffsetDateTime startDateTime,
-      final OffsetDateTime endDateTime) {
-    if (startDateTime.isAfter(endDateTime)) {
-      throw new IllegalArgumentException("The end date time should be after the start date time");
-    }
-  }
-
-  private static void checkPeriod(final LocalDate startDate, final LocalDate endDate) {
-    if (startDate.isAfter(endDate)) {
-      throw new IllegalArgumentException("The end date should be after the start date");
-    }
+  private CalendarEvent(Period period) {
+    this.period = period;
   }
 }

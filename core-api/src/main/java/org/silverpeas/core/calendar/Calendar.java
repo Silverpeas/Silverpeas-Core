@@ -69,12 +69,4 @@ public class Calendar {
     this.title = title;
   }
 
-  /**
-   * Adds a new event on the specified day.
-   * @param day the date at which the event will occur.
-   * @return the newly created event.
-   */
-  public CalendarEvent addEventOn(final LocalDate day) {
-    return CalendarEvent.anEventOn(day, day);
-  }
 }
