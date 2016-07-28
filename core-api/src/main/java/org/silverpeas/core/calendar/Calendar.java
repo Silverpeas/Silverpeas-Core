@@ -23,42 +23,76 @@
  */
 package org.silverpeas.core.calendar;
 
-import java.time.LocalDate;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.repository.CalendarRepository;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.security.Securable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import java.util.List;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
  * at different times or on different dates throughout the year.
  * @author mmoquillon
  */
-public class Calendar {
+@Entity
+@NamedQuery(
+    name = "calendarsByComponentInstanceId",
+    query = "from Calendar c where c.componentInstanceId = :componentInstanceId " +
+            "order by c.componentInstanceId, c.title, c.id")
+@Table(name = "sb_calendar")
+public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implements Securable {
 
-  private String id;
+  @Column(name = "instanceId", nullable = false)
+  private String componentInstanceId;
+
+  @Column(name = "title")
   private String title;
 
   /**
-   * Creates a new calendar with the specified identifier and the specified title.
-   * @param id an identifier identifying uniquely the calendar. Usually, this identifier is the
-   * identifier of the component instance to which it belongs (for example almanach32) or the
-   * identifier of the user personal calendar.
-   * @param title a title presenting usually the subject of the calendar.
+   * Necessary for JPA management.
    */
-  public Calendar(String id, String title) {
-    this.id = id;
-    this.title = title;
+  protected Calendar() {
   }
 
   /**
-   * Creates a new calendar with the specified identifier and the specified title.
-   * @param id an identifier identifying uniquely the calendar. Usually, this identifier is the
-   * identifier of the component instance to which it belongs (for example almanach32) or the
-   * identifier of the user personal calendar.
+   * Creates a new calendar with the specified component instance identifier.
+   * @param instanceId an identifier identifying an instance of a component in Silverpeas.
+   * Usually, this identifier is the identifier of the component instance to which it belongs
+   * (for example almanach32) or the identifier of the user personal calendar.
    */
-  public Calendar(String id) {
-    this(id, id);
+  public Calendar(String instanceId) {
+    this.componentInstanceId = instanceId;
   }
 
-  public String getId() {
-    return this.id;
+  /**
+   * Gets a calendar by its identifier.
+   * @param id the identifier of the aimed calendar.
+   * @return the instance of the aimed calendar or null if it does not exist.
+   */
+  public static Calendar getById(final String id) {
+    CalendarRepository calendarRepository = CalendarRepository.get();
+    return calendarRepository.getById(id);
+  }
+
+  /**
+   * @see CalendarRepository#getByComponentInstanceId(String)
+   */
+  public static List<Calendar> getByComponentInstanceId(String contextId) {
+    CalendarRepository calendarRepository = CalendarRepository.get();
+    return calendarRepository.getByComponentInstanceId(contextId);
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return componentInstanceId;
   }
 
   public String getTitle() {
@@ -69,4 +103,25 @@ public class Calendar {
     this.title = title;
   }
 
+  /**
+   * Saves the calendar into the persistence context.
+   */
+  public void save() {
+    Transaction.performInOne(() -> {
+      CalendarRepository calendarRepository = CalendarRepository.get();
+      calendarRepository.save(OperationContext.fromUser(User.getCurrentRequester()), this);
+      return null;
+    });
+  }
+
+  /**
+   * Saves the calendar into the persistence context.
+   */
+  public void delete() {
+    Transaction.performInOne(() -> {
+      CalendarRepository calendarRepository = CalendarRepository.get();
+      calendarRepository.delete(this);
+      return null;
+    });
+  }
 }

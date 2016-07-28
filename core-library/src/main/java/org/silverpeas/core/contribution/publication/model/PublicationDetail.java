@@ -1197,6 +1197,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @param user a user in Silverpeas.
    * @return true if the user can access this publication, false otherwise.
    */
+  @Override
   public boolean canBeModifiedBy(final User user) {
     AccessController<PublicationPK> accessController =
         AccessControllerProvider.getAccessController(PublicationAccessControl.class);
