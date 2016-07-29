@@ -61,13 +61,11 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 		SP_openWindow(fonction, windowName, '750', '250','scrollbars=yes, resizable, alwaysRaised');
 	}
 
-    function ConfirmAndSend(targetURL,textToDisplay)
-    {
-        if (window.confirm(textToDisplay))
-        {
-          jQuery('#genericForm').attr('action', targetURL).submit();
-        }
-    }
+  function ConfirmAndSend(targetURL,textToDisplay) {
+    jQuery.popup.confirm(textToDisplay, function() {
+      jQuery('#genericForm').attr('action', targetURL).submit();
+    });
+  }
 
 //--------------------------------------------------------------------------------------DoIdle
 ID = window.setTimeout("DoIdle();", 60000);

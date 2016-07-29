@@ -106,12 +106,12 @@
     }
     else
     {
-        window.alert(errorMsg);
+      jQuery.popup.error(errorMsg);
     }
   }
 </script>
 </HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.personalizationForm.txtNotifName.focus()">
+<BODY onload="document.personalizationForm.txtNotifName.focus()">
 <%
     browseBar.setComponentName(resource.getString("MesNotifications"));
     if (! id.equals("")) //modification

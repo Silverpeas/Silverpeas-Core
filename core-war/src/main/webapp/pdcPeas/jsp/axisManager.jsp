@@ -108,27 +108,25 @@
 
 <script language="Javascript">
 
-	function isCorrectForm(){
+	function ifCorrectFormExecute(callback) {
 		var name = stripInitialWhitespace(document.axisForm.Name.value);
 		if (isWhitespace(name)) {
-			alert("<%=resource.getString("pdcPeas.emptyName")%>");
+      jQuery.popup.error("<%=resource.getString("pdcPeas.emptyName")%>");
 			document.axisForm.Name.focus();
-			return false;
 		} else {
 			if (document.axisForm.Description.value.length > 1000) {
-               alert("<%=resource.getString("pdcPeas.lenDescription")%>");
-               document.axisForm.Description.focus();
-               return false;
-            } else {
-               return true;
-            }
+        jQuery.popup.error("<%=resource.getString("pdcPeas.lenDescription")%>");
+        document.axisForm.Description.focus();
+      } else {
+        callback.call(this);
+      }
 		}
 	}
 
 	function sendData() {
-		if (isCorrectForm()) {
+		ifCorrectFormExecute(function() {
 			document.axisForm.submit();
-		}
+    });
 	}
 
 	function changeList(axisType){

@@ -84,19 +84,19 @@ function Deletes()
 {
 	if (existVocaSelected())
 	{
-		if (window.confirm("<%=resource.getString("thesaurus.MessageSuppressionSelectedVoca")%>")) {
+    jQuery.popup.confirm("<%=resource.getString("thesaurus.MessageSuppressionSelectedVoca")%>", function() {
       jQuery('#genericForm').attr('action', "DeleteVoca").submit();
-		}
+		});
 	}
 	else
-		alert("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
+    jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
 }
 function Update()
 {
 	if (existVocaSelected())
     jQuery('#genericForm').attr('action', "UpdateVocaQuery").submit();
 	else
-		alert("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
+    jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
 }
 function ManageSynonyms()
 {
@@ -107,26 +107,23 @@ function ManageSynonyms()
 		if (!existVocaSelected())
 		{
 			if (!existTermSelected())
-				alert("<%=resource.getString("thesaurus.MessageSelectVocaTerm")%>");
-			else alert("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
+        jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectVocaTerm")%>");
+			else jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
 		}
-		else alert("<%=resource.getString("thesaurus.MessageSelectTerm")%>");
+		else jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectTerm")%>");
 
 	}
 }
 function ManageAssignments()
 {
-	//if (existVocaSelected())
-		self.location = "ManageAssignments";
-	/*else
-		alert("<%=resource.getString("thesaurus.MessageSelectVoca")%>");*/
+	self.location = "ManageAssignments";
 }
 function EditAssignments()
 {
 	if (existVocaSelected())
 		self.location = "EditAssignments";
 	else
-		alert("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
+    jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
 }
 function existTermSelected()
 {
@@ -151,10 +148,9 @@ function SetAxis()
         document.forms[0].action = "SetAxis";
         document.forms[0].submit();
     } else {
-        alert('<%=resource.getString("thesaurus.MessageSelectVoca")%>');
+        jQuery.popup.error('<%=resource.getString("thesaurus.MessageSelectVoca")%>');
         document.forms[0].idAxis.options.selectedIndex = 0;
     }
-
 }
 
 function setColorToRed(field){
@@ -171,7 +167,7 @@ function showButtonClick()
     if (document.all.idAxis.value != '0') {
         document.all.termsCell.className = 'showIt';
     } else {
-        alert('<%=resource.getString("thesaurus.MessageSelectAxis")%>');
+      jQuery.popup.error('<%=resource.getString("thesaurus.MessageSelectAxis")%>');
     }
 }
 
@@ -184,7 +180,7 @@ function validateSynonyms(termId)
 
 </SCRIPT>
 </HEAD>
-<BODY  marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<BODY>
 <%
 	browseBar.setComponentName(componentLabel, "Main");
 	browseBar.setPath(resource.getString("thesaurus.thesaurus"));

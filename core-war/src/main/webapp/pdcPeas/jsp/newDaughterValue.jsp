@@ -72,7 +72,7 @@ if (valueToCreate != null){
 <script language="javascript">
 	function validDescr(){
 		if (document.editValue.Description.value.length > 1000) {
-			alert("<%=resource.getString("pdcPeas.lenDescription")%>");
+      jQuery.popup.error("<%=resource.getString("pdcPeas.lenDescription")%>");
 			document.editValue.Description.focus();
 			return false;
 		}
@@ -82,7 +82,7 @@ if (valueToCreate != null){
 	// envoi les donn�es entr�es par l'utilisateur
 	function sendData(){
 		if (isEmptyField(document.editValue.Name.value)){
-			alert("<%=resource.getString("pdcPeas.emptyDaughterName")%>");
+      jQuery.popup.error("<%=resource.getString("pdcPeas.emptyDaughterName")%>");
 		} else if (validDescr()) {
 			document.editValue.submit();
 		}
@@ -94,7 +94,7 @@ if (valueToCreate != null){
 	}
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onload="storeItems(document.editValue.Order);document.editValue.Name.focus()">
+<BODY onload="storeItems(document.editValue.Order);document.editValue.Name.focus()">
 <FORM name="editValue" action="CreateDaughterValue" method="post">
   <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));

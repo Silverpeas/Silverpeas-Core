@@ -57,12 +57,6 @@
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script language="javaScript">
-    function sendData()
-    {
-        if ( isCorrectlyFilled() )
-            document.formForm.submit();
-    }
-
     function switchType()
     {
         // Which type of form is it?
@@ -94,11 +88,10 @@
         }
     }
 
-    function isCorrectlyFilled()
+    function sendData()
     {
         var errorMsg = "";
         var errorNb = 0;
-        var result = true;
 
         // Which type of form is it?
         //
@@ -122,24 +115,20 @@
         switch(errorNb)
         {
             case 0 :
-                result = true;
+                document.formForm.submit();
                 break;
             case 1 :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
+                jQuery.popup.error(errorMsg);
                 break;
             default :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
-                break;
+                jQuery.popup.error(errorMsg);
         }
-        return result;
     }
 </script>
 </HEAD>
-<BODY leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="switchType()">
+<BODY onLoad="switchType()">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.forms"));

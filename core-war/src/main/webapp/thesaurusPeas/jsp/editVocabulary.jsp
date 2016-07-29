@@ -38,51 +38,40 @@
 <view:looknfeel/>
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-function isCorrectForm() {
+function save() {
 	var errorMsg = "";
 	var errorNb = 0;
 	var nom = document.forms[0].nom.value;
 	var desc = document.forms[0].description;
 	if (isWhitespace(nom)) {
-           errorMsg+="  - '<%=resource.getString("thesaurus.vocabulaire")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
-           errorNb++;
-        }
+    errorMsg+="  - '<%=resource.getString("thesaurus.vocabulaire")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
+    errorNb++;
+  }
 	if (isWhitespace(desc.value)) {
-           errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
-           errorNb++;
-        }
+    errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
+    errorNb++;
+  }
 	if (!isValidTextArea(desc)) {
 		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("thesaurus.containsTooLargeText")+resource.getString("thesaurus.nbMaxTextArea")+resource.getString("thesaurus.characters")%>\n";
 		errorNb++;
-		}
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  }
+  switch(errorNb) {
+    case 0 :
+      document.forms[0].submit();
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
-function save()
-{
-	if (isCorrectForm())
-		document.forms[0].submit();
-}
-function Deletes()
-{
-	if (window.confirm("<%=resource.getString("thesaurus.MessageSuppressionVoca")%>"))
+function Deletes() {
+  jQuery.popup.confirm("<%=resource.getString("thesaurus.MessageSuppressionVoca")%>", function() {
     jQuery('#genericForm').attr('action', "DeleteVoca").submit();
-
+  });
 }
 //-->
 </SCRIPT>

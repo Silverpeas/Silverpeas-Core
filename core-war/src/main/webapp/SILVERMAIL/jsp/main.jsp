@@ -58,25 +58,33 @@ function readMessage(id){
 }
 
 function deleteMessage(id, skipConfirmation, spaceId, from) {
-    if(skipConfirmation || window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
-      var $form = jQuery('#genericForm');
-      jQuery('#ID', $form).val(id);
-      if (spaceId) {
-        jQuery('#SpaceId', $form).val(spaceId);
-      }
-      if (from) {
-        jQuery('#from', $form).val(from);
-      }
-      $form.attr('action', "DeleteMessage.jsp").submit();
+    if(skipConfirmation){
+      reallyDeleteMessage(id, spaceId, from);
+    } else {
+      jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
+        reallyDeleteMessage(id, spaceId, from);
+      });
     }
 }
 
+function reallyDeleteMessage(id, spaceId, from) {
+  var $form = jQuery('#genericForm');
+  jQuery('#ID', $form).val(id);
+  if (spaceId) {
+    jQuery('#SpaceId', $form).val(spaceId);
+  }
+  if (from) {
+    jQuery('#from', $form).val(from);
+  }
+  $form.attr('action', "DeleteMessage.jsp").submit();
+}
+
 function deleteAllMessages() {
-    if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>")){
-      var $form = jQuery('#genericForm');
-      jQuery('#folder', $form).val('INBOX');
-      $form.attr('action', "DeleteAllMessages.jsp").submit();
-    }
+  jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>", function() {
+    var $form = jQuery('#genericForm');
+    jQuery('#folder', $form).val('INBOX');
+    $form.attr('action', "DeleteAllMessages.jsp").submit();
+  });
 }
 
 function newMessage() {
@@ -165,7 +173,7 @@ function newMessage() {
 <%
 out.println(window.printAfter());
 %>
-<form id="genericForm" action="" method="POST">
+<form id="genericForm" action="" method="post">
   <input id="ID" name="ID" type="hidden"/>
   <input id="folder" name="folder" type="hidden"/>
   <input id="SpaceId" name="SpaceId" type="hidden"/>

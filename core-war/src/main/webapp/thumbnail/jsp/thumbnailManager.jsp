@@ -122,10 +122,10 @@
 
 function save(){
 	var path = document.thumbnailForm.OriginalFile.value;
-    if(path != null && path.length > 0){
-	saveUpdate();
+  if(path != null && path.length > 0){
+	  saveUpdate();
 	} else {
-	  alert('<%=resource.getString("thumbnail.nofile")%>');
+    jQuery.popup.error('<%=resource.getString("thumbnail.nofile")%>');
 	}
 }
 

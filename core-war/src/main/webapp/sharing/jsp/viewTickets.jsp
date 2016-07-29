@@ -44,14 +44,14 @@
     }
 
     function deleteTicket(token) {
-      if (window.confirm("<%=resource.getString("sharing.confirmDeleteTicket")%> ?")) {
+      jQuery.popup.confirm("<%=resource.getString("sharing.confirmDeleteTicket")%> ?", function() {
         document.deleteForm.token.value = token;
         document.deleteForm.submit();
-      }
+      });
     }
 
     function go(url) {
-	window.open(url);
+    	window.open(url);
     }
   </script>
 </head>

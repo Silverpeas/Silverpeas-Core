@@ -80,7 +80,7 @@ $(function() {
 					nbInvitations--;
 					showEmptyListMessage();
 				} else {
-					alert(data.error);
+					notyError(data.error);
 				}
 				});
 				$( this ).dialog( "close" );
@@ -110,7 +110,7 @@ $(function() {
 					showEmptyListMessage();
 
 				} else {
-					alert(data.error);
+					notyError(data.error);
 				}
 				});
 				$( this ).dialog( "close" );
@@ -142,7 +142,7 @@ $(function() {
 					nbInvitations--;
 					showEmptyListMessage();
 				} else {
-					alert(data.error);
+					notyError(data.error);
 				}
 				});
 				$( this ).dialog( "close" );

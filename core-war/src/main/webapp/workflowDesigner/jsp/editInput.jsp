@@ -54,12 +54,6 @@
 <script language="javaScript">
     function sendData()
     {
-        if ( isCorrectlyFilled() )
-               document.inputForm.submit();
-    }
-
-    function isCorrectlyFilled()
-    {
         var errorMsg = "";
         var errorNb = 0;
 
@@ -76,20 +70,16 @@
         switch(errorNb)
         {
             case 0 :
-                result = true;
+                document.inputForm.submit();
                 break;
             case 1 :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
+                jQuery.popup.error(errorMsg);
                 break;
             default :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
-                break;
+                jQuery.popup.error(errorMsg);
         }
-        return result;
     }
 
     var items = [];

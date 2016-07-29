@@ -245,9 +245,9 @@ public abstract class CommentWidget extends TagSupport {
         + "'}, editionBox: { title: '" + resources.getString("comment.add") + "', ok: '"
         + resources.getString("GML.validate")
         + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { "
-        + "alert('"
+        + "notyError('"
         + resources.getString("comment.pleaseFill_single") + "');"
-        + "} else if (!isValidTextArea(text)) { alert('" + resources.getString(
+        + "} else if (!isValidTextArea(text)) { notyError('" + resources.getString(
             "comment.champsTropLong") + "'); } else { return true; } return false; },"
         + "mandatory: '"
         + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + resources.getString(

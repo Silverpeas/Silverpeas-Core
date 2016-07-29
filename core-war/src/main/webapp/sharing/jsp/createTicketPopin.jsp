@@ -75,12 +75,9 @@ function createSharingTicketPopup(sharingParam) {
       if ( window.console && window.console.log ) {
         console.log("User create new share ticket");
       }
-      if (isCorrectForm()) {
+      return ifCorrectFormExecute(function() {
         createTicket();
-        return true;
-      } else {
-        return false;
-      }
+      });
     }
   });
 }
@@ -101,7 +98,7 @@ function toggleContinuous(effect) {
 }
 
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
   var nb  = $("#nbAccessMax").val();
@@ -135,21 +132,18 @@ function isCorrectForm() {
     }
   }
   switch(errorNb) {
-  case 0 :
-    result = true;
-    break;
-  case 1 :
-    errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
-    window.alert(errorMsg);
-    result = false;
-    break    ;
-  default :
-    errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
-    window.alert(errorMsg);
-    result = false;
-    break;
+    case 0 :
+      callback.call(this);
+      return true;
+    case 1 :
+      errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      return false;
+    default :
+      errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      return false;
   }
-  return result;
 }
 
 
