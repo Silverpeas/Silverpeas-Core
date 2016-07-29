@@ -102,7 +102,7 @@ public class CalendarEventCreationTest {
     assertThat(event.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
     assertThat(event.getAttendees().isEmpty(), is(true));
     assertThat(event.getCategories().isEmpty(), is(true));
-    assertThat(event.getRecurrence(), is(CalendarEventRecurrence.NO_RECURRENCE));
+    assertThat(event.getRecurrence(), is(Recurrence.NO_RECURRENCE));
   }
 
   private void assertTitleAndDescriptionOf(CalendarEvent event) {

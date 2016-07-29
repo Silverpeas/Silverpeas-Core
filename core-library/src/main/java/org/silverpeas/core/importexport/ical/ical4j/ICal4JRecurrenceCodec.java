@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.importexport.ical.ical4j;
 
-import org.silverpeas.core.calendar.CalendarEventRecurrence;
+import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.importexport.EncodingException;
@@ -35,9 +35,8 @@ import net.fortuna.ical4j.model.WeekDay;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.text.ParseException;
-import java.time.OffsetDateTime;
 
-import static org.silverpeas.core.calendar.CalendarEventRecurrence.*;
+import static org.silverpeas.core.calendar.Recurrence.*;
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
 
 /**
@@ -55,7 +54,7 @@ public class ICal4JRecurrenceCodec {
    * @return the encoded iCal4J recurrence.
    * @throws EncodingException if the encoding fails.
    */
-  public Recur encode(final CalendarEventRecurrence eventRecurrence) throws EncodingException {
+  public Recur encode(final Recurrence eventRecurrence) throws EncodingException {
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
     }

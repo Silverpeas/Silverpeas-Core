@@ -24,16 +24,33 @@
 
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.date.TimeUnit;
+
 /**
- * A period of a recurrence. It defines the unit of time the recurrence is scheduled and the
- * interval in this unit of time.
+ * A period of a recurrence. It defines the recurrence of a plannable object in a calendar as a
+ * regular interval in a given unit of time. For example, in <i>every 2 weeks</i>, week is the unit
+ * of time whereas 2 is the interval in this unit of time. The unit of time of the recurrence period
+ * cannot be less that the hour.
  */
 public class RecurrencePeriod {
 
   private int interval;
   private TimeUnit timeUnit;
 
+  /**
+   * Creates a recurrence period from the specified frequency statement that is expressed by a
+   * regular interval in a given unit of time. For example, <i>every 3 months</i>.
+   * @param interval the regular interval of the period in the specified unit of time.
+   * @param unit an unit of time. It doesn't must be lesser than hour, otherwise an
+   * {@link IllegalArgumentException} is thrown.
+   * @return a recurrence period matching specified the frequency statement.
+   */
   public static RecurrencePeriod every(int interval, TimeUnit unit) {
+    if (unit.ordinal() < TimeUnit.HOUR.ordinal()) {
+      throw new IllegalArgumentException(
+          "The recurrence of an object plannable in a calendar cannot be less than the hour");
+    }
     return new RecurrencePeriod(interval, unit);
   }
 
@@ -53,9 +70,71 @@ public class RecurrencePeriod {
     return timeUnit;
   }
 
+  /**
+   * Is the frequency is hourly?
+   * @return true if the recurrence period is on a per-hours basis. False otherwise.
+   */
+  public boolean isHourly() {
+    return timeUnit == TimeUnit.HOUR;
+  }
+
+  /**
+   * Is the frequency is daily?
+   * @return true if the recurrence period is on a per-days basis. False otherwise.
+   */
+  public boolean isDaily() {
+    return timeUnit == TimeUnit.DAY;
+  }
+
+  /**
+   * Is the frequency is weekly?
+   * @return true if the recurrence period is on a per-weeks basis. False otherwise.
+   */
+  public boolean isWeekly() {
+    return timeUnit == TimeUnit.WEEK;
+  }
+
+  /**
+   * Is the frequency is monthly?
+   * @return true if the recurrence period is on a per-months basis. False otherwise.
+   */
+  public boolean isMonthly() {
+    return timeUnit == TimeUnit.MONTH;
+  }
+
+  /**
+   * Is the frequency is yearly?
+   * @return true if the recurrence period is on a per-years basis. False otherwise.
+   */
+  public boolean isYearly() {
+    return timeUnit == TimeUnit.YEAR;
+  }
+
   private RecurrencePeriod(int every, TimeUnit unit) {
     this.interval = every;
     this.timeUnit = unit;
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof RecurrencePeriod)) {
+      return false;
+    }
+
+    final RecurrencePeriod that = (RecurrencePeriod) o;
+
+    if (interval != that.interval) {
+      return false;
+    }
+    return timeUnit == that.timeUnit;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(interval).append(timeUnit).toHashCode();
+  }
 }

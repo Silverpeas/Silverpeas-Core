@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The categories in which an event, scheduled in a calendar, is classified. The categories are
- * expected to be managed by the event itself.
+ * The categories in which a {@link Plannable} planned in a calendar is classified. The categories
+ * are expected to be managed by the {@link Plannable} itself.
  */
-public class CalendarEventCategories {
+public class Categories {
 
   private Set<String> categories = new HashSet<String>();
 
   /**
-   * Adds a category to an event scheduled in a calendar. The category is specified by its unique
+   * Adds a category to a {@link Plannable}. The category is specified by its unique
    * identifier (its title for example). If the category is already added, then nothing is done.
    * @param categoryId the identifier of the category to add.
    */
@@ -48,7 +48,7 @@ public class CalendarEventCategories {
   }
 
   /**
-   * Adds several categories to an event scheduled in a calendar. The categories are specified by
+   * Adds several categories to a {@link Plannable}. The categories are specified by
    * their unique identifier (their title for example). If some of the categories to add are already
    * present, then they are not added.
    * @param categoryIds the identifiers of the categories to add.
@@ -58,7 +58,7 @@ public class CalendarEventCategories {
   }
 
   /**
-   * Adds one or several categories to an event scheduled in a calendar. The categories are
+   * Adds one or several categories to a {@link Plannable}. The categories are
    * specified by their unique identifier (their title for example). If some of the categories to
    * add are already present, then they are not added.
    * @param categoryIds the identifiers of the categories to add.
@@ -68,7 +68,7 @@ public class CalendarEventCategories {
   }
 
   /**
-   * Removes a category from the categories of an event scheduled in a calendar. The category is
+   * Removes a category from the categories of a {@link Plannable}. The category is
    * specified by its unique identifier (its title for example). If the category isn't present, then
    * nothing is done.
    * @param categoryId the identifier of the category to remove.
@@ -78,7 +78,7 @@ public class CalendarEventCategories {
   }
 
   /**
-   * Removes several categories from the categories of an event scheduled in a calendar. The
+   * Removes several categories from the categories of a {@link Plannable}. The
    * categories are specified by their unique identifier (their title for example). If some of the
    * categories to remove aren't present, then nothing is done with them.
    * @param categoryIds the identifiers of the categories to remove.
@@ -88,7 +88,7 @@ public class CalendarEventCategories {
   }
 
   /**
-   * Removes one or several categories from the categories of an event scheduled in a calendar. The
+   * Removes one or several categories from the categories of a {@link Plannable}. The
    * categories are specified by their unique identifier (their title for example). If some of the
    * categories to remove aren't present, then nothing is done with them.
    * @param categoryIds the identifiers of the categories to remove.
@@ -115,23 +115,24 @@ public class CalendarEventCategories {
   }
 
   /**
-   * Is the specified category is in the categories of an event scheduled in a calendar.
+   * Is the specified category is in the categories of a {@link Plannable}.
    * @param category a category identifier.
-   * @return true if the specified category is among the categories of an event, false otherwise.
+   * @return true if the specified category is among the categories of a {@link Plannable}, false
+   * otherwise.
    */
   public boolean contains(final String category) {
     return categories.contains(category);
   }
 
   /**
-   * Is there is no any categories set for an event?
+   * Is there is no any categories set for a {@link Plannable}?
    * @return true if no categories are set, false otherwise.
    */
   public boolean isEmpty() {
     return categories.isEmpty();
   }
 
-  protected CalendarEventCategories() {
+  protected Categories() {
 
   }
 }

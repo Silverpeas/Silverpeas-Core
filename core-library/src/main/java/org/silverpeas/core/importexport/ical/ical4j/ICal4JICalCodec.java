@@ -21,8 +21,7 @@
 package org.silverpeas.core.importexport.ical.ical4j;
 
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventRecurrence;
-import org.silverpeas.core.date.Temporal;
+import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
 
@@ -100,7 +99,7 @@ public class ICal4JICalCodec implements ICalCodec {
 
       // Add recurring data if any
       if (event.isRecurring()) {
-        CalendarEventRecurrence eventRecurrence = event.getRecurrence();
+        Recurrence eventRecurrence = event.getRecurrence();
         Recur recur = iCal4JRecurrenceCodec.encode(eventRecurrence);
         iCalEvent.getProperties().add(new RRule(recur));
         iCalEvent.getProperties().add(exceptionDatesFrom(eventRecurrence));
@@ -167,7 +166,7 @@ public class ICal4JICalCodec implements ICalCodec {
     }
   }
 
-  private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
+  private ExDate exceptionDatesFrom(final Recurrence recurrence) {
     List<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
         .collect(Collectors.toCollection(DateList::new));

@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The attendees to an event scheduled in a calendar. The attendees are expected to be managed by
- * the event itself.
+ * A set of attendees to a {@link Plannable} planned in a calendar. The attendees are expected to be
+ * managed by the implementation of the {@link Plannable} itself.
  */
-public class CalendarEventAttendees {
+public class Attendees {
 
   private Set<String> attendees = new HashSet<String>();
 
   /**
-   * Adds an attendee to an event scheduled in a calendar. The attendee is specified by one of its
+   * Adds an attendee to the attendees of a {@link Plannable}. The attendee is specified by one of its
    * URI that can be an email address. If the attendee is already added, then nothing is done.
    * @param attendeeURI the URI of the attendee to add.
    */
@@ -48,7 +48,7 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Adds several attendees to an event scheduled in a calendar. The attendees are specified by one
+   * Adds several attendees to the attendees of a {@link Plannable}. The attendees are specified by one
    * of their URI that can be an email address. If some of the attendees to add are already present,
    * then they are not added.
    * @param attendeeURIs the URI of the attendees to add.
@@ -58,7 +58,7 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Adds one or several attendees to an event scheduled in a calendar. The attendees are specified
+   * Adds one or several attendees to the attendees of a {@link Plannable}. The attendees are specified
    * by one of their URI that can be an email address. If some of the attendees to add are already
    * present, then they are not added.
    * @param attendeeURIs the URI of the attendees to add.
@@ -68,7 +68,7 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Removes an attendee from the attendees to an event scheduled in a calendar. The attendee is
+   * Removes an attendee from the attendees of a {@link Plannable}. The attendee is
    * specified by one of its URI that can be an email address. If the attendee isn't present, then
    * nothing is done.
    * @param attendeeURI the URI of the attendee to remove.
@@ -78,7 +78,7 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Removes several attendees from the attendees to an event scheduled in a calendar. The attendees
+   * Removes several attendees from the attendees of a {@link Plannable}. The attendees
    * are specified by one of their URI that can be an email address. If some of the attendees to
    * remove aren't present, then nothing is done with them.
    * @param attendeeURIs the URI of the attendees to remove.
@@ -88,7 +88,7 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Removes one or several attendees from the attendees to an event scheduled in a calendar. The
+   * Removes one or several attendees from the attendees of a {@link Plannable}. The
    * attendees are specified by one of their URI that can be an email address. If some of the
    * attendees to remove aren't present, then nothing is done with them.
    * @param attendeeURIs the URI of the attendees to remove.
@@ -102,27 +102,27 @@ public class CalendarEventAttendees {
    * @return a list of attendee URIs.
    */
   public List<String> asList() {
-    return new ArrayList<String>(attendees);
+    return new ArrayList<>(attendees);
   }
 
   /**
-   * Is the specified attended is in the attendees of an event scheduled in a calendar.
+   * Is the specified attended is among the attendees of a {@link Plannable}
    * @param attendee an attendee URI.
-   * @return true if the specified attendee is among the attendees of an event, false otherwise.
+   * @return true if the specified attendee in this set of attendees.
    */
   public boolean contains(final String attendee) {
     return attendees.contains(attendee);
   }
 
   /**
-   * Is there is no any attendees to an event?
-   * @return true if no attendees are set, false otherwise.
+   * Is there is no any attendees?
+   * @return true if no attendees are add, false otherwise.
    */
   public boolean isEmpty() {
     return attendees.isEmpty();
   }
 
-  protected CalendarEventAttendees() {
+  protected Attendees() {
 
   }
 

@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.date;
 
 /**
- * An enumeration of time units in use with calendar events or in recurrence period.
+ * An enumeration of time units.
  */
 public enum TimeUnit {
 

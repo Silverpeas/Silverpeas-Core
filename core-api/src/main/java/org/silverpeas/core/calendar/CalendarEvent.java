@@ -47,9 +47,9 @@ public class CalendarEvent implements Plannable {
   private URL url = null;
   private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
   private int priority = 0;
-  private CalendarEventRecurrence recurrence = CalendarEventRecurrence.NO_RECURRENCE;
-  private final CalendarEventCategories categories = new CalendarEventCategories();
-  private final CalendarEventAttendees attendees = new CalendarEventAttendees();
+  private Recurrence recurrence = Recurrence.NO_RECURRENCE;
+  private final Categories categories = new Categories();
+  private final Attendees attendees = new Attendees();
   private String id = "";
 
   /**
@@ -137,7 +137,7 @@ public class CalendarEvent implements Plannable {
    * Gets the attendees to this event.
    * @return the attendees to this event.
    */
-  public CalendarEventAttendees getAttendees() {
+  public Attendees getAttendees() {
     return this.attendees;
   }
 
@@ -145,7 +145,7 @@ public class CalendarEvent implements Plannable {
    * Gets the categories to which this event belongs.
    * @return the categories of this event.
    */
-  public CalendarEventCategories getCategories() {
+  public Categories getCategories() {
     return categories;
   }
 
@@ -187,7 +187,10 @@ public class CalendarEvent implements Plannable {
    * @param recurrence the recurrence defining the recurring property of this event.
    * @return itself.
    */
-  public CalendarEvent recur(final CalendarEventRecurrence recurrence) {
+  public CalendarEvent recur(final Recurrence recurrence) {
+    if (isOnAllDay() && recurrence.getFrequency().isHourly()) {
+      throw new IllegalArgumentException("Impossible to recur hourly an event on all day!");
+    }
     this.recurrence = recurrence;
     return this;
   }
@@ -225,7 +228,7 @@ public class CalendarEvent implements Plannable {
    * NO_RECURRENCE.
    * @return this event recurrence or NO_RECURRENCE.
    */
-  public CalendarEventRecurrence getRecurrence() {
+  public Recurrence getRecurrence() {
     return this.recurrence;
   }
 
@@ -234,7 +237,7 @@ public class CalendarEvent implements Plannable {
    * @return true if this event is recurring, false otherwise.
    */
   public boolean isRecurring() {
-    return this.recurrence != CalendarEventRecurrence.NO_RECURRENCE;
+    return this.recurrence != Recurrence.NO_RECURRENCE;
   }
 
   /**

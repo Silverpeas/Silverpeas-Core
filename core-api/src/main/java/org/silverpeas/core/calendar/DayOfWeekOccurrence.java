@@ -24,11 +24,13 @@
 
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.time.DayOfWeek;
 
 /**
  * The occurrence of a day of week represents the nth occurrence of a day of week in a month or
- * in a year within a recurrence rule of a plannable object. For example, the third tuesday
+ * in a year within a recurrence rule of a {@link Plannable} object. For example, the third tuesday
  * in the month.
  */
 public class DayOfWeekOccurrence {
@@ -50,7 +52,7 @@ public class DayOfWeekOccurrence {
    * @param dayOfWeek the day of week.
    * @return a DayOfWeekOccurrence instance.
    */
-  public static DayOfWeekOccurrence nthOccurrence(int nth, final DayOfWeek dayOfWeek) {
+  public static DayOfWeekOccurrence nth(int nth, final DayOfWeek dayOfWeek) {
     return new DayOfWeekOccurrence(nth, dayOfWeek);
   }
 
@@ -60,7 +62,7 @@ public class DayOfWeekOccurrence {
    * @param dayOfWeek the day of week.
    * @return a DayOfWeekOccurrence instance.
    */
-  public static DayOfWeekOccurrence allOccurrences(final DayOfWeek dayOfWeek) {
+  public static DayOfWeekOccurrence all(final DayOfWeek dayOfWeek) {
     return new DayOfWeekOccurrence(ALL_OCCURRENCES, dayOfWeek);
   }
 
@@ -79,6 +81,29 @@ public class DayOfWeekOccurrence {
    */
   public int nth() {
     return nth;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof DayOfWeekOccurrence)) {
+      return false;
+    }
+
+    final DayOfWeekOccurrence that = (DayOfWeekOccurrence) o;
+
+    if (nth != that.nth) {
+      return false;
+    }
+    return dayOfWeek == that.dayOfWeek;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(nth).append(dayOfWeek).toHashCode();
   }
 
   private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {

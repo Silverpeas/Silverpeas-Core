@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.date.TimeUnit;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -33,18 +35,25 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * It defines the recurrence rules of a calendar event. An event recurrence is defined by a
- * frequency (secondly, minutely, hourly, daily, weekly, monthly, or yearly) and optionally by some
- * days of week on which the event should frequently occur, and by a termination condition.
+ * It defines the rules of the recurrence of a {@link Plannable} in its planning in a calendar.
+ * A {@link Plannable} recurrence is defined by a recurrence period, id est a frequency (hourly,
+ * daily, weekly, monthly, or yearly), and optionally by some of the following properties:
+ *
+ * <ul>
+ *   <li>some days of week on which the {@link Plannable} should regularly occur</li>
+ *   <li>some exceptions in the recurrence period of the {@link Plannable}</li>
+ *   <li>a termination condition.</li>
+ * </ul>
  */
-public class CalendarEventRecurrence {
+public class Recurrence {
 
   /**
    * A constant that defines a specific value for an empty recurrence.
    */
-  public static final CalendarEventRecurrence NO_RECURRENCE = null;
+  public static final Recurrence NO_RECURRENCE = null;
   /**
    * A constant that defines a specific value for no recurrence count limit.
    */
@@ -60,66 +69,86 @@ public class CalendarEventRecurrence {
   private List<OffsetDateTime> exceptionDates = new ArrayList<>();
 
   /**
-   * Creates a new event recurrence from the specified frequency.
-   * @param frequencyUnit the frequency in which the event should recur: SECOND means SECONDLY,
+   * Creates a new recurrence from the specified frequency.
+   * @param frequencyUnit the unit of the frequency: SECOND means SECONDLY,
    * MINUTE means minutely, HOUR means hourly, WEEK means weekly, DAY means daily, WEEK means
-   * weekly,
-   * MONTH means monthly or YEAR means YEARLY.
+   * weekly, MONTH means monthly or YEAR means YEARLY.
    * @return the event recurrence instance.
    */
-  public static CalendarEventRecurrence every(TimeUnit frequencyUnit) {
-    return new CalendarEventRecurrence(RecurrencePeriod.every(1, frequencyUnit));
+  public static Recurrence every(TimeUnit frequencyUnit) {
+    return new Recurrence(RecurrencePeriod.every(1, frequencyUnit));
   }
 
   /**
-   * Creates a new event recurrence from the specified frequency. For example every(2, MONTH) means
+   * Creates a new recurrence from the specified frequency. For example every(2, MONTH) means
    * every 2 month.
-   * @param frequencyValue the value of the event frequency. every two weeks.
+   * @param frequencyValue the value of the frequency. every two weeks.
    * @param frequencyUnit the frequency unit.
    * @return the event recurrence instance.
    */
-  public static CalendarEventRecurrence every(int frequencyValue, TimeUnit frequencyUnit) {
-    return new CalendarEventRecurrence(RecurrencePeriod.every(frequencyValue, frequencyUnit));
+  public static Recurrence every(int frequencyValue, TimeUnit frequencyUnit) {
+    return new Recurrence(RecurrencePeriod.every(frequencyValue, frequencyUnit));
   }
 
   /**
-   * Creates a new event recurrence by specifying the recurrence period at which the event should
-   * recur.
+   * Creates a new recurrence by specifying the recurrence period at which a {@link Plannable}
+   * should recur.
    * @param period the recurrence period of the event.
    * @return the event recurrence instance.
    */
-  public static CalendarEventRecurrence from(final RecurrencePeriod period) {
-    return new CalendarEventRecurrence(period);
+  public static Recurrence from(final RecurrencePeriod period) {
+    return new Recurrence(period);
   }
 
   /**
-   * Excludes from this recurrence rule the occurrences of the event starting at the specified
-   * date and times. If the occurrences of the event are spanning all the day, then the time should
-   * to be set at midnight. Nevertheless, in such a case, the time hasn't to be taken into account
-   * in the computation of the actual occurrences of the event.
+   * Excludes from this recurrence rule the occurrences of the {@link Plannable} starting at the
+   * specified date and times. The time of each specified date time is set in UTC/Greenwich.
+   * If the occurrences are spanning all the day, then please use
+   * the <code>excludeEventOccurrencesStartingAt</code> method accepting {@link LocalDate}
+   * arguments
+   * instead of {@link OffsetDateTime} ones. Otherwise set the time at midnight. Nevertheless, in
+   * such a case, the time hasn't to be taken into account in the computation of the actual
+   * occurrences.
    * @param dateTimes a list of date times at which start the occurrences to exclude.
    * @return itself.
    */
-  public CalendarEventRecurrence excludeEventOccurrencesStartingAt(
+  public Recurrence excludeEventOccurrencesStartingAt(
       final OffsetDateTime... dateTimes) {
-    this.exceptionDates.addAll(Arrays.asList(dateTimes));
+    this.exceptionDates.addAll(Arrays.asList(dateTimes)
+        .stream()
+        .map(dateTime -> dateTime.withOffsetSameInstant(ZoneOffset.UTC))
+        .collect(Collectors.toList()));
     return this;
   }
 
   /**
-   * Sets some specific days of week at which the event should periodically occur. For example,
+   * Excludes from this recurrence rule the occurrences of a {@link Plannable} starting at the
+   * specified dates.
+   * @param days a list of dates at which start the occurrences to exclude.
+   * @return itself.
+   */
+  public Recurrence excludeEventOccurrencesStartingAt(final LocalDate... days) {
+    this.exceptionDates.addAll(Arrays.asList(days)
+        .stream()
+        .map(date -> date.atStartOfDay().atOffset(ZoneOffset.UTC))
+        .collect(Collectors.toList()));
+    return this;
+  }
+
+  /**
+   * Sets some specific days of week at which a {@link Plannable} should periodically occur. For
+   * example,
    * recur every weeks on monday and on tuesday. For a monthly or an yearly recurrence, the days of
    * week are the first days of the month or of the year; for example, the first monday and tuesday
    * of each month.
-   * @param days the days of week at which an event should occur. Theses days replace the ones
+   * @param days the days of week at which a {@link Plannable} should occur. Theses days replace the ones
    * already set in the recurrence.
    * @return itself.
    */
-  public CalendarEventRecurrence on(DayOfWeek... days) {
+  public Recurrence on(DayOfWeek... days) {
     List<DayOfWeekOccurrence> dayOccurrences = new ArrayList<DayOfWeekOccurrence>();
     for (DayOfWeek dayOfWeek : days) {
-      dayOccurrences.add(
-          DayOfWeekOccurrence.nthOccurrence(DayOfWeekOccurrence.ALL_OCCURRENCES, dayOfWeek));
+      dayOccurrences.add(DayOfWeekOccurrence.nth(DayOfWeekOccurrence.ALL_OCCURRENCES, dayOfWeek));
     }
     this.daysOfWeek.clear();
     this.daysOfWeek.addAll(dayOccurrences);
@@ -127,7 +156,7 @@ public class CalendarEventRecurrence {
   }
 
   /**
-   * Sets some specific occurrences of day of week at which the event should periodically occur
+   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically occur
    * within a monthly or a yearly period. For example, recur every month on the third monday and on
    * the first tuesday. The days of week for a weekly recurrence can also be indicated if, and only
    * if, the nth occurrence of the day is the first one or all occurrences (as there is actually
@@ -138,22 +167,23 @@ public class CalendarEventRecurrence {
    * the ones already set in the recurrence.
    * @return itself.
    */
-  public CalendarEventRecurrence on(DayOfWeekOccurrence... days) {
+  public Recurrence on(DayOfWeekOccurrence... days) {
     return on(Arrays.asList(days));
   }
 
   /**
-   * Sets some specific occurrences of day of week at which the event should periodically occur
+   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically occur
    * within monthly or yearly period. For example, recur every month on the third monday and on the
    * first tuesday. The days of week for a weekly recurrence can also be indicated if, and only if,
    * the nth occurrence of the day is the first one or all occurrences (as there is actually only
    * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
    * considered as an error and an IllegalArgumentException is thrown.
-   * @param days a list of days of week at which an event should occur. Theses days replace the ones
-   * already set in the recurrence.
+   * @param days a list of days of week at which a {@link Plannable} should occur. Theses days
+   * replace
+   * the ones already set in the recurrence.
    * @return itself.
    */
-  public CalendarEventRecurrence on(final List<DayOfWeekOccurrence> days) {
+  public Recurrence on(final List<DayOfWeekOccurrence> days) {
     if (frequency.getUnit() == TimeUnit.WEEK) {
       for (DayOfWeekOccurrence dayOfWeekOccurrence : days) {
         if (dayOfWeekOccurrence.nth() != 1 && dayOfWeekOccurrence.nth() != DayOfWeekOccurrence.ALL_OCCURRENCES) {
@@ -169,12 +199,13 @@ public class CalendarEventRecurrence {
   }
 
   /**
-   * Sets a termination to this recurrence by specifying the number of time the event should recur.
+   * Sets a termination to this recurrence by specifying the number of time a {@link Plannable}
+   * should recur.
    * Settings this termination overrides the recurrence end date.
-   * @param recurrenceCount the number of time the event should occur.
+   * @param recurrenceCount the number of time a {@link Plannable} should occur.
    * @return itself.
    */
-  public CalendarEventRecurrence upTo(int recurrenceCount) {
+  public Recurrence upTo(int recurrenceCount) {
     if (recurrenceCount <= 0) {
       throw new IllegalArgumentException("The number of time the event has to recur should be a"
           + " positive value");
@@ -186,30 +217,31 @@ public class CalendarEventRecurrence {
 
   /**
    * Sets a termination to this recurrence by specifying an end date and time of the recurrence.
-   * Settings this termination overrides the number of time the event should occur.
+   * The time of the specified date time is set from UTC/Greenwich.
+   * Settings this termination overrides the number of time a {@link Plannable} should occur.
    * @param endDateTime the end date and time of the recurrence.
    * @return itself.
    */
-  public CalendarEventRecurrence upTo(final OffsetDateTime endDateTime) {
+  public Recurrence upTo(final OffsetDateTime endDateTime) {
     this.count = NO_RECURRENCE_COUNT;
-    this.endDateTime = endDateTime;
+    this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
     return this;
   }
 
   /**
    * Sets a termination to this recurrence by specifying an end date of the recurrence.
-   * Settings this termination overrides the number of time the event should occur.
+   * Settings this termination overrides the number of time a {@link Plannable} should occur.
    * @param endDate the end date and time of the recurrence.
    * @return itself.
    */
-  public CalendarEventRecurrence upTo(final LocalDate endDate) {
+  public Recurrence upTo(final LocalDate endDate) {
     this.count = NO_RECURRENCE_COUNT;
     this.endDateTime = endDate.atStartOfDay().atOffset(ZoneOffset.UTC);
     return this;
   }
 
   /**
-   * Gets the frequency at which the event should recur.
+   * Gets the frequency at which the {@link Plannable} should recur.
    * @return the frequency as a RecurrencePeriod instance.
    */
   public RecurrencePeriod getFrequency() {
@@ -217,8 +249,9 @@ public class CalendarEventRecurrence {
   }
 
   /**
-   * Gets the number of time the event should occur. If NO_RECURRENCE_COUNT is returned, then no
-   * termination by recurrence count is defined.
+   * Gets the number of time the {@link Plannable} should occur. If NO_RECURRENCE_COUNT is
+   * returned,
+   * then no termination by recurrence count is defined.
    * @return the recurrence count or NO_RECURRENCE_COUNT if no such termination is defined.
    */
   public int getRecurrenceCount() {
@@ -230,7 +263,7 @@ public class CalendarEventRecurrence {
    * case the returned end date is empty.
    * @return an optional recurrence end date. The optional is empty if the end date of the
    * recurrence is unspecified, otherwise the recurrence termination date time can be get from the
-   * {@link Optional}.
+   * {@link Optional}. The returned date time is from UTC/Greenwich.
    */
   public Optional<OffsetDateTime> getEndDate() {
     if (this.endDateTime != NO_RECURRENCE_END_DATE) {
@@ -240,7 +273,7 @@ public class CalendarEventRecurrence {
   }
 
   /**
-   * Gets the days of week on which the event should recur each time.
+   * Gets the days of week on which the {@link Plannable} should recur each time.
    * @return an unmodifiable list of days of week or an empty list if no days of week is set to this
    * recurrence.
    */
@@ -260,10 +293,10 @@ public class CalendarEventRecurrence {
   }
 
   /**
-   * Constructs a new event recurrence instance with the specified new
+   * Constructs a new recurrence instance from the specified recurrence period.
    * @param frequency the frequency of the recurrence.
    */
-  private CalendarEventRecurrence(final RecurrencePeriod frequency) {
+  private Recurrence(final RecurrencePeriod frequency) {
     this.frequency = frequency;
   }
 }
