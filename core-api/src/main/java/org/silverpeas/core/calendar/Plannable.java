@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 /**
- * A plannable object is an object that can be planned on a calendar and that can be serialized
+ * A plannable object is an object that can be planned in a calendar and that can be serialized
  * on a data source. A plannable object is defined in the timeline by a start date time and
  * by an end date time with a precision of one minute. According to the type of the plannable
  * object, the end date time can be undefined. When a plannable object is created, the temporal

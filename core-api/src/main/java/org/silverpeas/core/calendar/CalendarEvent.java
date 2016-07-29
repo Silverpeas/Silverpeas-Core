@@ -37,7 +37,7 @@ import java.time.OffsetDateTime;
  * temporal).
  */
 @DateRange(startDate = "startDate", endDate = "endDate")
-public class CalendarEvent implements Plannable {
+public class CalendarEvent implements Plannable, Recurrent, Prioritized {
   private static final long serialVersionUID = 1L;
 
   private Period period;
@@ -46,7 +46,7 @@ public class CalendarEvent implements Plannable {
   private String location = "";
   private URL url = null;
   private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
-  private int priority = 0;
+  private Priority priority = Priority.NORMAL;
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
   private final Categories categories = new Categories();
   private final Attendees attendees = new Attendees();
@@ -87,7 +87,8 @@ public class CalendarEvent implements Plannable {
    * @param priority an event priority.
    * @return itself.
    */
-  public CalendarEvent withPriority(int priority) {
+  @Override
+  public CalendarEvent withPriority(Priority priority) {
     this.priority = priority;
     return this;
   }
@@ -178,7 +179,8 @@ public class CalendarEvent implements Plannable {
    * Gets the priority of this event.
    * @return the priority of the event.
    */
-  public int getPriority() {
+  @Override
+  public Priority getPriority() {
     return priority;
   }
 
@@ -187,6 +189,7 @@ public class CalendarEvent implements Plannable {
    * @param recurrence the recurrence defining the recurring property of this event.
    * @return itself.
    */
+  @Override
   public CalendarEvent recur(final Recurrence recurrence) {
     if (isOnAllDay() && recurrence.getFrequency().isHourly()) {
       throw new IllegalArgumentException("Impossible to recur hourly an event on all day!");
@@ -228,16 +231,9 @@ public class CalendarEvent implements Plannable {
    * NO_RECURRENCE.
    * @return this event recurrence or NO_RECURRENCE.
    */
+  @Override
   public Recurrence getRecurrence() {
     return this.recurrence;
-  }
-
-  /**
-   * Is this event a recurring one?
-   * @return true if this event is recurring, false otherwise.
-   */
-  public boolean isRecurring() {
-    return this.recurrence != Recurrence.NO_RECURRENCE;
   }
 
   /**
