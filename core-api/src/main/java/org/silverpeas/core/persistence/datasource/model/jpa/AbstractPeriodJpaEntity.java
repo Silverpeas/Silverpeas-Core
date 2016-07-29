@@ -23,14 +23,21 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
+
+import static java.time.OffsetDateTime.ofInstant;
 
 /**
  * This JPA entity abstraction that handles begin and end dates, both persisted as long values.
@@ -44,23 +51,36 @@ import java.util.Date;
  * @author Yohann Chastagnier
  */
 @MappedSuperclass
-public abstract class AbstractPeriodDateAsLongJpaEntity<ENTITY extends Entity<ENTITY,
+public abstract class AbstractPeriodJpaEntity<ENTITY extends Entity<ENTITY,
     IDENTIFIER_TYPE>, IDENTIFIER_TYPE extends EntityIdentifier>
     extends AbstractJpaEntity<ENTITY, IDENTIFIER_TYPE> {
 
-  @Column(name = "beginDate", nullable = false)
-  private Long beginDate;
+  @Column(name = "inDays", nullable = false)
+  private boolean inDays = false;
+
+  @Column(name = "startDate", nullable = false)
+  @Temporal(value = TemporalType.TIMESTAMP)
+  @NotNull
+  private Date startDate;
 
   @Column(name = "endDate", nullable = false)
-  private Long endDate;
+  @Temporal(value = TemporalType.TIMESTAMP)
+  @NotNull
+  private Date endDate;
 
   @Transient
   private Period period;
 
   public Period getPeriod() {
-    if (beginDate != null && endDate != null) {
+    if (startDate != null && endDate != null) {
       if (period == null) {
-        period = Period.from(new Date(beginDate), new Date(endDate));
+        OffsetDateTime start = ofInstant(startDate.toInstant(), ZoneOffset.UTC.normalized());
+        OffsetDateTime end = ofInstant(endDate.toInstant(), ZoneOffset.UTC.normalized());
+        if (inDays) {
+          period = Period.between(start.toLocalDate(), end.toLocalDate());
+        } else {
+          period = Period.between(start, end);
+        }
       }
     } else {
       period = null;
@@ -68,9 +88,12 @@ public abstract class AbstractPeriodDateAsLongJpaEntity<ENTITY extends Entity<EN
     return period;
   }
 
-  public void setPeriod(final Period period) {
+  @SuppressWarnings("unchecked")
+  public ENTITY setPeriod(final Period period) {
     this.period = period;
-    beginDate = period.getBeginDate().getTime();
-    endDate = period.getEndDate().getTime();
+    inDays = period.isInDays();
+    startDate = new Date(period.getStartDateTime().toInstant().toEpochMilli());
+    endDate = new Date(period.getEndDateTime().toInstant().toEpochMilli());
+    return (ENTITY) this;
   }
 }

@@ -25,32 +25,97 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.annotation.constraint.DateRange;
+import org.silverpeas.core.calendar.repository.CalendarEventCriteria;
+import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractPeriodJpaEntity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * The event in a calendar. An event in the calendar is described by a starting and an ending date
  * and a name. The start and end dates in an event must be in the same type (either a date or a
  * temporal).
  */
+@Entity
+@Table(name = "sb_calendar_event")
 @DateRange(startDate = "startDate", endDate = "endDate")
-public class CalendarEvent implements Plannable, Recurrent, Prioritized {
+public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidIdentifier>
+    implements Plannable, Recurrent, Prioritized {
+
   private static final long serialVersionUID = 1L;
 
-  private Period period;
-  private String title = "";
-  private String description = "";
-  private String location = "";
-  private URL url = null;
-  private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
+  private Calendar calendar;
+
+  @Column(name = "title", nullable = false)
+  @Size(min = 1)
+  @NotNull
+  private String title;
+
+  @Column(name = "description")
+  private String description;
+
+  @Column(name = "location")
+  private String location;
+
+  @Transient
+  private URL url;
+
+  @Column(name = "visibility")
+  @NotNull
+  private String visibilityLevel = VisibilityLevel.PUBLIC.name();
+
+  @Column(name = "priority", nullable = false)
+  @NotNull
   private Priority priority = Priority.NORMAL;
+
+  @Transient
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
+
+  @Transient
   private final Categories categories = new Categories();
+
+  @Transient
   private final Attendees attendees = new Attendees();
-  private String id = "";
+
+  /**
+   * Necessary for JPA management.
+   */
+  protected CalendarEvent() {
+  }
+
+  /**
+   * Gets an event by its identifier.
+   * @param id the event identifier.
+   * @return the event associated to the specified identifier or null.
+   */
+  public static CalendarEvent getById(final String id) {
+    CalendarEventRepository repository = CalendarEventRepository.get();
+    return repository.getById(id);
+  }
+
+  /**
+   * @see CalendarEventRepository#findByCriteria(CalendarEventCriteria)
+   */
+  public static List<CalendarEvent> findByCriteria(CalendarEventCriteria criteria) {
+    CalendarEventRepository repository = CalendarEventRepository.get();
+    return repository.findByCriteria(criteria);
+  }
 
   /**
    * Creates a new calendar event that is spanning on the specified period of time.
@@ -58,7 +123,7 @@ public class CalendarEvent implements Plannable, Recurrent, Prioritized {
    * @return a calendar event occurring on the specified period.
    */
   public static CalendarEvent on(Period period) {
-    return new CalendarEvent(period);
+    return new CalendarEvent().setPeriod(period);
   }
 
   /**
@@ -67,7 +132,21 @@ public class CalendarEvent implements Plannable, Recurrent, Prioritized {
    * @return a calendar event spanning on all the specified day.
    */
   public static CalendarEvent on(final LocalDate day) {
-    return new CalendarEvent(Period.between(day, day));
+    return new CalendarEvent().setPeriod(Period.between(day, day));
+  }
+
+  public Calendar getCalendar() {
+    return calendar;
+  }
+
+  /**
+   * Sets a calendar to this event.
+   * @param calendar an event calendar.
+   * @return itself.
+   */
+  public CalendarEvent onCalendar(final Calendar calendar) {
+    this.calendar = calendar;
+    return this;
   }
 
   /**
@@ -78,7 +157,7 @@ public class CalendarEvent implements Plannable, Recurrent, Prioritized {
    * @return itself.
    */
   public CalendarEvent withVisibilityLevel(VisibilityLevel accessLevel) {
-    this.visibilityLevel = accessLevel;
+    this.visibilityLevel = accessLevel.name();
     return this;
   }
 
@@ -155,7 +234,7 @@ public class CalendarEvent implements Plannable, Recurrent, Prioritized {
    * @return the visibility level of this event.
    */
   public VisibilityLevel getVisibilityLevel() {
-    return visibilityLevel;
+    return VisibilityLevel.valueOf(visibilityLevel);
   }
 
   /**
@@ -241,29 +320,29 @@ public class CalendarEvent implements Plannable, Recurrent, Prioritized {
    * @return true if this event is occurring on all its day(s).
    */
   public boolean isOnAllDay() {
-    return period.isInDays();
+    return getPeriod().isInDays();
   }
 
+  /**
+   * BE CAREFUL, it is not possible to use the persistence when the ID is set by this method or
+   * {@link #setId(String)}.<br/>
+   * TODO this behavior will be removed...
+   */
   public CalendarEvent identifiedBy(String appId, String eventId) {
-    this.id = appId+"-"+eventId;
+    if (getId() != null) {
+      throw new IllegalStateException("identifier should be null on this method call");
+    }
+    setId(appId + "-" + eventId);
     return this;
-  }
-
-  public String getId() {
-    return id;
   }
 
   @Override
   public OffsetDateTime getStartDateTime() {
-    return this.period.getStartDateTime();
+    return getPeriod().getStartDateTime();
   }
 
   @Override
   public OffsetDateTime getEndDateTime() {
-    return this.period.getEndDateTime();
-  }
-
-  private CalendarEvent(Period period) {
-    this.period = period;
+    return getPeriod().getEndDateTime();
   }
 }

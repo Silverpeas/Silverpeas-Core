@@ -54,6 +54,9 @@ public abstract class BaseCalendarTest extends DataSetTest {
   static final String TABLE_CREATION_SCRIPT =
       "/org/silverpeas/core/calendar/create_table_calendar.sql";
 
+  static final String INITIALIZATION_SCRIPT =
+      "/org/silverpeas/core/calendar/initialize_common_data_calendar.sql";
+
   protected static final String INSTANCE_ID = "anInstanceId";
 
   private User mockedUser;
@@ -63,9 +66,10 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return TABLE_CREATION_SCRIPT;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected <T> T getDbSetupInitializations() {
-    return null;
+  protected String getDbSetupInitializations() {
+    return INITIALIZATION_SCRIPT;
   }
 
   @Before
@@ -107,9 +111,30 @@ public abstract class BaseCalendarTest extends DataSetTest {
    */
   protected TableLine getCalendarTableLineById(String id) throws Exception {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from sb_calendar")
-            .where("id = ?", id)
-            .addSqlPart("order by instanceid, title, id")));
+        JdbcSqlQuery.createSelect("* from sb_calendar").where("id = ?", id)));
+  }
+
+  /**
+   * Returns the list of calendar event lines persisted into sb_calendar_event table.
+   * @return List of lines represented by a map between column name and value.
+   */
+  protected List<TableLine> getCalendarEventTableLines() throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("ce.* from sb_calendar_event ce")
+            .addSqlPart("join sb_calendar c on c.id = ce.calendarId")
+            .addSqlPart("order by c.instanceId, ce.startDate, ce.endDate, ce.title, ce.id"));
+  }
+
+  /**
+   * Returns the calendar events persisted into sb_calendar_event table corresponding to the given
+   * identifier.
+   * @param id the id searched for.
+   * @return List of lines represented by a map between column name and value.
+   */
+  protected TableLine getCalendarEventTableLineById(String id) throws Exception {
+    return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("ce.* from sb_calendar_event ce")
+            .addSqlPart("join sb_calendar c on c.id = ce.calendarId").where("id = ?", id)));
   }
 
   /**

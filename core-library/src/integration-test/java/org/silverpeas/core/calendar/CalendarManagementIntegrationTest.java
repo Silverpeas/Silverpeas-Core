@@ -45,9 +45,6 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
-  private static final String INITIALIZATION_SCRIPT =
-      "/org/silverpeas/core/calendar/initialize_common_data_calendar.sql";
-
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(CalendarManagementIntegrationTest.class)
@@ -60,12 +57,6 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarTableLines(), hasSize(3));
     assertThat(Calendar.getByComponentInstanceId(INSTANCE_ID), empty());
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected String getDbSetupInitializations() {
-    return INITIALIZATION_SCRIPT;
   }
 
   @Test
