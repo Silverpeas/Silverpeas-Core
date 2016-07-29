@@ -104,12 +104,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				ext.toLowerCase() != "pcd" && ext.toLowerCase() != "tga" &&
 				ext.toLowerCase() != "tif" && ext.toLowerCase() != "swf")
 	            {
-			alert("<%=message.getString("ErreurFichierUpload")%>");
+			notyError("<%=message.getString("ErreurFichierUpload")%>");
 	            }
 	            else if (!isCorrect(file))
 	            {
 				// verif caract�res speciaux contenus dans le nom du fichier
-			alert("<%=message.getString("NameFile")%> <%=message.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(message.getString("Char7"))%>\n");
+			notyError("<%=message.getString("NameFile")%> <%=message.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(message.getString("Char7"))%>\n");
 	            }
 	            else
 		        {

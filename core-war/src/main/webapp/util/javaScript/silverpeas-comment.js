@@ -320,7 +320,7 @@
    */
   function __deleteComment($this, commentId) {
     var comments = $this.data('comments'), msg = settings.deletion.confirmation;
-    if (window.confirm(msg)) {
+    jQuery.popup.confirm(msg, function() {
       $.ajax({
         url: settings.uri + "/" + commentId,
         type: "DELETE",
@@ -338,7 +338,8 @@
           });
         }
       });
-    }
+      return true;
+    });
   }
 
   function __addComment($this, commentCreation) {

@@ -58,12 +58,12 @@ function SubmitWithVerif(verifParams)
     }
     else
     {
-        window.alert(errorMsg);
+      jQuery.popup.error(errorMsg);
     }
 }
 </script>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 
 <%
 out.println(window.printBefore());

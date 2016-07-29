@@ -131,14 +131,14 @@ function cleanMyLinkForm() {
 }
 
 function deleteSelectLinksConfirm() {
-  if (confirm('<fmt:message key="myLinks.deleteSelection"/>')) {
+  jQuery.popup.confirm('<fmt:message key="myLinks.deleteSelection"/>', function() {
     $.progressMessage();
     document.readForm.mode.value = 'delete';
     document.readForm.submit();
-  }
+  });
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
   var url = $("#urlId").val().trim();
@@ -154,21 +154,17 @@ function isCorrectForm() {
   }
 
   switch(errorNb) {
-      case 0 :
-          result = true;
-          break;
-      case 1 :
-          errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
-          break;
-      default :
-          errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
-          break;
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 function createLinkPopup() {
@@ -180,11 +176,9 @@ function createLinkPopup() {
       if ( window.console && window.console.log ) {
         console.log("User create new link !!!");
       }
-      if (isCorrectForm()) {
+      ifCorrectFormExecute(function() {
         submitLink();
-        return true;
-      }
-      return false;
+      });
     }
   });
 }
@@ -198,11 +192,9 @@ function updateLinkPopup() {
       if ( window.console && window.console.log ) {
         console.log("User update the following link identifier = " + $("#linkId").attr('value'));
       }
-      if (isCorrectForm()) {
+      ifCorrectFormExecute(function() {
         submitLink();
-        return true;
-      }
-      return false;
+      });
     }
   });
 }

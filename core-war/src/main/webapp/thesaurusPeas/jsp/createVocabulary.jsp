@@ -43,50 +43,40 @@
 <view:looknfeel/>
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-function isCorrectForm() {
+function save() {
 	var errorMsg = "";
 	var errorNb = 0;
 	var nom = document.forms[0].nom.value;
 	var desc = document.forms[0].description;
 	if (isWhitespace(nom)) {
-           errorMsg+="  - '<%=resource.getString("thesaurus.vocabulaire")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
-           errorNb++;
-        }
+    errorMsg+="  - '<%=resource.getString("thesaurus.vocabulaire")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
+    errorNb++;
+  }
 	if (isWhitespace(desc.value)) {
-           errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
-           errorNb++;
-        }
+    errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("thesaurus.mustContainsText")%>\n";
+    errorNb++;
+  }
 	if (!isValidTextArea(desc)) {
 		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("thesaurus.containsTooLargeText")+resource.getString("thesaurus.nbMaxTextArea")+resource.getString("thesaurus.characters")%>\n";
 		errorNb++;
-		}
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
-}
-function save()
-{
-	if (isCorrectForm())
-		document.forms[0].submit();
+	}
+  switch(errorNb) {
+    case 0 :
+      document.forms[0].submit();
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("thesaurus.thisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
 //-->
 </SCRIPT>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onLoad="document.forms[0].nom.focus();">
+<BODY onLoad="document.forms[0].nom.focus();">
 <%
 	browseBar.setComponentName(componentLabel, "Main");
 	browseBar.setPath("<a href=\"Back\">"+resource.getString("thesaurus.thesaurus")+ "</a> > " + resource.getString("thesaurus.BBcreateVoc"));

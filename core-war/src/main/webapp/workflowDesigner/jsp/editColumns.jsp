@@ -48,14 +48,6 @@ String          strCancelAction = "ViewPresentation";
 
     function sendData()
     {
-        if ( isCorrectlyFilled() )
-        {
-            document.columnsForm.submit();
-        }
-    }
-
-    function isCorrectlyFilled()
-    {
         var errorMsg = "";
         var errorNb = 0;
         var fChecked = false;
@@ -87,20 +79,16 @@ String          strCancelAction = "ViewPresentation";
         switch(errorNb)
         {
             case 0 :
-                result = true;
+                document.columnsForm.submit();
                 break;
             case 1 :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
+                jQuery.popup.error(errorMsg);
                 break;
             default :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
-                break;
+                jQuery.popup.error(errorMsg);
         }
-        return result;
     }
 </script>
 </HEAD>

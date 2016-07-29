@@ -51,12 +51,12 @@
 	Button validateButton;
 	Button cancelButton;
 	if (isCreation) {
-		validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:redirect('"+connection.getComponentId()+"')", false);
+		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:redirect('"+connection.getComponentId()+"')", false);
 	}
 	else {
-		validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=updateData();", false);
-		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
+		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=updateData();", false);
+		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
 	}
 
 
@@ -69,13 +69,13 @@
 <script language="javascript">
 
 function sendData() {
-	if (isCorrectForm()) {
+	ifCorrectFormExecute(function() {
 		document.connectionForm.submit();
-	}
+  });
 }
 
 function updateData() {
-	if (isCorrectForm()) {
+  ifCorrectFormExecute(function() {
 		window.opener.document.connectionForm.action = "<%=action%>";
 		window.opener.document.connectionForm.Login.value = document.connectionForm.Login.value;
 		window.opener.document.connectionForm.Password.value = document.connectionForm.Password.value;
@@ -83,34 +83,30 @@ function updateData() {
 		window.opener.document.connectionForm.ComponentId.value = document.connectionForm.ComponentId.value;
 		window.opener.document.connectionForm.submit();
 		window.close();
-	}
+	});
 }
 
-function isCorrectForm() {
-     var errorMsg 			= "";
-     var errorNb 			= 0;
-     var login 				= document.connectionForm.Login.value;
+function ifCorrectFormExecute(callback) {
+  var errorMsg 			= "";
+  var errorNb 			= 0;
+  var login 				= document.connectionForm.Login.value;
 
-     if (isWhitespace(login)) {
-           errorMsg +="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("webConnections.login")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-     }
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  if (isWhitespace(login)) {
+    errorMsg +="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("webConnections.login")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+    errorNb++;
+  }
+  switch(errorNb) {
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
 
 function razData() {

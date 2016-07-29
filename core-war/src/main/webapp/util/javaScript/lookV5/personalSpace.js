@@ -60,9 +60,11 @@ function addComponent(name) {
 
 function removeComponent(id) {
   var labels = getPersonalSpaceLabels();
-  if (window.confirm(labels[1])) {
+  jQuery.popup.confirm(labels[1], function() {
+    $.progressMessage();
     jQuery.getJSON(getContext() + "/PersonalSpace?Action=RemoveComponent&ComponentId=" + id + "&IEFix=" +
         new Date().getTime(), function(data) {
+          $.closeProgressMessage();
           if (data.successfull == true) {
             var componentId = data.id;
             jQuery("#" + componentId).remove();
@@ -84,7 +86,8 @@ function removeComponent(id) {
             alert(data.exception);
           }
         });
-  }
+    return true;
+  });
 }
 
 function getComponentEntry(name, description, label) {

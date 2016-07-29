@@ -1,4 +1,5 @@
 <%--
+<%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -102,11 +103,11 @@
         var name = $('input[name="SubscriptionName"]').val();
         var values = $('#used_pdc').pdc('selectedValues');
         if (!name) {
-          alert('<view:encodeJs string="${invalidName}"/>');
+          jQuery.popup.error('<view:encodeJs string="${invalidName}"/>');
           return;
         }
         if (values.length === 0) {
-          alert('<view:encodeJs string="${invalidValues}"/>');
+          jQuery.popup.error('<view:encodeJs string="${invalidValues}"/>');
           return;
         }
         $('input[name="AxisValueCouples"]').val(values.flatten());

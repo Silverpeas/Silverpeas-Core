@@ -147,45 +147,39 @@ function listValues () {
 	return z;
 }
 
-function checkSelectedValues()
-{
-	i = 0;
+function ifCorrectSelectedValuesExecute(callback) {
+	var i = 0;
 	var axisIdAndValue = "";
 	var errorMsg = "";
-    var errorNb = 0;
+  var errorNb = 0;
 	while (i<document.chooseValues.length-1) {
 		if (document.chooseValues.elements[i].value.length != 0) {
 			axisIdAndValue = document.chooseValues.elements[i].value.split("|");
 			axisId = axisIdAndValue[0];
 			value = axisIdAndValue[1];
-			if (value == '/0/')
-			{
+			if (value == '/0/') {
 				errorMsg += "- "+document.chooseValues.elements[i+1].value+"\n";
 				errorNb++;
 			}
-        }
+    }
 		i = i+3;
 	}
 	switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("pdcPeas.rootValueNotAllowed")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-    return result;
+    case 0 :
+      callback.call(this);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("pdcPeas.rootValueNotAllowed")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
 
 function sendData() {
-	if (checkSelectedValues())
-	{
+	ifCorrectSelectedValuesExecute(function() {
 		document.submitValues.Values.value = listValues();
 		document.submitValues.action = "<%=pdcClassifyContext%>UpdatePosition";
 		document.submitValues.submit();
-	}
+  });
 }
 
 function test(object, reload) {

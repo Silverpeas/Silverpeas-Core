@@ -110,7 +110,9 @@ function getExtension(filename) {
   return null;
 }
 
-function isFileCorrect(image) {
+function ifFileCorrectExecute(callback) {
+  var image = $("#avatarDialog #ImageNewFile").val();
+
   var errorMsg = "";
   var errorNb = 0;
 
@@ -131,20 +133,16 @@ function isFileCorrect(image) {
 
   switch(errorNb) {
     case 0 :
-      result = true;
+      callback.call(this);
       break;
-     case 1 :
+    case 1 :
       errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
-     default :
+    default :
       errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 $(document).ready(function(){
@@ -192,10 +190,9 @@ $(document).ready(function(){
             title: "<fmt:message key="profil.actions.changePhoto" />",
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
-					var imageNewFile = $("#avatarDialog #ImageNewFile").val();
-					if (isFileCorrect(imageNewFile)) {
+					ifFileCorrectExecute(function() {
 						document.photoForm.submit();
-					}
+          });
 				},
 				"<fmt:message key="GML.cancel"/>": function() {
 					$(this).dialog( "close" );

@@ -58,12 +58,10 @@ function goToOperationInUserPanel(action) {
 	userPanelWindow = SP_openUserPanel(url, windowName, windowParams);
 }
 
-function ConfirmAndSend(textToDisplay,targetURL)
-{
-    if (window.confirm(textToDisplay))
-    {
-        window.location.href = targetURL;
-    }
+function deleteAllManagers() {
+  jQuery.popup.confirm("<%=resource.getString("pdcPeas.confirmDeleteAllManagers")%>", function() {
+    window.location.href = "EraseManager";
+  });
 }
 </script>
 </HEAD>
@@ -81,7 +79,7 @@ function ConfirmAndSend(textToDisplay,targetURL)
 	tabbedPane.addTab(resource.getString("pdcPeas.managers"), "ViewManager", true);
 
 	operationPane.addOperation(m_context+"/util/icons/group_modify.gif",resource.getString("pdcPeas.updateManagers"),"EditManager");
-	operationPane.addOperation(m_context+"/util/icons/userPanelPeas_to_del.gif",resource.getString("pdcPeas.deleteAllManagers"),"javascript:ConfirmAndSend('"+ resource.getString("pdcPeas.confirmDeleteAllManagers") + "','EraseManager')");
+	operationPane.addOperation(m_context+"/util/icons/userPanelPeas_to_del.gif",resource.getString("pdcPeas.deleteAllManagers"),"javascript:deleteAllManagers()");
 
 	out.println(window.printBefore());
     out.println(tabbedPane.print());

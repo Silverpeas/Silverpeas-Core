@@ -34,8 +34,8 @@ String action	= (String) request.getAttribute("action");
 String icName	= (String)request.getAttribute("icName"); //End View
 icName=(icName==null)?"":icName;
 
-Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button okButton		= gef.getFormButton(resource.getString("GML.ok"), "javascript:onClick=sendData()", false);
 %>
   <HTML>
     <HEAD>
@@ -62,7 +62,7 @@ Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "jav
         document.icForm.action.value = "check";
         document.icForm.submit();
       } else {
-        alert('<%=resource.getString("EmtyICName")%>');
+        jQuery.popup.error('<%=resource.getString("EmtyICName")%>');
         document.icForm.icName.focus();
       }
     }

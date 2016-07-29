@@ -6,26 +6,25 @@
 
 <script>
   function editPref(id){
-      SP_openWindow("editPreference.jsp?id=" + id,"addPrefs","600","250","scrollable=yes");
+    SP_openWindow("editPreference.jsp?id=" + id,"addPrefs","600","250","scrollable=yes");
   }
   function resizePopup(largeur,hauteur){
-	window.resizeTo(largeur,hauteur);
+	  window.resizeTo(largeur,hauteur);
   }
-  function deleteRegle(id){
-	if (window.confirm("<%=resource.getString("MessageSuppressionRegle")%>")) {
-     var $form = jQuery('#genericFormParamNotif');
-     jQuery('#id', $form).val(id);
-     jQuery('#Action', $form).val('delete');
-     $form.attr('action', "paramNotif.jsp").submit();
-	}
+  function deleteRegle(id) {
+    jQuery.popup.confirm("<%=resource.getString("MessageSuppressionRegle")%>", function() {
+      var $form = jQuery('#genericFormParamNotif');
+      jQuery('#id', $form).val(id);
+      jQuery('#Action', $form).val('delete');
+      $form.attr('action', "paramNotif.jsp").submit();
+    });
   }
 </script>
 
-<CENTER>
-<TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH="98%"><TR><TD NOWRAP>
-	<span  class="txttitrecol"><%=resource.getString("default")%> :</span>
+<table cellpadding="5" cellspacing="2" border="0" width="98%"><tr><td>
+	<span class="txttitrecol"><%=resource.getString("default")%> :</span>
      &#149;&nbsp;<%=Encode.forHtml(personalizationScc.getDefaultAddress().getProperty("name"))%>&nbsp;&#149;
-</TD></TR></TABLE>
+</td></tr></table>
 <%
 	// Arraypane notif
 	ArrayPane notif = gef.getArrayPane("personalization", "paramNotif.jsp", request,session);
@@ -90,7 +89,7 @@
 	}
 %>
 
-<form id="genericFormParamNotif" action="" method="POST">
+<form id="genericFormParamNotif" action="" method="post">
   <input id="id" name="id" type="hidden"/>
   <input id="Action" name="Action" type="hidden"/>
 </form>

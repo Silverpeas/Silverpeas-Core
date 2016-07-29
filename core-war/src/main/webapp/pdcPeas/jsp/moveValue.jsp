@@ -70,17 +70,17 @@ if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
 function sendData(action) {
 	document.moveValue.action = action;
 	if (action == 'MoveValue') {
-		if (window.confirm("<%=resource.getString("pdcPeas.confirmMoveValue")%>")) {
+    jQuery.popup.confirm("<%=resource.getString("pdcPeas.confirmMoveValue")%>", function() {
 			$.progressMessage();
 			document.moveValue.submit();
-		}
+		});
 	} else {
 		document.moveValue.submit();
 	}
 }
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<BODY>
 
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));

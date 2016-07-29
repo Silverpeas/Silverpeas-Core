@@ -79,6 +79,17 @@
         }
       }
       $confirm.popup('confirmation', options);
+    },
+    error: function(message, params) {
+      var options = params;
+      message = message.replaceAll('\n', '<br/>');
+      var $error = $('<div>').append($('<p>').append(message));
+      if (typeof params === 'function') {
+        options = {
+          callback: params
+        }
+      }
+      $error.popup('error', options);
     }
   };
 

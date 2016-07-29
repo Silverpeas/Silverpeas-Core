@@ -88,33 +88,30 @@ browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 }
 </style>
 <script type="text/javascript">
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
 	var errorMsg = "";
-    var errorNb = 0;
-    var toCheck = document.multichoice.URL.value;
-    if (isWhitespace(toCheck)) {
-	errorMsg+="<%=resource.getString("GML.theField")%> '<%=resource.getString("JSPP.webPage")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	errorNb++;
-    }
+  var errorNb = 0;
+  var toCheck = document.multichoice.URL.value;
+  if (isWhitespace(toCheck)) {
+	  errorMsg+="<%=resource.getString("GML.theField")%> '<%=resource.getString("JSPP.webPage")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	  errorNb++;
+  }
 
-    switch(errorNb)
-    {
-	case 0 :
-            result = true;
-            break;
-        default :
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb) {
+	  case 0 :
+      callback.call(this);
+      break;
+    default :
+      jQuery.popup.error(errorMsg);
+  }
 }
+
 function sendData()
 {
 	if ($('#url-radio').is(':checked')) {
-		if (isCorrectForm()) {
+		ifCorrectFormExecute(function() {
 			document.multichoice.submit();
-		}
+    });
 	} else {
 		document.multichoice.submit();
 	}

@@ -48,6 +48,13 @@ if (!String.prototype.startsWith) {
   };
 }
 
+if (!String.prototype.replaceAll) {
+  String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+  };
+}
+
 if (!String.prototype.isDefined) {
   String.prototype.isDefined = function() {
     var withoutWhitespaces = this.replace(/[ \r\n\t]/g, '');

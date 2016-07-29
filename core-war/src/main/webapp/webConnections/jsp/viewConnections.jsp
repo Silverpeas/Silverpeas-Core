@@ -53,10 +53,10 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
       }
 
       function deleteConnection(id) {
-          if(window.confirm("<%=resource.getString("webConnections.confirmDeleteConnection")%>")) {
-              document.deleteForm.ConnectionId.value = id;
-              document.deleteForm.submit();
-          }
+        jQuery.popup.confirm("<%=resource.getString("webConnections.confirmDeleteConnection")%>", function() {
+          document.deleteForm.ConnectionId.value = id;
+          document.deleteForm.submit();
+        });
       }
     </script>
   </head>

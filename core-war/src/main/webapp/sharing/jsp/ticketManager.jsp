@@ -89,13 +89,13 @@ $(function () {
 });
 
 function sendData() {
-  if (isCorrectForm()) {
+  ifCorrectFormExecute(function() {
     document.ticketForm.action = "<c:out value='${action}'/>";
     document.ticketForm.submit();
-  }
+  });
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
   var nb  = document.ticketForm.nbAccessMax.value;
@@ -120,21 +120,17 @@ function isCorrectForm() {
     }
   }
   switch(errorNb) {
-  case 0 :
-    result = true;
-    break;
-  case 1 :
-    errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
-    window.alert(errorMsg);
-    result = false;
-    break    ;
-  default :
-    errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
-    window.alert(errorMsg);
-    result = false;
-    break;
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<fmt:message key='GML.ThisFormContains'/> 1 <fmt:message key='GML.error'/> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<fmt:message key='GML.ThisFormContains'/> " + errorNb + " <fmt:message key='GML.errors'/> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 function toggleContinuous(effect) {
@@ -160,7 +156,6 @@ function toggleContinuous(effect) {
 
     <view:window>
       <view:frame>
-        <view:board>
 
           <form name="ticketForm" method="post" action="">
             <input type="hidden" name="componentId" value="<c:out value='${ticket.componentId}'/>"/>
@@ -287,15 +282,13 @@ function toggleContinuous(effect) {
             <div class="legend"> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5" alt="<fmt:message key="GML.mandatory"/>"/> : <fmt:message key="GML.mandatory"/> </div>
           </form>
 
-        </view:board>
-      <br/><center>
+      <br/>
         <fmt:message var="cancel" key="GML.cancel"/>
         <fmt:message var="validate" key="GML.validate"/>
         <view:buttonPane>
           <view:button action="javascript:onclick=sendData();" label="${validate}" disabled="false"/>
           <view:button action="${cancellation}" label="${cancel}" disabled="false"/>
         </view:buttonPane>
-      </center>
     </view:frame>
   </view:window>
   </body>

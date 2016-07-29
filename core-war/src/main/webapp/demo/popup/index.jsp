@@ -70,6 +70,10 @@ function showConfirmation() {
 	});
 }
 
+function showError() {
+  $('#message').popup('error');
+}
+
 </script>
 </head>
 <body>
@@ -80,6 +84,7 @@ function showConfirmation() {
 <li><a href="javascript:onclick=showHelp()">Display help message (One button + specific class)</a></li>
 <li><a href="javascript:onclick=showValidation()">Display validation message (Two buttons)</a></li>
 <li><a href="javascript:onclick=showConfirmation()">Afficher message de confirmation (Two buttons + one icon)</a></li>
+<li><a href="javascript:onclick=showError()">Afficher message d'erreur</a></li>
 </ul>
 
 <div id="message" style="display: none">

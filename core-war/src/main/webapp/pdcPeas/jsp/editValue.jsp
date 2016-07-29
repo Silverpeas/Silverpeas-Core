@@ -74,47 +74,39 @@ if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 
 <script language="Javascript">
+function ifCorrectFormExecute(callback) {
+  var errorMsg = "";
+  var errorNb = 0;
+  var name = stripInitialWhitespace(document.editValue.Name.value);
+  if (isWhitespace(name)) {
+    errorMsg+=" - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.value")%>' <%=resource.getString("pdcPeas.MustContainsText")%>\n";
+    errorNb++;
+  }
 
-function validDescr(){
-	if (document.editValue.Description.value.length > 1000) {
-		alert("<%=resource.getString("pdcPeas.lenDescription")%>");
-		document.editValue.Description.focus();
-		return false;
-	}
-	return true;
-}
+  if ($("#ValueDescription").val().length > 1000) {
+    errorMsg+=" - <%=resource.getString("pdcPeas.lenDescription")%>\n";
+    errorNb++;
+    document.editValue.Description.focus();
+  }
 
-function isCorrectForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var name = stripInitialWhitespace(document.editValue.Name.value);
-     if (isWhitespace(name)) {
-       errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '" + value + "' <%=resource.getString("pdcPeas.MustContainsText")%>\n";
-       errorNb++;
-     }
-     switch(errorNb)
-     {
-        case 0 :
-            result = validDescr();
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb) {
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+  }
 }
 
 function sendData() {
-	if (isCorrectForm()) {
+	ifCorrectFormExecute(function() {
 		document.editValue.submit();
-    }
+  });
 }
 
 //gestion des traductions
@@ -147,7 +139,7 @@ function removeTranslation()
 
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onload="document.editValue.Name.focus()">
+<BODY onload="document.editValue.Name.focus()">
 <FORM name="editValue" action="UpdateValue" method="post">
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));

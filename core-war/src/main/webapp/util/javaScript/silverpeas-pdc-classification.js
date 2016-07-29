@@ -241,7 +241,7 @@
                     settings.addition.title, [], false, function(positions) {
               var classification = predefinition.data('classification');
               if (!areNotAlreadyInClassification(positions, classification)) {
-                alert(settings.messages.positionAlreadyInClassification);
+                notyError(settings.messages.positionAlreadyInClassification);
               } else {
                 for (var i = 0; i < positions.length; i++) {
                   classification.positions.push(positions[i]);
@@ -270,20 +270,20 @@
                 openEditionBox(predefinition, settings.defaultClassificationURI, position);
               },
               onDeletion: function(position) {
-                if (window.confirm(settings.deletion.confirmation)) {
+                jQuery.popup.confirm(settings.deletion.confirmation, function() {
                   var classification = predefinition.data('classification');
                   removePosition(position, classification.positions);
                   submitClassification(predefinition, settings.defaultClassificationURI);
-                }
+                });
               }
             });
           }, function(classification, error) {
             $this.data('classification', classification);
-            alert(error.message);
+            notyError(error.message);
           });
         }, function(pdc, error) {
           $this.data('pdc', pdc);
-          alert(error.message);
+          notyError(error.message);
         });
       });
     },
@@ -313,7 +313,7 @@
                       settings.addition.title, [], false, function(positions) {
                 var classification = $this.data('classification');
                 if (!areNotAlreadyInClassification(positions, classification)) {
-                  alert(settings.messages.positionAlreadyInClassification);
+                  notyError(settings.messages.positionAlreadyInClassification);
                 } else {
                   for (var i = 0; i < positions.length; i++) {
                     classification.positions.push(positions[i]);
@@ -341,11 +341,11 @@
                   openEditionBox($this, settings.defaultClassificationURI, position);
                 },
                 onDeletion: function(position) {
-                  if (window.confirm(settings.deletion.confirmation)) {
+                  jQuery.popup.confirm(settings.deletion.confirmation, function() {
                     var classification = $this.data('classification');
                     removePosition(position, classification.positions);
                     $this.pdcPositions('refresh', classification.positions);
-                  }
+                  });
                 }
               });
             } else {
@@ -353,11 +353,11 @@
             }
           }, function(classification, error) {
             $this.data('classification', classification);
-            alert(error.message);
+            notyError(error.message);
           });
         }, function(pdc, error) {
           $this.data('pdc', pdc);
-          alert(error.message);
+          notyError(error.message);
         });
       });
     },
@@ -418,7 +418,7 @@
                             $this.pdcPositions('refresh', classification.positions);
                           }, function(error) {
                     if (error.status === 409) {
-                      alert(settings.messages.contentMustHaveAPosition);
+                      notyError(settings.messages.contentMustHaveAPosition);
                     }
                   });
                 }
@@ -426,11 +426,11 @@
             }
           }, function(classification, error) {
             $this.data('classification', classification);
-            alert(error.message);
+            notyError(error.message);
           });
         }, function(pdc, error) {
           $this.data('pdc', pdc);
-          alert(error.message);
+          notyError(error.message);
         });
       });
     },
@@ -460,7 +460,7 @@
             }
           }, function(classification, error) {
             $this.data('classification', classification);
-            alert(error.message);
+            notyError(error.message);
           });
         }, function(pdc, error) {
 		$this.hide();
@@ -626,7 +626,7 @@
           selectedPosition.values = positions[i].values;
         }
         if (isAlreadyInClassification(selectedPosition, classification)) {
-          alert(settings.messages.positionAlreadyInClassification);
+          notyError(settings.messages.positionAlreadyInClassification);
           selection = [];
           break;
         } else {
@@ -716,7 +716,7 @@
         $this.pdcPositions('refresh', newClassification.positions, newParameters);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
+        notyError(errorThrown);
       }
     });
   }

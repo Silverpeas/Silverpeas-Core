@@ -87,10 +87,10 @@ function sendNotification() {
        errorMsg = "<fmt:message key="GML.thefield"/> <fmt:message key="GML.notification.subject"/> <fmt:message key="GML.isRequired"/>";
     }
     if (errorMsg == "") {
-		document.notificationSenderForm.action = "SendNotif";
-		document.notificationSenderForm.submit();
+		  document.notificationSenderForm.action = "SendNotif";
+		  document.notificationSenderForm.submit();
     } else {
-        window.alert(errorMsg);
+      jQuery.popup.error(errorMsg);
     }
 }
 

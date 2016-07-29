@@ -57,7 +57,7 @@ $(function() {
 					//As fragment is externalized, class invitation can be missing
 					}
 				} else {
-				alert(data.error);
+				  notyError(data.error);
 				}
 			});
 			},

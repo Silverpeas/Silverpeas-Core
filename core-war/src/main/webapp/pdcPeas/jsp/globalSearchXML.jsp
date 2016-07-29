@@ -87,7 +87,7 @@ function sendXMLRequest()
 		$.progressMessage();
 		document.XMLSearchForm.submit();
 	} else {
-		alert("<%=resource.getString("pdcPeas.choiceForm")%>");
+    jQuery.popup.error("<%=resource.getString("pdcPeas.choiceForm")%>");
 	}
 }
 function chooseTemplate()
