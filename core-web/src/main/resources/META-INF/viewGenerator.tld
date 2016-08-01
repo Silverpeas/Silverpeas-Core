@@ -1661,6 +1661,41 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Defines if apps must be displayed before subspaces</description>
+      <name>displayAppsFirst</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Defines if apps icon must be displayed</description>
+      <name>displayAppIcon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Defines the name of Javascript function to call when user clicks on main space</description>
+      <name>callbackJSForMainSpace</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Defines the name of Javascript function to call when user clicks on subspace</description>
+      <name>callbackJSForSubspaces</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Defines the name of Javascript function to call when user clicks on app</description>
+      <name>callbackJSForApps</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that checks the validity of the current session and forwards to the error page.</description>
