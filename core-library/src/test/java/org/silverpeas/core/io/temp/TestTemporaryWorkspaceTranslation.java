@@ -44,6 +44,8 @@ import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation
     .startWithTranslationDescriptorPrefix;
 
 /**
+ * In the tests below, the last modification time is asserted with split-second accuracy as the
+ * test running system is unable to be consistent over the time with the time measurements.
  * @author Yohann Chastagnier
  */
 public class TestTemporaryWorkspaceTranslation {
@@ -74,7 +76,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(test.exists(), is(false));
     assertThat(test.lastModified(), is(0l));
 
-    long createTime = System.currentTimeMillis();
+    long createTime = System.currentTimeMillis() / 1000;
     Thread.sleep(1001);
     test.create();
 
@@ -84,7 +86,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified(), greaterThan(createTime));
+    assertThat(test.lastModified() / 1000, greaterThan(createTime));
     assertThat(readFileToString(descriptor), is(TRANSLATION_ID_KEY + workspace.getName()));
 
     test.create();
@@ -93,7 +95,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified(), greaterThan(createTime));
+    assertThat(test.lastModified() / 1000, greaterThan(createTime));
     assertThat(readFileToString(descriptor), is(TRANSLATION_ID_KEY + workspace.getName()));
   }
 
@@ -130,7 +132,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(descriptor, not(is(workspace)));
     assertThat(descriptor, is(descriptorSrc));
     assertThat(workspace, is(workspaceSrc));
-    assertThat((String) test.get("key"), is("value"));
+    assertThat(test.get("key"), is("value"));
   }
 
   @Test
@@ -149,14 +151,14 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(test.exists(), is(false));
     assertThat(test.lastModified(), is(0l));
 
-    long createTime = System.currentTimeMillis();
+    long createTime = System.currentTimeMillis() / 1000;
     Thread.sleep(1001);
     test.create();
 
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified(), greaterThan(createTime));
+    assertThat(test.lastModified() / 1000, greaterThan(createTime));
   }
 
   @Test
@@ -175,7 +177,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(test.exists(), is(false));
     assertThat(test.lastModified(), is(0l));
 
-    long createTime = System.currentTimeMillis();
+    long createTime = System.currentTimeMillis() / 1000;
     Thread.sleep(1001);
     test.create();
 
@@ -183,7 +185,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified(), greaterThan(createTime));
+    assertThat(test.lastModified() / 1000, greaterThan(createTime));
   }
 
   @Test
@@ -268,7 +270,7 @@ public class TestTemporaryWorkspaceTranslation {
 
     test.put("key", "value");
     test.put("otherKey", serializable);
-    assertThat((String) test.get("key"), is("value"));
+    assertThat(test.get("key"), is("value"));
     assertThat(test.get("otherKey"), not(sameInstance(serializable)));
     assertThat(test.get("otherKey").toString(), is(serializable.toString()));
 
@@ -279,7 +281,7 @@ public class TestTemporaryWorkspaceTranslation {
     test = TemporaryWorkspaceTranslation.from(TEST_WORKSPACE_ID);
     assertThat(test.get("key"), notNullValue());
     assertThat(test.get("otherKey"), notNullValue());
-    assertThat((String) test.get("key"), is("value"));
+    assertThat(test.get("key"), is("value"));
     assertThat(test.get("otherKey"), not(sameInstance(serializable)));
     assertThat(test.get("otherKey").toString(), is(serializable.toString()));
   }
