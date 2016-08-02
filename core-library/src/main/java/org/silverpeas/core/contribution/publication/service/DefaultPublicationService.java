@@ -201,7 +201,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
       loadTranslations(detail);
       detail.setIndexOperation(indexOperation);
-      createIndex(detail);
+      createIndex(detail, false);
       return detail.getPK();
     } catch (Exception re) {
       throw new PublicationRuntimeException("DefaultPublicationService.createPublication()",
@@ -1296,12 +1296,14 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public void createIndex(PublicationDetail pubDetail) {
+    createIndex(pubDetail, true);
+  }
 
+  private void createIndex(PublicationDetail pubDetail, boolean processContent) {
     if (pubDetail.getIndexOperation() == IndexManager.ADD ||
         pubDetail.getIndexOperation() == IndexManager.READD) {
-
       try {
-        FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
+        FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
         if (indexEntry != null) {
           IndexEngineProxy.addIndexEntry(indexEntry);
         }
@@ -1405,12 +1407,14 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
 
       // set path(s) to publication into the index
-      Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
-      List<String> paths = new ArrayList<>();
-      for (NodePK father : fathers) {
-        paths.add(nodeService.getDetail(father).getFullPath());
+        if (!pubDetail.getPK().getInstanceId().startsWith("kmax")) {
+          Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
+          List<String> paths = new ArrayList<String>();
+          for (NodePK father : fathers) {
+            paths.add(nodeService.getDetail(father).getFullPath());
+          }
+          indexEntry.setPaths(paths);
       }
-      indexEntry.setPaths(paths);
 
       try {
         ThumbnailDetail thumbnail = pubDetail.getThumbnail();
