@@ -64,6 +64,7 @@ import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.StringUtils;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -285,12 +286,20 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           } // if no item set, then use delay to compute next timeout
           else {
             String delay = timeOutAction.getDelay();
-            if ((StringUtil.isDefined(delay)) && (delay.endsWith("d"))) {
+            if ((StringUtil.isDefined(delay)) && (delay.endsWith("m"))) {
+              now.add(Calendar.MONTH,
+                  Integer.parseInt(delay.substring(0, delay.length() - 1)));
+              timeOutDate = now.getTime();
+            } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("d"))) {
               now.add(Calendar.DAY_OF_YEAR,
                   Integer.parseInt(delay.substring(0, delay.length() - 1)));
               timeOutDate = now.getTime();
             } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("h"))) {
               now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+              timeOutDate = now.getTime();
+            } else if ((StringUtil.isDefined(delay)) && (StringUtils.isNumeric(delay))) {
+              // If no unit is specified, we consider the value as a number of minutes
+              now.add(Calendar.MINUTE, Integer.parseInt(delay));
               timeOutDate = now.getTime();
             } else {
               SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
