@@ -765,53 +765,6 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
         destination = getDestination("ViewManager", pdcSC, request);
-
-      } else if (function.startsWith("vsicAddPdc")) {
-
-        destination = "/pdcPeas/jsp/addPdc_test.jsp";
-
-      } else if (function.startsWith("vsicAddList")) {
-        // assign attributes into the request
-        String values = (String) request.getParameter("Values");
-        if (values != null) {
-          pdcSC.setValuesToPdcAddAPosteriori(values);
-        }
-
-        request.setAttribute("AxisList", pdcSC.getAxis()); // set a sorted list
-        request.setAttribute("ViewType", pdcSC.getCurrentView()); // the type of
-        // the axe
-
-        destination = "/pdcPeas/jsp/directValuesTree.jsp";
-
-      } else if (function.startsWith("vsicChangeType")) {
-        String type = request.getParameter("ViewType"); // get the id of the
-        // selected axe
-
-        pdcSC.setCurrentView(type);
-        destination = getDestination("vsicAddList", pdcSC, request);
-
-      } else if (function.startsWith("vsicAddTree")) {// get URL parameters
-        String axeId = request.getParameter("Id"); // get the id of the selected axis
-        request.setAttribute("Axis", pdcSC.getAxisDetail(axeId));
-        destination = "/pdcPeas/jsp/directValuesAxis.jsp";
-
-      } else if (function.startsWith("vsicAddAxis")) {
-        String valueId = request.getParameter("valueId"); // get the id of the selected axis
-        String res = pdcSC.getValuesToPdcAddAPosteriori();
-        String val = "";
-        // just to set the current value
-        pdcSC.getAxisValue(valueId);
-        if (StringUtil.isDefined(res)) {
-          StringTokenizer st = new StringTokenizer(res, ";");
-          while (st.hasMoreTokens()) {
-            val = st.nextToken();
-            Value newValue = new Value("UNKNOWN", "unknown", val, val, null, null, null, -1, -1,
-                null);
-            pdcSC.createDaughterValue(newValue);
-          }
-        }
-
-        destination = "/pdcPeas/jsp/addPdc_test.jsp";
       }
     } catch (AccessForbiddenException afe) {
       destination = "/admin/jsp/accessForbidden.jsp";

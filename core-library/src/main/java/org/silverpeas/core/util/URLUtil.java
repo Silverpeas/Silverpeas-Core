@@ -42,31 +42,20 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class URLUtil {
 
-  public final static String CMP_ADMIN = "admin";
   public final static String CMP_AGENDA = "agenda";
-  public final static String CMP_ATTACHMENT = "attachment";
-  public final static String CMP_FORMDESIGNER = "formDesigner";
   public final static String CMP_SILVERMAIL = "SILVERMAIL";
   public final static String CMP_POPUP = "POPUP";
   public final static String CMP_PERSONALIZATION = "personalization";
-  public final static String CMP_FILESERVER = "FileServer";
-  public final static String CMP_PORTLET = "portlet";
   public final static String CMP_TODO = "todo";
-  public final static String CMP_TREEVIEW = "treeview";
-  public final static String CMP_WORKFLOW = "workflow";
-  public final static String CMP_WYSIWYG = "wysiwyg";
   public final static String CMP_SCHEDULE_EVENT = "scheduleEvent";
   public final static String CMP_CLIPBOARD = "clipboard";
   public final static String CMP_NOTIFICATIONUSER = "notificationUser";
   public final static String CMP_COMMUNICATIONUSER = "communicationUser";
-  public final static String CMP_SEARCHENGINE = "searchEngine";
-  public final static String CMP_WEBLOADERPEAS = "webLoaderPeas";
   public final static String CMP_JOBMANAGERPEAS = "jobManagerPeas";
   public final static String CMP_JOBDOMAINPEAS = "jobDomainPeas";
   public final static String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
   public final static String CMP_JOBORGANIZATIONPEAS = "jobOrganizationPeas";
   public final static String CMP_JOBSEARCHPEAS = "jobSearchPeas";
-  public final static String CMP_JOBREPORTPEAS = "jobReportPeas";
   public final static String CMP_JOBTOOLSPEAS = "jobToolsPeas";
   public final static String CMP_SELECTIONPEAS = "selectionPeas";
   public final static String CMP_ALERTUSERPEAS = "alertUserPeas";
@@ -80,11 +69,8 @@ public class URLUtil {
   public final static String CMP_VERSIONINGPEAS = "versioningPeas";
   public final static String CMP_FILESHARING = "fileSharing";
   public final static String CMP_WEBCONNECTIONS = "webConnections";
-  public final static String CMP_EXPERTLOCATORPEAS = "expertLocatorPeas";
   // For white pages only : this component have a 'BusIHM like' state
   public final static String CMP_WHITEPAGESPEAS = "whitePagesPeas";
-  public final static String CMP_VSICPUZZLE = "vsicPuzzle";
-  public final static String CMP_INFOLETTER = "infoLetter";
   public final static String CMP_JOBBACKUP = "jobBackup";
   public final static String CMP_TEMPLATEDESIGNER = "templateDesigner";
   public final static String CMP_MYPROFILE = "MyProfile";

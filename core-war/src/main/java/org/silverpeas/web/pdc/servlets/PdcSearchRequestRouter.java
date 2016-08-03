@@ -401,12 +401,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
 
         destination = doGlobalView(pdcSC, request);
-      } else if (function.equals("DisplayPDC")) {
-        String componentId = request.getParameter("ComponentId");
-
-        request.setAttribute("ComponentId", componentId);
-
-        destination = "/pdcPeas/jsp/pdcInComponent.jsp";
       } else if (function.startsWith("ChangeSearchType")) {
         boolean setAdvancedSearchItems = processChangeSearchType(function, pdcSC, request);
 
@@ -1070,8 +1064,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
     List<String> asUserContentRoles = new ArrayList<>();
     if (!bOnlyContainer) {
-      if (contentPeasPDC.getType().equals("fileBoxPlus")
-          || contentPeasPDC.getType().equals("whitePages")
+      if (contentPeasPDC.getType().equals("whitePages")
           || contentPeasPDC.getType().equals("questionReply")) {
         for (int nI = 0; nI < asUserGenericRoles.length; nI++) {
           if (asUserGenericRoles[nI].equals("user")) {

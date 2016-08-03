@@ -65,7 +65,6 @@ public class ContentManager implements Serializable {
     // We hard coded for this time !!!!
     // -------------------------------------------------
 
-    ContentPeas contentFB = new ContentPeas("fileBoxPlus");
     ContentPeas contentWP = new ContentPeas("whitePages");
     ContentPeas contentQR = new ContentPeas("questionReply");
     ContentPeas contentKMelia = new ContentPeas("kmelia");
@@ -79,13 +78,11 @@ public class ContentManager implements Serializable {
     ContentPeas contentBookmark = new ContentPeas("bookmark");
     ContentPeas contentChat = new ContentPeas("chat");
     ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
-    ContentPeas contentEL = new ContentPeas("expertLocator");
     ContentPeas contentWebSites = new ContentPeas("webSites");
     ContentPeas contentGallery = new ContentPeas("gallery");
     ContentPeas contentBlog = new ContentPeas("blog");
 
     // Put all the existing contents in the array of contents
-    s_acContentPeas.add(contentFB);
     s_acContentPeas.add(contentWP);
     s_acContentPeas.add(contentQR);
     s_acContentPeas.add(contentKMelia);
@@ -99,9 +96,7 @@ public class ContentManager implements Serializable {
     s_acContentPeas.add(contentBookmark);
     s_acContentPeas.add(contentChat);
     s_acContentPeas.add(contentInfoLetter);
-    s_acContentPeas.add(contentEL);
     s_acContentPeas.add(contentWebSites);
-    // s_acContentPeas.add(contentDocumentation);
     s_acContentPeas.add(contentGallery);
     s_acContentPeas.add(contentBlog);
   }
@@ -290,37 +285,7 @@ public class ContentManager implements Serializable {
 
     List<URLIcone> auURLIcones = new ArrayList<>();
 
-    if (sContentType.equals("fileBoxPlus")) {
-      boolean publisher = false;
-      boolean admin = false;
-
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if ("admin".equals(userRole)) {
-          admin = true;
-        } else if ("publisher".equals(userRole)) {
-          publisher = true;
-        }
-      }
-
-      if (admin || publisher) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publicationAdd.gif");
-        uiCreation.setAlternateText("fileBoxPlus.CreateNewDocument");
-        uiCreation.setActionURL("CreateQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
-        uiCreation.setAlternateText("fileBoxPlus.AllDocuments");
-        uiCreation.setActionURL("Main");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("whitePages")) {
+    if (sContentType.equals("whitePages")) {
       boolean admin = false;
 
       Iterator<String> iter = asUserContentRoles.iterator();
@@ -346,99 +311,6 @@ public class ContentManager implements Serializable {
         uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
         uiCreation.setAlternateText("whitePages.AllCards");
         uiCreation.setActionURL("Main");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("expertLocator")) {
-      boolean admin = false;
-
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if ("admin".equals(userRole)) {
-          admin = true;
-        }
-      }
-
-      if (admin) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
-        uiCreation.setAlternateText("expertLocator.CreateAUsercard");
-        uiCreation.setActionURL("createQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
-        uiCreation.setAlternateText("expertLocator.AllCards");
-        uiCreation.setActionURL("Main");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("questionReply")) {
-      boolean admin = false;
-      boolean publisher = false;
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if (("admin".equals(userRole)) || ("writer".equals(userRole))) {
-          admin = true;
-        }
-        if ("publisher".equals(userRole)) {
-          publisher = true;
-        }
-      }
-
-      if (admin) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
-        uiCreation.setAlternateText("questionReply.AriseAQuestion");
-        uiCreation.setActionURL("CreateQQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
-        uiCreation.setAlternateText("questionReply.AddAFAQ");
-        uiCreation.setActionURL("CreateQueryQR");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(
-            URLUtil.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
-        uiCreation.setAlternateText("questionReply.AllQuestions");
-        uiCreation.setActionURL("ConsultReceiveQuestions");
-        auURLIcones.add(uiCreation);
-      } else if (publisher) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
-        uiCreation.setAlternateText("questionReply.AriseAQuestion");
-        uiCreation.setActionURL("CreateQQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(
-            URLUtil.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
-        uiCreation.setAlternateText("questionReply.AllQuestions");
-        uiCreation.setActionURL("ConsultReceiveQuestions");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("contentFB")) {
-      // No icones for role contentFB_user
-      // Get the URLIcones for a contentFB_admin role
-      if ((asUserContentRoles.get(0)).equals("ContentRole_fileBoxPlus_admin")) {
-        URLIcone uiCreation = new URLIcone();
-        uiCreation.setIconePath("");
-        uiCreation.setActionURL("Main");
-
         auURLIcones.add(uiCreation);
       }
     }

@@ -52,10 +52,7 @@ public class ContentPeas {
     // We don't have enough time to do the parsing !!!
     // We hard coded for this time !!!!
     // -------------------------------------------------
-    if ("fileBoxPlus".equals(sContentDescriptorPath)) {
-      this.init("fileBoxPlus", "com.stratelia.silverpeas.fileBoxPlus.FileBoxPlusContentManager",
-          "fileBoxPlus", "admin", "publisher", "user");
-    } else if ("whitePages".equals(sContentDescriptorPath)) {
+    if ("whitePages".equals(sContentDescriptorPath)) {
       this.init("whitePages", "org.silverpeas.components.whitepages.control.WhitePagesContentManager",
           "whitePagesPDC", "admin", "user");
     } else if ("questionReply".equals(sContentDescriptorPath)) {
@@ -96,10 +93,6 @@ public class ContentPeas {
     } else if ("infoLetter".equals(sContentDescriptorPath)) {
       this.init("infoLetter", "org.silverpeas.components.infoLetter.InfoLetterContentManager",
           "infoLetter", "admin", "publisher", "user");
-    } else if ("expertLocator".equals(sContentDescriptorPath)) {
-      this.init("expertLocator",
-          "com.silverpeas.expertLocator.control.ExpertLocatorContentManager",
-          "expertLocator", "admin", "user");
     } else if ("webSites".equals(sContentDescriptorPath)) {
       this.init("webSites", "org.silverpeas.components.websites.WebSitesContentManager", "webSites",
           "Publisher", "Reader");
