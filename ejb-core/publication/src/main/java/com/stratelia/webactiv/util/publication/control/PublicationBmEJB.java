@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.util.publication.control;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.RatingBm;
@@ -66,7 +65,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
-import org.apache.commons.collections.ListUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.publication.notification.PublicationNotificationService;
 import org.silverpeas.rating.ContributionRatingPK;
@@ -181,7 +179,7 @@ public class PublicationBmEJB implements PublicationBm {
       }
       loadTranslations(detail);
       detail.setIndexOperation(indexOperation);
-      createIndex(detail);
+      createIndex(detail, false);
       if (useTagCloud) {
         createTagCloud(detail);
       }
@@ -1310,6 +1308,10 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void createIndex(PublicationDetail pubDetail) {
+    createIndex(pubDetail, true);
+  }
+
+  private void createIndex(PublicationDetail pubDetail, boolean processContent) {
     SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
         "pubDetail.getIndexOperation() = " + pubDetail.getIndexOperation());
     if (pubDetail.getIndexOperation() == IndexManager.ADD
@@ -1317,7 +1319,7 @@ public class PublicationBmEJB implements PublicationBm {
       SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
           "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + pubDetail.toString());
       try {
-        FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
+        FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
         if (indexEntry != null) {
           IndexEngineProxy.addIndexEntry(indexEntry);
         }
@@ -1424,12 +1426,14 @@ public class PublicationBmEJB implements PublicationBm {
       }
       
       // set path(s) to publication into the index
-      Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
-      List<String> paths = new ArrayList<String>();
-      for (NodePK father : fathers) {
-        paths.add(nodeBm.getDetail(father).getFullPath());
+      if (!pubDetail.getPK().getInstanceId().startsWith("kmax")) {
+        Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
+        List<String> paths = new ArrayList<String>();
+        for (NodePK father : fathers) {
+          paths.add(nodeBm.getDetail(father).getFullPath());
+        }
+        indexEntry.setPaths(paths);
       }
-      indexEntry.setPaths(paths);
 
       try {
         ThumbnailDetail thumbnail = pubDetail.getThumbnail();
