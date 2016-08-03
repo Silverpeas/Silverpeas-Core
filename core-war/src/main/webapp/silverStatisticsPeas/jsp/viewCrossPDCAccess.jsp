@@ -68,12 +68,12 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 
 	function checkForm() {
 		if (document.pdcAccessForm.FirstAxis.value == 0 || document.pdcAccessForm.SecondAxis.value == 0) {
-			alert(document.pdcAccessForm.selectAxisError.value);
+			notyError(document.pdcAccessForm.selectAxisError.value);
 			return false;
 		}
 		if (document.pdcAccessForm.FirstAxis.value != 0 &&
 			document.pdcAccessForm.FirstAxis.value == document.pdcAccessForm.SecondAxis.value) {
-			alert(document.pdcAccessForm.sameAxisError.value);
+      notyError(document.pdcAccessForm.sameAxisError.value);
 			return false;
 		}
 		return true;

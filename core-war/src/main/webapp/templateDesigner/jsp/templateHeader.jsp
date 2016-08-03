@@ -109,37 +109,27 @@ ul.tagit {
 </style>
 <script type="text/javascript">
 function sendData() {
-	if (isCorrectForm()) {
-		document.templateForm.submit();
-	}
-}
-
-function isCorrectForm() {
 	var errorMsg = "";
 	var errorNb = 0;
 	var title = stripInitialWhitespace(document.templateForm.Name.value);
 	if (title == "") {
-         errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+         errorMsg+=" - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
          errorNb++;
 	}
 	$("#Visibility_Spaces").val(getTags($("#template-spaces-visibility").tagit("tags")));
 	$("#Visibility_Instances").val(getTags($("#template-instances-visibility").tagit("tags")));
 	switch(errorNb) {
-	case 0 :
-		result = true;
-		break;
-	case 1 :
-		errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-		window.alert(errorMsg);
-		result = false;
-		break;
-	default :
-		errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-		window.alert(errorMsg);
-		result = false;
-		break;
+	  case 0 :
+      document.templateForm.submit();
+		  break;
+	  case 1 :
+		  errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+		  break;
+	  default :
+		  errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
 	}
-	return result;
 }
 
 function getTags(tags) {

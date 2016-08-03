@@ -58,23 +58,18 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
 <script type="text/javascript">
 	var currentLanguage = "<%=value.getLanguage()%>";
 
-	// this method opens a pop-up which warns the user
-	function areYouSure(choice){
-		if (choice == 'all')
-		    ConfirmDelete = confirm('<%=resource.getString("pdcPeas.confirmDeleteArbo")%>');
-		else
-			ConfirmDelete = confirm('<%=resource.getString("pdcPeas.confirmDeleteValue")%>');
-		return ConfirmDelete
-	}
-
 	// efface une valeur ou/et son arborescence
 	function removeSelection(choice){
-		// demande confirmation
-		if (areYouSure(choice)){
-			if (choice == 'all')
-				document.deleteForm.action = "DeleteArbo";
-			document.deleteForm.submit();
-		}
+    var label = "<%=resource.getString("pdcPeas.confirmDeleteValue")%>";
+    document.deleteForm.action = "DeleteValue";
+    if (choice == 'all') {
+      label = "<%=resource.getString("pdcPeas.confirmDeleteArbo")%>";
+      document.deleteForm.action = "DeleteArbo";
+    }
+
+    jQuery.popup.confirm(label, function() {
+      document.deleteForm.submit();
+    });
 	}
 
 	function editValue()

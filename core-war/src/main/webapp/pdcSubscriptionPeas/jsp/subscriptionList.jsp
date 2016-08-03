@@ -146,11 +146,6 @@
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <script type="text/javascript">
-
-function areYouSure(){
-    return confirm("<%=resource.getString("confirmDeleteSubscription")%>");
-}
-
 function newSubscription() {
         chemin = '<%=m_context%>/RpdcSubscriptionPeas/jsp/PdcSubscription';
                 largeur = "600";
@@ -166,29 +161,29 @@ function editSubscription(scid) {
 }
 
 function deleteSubscription() {
-
-                var boxItems = document.subscriptionList.pdcCheck;
-                var selectItems = "";
-                if (boxItems != null){
-                        // au moins une checkbox exist
-                        var nbBox = boxItems.length;
-                        if ( (nbBox == null) && (boxItems.checked == true) ){
-                                selectItems += boxItems.value;
-                        } else{
-                                for (i=0;i<boxItems.length ;i++ ){
-                                        if (boxItems[i].checked == true){
-                                                selectItems += boxItems[i].value+",";
-                                        }
-                                }
-                                selectItems = selectItems.substring(0,selectItems.length-1);
-                        }
-         }
- if ( (selectItems.length > 0) && (areYouSure()) ) {
-    document.subscriptionList.mode.value = 'delete';
-    document.subscriptionList.submit();
+  var boxItems = document.subscriptionList.pdcCheck;
+  var selectItems = "";
+  if (boxItems != null) {
+    // au moins une checkbox exist
+    var nbBox = boxItems.length;
+    if ((nbBox == null) && (boxItems.checked == true)) {
+      selectItems += boxItems.value;
+    } else {
+      for (i = 0; i < boxItems.length; i++) {
+        if (boxItems[i].checked == true) {
+          selectItems += boxItems[i].value + ",";
+        }
+      }
+      selectItems = selectItems.substring(0, selectItems.length - 1);
+    }
+  }
+  if (selectItems.length > 0) {
+    jQuery.popup.confirm("<%=resource.getString("confirmDeleteSubscription")%>", function() {
+      document.subscriptionList.mode.value = 'delete';
+      document.subscriptionList.submit();
+    });
   }
 }
-
 </script>
 </head>
 <body class="txtlist">

@@ -39,14 +39,6 @@
 
 	function sendData()
 	{
-		if ( isCorrectlyFilled() )
-		{
-			document.importWorkflowForm.submit();
-		}
-	}
-
-	function isCorrectlyFilled()
-	{
 	var errorMsg = "";
 	var errorNb = 0;
 	var xmlFile = stripInitialWhitespace(document.importWorkflowForm.xmlFile.value);
@@ -60,26 +52,21 @@
 	switch(errorNb)
 	{
 		case 0 :
-		result = true;
-		break;
+      document.importWorkflowForm.submit();
+		  break;
 		case 1 :
-		errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-		window.alert(errorMsg);
-		result = false;
-		break;
+		  errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+		  break;
 		default :
-		errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-		window.alert(errorMsg);
-		result = false;
-		break;
+		  errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
 	}
-	return result;
 	}
 
 </script>
 </HEAD>
-
-<BODY leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+<BODY>
 <%
 	browseBar.setDomainName(resource.getString("workflowDesigner.toolName") );
 	browseBar.setComponentName(resource.getString("workflowDesigner.importWorkflow"), "#" );

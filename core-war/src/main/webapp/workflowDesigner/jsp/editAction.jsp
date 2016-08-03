@@ -54,19 +54,13 @@
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
-    function sendData()
-    {
-        if ( isCorrectlyFilled() )
-            document.actionForm.submit();
-    }
-
     function move(direction, iConsequence)
     {
         location.href="MoveConsequence?consequenceNo=" + iConsequence +"&direction="+ direction
                       + "&context=" + "<%=strConsequenceContext%>";
     }
 
-    function isCorrectlyFilled()
+    function sendData()
     {
         var errorMsg = "";
         var errorNb = 0;
@@ -81,31 +75,27 @@
         }
 
         if (actionName.toLowerCase() == formName.toLowerCase()) {
-		errorMsg+="  - <%=resource.getString("workflowDesigner.action.js.different")%>\n";
+		      errorMsg+="  - <%=resource.getString("workflowDesigner.action.js.different")%>\n";
             errorNb++;
         }
 
         switch(errorNb)
         {
             case 0 :
-                result = true;
+                document.actionForm.submit();
                 break;
             case 1 :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
+                jQuery.popup.error(errorMsg);
                 break;
             default :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
-                break;
+                jQuery.popup.error(errorMsg);
         }
-        return result;
     }
 </script>
 </HEAD>
-<BODY leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+<BODY>
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.actions"), strCancelAction);

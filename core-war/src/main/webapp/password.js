@@ -57,7 +57,7 @@ function handlePasswordForm(params) {
       errorMsg += "- " + $.i18n.prop('authentication.password.different') + "\n";
     }
     if (errorMsg) {
-      alert(errorMsg);
+      jQuery.popup.error(errorMsg);
       return false;
     }
     this.action = settings.passwordFormAction;

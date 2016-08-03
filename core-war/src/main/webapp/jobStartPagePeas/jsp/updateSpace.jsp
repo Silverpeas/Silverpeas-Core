@@ -66,12 +66,12 @@ browseBar.setPath(resource.getString("JSPP.updateSpace"));
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript">
 function B_VALIDER_ONCLICK() {
-	if (isCorrectForm()) {
+	ifCorrectFormExecute(function() {
 		document.infoSpace.submit();
-	}
+  });
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
 	var errorMsg = "";
 	var errorNb = 0;
 
@@ -106,23 +106,18 @@ function isCorrectForm() {
       }
     <% } %>
 
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
+     switch(errorNb) {
+       case 0 :
+         callback.call(this);
+         break;
+       case 1 :
+         errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+         jQuery.popup.error(errorMsg);
+         break;
+       default :
+          errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+          jQuery.popup.error(errorMsg);
      }
-     return result;
 }
 
 <%

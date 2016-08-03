@@ -75,7 +75,7 @@ function gotoToDo()
   window.location.replace("todo.jsp");
 }
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
   var errorMsg = "";
   var errorNb = 0;
 
@@ -96,57 +96,52 @@ function isCorrectForm() {
     errorNb++;
   });
 
-  var result;
   switch (errorNb) {
     case 0 :
-      result = true;
+      callback.call(this);
       break;
     case 1 :
       errorMsg =
           "<%=todo.getString("ThisFormContains")%> 1 <%=todo.getString("Error")%> : \n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
+      jQuery.popup.error(errorMsg);
       break;
     default :
       errorMsg = "<%=todo.getString("ThisFormContains")%> " + errorNb +
           " <%=todo.getString("Errors")%> :\n" + errorMsg;
-      window.alert(errorMsg);
-      result = false;
-      break;
+      jQuery.popup.error(errorMsg);
   }
-  return result;
 }
 
 
 function reallyAdd()
 {
-        if (isCorrectForm()) {
-        document.todoEditForm.Action.value = "ReallyAdd";
-        document.todoEditForm.submit();
-        }
+  ifCorrectFormExecute(function() {
+    document.todoEditForm.Action.value = "ReallyAdd";
+    document.todoEditForm.submit();
+  });
 }
 
 function reallyUpdate()
 {
 	document.todoEditForm.Name.disabled = false;
-    document.todoEditForm.PercentCompleted.disabled = false;
-    document.todoEditForm.Description.disabled = false;
-    document.todoEditForm.StartDate.disabled = false;
-    document.todoEditForm.EndDate.disabled = false;
-    document.todoEditForm.Classification.disabled = false;
-    document.todoEditForm.Priority.disabled = false;
-    if (isCorrectForm()) {
-     document.todoEditForm.Action.value = "ReallyUpdate";
-     document.todoEditForm.submit();
-    }
+  document.todoEditForm.PercentCompleted.disabled = false;
+  document.todoEditForm.Description.disabled = false;
+  document.todoEditForm.StartDate.disabled = false;
+  document.todoEditForm.EndDate.disabled = false;
+  document.todoEditForm.Classification.disabled = false;
+  document.todoEditForm.Priority.disabled = false;
+  ifCorrectFormExecute(function() {
+   document.todoEditForm.Action.value = "ReallyUpdate";
+   document.todoEditForm.submit();
+  });
 }
 
-function deleteConfirm(name)
-{
-    if (window.confirm("<%=todo.getString("todoDeleteConfirm")%> '" + name + "' ?")){
-          document.todoEditForm.Action.value = "ReallyRemove";
-          document.todoEditForm.submit();
-    }
+function deleteConfirm(name) {
+  var label = "<%=todo.getString("todoDeleteConfirm")%> '" + name + "' ?";
+  jQuery.popup.confirm(label, function() {
+    document.todoEditForm.Action.value = "ReallyRemove";
+    document.todoEditForm.submit();
+  });
 }
 
 function test(){

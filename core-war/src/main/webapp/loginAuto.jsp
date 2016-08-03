@@ -157,7 +157,7 @@
     function loginQuestion() {
       var form = document.getElementById("EDform");
       if (form.elements["Login"].value.length === 0) {
-        alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
+        jQuery.popup.error("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
       } else {
         form.action = '<c:url value="/CredentialsServlet/LoginQuestion" />';
         form.submit();
@@ -167,7 +167,7 @@
     function resetPassword() {
       var form = document.getElementById("EDform");
       if (form.elements["Login"].value.length === 0) {
-        alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
+        jQuery.popup.error("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
       } else {
         form.action = '<c:url value="/CredentialsServlet/ForgotPassword" />';
         form.submit();

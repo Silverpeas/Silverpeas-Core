@@ -164,7 +164,7 @@
             __renderSubscriptions(subscriptions);
           },
           error : function(jqXHR, textStatus, errorThrown) {
-            alert(errorThrown);
+            notyError(errorThrown);
           }
         });
 

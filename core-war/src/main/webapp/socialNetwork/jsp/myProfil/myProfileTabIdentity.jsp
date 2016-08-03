@@ -224,7 +224,7 @@
 		if (errorMsg == "") {
 			document.UserForm.submit();
 		} else {
-			window.alert(errorMsg);
+      jQuery.popup.error(errorMsg);
 		}
 	}
 </script>

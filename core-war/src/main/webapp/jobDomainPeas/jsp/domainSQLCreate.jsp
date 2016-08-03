@@ -67,7 +67,7 @@ function SubmitWithVerif() {
     if (errorMsg == "") {
         document.domainForm.submit();
     } else {
-        window.alert("<% out.print(resource.getString("JDP.missingFieldStart")); %>"
+      jQuery.popup.error("<% out.print(resource.getString("JDP.missingFieldStart")); %>"
             + errorMsg
             + "<% out.print(resource.getString("JDP.missingFieldEnd")); %>");
     }

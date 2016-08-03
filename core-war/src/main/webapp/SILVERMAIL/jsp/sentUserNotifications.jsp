@@ -62,17 +62,25 @@ function readMessage(id){
 }
 
 function deleteMessage(id, skipConfirmation) {
-    if(skipConfirmation || window.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>")){
-      var $form = jQuery('#genericForm');
-      jQuery('#NotifId', $form).val(id);
-      $form.attr('action', "DeleteSentNotification.jsp").submit();
-    }
+  if(skipConfirmation){
+    reallyDeleteMessage(id);
+  } else {
+    jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
+      reallyDeleteMessage(id);
+    });
+  }
+}
+
+function reallyDeleteMessage(id) {
+  var $form = jQuery('#genericForm');
+  jQuery('#NotifId', $form).val(id);
+  $form.attr('action', "DeleteSentNotification.jsp").submit();
 }
 
 function deleteAllMessages() {
-    if(window.confirm("<%=silvermailScc.getString("ConfirmDeleteAllSentNotif")%>")){
-      jQuery('#genericForm').attr('action', "DeleteAllSentNotifications.jsp").submit();
-    }
+  jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllSentNotif")%>", function() {
+    jQuery('#genericForm').attr('action', "DeleteAllSentNotifications.jsp").submit();
+  });
 }
 </script>
 </head>

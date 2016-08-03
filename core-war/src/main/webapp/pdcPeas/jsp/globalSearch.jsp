@@ -129,7 +129,6 @@ String icoUser	= m_context + "/util/icons/user.gif";
 
 Board board = gef.getBoard();
 
-ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
@@ -236,10 +235,10 @@ function addValue(selectItem, axisId)
 
 function sendQuery() {
 	setPositionIntoForm();
-    if (document.AdvancedSearch.query.value == "*") {
-		document.AdvancedSearch.query.value = "";
-    }
-	if (checkDates()) {
+  if (document.AdvancedSearch.query.value == "*") {
+    document.AdvancedSearch.query.value = "";
+  }
+	ifCorrectDatesExecute(function() {
 		try {
 		  // clear global input search
 		  top.document.topBarSearchForm.query.value = "";
@@ -249,8 +248,8 @@ function sendQuery() {
 		document.AdvancedSearch.action = "AdvancedSearch";
 
 		$.progressMessage();
-	setTimeout("document.AdvancedSearch.submit();", 500);
-	}
+	  setTimeout("document.AdvancedSearch.submit();", 500);
+	});
 }
 
 function setPositionIntoForm() {
@@ -295,7 +294,7 @@ function areDatesOK(afterDate, beforeDate)
 	 }
 }
 
-function checkDates() {
+function ifCorrectDatesExecute(callback) {
 	errorMsg = "";
 	errorNb = 0;
 
@@ -309,15 +308,12 @@ function checkDates() {
 
 	switch(errorNb) {
 		case 0 :
-			result = true;
+			callback.call(this);
 			break;
 		default :
 			errorMsg = "<%=resource.getString("pdcPeas.Errors")%> :\n" + errorMsg;
-			window.alert(errorMsg);
-			result = false;
-			break;
+      jQuery.popup.error(errorMsg);
 	}
-	return result;
 }
 
 function editHelp()

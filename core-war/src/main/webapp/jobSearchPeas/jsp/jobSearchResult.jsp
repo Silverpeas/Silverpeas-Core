@@ -55,37 +55,33 @@ if(category == null) {
 <view:looknfeel withCheckFormScript="true"/>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <script type="text/javascript">
-function isCorrectForm() {
-	 var errorMsg = "";
-     var errorNb = 0;
-     var idOrName = stripInitialWhitespace(document.forms["SearchResultForm"].elements["SearchField"].value);
+function ifCorrectFormExecute(callback) {
+	var errorMsg = "";
+  var errorNb = 0;
+  var idOrName = stripInitialWhitespace(document.forms["SearchResultForm"].elements["SearchField"].value);
 
-     if (isWhitespace(idOrName)) {
-       errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("JSP.searchField")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-       errorNb++;
-     }
+  if (isWhitespace(idOrName)) {
+    errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("JSP.searchField")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+    errorNb++;
+  }
 
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb) {
+    case 0 :
+      callback.call(this);
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+      break;
+    default :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      jQuery.popup.error(errorMsg);
+   }
 }
 function validateSearch() {
-	if (isCorrectForm()) {
-		document.forms["SearchResultForm"].submit();
-	}
+	ifCorrectFormExecute(function() {
+		  document.forms["SearchResultForm"].submit();
+  });
 }
 
 var spWindow = window;

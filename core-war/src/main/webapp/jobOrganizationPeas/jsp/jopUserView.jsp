@@ -84,7 +84,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-    <title><fmt:message key="GML.popupTitle"/></title>
+  <title><fmt:message key="GML.popupTitle"/></title>
 	<view:includePlugin name="qtip"/>
 
     <script type="text/javascript">
@@ -136,31 +136,28 @@
         componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
       }
 
-	function isCorrectForm() {
+	function ifCorrectFormExecute(callback) {
 		var errorMsg = "";
 		var errorNb = 0;
 		var sourceRightsId = stripInitialWhitespace(document.rightsForm.sourceRightsId.value);
 
 		if (isWhitespace(sourceRightsId)) {
-		errorMsg+=" - '<fmt:message key="JOP.as"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-		errorNb++;
+		  errorMsg+=" - '<fmt:message key="JOP.as"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+		  errorNb++;
 		}
 
-		var result = false;
 		switch (errorNb) {
-		case 0 :
-				result = true;
+      case 0 :
+				callback.call(this);
 				break;
-			case 1 :
+      case 1 :
 				errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-				window.alert(errorMsg);
+        jQuery.popup.error(errorMsg);
 				break;
 			default :
 				errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-				window.alert(errorMsg);
-				break;
+        jQuery.popup.error(errorMsg);
 		}
-		return result;
 	}
 
     <c:if test="${isRightCopyReplaceActivated && isAdmin}">
@@ -173,14 +170,14 @@
           width: 550,
           buttons: {
             "<fmt:message key="GML.ok"/>": function() {
-		if (isCorrectForm()) {
+		          ifCorrectFormExecute(function() {
                 $.progressMessage();
-			if(!document.rightsForm.checkNodeAssignRights.checked) {
-				document.rightsForm.nodeAssignRights.value = "false";
-			}
-			document.rightsForm.action = "AssignRights";
-			document.rightsForm.submit();
-		}
+			          if(!document.rightsForm.checkNodeAssignRights.checked) {
+				          document.rightsForm.nodeAssignRights.value = "false";
+			          }
+			          document.rightsForm.action = "AssignRights";
+			          document.rightsForm.submit();
+		          });
             },
             "<fmt:message key="GML.cancel" />": function() {
               $(this).dialog("close");
@@ -189,7 +186,7 @@
         });
       });
       function assignSameRights() {
-	  $("#assignRightsDialog").dialog("open");
+	      $("#assignRightsDialog").dialog("open");
       }
     </c:if>
 

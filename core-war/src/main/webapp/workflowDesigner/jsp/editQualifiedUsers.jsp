@@ -51,14 +51,6 @@
 <script type="text/javascript">
     function sendData()
     {
-        if ( isCorrectlyFilled() )
-        {
-            document.qualifiedUsersForm.submit();
-        }
-    }
-
-    function isCorrectlyFilled()
-    {
         var errorMsg = '';
         var errorNb = 0;
         var result;
@@ -109,24 +101,20 @@
         switch(errorNb)
         {
             case 0 :
-                result = true;
+                document.qualifiedUsersForm.submit();
                 break;
             case 1 :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
+                jQuery.popup.error(errorMsg);
                 break;
             default :
                 errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
-                window.alert(errorMsg);
-                result = false;
-                break;
+                jQuery.popup.error(errorMsg);
         }
-        return result;
     }
 </script>
 </head>
-<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+<body>
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString(strEditorName) );

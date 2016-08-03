@@ -253,13 +253,14 @@ function reallyUpdate()
 
 function deleteConfirm(name)
 {
-    if (window.confirm("<%=agenda.getString("confirmationSuppressionNote")%> '" + name + "' ?")){
-          document.journalForm.Action.value = "ReallyRemove";
-          if (document.journalForm.CompleteDay.checked) {
+  var label = "<%=agenda.getString("confirmationSuppressionNote")%> '" + name + "' ?";
+  jQuery.popup.confirm(label, function() {
+    document.journalForm.Action.value = "ReallyRemove";
+    if (document.journalForm.CompleteDay.checked) {
 			document.journalForm.WithoutHour.value = "true";
-		  }
-          document.journalForm.submit();
     }
+    document.journalForm.submit();
+  });
 }
 
 function viewFreeBusyTime(formIndex)

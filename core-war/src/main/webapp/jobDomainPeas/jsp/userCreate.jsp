@@ -165,7 +165,7 @@ function SubmitWithVerif()
           }
           else
           {
-            alert("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
+            jQuery.popup.error("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
           }
         }, 'text');
   <% } else { %>
@@ -174,7 +174,7 @@ function SubmitWithVerif()
   }
   else
   {
-      window.alert(errorMsg);
+    jQuery.popup.error(errorMsg);
   }
 }
 

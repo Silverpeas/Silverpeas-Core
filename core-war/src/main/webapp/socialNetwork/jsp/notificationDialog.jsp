@@ -58,11 +58,11 @@ $(function() {
 					if (data.success) {
 						closeNotificationDialog();
 					} else {
-					alert(data.error);
+					  notyError(data.error);
 					}
 				});
 			    } else {
-				window.alert(errorMsg);
+            jQuery.popup.error(errorMsg);
 			    }
 			},
 			"<fmt:message key="GML.cancel" />": function() {

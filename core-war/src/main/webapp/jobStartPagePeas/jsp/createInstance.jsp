@@ -153,7 +153,7 @@ function B_ANNULER_ONCLICK() {
 
 /*****************************************************************************/
 function B_VALIDER_ONCLICK() {
-	if (isCorrectForm()) {
+	ifCorrectFormExecute(function() {
 		<% for(LocalizedParameter parameter : parameters.getParameters().getVisibleParameters()) {
 			if (parameter.isCheckbox()) {
 			%>
@@ -165,13 +165,13 @@ function B_VALIDER_ONCLICK() {
     <% } %>
 			document.infoInstance.<%=parameter.getName()%>.disabled = false;
 		<% } %>
-		document.infoInstance.submit();
-	}
+		  document.infoInstance.submit();
+  });
 }
 
 /*****************************************************************************/
 
-function isCorrectForm() {
+function ifCorrectFormExecute(callback) {
 	var errorMsg = "";
 	var errorNb = 0;
 
@@ -206,20 +206,16 @@ function isCorrectForm() {
 
 	switch(errorNb){
 		case 0 :
-		    result = true;
+        callback.call(this);
 		    break;
 		case 1 :
 		    errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-		    window.alert(errorMsg);
-		    result = false;
+        jQuery.popup.error(errorMsg);
 		    break;
 		default :
 		    errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-		    window.alert(errorMsg);
-		    result = false;
-		    break;
+        jQuery.popup.error(errorMsg);
 	}
-	return result;
 }
 
 function toDoOnLoad() {
