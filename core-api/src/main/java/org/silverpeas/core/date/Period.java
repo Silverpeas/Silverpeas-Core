@@ -23,7 +23,10 @@
  */
 package org.silverpeas.core.date;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -34,9 +37,13 @@ import java.time.ZoneOffset;
  * or offset zones.
  * @author mmoquillon
  */
+@Embeddable
 public class Period {
 
-  private OffsetDateTime startDateTime, endDateTime;
+  @Column(name = "startDate", nullable = false)
+  private LocalDateTime startDateTime;
+  @Column(name = "endDate", nullable = false)
+  private LocalDateTime endDateTime;
   private boolean inDays = false;
 
   /**
@@ -52,8 +59,12 @@ public class Period {
   public static Period between(LocalDate startDay, LocalDate endDay) {
     checkPeriod(startDay, endDay);
     Period period = new Period();
-    period.startDateTime = startDay.atStartOfDay().atOffset(ZoneOffset.UTC);
-    period.endDateTime = endDay.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC);
+    period.startDateTime = startDay.atStartOfDay().atOffset(ZoneOffset.UTC).toLocalDateTime();
+    period.endDateTime = endDay.plusDays(1)
+        .atStartOfDay()
+        .minusMinutes(1)
+        .atOffset(ZoneOffset.UTC)
+        .toLocalDateTime();
     period.inDays = true;
     return period;
   }
@@ -70,8 +81,8 @@ public class Period {
   public static Period between(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
     checkPeriod(startDateTime, endDateTime);
     Period period = new Period();
-    period.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
-    period.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    period.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
+    period.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
     period.inDays = false;
     return period;
   }
@@ -84,7 +95,7 @@ public class Period {
    * @return a date and time in UTC/Greenwich.
    */
   public OffsetDateTime getStartDateTime() {
-    return startDateTime;
+    return startDateTime.atOffset(ZoneOffset.UTC);
   }
 
   /**
@@ -95,7 +106,7 @@ public class Period {
    * @return a date and time in UTC/Greenwich.
    */
   public OffsetDateTime getEndDateTime() {
-    return endDateTime;
+    return endDateTime.atOffset(ZoneOffset.UTC);
   }
 
   /**

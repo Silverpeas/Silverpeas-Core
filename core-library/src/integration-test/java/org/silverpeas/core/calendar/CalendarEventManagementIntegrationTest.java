@@ -24,27 +24,21 @@
 
 package org.silverpeas.core.calendar;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.calendar.repository.CalendarEventCriteria;
-import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
+import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Yohann Chastagnier
@@ -55,7 +49,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(CalendarEventManagementIntegrationTest.class)
-        .addAsResource(INITIALIZATION_SCRIPT.substring(1)).build();
+        .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
+        .addAsResource(INITIALIZATION_SCRIPT.substring(1))
+        .build();
   }
 
   @Before
@@ -66,30 +62,23 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
   @Test
   public void getCalendarEventById() throws Exception {
-    CalendarEvent calendarEvent = CalendarEvent.getById("ID_E_3");
-    assertThat(calendarEvent, notNullValue());
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById("ID_1").getEvent("ID_E_3");
+    assertThat(mayBeEvent.isPresent(), is(true));
+
+    CalendarEvent calendarEvent = mayBeEvent.get();
     assertThat(calendarEvent.getCalendar().getId(), is("ID_1"));
-    assertThat(calendarEvent.getPeriod(), notNullValue());
-    assertThat(calendarEvent.getPeriod().isInDays(), is(false));
-    assertThat(calendarEvent.getPeriod().getStartDateTime().toInstant(),
-        is(Instant.parse("2016-01-08T18:30:00Z")));
-    assertThat(calendarEvent.getPeriod().getEndDateTime().toInstant(),
-        is(Instant.parse("2016-01-22T13:38:22Z")));
+    assertThat(calendarEvent.isOnAllDay(), is(false));
+    assertThat(calendarEvent.getStartDateTime(),
+        is(Instant.parse("2016-01-08T18:30:00Z").atOffset(ZoneOffset.UTC)));
+    assertThat(calendarEvent.getEndDateTime(),
+        is(Instant.parse("2016-01-22T13:38:22Z").atOffset(ZoneOffset.UTC)));
     assertThat(calendarEvent.getTitle(), is("title C"));
     assertThat(calendarEvent.getDescription(), is("description C"));
-    assertThat(calendarEvent.getLocation(), is("location C"));
+    //assertThat(calendarEvent.getLocation(), is("location C"));
     assertThat(calendarEvent.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
-    assertThat(calendarEvent.getPriority(), is(1));
+    assertThat(calendarEvent.getPriority(), is(Priority.HIGH));
+    assertThat(calendarEvent.getAttributes().get("location").isPresent(), is(true));
+    assertThat(calendarEvent.getAttributes().get("location").get(), is("location C"));
   }
 
-  @Test
-  public void getCalendarEventByMinimalCriteriaShouldWork() throws Exception {
-    OffsetDateTime startDateTime =
-        OffsetDateTime.of(LocalDateTime.of(2016, 1, 22, 0, 0), ZoneOffset.UTC);
-    OffsetDateTime endDateTime =
-        OffsetDateTime.of(LocalDateTime.of(2016, 1, 25, 0, 0), ZoneOffset.UTC);
-    List<CalendarEvent> calendarEvents = CalendarEvent
-        .findByCriteria(CalendarEventCriteria.from(Period.between(startDateTime, endDateTime)));
-    assertThat(calendarEvents, hasSize(3));
-  }
 }

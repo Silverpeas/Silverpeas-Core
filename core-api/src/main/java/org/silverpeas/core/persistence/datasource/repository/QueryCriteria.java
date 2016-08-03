@@ -56,7 +56,7 @@ public interface QueryCriteria {
    * the charge of managing the parameters, they can be used accross several clauses and in
    * different process implied in the final query build.
    */
-  public static class Clause {
+  class Clause {
 
     private final Parameters parameters;
     private final StringBuilder text = new StringBuilder();

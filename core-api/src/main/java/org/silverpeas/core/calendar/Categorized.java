@@ -24,30 +24,17 @@
 package org.silverpeas.core.calendar;
 
 /**
- * It defines the property of an object of being potentially prioritized. By default,
- * a {@link Plannable} object isn't a priority; in such a case, it has a normal priority.
+ * It defines the property of an object of being potentially classified in some categories. By
+ * default a {@link Plannable} object isn't categorized.
  * @author mmoquillon
  */
-public interface Prioritized {
+public interface Categorized {
 
   /**
-   * Sets a priority to this prioritized object.
-   * @param priority a priority level.
-   * @return itself.
+   * Gets the categories in which this object is categorized. The object can be categorized by
+   * adding explicitly one or more categories to the returned collection of categories.
+   * @return a collection of categories. If the object isn't categorized, then the returned
+   * collection is empty.
    */
-  Prioritized withPriority(Priority priority);
-
-  /**
-   * Gets the priority of this object.
-   * @return a priority level.
-   */
-  Priority getPriority();
-
-  /**
-   * Is this object a priority?
-   * @return true if this object has a priority level other than normal. False otherwise.
-   */
-  default boolean isPriority() {
-    return getPriority() != Priority.NORMAL;
-  }
+  Categories getCategories();
 }

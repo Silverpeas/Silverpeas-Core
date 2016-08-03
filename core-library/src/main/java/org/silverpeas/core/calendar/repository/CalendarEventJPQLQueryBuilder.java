@@ -34,7 +34,6 @@ import org.silverpeas.core.persistence.datasource.repository.SimpleQueryCriteria
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
   private StringBuilder orderBy = null;
   private boolean done = false;
   private final SimpleQueryCriteria jpqlCriteria;
-  private String conjonction;
+  private String conjunction;
 
   public CalendarEventJPQLQueryBuilder(final NamedParameters parameters) {
     this.jpqlCriteria = new SimpleQueryCriteria(parameters);
@@ -72,7 +71,7 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
   @Override
   public CalendarEventCriteriaProcessor then() {
     if (!done) {
-      conjonction = "and";
+      conjunction = "and";
     }
     return this;
   }
@@ -80,9 +79,9 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
   @Override
   public CalendarEventCriteriaProcessor processCalendars(List<Calendar> calendars) {
     if (!done) {
-      jpqlCriteria.clause().add(conjonction).add("calendar in :calendars").parameters()
+      jpqlCriteria.clause().add(conjunction).add("calendar in :calendars").parameters()
           .add("calendars", calendars);
-      conjonction = null;
+      conjunction = null;
     }
     return this;
   }
@@ -90,11 +89,15 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
   @Override
   public CalendarEventCriteriaProcessor processPeriod(Period period) {
     if (!done) {
-      jpqlCriteria.clause().add(conjonction).add("startDate <= :endDate and endDate >= :startDate")
+      jpqlCriteria.clause()
+          .add(conjunction)
+          .add("startDate <= :endDate and endDate >= :startDate")
           .parameters()
-          .add("startDate", new Date(period.getStartDateTime().toInstant().toEpochMilli()))
-          .add("endDate", new Date(period.getEndDateTime().toInstant().toEpochMilli()));
-      conjonction = null;
+          .add("startDate", period.getStartDateTime()
+              .toLocalDateTime()) //new Date(period.getStartDateTime().toInstant().toEpochMilli()))
+          .add("endDate", period.getEndDateTime()
+              .toLocalDateTime());//new Date(period.getEndDateTime().toInstant().toEpochMilli()));
+      conjunction = null;
     }
     return this;
   }
@@ -102,9 +105,9 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
   @Override
   public CalendarEventCriteriaProcessor processCreator(User creator) {
     if (!done) {
-      jpqlCriteria.clause().add(conjonction).add("createdBy = :createdBy").parameters()
+      jpqlCriteria.clause().add(conjunction).add("createdBy = :createdBy").parameters()
           .add("createdBy", creator.getId());
-      conjonction = null;
+      conjunction = null;
     }
     return this;
   }
@@ -131,7 +134,7 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
         orderBy.append(" ");
         orderBy.append(anOrdering.isAsc() ? "asc" : "desc");
       }
-      conjonction = null;
+      conjunction = null;
     }
     return this;
   }
@@ -143,8 +146,8 @@ public class CalendarEventJPQLQueryBuilder implements CalendarEventCriteriaProce
       for (String id : identifiers) {
         uuids.add(new UuidIdentifier().fromString(id));
       }
-      jpqlCriteria.clause().add(conjonction).add("id in :ids").parameters().add("ids", uuids);
-      conjonction = null;
+      jpqlCriteria.clause().add(conjunction).add("id in :ids").parameters().add("ids", uuids);
+      conjunction = null;
     }
     return this;
   }

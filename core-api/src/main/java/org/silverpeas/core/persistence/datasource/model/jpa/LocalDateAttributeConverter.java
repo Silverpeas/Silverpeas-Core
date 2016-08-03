@@ -21,33 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.persistence.datasource.model.jpa;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
- * It defines the property of an object of being potentially prioritized. By default,
- * a {@link Plannable} object isn't a priority; in such a case, it has a normal priority.
+ * An automatic converter of {@link LocalDate} values to SQL {@link Date} values for
+ * JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
+ * API).
  * @author mmoquillon
  */
-public interface Prioritized {
+@Converter(autoApply = true)
+public class LocalDateAttributeConverter implements
+    AttributeConverter<LocalDate, Date> {
 
-  /**
-   * Sets a priority to this prioritized object.
-   * @param priority a priority level.
-   * @return itself.
-   */
-  Prioritized withPriority(Priority priority);
+  @Override
+  public Date convertToDatabaseColumn(LocalDate locDate) {
+    return (locDate == null ? null : Date.valueOf(locDate));
+  }
 
-  /**
-   * Gets the priority of this object.
-   * @return a priority level.
-   */
-  Priority getPriority();
-
-  /**
-   * Is this object a priority?
-   * @return true if this object has a priority level other than normal. False otherwise.
-   */
-  default boolean isPriority() {
-    return getPriority() != Priority.NORMAL;
+  @Override
+  public LocalDate convertToEntityAttribute(Date sqlDate) {
+    return (sqlDate == null ? null : sqlDate.toLocalDate());
   }
 }

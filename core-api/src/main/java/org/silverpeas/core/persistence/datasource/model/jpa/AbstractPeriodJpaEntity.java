@@ -33,6 +33,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -61,12 +62,12 @@ public abstract class AbstractPeriodJpaEntity<ENTITY extends Entity<ENTITY,
   @Column(name = "startDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   @NotNull
-  private Date startDate;
+  private LocalDateTime startDate;
 
   @Column(name = "endDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   @NotNull
-  private Date endDate;
+  private LocalDateTime endDate;
 
   @Transient
   private Period period;
@@ -74,8 +75,8 @@ public abstract class AbstractPeriodJpaEntity<ENTITY extends Entity<ENTITY,
   public Period getPeriod() {
     if (startDate != null && endDate != null) {
       if (period == null) {
-        OffsetDateTime start = ofInstant(startDate.toInstant(), ZoneOffset.UTC.normalized());
-        OffsetDateTime end = ofInstant(endDate.toInstant(), ZoneOffset.UTC.normalized());
+        OffsetDateTime start = startDate.atOffset(ZoneOffset.UTC);
+        OffsetDateTime end = startDate.atOffset(ZoneOffset.UTC);
         if (inDays) {
           period = Period.between(start.toLocalDate(), end.toLocalDate());
         } else {
@@ -92,8 +93,8 @@ public abstract class AbstractPeriodJpaEntity<ENTITY extends Entity<ENTITY,
   public ENTITY setPeriod(final Period period) {
     this.period = period;
     inDays = period.isInDays();
-    startDate = new Date(period.getStartDateTime().toInstant().toEpochMilli());
-    endDate = new Date(period.getEndDateTime().toInstant().toEpochMilli());
+    startDate = period.getStartDateTime().toLocalDateTime();
+    endDate = period.getStartDateTime().toLocalDateTime();
     return (ENTITY) this;
   }
 }

@@ -23,7 +23,7 @@ CREATE TABLE sb_calendar_event (
   endDate        TIMESTAMP     NOT NULL,
   title          VARCHAR(2000) NOT NULL,
   description    VARCHAR(6000) NOT NULL,
-  location       VARCHAR(200)  NOT NULL,
+  attributes     VARCHAR(6000) NULL,
   visibility     VARCHAR(50)   NOT NULL,
   priority       INT           NOT NULL,
   createDate     TIMESTAMP     NOT NULL,

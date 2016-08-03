@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -36,6 +37,7 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -123,5 +125,15 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
       calendarRepository.delete(this);
       return null;
     });
+  }
+
+  /**
+   * Gets an event from this calendar by is specified identifier or nothing is no such event exists
+   * in this calendar.
+   * @param eventId the unique identifier of the event to get from this calendar.
+   * @return optionally an event from this calendar.
+   */
+  public Optional<CalendarEvent> getEvent(String eventId) {
+    return CalendarEventRepository.get().getById(this, eventId);
   }
 }

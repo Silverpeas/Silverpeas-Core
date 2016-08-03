@@ -24,39 +24,44 @@
 
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.annotation.constraint.DateRange;
-import org.silverpeas.core.calendar.repository.CalendarEventCriteria;
-import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractPeriodJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 /**
- * The event in a calendar. An event in the calendar is described by a starting and an ending date
- * and a name. The start and end dates in an event must be in the same type (either a date or a
- * temporal).
+ * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
+ * general business object that can be planned on one and only one given existing {@link Calendar};
+ * we ensures an event is unique in a per-calendar basis.
+ * It occurs on a {@link Period} and as a such it must be well limited in the time (id est it must
+ * have a start and an end dates/date times).
+ * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendees}.
+ * In order to be customized for different kinds of use, some additional information can be set
+ * through its {@link Attributes} property.
  */
 @Entity
 @Table(name = "sb_calendar_event")
-@DateRange(startDate = "startDate", endDate = "endDate")
-public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidIdentifier>
-    implements Plannable, Recurrent, Prioritized {
+@NamedQueries({
+    @NamedQuery(name = "byId", query = "from CalendarEvent where id = :id and calendar = " +
+        ":calendar"),
+    @NamedQuery(name = "byIds", query = "from CalendarEvent where calendar = :calendar and id in " +
+        ":ids")})
+@EntityListeners(Attributes.SerializationListener.class)
+public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifier>
+    implements Plannable, Recurrent, Categorized, Prioritized {
 
   private static final long serialVersionUID = 1L;
+
+  @Embedded
+  private Period period;
+
+  @Embedded
+  private Attributes attributes;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
@@ -69,12 +74,6 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
 
   @Column(name = "description")
   private String description;
-
-  @Column(name = "location")
-  private String location;
-
-  @Transient
-  private URL url;
 
   @Column(name = "visibility")
   @NotNull
@@ -93,28 +92,12 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
   @Transient
   private final Attendees attendees = new Attendees();
 
-  /**
-   * Necessary for JPA management.
-   */
+  protected CalendarEvent(Period period) {
+    this.period = period;
+  }
+
   protected CalendarEvent() {
-  }
 
-  /**
-   * Gets an event by its identifier.
-   * @param id the event identifier.
-   * @return the event associated to the specified identifier or null.
-   */
-  public static CalendarEvent getById(final String id) {
-    CalendarEventRepository repository = CalendarEventRepository.get();
-    return repository.getById(id);
-  }
-
-  /**
-   * @see CalendarEventRepository#findByCriteria(CalendarEventCriteria)
-   */
-  public static List<CalendarEvent> findByCriteria(CalendarEventCriteria criteria) {
-    CalendarEventRepository repository = CalendarEventRepository.get();
-    return repository.findByCriteria(criteria);
   }
 
   /**
@@ -123,7 +106,7 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
    * @return a calendar event occurring on the specified period.
    */
   public static CalendarEvent on(Period period) {
-    return new CalendarEvent().setPeriod(period);
+    return new CalendarEvent(period);
   }
 
   /**
@@ -132,21 +115,17 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
    * @return a calendar event spanning on all the specified day.
    */
   public static CalendarEvent on(final LocalDate day) {
-    return new CalendarEvent().setPeriod(Period.between(day, day));
-  }
-
-  public Calendar getCalendar() {
-    return calendar;
+    return new CalendarEvent(Period.between(day, day));
   }
 
   /**
-   * Sets a calendar to this event.
-   * @param calendar an event calendar.
-   * @return itself.
+   * Gets the calendar to which this event is related. A calendar event can only be persisted into
+   * a given existing calendar.
+   * @return either the calendar to which this event belongs or null if this event isn't yet
+   * saved into a given calendar.
    */
-  public CalendarEvent onCalendar(final Calendar calendar) {
-    this.calendar = calendar;
-    return this;
+  public Calendar getCalendar() {
+    return calendar;
   }
 
   /**
@@ -173,47 +152,6 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
   }
 
   /**
-   * Gets the location where this event should occur.
-   * @return the location of this event or an empty string if no location is defined for this event.
-   */
-  public String getLocation() {
-    return location;
-  }
-
-  /**
-   * Sets a location where this event should occur.
-   * @param location the location of this event.
-   * @return itself.
-   */
-  public CalendarEvent withLocation(String location) {
-    if (location == null) {
-      this.location = "";
-    } else {
-      this.location = location;
-    }
-    return this;
-  }
-
-  /**
-   * Sets an URL of a resource describing or representing this event.
-   * @return an URL of a resource in connection with this event or null if no URL is defined for
-   * this event.
-   */
-  public URL getUrl() {
-    return url;
-  }
-
-  /**
-   * Gets the URL of a resource describing or representing this event.
-   * @param url the URL of a resource in connection with this event.
-   * @return itself.
-   */
-  public CalendarEvent withUrl(URL url) {
-    this.url = url;
-    return this;
-  }
-
-  /**
    * Gets the attendees to this event.
    * @return the attendees to this event.
    */
@@ -225,6 +163,7 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
    * Gets the categories to which this event belongs.
    * @return the categories of this event.
    */
+  @Override
   public Categories getCategories() {
     return categories;
   }
@@ -261,6 +200,14 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
   @Override
   public Priority getPriority() {
     return priority;
+  }
+
+  /**
+   * Gets the different additional attributes set to this event.
+   * @return the additional attributes of this event.
+   */
+  public Attributes getAttributes() {
+    return attributes;
   }
 
   /**
@@ -344,5 +291,9 @@ public class CalendarEvent extends AbstractPeriodJpaEntity<CalendarEvent, UuidId
   @Override
   public OffsetDateTime getEndDateTime() {
     return getPeriod().getEndDateTime();
+  }
+
+  private Period getPeriod() {
+    return this.period;
   }
 }

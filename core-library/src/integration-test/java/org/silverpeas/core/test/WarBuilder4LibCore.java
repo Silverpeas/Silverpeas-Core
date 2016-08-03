@@ -69,7 +69,6 @@ import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -183,9 +182,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(EncodeHelper.class)) {
       addClasses(EncodeHelper.class);
-    }
-    if (!contains(CalendarEvent.class)) {
-      addPackages(true, "org.silverpeas.core.calendar");
     }
     if (!contains(Charsets.class)) {
       addClasses(Charsets.class);

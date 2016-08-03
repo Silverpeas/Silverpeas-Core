@@ -25,23 +25,15 @@ package org.silverpeas.core.calendar;
 
 import org.junit.After;
 import org.junit.Before;
-import org.silverpeas.core.admin.service.DefaultOrganizationController;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
-import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
 import java.util.List;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -90,9 +82,9 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return mockedUser;
   }
 
-  protected OrganizationController getOrganisationControllerMock() {
+  /*protected OrganizationController getOrganisationControllerMock() {
     return StubbedOrganizationController.getMock();
-  }
+  }*/
 
   /**
    * Returns the list of calendar lines persisted into sb_calendar table.
@@ -140,7 +132,7 @@ public abstract class BaseCalendarTest extends DataSetTest {
   /**
    * @author Yohann Chastagnier
    */
-  @Singleton
+  /*@Singleton
   @Alternative
   @Priority(APPLICATION + 10)
   public static class StubbedOrganizationController extends DefaultOrganizationController {
@@ -161,5 +153,5 @@ public abstract class BaseCalendarTest extends DataSetTest {
     public String[] getUserProfiles(final String userId, final String componentId) {
       return mock.getUserProfiles(userId, componentId);
     }
-  }
+  }*/
 }

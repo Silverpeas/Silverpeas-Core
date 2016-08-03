@@ -30,6 +30,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
 import java.time.Instant;
@@ -48,6 +49,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(CalendarManagementIntegrationTest.class)
+        .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
   }

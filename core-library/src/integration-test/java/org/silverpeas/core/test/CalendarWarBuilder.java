@@ -21,9 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar;
-
-import org.silverpeas.core.test.WarBuilder4LibCore;
+package org.silverpeas.core.test;
 
 /**
  * @author Yohann Chastagnier
@@ -37,13 +35,14 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
    */
   private <T> CalendarWarBuilder(final Class<T> test) {
     super(test);
-    addClasses(WarBuilder4LibCore.class);
+    //addClasses(WarBuilder4LibCore.class);
+    addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
     addProcessFeatures();
     addAdministrationFeatures();
     addSilverpeasExceptionBases();
     addJpaPersistenceFeatures();
-    addClasses(BaseCalendarTest.StubbedOrganizationController.class);
-    addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1));
+    addPackages(false, "org.silverpeas.core.calendar.repository");
+    //addClasses(BaseCalendarTest.StubbedOrganizationController.class);
   }
 
   /**

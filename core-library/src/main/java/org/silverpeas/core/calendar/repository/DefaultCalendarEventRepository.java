@@ -24,12 +24,16 @@
 
 package org.silverpeas.core.calendar.repository;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
@@ -37,8 +41,28 @@ import java.util.List;
 public class DefaultCalendarEventRepository
     extends SilverpeasJpaEntityManager<CalendarEvent, UuidIdentifier>
     implements CalendarEventRepository {
+  @Override
+  public Optional<CalendarEvent> getById(final Calendar calendar, final String id) {
+    NamedParameters params = newNamedParameters()
+        .add("id", convertToEntityIdentifier(id))
+        .add("calendar", calendar);
+    return Optional.ofNullable(findOneByNamedQuery("byId", params));
+  }
 
   @Override
+  public List<CalendarEvent> getById(final Calendar calendar, final String... ids) {
+    return getById(calendar, Arrays.asList(ids));
+  }
+
+  @Override
+  public List<CalendarEvent> getById(final Calendar calendar, final Collection<String> ids) {
+    NamedParameters params = newNamedParameters()
+        .add("ids", convertToEntityIdentifiers(ids))
+        .add("calendar", calendar);
+    return findByNamedQuery("byIds", params);
+  }
+
+  /*@Override
   public List<CalendarEvent> findByCriteria(final CalendarEventCriteria criteria) {
     NamedParameters params = newNamedParameters();
     CalendarEventJPQLQueryBuilder queryBuilder = new CalendarEventJPQLQueryBuilder(params);
@@ -46,5 +70,5 @@ public class DefaultCalendarEventRepository
 
     // Playing the query and returning the requested result
     return findByCriteria(queryBuilder.result());
-  }
+  }*/
 }

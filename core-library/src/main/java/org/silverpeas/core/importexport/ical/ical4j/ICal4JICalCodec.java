@@ -44,10 +44,12 @@ import org.apache.tika.io.IOUtils;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -124,14 +126,16 @@ public class ICal4JICalCodec implements ICalCodec {
       iCalEvent.getProperties().add(new Priority(event.getPriority().ordinal()));
 
       // Add location if any
-      if (!event.getLocation().isEmpty()) {
-        iCalEvent.getProperties().add(new Location(event.getLocation()));
+      Optional<String> location = event.getAttributes().get("location");
+      if (location.isPresent()) {
+        iCalEvent.getProperties().add(new Location(location.get()));
       }
 
       // Add event URL if any
-      if (event.getUrl() != null) {
+      Optional<String> url = event.getAttributes().get("url");
+      if (url.isPresent()) {
         try {
-          iCalEvent.getProperties().add(new Url(event.getUrl().toURI()));
+          iCalEvent.getProperties().add(new Url(new URI(url.get())));
         } catch (URISyntaxException ex) {
           throw new EncodingException(ex.getMessage(), ex);
         }

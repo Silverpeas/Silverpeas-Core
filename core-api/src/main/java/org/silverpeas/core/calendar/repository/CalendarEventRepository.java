@@ -24,14 +24,22 @@
 
 package org.silverpeas.core.calendar.repository;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
+import javax.resource.NotSupportedException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
+ * A persistence repository of calendar events. A calendar event is always persisted for a given
+ * calendar; a calendar event is always related to an existing calendar.
  * @author Yohann Chastagnier
  */
 public interface CalendarEventRepository
@@ -42,9 +50,66 @@ public interface CalendarEventRepository
   }
 
   /**
+   * Gets from the specified calendar the event having the specified identifier or nothing if no
+   * such event exists into the calendar.
+   * This method replace the getById(String id) one.
+   * @param calendar a calendar.
+   * @param id the unique identifier of the event to get
+   * @return optionally the calendar event matching the specified identifier.
+   */
+  Optional<CalendarEvent> getById(Calendar calendar, String id);
+
+  /**
+   * Gets from the specified calendar all the event whose identifier matches the specified ones or
+   * nothing if no such events exist into the calendar.
+   * This method replace the getById(String ...ids) one.
+   * @param calendar a calendar.
+   * @param ids one or several unique identifiers of calendar events.
+   * @return a list of events or an empty list if there is no events with the specified identifiers.
+   */
+  List<CalendarEvent> getById(Calendar calendar, String ...ids);
+
+  /**
+   * Gets from the specified calendar all the event whose identifier matches the specified ones or
+   * nothing if no such events exist into the calendar.
+   * This method replace the getById(Collection<String> id) one.
+   * @param calendar a calendar.
+   * @param ids one or several unique identifiers of calendar events.
+   * @return a list of events or an empty list if there is no events with the specified identifiers.
+   */
+  List<CalendarEvent> getById(Calendar calendar, Collection<String> ids);
+
+  /**
+   * Throws a {@link SilverpeasRuntimeException}
+   * Uses instead getById(Calendar calendar, String id);
+   */
+  @Override
+  default CalendarEvent getById(String id) {
+    throw new SilverpeasRuntimeException("getById(String id) not supported");
+  }
+
+  /**
+   * Throws a {@link SilverpeasRuntimeException}
+   * Uses instead getById(Calendar calendar, String... ids);
+   */
+  @Override
+  default List<CalendarEvent> getById(String... ids) {
+    throw new SilverpeasRuntimeException("getById(String... ids) not supported");
+  }
+
+  /**
+   * Throws a {@link SilverpeasRuntimeException}
+   * Uses instead getById(Calendar calendar, Collection<String> ids);
+   */
+  @Override
+  default List<CalendarEvent> getById(Collection<String> ids) {
+    throw new SilverpeasRuntimeException("getById(Collection<String> ids) not supported");
+  }
+
+  /**
    * Finds calendar events according to the given criteria.
    * @param criteria the calendar event criteria.
    * @return the calendar event list corresponding to the given criteria.
    */
-  List<CalendarEvent> findByCriteria(final CalendarEventCriteria criteria);
+  //List<CalendarEvent> findByCriteria(final CalendarEventCriteria criteria);
 }
