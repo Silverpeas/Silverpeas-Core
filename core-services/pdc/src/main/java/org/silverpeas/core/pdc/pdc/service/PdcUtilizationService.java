@@ -27,7 +27,6 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
-import org.silverpeas.core.index.search.model.AxisFilter;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
@@ -54,18 +53,7 @@ public interface PdcUtilizationService {
    */
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
-  /**
-   * Returns the distinct axis used by a given Job'Peas instance
-   * @param instanceId - the id of the Job'Peas
-   * @return a List of AxisHeader
-   * @throws PdcException
-   */
-  public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId) throws PdcException;
-
   public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
-      throws PdcException;
-
-  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds, AxisFilter filter)
       throws PdcException;
 
   /**

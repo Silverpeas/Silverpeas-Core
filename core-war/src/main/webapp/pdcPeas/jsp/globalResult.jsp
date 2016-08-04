@@ -230,15 +230,6 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
     });
   }
 
-
-	function openGlossary(uniqueId)
-	{
-		chemin="<%=m_context%>/RpdcSearch/jsp/AxisTree?query=&uniqueId="+uniqueId;
-		largeur = "700";
-		hauteur = "500";
-		SP_openWindow(chemin,"Pdc_Pop",largeur,hauteur,"scrollbars=yes, resizable=yes");
-	}
-
 	function getSelectedOjects()
 	{
 		return getObjects(true);

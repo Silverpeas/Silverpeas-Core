@@ -29,7 +29,6 @@ import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
@@ -117,9 +116,6 @@ public interface PdcManager {
    */
   public Axis getAxisDetail(String axisId) throws PdcException;
 
-  public Axis getAxisDetail(String axisId, AxisFilter filter)
-      throws PdcException;
-
   /**
    * Method declaration
    *
@@ -162,16 +158,6 @@ public interface PdcManager {
    * @see
    */
   public List<String> getDaughterValues(String axisId, String valueId)
-      throws PdcException;
-
-  /**
-   * Return a list of String corresponding to the valueId of the value in parameter
-   *
-   * @return List
-   * @throws PdcException
-   * @see
-   */
-  public List<Value> getFilteredAxisValues(String rootId, AxisFilter filter)
       throws PdcException;
 
   /**
@@ -421,15 +407,8 @@ public interface PdcManager {
   public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext,
       String axisType, String instanceId) throws PdcException;
 
-  public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext,
-      String axisType, String instanceId, AxisFilter filter)
-      throws PdcException;
-
   public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
       String axisType, List<String> instanceIds) throws PdcException;
-
-  public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
-      String axisType, List<String> instanceIds, AxisFilter filter) throws PdcException;
 
   // public List getFirstLevelAxisValues(SearchContext searchContext, String
   // axisId) throws PdcException;
@@ -447,17 +426,9 @@ public interface PdcManager {
       SearchContext searchContext, String axisId, String valueId,
       String instanceId) throws PdcException;
 
-  public List<Value> getPertinentDaughterValuesByInstanceId(
-      SearchContext searchContext, String axisId, String valueId,
-      String instanceId, AxisFilter filter) throws PdcException;
-
   public List<Value> getPertinentDaughterValuesByInstanceIds(
       SearchContext searchContext, String axisId, String valueId,
       List<String> instanceIds) throws PdcException;
-
-  public List<Value> getPertinentDaughterValuesByInstanceIds(
-      SearchContext searchContext, String axisId, String valueId,
-      List<String> instanceIds, AxisFilter filter) throws PdcException;
 
   public List<Integer> findSilverContentIdByPosition(
       SearchContext containerPosition, List<String> alComponentId,
@@ -472,8 +443,6 @@ public interface PdcManager {
       throws PdcException;
 
   public List<Value> getDaughters(String refValue, String treeId);
-
-  public List<Value> getSubAxisValues(String axisId, String valueId);
 
   public void indexAllAxis() throws PdcException;
 }

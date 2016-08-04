@@ -44,7 +44,6 @@ import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 import org.silverpeas.core.pdc.tree.service.TreeService;
-import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -507,17 +506,12 @@ public class GlobalPdcManager implements PdcManager {
    */
   @Override
   public Axis getAxisDetail(String axisId) throws PdcException {
-    return getAxisDetail(axisId, new AxisFilter());
-  }
-
-  @Override
-  public Axis getAxisDetail(String axisId, AxisFilter filter) throws PdcException {
     Axis axis = null;
     // get the header of the axe to obtain the rootId.
     AxisHeader axisHeader = getAxisHeader(axisId);
     if (axisHeader != null) {
       int treeId = axisHeader.getRootId();
-      axis = new Axis(axisHeader, getAxisValues(treeId, filter));
+      axis = new Axis(axisHeader, getAxisValues(treeId));
     }
     return axis;
   }
@@ -626,28 +620,6 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   /**
-   * Return a list of String corresponding to the valueId of the value in parameter
-   * @param rootId the root identifier
-   * @param filter the axis filter
-   * @return List of String
-   * @throws PdcException
-   */
-  @Override
-  public List<Value> getFilteredAxisValues(String rootId, AxisFilter filter) throws PdcException {
-    try {
-      List<Value> values = getAxisValues(Integer.parseInt(rootId), filter);
-      // for each filtered value, get all values from root to this finded value
-      for (Value value : values) {
-        value.setPathValues(getFullPath(value.getValuePK().getId(), value.getTreeId()));
-      }
-      return values;
-    } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getFilteredAxisValues", SilverpeasException.ERROR,
-          "Pdc.CANNOT_RETRIEVE_SUBNODES", e);
-    }
-  }
-
-  /**
    * Return the Value corresponding to the axis done
    * @param axisId the axis identifier
    * @return org.silverpeas.core.pdc.pdc.model.Value
@@ -677,14 +649,10 @@ public class GlobalPdcManager implements PdcManager {
    */
   @Override
   public List<Value> getAxisValues(int treeId) throws PdcException {
-    return getAxisValues(treeId, new AxisFilter());
-  }
-
-  private List<Value> getAxisValues(int treeId, AxisFilter filter) throws PdcException {
     Connection con = openConnection();
 
     try {
-      return createValuesList(treeService.getTree(con, Integer.toString(treeId), filter));
+      return createValuesList(treeService.getTree(con, Integer.toString(treeId)));
     } catch (Exception e) {
       throw new PdcException("GlobalPdcManager.getAxisValues", SilverpeasException.ERROR,
           "Pdc.CANNOT_ACCESS_LIST_OF_VALUES", e);
@@ -1491,24 +1459,6 @@ public class GlobalPdcManager implements PdcManager {
     return daughters;
   }
 
-  @Override
-  public List<Value> getSubAxisValues(String axisId, String valueId) {
-    List<Value> daughters = new ArrayList<>();
-    Connection con = null;
-    try {
-      con = openConnection();
-      AxisHeader axisHeader = getAxisHeader(axisId, false);
-      int tId = axisHeader.getRootId();
-      daughters = createValuesList(
-          treeService.getSubTree(con, new TreeNodePK(valueId), Integer.toString(tId)));
-    } catch (Exception err_list) {
-      SilverLogger.getLogger(this).warn(err_list.getMessage());
-    } finally {
-      DBUtil.close(con);
-    }
-    return daughters;
-  }
-
   /**
    * Creates a list of Value objects with a list of treeNodes objects
    * @param treeNodes - a list of TreeNode objects
@@ -1940,29 +1890,17 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext, String axisType,
       String instanceId) throws PdcException {
-    return getPertinentAxisByInstanceId(searchContext, axisType, instanceId, new AxisFilter());
-  }
-
-  @Override
-  public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext, String axisType,
-      String instanceId, AxisFilter filter) throws PdcException {
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.add(instanceId);
-    return getPertinentAxisByInstanceIds(searchContext, axisType, instanceIds, filter);
+    return getPertinentAxisByInstanceIds(searchContext, axisType, instanceIds);
   }
 
   // recherche à l'intérieur d'une liste d'instance
   @Override
   public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
       String axisType, List<String> instanceIds) throws PdcException {
-    return getPertinentAxisByInstanceIds(searchContext, axisType, instanceIds, new AxisFilter());
-  }
-
-  @Override
-  public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
-      String axisType, List<String> instanceIds, AxisFilter filter) throws PdcException {
     List<AxisHeader> axis =
-        pdcUtilizationService.getAxisHeaderUsedByInstanceIds(instanceIds, filter);
+        pdcUtilizationService.getAxisHeaderUsedByInstanceIds(instanceIds);
     ArrayList<Integer> axisIds = new ArrayList<Integer>();
     String axisId = null;
     for (AxisHeader axisHeader : axis) {
@@ -2002,34 +1940,16 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<Value> getPertinentDaughterValuesByInstanceId(SearchContext searchContext,
       String axisId, String valueId, String instanceId) throws PdcException {
-    return getPertinentDaughterValuesByInstanceId(searchContext, axisId, valueId, instanceId,
-        new AxisFilter());
-  }
-
-  @Override
-  public List<Value> getPertinentDaughterValuesByInstanceId(SearchContext searchContext,
-      String axisId, String valueId, String instanceId, AxisFilter filter) throws PdcException {
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.add(instanceId);
-    return getPertinentDaughterValuesByInstanceIds(searchContext, axisId, valueId, instanceIds,
-        filter);
+    return getPertinentDaughterValuesByInstanceIds(searchContext, axisId, valueId, instanceIds);
   }
 
   // recherche à l'intérieur d'une liste d'instance
   @Override
   public List<Value> getPertinentDaughterValuesByInstanceIds(SearchContext searchContext,
       String axisId, String valueId, List<String> instanceIds) throws PdcException {
-    return getPertinentDaughterValuesByInstanceIds(searchContext, axisId, valueId, instanceIds,
-        new AxisFilter());
-  }
-
-  @Override
-  public List<Value> getPertinentDaughterValuesByInstanceIds(SearchContext searchContext,
-      String axisId, String valueId, List<String> instanceIds, AxisFilter filter)
-      throws PdcException {
-    List<Value> pertinentDaughters =
-        filterValues(searchContext, axisId, valueId, instanceIds, filter);
-
+    List<Value> pertinentDaughters = filterValues(searchContext, axisId, valueId, instanceIds);
     return pertinentDaughters;
   }
 
@@ -2044,14 +1964,11 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
       String axisId, List<String> instanceIds) throws PdcException {
-
-
     // quelle est la racine de l'axe
     String rootId = getRootId(axisId);
 
     List<Value> pertinentDaughters = filterValues(searchContext, axisId, rootId, instanceIds);
     return pertinentDaughters;
-
   }
 
   private String getRootId(String axisId) throws PdcException {
@@ -2077,12 +1994,6 @@ public class GlobalPdcManager implements PdcManager {
 
   private List<Value> filterValues(SearchContext searchContext, String axisId, String motherId,
       List<String> instanceIds) throws PdcException {
-    return filterValues(searchContext, axisId, motherId, instanceIds, new AxisFilter());
-  }
-
-  private List<Value> filterValues(SearchContext searchContext, String axisId, String motherId,
-      List<String> instanceIds, AxisFilter filter) throws PdcException {
-
     List<Value> descendants = null;
     ArrayList<String> emptyValues = new ArrayList<String>();
     Value descendant = null;
@@ -2101,7 +2012,7 @@ public class GlobalPdcManager implements PdcManager {
 
     try {
       // Get all the values for this treeService
-      descendants = getAxisValues(treeId, filter);
+      descendants = getAxisValues(treeId);
       List<PertinentValue> pertinentValues = pdcClassifyManager
           .getPertinentValues(searchContext, Integer.parseInt(axisId), instanceIds);
       // Set the NbObject for all the pertinent values

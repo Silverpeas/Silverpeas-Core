@@ -30,7 +30,6 @@ import java.sql.Connection;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
-import org.silverpeas.core.index.search.model.AxisFilter;
 
 public interface TreeService {
 
@@ -50,9 +49,6 @@ public interface TreeService {
       throws TreeManagerException;
 
   public List<TreeNode> getTree(Connection con, String treeId)
-      throws TreeManagerException;
-
-  public List<TreeNode> getTree(Connection con, String treeId, AxisFilter filter)
       throws TreeManagerException;
 
   public List<TreeNode> getSubTree(Connection con, TreeNodePK rootPK, String treeId)

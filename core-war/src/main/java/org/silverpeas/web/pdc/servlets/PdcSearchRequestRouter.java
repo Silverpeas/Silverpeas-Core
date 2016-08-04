@@ -38,7 +38,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverCon
 import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
@@ -129,12 +128,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         // Processing of the Pdc selection actions
         destination = processPDCSelectionActions(function, pdcSC, request);
-
-      } else if (function.startsWith("AxisTree") || function.startsWith("searchInit")
-          || function.startsWith("searchResult")) {
-
-        // Processing of the Pdc glossary actions
-        destination = processPDCGlossaryActions(function, pdcSC, request);
 
       } else if (function.startsWith("GlobalViewArbo")) {
         // USED ONLY IN GLOBAL MODE -- The user wants to collapse or uncollapse a value
@@ -1185,113 +1178,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       // return to the stored return url
       destination = pdcSC.getPdc().getURLToReturn();
     }
-    return destination;
-  }
-
-  private String processPDCGlossaryActions(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    String destination = "";
-
-    if (function.startsWith("AxisTree")) {
-      // be careful, we don't care about pertinent axis !
-      String component_id = request.getParameter("component_id");
-      String unique_id = request.getParameter("uniqueId");
-      List<Axis> allAxis = new ArrayList<>();
-      if (component_id != null && !"".equals(component_id)) {
-        // we are in the localResourceLocator search (localResourceLocator to a component instance)
-        // only axis used by this instance must be shown
-        allAxis.addAll(pdcSC.getUsedAxisByAComponentInstance(component_id));
-      } else {
-        // we are in the global search
-        // All axis and all values must be shown
-        component_id = "";
-
-        List<AxisHeader> axisHeaders;
-        if (pdcSC.showAllAxisInGlossary()) {
-          axisHeaders = pdcSC.getAllAxis();
-        } else {
-          axisHeaders = pdcSC.getPrimaryAxis();
-        }
-
-        for (AxisHeader axisHeader : axisHeaders) {
-          allAxis.add(pdcSC.getAxisDetail(axisHeader.getPK().getId()));
-        }
-      }
-
-      request.setAttribute("component_id", component_id);
-      request.setAttribute("uniqueId", unique_id);
-      request.setAttribute("Axis", allAxis);
-
-      destination = "/pdcPeas/jsp/consultNavigation.jsp";
-    } else if (function.startsWith("searchInit")) {
-      String component_id = request.getParameter("component_id");
-      String unique_id = request.getParameter("uniqueId");
-
-      request.setAttribute("component_id", component_id);
-      request.setAttribute("uniqueId", unique_id);
-      destination = "/pdcPeas/jsp/consultSearchInit.jsp";
-    } else if (function.startsWith("searchResult")) {
-      String query = request.getParameter("query");
-      String type = request.getParameter("type");
-      String component_id = request.getParameter("component_id");
-      String unique_id = request.getParameter("uniqueId");
-
-      if (query != null && !"".equals(query)) {
-        if (type != null && type.equals("filter")) {
-          // We search only axis values beginning with the string entered in the request
-          if (!"*".equals(query.substring(query.length() - 1))) {
-            query += "*";
-          }
-
-          if (component_id != null && !"".equals(component_id)) {
-            pdcSC.setAxisResult(pdcSC.getAxisValuesByFilter(query, "", true, component_id));
-          } else {
-            pdcSC.setAxisResult(pdcSC.getAxisValuesByFilter(query, "", true, null));
-          }
-        } else {
-          // We search pdc values with the help of the search engine
-          MatchingIndexEntry[] ie = pdcSC.glossarySearch(query);
-          // get results from searchEngine
-          // for each result, get corresponding AxisValue
-          List<Value> values = new ArrayList<>();
-          List<String> usedTreeIds = null;
-          for (int i = 0; i < ie.length; i++) {
-            MatchingIndexEntry oneResult = ie[i];
-            String valueIdAndTreeId = oneResult.getObjectId();
-            int indexOfDelimiter = valueIdAndTreeId.indexOf('_');
-            if (indexOfDelimiter != -1) {
-              String valueId = valueIdAndTreeId.substring(0, indexOfDelimiter);
-              String treeId = valueIdAndTreeId.substring(indexOfDelimiter + 1, valueIdAndTreeId
-                  .length());
-
-              // get the value and its path from root to value
-              Value value = pdcSC.getAxisValueAndFullPath(valueId, treeId);
-              if (component_id != null && !"".equals(component_id)) {
-                // check if this value belongs to an axis which is used by the instance
-                if (i == 0) {
-                  usedTreeIds = pdcSC.getUsedTreeIds(component_id);
-                }
-                if (usedTreeIds.contains(treeId)) {
-                  values.add(value);
-                }
-              } else {
-                values.add(value);
-              }
-            }
-          }
-          pdcSC.setAxisResult(values);
-        }
-      }
-
-      request.setAttribute("Axis", pdcSC.getAxisResult());
-      request.setAttribute("component_id", component_id);
-      request.setAttribute("uniqueId", unique_id);
-      request.setAttribute("query", query);
-      request.setAttribute("type", type);
-
-      destination = "/pdcPeas/jsp/consultSearchResult.jsp";
-    }
-
     return destination;
   }
 
