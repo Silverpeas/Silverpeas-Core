@@ -23,14 +23,12 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ClassifyEngineException;
+import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
 import org.silverpeas.core.pdc.classification.PertinentAxis;
 import org.silverpeas.core.pdc.classification.PertinentValue;
 import org.silverpeas.core.pdc.classification.Position;
 import org.silverpeas.core.pdc.classification.Value;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
@@ -38,8 +36,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -55,12 +53,10 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
 
   @Inject
   private ClassifyEngine classifyEngine;
-  private ContainerManager containerManager = null;
   @Inject
   private ContentManager contentManager;
 
   protected DefaultPdcClassifyManager() {
-    containerManager = new ContainerManager();
   }
 
   @Override
@@ -83,9 +79,6 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       connection = DBUtil.openConnection();
       // Vérification de la contrainte invariante
       int nPositionId = classifyEngine.classifySilverObject(connection, silverObjectId, position);
-      // Call the containerManager to register the association containerInstance
-      // - ContentInstance(SilverObjectId)
-      containerManager.addContainerContentInstanceLink(connection, nPositionId, sComponentId);
       return 0;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.addPosition", SilverpeasException.ERROR,
@@ -125,8 +118,6 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       // Open the connection
       connection = DBUtil.openConnection();
       classifyEngine.unclassifySilverObjectByPositionId(connection, nPositionId);
-      // Call the containerManager to unregister the association
-      containerManager.removeContainerContentInstanceLink(connection, nPositionId, sComponentId);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.deletePosition", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_POSITION", e);
@@ -141,48 +132,10 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       // Get all the positions for the given silverObjectId
       List<Position> positions = classifyEngine.findPositionsBySilverOjectId(silverObjectId);
 
-      // Extract the positiondIds
-      ArrayList<Integer> alPositionIds = new ArrayList<Integer>();
-      for (int nI = 0; positions != null && nI < positions.size(); nI++) {
-        int nPositionId = positions.get(nI).getPositionId();
-        alPositionIds.add(nPositionId);
-      }
-
-      // Get only the positions for the given componentId
-      List<Integer> alFilteredPositionIds = containerManager.filterPositionsByComponentId(
-          alPositionIds, sComponentId);
-      // Rebuild the positions
-      List<Position> alFinalPositions = new ArrayList<Position>();
-      for (Position position : positions) {
-        int nPositionId = position.getPositionId();
-        for (int nJ = 0; alFilteredPositionIds != null && nJ < alFilteredPositionIds.size(); nJ++) {
-          if (alFilteredPositionIds.get(nJ) == nPositionId) {
-            alFinalPositions.add(position);
-          }
-        }
-      }
       return positions;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
           "Pdc.CANNOT_GET_POSITIONS", e);
-    }
-  }
-
-  @Override
-  public JoinStatement getPositionsJoinStatement(String sComponentId) throws PdcException {
-    ArrayList<String> alComponentId = new ArrayList<String>();
-    alComponentId.add(sComponentId);
-    return getPositionsJoinStatement(alComponentId);
-  }
-
-  @Override
-  public JoinStatement getPositionsJoinStatement(List<String> alComponentId) throws PdcException {
-    try {
-      // Get the join statement for all positions for the given componentId
-      return containerManager.getFilterPositionsByComponentIdStatement(null, alComponentId);
-    } catch (ContainerManagerException e) {
-      throw new PdcException("PdcClassifyBmImpl.getPositions",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
     }
   }
 
@@ -200,12 +153,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   public void unregisterAxis(Connection con, int axisId) throws PdcException {
     try {
       List<Integer> alDeletedPositionIds = classifyEngine.unregisterAxis(con, axisId);
-      containerManager.removeAllPositionIdsLink(con, alDeletedPositionIds);
-
     } catch (ClassifyEngineException e) {
-      throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
-    } catch (ContainerManagerException e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
     }
@@ -261,16 +209,15 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
 
   @Override
   public List<Integer> getObjectsByInstance(String instanceId) throws PdcException {
-    // récupère la liste des silverobjectId depuis le container manager
-    // qui provienne de l'instanceId
     List<Integer> objectIdList = new ArrayList<Integer>();
     try {
-      List<Integer> alPositionIds = containerManager.filterPositionsByComponentId(null,
-          instanceId);
-      objectIdList = classifyEngine.getSilverContentIdsByPositionIds(alPositionIds);
+      JoinStatement contentJoin = contentManager.getPositionsByGenericSearch(null, null, null);
+      List<Criteria> criterias = new ArrayList<>();
+      List<String> instanceIds = new ArrayList<>();
+      instanceIds.add(instanceId);
+      objectIdList = classifyEngine
+          .findSilverOjectByCriterias(criterias, instanceIds, contentJoin, null, null, true, false);
     } catch (ClassifyEngineException e) {
-
-    } catch (ContainerManagerException e) {
 
     }
     return objectIdList;
@@ -334,46 +281,11 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   }
 
   @Override
-  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds)
-      throws PdcException {
-    try {
-      return classifyEngine.getPertinentAxis(searchContext.getCriterias(), axisIds);
-    } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
-    }
-  }
-
-  @Override
-  public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId)
-      throws PdcException {
-    try {
-      return classifyEngine.getPertinentValues(searchContext.getCriterias(), axisId);
-    } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentValues",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
-    }
-  }
-
-  @Override
   public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds,
-      JoinStatement joinStatementAllPositions) throws PdcException {
+      List<String> instanceIds) throws PdcException {
     try {
-      return classifyEngine.getPertinentAxisByJoin(
-          searchContext.getCriterias(), axisIds, joinStatementAllPositions);
-    } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
-    }
-  }
-
-  @Override
-  public PertinentAxis getPertinentAxis(SearchContext searchContext,
-      String axisId, String sRootValue, JoinStatement joinStatementAllPositions)
-      throws PdcException {
-    try {
-      return classifyEngine.getSinglePertinentAxisByJoin(null, searchContext.getCriterias(),
-          Integer.parseInt(axisId), sRootValue, joinStatementAllPositions);
+      return classifyEngine
+          .getPertinentAxisByJoin(searchContext.getCriterias(), axisIds, instanceIds);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
@@ -382,10 +294,10 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
 
   @Override
   public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId,
-      JoinStatement joinStatementAllPositions) throws PdcException {
+      List<String> instanceIds) throws PdcException {
     try {
       return classifyEngine.getPertinentValuesByJoin(searchContext.getCriterias(), axisId,
-          joinStatementAllPositions);
+          instanceIds);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
@@ -394,10 +306,10 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
 
   @Override
   public List<ObjectValuePair> getObjectValuePairs(SearchContext searchContext, int axisId,
-      JoinStatement joinStatementAllPositions) throws PdcException {
+      List<String> instanceIds) throws PdcException {
     try {
       return classifyEngine.getObjectValuePairsByJoin(searchContext.getCriterias(), axisId,
-          joinStatementAllPositions);
+          instanceIds);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
@@ -438,26 +350,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   /**
    * Find all the SilverContentId with the given position.
    *
-   * @param containerPosition
-   * @param alComponentId
-   * @param authorId
-   * @param afterDate
-   * @param beforeDate
-   * @return
-   * @throws PdcException
-   */
-  @Override
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
-      String authorId, String afterDate, String beforeDate) throws PdcException {
-    return findSilverContentIdByPosition(containerPosition, alComponentId,
-        authorId, afterDate, beforeDate, true, true);
-  }
-
-  /**
-   * Find all the SilverContentId with the given position.
-   *
-   * @param containerPosition
+   * @param searchContext
    * @param alComponentId
    * @param authorId
    * @param afterDate
@@ -468,31 +361,20 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
    * @throws PdcException
    */
   @Override
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
-      String authorId, String afterDate, String beforeDate,
+  public List<Integer> findSilverContentIdByPosition(SearchContext searchContext,
+      List<String> alComponentId, String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
     try {
       // Change the position in criteria
-      SearchContext searchContext = (SearchContext) containerPosition;
       List alCriterias = searchContext.getCriterias();
-      // Call the classifyEngine to get the objects
       return classifyEngine.findSilverOjectByCriterias(alCriterias,
-          containerManager.getFilterPositionsByComponentIdStatement(null,
-          alComponentId), contentManager.getPositionsByGenericSearch(
+          alComponentId, contentManager.getPositionsByGenericSearch(
           authorId, afterDate, beforeDate), afterDate, beforeDate,
           recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.findSilverContentIdByPosition",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_SILVERCONTENTIDS", e);
     }
-  }
-
-  @Override
-  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
-      List<String> alComponentId) throws PdcException {
-    return findSilverContentIdByPosition(containerPosition, alComponentId,
-        null, null, null);
   }
 
   /**

@@ -73,7 +73,6 @@ import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
@@ -1046,12 +1045,9 @@ class Admin implements Administration {
 
       if (isContentManagedComponent(componentName)) {
         // Create the manager objects
-        ContainerManager containerManager = new ContainerManager();
         ContentManager contentManager = new ContentManager();
 
         // Call the register functions
-        containerManager.registerNewContainerInstance(connectionProd, componentId, "containerPDC",
-            componentName);
         contentManager.registerNewContentInstance(connectionProd, componentId, "containerPDC",
             componentName);
       }
@@ -1180,12 +1176,9 @@ class Admin implements Administration {
 
         if (isContentManagedComponent(componentName)) {
           // Create the manager objects
-          ContainerManager containerManager = new ContainerManager();
           ContentManager contentManager = new ContentManager();
 
           // Call the unregister functions
-          containerManager.unregisterNewContainerInstance(connectionProd, componentId,
-              "containerPDC", componentName);
           contentManager.unregisterNewContentInstance(connectionProd, componentId, "containerPDC",
               componentName);
         }

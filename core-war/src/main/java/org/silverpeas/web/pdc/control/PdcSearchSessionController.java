@@ -40,9 +40,6 @@ import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.classification.Criteria;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPeas;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerWorkspace;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
@@ -117,9 +114,6 @@ import java.util.*;
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
   // Container and Content Peas
-  private ContainerWorkspace containerWorkspace = null;
-  private ContainerPeas containerPeasPDC = null;
-  private ContentPeas contentPeasPDC = null;
   private SearchContext searchContext = null; // Current position
   // in PDC
   private QueryParameters queryParameters = null; // Current parameters for
@@ -244,18 +238,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         srvName = getSettings().getString(prefixKey + cptSrv + nameKey);
       }
     }
-  }
-
-  public void setContainerWorkspace(ContainerWorkspace givenContainerWorkspace) {
-    containerWorkspace = givenContainerWorkspace;
-  }
-
-  public ContainerWorkspace getContainerWorkspace() {
-    return containerWorkspace;
-  }
-
-  public ContainerPositionInterface getContainerPosition() {
-    return searchContext;
   }
 
   public SearchContext getSearchContext() {
@@ -1748,13 +1730,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return getPdcManager().getValue(axisId, valueId);
   }
 
-  public void setContainerPeas(ContainerPeas containerGivenPeasPDC) {
-    containerPeasPDC = containerGivenPeasPDC;
-  }
-
-  public ContainerPeas getContainerPeas() {
-    return containerPeasPDC;
-  }
   /**
    * ***************************************************************************************************************
    */

@@ -25,13 +25,13 @@
 package org.silverpeas.core.pdc.classification;
 
 import org.silverpeas.core.util.JoinStatement;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
-
 class SQLStatement {
 
+  private static final String INSTANCES_TABLE = "SB_ContentManager_Instance";
   private static final String CLASSIFICATION_TABLE = "SB_ClassifyEngine_Classify";
   private static final String POSITION_ID_COLUMN = "PositionId";
   private static final String SILVEROBJECT_ID_COLUMN = "ObjectId";
@@ -276,55 +276,28 @@ class SQLStatement {
   }
 
   public String buildFindByCriteriasStatementByJoin(List<Criteria> alCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
-      String todayFormatted) {
-    return buildFindByCriteriasStatementByJoin(alCriterias,
-        joinStatementContainer, joinStatementContent, todayFormatted, true);
-  }
-
-  /*
-   * Build the SQL statement to find the objects.
-   * @param recursiveSearch if true, the search will be made on value and all subvalues (first and
-   * classic Silverpeas implementation). If set to false, the search will be made only one value
-   * (useful for taglib functionality)
-   * @return the Sql query string
-   */
-  public String buildFindByCriteriasStatementByJoin(List<Criteria> alCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
-      String todayFormatted, boolean recursiveSearch) {
-    return buildFindByCriteriasStatementByJoin(alCriterias,
-        joinStatementContainer, joinStatementContent, todayFormatted,
-        recursiveSearch, true);
-  }
-
-  public String buildFindByCriteriasStatementByJoin(List<Criteria> alCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
-      String todayFormatted, boolean recursiveSearch,
-      boolean visibilitySensitive) {
+      List<String> instanceIds, JoinStatement joinStatementContent,
+      String todayFormatted, boolean recursiveSearch, boolean visibilitySensitive) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
-    String containerMgrLinks = joinStatementContainer.getTable(0);
-    String containerMgrLinksKey = joinStatementContainer.getJoinKey(0);
     String contentMgr = joinStatementContent.getTable(0);
     String contentMgrKey = joinStatementContent.getJoinKey(0);
 
-    String whereClause = "";
     sSQLStatement.append(" SELECT CEC.").append(SILVEROBJECT_ID_COLUMN).append(" FROM ").append(
         CLASSIFICATION_TABLE).append(" CEC,").append(
-        containerMgrLinks).append(" CML,").append(contentMgr).append(" CMC");
+        INSTANCES_TABLE).append(" CMI,").append(contentMgr).append(" CMC");
     sSQLStatement.append(" WHERE ");
-    sSQLStatement.append(" CEC.").append(POSITION_ID_COLUMN).append(" = CML.").append(
-        containerMgrLinksKey);
+    sSQLStatement.append(" CMC.contentInstanceId = CMI.instanceId");
     sSQLStatement.append(" AND CEC.").append(SILVEROBJECT_ID_COLUMN).append(
         " = CMC.").append(contentMgrKey);
-    // works on the container statement
-    whereClause = joinStatementContainer.getWhere();
-    if (!whereClause.equals("")) {
-      sSQLStatement.append(" AND ").append(whereClause);
+    if (!instanceIds.isEmpty()) {
+      sSQLStatement.append(" AND ").append("CMI.componentId IN ('");
+      sSQLStatement.append(StringUtil.join(instanceIds, "','"));
+      sSQLStatement.append("')");
     }
 
     // works on the content statement
-    whereClause = joinStatementContent.getWhere();
-    if (!whereClause.equals("")) {
+    String whereClause = joinStatementContent.getWhere();
+    if (StringUtil.isDefined(whereClause)) {
       sSQLStatement.append(" AND ").append(whereClause);
     }
 
@@ -356,8 +329,6 @@ class SQLStatement {
     }
 
     sSQLStatement.append(" GROUP BY CEC.").append(SILVEROBJECT_ID_COLUMN);
-
-    whereClause = null;
 
     return sSQLStatement.toString();
   }
@@ -479,31 +450,27 @@ class SQLStatement {
 
   // Get the pertinent Axis corresponding to the criterias
   public String buildGetPertinentAxisStatementByJoin(List<? extends Criteria> alCriterias,
-      int nAxisId, String sRootValue, JoinStatement joinStatementAllPositions,
-      String todayFormatted) {
+      int nAxisId, String sRootValue, List<String> instanceIds, String todayFormatted) {
     return buildGetPertinentAxisStatementByJoin(alCriterias, nAxisId,
-        sRootValue, joinStatementAllPositions, todayFormatted, true);
+        sRootValue, instanceIds, todayFormatted, true);
   }
 
-  public String buildGetPertinentAxisStatementByJoin(List<? extends Criteria> alCriterias,
-      int nAxisId, String sRootValue, JoinStatement joinStatementAllPositions,
+  private String buildGetPertinentAxisStatementByJoin(List<? extends Criteria> alCriterias,
+      int nAxisId, String sRootValue, List<String> instanceIds,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
-    String containerMgrLinks = joinStatementAllPositions.getTable(0);
-    String containerMgrLinksKey = joinStatementAllPositions.getJoinKey(0);
 
     sSQLStatement.append("SELECT COUNT(DISTINCT CEC.").append(
         SILVEROBJECT_ID_COLUMN).append(")");
     sSQLStatement.append(" FROM ").append(CLASSIFICATION_TABLE).append(" CEC, ").append(
-        containerMgrLinks).append(
-        " CML, SB_ContentManager_Content CMC ");
-    sSQLStatement.append(" WHERE CEC.").append(POSITION_ID_COLUMN).append(
-        " = CML.").append(containerMgrLinksKey);
+        INSTANCES_TABLE).append(" CMI, SB_ContentManager_Content CMC ");
+    sSQLStatement.append(" WHERE CMC.contentInstanceId").append(" = CMI.instanceId");
     sSQLStatement.append(" AND CEC.").append(SILVEROBJECT_ID_COLUMN).append(
         " = CMC.silverContentId ");
-    String whereClause = joinStatementAllPositions.getWhere();
-    if (isDefined(whereClause)) {
-      sSQLStatement.append(" AND ").append(whereClause);
+    if (!instanceIds.isEmpty()) {
+      sSQLStatement.append(" AND ").append("CMI.componentId IN ('");
+      sSQLStatement.append(StringUtil.join(instanceIds, "','"));
+      sSQLStatement.append("')");
     }
     if (alCriterias != null) {
       for (Criteria criteria : alCriterias) {
@@ -539,7 +506,7 @@ class SQLStatement {
         todayFormatted, true);
   }
 
-  public String buildGetPertinentValueStatement(List<Criteria> alCriterias, int nAxisId,
+  private String buildGetPertinentValueStatement(List<Criteria> alCriterias, int nAxisId,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
     sSQLStatement.append("SELECT COUNT(CEC.").append(SILVEROBJECT_ID_COLUMN).append("), ").append(
@@ -582,29 +549,25 @@ class SQLStatement {
 
   // Get the pertinent Value corresponding to the criterias
   public String buildGetPertinentValueByJoinStatement(List<Criteria> alCriterias,
-      int nAxisId, JoinStatement joinStatementAllPositions,
-      String todayFormatted) {
+      int nAxisId, List<String> instanceIds, String todayFormatted) {
     return buildGetPertinentValueByJoinStatement(alCriterias, nAxisId,
-        joinStatementAllPositions, todayFormatted, true);
+        instanceIds, todayFormatted, true);
   }
 
-  public String buildGetPertinentValueByJoinStatement(List<Criteria> alCriterias,
-      int nAxisId, JoinStatement joinStatementAllPositions,
-      String todayFormatted, boolean visibilitySensitive) {
+  private String buildGetPertinentValueByJoinStatement(List<Criteria> alCriterias,
+      int nAxisId, List<String> instanceIds, String todayFormatted, boolean visibilitySensitive) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
     sSQLStatement.append("SELECT COUNT(DISTINCT CEC.").append(
         SILVEROBJECT_ID_COLUMN).append("), CEC.").append(AXIS_COLUMN).append(nAxisId);
     sSQLStatement.append(" FROM ").append(CLASSIFICATION_TABLE).append(" CEC, ").append(
-        joinStatementAllPositions.
-        getTable(0)).append(
-        " CML, SB_ContentManager_Content CMC ");
-    sSQLStatement.append(" WHERE CEC.").append(POSITION_ID_COLUMN).append(
-        " = CML.").append(joinStatementAllPositions.getJoinKey(0));
+        INSTANCES_TABLE).append(" CMI, SB_ContentManager_Content CMC ");
+    sSQLStatement.append(" WHERE CMC.contentInstanceId").append(" = CMI.instanceId");
     sSQLStatement.append(" AND CEC.").append(SILVEROBJECT_ID_COLUMN).append(
         " = CMC.silverContentId ");
-    String whereClause = joinStatementAllPositions.getWhere();
-    if ((whereClause != null) && (!whereClause.equals(""))) {
-      sSQLStatement.append(" AND ").append(whereClause);
+    if (!instanceIds.isEmpty()) {
+      sSQLStatement.append(" AND ").append("CMI.componentId IN ('");
+      sSQLStatement.append(StringUtil.join(instanceIds, "','"));
+      sSQLStatement.append("')");
     }
 
     for (Criteria criteria : alCriterias) {
@@ -631,24 +594,19 @@ class SQLStatement {
   }
 
   public String buildGetObjectValuePairsByJoinStatement(List<Criteria> alCriterias,
-      int nAxisId, JoinStatement joinStatementAllPositions,
-      String todayFormatted, boolean visibilitySensitive) {
+      int nAxisId, List<String> instanceIds, String todayFormatted, boolean visibilitySensitive) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
     sSQLStatement.append("SELECT CMC.internalContentId").append(", CEC.").append(AXIS_COLUMN).
         append(nAxisId).append(", CMI.componentId");
     sSQLStatement.append(" FROM ").append(CLASSIFICATION_TABLE).append(" CEC, ").append(
-        joinStatementAllPositions.
-        getTable(0)).append(
-        " CML, SB_ContentManager_Content CMC, SB_ContentManager_Instance CMI ");
-    sSQLStatement.append(" WHERE CEC.").append(POSITION_ID_COLUMN).append(
-        " = CML.").append(joinStatementAllPositions.getJoinKey(0));
-    sSQLStatement.append(" AND CEC.").append(SILVEROBJECT_ID_COLUMN).append(
+        " SB_ContentManager_Content CMC, SB_ContentManager_Instance CMI ");
+    sSQLStatement.append(" WHERE CEC.").append(SILVEROBJECT_ID_COLUMN).append(
         " = CMC.silverContentId ");
-    sSQLStatement.append(" AND CMC.contentInstanceId").append(
-        " = CMI.instanceId ");
-    String whereClause = joinStatementAllPositions.getWhere();
-    if (isDefined(whereClause)) {
-      sSQLStatement.append(" AND ").append(whereClause);
+    sSQLStatement.append(" AND CMC.contentInstanceId").append(" = CMI.instanceId ");
+    if (!instanceIds.isEmpty()) {
+      sSQLStatement.append(" AND ").append("CMI.componentId IN ('");
+      sSQLStatement.append(StringUtil.join(instanceIds, "','"));
+      sSQLStatement.append("')");
     }
 
     for (Criteria criteria : alCriterias) {

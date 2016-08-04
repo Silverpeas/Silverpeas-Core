@@ -24,15 +24,13 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Nicolas EYSSERIC
  */
-public class SearchContext implements ContainerPositionInterface, java.io.Serializable {
+public class SearchContext implements java.io.Serializable {
 
   private static final long serialVersionUID = 3377353406396353627L;
   private ArrayList<SearchCriteria> criterias = new ArrayList<SearchCriteria>();

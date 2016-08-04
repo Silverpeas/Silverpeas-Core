@@ -593,18 +593,11 @@ public class ClassifyEngine {
     }
   }
 
-  public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
-      String afterDate, String beforeDate) throws ClassifyEngineException {
-    return findSilverOjectByCriterias(alGivenCriterias, joinStatementContainer,
-        joinStatementContent, afterDate, beforeDate, true, true);
-  }
-
   /*
    * Find all the SilverObjectId corresponding to the given criterias and the given Join Statement
    */
   public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
+      List<String> instanceIds, JoinStatement joinStatementContent,
       String afterDate, String beforeDate, boolean recursiveSearch,
       boolean visibilitySensitive) throws ClassifyEngineException {
     Connection connection = null;
@@ -629,7 +622,7 @@ public class ClassifyEngine {
 
       // build the statement to get the SilverObjectIds
       String sSQLStatement = SQLStatement.buildFindByCriteriasStatementByJoin(
-          alCriterias, joinStatementContainer, joinStatementContent, today,
+          alCriterias, instanceIds, joinStatementContent, today,
           recursiveSearch, visibilitySensitive);
 
       // Execute the finding
@@ -1031,8 +1024,7 @@ public class ClassifyEngine {
    * given Join Statement The return list is ordered like the given one considering the AxisId
    */
   public List<PertinentAxis> getPertinentAxisByJoin(List<? extends Criteria> alGivenCriterias,
-      List<Integer> alAxisIds,
-      JoinStatement joinStatementAllPositions) throws ClassifyEngineException {
+      List<Integer> alAxisIds, List<String> instanceIds) throws ClassifyEngineException {
     Connection connection = null;
 
     // Check the minimum required
@@ -1055,8 +1047,8 @@ public class ClassifyEngine {
       ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
       for (Integer alAxisId : alAxisIds) {
         int nAxisId = this.getPhysicalAxisId(alAxisId);
-        alPertinentAxis.add(this.getSinglePertinentAxisByJoin(connection,
-            alCriterias, nAxisId, "", joinStatementAllPositions, today));
+        alPertinentAxis.add(getSinglePertinentAxisByJoin(connection,
+            alCriterias, nAxisId, "", instanceIds, today));
       }
 
       return alPertinentAxis;
@@ -1069,21 +1061,12 @@ public class ClassifyEngine {
     }
   }
 
-  public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
-      List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
-      JoinStatement joinStatementAllPositions) throws SQLException,
-      ClassifyEngineException {
-    String today = DateUtil.today2SQLDate();
-    return getSinglePertinentAxisByJoin(connection, alCriterias, nAxisId,
-        sRootValue, joinStatementAllPositions, today);
-  }
-
   /*
    * Return a PertinentAxis object corresponding to the given AxisId, rootValue and search Criterias
    */
-  public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
+  private PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
       List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
-      JoinStatement joinStatementAllPositions, String todayFormatted)
+      List<String> instanceIds, String todayFormatted)
       throws SQLException, ClassifyEngineException {
     boolean bCloseConnection = false;
 
@@ -1112,8 +1095,7 @@ public class ClassifyEngine {
 
       // build the statements
       String sSQLStatement = SQLStatement.buildGetPertinentAxisStatementByJoin(
-          alCriterias, nAxisId, sRootValue, joinStatementAllPositions,
-          todayFormatted);
+          alCriterias, nAxisId, sRootValue, instanceIds, todayFormatted);
 
       PertinentAxis pertinentAxis = m_hSinglePertinentAxis.get(sSQLStatement);
       if (pertinentAxis == null) {
@@ -1214,8 +1196,7 @@ public class ClassifyEngine {
    * like the given one considering the AxisId
    */
   public List<PertinentValue> getPertinentValuesByJoin(List<? extends Criteria> alGivenCriterias,
-      int nLogicalAxisId, JoinStatement joinStatementAllPositions)
-      throws ClassifyEngineException {
+      int nLogicalAxisId, List<String> instanceIds) throws ClassifyEngineException {
     Connection connection = null;
 
     // Check the minimum required
@@ -1238,8 +1219,7 @@ public class ClassifyEngine {
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetPertinentValueByJoinStatement(alCriterias, this.
-          getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
-          today);
+          getPhysicalAxisId(nLogicalAxisId), instanceIds, today);
 
       // Execute the finding
       prepStmt = connection.prepareStatement(sSQLStatement);
@@ -1272,8 +1252,7 @@ public class ClassifyEngine {
    * like the given one considering the AxisId
    */
   public List<ObjectValuePair> getObjectValuePairsByJoin(List<? extends Criteria> alGivenCriterias,
-      int nLogicalAxisId, JoinStatement joinStatementAllPositions)
-      throws ClassifyEngineException {
+      int nLogicalAxisId, List<String> instanceIds) throws ClassifyEngineException {
     Connection connection = null;
 
     // Check the minimum required
@@ -1297,8 +1276,7 @@ public class ClassifyEngine {
       // Build the statement
       String sSQLStatement =
           SQLStatement.buildGetObjectValuePairsByJoinStatement(alCriterias, this.
-          getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
-          today, true);
+          getPhysicalAxisId(nLogicalAxisId), instanceIds, today, true);
 
       // Execute the finding
       prepStmt = connection.prepareStatement(sSQLStatement);

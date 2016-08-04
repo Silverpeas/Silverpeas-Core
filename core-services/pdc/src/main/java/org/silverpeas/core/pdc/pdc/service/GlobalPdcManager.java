@@ -24,9 +24,6 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerInterface;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -50,7 +47,6 @@ import org.silverpeas.core.pdc.tree.service.TreeService;
 import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
@@ -70,7 +66,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Singleton
-public class GlobalPdcManager implements PdcManager, ContainerInterface {
+public class GlobalPdcManager implements PdcManager {
 
   /**
    * SilverpeasBeanDAO is the main link with the SilverPeas persistence. We indicate the Object
@@ -121,7 +117,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
   @Override
   public List<GlobalSilverContent> findGlobalSilverContents(
-      ContainerPositionInterface containerPosition, List<String> componentIds,
+      SearchContext containerPosition, List<String> componentIds,
       boolean recursiveSearch, boolean visibilitySensitive) {
     List<Integer> silverContentIds = new ArrayList<>();
     try {
@@ -129,7 +125,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       silverContentIds.addAll(
           findSilverContentIdByPosition(containerPosition, componentIds, recursiveSearch,
               visibilitySensitive));
-    } catch (ContainerManagerException c) {
+    } catch (PdcException c) {
       throw new PdcRuntimeException("PdcBmEJB.findGlobalSilverContents",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
@@ -1940,22 +1936,6 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     return classifyPositions;
   }
 
-  // recherche globale
-  @Override
-  public List<SearchAxis> getPertinentAxis(SearchContext searchContext, String axisType)
-      throws PdcException {
-    List<AxisHeader> axis = getAxisByType(axisType);
-    ArrayList<Integer> axisIds = new ArrayList<>();
-    String axisId;
-    for (AxisHeader axisHeader : axis) {
-      axisId = axisHeader.getPK().getId();
-      axisIds.add(new Integer(axisId));
-    }
-    List<PertinentAxis> pertinentAxis = pdcClassifyManager.getPertinentAxis(searchContext, axisIds);
-
-    return transformPertinentAxisIntoSearchAxis(pertinentAxis, axis);
-  }
-
   // recherche à l'intérieur d'une instance
   @Override
   public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext, String axisType,
@@ -1993,7 +1973,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     }
 
     List<PertinentAxis> pertinentAxis = pdcClassifyManager.getPertinentAxis(searchContext, axisIds,
-        pdcClassifyManager.getPositionsJoinStatement(instanceIds));
+        instanceIds);
     return transformPertinentAxisIntoSearchAxis(pertinentAxis, axis);
   }
 
@@ -2117,25 +2097,13 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
     List<ObjectValuePair> objectValuePairs = null;
 
-
-
     ComponentAuthorization componentAuthorization = null;
 
     try {
       // Get all the values for this treeService
       descendants = getAxisValues(treeId, filter);
-
-
-
-      JoinStatement joinStatement = pdcClassifyManager.getPositionsJoinStatement(instanceIds);
-
-
-
       List<PertinentValue> pertinentValues = pdcClassifyManager
-          .getPertinentValues(searchContext, Integer.parseInt(axisId), joinStatement);
-
-
-
+          .getPertinentValues(searchContext, Integer.parseInt(axisId), instanceIds);
       // Set the NbObject for all the pertinent values
       String descendantPath = null;
       for (int nI = 0; nI < descendants.size(); nI++) {
@@ -2189,7 +2157,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           } else {
             if (objectValuePairs == null) {
               objectValuePairs = pdcClassifyManager
-                  .getObjectValuePairs(searchContext, Integer.parseInt(axisId), joinStatement);
+                  .getObjectValuePairs(searchContext, Integer.parseInt(axisId), instanceIds);
             }
 
             List<String> countedObjects = new ArrayList<String>();
@@ -2344,24 +2312,16 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
    * ******** CONTAINER INTERFACE METHODS ********
    * *********************************************
    */
-  /**
-   * Return the parameters for the HTTP call on the classify
-   */
-  @Override
-  public String getCallParameters(String sComponentId, String sSilverContentId) {
-    return "ComponentId=" + sComponentId + "&SilverObjectId=" + sSilverContentId;
-  }
 
   /**
    * Remove all the positions of the given content
    */
-  @Override
   public List<Integer> removePosition(Connection connection, int nSilverContentId)
-      throws ContainerManagerException {
+      throws PdcException {
     try {
       return pdcClassifyManager.removePosition(connection, nSilverContentId);
     } catch (Exception e) {
-      throw new ContainerManagerException("GlobalPdcManager.removePosition",
+      throw new PdcException("GlobalPdcManager.removePosition",
           SilverpeasException.ERROR, "containerManager.EX_INTERFACE_REMOVE_FUNCTIONS", e);
     }
 
@@ -2370,9 +2330,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   /**
    * Get the SearchContext of the first position for the given SilverContentId
    */
-  @Override
-  public ContainerPositionInterface getSilverContentIdSearchContext(int nSilverContentId,
-      String sComponentId) throws ContainerManagerException {
+  public SearchContext getSilverContentIdSearchContext(int nSilverContentId,
+      String sComponentId) throws PdcException {
     try {
       // Get the positions
       List alPositions = pdcClassifyManager.getPositions(nSilverContentId, sComponentId);
@@ -2393,15 +2352,15 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
       return searchContext;
     } catch (Exception e) {
-      throw new ContainerManagerException("GlobalPdcManager.getSilverContentIdPositions",
+      throw new PdcException("GlobalPdcManager.getSilverContentIdPositions",
           SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);
     }
   }
 
   @Override
-  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
+  public List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
       List<String> alComponentId, String authorId, String afterDate, String beforeDate)
-      throws ContainerManagerException {
+      throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId, authorId, afterDate,
         beforeDate, true, true);
   }
@@ -2409,31 +2368,29 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   /**
    * Find all the SilverContentId with the given position
    */
-  @Override
-  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
+  private List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
       List<String> alComponentId, String authorId, String afterDate, String beforeDate,
-      boolean recursiveSearch, boolean visibilitySensitive) throws ContainerManagerException {
+      boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
     try {
       // Get the objects
       return pdcClassifyManager
           .findSilverContentIdByPosition(containerPosition, alComponentId, authorId, afterDate,
               beforeDate, recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
-      throw new ContainerManagerException("GlobalPdcManager.findSilverContentIdByPosition",
+      throw new PdcException("GlobalPdcManager.findSilverContentIdByPosition",
           SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);
     }
   }
 
   @Override
-  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
-      List<String> alComponentId) throws ContainerManagerException {
+  public List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
+      List<String> alComponentId) throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId, true, true);
   }
 
-  @Override
-  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
+  private List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
       List<String> alComponentId, boolean recursiveSearch, boolean visibilitySensitive)
-      throws ContainerManagerException {
+      throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId, null, null, null,
         recursiveSearch, visibilitySensitive);
   }

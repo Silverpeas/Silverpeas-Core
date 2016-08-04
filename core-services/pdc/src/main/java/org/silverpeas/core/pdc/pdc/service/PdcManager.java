@@ -20,8 +20,6 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManagerException;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -55,7 +53,7 @@ public interface PdcManager {
   }
 
   public List<GlobalSilverContent> findGlobalSilverContents(
-      ContainerPositionInterface containerPosition, List<String> componentIds,
+      SearchContext containerPosition, List<String> componentIds,
       boolean recursiveSearch, boolean visibilitySensitive);
 
   public List<AxisHeader> getAxisByType(String type) throws PdcException;
@@ -420,12 +418,6 @@ public interface PdcManager {
 
   public boolean isClassifyingMandatory(String componentId) throws PdcException;
 
-  /**
-   * Search methods
-   */
-  public List<SearchAxis> getPertinentAxis(SearchContext searchContext, String axisType)
-      throws PdcException;
-
   public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext,
       String axisType, String instanceId) throws PdcException;
 
@@ -468,30 +460,16 @@ public interface PdcManager {
       List<String> instanceIds, AxisFilter filter) throws PdcException;
 
   public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
+      SearchContext containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate)
-      throws ContainerManagerException;
+      throws PdcException;
 
   /**
    * Find all the SilverContentId with the given position
    */
   public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
-      String authorId, String afterDate, String beforeDate,
-      boolean recursiveSearch, boolean visibilitySensitive)
-      throws ContainerManagerException;
-
-  /**
-   * Find all the SilverContentId with the given position
-   */
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId)
-      throws ContainerManagerException;
-
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
-      boolean recursiveSearch, boolean visibilitySensitive)
-      throws ContainerManagerException;
+      SearchContext containerPosition, List<String> alComponentId)
+      throws PdcException;
 
   public List<Value> getDaughters(String refValue, String treeId);
 
