@@ -80,4 +80,13 @@ public interface Plannable extends Serializable {
    * @return a short text about the reason of this plannable object.
    */
   String getTitle();
+
+  /**
+   * Saves this plannable object into the specified calendar. This will add this plannable object
+   * into the given calendar and it will have hence an unique identifier that will uniquely
+   * identify it among all others plannable objects in the calendar.
+   * @param aCalendar
+   * @return
+   */
+  Plannable saveOn(final Calendar aCalendar);
 }

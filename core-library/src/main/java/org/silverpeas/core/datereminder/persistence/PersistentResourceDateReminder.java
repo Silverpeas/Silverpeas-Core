@@ -180,7 +180,7 @@ public class PersistentResourceDateReminder
    * @param userId
    */
   private void setCreatorId(String userId) {
-    super.setCreatedBy(userId);
+    super.createdBy(userId);
   }
 
   /**

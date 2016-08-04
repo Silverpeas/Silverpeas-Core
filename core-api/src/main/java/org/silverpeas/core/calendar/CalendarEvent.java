@@ -33,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
@@ -61,7 +62,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   private Period period;
 
   @Embedded
-  private Attributes attributes;
+  private Attributes attributes = new Attributes();
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
@@ -253,6 +254,20 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   }
 
   /**
+   * Adds the specified attribute among the attributes of this event. Same as
+   * <pre>{@code
+   * getAttributes().add(attrName, attrValue);
+   * return this;}</pre>
+   * @param attrName the name of the attribute to add.
+   * @param attrValue the value of the attribute to add.
+   * @return itself.
+   */
+  public CalendarEvent withAttribute(String attrName, String attrValue) {
+    getAttributes().add(attrName, attrValue);
+    return this;
+  }
+
+  /**
    * Gets the recurrence of this recurring event. If the event isn't a recurring one, then returns
    * NO_RECURRENCE.
    * @return this event recurrence or NO_RECURRENCE.
@@ -291,6 +306,15 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   @Override
   public OffsetDateTime getEndDateTime() {
     return getPeriod().getEndDateTime();
+  }
+
+  @Override
+  public CalendarEvent saveOn(final Calendar calendar) {
+    return calendar.getEvents().add(this);
+  }
+
+  protected void setCalendar(final Calendar calendar) {
+    this.calendar = calendar;
   }
 
   private Period getPeriod() {

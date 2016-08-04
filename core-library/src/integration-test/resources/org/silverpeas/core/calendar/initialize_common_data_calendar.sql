@@ -1,3 +1,15 @@
+INSERT INTO st_accesslevel (id, name) VALUES ('U', 'User');
+INSERT INTO st_accesslevel (id, name) VALUES ('A', 'Administrator');
+INSERT INTO st_accesslevel (id, name) VALUES ('G', 'Guest');
+INSERT INTO st_accesslevel (id, name) VALUES ('R', 'Removed');
+INSERT INTO st_accesslevel (id, name) VALUES ('K', 'KMManager');
+INSERT INTO st_accesslevel (id, name) VALUES ('D', 'DomainManager');
+
+INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, state, stateSaveDate, notifManualReceiverLimit)
+VALUES (0, 0, '0', 'Administrateur', 'SilverAdmin', 'A', 'VALID', '2012-01-01 00:00:00.000', 0);
+INSERT INTO st_user (id, domainId, specificId, firstName, lastName, login, accessLevel, state, stateSaveDate, notifManualReceiverLimit)
+VALUES (1, 0, '1', 'Toto', 'Chez-les-Papoos', 'toto', 'U', 'VALID', '2012-01-01 00:00:00.000', 0);
+
 INSERT INTO sb_calendar
   (id, instanceId, title, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
 VALUES

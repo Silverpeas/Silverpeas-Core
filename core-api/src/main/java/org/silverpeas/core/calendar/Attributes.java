@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
 public class Attributes {
 
   private static final Pattern ATTR_PATTERN =
-      Pattern.compile("\"(\\p{Alnum}+)\":\"([\\p{Alnum}\\s\\p{Punct}&&[^\"]]+)\"");
+      Pattern.compile("\"(\\p{Alnum}+)\":\"([\\p{javaLetterOrDigit}\\s\\p{Punct}&&[^\"]]+)\"");
   private static final MessageFormat ATTR_FORMAT = new MessageFormat("\"{0}\":\"{1}\"");
 
   @Transient
@@ -81,6 +81,14 @@ public class Attributes {
   }
 
   /**
+   * Is this set of attributes empty?
+   * @return true if there is no attributes set, false otherwise.
+   */
+  public boolean isEmpty() {
+    return attrs.isEmpty();
+  }
+
+  /**
    * Gets the value of the specified attribute or nothing is there is no a such attribute.
    * @param name the name of an attribute.
    * @return optionally the value of the specified attribute.
@@ -89,11 +97,33 @@ public class Attributes {
     return Optional.ofNullable(attrs.get(name));
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Attributes)) {
+      return false;
+    }
+
+    final Attributes that = (Attributes) o;
+    return attrs.equals(that.attrs);
+  }
+
+  @Override
+  public int hashCode() {
+    return attrs.hashCode();
+  }
+
+  protected Attributes() {
+
+  }
+
   private void deserialize() {
     if (attributes != null) {
       Matcher matcher = ATTR_PATTERN.matcher(this.attributes);
       while (matcher.find()) {
-        attrs.put(matcher.group(1), matcher.group(2));
+        attrs.put(matcher.group(1), matcher.group(2).replaceAll("U\\+0022", "\""));
       }
     }
   }
@@ -104,7 +134,8 @@ public class Attributes {
     } else {
       attrs.entrySet().forEach(e -> {
         String a = attributes == null || attributes.isEmpty() ? "" : attributes + ",";
-        attributes = a + ATTR_FORMAT.format(new String[]{e.getKey(), e.getValue()});
+        attributes = a + ATTR_FORMAT.format(new String[]{e.getKey(),
+            e.getValue().replaceAll("\"", "U+0022")});
       });
     }
   }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.AbstractEntity;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
@@ -184,8 +185,15 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @SuppressWarnings("unchecked")
   @Override
-  public ENTITY setCreatedBy(final String createdBy) {
+  public ENTITY createdBy(final String createdBy) {
     this.createdBy = createdBy;
+    return (ENTITY) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public ENTITY createdBy(final User creator) {
+    setCreator(creator);
     return (ENTITY) this;
   }
 

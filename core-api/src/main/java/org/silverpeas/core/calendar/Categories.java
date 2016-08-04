@@ -36,7 +36,7 @@ import java.util.Set;
  */
 public class Categories {
 
-  private Set<String> categories = new HashSet<String>();
+  private Set<String> categories = new HashSet<>();
 
   /**
    * Adds a category to a {@link Plannable}. The category is specified by its unique
@@ -102,7 +102,7 @@ public class Categories {
    * @return a list of category identifiers.
    */
   public List<String> asList() {
-    return new ArrayList<String>(categories);
+    return new ArrayList<>(categories);
   }
 
   /**
@@ -130,6 +130,24 @@ public class Categories {
    */
   public boolean isEmpty() {
     return categories.isEmpty();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Categories)) {
+      return false;
+    }
+
+    final Categories that = (Categories) o;
+    return categories.equals(that.categories);
+  }
+
+  @Override
+  public int hashCode() {
+    return categories.hashCode();
   }
 
   protected Categories() {

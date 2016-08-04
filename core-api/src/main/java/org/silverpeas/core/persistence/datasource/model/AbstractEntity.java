@@ -102,7 +102,9 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
     setLastUpdateDate(new Timestamp((new Date()).getTime()));
   }
 
-  public abstract ENTITY setCreatedBy(String createdBy);
+  public abstract ENTITY createdBy(String createdBy);
+
+  public abstract ENTITY createdBy(User creator);
 
   protected abstract ENTITY setCreateDate(Date createDate);
 
@@ -125,7 +127,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   @Override
   public ENTITY setCreator(final User creator) {
     createdByUser = creator;
-    return setCreatedBy((createdByUser != null) ? createdByUser.getId() : null);
+    return createdBy((createdByUser != null) ? createdByUser.getId() : null);
   }
 
   @Override
@@ -196,7 +198,6 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
       entity = (AbstractEntity) super.clone();
       entity.setId(null);
       entity.setCreator(null);
-      entity.setCreatedBy(null);
       entity.setCreateDate(null);
       entity.setLastUpdater(null);
       entity.setLastUpdatedBy(null);

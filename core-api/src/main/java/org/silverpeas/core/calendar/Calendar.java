@@ -24,7 +24,6 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -35,9 +34,10 @@ import org.silverpeas.core.security.Securable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -58,6 +58,9 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   @Column(name = "title")
   private String title;
 
+  @Transient
+  private CalendarEventStore events;
+
   /**
    * Necessary for JPA management.
    */
@@ -72,6 +75,7 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
    */
   public Calendar(String instanceId) {
     this.componentInstanceId = instanceId;
+    initEventStore();
   }
 
   /**
@@ -117,7 +121,7 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   }
 
   /**
-   * Saves the calendar into the persistence context.
+   * Deletes the calendar in the persistence context.
    */
   public void delete() {
     Transaction.performInOne(() -> {
@@ -128,12 +132,16 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   }
 
   /**
-   * Gets an event from this calendar by is specified identifier or nothing is no such event exists
-   * in this calendar.
-   * @param eventId the unique identifier of the event to get from this calendar.
-   * @return optionally an event from this calendar.
+   * Gets the events that were added into this calendar.
+   * @return a {@link CalendarEventStore} instance by which the events in this calendar
+   * can be managed.
    */
-  public Optional<CalendarEvent> getEvent(String eventId) {
-    return CalendarEventRepository.get().getById(this, eventId);
+  public CalendarEventStore getEvents() {
+    return events;
+  }
+
+  @PostLoad
+  private final void initEventStore() {
+    this.events = new CalendarEventStore(this);
   }
 }

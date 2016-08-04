@@ -36,7 +36,7 @@ import java.util.Set;
  */
 public class Attendees {
 
-  private Set<String> attendees = new HashSet<String>();
+  private Set<String> attendees = new HashSet<>();
 
   /**
    * Adds an attendee to the attendees of a {@link Plannable}. The attendee is specified by one of its
@@ -122,8 +122,25 @@ public class Attendees {
     return attendees.isEmpty();
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Attendees)) {
+      return false;
+    }
+
+    final Attendees attendees1 = (Attendees) o;
+    return attendees.equals(attendees1.attendees);
+  }
+
+  @Override
+  public int hashCode() {
+    return attendees.hashCode();
+  }
+
   protected Attendees() {
 
   }
-
 }

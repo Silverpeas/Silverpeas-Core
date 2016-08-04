@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.calendar.repository;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -32,7 +32,6 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.resource.NotSupportedException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -81,29 +80,29 @@ public interface CalendarEventRepository
 
   /**
    * Throws a {@link SilverpeasRuntimeException}
-   * Uses instead getById(Calendar calendar, String id);
+   * Uses instead {@code getById(Calendar calendar, String id);}
    */
   @Override
   default CalendarEvent getById(String id) {
-    throw new SilverpeasRuntimeException("getById(String id) not supported");
+    throw new NotSupportedException("getById(String id) not supported");
   }
 
   /**
    * Throws a {@link SilverpeasRuntimeException}
-   * Uses instead getById(Calendar calendar, String... ids);
+   * Uses instead {@code getById(Calendar calendar, String... ids);}
    */
   @Override
   default List<CalendarEvent> getById(String... ids) {
-    throw new SilverpeasRuntimeException("getById(String... ids) not supported");
+    throw new NotSupportedException("getById(String... ids) not supported");
   }
 
   /**
    * Throws a {@link SilverpeasRuntimeException}
-   * Uses instead getById(Calendar calendar, Collection<String> ids);
+   * Uses instead {@code getById(Calendar calendar, Collection<String> ids);}
    */
   @Override
   default List<CalendarEvent> getById(Collection<String> ids) {
-    throw new SilverpeasRuntimeException("getById(Collection<String> ids) not supported");
+    throw new NotSupportedException("getById(Collection<String> ids) not supported");
   }
 
   /**

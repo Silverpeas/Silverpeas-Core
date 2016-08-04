@@ -30,21 +30,37 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
+ * Integration tests on the getting, on the saving, on the deletion and on the update of the events
+ * in a given calendar.
+ *
+ * We first check the getting of an existing event works fine so that we can use afterwards the
+ * getting method to get the previously saved event in order to check its persisted properties.
  * @author Yohann Chastagnier
  */
 @RunWith(Arquillian.class)
 public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
+
+  private static final String CALENDAR_ID = "ID_1";
+  private static final String EVENT_TITLE = "an event";
+  private static final String EVENT_DESCRIPTION = "a description";
+  private static final String AN_ATTRIBUTE_NAME = "location";
+  private static final String AN_ATTRIBUTE_VALUE = "L'agence de Grenoble, en Isère (France)";
+  private static final String USER_ID = "1";
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -61,8 +77,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   }
 
   @Test
-  public void getCalendarEventById() throws Exception {
-    Optional<CalendarEvent> mayBeEvent = Calendar.getById("ID_1").getEvent("ID_E_3");
+  public void getExistingCalendarEventById() {
+    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).getEvents().get("ID_E_3");
     assertThat(mayBeEvent.isPresent(), is(true));
 
     CalendarEvent calendarEvent = mayBeEvent.get();
@@ -79,6 +95,72 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(calendarEvent.getPriority(), is(Priority.HIGH));
     assertThat(calendarEvent.getAttributes().get("location").isPresent(), is(true));
     assertThat(calendarEvent.getAttributes().get("location").get(), is("location C"));
+  }
+
+  @Test
+  public void saveANewEventOnAllDay() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    LocalDate today = LocalDate.now();
+    CalendarEvent expectedEvent = CalendarEvent.on(today)
+        .createdBy(USER_ID)
+        .withTitle(EVENT_TITLE)
+        .withDescription(EVENT_DESCRIPTION)
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
+        .saveOn(calendar);
+    assertThat(expectedEvent.isPersisted(), is(true));
+
+    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
+    assertThat(mayBeActualEvent.isPresent(), is(true));
+    assertEventProperties(mayBeActualEvent.get(), expectedEvent);
+  }
+
+  @Test
+  public void saveANewEventOnSeveralDays() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    LocalDate today = LocalDate.now();
+    LocalDate dayAfterTomorrow = today.plusDays(2);
+    CalendarEvent expectedEvent = CalendarEvent.on(Period.between(today, dayAfterTomorrow))
+        .createdBy(USER_ID)
+        .withTitle(EVENT_TITLE)
+        .withDescription(EVENT_DESCRIPTION)
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
+        .saveOn(calendar);
+    assertThat(expectedEvent.isPersisted(), is(true));
+
+    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
+    assertThat(mayBeActualEvent.isPresent(), is(true));
+    assertEventProperties(mayBeActualEvent.get(), expectedEvent);
+  }
+
+  @Test
+  public void saveANewEventAtAGivenDateTime() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    OffsetDateTime now = OffsetDateTime.now();
+    OffsetDateTime inThreeHours = now.plusHours(3);
+    CalendarEvent expectedEvent = CalendarEvent.on(Period.between(now, inThreeHours))
+        .createdBy(USER_ID)
+        .withTitle(EVENT_TITLE)
+        .withDescription(EVENT_DESCRIPTION)
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
+        .saveOn(calendar);
+    assertThat(expectedEvent.isPersisted(), is(true));
+
+    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
+    assertThat(mayBeActualEvent.isPresent(), is(true));
+    assertEventProperties(mayBeActualEvent.get(), expectedEvent);
+  }
+
+  private void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
+    assertThat(actual.getStartDateTime(), is(expected.getStartDateTime()));
+    assertThat(actual.getEndDateTime(), is(expected.getEndDateTime()));
+    assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
+    assertThat(actual.getTitle(), is(expected.getTitle()));
+    assertThat(actual.getDescription(), is(expected.getDescription()));
+    assertThat(actual.getAttributes(), is(expected.getAttributes()));
+    assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
+    assertThat(actual.getAttendees(), is(expected.getAttendees()));
+    assertThat(actual.getCategories(), is(expected.getCategories()));
+    assertThat(actual.getRecurrence(), is(Recurrence.NO_RECURRENCE));
   }
 
 }

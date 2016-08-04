@@ -21,45 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.silverpeas.core.date;
+package org.silverpeas.core;
 
 /**
- * An enumeration of time units to be used to express a well known defined unit in the timeline.
+ * An <em>unchecked exception</em> to signal a method inherited from an interface or an abstract
+ * class isn't supported by the current implementation (in others terms, the method has no meaning
+ * for the current implementation).
+ * @author mmoquillon
  */
-public enum TimeUnit {
+public class NotSupportedException extends SilverpeasRuntimeException {
+  public NotSupportedException(final String message) {
+    super(message);
+  }
 
-  /**
-   * Time unit representing one second.
-   */
-  SECOND,
-  /**
-   * Time unit representing one minute.
-   */
-  MINUTE,
+  public NotSupportedException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
 
-  /**
-   * Time unit representing one hour.
-   */
-  HOUR,
-
-  /**
-   * Time unit representing one day.
-   */
-  DAY,
-
-  /**
-   * Time unit representing one week.
-   */
-  WEEK,
-
-  /**
-   * Time unit representing one month.
-   */
-  MONTH,
-
-  /**
-   * Time unit representing one year.
-   */
-  YEAR
+  public NotSupportedException(final Throwable cause) {
+    super(cause);
+  }
 }

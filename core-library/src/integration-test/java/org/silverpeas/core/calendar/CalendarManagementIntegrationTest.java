@@ -34,6 +34,7 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
+ * Integration tests on a {@link Calendar}.
  * @author Yohann Chastagnier
  */
 @RunWith(Arquillian.class)
@@ -62,7 +64,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
   }
 
   @Test
-  public void getCalendarBuComponentInstanceIdShouldWorkAndCalendarsAreSorted() throws Exception {
+  public void getCalendarByComponentInstanceIdShouldWorkAndCalendarsAreSorted() throws Exception {
     List<Calendar> calendars = Calendar.getByComponentInstanceId("instance_B");
     assertThat(calendars, hasSize(1));
     Calendar calendar = calendars.get(0);
@@ -157,5 +159,23 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     TableLine afterModify = getCalendarTableLineById("ID_3");
     assertThat(afterModify, nullValue());
+  }
+
+  @Test
+  public void addEventIntoCalendarShouldPersistIt() throws Exception {
+    CalendarEvent event = CalendarEvent.on(LocalDate.now())
+        .createdBy("1")
+        .withTitle("a title")
+        .withDescription("a description");
+    assertThat(event.isPersisted(), is(false));
+    Calendar calendar = Calendar.getById("ID_3");
+    calendar.getEvents().add(event);
+
+    assertThat(event.isPersisted(), is(true));
+    TableLine afterAdd = getCalendarEventTableLineById(event.getId());
+    assertThat(afterAdd, notNullValue());
+    assertThat(afterAdd.get("title"), is("a title"));
+    assertThat(afterAdd.get("description"), is("a description"));
+    assertThat(afterAdd.get("inDays"), is(true));
   }
 }

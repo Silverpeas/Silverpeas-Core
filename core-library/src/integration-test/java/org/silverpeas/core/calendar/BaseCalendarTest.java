@@ -118,7 +118,7 @@ public abstract class BaseCalendarTest extends DataSetTest {
   }
 
   /**
-   * Returns the calendar events persisted into sb_calendar_event table corresponding to the given
+   * Returns the calendar event persisted into sb_calendar_event table corresponding to the given
    * identifier.
    * @param id the id searched for.
    * @return List of lines represented by a map between column name and value.
@@ -126,32 +126,7 @@ public abstract class BaseCalendarTest extends DataSetTest {
   protected TableLine getCalendarEventTableLineById(String id) throws Exception {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("ce.* from sb_calendar_event ce")
-            .addSqlPart("join sb_calendar c on c.id = ce.calendarId").where("id = ?", id)));
+            .addSqlPart("join sb_calendar c on c.id = ce.calendarId").where("ce.id = ?", id)));
   }
 
-  /**
-   * @author Yohann Chastagnier
-   */
-  /*@Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
-  public static class StubbedOrganizationController extends DefaultOrganizationController {
-
-    private OrganizationController mock = mock(OrganizationController.class);
-
-    static OrganizationController getMock() {
-      return ((StubbedOrganizationController) ServiceProvider
-          .getService(OrganizationController.class)).mock;
-    }
-
-    @Override
-    public UserDetail getUserDetail(final String sUserId) {
-      return mock.getUserDetail(sUserId);
-    }
-
-    @Override
-    public String[] getUserProfiles(final String userId, final String componentId) {
-      return mock.getUserProfiles(userId, componentId);
-    }
-  }*/
 }
