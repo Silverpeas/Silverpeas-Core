@@ -274,10 +274,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.web.clipboard.servlets.ClipboardRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GenericPanelPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.genericpanel.servlets.GenericPanelPeasRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>JobDomainPeasRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasRequestRouter</servlet-class>
   </servlet>
@@ -717,10 +713,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>ClipboardRequestRouter</servlet-name>
     <url-pattern>/Rclipboard/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>GenericPanelPeasRequestRouter</servlet-name>
-    <url-pattern>/RgenericPanelPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JobDomainPeasRequestRouter</servlet-name>

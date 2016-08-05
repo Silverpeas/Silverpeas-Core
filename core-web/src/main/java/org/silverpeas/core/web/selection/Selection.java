@@ -32,12 +32,9 @@ import java.util.List;
 public final class Selection {
 
   final public static String TYPE_USERS_GROUPS = "UsersGroups";
-  final public static String TYPE_SPACES_COMPONENTS = "SpacesComponents";
-  final public static String TYPE_JDBC_CONNECTOR = "JdbcConnector";
   final public static String FIRST_PAGE_DEFAULT = "Default";
   final public static String FIRST_PAGE_CART = "DisplayCart";
   final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
-  final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
   final public static String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
   final public static String TYPE_SELECTED_SET = "Set"; //group selected

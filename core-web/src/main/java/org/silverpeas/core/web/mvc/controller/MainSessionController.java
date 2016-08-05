@@ -25,7 +25,6 @@ import org.silverpeas.core.personalization.service.PersonalizationServiceProvide
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.web.panel.GenericPanel;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
@@ -53,10 +52,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
@@ -79,8 +75,6 @@ public class MainSessionController implements Clipboard {
   private OrganizationController organizationController = null;
   private String userLanguage = null;
   private ContentManager contentManager = null;
-  private Map<String, GenericPanel> genericPanels = Collections.synchronizedMap(
-      new HashMap<>());
   private Selection selection = null;
   private String userSpace = null;
   private AlertUser m_alertUser = null;
@@ -186,15 +180,6 @@ public class MainSessionController implements Clipboard {
 
   public String getSessionId() {
     return sessionId;
-  }
-
-  // ------------------- Generic Panel Functions -----------------------------
-  public void setGenericPanel(String panelKey, GenericPanel panel) {
-    genericPanels.put(panelKey, panel);
-  }
-
-  public GenericPanel getGenericPanel(String panelKey) {
-    return genericPanels.get(panelKey);
   }
 
   // ------------------- Selection Functions -----------------------------
