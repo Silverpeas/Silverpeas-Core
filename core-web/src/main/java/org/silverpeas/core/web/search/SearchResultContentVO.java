@@ -34,7 +34,6 @@ public class SearchResultContentVO {
   private String userId = null;
   private GlobalSilverResult gsr = null;
   private Integer sortValue = null;
-  private Boolean activeSelection = false;
   private Boolean exportEnabled = false;
   private MultiSilverpeasBundle settings = null;
 
@@ -42,17 +41,15 @@ public class SearchResultContentVO {
    * @param userId the user identifier
    * @param gsr the current globalSilverResult object
    * @param sortValue the sort value
-   * @param activeSelection the active selection
    * @param exportEnabled the export enabled
    * @param settings the pdcPeas settings with bundle and properties
    */
   public SearchResultContentVO(String userId, GlobalSilverResult gsr, Integer sortValue,
-      Boolean activeSelection, Boolean exportEnabled, MultiSilverpeasBundle settings) {
+      Boolean exportEnabled, MultiSilverpeasBundle settings) {
     super();
     this.userId = userId;
     this.gsr = gsr;
     this.sortValue = sortValue;
-    this.activeSelection = activeSelection;
     this.exportEnabled = exportEnabled;
     this.settings = settings;
   }
@@ -76,13 +73,6 @@ public class SearchResultContentVO {
    */
   public Integer getSortValue() {
     return sortValue;
-  }
-
-  /**
-   * @return the activeSelection
-   */
-  public Boolean getActiveSelection() {
-    return activeSelection;
   }
 
   /**

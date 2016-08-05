@@ -43,7 +43,6 @@
 //recuperation des parametres pour le PDC
 String			showSndSearchAxis	= (String) request.getAttribute("ShowSndSearchAxis");
 SearchContext	searchContext		= (SearchContext) request.getAttribute("SearchContext");
-Boolean 		activeSelection 	= (Boolean) request.getAttribute("ActiveSelection");
 boolean			xmlSearchVisible	= (Boolean) request.getAttribute("XmlSearchVisible");
 boolean			expertSearchVisible = (Boolean) request.getAttribute("ExpertSearchVisible");
 
@@ -52,10 +51,6 @@ List 			choiceNbResToDisplay = (List) request.getAttribute("ChoiceNbResToDisplay
 Integer			nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer			sortValue			= (Integer) request.getAttribute("SortValue");
 String			sortOrder			= (String) request.getAttribute("SortOrder");
-
-if (activeSelection == null) {
-	activeSelection = new Boolean(false);
-}
 
 int				searchType			= ((Integer) request.getAttribute("SearchType")).intValue();
 
@@ -253,17 +248,12 @@ function sendQuery() {
 }
 
 function setPositionIntoForm() {
-	<% if (activeSelection.booleanValue() || searchType == 2) { %>
+	<% if (searchType == 2) { %>
 	var values = $('#used_pdc').pdc('selectedValues');
 	if (values.length > 0) {
       document.AdvancedSearch.AxisValueCouples.value = values.flatten();
     }
 	<% } %>
-}
-
-function sendSelectionQuery() {
-	document.AdvancedSearch.action = "AdvancedSearch";
-	document.AdvancedSearch.submit();
 }
 
 var errorMsg;
@@ -393,12 +383,8 @@ function showExplorer() {
 		}
 	}
 
-	if (!activeSelection.booleanValue() && searchType >= 1) {
+	if (searchType >= 1) {
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoSaveAsInterestCenter"), resource.getString("pdcPeas.saveAsInterestCenter"), "javascript:saveAsInterestCenter()");
-	}
-
-	if (activeSelection.booleanValue() && !isEmptySearchContext) {
-		operationPane.addOperation(resource.getIcon("pdcPeas.icoSearchPubli"), resource.getString("pdcPeas.searchResult"), "javascript:sendSelectionQuery()");
 	}
 
 	tabs = gef.getTabbedPane();
@@ -427,8 +413,6 @@ out.println(window.printBefore());
   <input type="hidden" name="AxisValueCouples"/>
   <input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>
 <%
-if (!activeSelection.booleanValue())
-{
 	if (!showAllAxis) {
 		out.println(tabs.print());
 	}
@@ -648,13 +632,12 @@ if (!activeSelection.booleanValue())
         </table>
 <%
 		out.println(board.printAfter());
-	}
 }
 if (searchType == 2) {
 	out.println("<br/>");
 }
 
-if (activeSelection.booleanValue() || searchType == 2) {%>
+if (searchType == 2) {%>
   <div class="tableFrame">
     <div class="tableBoard">
       <fieldset id="used_pdc" class="skinFieldset"></fieldset>
@@ -701,7 +684,7 @@ out.println(frame.printAfter());
 %>
 <view:progressMessage/>
 <%
-  if (activeSelection.booleanValue() || searchType == 2) {
+  if (searchType == 2) {
 %>
 <script type="text/javascript">
     var showSecondaryAxis = <%= ("YES".equals(showSndSearchAxis) ? true: false)%>;

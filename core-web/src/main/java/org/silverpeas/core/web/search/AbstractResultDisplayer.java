@@ -114,7 +114,6 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
           .getRawScore()));
     }
 
-    componentTemplate.setAttribute("activeSelection", searchResult.getActiveSelection());
     componentTemplate.setAttribute("exportEnabled", searchResult.getExportEnabled());
     componentTemplate.setAttribute("type", silverResult.getType());
 

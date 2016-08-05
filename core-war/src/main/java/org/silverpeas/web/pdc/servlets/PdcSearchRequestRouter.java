@@ -123,13 +123,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String destination = "";
     // controller to inform the request
     try {
-      if (function.startsWith("ToSearchToSelect")
-          || function.startsWith("ValidateSelectedObjects")) {
-
-        // Processing of the Pdc selection actions
-        destination = processPDCSelectionActions(function, pdcSC, request);
-
-      } else if (function.startsWith("GlobalViewArbo")) {
+      if (function.startsWith("GlobalViewArbo")) {
         // USED ONLY IN GLOBAL MODE -- The user wants to collapse or uncollapse a value
 
         InterestCentersHelper.putSelectedInterestCenterId(request);
@@ -223,7 +217,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.equals("Pagination")) {
-        processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
+        processSelection(pdcSC, request);
 
         String index = request.getParameter("Index");
         pdcSC.setIndexOfFirstResultToDisplay(index);
@@ -455,7 +449,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         destination = "/pdcPeas/jsp/refreshFromUserSelect.jsp";
         // destination = doGlobalView(pdcSC, request);
       } else if (function.startsWith("ExportPublications")) {
-        processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
+        processSelection(pdcSC, request);
 
         // build an exploitable list by importExportPeas
         List<WAAttributeValuePair> selectedResultsWa =
@@ -465,7 +459,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // jump to importExportPeas
         destination = "/RimportExportPeas/jsp/ExportItems";
       } else if (function.startsWith("ExportAttachementsToPDF")) {
-        processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
+        processSelection(pdcSC, request);
         // build an exploitable list by importExportPeas
         List<WAAttributeValuePair> selectedResultsWa =
             getItemPks(pdcSC.getSelectedSilverContents());
@@ -1068,7 +1062,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   private void clearUserChoices(PdcSearchSessionController pdcSC) {
     pdcSC.clearQueryParameters();
     pdcSC.removeAllCriterias();
-    pdcSC.setSelectionActivated(false);
     pdcSC.setSortOrder(PdcSearchSessionController.SORT_ORDER_DESC);
     pdcSC.setSortValue(1);
     pdcSC.getQueryParameters().setXmlTitle(null);
@@ -1096,89 +1089,49 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     return res;
   }
 
-  private String processPDCSelectionActions(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    String destination = "";
+  private void processSelection(PdcSearchSessionController pdcSC, HttpServletRequest request)
+      throws Exception {
+    // get the selected object ids
+    String selectedObjectIds = request.getParameter("selectedIds");
 
-    if (function.startsWith("ToSearchToSelect")) {
-
-      clearUserChoices(pdcSC);
-
-      // the selection mode is activated
-      pdcSC.setSelectionActivated(true);
-
-      // the selection is made on a specific component (kmelia, whitePages...)
-      String componentName = request.getParameter("ComponentName");
-      // get all available instances of the specific component
-      List<String> instanceIds = pdcSC.getInstanceIdsFromComponentName(componentName);
-      pdcSC.setCurrentComponentIds(instanceIds);
-
-      // store the url of the page to return
-      String returnURL = request.getParameter("ReturnURL");
-      pdcSC.getPdc().setURLToReturn(returnURL);
-
-      String selectedAxis1 = request.getParameter("Axis1");
-      // For future use
-      // String selectedAxis2 = request.getParameter("Axis2");
-      // String selectedAxis3 = request.getParameter("Axis3");
-
-      // construction de l'objet SearchCriteria
-      if (selectedAxis1 != null && !selectedAxis1.equals("-1")) {
-        SearchCriteria searchCriteria =
-            new SearchCriteria(Integer.parseInt(selectedAxis1), "/0");
-        pdcSC.addCriteriaToSearchContext(searchCriteria); // travail sur le contexte courant
+    // extract the selected objects from the results
+    List<GlobalSilverResult> silverContents = pdcSC.getResultsToDisplay();
+    String objectId = null;
+    List<GlobalSilverResult> selectedSilverContents = pdcSC.getSelectedSilverContents();
+    if (selectedSilverContents == null) {
+      selectedSilverContents = new ArrayList<>();
+    }
+    for (int i = 0; i < silverContents.size(); i++) {
+      GlobalSilverResult gsr = silverContents.get(i);
+      objectId = gsr.getId() + "-" + gsr.getInstanceId();
+      if (selectedObjectIds.indexOf(objectId) != -1 && !selectedSilverContents.contains(gsr)) {
+        // the silverContent is in the selected objects list
+        selectedSilverContents.add(gsr);
+      } else if (selectedObjectIds.indexOf(objectId) == -1) {
+        selectedSilverContents.remove(gsr);
       }
+    }
 
-      destination = doGlobalView(pdcSC, request);
-    } else if (function.startsWith("ValidateSelectedObjects")) {
+    // memorize the selected silverContents
+    pdcSC.setSelectedSilverContents(selectedSilverContents);
 
-      // get the selected object ids
-      String selectedObjectIds = request.getParameter("selectedIds");
-
-
-      // extract the selected objects from the results
-      List<GlobalSilverResult> silverContents = pdcSC.getResultsToDisplay();
-      String objectId = null;
-      List<GlobalSilverResult> selectedSilverContents = pdcSC.getSelectedSilverContents();
-      if (selectedSilverContents == null) {
-        selectedSilverContents = new ArrayList<>();
-      }
+    // Ajout d un traitement spécifique pour le cas de l export: je ne change pas la
+    // mécanique existante car je crains la régression.
+    String notSelectedObjectIds = request.getParameter("notSelectedIds");
+    if (selectedObjectIds != null && selectedObjectIds.length() != 0) {
       for (int i = 0; i < silverContents.size(); i++) {
         GlobalSilverResult gsr = silverContents.get(i);
         objectId = gsr.getId() + "-" + gsr.getInstanceId();
-        if (selectedObjectIds.indexOf(objectId) != -1 && !selectedSilverContents.contains(gsr)) {
+        if (selectedObjectIds.indexOf(objectId) != -1) {
           // the silverContent is in the selected objects list
-          selectedSilverContents.add(gsr);
-        } else if (selectedObjectIds.indexOf(objectId) == -1) {
-          selectedSilverContents.remove(gsr);
+          gsr.setSelected(true);
+        }
+        if (notSelectedObjectIds.indexOf(objectId) != -1) {
+          // the silverContent is in the selected objects list
+          gsr.setSelected(false);
         }
       }
-
-      // memorize the selected silverContents
-      pdcSC.setSelectedSilverContents(selectedSilverContents);
-
-      // Ajout d un traitement spécifique pour le cas de l export: je ne change pas la
-      // mécanique existante car je crains la régression.
-      String notSelectedObjectIds = request.getParameter("notSelectedIds");
-      if (selectedObjectIds != null && selectedObjectIds.length() != 0) {
-        for (int i = 0; i < silverContents.size(); i++) {
-          GlobalSilverResult gsr = silverContents.get(i);
-          objectId = gsr.getId() + "-" + gsr.getInstanceId();
-          if (selectedObjectIds.indexOf(objectId) != -1) {
-            // the silverContent is in the selected objects list
-            gsr.setSelected(true);
-          }
-          if (notSelectedObjectIds.indexOf(objectId) != -1) {
-            // the silverContent is in the selected objects list
-            gsr.setSelected(false);
-          }
-        }
-      }
-
-      // return to the stored return url
-      destination = pdcSC.getPdc().getURLToReturn();
     }
-    return destination;
   }
 
   public String processThesaurusActions(String function, PdcSearchSessionController pdcSC,

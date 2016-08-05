@@ -67,7 +67,6 @@ public class HtmlSearchResultTag extends TagSupport {
   private String userId = null;
   private GlobalSilverResult gsr = null;
   private Integer sortValue = null;
-  private boolean activeSelection = false;
   private boolean exportEnabled = false;
   private MultiSilverpeasBundle resources = null;
   private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
@@ -127,20 +126,6 @@ public class HtmlSearchResultTag extends TagSupport {
   }
 
   /**
-   * @return the activeSelection
-   */
-  public boolean getActiveSelection() {
-    return activeSelection;
-  }
-
-  /**
-   * @param activeSelection the activeSelection to set
-   */
-  public void setActiveSelection(boolean activeSelection) {
-    this.activeSelection = activeSelection;
-  }
-
-  /**
    * @return the exportEnabled
    */
   public boolean getExportEnabled() {
@@ -185,7 +170,7 @@ public class HtmlSearchResultTag extends TagSupport {
           if (resultDisplayer != null) {
             addedInformation = resultDisplayer.getResultContent(
                 new SearchResultContentVO(this.userId, this.gsr, this.sortValue,
-                    this.activeSelection, this.exportEnabled, settings));
+                    this.exportEnabled, settings));
           }
         }
       }
@@ -265,7 +250,7 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append(gsr.getInstanceId()).append(" ");
     result.append(serverName).append("\">");
 
-    if (activeSelection || exportEnabled) {
+    if (exportEnabled) {
       if (gsr.isExportable() && gsr.isUserAllowedToDownloadFile()) {
         String checked = "";
         if (gsr.isSelected()) {
@@ -311,29 +296,23 @@ public class HtmlSearchResultTag extends TagSupport {
 
     result.append("<div class=\"locationTitle\">");
     String curResultId = "readSpanId_" + gsr.getResultId();
-    if (activeSelection) {
-      result.append("<span id=\"").append(curResultId).append("\" class=\"textePetitBold")
-          .append((gsr.isUserAllowedToDownloadFile()) ? "" : " forbidden-download").append("\">")
-          .append(sName).append("</span>");
-    } else {
-      String cssClass = "";
-      String cssClassDisableVisited = "";
-      if (gsr.isHasRead()) {
-        cssClass = "markedAsRead";
-        cssClassDisableVisited = "markedAsReadDisableVisited";
-      }
-      if (!gsr.isUserAllowedToDownloadFile()) {
-        cssClass += " forbidden-download";
-      }
-      if (gsr.isUserAllowedToDownloadFile()) {
-        result.append("<a href=\"").append(sURL).append("\" class=\"")
-            .append(cssClassDisableVisited).append("\">");
-      }
-      result.append("<span id=\"").append(curResultId).append("\" class=\"").append(cssClass)
-          .append("\">").append(sName).append("</span>");
-      if (gsr.isUserAllowedToDownloadFile()) {
-        result.append("</a>");
-      }
+    String cssClass = "";
+    String cssClassDisableVisited = "";
+    if (gsr.isHasRead()) {
+      cssClass = "markedAsRead";
+      cssClassDisableVisited = "markedAsReadDisableVisited";
+    }
+    if (!gsr.isUserAllowedToDownloadFile()) {
+      cssClass += " forbidden-download";
+    }
+    if (gsr.isUserAllowedToDownloadFile()) {
+      result.append("<a href=\"").append(sURL).append("\" class=\"")
+          .append(cssClassDisableVisited).append("\">");
+    }
+    result.append("<span id=\"").append(curResultId).append("\" class=\"").append(cssClass)
+        .append("\">").append(sName).append("</span>");
+    if (gsr.isUserAllowedToDownloadFile()) {
+      result.append("</a>");
     }
     if (gsr.getIndexEntry() != null && gsr.getIndexEntry().isAlias()) {
       result.append(" (").append(resources.getString("GML.alias")).append(")");

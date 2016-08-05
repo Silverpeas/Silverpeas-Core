@@ -108,7 +108,6 @@ void displayFacet(Facet facet, MultiSilverpeasBundle resource, JspWriter out) th
 
 <c:set var="results" value="${requestScope['Results']}" />
 <c:set var="exportEnabled" value="${requestScope['ExportEnabled']}" />
-<c:set var="activeSelection" value="${requestScope['ActiveSelection']}" />
 <c:set var="sortValue" value="${requestScope['SortValue']}" />
 <c:set var="userId" value="${requestScope['UserId']}" />
 <%
@@ -117,7 +116,6 @@ int nbTotalResults		= ((Integer) request.getAttribute("NbTotalResults")).intValu
 
 int indexOfFirstResult	= ((Integer) request.getAttribute("IndexOfFirstResult")).intValue();
 Boolean refreshEnabled	= (Boolean) request.getAttribute("RefreshEnabled");
-boolean externalSearchEnabled = ((Boolean) request.getAttribute("ExternalSearchEnabled")).booleanValue();
 Boolean	xmlSearchVisible	= (Boolean) request.getAttribute("XmlSearchVisible");
 boolean	expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisible");
 boolean	showPertinence	= ((Boolean) request.getAttribute("PertinenceVisible")).booleanValue();
@@ -457,11 +455,6 @@ function viewFile(target, attachmentId, versioned, componentId) {
 <fmt:message var="resultLabel" key="pdcPeas.ResultPage" />
 <view:browseBar extraInformations="${resultLabel}" />
 <view:operationPane>
-  <c:if test="${activeSelection}">
-    <fmt:message var="iconSelection" key="pdcPeas.folder_to_valid" bundle="${icons}"/>
-    <fmt:message var="messageSelection" key="pdcPeas.tracker_to_select" />
-    <view:operation altText="${messageSelection}" icon="${iconSelection}" action="javascript:getSelectedOjectsFromResultList();"></view:operation>
-  </c:if>
   <c:if test="${exportEnabled}">
     <fmt:message var="iconExport" key="pdcPeas.ToExport" bundle="${icons}"/>
     <fmt:message var="messageExport" key="pdcPeas.ToExport" />
@@ -552,7 +545,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
 		  <a href="javascript:setSortOrder('DESC')" class="<%=classCSS%>">DESC</a>
 		  </td>
         </tr>
-        <c:if test="${activeSelection or exportEnabled}">
+        <c:if test="${exportEnabled}">
 			<tr id="globalResultSelectAllResult">
 				<td class="txtlibform"><fmt:message key="pdcPeas.selectAll" /></td><td><input type="checkbox" name="selectAll" onclick="selectEveryResult(this);"/></td>
 			</tr>
@@ -597,7 +590,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
   <c:if test="${not empty results}">
     <ul id="globalResultListDetails">
       <c:forEach var="result" items="${results}">
-        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}" resources="<%=resource %>"></view:displayResult>
+        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" exportEnabled="${exportEnabled}" resources="<%=resource %>"></view:displayResult>
       </c:forEach>
     </ul>
   </c:if>

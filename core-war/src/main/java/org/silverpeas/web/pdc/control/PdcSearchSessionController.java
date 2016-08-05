@@ -42,7 +42,6 @@ import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.Pdc;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -1677,12 +1676,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public Axis getAxisDetail(String axisId) throws PdcException {
-    return getAxisDetail(axisId);
+    return getPdcManager().getAxisDetail(axisId);
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {
-    AxisHeader axisHeader = getPdcManager().getAxisHeader(axisId);
-    return axisHeader;
+    return getPdcManager().getAxisHeader(axisId);
   }
 
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
@@ -1700,42 +1698,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * searchAndSelect methods /
    * ****************************************************************************************************************
    */
-  private boolean activeSelection = false;
-  private Pdc m_pdc = null;
-
-  public Pdc getPdc() {
-    if (m_pdc == null) {
-      m_pdc = new Pdc();
-    }
-
-    return m_pdc;
-  }
-
-  public void setSelectionActivated(boolean isSelectionActivated) {
-    this.activeSelection = isSelectionActivated;
-  }
-
-  public boolean isSelectionActivated() {
-    return this.activeSelection;
-  }
+  private List<GlobalSilverResult> selectedSilverContents = null;
 
   public void setSelectedSilverContents(List<GlobalSilverResult> silverContents) {
-    getPdc().setSelectedSilverContents(silverContents);
+    selectedSilverContents = silverContents;
   }
 
   public List<GlobalSilverResult> getSelectedSilverContents() {
-    return getPdc().getSelectedSilverContents();
+    return selectedSilverContents;
   }
 
-  public List<String> getInstanceIdsFromComponentName(String componentName) {
-    CompoSpace[] compoIds = getOrganisationController().getCompoForUser(getUserId(), componentName);
-
-    List<String> instanceIds = new ArrayList<>();
-    for (CompoSpace component : compoIds) {
-      instanceIds.add(component.getComponentId());
-    }
-    return instanceIds;
-  }
   /**
    * ***************************************************************************************************************
    */
