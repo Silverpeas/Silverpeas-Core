@@ -42,6 +42,10 @@ import java.util.List;
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
  * at different times or on different dates throughout the year.
+ *
+ * Before adding any events or activities into a calendar, it requires to be saved into the
+ * Silverpeas data source (use the {@code save} method for doing. Once saved, a store for events
+ * will be initialized for further event management.
  * @author mmoquillon
  */
 @Entity
@@ -75,7 +79,6 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
    */
   public Calendar(String instanceId) {
     this.componentInstanceId = instanceId;
-    initEventStore();
   }
 
   /**
@@ -116,6 +119,7 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.save(OperationContext.fromUser(User.getCurrentRequester()), this);
+      initEventStore();
       return null;
     });
   }
@@ -127,14 +131,16 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.delete(this);
+      this.events = null;
       return null;
     });
   }
 
   /**
-   * Gets the events that were added into this calendar.
-   * @return a {@link CalendarEventStore} instance by which the events in this calendar
-   * can be managed.
+   * Gets the events that were added into this calendar. This will be available only if the calendar
+   * is persisted.
+   * @return the {@link CalendarEventStore} instance of this calendar and that contains its
+   * registered events or null if this calendar isn't yet saved.
    */
   public CalendarEventStore getEvents() {
     return events;

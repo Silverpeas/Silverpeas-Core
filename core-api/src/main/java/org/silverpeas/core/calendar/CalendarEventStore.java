@@ -32,11 +32,13 @@ import java.util.Optional;
 /**
  * A store of persisted {@link CalendarEvent} instances for a given calendar. Each calendar has
  * its own store of events in which each event is indexed by their identifier; a persisted
- * event is ensured to be unique by its identifier and by the calendar it belongs to.
- * When an event is get from this store, it could be detached from its persistence context so any
- * change to the event could be lost. To avoid such a situation, use the {@code update} method
- * to update the existing event in the store by the new given one (their unique identifier has to
- * be equal).
+ * event is ensured to be unique both by its identifier and by the calendar it belongs to. A store
+ * uses the persistence repository for events to store and retrieve the events which it is in
+ * charge; the persistence repository is shared by all the stores.
+ *
+ * Each event get from this store is a shadow copy of a persisted event and thus any changes to
+ * the event requires a call to the {@code update} method to be effectively reported to the
+ * persisted event.
  * @author mmoquillon
  */
 public class CalendarEventStore {

@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit;
         ":calendar"),
     @NamedQuery(name = "byIds", query = "from CalendarEvent where calendar = :calendar and id in " +
         ":ids")})
-@EntityListeners(Attributes.SerializationListener.class)
 public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized {
 

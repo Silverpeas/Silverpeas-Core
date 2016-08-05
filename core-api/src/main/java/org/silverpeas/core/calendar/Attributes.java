@@ -23,45 +23,26 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
-import java.text.MessageFormat;
-import java.util.Arrays;
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A set of attributes of a {@link Plannable} object. An attribute is an additional information
  * carried by a {@link Plannable} object. This is a way to users to specify additional attributes
  * that weren't defined into a {@link Plannable} implementation. For example, for an event, the
- * location of the event can be set as an attribute. In order to be fully operational, id est to
- * be involved in the serialization of the entity that embeds an {@link Attributes} field, the
- * {@link SerializationListener} class requires to be declared as a {@link
- * javax.persistence.EntityListeners} for the entity that embeds it; otherwise the attributes won't
- * be neither serialized to nor serialized from the data source.
+ * location of the event can be set as an attribute.
  * @author mmoquillon
  */
 @Embeddable
 public class Attributes {
 
-  private static final Pattern ATTR_PATTERN =
-      Pattern.compile("\"(\\p{Alnum}+)\":\"([\\p{javaLetterOrDigit}\\s\\p{Punct}&&[^\"]]+)\"");
-  private static final MessageFormat ATTR_FORMAT = new MessageFormat("\"{0}\":\"{1}\"");
-
-  @Transient
-  private Map<String, String> attrs = new HashMap<>();
-  @Column(name = "attributes", columnDefinition = "varchar(6000)")
-  private String attributes = null;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "sb_calendar_attributes", joinColumns = {@JoinColumn(name = "event_id")})
+  @MapKeyColumn(name = "name")
+  @Column(name = "value")
+  private Map<String, String> attributes = new HashMap<>();
 
   /**
    * Adds the specified attributes.
@@ -69,7 +50,7 @@ public class Attributes {
    * @param value the attribute value.
    */
   public void add(String name, String value) {
-    attrs.put(name, value);
+    attributes.put(name, value);
   }
 
   /**
@@ -77,7 +58,7 @@ public class Attributes {
    * @param name the name of the attribute to remove.
    */
   public void remove(String name) {
-    attrs.remove(name);
+    attributes.remove(name);
   }
 
   /**
@@ -85,7 +66,7 @@ public class Attributes {
    * @return true if there is no attributes set, false otherwise.
    */
   public boolean isEmpty() {
-    return attrs.isEmpty();
+    return attributes.isEmpty();
   }
 
   /**
@@ -94,7 +75,7 @@ public class Attributes {
    * @return optionally the value of the specified attribute.
    */
   public Optional<String> get(String name) {
-    return Optional.ofNullable(attrs.get(name));
+    return Optional.ofNullable(attributes.get(name));
   }
 
   @Override
@@ -107,75 +88,15 @@ public class Attributes {
     }
 
     final Attributes that = (Attributes) o;
-    return attrs.equals(that.attrs);
+    return attributes.equals(that.attributes);
   }
 
   @Override
   public int hashCode() {
-    return attrs.hashCode();
+    return attributes.hashCode();
   }
 
   protected Attributes() {
 
-  }
-
-  private void deserialize() {
-    if (attributes != null) {
-      Matcher matcher = ATTR_PATTERN.matcher(this.attributes);
-      while (matcher.find()) {
-        attrs.put(matcher.group(1), matcher.group(2).replaceAll("U\\+0022", "\""));
-      }
-    }
-  }
-
-  private void serialize() {
-    if (attrs.isEmpty()) {
-      attributes = null;
-    } else {
-      attrs.entrySet().forEach(e -> {
-        String a = attributes == null || attributes.isEmpty() ? "" : attributes + ",";
-        attributes = a + ATTR_FORMAT.format(new String[]{e.getKey(),
-            e.getValue().replaceAll("\"", "U+0022")});
-      });
-    }
-  }
-
-  /**
-   * A listener of events on the serialization of an {@link Attributes} field of an entity.
-   */
-  static class SerializationListener {
-
-    @PostLoad
-    public void deserializeAttributesOf(final Object entity) {
-      Arrays.stream(entity.getClass().getDeclaredFields())
-          .filter(f -> f.getType().isAssignableFrom(Attributes.class) &&
-              f.isAnnotationPresent(Embedded.class))
-          .findFirst()
-          .ifPresent(f -> {
-            try {
-              f.setAccessible(true);
-              ((Attributes) f.get(entity)).deserialize();
-            } catch (IllegalAccessException e) {
-              SilverLogger.getLogger(this).error(e.getMessage(), e);
-            }
-          });
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void serializeAttributesOf(Object entity) {
-      Arrays.stream(entity.getClass().getDeclaredFields())
-          .filter(f -> f.getType().isAssignableFrom(Attributes.class) &&
-              f.isAnnotationPresent(Embedded.class))
-          .findFirst()
-          .ifPresent(f -> {
-            try {
-              f.setAccessible(true);
-              ((Attributes) f.get(entity)).serialize();
-            } catch (IllegalAccessException e) {
-              SilverLogger.getLogger(this).error(e.getMessage(), e);
-            }
-          });
-    }
   }
 }

@@ -1,4 +1,3 @@
-/* Table */
 CREATE TABLE IF NOT EXISTS ST_AccessLevel
 (
   id   CHAR(1)      NOT NULL,
@@ -36,7 +35,7 @@ CREATE TABLE IF NOT EXISTS ST_User (
   CONSTRAINT FK_User_1 FOREIGN KEY (accessLevel) REFERENCES ST_AccessLevel (id)
 );
 
-CREATE TABLE sb_calendar (
+CREATE TABLE IF NOT EXISTS sb_calendar (
   id             VARCHAR(40)   NOT NULL,
   instanceId     VARCHAR(30)   NOT NULL,
   title          VARCHAR(2000) NOT NULL,
@@ -47,12 +46,10 @@ CREATE TABLE sb_calendar (
   version        INT8          NOT NULL
 );
 
-/* Table constraints */
 ALTER TABLE sb_calendar
   ADD CONSTRAINT const_sb_calendar_pk PRIMARY KEY (id);
 
-/* Table */
-CREATE TABLE sb_calendar_event (
+CREATE TABLE IF NOT EXISTS sb_calendar_event (
   id             VARCHAR(40)   NOT NULL,
   calendarId     VARCHAR(40)   NOT NULL,
   inDays         BOOLEAN       NOT NULL,
@@ -70,6 +67,12 @@ CREATE TABLE sb_calendar_event (
   version        INT8          NOT NULL
 );
 
-/* Table constraints */
 ALTER TABLE sb_calendar_event
   ADD CONSTRAINT const_sb_calendar_event_pk PRIMARY KEY (id);
+
+CREATE TABLE IF NOT EXISTS sb_calendar_attributes (
+  event_id   VARCHAR(40) NOT NULL,
+  name       VARCHAR(40) NOT NULL,
+  value      VARCHAR(40) NOT NULL,
+  CONSTRAINT FK_Event FOREIGN KEY (event_id) REFERENCES sb_calendar_event(id)
+);
