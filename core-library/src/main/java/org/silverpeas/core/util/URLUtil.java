@@ -57,7 +57,6 @@ public class URLUtil {
   public final static String CMP_JOBORGANIZATIONPEAS = "jobOrganizationPeas";
   public final static String CMP_JOBSEARCHPEAS = "jobSearchPeas";
   public final static String CMP_JOBTOOLSPEAS = "jobToolsPeas";
-  public final static String CMP_SELECTIONPEAS = "selectionPeas";
   public final static String CMP_ALERTUSERPEAS = "alertUserPeas";
   public final static String CMP_GENERICPANELPEAS = "genericPanelPeas";
   public final static String CMP_SILVERSTATISTICSPEAS = "silverStatisticsPeas";
@@ -69,8 +68,6 @@ public class URLUtil {
   public final static String CMP_VERSIONINGPEAS = "versioningPeas";
   public final static String CMP_FILESHARING = "fileSharing";
   public final static String CMP_WEBCONNECTIONS = "webConnections";
-  // For white pages only : this component have a 'BusIHM like' state
-  public final static String CMP_WHITEPAGESPEAS = "whitePagesPeas";
   public final static String CMP_JOBBACKUP = "jobBackup";
   public final static String CMP_TEMPLATEDESIGNER = "templateDesigner";
   public final static String CMP_MYPROFILE = "MyProfile";

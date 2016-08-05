@@ -33,7 +33,6 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
-import org.silverpeas.core.contribution.content.form.field.JdbcRefField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.StringUtil;
@@ -251,9 +250,8 @@ public class XmlForm extends AbstractForm {
             out.println("</li>");
           }
 
-          if (isMandatory && !isDisabled && !isHidden
-              && fieldDisplayer.isDisplayedMandatory()
-              && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
+          if (isMandatory && !isDisabled && !isHidden && fieldDisplayer.isDisplayedMandatory() &&
+              !isReadOnly) {
             mandatory = true;
           }
           out.flush();

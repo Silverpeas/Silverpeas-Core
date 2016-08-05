@@ -394,10 +394,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.web.look.PersonalSpaceJSONServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>SelectionPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.selection.servlets.SelectionPeasRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>SelectionPeasWrapper</servlet-name>
     <servlet-class>org.silverpeas.web.selection.servlets.SelectionPeasWrapper</servlet-class>
   </servlet>
@@ -817,10 +813,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
     <url-pattern>/PersonalSpace/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>SelectionPeasRequestRouter</servlet-name>
-    <url-pattern>/RselectionPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>SelectionPeasWrapper</servlet-name>
