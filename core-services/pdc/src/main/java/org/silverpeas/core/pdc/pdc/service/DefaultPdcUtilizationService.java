@@ -33,8 +33,6 @@ import java.util.List;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 
-import org.silverpeas.core.util.CollectionUtil;
-
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence;

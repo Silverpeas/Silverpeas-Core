@@ -143,7 +143,6 @@ public class XmlForm extends AbstractForm {
         Map<String, String> parameters = fieldTemplate.getParameters(language);
         String fieldName = fieldTemplate.getFieldName();
         String fieldLabel = fieldTemplate.getLabel(language);
-        String fieldType = fieldTemplate.getTypeName();
         String fieldDisplayerName = fieldTemplate.getDisplayerName();
         isMandatory = fieldTemplate.isMandatory();
         boolean isDisabled = fieldTemplate.isDisabled();

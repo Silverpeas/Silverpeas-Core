@@ -2359,7 +2359,7 @@ public class GlobalPdcManager implements PdcManager {
           // we are going to search only SilverContent of this instanceId
           ContentInterface contentInterface = contentP.getContentInterface();
           silverContentTempo = contentInterface
-              .getSilverContentById(allSilverContentIds, instanceId, userId, new ArrayList<>());
+              .getSilverContentById(allSilverContentIds, instanceId, userId);
         } catch (Exception e) {
           throw new PdcRuntimeException("PdcBmEJB.getSilverContentsByIds",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

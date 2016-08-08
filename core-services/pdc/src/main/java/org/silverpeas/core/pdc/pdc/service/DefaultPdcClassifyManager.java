@@ -78,7 +78,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       // Open the connection
       connection = DBUtil.openConnection();
       // Vérification de la contrainte invariante
-      int nPositionId = classifyEngine.classifySilverObject(connection, silverObjectId, position);
+      classifyEngine.classifySilverObject(connection, silverObjectId, position);
       return 0;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.addPosition", SilverpeasException.ERROR,
@@ -130,9 +130,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   public List<Position> getPositions(int silverObjectId, String sComponentId) throws PdcException {
     try {
       // Get all the positions for the given silverObjectId
-      List<Position> positions = classifyEngine.findPositionsBySilverOjectId(silverObjectId);
-
-      return positions;
+      return classifyEngine.findPositionsBySilverOjectId(silverObjectId);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
           "Pdc.CANNOT_GET_POSITIONS", e);
@@ -152,7 +150,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Override
   public void unregisterAxis(Connection con, int axisId) throws PdcException {
     try {
-      List<Integer> alDeletedPositionIds = classifyEngine.unregisterAxis(con, axisId);
+      classifyEngine.unregisterAxis(con, axisId);
     } catch (ClassifyEngineException e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);

@@ -303,10 +303,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
       ContentManager contentManager = new ContentManager();
       ContentPeas contentPeas = contentManager.getContentPeas(componentId);
       ContentInterface contentInterface = contentPeas.getContentInterface();
-      ArrayList<String> userRoles = new ArrayList<String>();
-      userRoles.add("admin");
-      silverContents = contentInterface.getSilverContentById(silverobjectIds,
-          componentId, userId, userRoles);
+      silverContents = contentInterface.getSilverContentById(silverobjectIds, componentId, userId);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionBmEJB.sendSubscriptionNotif",

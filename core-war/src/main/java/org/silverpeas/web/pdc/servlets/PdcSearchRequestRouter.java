@@ -25,6 +25,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
@@ -38,8 +39,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverCon
 import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.pdc.pdc.model.AxisHeader;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.web.pdc.control.Keys;
@@ -782,51 +781,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
   }
 
-  private void buildSearchContext(PdcSearchSessionController pdcSC, HttpServletRequest request)
-      throws Exception {
-    // on prepare le chemin complet pour l'affichage dans le cadre du contexte
-    SearchContext searchContext = pdcSC.getSearchContext();
-    List<SearchCriteria> c = searchContext.getCriterias();
-    List<List> pathCriteria = new ArrayList<>(c.size());
-    if (c.size() > 0) {
-      for (int i = 0; i < c.size(); i++) {
-        SearchCriteria sc = c.get(i);
-
-        int searchAxisId = sc.getAxisId();
-        String searchValue = PdcSearchRequestRouterHelper.getLastValueOf(sc.getValue());
-        // on créait un axis
-        AxisHeader axis = pdcSC.getAxisHeader(String.valueOf(searchAxisId));
-
-        String treeId = null;
-        if (axis != null) {
-          treeId = String.valueOf(axis.getRootId());
-        }
-
-        List<Value> fullPath = new ArrayList<>();
-        if (searchValue != null && treeId != null) {
-          fullPath = pdcSC.getFullPath(searchValue, treeId);
-        }
-
-        pathCriteria.add(fullPath);
-      }
-    }
-    request.setAttribute("PathCriteria", pathCriteria);
-    // on ajoute le contexte de recherche
-    request.setAttribute("SearchContext", searchContext);
-  }
-
-  /*
-   * Put, in the request, the pertinent axis, the search context and the full path of each criteria
-   */
-  private void buildContextAndPertinentAxis(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    // Put the pertinent axis in the request
-    PdcSearchRequestRouterHelper.setPertinentAxis(pdcSC, request);
-
-    // Put the search context and the full path of each criteria in the request
-    buildSearchContext(pdcSC, request);
-  }
-
   /**
    * Builds a list of daughters value to see an arborescence and set it into the request.
    *
@@ -943,7 +897,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // we are going to search only SilverContent of this instanceId
         ContentInterface contentInterface = contentP.getContentInterface();
         List<SilverContentInterface> silverContentTempo = contentInterface.getSilverContentById(
-            allSilverContentIds, instanceId, pdcSC.getUserId(), contentP.getUserRoles());
+            allSilverContentIds, instanceId, pdcSC.getUserId());
 
         if (silverContentTempo != null) {
           alSilverContents.addAll(transformSilverContentsToGlobalSilverContents(silverContentTempo,
@@ -1050,7 +1004,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    * SilverContent's (PDC pure) ou MatchingIndexEntry (Classic/mixte)
    */
   private List<Integer> searchAllSilverContentId(PdcSearchSessionController pdcSC,
-      QueryParameters searchParameters) throws Exception {
+      QueryParameters searchParameters) throws PdcException {
     List<String> alComponentIds = pdcSC.getCurrentComponentIds();
     // We get silvercontentids according to the search context, author, components and dates
     String afterDate = DateUtil.date2SQLDate(searchParameters.getAfterDate());

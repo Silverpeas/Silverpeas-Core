@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
@@ -41,7 +40,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -116,9 +114,6 @@ public class ContentManager implements Serializable {
           .error("contentManager", "ContentManager.initStatic", "root.EX_CLASS_NOT_INITIALIZED",
               "assoComponentIdInstanceId initialization failed !", e);
     }
-  }
-
-  public ContentManager() {
   }
 
   /**
