@@ -487,11 +487,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
       }
       sel.setSelectedElements(users.toArray(new String[users.size()]));
       sel.setSelectedSets(groups.toArray(new String[groups.size()]));
-      sel.setFirstPage(Selection.FIRST_PAGE_CART);
-    } else {
-      sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
     }
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**
@@ -523,7 +520,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
     sel.setMultiSelect(true);
     sel.setPopupMode(false);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

@@ -578,7 +578,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public String initUserPanel() {
     communInitUserPanel("ViewConnections", "ReturnFromUserPanel");
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*
@@ -672,7 +672,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     Selection sel =
         communInitUserPanel("AccessCallUserPanelGroup", "AccessReturnFromUserPanelGroup");
     sel.setElementSelectable(false);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*
@@ -692,7 +692,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public String initAccessUserPanelUser() {
     Selection sel = communInitUserPanel("AccessCallUserPanelUser", "AccessReturnFromUserPanelUser");
     sel.setSetSelectable(false);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*
@@ -712,7 +712,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     Selection sel =
         communInitUserPanel("VolumeCallUserPanelGroup", "VolumeReturnFromUserPanelGroup");
     sel.setElementSelectable(false);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*
@@ -732,7 +732,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public String initVolumeUserPanelUser() {
     Selection sel = communInitUserPanel("VolumeCallUserPanelUser", "VolumeReturnFromUserPanelUser");
     sel.setSetSelectable(false);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*

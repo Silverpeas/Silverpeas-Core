@@ -31,11 +31,6 @@ import java.util.List;
 
 public final class Selection {
 
-  final public static String TYPE_USERS_GROUPS = "UsersGroups";
-  final public static String FIRST_PAGE_DEFAULT = "Default";
-  final public static String FIRST_PAGE_CART = "DisplayCart";
-  final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
-  final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
   final public static String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
   final public static String TYPE_SELECTED_SET = "Set"; //group selected
   final public static String TYPE_SELECTED_ELEMENT = "Element"; //user selected
@@ -46,7 +41,6 @@ public final class Selection {
   protected String htmlFormElementName;
   protected String htmlFormElementId;
   protected String htmlFormElementType; //TYPE_SELECTED_SET or TYPE_SELECTED_ELEMENT
-  protected String firstPage;
   protected String[] selectedSets;
   protected String[] selectedElements;
   protected boolean popupMode;
@@ -56,7 +50,7 @@ public final class Selection {
   protected String hostSpaceName;
   protected Pair<String, String> hostComponentName;
   protected Pair<String, String>[] hostPath;
-  protected SelectionExtraParams extraParams;
+  protected SelectionUsersGroups extraParams;
   protected int selectedUserLimit;
   protected boolean filterOnDeactivatedState = true;
 
@@ -72,8 +66,6 @@ public final class Selection {
     htmlFormName = "";
     htmlFormElementId = "";
     htmlFormElementName = "";
-
-    firstPage = FIRST_PAGE_DEFAULT;
 
     selectedSets = new String[0];
     selectedElements = new String[0];
@@ -92,11 +84,8 @@ public final class Selection {
     filterOnDeactivatedState = true;
   }
 
-  static public String getSelectionURL(String selectionType) {
-    if (Selection.TYPE_USERS_GROUPS.equals(selectionType)) {
-      return USER_SELECTION_PANEL_PATH;
-    }
-    return "/RselectionPeas/jsp/Main?SelectionType=" + selectionType;
+  static public String getSelectionURL() {
+    return USER_SELECTION_PANEL_PATH;
   }
 
   public void setHostSpaceName(String hostSpaceName) {
@@ -153,14 +142,6 @@ public final class Selection {
 
   public void setGoBackURL(String goBackURL) {
     this.goBackURL = goBackURL;
-  }
-
-  public String getFirstPage() {
-    return firstPage;
-  }
-
-  public void setFirstPage(String firstPage) {
-    this.firstPage = firstPage;
   }
 
   public boolean isPopupMode() {
@@ -264,11 +245,11 @@ public final class Selection {
     return null;
   }
 
-  public SelectionExtraParams getExtraParams() {
+  public SelectionUsersGroups getExtraParams() {
     return extraParams;
   }
 
-  public void setExtraParams(SelectionExtraParams extraParams) {
+  public void setExtraParams(SelectionUsersGroups extraParams) {
     this.extraParams = extraParams;
   }
 

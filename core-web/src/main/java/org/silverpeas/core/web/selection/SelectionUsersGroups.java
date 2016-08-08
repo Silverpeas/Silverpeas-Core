@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-public class SelectionUsersGroups implements SelectionExtraParams {
+public class SelectionUsersGroups {
   static OrganizationController organizationController =  OrganizationControllerProvider
       .getOrganisationController();
 
@@ -49,30 +49,6 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   List<String> profileIds = null;
   List<String> profileNames = null;
 
-  @Deprecated
-  public String[] getProfileIds() {
-    if (profileIds != null) {
-      return profileIds.toArray(new String[profileIds.size()]);
-    }
-    return null;
-  }
-
-  public String getJoinedProfileNames() {
-    if (profileNames != null && !profileNames.isEmpty()) {
-      StringBuilder names = new StringBuilder();
-      for(int i = 0; i < profileNames.size() - 1; i++) {
-        names.append(profileNames.get(i)).append(",");
-      }
-      names.append(profileNames.get(profileNames.size() - 1));
-      return names.toString();
-    }
-    return null;
-  }
-
-  public List<String> getProfileNames() {
-    return profileNames;
-  }
-
   public void setProfileNames(List<String> profileNames) {
     this.profileNames = profileNames;
     ComponentInst componentInst = organizationController.getComponentInst(componentId);
@@ -82,21 +58,6 @@ public class SelectionUsersGroups implements SelectionExtraParams {
         profileIds.add(profileInst.getId());
       }
     }
-  }
-
-  /**
-   * Add the identifier of the role the users must play.
-   * @param profileId the unique identifier of a user role.
-   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
-   * for a given object in the component instance or the setProfileNames() method to set the roles
-   * for the whole component instance.
-   */
-  @Deprecated
-  public void addProfileId(String profileId) {
-    if (profileIds == null) {
-      profileIds = new ArrayList<>();
-    }
-    profileIds.add(profileId);
   }
 
   /**
@@ -131,11 +92,6 @@ public class SelectionUsersGroups implements SelectionExtraParams {
 
   public void setDomainId(String domainId) {
     this.domainId = domainId;
-  }
-
-  @Override
-  public String getParameter(String name) {
-    return null;
   }
 
   static public String[] getDistinctUserIds(String[] selectedUsers,

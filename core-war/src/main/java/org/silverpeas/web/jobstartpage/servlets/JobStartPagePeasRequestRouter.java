@@ -369,7 +369,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       jobStartPageSC
           .initUserPanelInstanceForGroupsUsers((String) request.getAttribute("myComponentURL"),
               userIds, groupIds);
-      destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+      destination = Selection.getSelectionURL();
     } else if (function.equals("EffectiveSetInstanceProfile")) {
       String[] userIds =
           StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
@@ -651,7 +651,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       jobStartPageSC
           .initUserPanelSpaceForGroupsUsers((String) request.getAttribute("myComponentURL"),
               userIds, groupIds);
-      destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+      destination = Selection.getSelectionURL();
     } else if (function.equals("EffectiveSetSpaceProfile")) {
       String role = request.getParameter("Role");
       List<String> userIds = (List<String>)

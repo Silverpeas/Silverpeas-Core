@@ -1856,8 +1856,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // Contraintes
     sel.setSetSelectable(false);
     sel.setPopupMode(false);
-    sel.setFirstPage(Selection.FIRST_PAGE_CART);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   private void setDomainIdOnSelection(Selection selection) {
@@ -1908,8 +1907,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // Contraintes
     sel.setMultiSelect(false);
     sel.setPopupMode(false);
-    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public String getSelectedUserId() {
