@@ -150,6 +150,50 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertEventProperties(mayBeActualEvent.get(), expectedEvent);
   }
 
+  @Test
+  public void removeAnExistingEventFromACalendar() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    calendar.getEvents().remove("ID_E_3");
+
+    assertThat(calendar.getEvents().get("ID_E_3").isPresent(), is(false));
+  }
+
+  @Test
+  public void removeANonExistingEventFromACalendar() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+
+    assertThat(calendar.getEvents().get("toto").isPresent(), is(false));
+    calendar.getEvents().remove("toto");
+    assertThat(calendar.getEvents().get("toto").isPresent(), is(false));
+  }
+
+  @Test
+  public void deleteAnExistingEvent() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    Optional<CalendarEvent> mayBeEvent = calendar.getEvents().get("ID_E_3");
+    assertThat(mayBeEvent.isPresent(), is(true));
+    CalendarEvent event = mayBeEvent.get();
+    event.delete();
+    assertThat(event.isPersisted(), is(false));
+
+    assertThat(calendar.getEvents().get("ID_E_3").isPresent(), is(false));
+  }
+
+  @Test
+  public void deleteANonSavedEvent() {
+    OffsetDateTime now = OffsetDateTime.now();
+    OffsetDateTime inThreeHours = now.plusHours(3);
+    CalendarEvent event = CalendarEvent.on(Period.between(now, inThreeHours))
+        .createdBy(USER_ID)
+        .withTitle(EVENT_TITLE)
+        .withDescription(EVENT_DESCRIPTION)
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE);
+    assertThat(event.isPersisted(), is(false));
+
+    event.delete();
+    assertThat(event.isPersisted(), is(false));
+  }
+
   private void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
     assertThat(actual.getStartDateTime(), is(expected.getStartDateTime()));
     assertThat(actual.getEndDateTime(), is(expected.getEndDateTime()));

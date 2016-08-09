@@ -86,7 +86,13 @@ public interface Plannable extends Serializable {
    * into the given calendar and it will have hence an unique identifier that will uniquely
    * identify it among all others plannable objects in the calendar.
    * @param aCalendar
-   * @return
+   * @return itself.
    */
   Plannable saveOn(final Calendar aCalendar);
+
+  /**
+   * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)
+   * on a given calendar, then nothing is done.
+   */
+  void delete();
 }

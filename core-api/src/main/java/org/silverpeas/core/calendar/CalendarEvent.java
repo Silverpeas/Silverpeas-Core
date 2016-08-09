@@ -312,6 +312,13 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     return calendar.getEvents().add(this);
   }
 
+  @Override
+  public void delete() {
+    if (this.getId() != null) {
+      calendar.getEvents().remove(this.getId());
+    }
+  }
+
   protected void setCalendar(final Calendar calendar) {
     this.calendar = calendar;
   }
@@ -319,4 +326,5 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   private Period getPeriod() {
     return this.period;
   }
+
 }

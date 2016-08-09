@@ -63,13 +63,27 @@ public class CalendarEventStore {
    * @return the event once successfully persisted and indexed into the store.
    */
   public CalendarEvent add(final CalendarEvent event) {
-    return Transaction.performInOne(() -> {
+    return Transaction.getTransaction().perform(() -> {
       event.setCalendar(calendar);
       return repository.save(OperationContext.fromUser(event.getCreator()), event);
+    });
+  }
+
+  /**
+   * Removes the specified event from the store of events. Removing it from the stores deletes it
+   * in the data source; it is no more persisted. By doing it the event won't belong
+   * anymore to the underlying calendar.
+   * @param eventId the unique identifier of the event to delete.
+   */
+  public void remove(final String eventId) {
+    Transaction.getTransaction().perform(() -> {
+      repository.deleteById(eventId);
+      return null;
     });
   }
 
   protected CalendarEventStore(final Calendar calendar) {
     this.calendar = calendar;
   }
+
 }

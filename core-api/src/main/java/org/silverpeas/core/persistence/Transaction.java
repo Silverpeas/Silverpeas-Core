@@ -61,7 +61,7 @@ public class Transaction {
   }
 
   /**
-   * The given process is executed in a transaction : support a current transaction,
+   * The given process is executed in a transaction: support a current transaction,
    * create a new one if none exists.
    * Analogous to EJB transaction attribute of the same name.
    * @param process the process to execute in a transaction.
