@@ -53,7 +53,7 @@ import java.util.List;
     name = "calendarsByComponentInstanceId",
     query = "from Calendar c where c.componentInstanceId = :componentInstanceId " +
             "order by c.componentInstanceId, c.title, c.id")
-@Table(name = "sb_calendar")
+@Table(name = "sb_cal_calendar")
 public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implements Securable {
 
   @Column(name = "instanceId", nullable = false)

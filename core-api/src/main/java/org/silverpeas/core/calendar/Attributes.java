@@ -23,7 +23,14 @@
  */
 package org.silverpeas.core.calendar;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapsId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +46,8 @@ import java.util.Optional;
 public class Attributes {
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "sb_calendar_attributes", joinColumns = {@JoinColumn(name = "event_id")})
+  @MapsId
+  @CollectionTable(name = "sb_cal_attributes", joinColumns = {@JoinColumn(name = "id")})
   @MapKeyColumn(name = "name")
   @Column(name = "value")
   private Map<String, String> attributes = new HashMap<>();

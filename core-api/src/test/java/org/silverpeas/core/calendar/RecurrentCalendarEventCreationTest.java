@@ -88,13 +88,9 @@ public class RecurrentCalendarEventCreationTest {
     assertTitleAndDescriptionOf(event);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void createAHourlyEvent() {
-    CalendarEvent event = aTimelyEvent().recur(Recurrence.every(2, TimeUnit.HOUR));
-    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(2, TimeUnit.HOUR)));
-    assertDefaultValuesOf(event);
-    assertEventTimePeriodOf(event);
-    assertTitleAndDescriptionOf(event);
+    aTimelyEvent().recur(Recurrence.every(2, TimeUnit.HOUR));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -138,20 +134,12 @@ public class RecurrentCalendarEventCreationTest {
     assertTitleAndDescriptionOf(event);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void createAHourlyEventOnSpecificDays() {
-    CalendarEvent event = aTimelyEvent().recur(
-        Recurrence.every(3, TimeUnit.HOUR).on(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
-    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(3, TimeUnit.HOUR)));
-    assertThat(event.getRecurrence().getDaysOfWeek(),
-        hasItems(DayOfWeekOccurrence.all(DayOfWeek.MONDAY),
-            DayOfWeekOccurrence.all(DayOfWeek.FRIDAY)));
-    assertDefaultValuesOf(event);
-    assertEventTimePeriodOf(event);
-    assertTitleAndDescriptionOf(event);
+    aTimelyEvent().recur(Recurrence.every(3, TimeUnit.HOUR));
   }
 
-  @Test
+  @Test(expected = IllegalStateException.class)
   public void createADailyEventOnSpecificDays() {
     CalendarEvent event = aTimelyEvent().recur(
         Recurrence.every(1, TimeUnit.DAY).on(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
@@ -170,8 +158,21 @@ public class RecurrentCalendarEventCreationTest {
         Recurrence.every(1, TimeUnit.WEEK).on(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
     assertThat(event.getRecurrence().getDaysOfWeek(),
-        hasItems(DayOfWeekOccurrence.all(DayOfWeek.MONDAY),
-            DayOfWeekOccurrence.all(DayOfWeek.FRIDAY)));
+        hasItems(DayOfWeekOccurrence.nth(1, DayOfWeek.MONDAY),
+            DayOfWeekOccurrence.nth(1, DayOfWeek.FRIDAY)));
+    assertDefaultValuesOf(event);
+    assertEventTimePeriodOf(event);
+    assertTitleAndDescriptionOf(event);
+  }
+
+  @Test
+  public void createAMonthlyEventOnAllSpecificDays() {
+    CalendarEvent event = aTimelyEvent().recur(Recurrence.every(1, TimeUnit.MONTH)
+        .on(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY));
+    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.MONTH)));
+    assertThat(event.getRecurrence().getDaysOfWeek(),
+        hasItems(DayOfWeekOccurrence.all(DayOfWeek.TUESDAY),
+            DayOfWeekOccurrence.all(DayOfWeek.THURSDAY)));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
     assertTitleAndDescriptionOf(event);
@@ -183,6 +184,33 @@ public class RecurrentCalendarEventCreationTest {
         .on(DayOfWeekOccurrence.nth(2, DayOfWeek.TUESDAY),
             DayOfWeekOccurrence.nth(3, DayOfWeek.THURSDAY)));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.MONTH)));
+    assertThat(event.getRecurrence().getDaysOfWeek(),
+        hasItems(DayOfWeekOccurrence.nth(2, DayOfWeek.TUESDAY),
+            DayOfWeekOccurrence.nth(3, DayOfWeek.THURSDAY)));
+    assertDefaultValuesOf(event);
+    assertEventTimePeriodOf(event);
+    assertTitleAndDescriptionOf(event);
+  }
+
+  @Test
+  public void createAYearlyEventOnAllSpecificDays() {
+    CalendarEvent event = aTimelyEvent().recur(Recurrence.every(1, TimeUnit.YEAR)
+        .on(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY));
+    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.YEAR)));
+    assertThat(event.getRecurrence().getDaysOfWeek(),
+        hasItems(DayOfWeekOccurrence.all(DayOfWeek.TUESDAY),
+            DayOfWeekOccurrence.all(DayOfWeek.THURSDAY)));
+    assertDefaultValuesOf(event);
+    assertEventTimePeriodOf(event);
+    assertTitleAndDescriptionOf(event);
+  }
+
+  @Test
+  public void createAYearlyEventOnSpecificDayOccurrences() {
+    CalendarEvent event = aTimelyEvent().recur(Recurrence.every(1, TimeUnit.YEAR)
+        .on(DayOfWeekOccurrence.nth(2, DayOfWeek.TUESDAY),
+            DayOfWeekOccurrence.nth(3, DayOfWeek.THURSDAY)));
+    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.YEAR)));
     assertThat(event.getRecurrence().getDaysOfWeek(),
         hasItems(DayOfWeekOccurrence.nth(2, DayOfWeek.TUESDAY),
             DayOfWeekOccurrence.nth(3, DayOfWeek.THURSDAY)));

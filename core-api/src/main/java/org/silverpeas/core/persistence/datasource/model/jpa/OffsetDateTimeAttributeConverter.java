@@ -21,38 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import javax.persistence.Transient;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
- * This interface is dedicated to be applied on {@link Plannable} implementations. It qualifies
- * a {@link Plannable} can be recurrent, periodic, over the timeline. By default, a recurrent
- * {@link Plannable} has no defined recurrence rules; hence it is no recurrent.
+ * An automatic converter of {@link java.time.OffsetDateTime} values to SQL {@link Timestamp} values
+ * for JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
+ * API).
  * @author mmoquillon
  */
-public interface Recurrent {
+@Converter(autoApply = true)
+public class OffsetDateTimeAttributeConverter
+    implements AttributeConverter<OffsetDateTime, Timestamp> {
 
-  /**
-   * Recurs this recurrent object with the specified recurrence rules.
-   * @param recurrence the recurrence defining the recurring rules to apply in the planning of this
-   * {@link Plannable}.
-   * @return itself.
-   */
-  Recurrent recur(final Recurrence recurrence);
+  @Override
+  public Timestamp convertToDatabaseColumn(OffsetDateTime dateTime) {
+    return (dateTime == null ? null : Timestamp.from(dateTime.toInstant()));
+  }
 
-  /**
-   * Gets the actual recurrence rules. If no recurrence has been set, then returns NO_RECURRENCE.
-   * @return the actual recurrence of this {@link Plannable} or NO_RECURRENCE.
-   */
-  Recurrence getRecurrence();
-
-  /**
-   * Is this {@link Plannable} recurrent?
-   * @return true if a recurrence has been set for this object, false otherwise.
-   */
-  @Transient
-  default boolean isRecurrent() {
-    return getRecurrence() != Recurrence.NO_RECURRENCE;
+  @Override
+  public OffsetDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
+    return (sqlTimestamp == null ? null : sqlTimestamp.toInstant().atOffset(ZoneOffset.UTC));
   }
 }

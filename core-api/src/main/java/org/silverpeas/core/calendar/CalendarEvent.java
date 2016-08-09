@@ -33,7 +33,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
@@ -46,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * through its {@link Attributes} property.
  */
 @Entity
-@Table(name = "sb_calendar_event")
+@Table(name = "sb_cal_event")
 @NamedQueries({
     @NamedQuery(name = "byId", query = "from CalendarEvent where id = :id and calendar = " +
         ":calendar"),
@@ -83,7 +82,8 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   @NotNull
   private Priority priority = Priority.NORMAL;
 
-  @Transient
+  @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+  @JoinColumn(name = "recurrenceId", referencedColumnName = "id")
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
 
   @Transient

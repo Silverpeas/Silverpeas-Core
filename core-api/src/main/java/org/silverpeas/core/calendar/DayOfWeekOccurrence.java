@@ -26,6 +26,12 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 
 /**
@@ -33,6 +39,7 @@ import java.time.DayOfWeek;
  * in a year within a recurrence rule of a {@link Plannable} object. For example, the third tuesday
  * in the month.
  */
+@Embeddable
 public class DayOfWeekOccurrence {
 
   /**
@@ -41,7 +48,12 @@ public class DayOfWeekOccurrence {
    */
   public static final int ALL_OCCURRENCES = 0;
 
+  @Column(name = "recur_nth", nullable = false)
+  @NotNull
   private int nth;
+  @Column(name = "recur_dayOfWeek", nullable = false)
+  @Enumerated(EnumType.ORDINAL)
+  @NotNull
   private DayOfWeek dayOfWeek;
 
   /**
@@ -104,6 +116,9 @@ public class DayOfWeekOccurrence {
   @Override
   public int hashCode() {
     return new HashCodeBuilder().append(nth).append(dayOfWeek).toHashCode();
+  }
+
+  protected DayOfWeekOccurrence() {
   }
 
   private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {

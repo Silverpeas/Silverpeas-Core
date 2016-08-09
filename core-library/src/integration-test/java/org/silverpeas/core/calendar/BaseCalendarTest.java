@@ -87,46 +87,46 @@ public abstract class BaseCalendarTest extends DataSetTest {
   }*/
 
   /**
-   * Returns the list of calendar lines persisted into sb_calendar table.
+   * Returns the list of calendar lines persisted into sb_cal_calendar table.
    * @return List of lines represented by a map between column name and value.
    */
   protected List<TableLine> getCalendarTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from sb_calendar")
+        JdbcSqlQuery.createSelect("* from sb_cal_calendar")
             .addSqlPart("order by instanceid, title, id"));
   }
 
   /**
-   * Returns the calendar persisted into sb_calendar table corresponding to the given identifier.
+   * Returns the calendar persisted into sb_cal_calendar table corresponding to the given identifier.
    * @param id the id searched for.
    * @return List of lines represented by a map between column name and value.
    */
   protected TableLine getCalendarTableLineById(String id) throws Exception {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("* from sb_calendar").where("id = ?", id)));
+        JdbcSqlQuery.createSelect("* from sb_cal_calendar").where("id = ?", id)));
   }
 
   /**
-   * Returns the list of calendar event lines persisted into sb_calendar_event table.
+   * Returns the list of calendar event lines persisted into sb_cal_event table.
    * @return List of lines represented by a map between column name and value.
    */
   protected List<TableLine> getCalendarEventTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("ce.* from sb_calendar_event ce")
-            .addSqlPart("join sb_calendar c on c.id = ce.calendarId")
+        JdbcSqlQuery.createSelect("ce.* from sb_cal_event ce")
+            .addSqlPart("join sb_cal_calendar c on c.id = ce.calendarId")
             .addSqlPart("order by c.instanceId, ce.startDate, ce.endDate, ce.title, ce.id"));
   }
 
   /**
-   * Returns the calendar event persisted into sb_calendar_event table corresponding to the given
+   * Returns the calendar event persisted into sb_cal_event table corresponding to the given
    * identifier.
    * @param id the id searched for.
    * @return List of lines represented by a map between column name and value.
    */
   protected TableLine getCalendarEventTableLineById(String id) throws Exception {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("ce.* from sb_calendar_event ce")
-            .addSqlPart("join sb_calendar c on c.id = ce.calendarId").where("ce.id = ?", id)));
+        JdbcSqlQuery.createSelect("ce.* from sb_cal_event ce")
+            .addSqlPart("join sb_cal_calendar c on c.id = ce.calendarId").where("ce.id = ?", id)));
   }
 
 }

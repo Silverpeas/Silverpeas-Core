@@ -79,7 +79,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   protected abstract ENTITY setVersion(Long version);
 
   /**
-   * This method contains all (technical) informations that must be performed on a entity create.
+   * This method contains all (technical) information that must be performed on a entity create.
    */
   protected void performBeforePersist() {
     OperationContext.getFromCache().applyToPersistOperation(this);
@@ -93,7 +93,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   }
 
   /**
-   * This method contains all (technical) informations that must be performed on a entity update.
+   * This method contains all (technical) information that must be performed on a entity update.
    */
   protected void performBeforeUpdate() {
     OperationContext.getFromCache().applyToUpdateOperation(this);

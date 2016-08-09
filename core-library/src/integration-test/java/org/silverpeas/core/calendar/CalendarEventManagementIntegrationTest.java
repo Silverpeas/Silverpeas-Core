@@ -156,11 +156,12 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
     assertThat(actual.getTitle(), is(expected.getTitle()));
     assertThat(actual.getDescription(), is(expected.getDescription()));
+    assertThat(actual.getAttributes().isEmpty(), is(false));
     assertThat(actual.getAttributes(), is(expected.getAttributes()));
     assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
     assertThat(actual.getAttendees(), is(expected.getAttendees()));
     assertThat(actual.getCategories(), is(expected.getCategories()));
-    assertThat(actual.getRecurrence(), is(Recurrence.NO_RECURRENCE));
+    assertThat(actual.isRecurrent(), is(false));
   }
 
 }

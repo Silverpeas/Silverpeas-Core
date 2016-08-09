@@ -24,8 +24,10 @@
 
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.date.TimeUnit;
 
+import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -33,8 +35,11 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +53,8 @@ import java.util.stream.Collectors;
  *   <li>a termination condition.</li>
  * </ul>
  */
+@Entity
+@Table(name = "sb_cal_recurrence")
 public class Recurrence {
 
   /**
@@ -62,17 +69,35 @@ public class Recurrence {
    * A constant that defines a specific value for no recurrence end date.
    */
   public static final OffsetDateTime NO_RECURRENCE_END_DATE = null;
+
+  /**
+   * Identifier of the recurrent object planned in a calendar. This identifier is mapped to the
+   * recurrent object's identifier in a one to one relationship between the recurrent object and
+   * its recurrence.
+   */
+  @Id
+  private String id;
+
+  @Embedded
   private RecurrencePeriod frequency;
+  @Column(name = "recur_count")
   private int count = NO_RECURRENCE_COUNT;
+  @Column(name = "recur_endDate")
   private OffsetDateTime endDateTime = NO_RECURRENCE_END_DATE;
-  private List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<>();
-  private List<OffsetDateTime> exceptionDates = new ArrayList<>();
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "sb_cal_recurrence_dayofweek", joinColumns = {
+      @JoinColumn(name = "recurrenceId")})
+  private Set<DayOfWeekOccurrence> daysOfWeek = new HashSet<>();
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "sb_cal_recurrence_exception", joinColumns = {
+      @JoinColumn(name = "recurrenceId")})
+  @Column(name = "recur_exceptionDate")
+  private Set<OffsetDateTime> exceptionDates = new HashSet<>();
 
   /**
    * Creates a new recurrence from the specified frequency.
-   * @param frequencyUnit the unit of the frequency: SECOND means SECONDLY,
-   * MINUTE means minutely, HOUR means hourly, WEEK means weekly, DAY means daily, WEEK means
-   * weekly, MONTH means monthly or YEAR means YEARLY.
+   * @param frequencyUnit the unit of the frequency: DAY means DAILY, WEEK means weekly, MONTH
+   * means monthly or YEAR means YEARLY.
    * @return the event recurrence instance.
    */
   public static Recurrence every(TimeUnit frequencyUnit) {
@@ -82,8 +107,8 @@ public class Recurrence {
   /**
    * Creates a new recurrence from the specified frequency. For example every(2, MONTH) means
    * every 2 month.
-   * @param frequencyValue the value of the frequency. every two weeks.
-   * @param frequencyUnit the frequency unit.
+   * @param frequencyValue a positive number indicating how many times the {@link Plannable} occurs.
+   * @param frequencyUnit the frequency unit: DAY, WEEK, MONTH, or YEAR.
    * @return the event recurrence instance.
    */
   public static Recurrence every(int frequencyValue, TimeUnit frequencyUnit) {
@@ -114,8 +139,7 @@ public class Recurrence {
    */
   public Recurrence excludeEventOccurrencesStartingAt(
       final OffsetDateTime... dateTimes) {
-    this.exceptionDates.addAll(Arrays.asList(dateTimes)
-        .stream()
+    this.exceptionDates.addAll(Arrays.stream(dateTimes)
         .map(dateTime -> dateTime.withOffsetSameInstant(ZoneOffset.UTC))
         .collect(Collectors.toList()));
     return this;
@@ -128,27 +152,30 @@ public class Recurrence {
    * @return itself.
    */
   public Recurrence excludeEventOccurrencesStartingAt(final LocalDate... days) {
-    this.exceptionDates.addAll(Arrays.asList(days)
-        .stream()
+    this.exceptionDates.addAll(Arrays.stream(days)
         .map(date -> date.atStartOfDay().atOffset(ZoneOffset.UTC))
         .collect(Collectors.toList()));
     return this;
   }
 
   /**
-   * Sets some specific days of week at which a {@link Plannable} should periodically occur. For
-   * example,
-   * recur every weeks on monday and on tuesday. For a monthly or an yearly recurrence, the days of
-   * week are the first days of the month or of the year; for example, the first monday and tuesday
-   * of each month.
+   * Sets some specific days of week at which a {@link Plannable} should periodically occur.
+   * For a weekly recurrence, the specified days of week are the first one in the week. For other
+   * frequency, the specified days of week will be all the occurrences of those days of week in the
+   * recurrence period. For example, recur every weeks on monday and on tuesday or recur every month
+   * on all saturdays and on all tuesdays.
+   * This method can only be applied on recurrence period higher than the day, otherwise an
+   * {@link IllegalStateException} will be thrown.
    * @param days the days of week at which a {@link Plannable} should occur. Theses days replace the ones
    * already set in the recurrence.
    * @return itself.
    */
   public Recurrence on(DayOfWeek... days) {
-    List<DayOfWeekOccurrence> dayOccurrences = new ArrayList<DayOfWeekOccurrence>();
+    checkRecurrenceStateForSpecificDaySetting();
+    List<DayOfWeekOccurrence> dayOccurrences = new ArrayList<>();
+    int nth = getFrequency().isWeekly() ? 1 : DayOfWeekOccurrence.ALL_OCCURRENCES;
     for (DayOfWeek dayOfWeek : days) {
-      dayOccurrences.add(DayOfWeekOccurrence.nth(DayOfWeekOccurrence.ALL_OCCURRENCES, dayOfWeek));
+      dayOccurrences.add(DayOfWeekOccurrence.nth(nth, dayOfWeek));
     }
     this.daysOfWeek.clear();
     this.daysOfWeek.addAll(dayOccurrences);
@@ -163,6 +190,8 @@ public class Recurrence {
    * only
    * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
    * considered as an error and an IllegalArgumentException is thrown.
+   * This method can only be applied on recurrence period higher than the day, otherwise an
+   * {@link IllegalStateException} will be thrown.
    * @param days the occurrences of day of week at which an event should occur. Theses days replace
    * the ones already set in the recurrence.
    * @return itself.
@@ -178,12 +207,15 @@ public class Recurrence {
    * the nth occurrence of the day is the first one or all occurrences (as there is actually only
    * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
    * considered as an error and an IllegalArgumentException is thrown.
+   * This method can only be applied on recurrence period higher than the day, otherwise an
+   * {@link IllegalStateException} will be thrown.
    * @param days a list of days of week at which a {@link Plannable} should occur. Theses days
    * replace
    * the ones already set in the recurrence.
    * @return itself.
    */
   public Recurrence on(final List<DayOfWeekOccurrence> days) {
+    checkRecurrenceStateForSpecificDaySetting();
     if (frequency.getUnit() == TimeUnit.WEEK) {
       for (DayOfWeekOccurrence dayOfWeekOccurrence : days) {
         if (dayOfWeekOccurrence.nth() != 1 && dayOfWeekOccurrence.nth() != DayOfWeekOccurrence.ALL_OCCURRENCES) {
@@ -274,11 +306,11 @@ public class Recurrence {
 
   /**
    * Gets the days of week on which the {@link Plannable} should recur each time.
-   * @return an unmodifiable list of days of week or an empty list if no days of week is set to this
+   * @return an unmodifiable set of days of week or an empty set if no days of week are set to this
    * recurrence.
    */
-  public List<DayOfWeekOccurrence> getDaysOfWeek() {
-    return Collections.unmodifiableList(daysOfWeek);
+  public Set<DayOfWeekOccurrence> getDaysOfWeek() {
+    return Collections.unmodifiableSet(daysOfWeek);
   }
 
   /**
@@ -286,10 +318,54 @@ public class Recurrence {
    *
    * The returned date time are the start date time of the occurrences that are excluded
    * from this recurrence rule. They are the exception in the application of the recurrence rule.
-   * @return an unmodifiable list of {@link OffsetDateTime}.
+   * @return an unmodifiable set of {@link OffsetDateTime} or an empty set of no exceptions are set
+   * to this recurrence.
    */
-  public List<OffsetDateTime> getExceptionDates() {
-    return Collections.unmodifiableList(exceptionDates);
+  public Set<OffsetDateTime> getExceptionDates() {
+    return Collections.unmodifiableSet(exceptionDates);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Recurrence)) {
+      return false;
+    }
+
+    final Recurrence that = (Recurrence) o;
+    if (count != that.count) {
+      return false;
+    }
+    if (!frequency.equals(that.frequency)) {
+      return false;
+    }
+    if (endDateTime != null ? !endDateTime.equals(that.endDateTime) : that.endDateTime != null) {
+      return false;
+    }
+    if (!daysOfWeek.equals(that.daysOfWeek)) {
+      return false;
+    }
+    return exceptionDates.equals(that.exceptionDates);
+
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(count)
+        .append(endDateTime)
+        .append(daysOfWeek)
+        .append(exceptionDates)
+        .toHashCode();
+  }
+
+  protected Recurrence() {
+  }
+
+  @PrePersist
+  protected void generateId() {
+    this.id = UUID.randomUUID().toString();
   }
 
   /**
@@ -299,4 +375,11 @@ public class Recurrence {
   private Recurrence(final RecurrencePeriod frequency) {
     this.frequency = frequency;
   }
+
+  private void checkRecurrenceStateForSpecificDaySetting() {
+    if (getFrequency().isDaily()) {
+      throw new IllegalStateException("Some specific days cannot be set for a daily recurrence");
+    }
+  }
+
 }

@@ -32,6 +32,12 @@
     <jta-data-source>java:/datasources/silverpeas</jta-data-source>
     <!-- @JAR_FILES@ -->
     <properties>
+      <!-- JPA 2.1 properties for database schema generation -->
+      <!--
+      <property name="javax.persistence.schema-generation.scripts.action" value="create"/>
+      <property name="javax.persistence.schema-generation.scripts.create-target"
+                value="silverpeas-schema.ddl"/>
+      -->
       <!-- Properties for Hibernate (default provider for JBoss AS, must be installed on GlassFish) -->
       <property name="hibernate.show_sql" value="true"/>
       <property name="hibernate.format_sql" value="false"/>

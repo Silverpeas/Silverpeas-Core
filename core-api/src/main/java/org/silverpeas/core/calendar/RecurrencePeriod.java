@@ -27,29 +27,46 @@ package org.silverpeas.core.calendar;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.date.TimeUnit;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+
 /**
- * A period of a recurrence. It defines the recurrence of a plannable object in a calendar as a
- * regular interval in a given unit of time. For example, in <i>every 2 weeks</i>, week is the unit
- * of time whereas 2 is the interval in this unit of time. The unit of time of the recurrence period
- * cannot be less that the hour.
+ * A period of a recurrence. It defines the recurrence of a {@link Plannable} object in a calendar
+ * as a regular interval in a given unit of time. For example, in <i>every 2 weeks</i>, week is the
+ * unit * of time whereas 2 is the interval in this unit of time. The unit of time of the recurrence
+ * period cannot be less that the day.
  */
+@Embeddable
 public class RecurrencePeriod {
 
+  @Column(name = "recur_periodInterval", nullable = false)
+  @NotNull
   private int interval;
+  @Column(name = "recur_periodUnit", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @NotNull
   private TimeUnit timeUnit;
 
   /**
    * Creates a recurrence period from the specified frequency statement that is expressed by a
    * regular interval in a given unit of time. For example, <i>every 3 months</i>.
    * @param interval the regular interval of the period in the specified unit of time.
-   * @param unit an unit of time. It doesn't must be lesser than hour, otherwise an
+   * @param unit an unit of time. It doesn't must be lesser than the day, otherwise an
    * {@link IllegalArgumentException} is thrown.
    * @return a recurrence period matching specified the frequency statement.
    */
   public static RecurrencePeriod every(int interval, TimeUnit unit) {
-    if (unit.ordinal() < TimeUnit.HOUR.ordinal()) {
+    if (unit.ordinal() < TimeUnit.DAY.ordinal()) {
       throw new IllegalArgumentException(
-          "The recurrence of an object plannable in a calendar cannot be less than the hour");
+          "The recurrence of an object planned in a calendar cannot be less than the day");
+    }
+    if (interval <= 0) {
+      throw new IllegalArgumentException(
+          "The recurrence of an object planned in a calendar cannot be less than every 1 of a " +
+              "given unit of time");
     }
     return new RecurrencePeriod(interval, unit);
   }
@@ -110,11 +127,6 @@ public class RecurrencePeriod {
     return timeUnit == TimeUnit.YEAR;
   }
 
-  private RecurrencePeriod(int every, TimeUnit unit) {
-    this.interval = every;
-    this.timeUnit = unit;
-  }
-
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -137,4 +149,14 @@ public class RecurrencePeriod {
   public int hashCode() {
     return new HashCodeBuilder().append(interval).append(timeUnit).toHashCode();
   }
+
+
+  protected RecurrencePeriod() {
+  }
+
+  private RecurrencePeriod(int every, TimeUnit unit) {
+    this.interval = every;
+    this.timeUnit = unit;
+  }
+
 }

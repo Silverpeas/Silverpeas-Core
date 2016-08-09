@@ -20,13 +20,6 @@
  */
 package org.silverpeas.core.importexport.ical.ical4j;
 
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.importexport.EncodingException;
-import org.silverpeas.core.importexport.ical.ICalCodec;
-
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.html.HtmlCleaner;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
@@ -40,6 +33,12 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.importexport.EncodingException;
+import org.silverpeas.core.importexport.ical.ICalCodec;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.html.HtmlCleaner;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -50,6 +49,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -100,7 +100,7 @@ public class ICal4JICalCodec implements ICalCodec {
       iCalEvent.getProperties().add(generateUid(event));
 
       // Add recurring data if any
-      if (event.isRecurring()) {
+      if (event.isRecurrent()) {
         Recurrence eventRecurrence = event.getRecurrence();
         Recur recur = iCal4JRecurrenceCodec.encode(eventRecurrence);
         iCalEvent.getProperties().add(new RRule(recur));
@@ -171,7 +171,7 @@ public class ICal4JICalCodec implements ICalCodec {
   }
 
   private ExDate exceptionDatesFrom(final Recurrence recurrence) {
-    List<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
+    Set<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
         .collect(Collectors.toCollection(DateList::new));
     return new ExDate(exDatesList);
