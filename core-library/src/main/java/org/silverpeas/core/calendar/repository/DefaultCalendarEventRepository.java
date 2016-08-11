@@ -31,7 +31,13 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 
+import javax.persistence.NamedQuery;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +66,23 @@ public class DefaultCalendarEventRepository
         .add("ids", convertToEntityIdentifiers(ids))
         .add("calendar", calendar);
     return findByNamedQuery("byIds", params);
+  }
+
+  @Override
+  public long size(final Calendar calendar) {
+    NamedParameters params = newNamedParameters()
+        .add("calendar", calendar);
+    return fromNamedQuery("count", params, Long.class);
+  }
+
+  @Override
+  public List<CalendarEvent> getAllBetween(final Calendar calendar,
+      final OffsetDateTime startDateTime, final OffsetDateTime endDateTime) {
+    NamedParameters params = newNamedParameters()
+        .add("startDateTime", Date.from(startDateTime.toInstant()), TemporalType.TIMESTAMP)
+        .add("endDateTime", Date.from(endDateTime.toInstant()), TemporalType.TIMESTAMP)
+        .add("calendar", calendar);
+    return findByNamedQuery("byPeriod", params);
   }
 
   /*@Override

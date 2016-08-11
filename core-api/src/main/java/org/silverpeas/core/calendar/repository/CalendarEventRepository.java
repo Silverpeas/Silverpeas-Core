@@ -32,6 +32,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public interface CalendarEventRepository
   /**
    * Gets from the specified calendar the event having the specified identifier or nothing if no
    * such event exists into the calendar.
-   * This method replace the getById(String id) one.
+   * This method replace the {@©ode getById(String id)} one.
    * @param calendar a calendar.
    * @param id the unique identifier of the event to get
    * @return optionally the calendar event matching the specified identifier.
@@ -59,9 +60,9 @@ public interface CalendarEventRepository
   Optional<CalendarEvent> getById(Calendar calendar, String id);
 
   /**
-   * Gets from the specified calendar all the event whose identifier matches the specified ones or
+   * Gets from the specified calendar all the events whose identifier matches the specified ones or
    * nothing if no such events exist into the calendar.
-   * This method replace the getById(String ...ids) one.
+   * This method replace the {@©ode getById(String ...ids)} one.
    * @param calendar a calendar.
    * @param ids one or several unique identifiers of calendar events.
    * @return a list of events or an empty list if there is no events with the specified identifiers.
@@ -69,14 +70,21 @@ public interface CalendarEventRepository
   List<CalendarEvent> getById(Calendar calendar, String ...ids);
 
   /**
-   * Gets from the specified calendar all the event whose identifier matches the specified ones or
+   * Gets from the specified calendar all the events whose identifier matches the specified ones or
    * nothing if no such events exist into the calendar.
-   * This method replace the getById(Collection<String> id) one.
+   * This method replace the {@©ode getById(Collection<String> id)} one.
    * @param calendar a calendar.
    * @param ids one or several unique identifiers of calendar events.
    * @return a list of events or an empty list if there is no events with the specified identifiers.
    */
   List<CalendarEvent> getById(Calendar calendar, Collection<String> ids);
+
+  /**
+   * Gets size of the specified calendar in events.
+   * @param calendar a calendar.
+   * @return the count of event in the specified calendar.
+   */
+  long size(Calendar calendar);
 
   /**
    * Throws a {@link SilverpeasRuntimeException}
@@ -106,9 +114,17 @@ public interface CalendarEventRepository
   }
 
   /**
-   * Finds calendar events according to the given criteria.
-   * @param criteria the calendar event criteria.
-   * @return the calendar event list corresponding to the given criteria.
+   * Gets all the events in the specified calendar that occur between the two specified date and
+   * times.
+   * @param calendar the calendar to which the event has to belong.
+   * @param startDateTime the inclusive date and time in UTC/Greenwich at which begins the period in
+   * which the events are get.
+   * @param endDateTime the inclusive date and time in UTC/Greenwich at which ends the period in
+   * which the events are get.
+   * @return a list of events that occur between the two date times or an empty list if there
+   * is no events in the specified calendar between the two date times.
    */
-  //List<CalendarEvent> findByCriteria(final CalendarEventCriteria criteria);
+  List<CalendarEvent> getAllBetween(Calendar calendar, OffsetDateTime startDateTime,
+      OffsetDateTime endDateTime);
+
 }

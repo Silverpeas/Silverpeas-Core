@@ -32,19 +32,24 @@ import org.silverpeas.core.util.ServiceProvider;
 import java.util.List;
 
 /**
+ * A persistence repository of calendars. It provides business methods to manage the calendars in
+ * the Silverpeas data source.
  * @author Yohann Chastagnier
  */
 public interface CalendarRepository extends SilverpeasEntityRepository<Calendar, UuidIdentifier> {
 
+  /**
+   * Gets an instance of the implementation of a {@link CalendarRepository}.
+   * @return a persistence repository of calendars.
+   */
   static CalendarRepository get() {
     return ServiceProvider.getService(CalendarRepository.class);
   }
 
   /**
-   * Gets the calendars represented by the specified context identifier.
-   * @param componentInstanceId an identifier identifying a context. Usually, this identifier is the
-   * identifier of the component instance to which it belongs (for example almanach32) or the
-   * identifier of the user personal calendar.
+   * Gets the calendars represented by the specified component instance.
+   * @param componentInstanceId the unique identifier identifying an instance of a Silverpeas
+   * component. For instance, the component can be a collaborative application or a personal one.
    * @return a list containing the calendar instances which matched if any, empty list otherwise.
    */
   List<Calendar> getByComponentInstanceId(String componentInstanceId);

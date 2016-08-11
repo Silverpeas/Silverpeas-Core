@@ -27,13 +27,18 @@ import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
 
 /**
  * A store of persisted {@link CalendarEvent} instances for a given calendar. Each calendar has
  * its own store of events in which each event is indexed by their identifier; a persisted
  * event is ensured to be unique both by its identifier and by the calendar it belongs to. A store
- * uses the persistence repository for events to store and retrieve the events which it is in
+ * uses the persistence repository of events to store and to retrieve the events it is in
  * charge; the persistence repository is shared by all the stores.
  *
  * Each event get from this store is a shadow copy of a persisted event and thus any changes to
@@ -82,8 +87,32 @@ public class CalendarEventStore {
     });
   }
 
+  /**
+   * Is this store is empty?
+   * @return true either if the calendar to which this store belongs isn't yet persisted or there
+   * is at least one event added. Otherwise returns false.
+   */
+  public boolean isEmpty() {
+    return !calendar.isPersisted() || repository.size(calendar) > 0;
+  }
+
+  /**
+   * Generate the occurrences of the events that occur in the specified period.
+   * @param yearMonth the month and year during which the events occur.
+   * @return a set of event occurrences sorted by their start date time.
+   */
+  public SortedSet<CalendarEventOccurrence> getOccurrencesIn(final YearMonth yearMonth) {
+    List<CalendarEvent> events =
+        getEventsBetween(yearMonth.atDay(1), yearMonth.atEndOfMonth());
+    return CalendarEventOccurrenceGenerator.get().generateOccurrencesOf(events, yearMonth);
+  }
+
   protected CalendarEventStore(final Calendar calendar) {
     this.calendar = calendar;
   }
 
+  private List<CalendarEvent> getEventsBetween(LocalDate startDate, LocalDate endDate) {
+    return repository.getAllBetween(calendar, startDate.atStartOfDay().atOffset(ZoneOffset.UTC),
+        endDate.atStartOfDay().atOffset(ZoneOffset.UTC));
+  }
 }

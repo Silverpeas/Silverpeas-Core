@@ -50,7 +50,13 @@ import java.time.OffsetDateTime;
     @NamedQuery(name = "byId", query = "from CalendarEvent where id = :id and calendar = " +
         ":calendar"),
     @NamedQuery(name = "byIds", query = "from CalendarEvent where calendar = :calendar and id in " +
-        ":ids")})
+        ":ids"), @NamedQuery(name = "count", query = "select count(e) from CalendarEvent e " +
+    "where calendar = :calendar"),
+    @NamedQuery(name = "byPeriod", query = "from CalendarEvent where calendar = :calendar and " +
+        "((period.startDateTime <= :startDateTime and period.endDateTime >= :startDateTime) or " +
+        "(period.startDateTime >= :startDateTime and period.startDateTime <= :endDateTime) or " +
+        "(period.endDateTime < :startDateTime and (recurrence.endDateTime >= :startDateTime or " +
+        "recurrence.endDateTime is null))) order by period.startDateTime")})
 public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized {
 
@@ -314,7 +320,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
 
   @Override
   public void delete() {
-    if (this.getId() != null) {
+    if (isPersisted()) {
       calendar.getEvents().remove(this.getId());
     }
   }

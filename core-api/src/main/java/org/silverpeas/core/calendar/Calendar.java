@@ -44,8 +44,8 @@ import java.util.List;
  * at different times or on different dates throughout the year.
  *
  * Before adding any events or activities into a calendar, it requires to be saved into the
- * Silverpeas data source (use the {@code save} method for doing. Once saved, a store for events
- * will be initialized for further event management.
+ * Silverpeas data source (use the {@code save} method for doing). Once saved, a store for events
+ * is initialized for its event management.
  * @author mmoquillon
  */
 @Entity
@@ -92,11 +92,15 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   }
 
   /**
-   * @see CalendarRepository#getByComponentInstanceId(String)
+   * Gets the calendars represented by the specified component instance.  For instance, the
+   * component can be a collaborative application or a personal one.
+   * @param instanceId the unique identifier identifying an instance of a Silverpeas
+   * component.
+   * @return a list containing the calendar instances which matched if any, empty list otherwise.
    */
-  public static List<Calendar> getByComponentInstanceId(String contextId) {
+  public static List<Calendar> getByComponentInstanceId(String instanceId) {
     CalendarRepository calendarRepository = CalendarRepository.get();
-    return calendarRepository.getByComponentInstanceId(contextId);
+    return calendarRepository.getByComponentInstanceId(instanceId);
   }
 
   @Override
@@ -138,11 +142,15 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
 
   /**
    * Gets the events that were added into this calendar. This will be available only if the calendar
-   * is persisted.
-   * @return the {@link CalendarEventStore} instance of this calendar and that contains its
-   * registered events or null if this calendar isn't yet saved.
+   * is persisted. Otherwise an {@link IllegalStateException} is thrown.
+   * @return the {@link CalendarEventStore} instance of this calendar.
    */
   public CalendarEventStore getEvents() {
+    if (!isPersisted()) {
+      throw new IllegalStateException(
+          "The calendar isn't persisted and then no event store was set up with the persistence " +
+              "context of the calendar");
+    }
     return events;
   }
 

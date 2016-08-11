@@ -256,7 +256,7 @@ public class RecurrentCalendarEventCreationTest {
     assertThat(event.getRecurrence().getEndDate().isPresent(), is(true));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(NO_RECURRENCE_COUNT));
     assertThat(event.getRecurrence().getEndDate().get(),
-        is(today.plusWeeks(4).atStartOfDay().atOffset(ZoneOffset.UTC)));
+        is(today.plusWeeks(4).atTime(23, 59).atOffset(ZoneOffset.UTC)));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
     assertTitleAndDescriptionOf(event);

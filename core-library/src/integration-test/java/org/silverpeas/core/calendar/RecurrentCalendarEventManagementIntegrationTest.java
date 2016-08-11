@@ -24,19 +24,15 @@
 
 package org.silverpeas.core.calendar;
 
-import org.apache.ecs.html.U;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -45,10 +41,8 @@ import java.util.Optional;
 
 import static java.time.DayOfWeek.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE_COUNT;
 import static org.silverpeas.core.date.TimeUnit.*;
 
 /**
@@ -249,19 +243,6 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent expectedEvent = anAllDayEvent()
         .recur(Recurrence.every(2, WEEK).upTo(now.plusWeeks(8)))
-        .saveOn(calendar);
-    assertThat(expectedEvent.isPersisted(), is(true));
-
-    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
-    assertThat(mayBeActualEvent.isPresent(), is(true));
-    assertEventProperties(mayBeActualEvent.get(), expectedEvent);
-  }
-
-  @Test
-  public void createARecurringEventEndingAfterGivenOccurrencesCount() {
-    Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent expectedEvent = anAllDayEvent()
-        .recur(Recurrence.every(1, WEEK).upTo(10))
         .saveOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 

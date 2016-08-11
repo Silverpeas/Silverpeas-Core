@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.calendar;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,19 +37,23 @@ import java.util.UUID;
 public class CalendarEventOccurrence {
 
   private String uid;
-  private Date startDate;
-  private Date endDate;
+  private OffsetDateTime startDateTime;
+  private OffsetDateTime endDateTime;
   private CalendarEvent event;
 
   /**
    * Constructs a new occurrence from the specified calendar event, starting and ending at the
    * specified dates.
-   * @param event the event from which the occurrence is instanciated.
-   * @param startDate the start date of the occurrence.
-   * @param endDate the end date of the occurrence.
+   * @param event the event from which the occurrence is instantiated.
+   * @param startDateTime the start date and time of the occurrence.
+   * @param endDateTime the end date and time of the occurrence.
    */
-  public CalendarEventOccurrence(final CalendarEvent event, final Date startDate, final Date endDate) {
+  public CalendarEventOccurrence(final CalendarEvent event, final OffsetDateTime startDateTime,
+      final OffsetDateTime endDateTime) {
     this.uid = UUID.randomUUID().toString();
+    this.event = event;
+    this.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
   }
 
   /**
@@ -59,19 +65,19 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Gets the date at which this occurrence should starts
+   * Gets the date and time at which this occurrence should starts
    * @return the start date of the event occurrence.
    */
-  public Date getStartDate() {
-    return new Date(startDate.getTime());
+  public OffsetDateTime getStartDate() {
+    return startDateTime;
   }
 
   /**
    * Gets the date at which this event should ends
    * @return the end date of the event occurrence.
    */
-  public Date getEndDate() {
-    return new Date(endDate.getTime());
+  public OffsetDateTime getEndDate() {
+    return endDateTime;
   }
 
   public String getUid() {

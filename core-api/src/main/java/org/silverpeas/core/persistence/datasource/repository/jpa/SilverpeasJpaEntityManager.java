@@ -510,6 +510,20 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
   }
 
   /**
+   * Gets the single entity from the named query.
+   * @param namedQuery the named query.
+   * @param parameters the named parameters to set with the query.
+   * @param returnEntityType the class of the single value to return.
+   * @param <AN_ENTITY> the type of the single value to return.
+   * @return the single entity matching the named query.
+   */
+  protected <AN_ENTITY> AN_ENTITY fromNamedQuery(String namedQuery,
+      NamedParameters parameters, Class<AN_ENTITY> returnEntityType) {
+    return singleResultFromQuery(getEntityManager().createNamedQuery(namedQuery, returnEntityType),
+        parameters);
+  }
+
+  /**
    * Updates entities from a named query.
    * Please using this method as little as possible. If it is used, please handle the technical
    * following data :
@@ -545,6 +559,17 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
   private <AN_ENTITY> List<AN_ENTITY> listFromQuery(TypedQuery<AN_ENTITY> query,
       NamedParameters parameters) {
     return parameters.applyTo(query).getResultList();
+  }
+
+  /**
+   * Lists entities from a jpql query.
+   * @param query
+   * @param parameters
+   * @return
+   */
+  private <AN_ENTITY> AN_ENTITY singleResultFromQuery(TypedQuery<AN_ENTITY> query,
+      NamedParameters parameters) {
+    return parameters.applyTo(query).getSingleResult();
   }
 
   /**

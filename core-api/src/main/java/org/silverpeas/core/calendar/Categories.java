@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * The categories in which a {@link Plannable} planned in a calendar is classified. The categories
@@ -130,6 +131,10 @@ public class Categories {
    */
   public boolean isEmpty() {
     return categories.isEmpty();
+  }
+
+  public Stream<String> stream() {
+    return categories.stream();
   }
 
   @Override

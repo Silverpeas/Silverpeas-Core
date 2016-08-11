@@ -166,8 +166,8 @@ public class Recurrence {
    * on all saturdays and on all tuesdays.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
-   * @param days the days of week at which a {@link Plannable} should occur. Theses days replace the ones
-   * already set in the recurrence.
+   * @param days the days of week at which a {@link Plannable} should occur. Theses days replace the
+   * ones already set in the recurrence.
    * @return itself.
    */
   public Recurrence on(DayOfWeek... days) {
@@ -183,13 +183,12 @@ public class Recurrence {
   }
 
   /**
-   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically occur
-   * within a monthly or a yearly period. For example, recur every month on the third monday and on
-   * the first tuesday. The days of week for a weekly recurrence can also be indicated if, and only
-   * if, the nth occurrence of the day is the first one or all occurrences (as there is actually
-   * only
-   * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
-   * considered as an error and an IllegalArgumentException is thrown.
+   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically
+   * occur within a monthly or a yearly period. For example, recur every month on the third monday
+   * and on the first tuesday. The days of week for a weekly recurrence can also be indicated if,
+   * and only if, the nth occurrence of the day is the first one or all occurrences (as there is
+   * actually only one possible occurrence of a day in a week); any value other than 1 or
+   * {@©ode ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
    * @param days the occurrences of day of week at which an event should occur. Theses days replace
@@ -201,12 +200,12 @@ public class Recurrence {
   }
 
   /**
-   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically occur
-   * within monthly or yearly period. For example, recur every month on the third monday and on the
-   * first tuesday. The days of week for a weekly recurrence can also be indicated if, and only if,
-   * the nth occurrence of the day is the first one or all occurrences (as there is actually only
-   * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
-   * considered as an error and an IllegalArgumentException is thrown.
+   * Sets some specific occurrences of day of week at which a {@link Plannable} should periodically
+   * occur within monthly or yearly period. For example, recur every month on the third monday and
+   * on the first tuesday. The days of week for a weekly recurrence can also be indicated if, and
+   * only if, the nth occurrence of the day is the first one or all occurrences (as there is
+   * actually only one possible occurrence of a day in a week); any value other than 1 or
+   * {@©code ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
    * @param days a list of days of week at which a {@link Plannable} should occur. Theses days
@@ -233,7 +232,7 @@ public class Recurrence {
   /**
    * Sets a termination to this recurrence by specifying the number of time a {@link Plannable}
    * should recur.
-   * Settings this termination overrides the recurrence end date.
+   * Settings this termination unset the recurrence end date.
    * @param recurrenceCount the number of time a {@link Plannable} should occur.
    * @return itself.
    */
@@ -249,9 +248,9 @@ public class Recurrence {
 
   /**
    * Sets a termination to this recurrence by specifying an end date and time of the recurrence.
-   * The time of the specified date time is set from UTC/Greenwich.
-   * Settings this termination overrides the number of time a {@link Plannable} should occur.
-   * @param endDateTime the end date and time of the recurrence.
+   * The time of the specified date time is set in UTC/Greenwich.
+   * Settings this termination unset the number of time a {@link Plannable} should occur.
+   * @param endDateTime the inclusive end date and time of the recurrence.
    * @return itself.
    */
   public Recurrence upTo(final OffsetDateTime endDateTime) {
@@ -262,13 +261,13 @@ public class Recurrence {
 
   /**
    * Sets a termination to this recurrence by specifying an end date of the recurrence.
-   * Settings this termination overrides the number of time a {@link Plannable} should occur.
-   * @param endDate the end date and time of the recurrence.
+   * Settings this termination unset the number of time a {@link Plannable} should occur.
+   * @param endDate the inclusive end date of the recurrence.
    * @return itself.
    */
   public Recurrence upTo(final LocalDate endDate) {
     this.count = NO_RECURRENCE_COUNT;
-    this.endDateTime = endDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    this.endDateTime = endDate.atTime(23, 59).atOffset(ZoneOffset.UTC);
     return this;
   }
 
