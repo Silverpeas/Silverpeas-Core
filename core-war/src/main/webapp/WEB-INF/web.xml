@@ -274,10 +274,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.web.clipboard.servlets.ClipboardRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GenericPanelPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.genericpanel.servlets.GenericPanelPeasRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>JobDomainPeasRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasRequestRouter</servlet-class>
   </servlet>
@@ -392,10 +388,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
     <servlet-class>org.silverpeas.web.look.PersonalSpaceJSONServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>SelectionPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.selection.servlets.SelectionPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SelectionPeasWrapper</servlet-name>
@@ -723,10 +715,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <url-pattern>/Rclipboard/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>GenericPanelPeasRequestRouter</servlet-name>
-    <url-pattern>/RgenericPanelPeas/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>JobDomainPeasRequestRouter</servlet-name>
     <url-pattern>/RjobDomainPeas/*</url-pattern>
   </servlet-mapping>
@@ -817,10 +805,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
     <url-pattern>/PersonalSpace/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>SelectionPeasRequestRouter</servlet-name>
-    <url-pattern>/RselectionPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>SelectionPeasWrapper</servlet-name>

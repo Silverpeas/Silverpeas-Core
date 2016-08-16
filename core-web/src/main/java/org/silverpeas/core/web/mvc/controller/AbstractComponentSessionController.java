@@ -37,7 +37,6 @@ import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.web.panel.GenericPanel;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -495,14 +494,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   public UserAccessLevel getUserAccessLevel() {
     return controller.getUserAccessLevel();
-  }
-
-  public void setGenericPanel(String panelKey, GenericPanel panel) {
-    controller.setGenericPanel(panelKey, panel);
-  }
-
-  public GenericPanel getGenericPanel(String panelKey) {
-    return controller.getGenericPanel(panelKey);
   }
 
   public Selection getSelection() {

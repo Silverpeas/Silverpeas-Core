@@ -24,9 +24,6 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.index.search.model.AxisFilter;
-import org.silverpeas.core.index.search.model.AxisFilterNode;
-import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
@@ -295,109 +292,6 @@ public class PdcUtilizationDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-  }
-
-  public List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds)
-      throws SQLException {
-    return getAxisUsedByInstanceId(con, instanceIds, new AxisFilter());
-  }
-
-  public List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds,
-      AxisFilter filter) throws SQLException {
-
-
-    List<AxisHeader> axisUsed = new ArrayList<>();
-
-    if (instanceIds == null || instanceIds.isEmpty()) {
-      return axisUsed;
-    }
-
-    StringBuilder selectStatement = new StringBuilder(
-        "select distinct(A.id), A.RootId, A.Name, A.AxisType, A.AxisOrder, A.description " +
-            "from SB_Pdc_Utilization U, SB_Pdc_Axis A where U.axisId = A.id ");
-
-    // la liste instanceIds n'est jamais nulle
-    selectStatement.append("  and U.instanceId IN (");
-    boolean first = true;
-    for (String instanceId : instanceIds) {
-      if (!first) {
-        selectStatement.append(",");
-      }
-      selectStatement.append("'").append(instanceId).append("'");
-      first = false;
-    }
-    selectStatement.append(" ) ");
-
-    AxisFilterNode condition;
-    String property;
-
-    boolean first_condition = true;
-    for (int i = 0; i < filter.size(); i++) {
-      if (i == 0) {
-        condition = filter.getFirstCondition();
-      } else {
-        condition = filter.getNextCondition();
-      }
-      property = condition.getPriperty();
-
-      if (AxisFilter.NAME.equals(property)) {
-        if (first_condition) {
-          selectStatement.append(" and (A.Name like ? ");
-          first_condition = false;
-        } else {
-          selectStatement.append(" or A.Name like ? ");
-        }
-      } else if (AxisFilter.DESCRIPTION.equals(property)) {
-        if (first_condition) {
-          selectStatement.append(" and (A.description like ? ");
-          first_condition = false;
-        } else {
-          selectStatement.append(" or A.description like ? ");
-        }
-      }
-    }
-
-    if (!first_condition) {
-      selectStatement.append(") ");
-    }
-    selectStatement.append(" order by A.AxisType Asc, A.AxisOrder ASC");
-
-
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement.toString());
-      int index = 1;
-      for (int i = 0; i < filter.size(); i++) {
-        if (i == 0) {
-          condition = filter.getFirstCondition();
-        } else {
-          condition = filter.getNextCondition();
-        }
-        property = condition.getPriperty();
-        if (AxisFilter.NAME.equals(property) || AxisFilter.DESCRIPTION.equals(property)) {
-          prepStmt.setString(index++, condition.getValue());
-        }
-      }
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        int axisId = rs.getInt(1);
-        int axisRootId = rs.getInt(2);
-        String axisName = rs.getString(3);
-        String axisType = rs.getString(4);
-        int axisOrder = rs.getInt(5);
-        String axisDescription = rs.getString(6);
-
-        AxisHeader axisHeader =
-            new AxisHeader(Integer.toString(axisId), axisName, axisType, axisOrder, axisRootId,
-                axisDescription);
-        axisUsed.add(axisHeader);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return axisUsed;
   }
 
   public void deleteAllAxisUsedByInstanceId(Connection con, String instanceId) throws SQLException {

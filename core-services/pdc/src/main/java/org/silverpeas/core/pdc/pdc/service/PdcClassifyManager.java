@@ -32,12 +32,10 @@ import org.silverpeas.core.pdc.classification.PertinentAxis;
 import org.silverpeas.core.pdc.classification.PertinentValue;
 import org.silverpeas.core.pdc.classification.Position;
 import org.silverpeas.core.pdc.classification.Value;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
-import org.silverpeas.core.util.JoinStatement;
 
 public interface PdcClassifyManager {
 
@@ -89,12 +87,6 @@ public interface PdcClassifyManager {
   public List<Position> getPositions(int silverObjectId, String sComponentId)
       throws PdcException;
 
-  public JoinStatement getPositionsJoinStatement(String sComponentId)
-      throws PdcException;
-
-  public JoinStatement getPositionsJoinStatement(List<String> alComponentId)
-      throws PdcException;
-
   public void registerAxis(Connection con, int axisId) throws PdcException;
 
   public void unregisterAxis(Connection con, int axisId) throws PdcException;
@@ -106,19 +98,10 @@ public interface PdcClassifyManager {
   public List<Integer> removePosition(Connection connection, int nSilverContentId)
       throws PdcException;
 
-  /** Find all the SilverContentId with the given position */
   public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
-      String authorId, String afterDate, String beforeDate) throws PdcException;
-
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
+      SearchContext containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive) throws PdcException;
-
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId)
-      throws PdcException;
 
   public boolean hasAlreadyPositions(List<Integer> objectIdList, UsedAxis usedAxis)
       throws PdcException;
@@ -126,32 +109,19 @@ public interface PdcClassifyManager {
   /** Returns a list of object for one instance */
   public List<Integer> getObjectsByInstance(String instanceId) throws PdcException;
 
-  // Recherche globale
-  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds)
-      throws PdcException;
-
-  // Recherche globale
-  public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId)
-      throws PdcException;
-
   // recherche à l'intérieur d'une instance
   public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds,
-      JoinStatement joinStatementAllPositions) throws PdcException;
-
-  // recherche à l'intérieur d'une instance
-  public PertinentAxis getPertinentAxis(SearchContext searchContext,
-      String axisId, String sRootValue, JoinStatement joinStatementAllPositions)
-      throws PdcException;
+      List<String> instanceIds) throws PdcException;
 
   // recherche à l'intérieur d'une instance
   public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId,
-      JoinStatement joinStatementAllPositions) throws PdcException;
+      List<String> instanceIds) throws PdcException;
 
   /*
    * recherche tous les objets classés sur l'axe axisId selon le searchContext et le JoinStatement
    * @return une List de ObjectValuePair
    */
   public List<ObjectValuePair> getObjectValuePairs(SearchContext searchContext, int axisId,
-      JoinStatement joinStatementAllPositions) throws PdcException;
+      List<String> instanceIds) throws PdcException;
 
 }

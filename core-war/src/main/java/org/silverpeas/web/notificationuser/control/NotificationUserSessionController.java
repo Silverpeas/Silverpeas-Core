@@ -153,7 +153,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
       sel.setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
     }
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   public Notification initTargets(String theTargetsUsers, String theTargetsGroups) {

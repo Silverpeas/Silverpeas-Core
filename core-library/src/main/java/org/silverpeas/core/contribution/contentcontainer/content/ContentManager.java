@@ -24,9 +24,6 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerManager;
-import org.silverpeas.core.contribution.contentcontainer.container.URLIcone;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
@@ -43,7 +40,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -65,7 +61,6 @@ public class ContentManager implements Serializable {
     // We hard coded for this time !!!!
     // -------------------------------------------------
 
-    ContentPeas contentFB = new ContentPeas("fileBoxPlus");
     ContentPeas contentWP = new ContentPeas("whitePages");
     ContentPeas contentQR = new ContentPeas("questionReply");
     ContentPeas contentKMelia = new ContentPeas("kmelia");
@@ -79,13 +74,11 @@ public class ContentManager implements Serializable {
     ContentPeas contentBookmark = new ContentPeas("bookmark");
     ContentPeas contentChat = new ContentPeas("chat");
     ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
-    ContentPeas contentEL = new ContentPeas("expertLocator");
     ContentPeas contentWebSites = new ContentPeas("webSites");
     ContentPeas contentGallery = new ContentPeas("gallery");
     ContentPeas contentBlog = new ContentPeas("blog");
 
     // Put all the existing contents in the array of contents
-    s_acContentPeas.add(contentFB);
     s_acContentPeas.add(contentWP);
     s_acContentPeas.add(contentQR);
     s_acContentPeas.add(contentKMelia);
@@ -99,9 +92,7 @@ public class ContentManager implements Serializable {
     s_acContentPeas.add(contentBookmark);
     s_acContentPeas.add(contentChat);
     s_acContentPeas.add(contentInfoLetter);
-    s_acContentPeas.add(contentEL);
     s_acContentPeas.add(contentWebSites);
-    // s_acContentPeas.add(contentDocumentation);
     s_acContentPeas.add(contentGallery);
     s_acContentPeas.add(contentBlog);
   }
@@ -111,7 +102,6 @@ public class ContentManager implements Serializable {
   // Association SilverContentId (the key) internalContentId (the value) (cache)
   private static HashMap<String, String> assoSilverContentIdInternalComponentId =
       new HashMap<>(1000);
-  // Datebase properties
   private static String m_sInstanceTable = "SB_ContentManager_Instance";
   private static final long serialVersionUID = 7069917496138130066L;
   private static String m_sSilverContentTable = "SB_ContentManager_Content";
@@ -124,13 +114,6 @@ public class ContentManager implements Serializable {
           .error("contentManager", "ContentManager.initStatic", "root.EX_CLASS_NOT_INITIALIZED",
               "assoComponentIdInstanceId initialization failed !", e);
     }
-  }
-
-  // Container manager
-  private ContainerManager m_containerManager = null;
-
-  public ContentManager() {
-    m_containerManager = new ContainerManager();
   }
 
   /**
@@ -276,174 +259,6 @@ public class ContentManager implements Serializable {
     // Get the contentType from the DB Query
     String sContentType = this.getFirstStringValue(sSQLStatement);
     return sContentType;
-  }
-
-  /**
-   * Return a list of URLIcones corresponding to the rights of the given roles It is the gateway to
-   * all the silverpeas contents (documentation, ....)
-   * @param sContentType
-   * @param asUserContentRoles
-   * @return
-   */
-  public List<URLIcone> getContentURLIcones(String sContentType, List<String> asUserContentRoles) {
-    // !!!!!!! HARD CODED FOR THE MOMENT (call th econtentPeas instead)
-
-    List<URLIcone> auURLIcones = new ArrayList<>();
-
-    if (sContentType.equals("fileBoxPlus")) {
-      boolean publisher = false;
-      boolean admin = false;
-
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if ("admin".equals(userRole)) {
-          admin = true;
-        } else if ("publisher".equals(userRole)) {
-          publisher = true;
-        }
-      }
-
-      if (admin || publisher) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publicationAdd.gif");
-        uiCreation.setAlternateText("fileBoxPlus.CreateNewDocument");
-        uiCreation.setActionURL("CreateQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
-        uiCreation.setAlternateText("fileBoxPlus.AllDocuments");
-        uiCreation.setActionURL("Main");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("whitePages")) {
-      boolean admin = false;
-
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if ("admin".equals(userRole)) {
-          admin = true;
-        }
-      }
-
-      if (admin) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/whitePages_to_add.gif");
-        uiCreation.setAlternateText("whitePages.CreateAUsercard");
-        uiCreation.setActionURL("createQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
-        uiCreation.setAlternateText("whitePages.AllCards");
-        uiCreation.setActionURL("Main");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("expertLocator")) {
-      boolean admin = false;
-
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if ("admin".equals(userRole)) {
-          admin = true;
-        }
-      }
-
-      if (admin) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
-        uiCreation.setAlternateText("expertLocator.CreateAUsercard");
-        uiCreation.setActionURL("createQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLUtil.getApplicationURL() + "/util/icons/publish.gif");
-        uiCreation.setAlternateText("expertLocator.AllCards");
-        uiCreation.setActionURL("Main");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("questionReply")) {
-      boolean admin = false;
-      boolean publisher = false;
-      Iterator<String> iter = asUserContentRoles.iterator();
-      String userRole;
-      while (iter.hasNext()) {
-        userRole = iter.next();
-        if (("admin".equals(userRole)) || ("writer".equals(userRole))) {
-          admin = true;
-        }
-        if ("publisher".equals(userRole)) {
-          publisher = true;
-        }
-      }
-
-      if (admin) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
-        uiCreation.setAlternateText("questionReply.AriseAQuestion");
-        uiCreation.setActionURL("CreateQQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
-        uiCreation.setAlternateText("questionReply.AddAFAQ");
-        uiCreation.setActionURL("CreateQueryQR");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(
-            URLUtil.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
-        uiCreation.setAlternateText("questionReply.AllQuestions");
-        uiCreation.setActionURL("ConsultReceiveQuestions");
-        auURLIcones.add(uiCreation);
-      } else if (publisher) {
-        URLIcone uiCreation;
-
-        uiCreation = new URLIcone();
-        uiCreation
-            .setIconePath(URLUtil.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
-        uiCreation.setAlternateText("questionReply.AriseAQuestion");
-        uiCreation.setActionURL("CreateQQuery");
-        auURLIcones.add(uiCreation);
-
-        uiCreation = new URLIcone();
-        uiCreation.setIconePath(
-            URLUtil.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
-        uiCreation.setAlternateText("questionReply.AllQuestions");
-        uiCreation.setActionURL("ConsultReceiveQuestions");
-        auURLIcones.add(uiCreation);
-      }
-    } else if (sContentType.equals("contentFB")) {
-      // No icones for role contentFB_user
-      // Get the URLIcones for a contentFB_admin role
-      if ((asUserContentRoles.get(0)).equals("ContentRole_fileBoxPlus_admin")) {
-        URLIcone uiCreation = new URLIcone();
-        uiCreation.setIconePath("");
-        uiCreation.setActionURL("Main");
-
-        auURLIcones.add(uiCreation);
-      }
-    }
-
-    return auURLIcones;
   }
 
   private void checkParameters(String sComponentId, String sContainerType, String sContentType)
@@ -619,10 +434,6 @@ public class ContentManager implements Serializable {
               "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
-
-      // Unregistered the object in the container
-      m_containerManager.silverContentIsRemoved(connection, nSilverContentId,
-          m_containerManager.getContainerInstanceId(sComponentId));
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.removeSilverContent",
           SilverpeasException.ERROR, "contentManager.EX_CANT_REMOVE_SILVER_CONTENT",
@@ -818,7 +629,6 @@ public class ContentManager implements Serializable {
   }
 
   private String extractComponentNameFromInstanceId(String instanceId) {
-    StringBuffer componentName = new StringBuffer();
     char character;
     for (int i = 0; i < instanceId.length(); i++) {
       character = instanceId.charAt(i);
@@ -893,7 +703,7 @@ public class ContentManager implements Serializable {
   }
 
   public JoinStatement getPositionsByGenericSearch(String authorId, String afterDate,
-      String beforeDate) throws ContentManagerException {
+      String beforeDate) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
 
     JoinStatement joinStatement = new JoinStatement();
@@ -1020,54 +830,6 @@ public class ContentManager implements Serializable {
       return allSilverContentIds;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.getSilverContentIdByInstanceId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID", "", e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      closeConnection(con);
-    }
-  }
-
-  public List<SilverContent> getSilverContentBySilverContentIds(List<Integer> alSilverContentIds)
-      throws ContentManagerException {
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
-    List<SilverContent> silverContents = new ArrayList<>();
-    try {
-      // Open connection
-      con = DBUtil.openConnection();
-
-      StringBuilder where = new StringBuilder();
-      int sizeOfIds = alSilverContentIds.size();
-      for (int i = 0; i < sizeOfIds - 1; i++) {
-        where.append(" silverContentId = ").append((alSilverContentIds.get(i)).toString())
-            .append(" or ");
-      }
-      if (sizeOfIds != 0) {
-        where.append(" silverContentId = ")
-            .append((alSilverContentIds.get(sizeOfIds - 1)).toString());
-      }
-
-      String sSQLStatement =
-          "select silverContentName, silverContentDescription, silverContentUrl from " +
-              m_sSilverContentTable;
-      sSQLStatement += " where " + where.toString();
-
-      // Execute the search
-
-      prepStmt = con.prepareStatement(sSQLStatement);
-
-      resSet = prepStmt.executeQuery();
-
-      // Fetch the result
-      while (resSet.next()) {
-        silverContents.add(new SilverContent(resSet.getString(1), resSet.getString(2), resSet.
-            getString(3)));
-      }
-
-      return silverContents;
-    } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getSilverContentBySilverContentIds",
           SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID", "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);

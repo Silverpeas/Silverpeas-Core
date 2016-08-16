@@ -40,7 +40,7 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle" />
 <c:set var="isNewSubscription" value="${requestScope.IsNewPDCSubscription}"/>
-<c:set var="subscription" value="${requestScope.PDCSubscription}"/>
+<c:set var="subscription" value="${requestScope.PdcSubscription}"/>
 <c:set var="subscriptionName" value="${requestScope.PDCSubscriptionName}"/>
 
 <fmt:message key="Path" var="path"/>

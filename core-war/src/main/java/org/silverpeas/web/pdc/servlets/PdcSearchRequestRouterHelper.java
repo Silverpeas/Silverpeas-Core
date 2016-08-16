@@ -269,12 +269,7 @@ public class PdcSearchRequestRouterHelper {
       }
     }
 
-    if (!pdcSC.isSelectionActivated()) {
-      pdcSC.buildComponentListWhereToSearch(selectedSpace, selectedComponent);
-    }
-
-    // The selection is active ?
-    request.setAttribute("ActiveSelection", pdcSC.isSelectionActivated());
+    pdcSC.buildComponentListWhereToSearch(selectedSpace, selectedComponent);
   }
 
   /**

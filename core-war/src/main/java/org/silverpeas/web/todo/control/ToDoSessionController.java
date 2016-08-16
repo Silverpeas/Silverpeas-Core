@@ -526,8 +526,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     // Contraintes
     sel.setPopupMode(true);
     sel.setSetSelectable(false);
-    sel.setFirstPage(Selection.FIRST_PAGE_CART);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

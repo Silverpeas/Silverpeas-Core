@@ -452,7 +452,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
     }
     sel.setSelectedElements(selectedUsers);
     sel.setSelectedSets(selectedGroups);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

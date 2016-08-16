@@ -29,8 +29,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.index.search.model.AxisFilter;
-import org.silverpeas.core.index.search.model.AxisFilterNode;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
@@ -368,26 +366,15 @@ public class DefaultTreeService implements TreeService {
     TreeCache.unvalidateTree(treeId);
   }
 
-  public List<TreeNode> getTree(Connection con, String treeId)
-      throws TreeManagerException {
-
-    return getTree(con, treeId, new AxisFilter());
-  }
-
-  public List<TreeNode> getTree(Connection con, String treeId, AxisFilter filter)
-      throws TreeManagerException {
-    List<TreeNode> sortedList = null;
-    if (filter.size() == 0) {
-      sortedList = TreeCache.getTree(treeId);
-    }
+  public List<TreeNode> getTree(Connection con, String treeId) throws TreeManagerException {
+    List<TreeNode> sortedList = TreeCache.getTree(treeId);
 
     if (sortedList == null) {
       TreeNode root = null;
       sortedList = new ArrayList<TreeNode>();
       root = getRoot(con, treeId);
       if (root != null) {
-
-        List<TreeNodePersistence> list = getDescendants(con, root, filter);
+        List<TreeNodePersistence> list = getDescendants(con, root);
 
         // 1 - On parcours la liste list
         // pour chaque élément on le place correctement dans la liste
@@ -412,21 +399,18 @@ public class DefaultTreeService implements TreeService {
           }
         }
       }
-      if (filter.size() == 0) {
-        TreeCache.cacheTree(treeId, sortedList);
-      }
+      TreeCache.cacheTree(treeId, sortedList);
     }
     return sortedList;
   }
 
   private void setTranslations(Connection con, TreeNode node)
       throws TreeManagerException {
-    if (I18NHelper.isI18nContentActivated) {
       // ajout de la traduction par defaut
-      TreeNodeI18N translation = new TreeNodeI18N(Integer.parseInt(node.getPK()
+    TreeNodeI18N translation = new TreeNodeI18N(Integer.parseInt(node.getPK()
           .getId()), node.getLanguage(), node.getName(), node.getDescription());
-      node.addTranslation(translation);
-
+    node.addTranslation(translation);
+    if (I18NHelper.isI18nContentActivated) {
       // ajout des autres traductions
       List<TreeNodeI18N> translations = null;
       try {
@@ -529,19 +513,6 @@ public class DefaultTreeService implements TreeService {
    */
   private List<TreeNodePersistence> getDescendants(Connection con, TreeNode root)
       throws TreeManagerException {
-
-    return getDescendants(con, root, new AxisFilter());
-  }
-
-  /**
-   * @param con
-   * @param root
-   * @return a List of TreeNodePersistence
-   * @throws TreeManagerException
-   */
-  @SuppressWarnings("unchecked")
-  private List<TreeNodePersistence> getDescendants(Connection con, TreeNode root, AxisFilter filter)
-      throws TreeManagerException {
     String rootId = root.getPK().getId();
     String treeId = root.getTreeId();
     String path = root.getPath();
@@ -552,46 +523,7 @@ public class DefaultTreeService implements TreeService {
         .append(path).append(rootId).append("/%' or id = ").append(rootId)
         .append(")");
 
-    boolean first_condition = true;
-    if (filter.size() > 0) {
-      AxisFilterNode condition;
-      String property;
-      for (int i = 0; i < filter.size(); i++) {
-        if (i == 0) {
-          condition = filter.getFirstCondition();
-        } else {
-          condition = filter.getNextCondition();
-        }
-        property = condition.getPriperty();
-        if (AxisFilter.NAME.equals(property)) {
-          if (first_condition) {
-            whereClause.append(" and (LOWER(name) like LOWER('").append(
-                condition.getValue()).append("')");
-            first_condition = false;
-          } else {
-            whereClause.append(" or LOWER(name) like LOWER('").append(
-                condition.getValue().toLowerCase()).append("')");
-          }
-        } else if (AxisFilter.DESCRIPTION.equals(property)) {
-          if (first_condition) {
-            whereClause.append(" and (LOWER(description) like LOWER('").append(
-                condition.getValue().toLowerCase()).append("')");
-            first_condition = false;
-          } else {
-            whereClause.append(" or LOWER(description) like LOWER('").append(
-                condition.getValue().toLowerCase()).append("')");
-          }
-        }
-      }
-    }
-
-    if (!first_condition) {
-      whereClause.append(") ");
-    }
-
     whereClause.append(" ORDER BY path ASC, orderNumber ASC");
-
-
 
     List<TreeNodePersistence> list = null;
     try {

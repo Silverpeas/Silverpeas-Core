@@ -32,9 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.index.search.model.AxisFilter;
-
-import org.silverpeas.core.util.CollectionUtil;
 
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -120,24 +117,9 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
     return usedAxis;
   }
 
-  /**
-   * Returns a list of axis header sorted.
-   * @return a list sorted or null otherwise
-   */
-  @Override
-  public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId) throws PdcException {
-    return getAxisHeaderUsedByInstanceIds(CollectionUtil.asList(instanceId));
-  }
-
   @Override
   public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
       throws PdcException {
-    return getAxisHeaderUsedByInstanceIds(instanceIds, new AxisFilter());
-  }
-
-  @Override
-  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds,
-      AxisFilter filter) throws PdcException {
     if (instanceIds == null || instanceIds.isEmpty()) {
       return new ArrayList<>(0);
     }

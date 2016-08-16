@@ -32,9 +32,6 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerContext"%>
-<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.ContainerWorkspace"%>
-<%@ page import="org.silverpeas.core.contribution.contentcontainer.container.URLIcone"%>
 <%@ page import="org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.Axis"%>
 <%@ page import="org.silverpeas.core.pdc.pdc.model.AxisHeader"%>

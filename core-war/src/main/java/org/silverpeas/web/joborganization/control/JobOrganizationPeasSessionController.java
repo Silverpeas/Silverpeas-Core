@@ -325,7 +325,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     String m_context = URLUtil.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
-        + Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+        + Selection.getSelectionURL();
     Pair<String, String> hostComponentName = new Pair<>(getString("JOP.pseudoPeas"),
         cancelUrl);
     String hostUrl = m_context + getComponentUrl() + "ViewUserOrGroup";
@@ -342,8 +342,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
     sel.setMultiSelect(false);
     sel.setPopupMode(false);
-    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*
@@ -387,8 +386,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
     sel.setMultiSelect(false);
     sel.setPopupMode(true);
-    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*

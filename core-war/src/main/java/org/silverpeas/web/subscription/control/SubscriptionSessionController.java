@@ -110,12 +110,6 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     // Groups
     sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds());
 
-    if (sel.getSelectedElements().length == 0 && sel.getSelectedSets().length == 0) {
-      sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
-    } else {
-      sel.setFirstPage(Selection.FIRST_PAGE_CART);
-    }
-
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(resource.getInstanceId());
@@ -130,7 +124,7 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     sel.setExtraParams(sug);
 
     // Returning the destination
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /*

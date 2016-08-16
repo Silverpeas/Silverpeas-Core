@@ -123,7 +123,6 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     m_Selection.setHostPath(null);
     m_Selection.setHostComponentName(getHostComponentName());
     m_Selection.setHostSpaceName(getHostSpaceName());
-    m_Selection.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
     // Add extra params
     SelectionUsersGroups sug = m_AlertUser.getSelectionUsersGroups();
@@ -139,7 +138,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
           .setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
     }
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   // recupération des users et groupes selectionnés au travers de

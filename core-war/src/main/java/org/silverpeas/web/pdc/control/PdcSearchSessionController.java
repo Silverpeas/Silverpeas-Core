@@ -40,13 +40,8 @@ import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.classification.Criteria;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPeas;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerWorkspace;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.Pdc;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -54,7 +49,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
-import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
@@ -80,7 +74,6 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -93,7 +86,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.search.PlainSearchResult;
 import org.silverpeas.core.index.search.SearchEngineProvider;
-import org.silverpeas.core.index.search.model.AxisFilter;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -117,9 +109,6 @@ import java.util.*;
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
   // Container and Content Peas
-  private ContainerWorkspace containerWorkspace = null;
-  private ContainerPeas containerPeasPDC = null;
-  private ContentPeas contentPeasPDC = null;
   private SearchContext searchContext = null; // Current position
   // in PDC
   private QueryParameters queryParameters = null; // Current parameters for
@@ -244,18 +233,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         srvName = getSettings().getString(prefixKey + cptSrv + nameKey);
       }
     }
-  }
-
-  public void setContainerWorkspace(ContainerWorkspace givenContainerWorkspace) {
-    containerWorkspace = givenContainerWorkspace;
-  }
-
-  public ContainerWorkspace getContainerWorkspace() {
-    return containerWorkspace;
-  }
-
-  public ContainerPositionInterface getContainerPosition() {
-    return searchContext;
   }
 
   public SearchContext getSearchContext() {
@@ -1113,13 +1090,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, false);
         } else if (resultType.equals("TreeNode")) {
           // the PDC uses this type of object.
-          // window.opener is not reloaded.
-          // the glossary is opened in popup mode.
-          String objectId = indexEntry.getObjectId();
-          String treeId = objectId.substring(objectId.indexOf("_") + 1, objectId.length());
-          String valueId = objectId.substring(0, objectId.indexOf("_"));
-          String uniqueId = treeId + "_" + valueId;
-          titleLink = "javascript:" + markAsReadJS + " openGlossary('" + uniqueId + "');";
+          titleLink = "javascript:" + markAsReadJS;
         } else if (resultType.equals("Space")) {
           // retour sur l'espace
           String spaceId = indexEntry.getObjectId();
@@ -1611,19 +1582,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return this.isSecondaryShowed;
   }
 
-  public List<AxisHeader> getAllAxis() throws PdcException {
-    return getPdcManager().getAxis();
-  }
-
-  public List<AxisHeader> getPrimaryAxis() throws PdcException {
-    return getPdcManager().getAxisByType("P");
-  }
-
   public List<SearchAxis> getAxis(String viewType) throws PdcException {
-    return getAxis(viewType, new AxisFilter());
-  }
-
-  public List<SearchAxis> getAxis(String viewType, AxisFilter filter) throws PdcException {
     if (componentList == null || componentList.isEmpty()) {
       if (StringUtil.isDefined(getCurrentComponentId())) {
         return getPdcManager().getPertinentAxisByInstanceId(searchContext, viewType,
@@ -1657,13 +1616,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return transformedAxis;
   }
 
-  public List<Value> getDaughterValues(String axisId, String valueId)
-      throws PdcException {
-    return getDaughterValues(axisId, valueId, new AxisFilter());
-  }
-
-  public List<Value> getDaughterValues(String axisId, String valueId, AxisFilter filter)
-      throws PdcException {
+  public List<Value> getDaughterValues(String axisId, String valueId) throws PdcException {
     List<Value> values;
     if (componentList == null || componentList.isEmpty()) {
       values = getPdcManager().getPertinentDaughterValuesByInstanceId(searchContext,
@@ -1722,39 +1675,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public Axis getAxisDetail(String axisId) throws PdcException {
-    return getAxisDetail(axisId, new AxisFilter());
-  }
-
-  public Axis getAxisDetail(String axisId, AxisFilter filter)
-      throws PdcException {
-    Axis axis = getPdcManager().getAxisDetail(axisId, filter);
-    return axis;
+    return getPdcManager().getAxisDetail(axisId);
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {
-    AxisHeader axisHeader = getPdcManager().getAxisHeader(axisId);
-    return axisHeader;
+    return getPdcManager().getAxisHeader(axisId);
   }
 
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
     return getPdcManager().getFullPath(valueId, treeId);
   }
 
-  public Value getAxisValue(String valueId, String treeId) throws PdcException {
-    return getPdcManager().getAxisValue(valueId, treeId);
-  }
-
   public Value getValue(String axisId, String valueId) throws PdcException {
     return getPdcManager().getValue(axisId, valueId);
   }
 
-  public void setContainerPeas(ContainerPeas containerGivenPeasPDC) {
-    containerPeasPDC = containerGivenPeasPDC;
-  }
-
-  public ContainerPeas getContainerPeas() {
-    return containerPeasPDC;
-  }
   /**
    * ***************************************************************************************************************
    */
@@ -1762,42 +1697,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * searchAndSelect methods /
    * ****************************************************************************************************************
    */
-  private boolean activeSelection = false;
-  private Pdc m_pdc = null;
-
-  public Pdc getPdc() {
-    if (m_pdc == null) {
-      m_pdc = new Pdc();
-    }
-
-    return m_pdc;
-  }
-
-  public void setSelectionActivated(boolean isSelectionActivated) {
-    this.activeSelection = isSelectionActivated;
-  }
-
-  public boolean isSelectionActivated() {
-    return this.activeSelection;
-  }
+  private List<GlobalSilverResult> selectedSilverContents = null;
 
   public void setSelectedSilverContents(List<GlobalSilverResult> silverContents) {
-    getPdc().setSelectedSilverContents(silverContents);
+    selectedSilverContents = silverContents;
   }
 
   public List<GlobalSilverResult> getSelectedSilverContents() {
-    return getPdc().getSelectedSilverContents();
+    return selectedSilverContents;
   }
 
-  public List<String> getInstanceIdsFromComponentName(String componentName) {
-    CompoSpace[] compoIds = getOrganisationController().getCompoForUser(getUserId(), componentName);
-
-    List<String> instanceIds = new ArrayList<>();
-    for (CompoSpace component : compoIds) {
-      instanceIds.add(component.getComponentId());
-    }
-    return instanceIds;
-  }
   /**
    * ***************************************************************************************************************
    */
@@ -1948,127 +1857,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * ***************************************************************************************************************
    */
-  /**
-   * Glossary methods /
-   * ****************************************************************************************************************
-   */
-  private String showAllAxisInGlossary = null;
-  private List<Value> axis_result = null;
 
-  public boolean showAllAxisInGlossary() {
-    if (showAllAxisInGlossary == null) {
-      showAllAxisInGlossary = getSettings().getString("glossaryShowAllAxis");
-    }
-    return showAllAxisInGlossary.equals("true");
-  }
-
-  public MatchingIndexEntry[] glossarySearch(String query) throws PdcException {
-    MatchingIndexEntry[] glossaryResults = null;
-    if (query != null) {
-      QueryDescription queryDescription = new QueryDescription(query);
-      queryDescription.addSpaceComponentPair("transverse", "pdc");
-      try {
-        PlainSearchResult result = SearchEngineProvider.getSearchEngine().search(queryDescription);
-        glossaryResults = result.getEntries().toArray(new MatchingIndexEntry[result.getEntries().
-            size()]);
-      } catch (org.silverpeas.core.index.search.model.ParseException e) {
-        throw new PdcException("PdcSearchSessionController.glossarySearch()",
-            SilverpeasException.ERROR, "pdcPeas.EX_CAN_SEARCH_QUERY", "query : "
-            + queryDescription.getQuery(), e);
-      }
-    }
-    return glossaryResults;
-  }
-
-  public List<Value> getAxisValuesByFilter(String filter_by_name,
-      String filter_by_description, boolean search_in_daughters,
-      String instanceId) throws PdcException {
-    AxisFilter filter;
-    if (filter_by_name != null && !"".equals(filter_by_name)) {
-      filter_by_name = filter_by_name.replace('*', '%');
-      filter = new AxisFilter(AxisFilter.NAME, filter_by_name);
-    } else {
-      filter = new AxisFilter();
-    }
-
-    if (filter_by_description != null && !"".equals(filter_by_description)) {
-      filter_by_description = filter_by_description.replace('*', '%');
-      filter.addCondition(AxisFilter.DESCRIPTION, filter_by_description);
-    }
-
-    List<AxisHeader> allAxis;
-    if (instanceId == null) {
-      allAxis = getAllAxis();
-    } else {
-      allAxis = getUsedAxisHeaderByInstanceId(instanceId);
-    }
-
-    List<Value> axises = new ArrayList<>();
-
-    for (int i = 0; i < allAxis.size(); i++) {
-      AxisHeader sa = allAxis.get(i);
-      String rootId = String.valueOf(sa.getRootId());
-      List<Value> daughters = getPdcManager().getFilteredAxisValues(rootId, filter);
-      axises.addAll(daughters);
-    }
-    return axises;
-  }
-
-  public List<AxisHeader> getUsedAxisHeaderByInstanceId(String instanceId)
-      throws PdcException {
-    List<UsedAxis> usedAxisList = getPdcManager().getUsedAxisByInstanceId(instanceId);
-    List<AxisHeader> allAxis = new ArrayList<>(usedAxisList.size());
-    // get all AxisHeader corresponding to usedAxis for this instance
-    for (UsedAxis usedAxis : usedAxisList) {
-      String axisId = new Integer(usedAxis.getAxisId()).toString();
-      AxisHeader axisHeader = getAxisHeader(axisId);
-      allAxis.add(axisHeader);
-    }
-    return allAxis;
-  }
-
-  public List<String> getUsedTreeIds(String instanceId) throws PdcException {
-    List<AxisHeader> usedAxisHeaders = getUsedAxisHeaderByInstanceId(instanceId);
-    List<String> usedTreeIds = new ArrayList<>(usedAxisHeaders.size());
-    for (int i = 0; i < usedAxisHeaders.size(); i++) {
-      AxisHeader axisHeader = usedAxisHeaders.get(i);
-      if (axisHeader != null) {
-        String treeId = Integer.toString(axisHeader.getRootId());
-        usedTreeIds.add(treeId);
-      }
-    }
-    return usedTreeIds;
-  }
-
-  public Value getAxisValueAndFullPath(String valueId, String treeId) throws PdcException {
-    Value value = getPdcManager().getAxisValue(valueId, treeId);
-    if (value != null) {
-      value.setPathValues(getFullPath(valueId, treeId));
-    }
-    return value;
-  }
-
-  public List<Axis> getUsedAxisByAComponentInstance(String instanceId)
-      throws PdcException {
-    List<UsedAxis> usedAxisList = getPdcManager().getUsedAxisByInstanceId(instanceId);
-    List<Axis> axisList = new ArrayList<>(usedAxisList.size());
-    for (UsedAxis usedAxis : usedAxisList) {
-      axisList.add(getAxisDetail(new Integer(usedAxis.getAxisId()).toString()));
-    }
-    return axisList;
-  }
-
-  public void setAxisResult(List<Value> result) {
-    axis_result = result;
-  }
-
-  public List<Value> getAxisResult() {
-    return axis_result;
-  }
-
-  /**
-   * ***************************************************************************************************************
-   */
   /**
    * Interest Center methods /
    * ****************************************************************************************************************
@@ -2141,9 +1930,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
-    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

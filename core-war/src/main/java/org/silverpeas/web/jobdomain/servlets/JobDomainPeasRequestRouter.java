@@ -378,7 +378,7 @@ public class JobDomainPeasRequestRouter extends
               .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
           jobDomainSC.initUserPanelForGroupManagers((String) request.getAttribute("myComponentURL"),
               userIds, groupIds);
-          destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+          destination = Selection.getSelectionURL();
         } else if (function.equals("groupManagersUpdate")) {
           List<String> userIds = (List<String>) StringUtil
               .splitString(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');

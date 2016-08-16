@@ -1238,8 +1238,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     sel.setPopupMode(true);
     sel.setElementSelectable(true);
     sel.setSetSelectable(false);
-    sel.setFirstPage(Selection.FIRST_PAGE_DEFAULT);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**
@@ -1351,7 +1350,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     sel.setMultiSelect(false);
     sel.setSetSelectable(false);
     sel.setElementSelectable(true);
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

@@ -27,13 +27,10 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.core.pdc.classification.Position;
 import java.util.List;
 
-import org.silverpeas.core.contribution.contentcontainer.container.ContainerPositionInterface;
-
 /**
  * @author Nicolas EYSSERIC
  */
-public class ClassifyPosition extends Position<ClassifyValue> implements
-    ContainerPositionInterface, java.io.Serializable {
+public class ClassifyPosition extends Position<ClassifyValue> implements java.io.Serializable {
   private static final long serialVersionUID = 6588855414301219379L;
 
   public ClassifyPosition() {

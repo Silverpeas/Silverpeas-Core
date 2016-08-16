@@ -191,7 +191,6 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     sel.setPopupMode(false);
     sel.setSetSelectable(isGroupSelectable());
     sel.setElementSelectable(isUserSelectable());
-    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     if (StringUtil.isDefined(instanceId)) {
@@ -211,7 +210,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     sel.setSelectedElements(selectedUserIds);
     sel.setSelectedSets(selectedGroupIds);
 
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+    return Selection.getSelectionURL();
   }
 
   /**

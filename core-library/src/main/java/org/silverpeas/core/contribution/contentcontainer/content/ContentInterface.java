@@ -36,10 +36,9 @@ public interface ContentInterface {
    * @param alSilverContentId
    * @param sComponentId
    * @param sUserId
-   * @param alContentUserRoles
    * @return
    */
   public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
-      String sComponentId, String sUserId, List<String> alContentUserRoles);
+      String sComponentId, String sUserId);
 
 }
