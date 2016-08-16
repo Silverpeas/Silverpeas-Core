@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.calendar.event;
 
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
@@ -33,6 +33,7 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 
@@ -40,9 +41,9 @@ import javax.inject.Singleton;
 import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
@@ -52,10 +53,9 @@ import java.util.TreeSet;
 public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccurrenceGenerator {
 
   @Override
-  public SortedSet<CalendarEventOccurrence> generateOccurrencesOf(
+  public List<CalendarEventOccurrence> generateOccurrencesOf(
       final Collection<CalendarEvent> events, final Period inPeriod) {
-    SortedSet<CalendarEventOccurrence> occurrences = new TreeSet<>(
-        (occurLeft, occurRight) -> occurLeft.getStartDate().compareTo(occurRight.getStartDate()));
+    List<CalendarEventOccurrence> occurrences = new ArrayList<>();
     events.forEach(event -> {
       VEvent vEvent = fromCalendarEvent(event);
       PeriodList periodList = vEvent.calculateRecurrenceSet(fromPeriod(inPeriod));
@@ -66,6 +66,8 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
         occurrences.add(new CalendarEventOccurrence(event, occurStart, occurEnd));
       });
     });
+    occurrences.sort((occurLeft, occurRight) -> occurLeft.getStartDateTime()
+        .compareTo(occurRight.getStartDateTime()));
     return occurrences;
   }
 

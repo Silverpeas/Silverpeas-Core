@@ -22,7 +22,7 @@ package org.silverpeas.core.web.calendar.ical;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;

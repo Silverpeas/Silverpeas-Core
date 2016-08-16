@@ -22,21 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.calendar.event;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.UUID;
 
 /**
  * The occurrence of an event in a Silverpeas calendar. An event occurrence starts and ends at a
- * given date and it represents an event that has occured or that is going to occur at a given
+ * given date and it represents an event that has occurred or that is going to occur at a given
  * moment in time.
  */
 public class CalendarEventOccurrence {
 
-  private String uid;
+  private int id;
   private OffsetDateTime startDateTime;
   private OffsetDateTime endDateTime;
   private CalendarEvent event;
@@ -50,7 +51,7 @@ public class CalendarEventOccurrence {
    */
   public CalendarEventOccurrence(final CalendarEvent event, final OffsetDateTime startDateTime,
       final OffsetDateTime endDateTime) {
-    this.uid = UUID.randomUUID().toString();
+    this.id = new HashCodeBuilder().append(event.getId()).append(startDateTime).toHashCode();
     this.event = event;
     this.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
     this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
@@ -68,7 +69,7 @@ public class CalendarEventOccurrence {
    * Gets the date and time at which this occurrence should starts
    * @return the start date of the event occurrence.
    */
-  public OffsetDateTime getStartDate() {
+  public OffsetDateTime getStartDateTime() {
     return startDateTime;
   }
 
@@ -76,12 +77,48 @@ public class CalendarEventOccurrence {
    * Gets the date at which this event should ends
    * @return the end date of the event occurrence.
    */
-  public OffsetDateTime getEndDate() {
+  public OffsetDateTime getEndDateTime() {
     return endDateTime;
   }
 
-  public String getUid() {
-    return uid;
+  /**
+   * Gets the unique identifier of this occurrence.
+   * @return
+   */
+  public String getId() {
+    return String.valueOf(id);
   }
 
+  /**
+   * Deletes this event occurrence.
+   * <ul>
+   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
+   * <li>If the occurrence is one of among any of an event, then the date time at which this
+   * occurrence starts is added as an exception in the recurrence rule of the event.</li>
+   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
+   * </ul>
+   */
+  public void delete() {
+    getCalendarEvent().getCalendar().getPlannedEvents().getOccurrences().remove(this);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof CalendarEventOccurrence)) {
+      return false;
+    }
+
+    final CalendarEventOccurrence that = (CalendarEventOccurrence) o;
+
+    return id == that.id;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return id;
+  }
 }

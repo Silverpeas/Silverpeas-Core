@@ -155,7 +155,7 @@ public class Categories {
     return categories.hashCode();
   }
 
-  protected Categories() {
+  public Categories() {
 
   }
 }

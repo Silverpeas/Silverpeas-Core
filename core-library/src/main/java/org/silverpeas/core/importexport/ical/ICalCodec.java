@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.importexport.ical;
 
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.importexport.EncodingException;
 
 import java.util.List;

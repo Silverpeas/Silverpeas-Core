@@ -33,7 +33,7 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;

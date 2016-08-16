@@ -104,7 +104,7 @@ public class Attributes {
     return attributes.hashCode();
   }
 
-  protected Attributes() {
+  public Attributes() {
 
   }
 }

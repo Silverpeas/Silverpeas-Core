@@ -24,18 +24,14 @@
 
 package org.silverpeas.core.calendar.repository;
 
-import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * A persistence repository of calendar events. A calendar event is always persisted for a given
@@ -45,78 +41,40 @@ import java.util.Optional;
 public interface CalendarEventRepository
     extends SilverpeasEntityRepository<CalendarEvent, UuidIdentifier> {
 
-  static CalendarEventRepository get() {
-    return ServiceProvider.getService(CalendarEventRepository.class);
+  /**
+   * Gets the repository of events that belongs to the specified calendar.
+   * @param calendar a persisted calendar. If the given calendar isn't persisted then an
+   * {@link IllegalArgumentException} is thrown.
+   * @return an instance of the {@link CalendarEventRepository} implementation.
+   */
+  static CalendarEventRepository getFor(Calendar calendar) {
+    CalendarEventRepository repository = ServiceProvider.getService(CalendarEventRepository.class);
+    repository.setCalendar(calendar);
+    return repository;
   }
 
   /**
-   * Gets from the specified calendar the event having the specified identifier or nothing if no
-   * such event exists into the calendar.
-   * This method replace the {@©ode getById(String id)} one.
-   * @param calendar a calendar.
-   * @param id the unique identifier of the event to get
-   * @return optionally the calendar event matching the specified identifier.
+   * Sets the calendar instance to which all the events handled by this repository have to be
+   * related. This will set the calendar as a filter for all the repository's queries on the events.
+   * If the calendar isn't persisted, then an {@link IllegalArgumentException} is thrown.
+   * @param calendar a calendar instance.
    */
-  Optional<CalendarEvent> getById(Calendar calendar, String id);
+  void setCalendar(final Calendar calendar);
 
   /**
-   * Gets from the specified calendar all the events whose identifier matches the specified ones or
-   * nothing if no such events exist into the calendar.
-   * This method replace the {@©ode getById(String ...ids)} one.
-   * @param calendar a calendar.
-   * @param ids one or several unique identifiers of calendar events.
-   * @return a list of events or an empty list if there is no events with the specified identifiers.
+   * Deletes all the events that belongs to the underlying calendar.
    */
-  List<CalendarEvent> getById(Calendar calendar, String ...ids);
+  void deleteAll();
 
   /**
-   * Gets from the specified calendar all the events whose identifier matches the specified ones or
-   * nothing if no such events exist into the calendar.
-   * This method replace the {@©ode getById(Collection<String> id)} one.
-   * @param calendar a calendar.
-   * @param ids one or several unique identifiers of calendar events.
-   * @return a list of events or an empty list if there is no events with the specified identifiers.
+   * Gets size in events in the repository for the underlying calendar.
+   * @return the count of events in the underlying calendar.
    */
-  List<CalendarEvent> getById(Calendar calendar, Collection<String> ids);
+  long size();
 
   /**
-   * Gets size of the specified calendar in events.
-   * @param calendar a calendar.
-   * @return the count of event in the specified calendar.
-   */
-  long size(Calendar calendar);
-
-  /**
-   * Throws a {@link SilverpeasRuntimeException}
-   * Uses instead {@code getById(Calendar calendar, String id);}
-   */
-  @Override
-  default CalendarEvent getById(String id) {
-    throw new NotSupportedException("getById(String id) not supported");
-  }
-
-  /**
-   * Throws a {@link SilverpeasRuntimeException}
-   * Uses instead {@code getById(Calendar calendar, String... ids);}
-   */
-  @Override
-  default List<CalendarEvent> getById(String... ids) {
-    throw new NotSupportedException("getById(String... ids) not supported");
-  }
-
-  /**
-   * Throws a {@link SilverpeasRuntimeException}
-   * Uses instead {@code getById(Calendar calendar, Collection<String> ids);}
-   */
-  @Override
-  default List<CalendarEvent> getById(Collection<String> ids) {
-    throw new NotSupportedException("getById(Collection<String> ids) not supported");
-  }
-
-  /**
-   * Gets all the events in the specified calendar that occur between the two specified date and
-   * times.
-   * @param calendar the calendar to which the event has to belong.
+   * Gets all the events belonging to the underlying calendar that occur between the two specified
+   * date and times.
    * @param startDateTime the inclusive date and time in UTC/Greenwich at which begins the period in
    * which the events are get.
    * @param endDateTime the inclusive date and time in UTC/Greenwich at which ends the period in
@@ -124,7 +82,6 @@ public interface CalendarEventRepository
    * @return a list of events that occur between the two date times or an empty list if there
    * is no events in the specified calendar between the two date times.
    */
-  List<CalendarEvent> getAllBetween(Calendar calendar, OffsetDateTime startDateTime,
-      OffsetDateTime endDateTime);
+  List<CalendarEvent> getAllBetween(OffsetDateTime startDateTime, OffsetDateTime endDateTime);
 
 }

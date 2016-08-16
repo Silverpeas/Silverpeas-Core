@@ -140,7 +140,7 @@ public class Attendees {
     return attendees.hashCode();
   }
 
-  protected Attendees() {
+  public Attendees() {
 
   }
 }

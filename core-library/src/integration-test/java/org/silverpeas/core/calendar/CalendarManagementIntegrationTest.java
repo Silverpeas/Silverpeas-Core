@@ -28,8 +28,11 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
@@ -47,6 +50,9 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(Arquillian.class)
 public class CalendarManagementIntegrationTest extends BaseCalendarTest {
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -117,6 +123,8 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     newCalendar.save();
     assertThat(newCalendar.getId(), notNullValue());
+    assertThat(newCalendar.isPersisted(), is(true));
+    assertThat(newCalendar.getPlannedEvents().isEmpty(), is(true));
 
     // Verifying the data
     List<TableLine> persistedCalendars = getCalendarTableLines();
@@ -156,9 +164,14 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     Calendar calendarToModify = Calendar.getById("ID_3");
     calendarToModify.delete();
+    assertThat(calendarToModify.isPersisted(), is(false));
+
 
     TableLine afterModify = getCalendarTableLineById("ID_3");
     assertThat(afterModify, nullValue());
+
+    thrown.expect(IllegalStateException.class);
+    calendarToModify.getPlannedEvents();
   }
 
   @Test
@@ -169,7 +182,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
         .withDescription("a description");
     assertThat(event.isPersisted(), is(false));
     Calendar calendar = Calendar.getById("ID_3");
-    calendar.getEvents().add(event);
+    calendar.getPlannedEvents().add(event);
 
     assertThat(event.isPersisted(), is(true));
     TableLine afterAdd = getCalendarEventTableLineById(event.getId());

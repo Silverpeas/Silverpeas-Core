@@ -46,10 +46,11 @@ import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
  * AbstractEntity#performBeforeUpdate()}
  * method calls are handled at this level for JPA.
  * <p/>
- * Please be careful into the child entity classes about the use of @PrePersist and @PreUpdate
- * annotations. In most of cases you don't need to use them, but to override {@link
- * AbstractEntity#performBeforePersist} or {@link AbstractEntity#performBeforeUpdate} methods
- * without forgetting to play the super call.
+ * Please be careful into the child entity classes about the use of @PrePersist, @PreUpdate
+ * annotations as they are all taken in charge here. In most of cases you don't need to
+ * use them, but to override {@link AbstractEntity#performBeforePersist} or
+ * {@link AbstractEntity#performBeforeUpdate} methods without forgetting to call before the same
+ * method to the parent.
  * <p/>
  * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
  * manager.

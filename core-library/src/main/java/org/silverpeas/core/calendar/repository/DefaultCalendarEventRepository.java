@@ -26,12 +26,11 @@ package org.silverpeas.core.calendar.repository;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 
-import javax.persistence.NamedQuery;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
@@ -39,7 +38,6 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
@@ -47,21 +45,24 @@ import java.util.Optional;
 public class DefaultCalendarEventRepository
     extends SilverpeasJpaEntityManager<CalendarEvent, UuidIdentifier>
     implements CalendarEventRepository {
+
+  private Calendar calendar;
+
   @Override
-  public Optional<CalendarEvent> getById(final Calendar calendar, final String id) {
+  public CalendarEvent getById(final String id) {
     NamedParameters params = newNamedParameters()
         .add("id", convertToEntityIdentifier(id))
         .add("calendar", calendar);
-    return Optional.ofNullable(findOneByNamedQuery("byId", params));
+    return findOneByNamedQuery("byId", params);
   }
 
   @Override
-  public List<CalendarEvent> getById(final Calendar calendar, final String... ids) {
-    return getById(calendar, Arrays.asList(ids));
+  public List<CalendarEvent> getById(final String... ids) {
+    return getById(Arrays.asList(ids));
   }
 
   @Override
-  public List<CalendarEvent> getById(final Calendar calendar, final Collection<String> ids) {
+  public List<CalendarEvent> getById(final Collection<String> ids) {
     NamedParameters params = newNamedParameters()
         .add("ids", convertToEntityIdentifiers(ids))
         .add("calendar", calendar);
@@ -69,29 +70,45 @@ public class DefaultCalendarEventRepository
   }
 
   @Override
-  public long size(final Calendar calendar) {
+  public long size() {
     NamedParameters params = newNamedParameters()
         .add("calendar", calendar);
     return fromNamedQuery("count", params, Long.class);
   }
 
   @Override
-  public List<CalendarEvent> getAllBetween(final Calendar calendar,
-      final OffsetDateTime startDateTime, final OffsetDateTime endDateTime) {
+  public List<CalendarEvent> getAllBetween(final OffsetDateTime startDateTime,
+      final OffsetDateTime endDateTime) {
+    /*Query query = getEntityManager().createNativeQuery(
+        "select distinct * from sb_cal_event as e, sb_cal_recurrence as rec, " +
+            "SB_Cal_Recurrence_DayOfWeek as rec_dow, SB_Cal_Recurrence_Exception as rec_exc where " +
+            "(e.recurrenceId is null or (e.recurrenceId = rec.id and rec_exc.recurrenceId = rec.id and rec_dow.recurrenceId = rec.id)) and " +
+            "e.calendarId = :calendar and ((e.startDate <= :startDateTime and e.endDate >= " +
+            ":startDateTime) or (e.startDate >= :startDateTime and e.startDate <= :endDateTime) " +
+            "or (e.endDate < :startDateTime and e.recurrenceId is not null and (rec.recur_endDate >= :startDateTime or rec" +
+            ".recur_endDate is null))) order by e.startDate",
+        CalendarEvent.class);
+    query.setParameter("calendar", calendar.getId());
+    query.setParameter("startDateTime", Date.from(startDateTime.toInstant()),
+        TemporalType.TIMESTAMP);
+    query.setParameter("endDateTime", Date.from(endDateTime.toInstant()), TemporalType.TIMESTAMP);
+    return query.getResultList();*/
     NamedParameters params = newNamedParameters()
-        .add("startDateTime", Date.from(startDateTime.toInstant()), TemporalType.TIMESTAMP)
-        .add("endDateTime", Date.from(endDateTime.toInstant()), TemporalType.TIMESTAMP)
+        .add("startDateTime", startDateTime)
+        .add("endDateTime", endDateTime)
         .add("calendar", calendar);
     return findByNamedQuery("byPeriod", params);
   }
 
-  /*@Override
-  public List<CalendarEvent> findByCriteria(final CalendarEventCriteria criteria) {
-    NamedParameters params = newNamedParameters();
-    CalendarEventJPQLQueryBuilder queryBuilder = new CalendarEventJPQLQueryBuilder(params);
-    criteria.processWith(queryBuilder);
+  @Override
+  public void setCalendar(final Calendar calendar) {
+    this.calendar = calendar;
+  }
 
-    // Playing the query and returning the requested result
-    return findByCriteria(queryBuilder.result());
-  }*/
+  @Override
+  public void deleteAll() {
+    NamedParameters params = newNamedParameters().add("calendar", calendar);
+    deleteFromNamedQuery("deleteAll", params);
+  }
+
 }

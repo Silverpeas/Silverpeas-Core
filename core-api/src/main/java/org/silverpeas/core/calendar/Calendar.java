@@ -24,28 +24,35 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.event.PlannedCalendarEvents;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
- * at different times or on different dates throughout the year.
+ * at different times or on different dates throughout the years.
  *
- * Before adding any events or activities into a calendar, it requires to be saved into the
- * Silverpeas data source (use the {@code save} method for doing). Once saved, a store for events
- * is initialized for its event management.
+ * Before adding any events or activities into a calendar, it requires to be persisted into the
+ * Silverpeas data source (use the {@code save} method for doing). Once saved, a collection of
+ * planned events is then set up for this calendar and through which the events of the calendar
+ * can be managed.
  * @author mmoquillon
  */
 @Entity
@@ -63,7 +70,7 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   private String title;
 
   @Transient
-  private CalendarEventStore events;
+  private PlannedCalendarEvents events;
 
   /**
    * Necessary for JPA management.
@@ -117,45 +124,62 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   }
 
   /**
-   * Saves the calendar into the persistence context.
+   * Saves the calendar into the Silverpeas data source and set up for it a persistence collection
+   * of planned event. Once saved, the calendar will be then ready to be used to plan events and
+   * activities.
    */
   public void save() {
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.save(OperationContext.fromUser(User.getCurrentRequester()), this);
-      initEventStore();
       return null;
     });
   }
 
   /**
-   * Deletes the calendar in the persistence context.
+   * Deletes the calendar in the Silverpeas data source. By deleting it, the persistence collection
+   * of planned events is then tear down, causing the deletion of all of the events planned in this
+   * calendar.
    */
   public void delete() {
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
+      this.events.clear();
       calendarRepository.delete(this);
-      this.events = null;
       return null;
     });
   }
 
   /**
-   * Gets the events that were added into this calendar. This will be available only if the calendar
-   * is persisted. Otherwise an {@link IllegalStateException} is thrown.
-   * @return the {@link CalendarEventStore} instance of this calendar.
+   * Gets the events that were planned into this calendar. This will be available only if the
+   * calendar is persisted. Otherwise an {@link IllegalStateException} is thrown.
+   * @return the {@link PlannedCalendarEvents} instance of this calendar.
    */
-  public CalendarEventStore getEvents() {
+  public PlannedCalendarEvents getPlannedEvents() {
     if (!isPersisted()) {
       throw new IllegalStateException(
-          "The calendar isn't persisted and then no event store was set up with the persistence " +
-              "context of the calendar");
+          "The calendar isn't persisted and then no collection of planned events was set up");
     }
     return events;
   }
 
+  @PostPersist
   @PostLoad
-  private final void initEventStore() {
-    this.events = new CalendarEventStore(this);
+  private final void initCollectionOfPlannedEvents() {
+    try {
+      Constructor<PlannedCalendarEvents> constructor =
+          PlannedCalendarEvents.class.getDeclaredConstructor(Calendar.class);
+      constructor.setAccessible(true);
+      this.events = constructor.newInstance(this);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+        InstantiationException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
   }
+
+  @PostRemove
+  protected void performAfterDeletion() {
+    this.events = null;
+  }
+
 }

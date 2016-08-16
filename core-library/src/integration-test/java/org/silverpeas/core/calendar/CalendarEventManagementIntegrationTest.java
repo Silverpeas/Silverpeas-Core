@@ -30,19 +30,23 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Integration tests on the getting, on the saving, on the deletion and on the update of the events
@@ -78,7 +82,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
   @Test
   public void getExistingCalendarEventById() {
-    Optional<CalendarEvent> mayBeEvent = Calendar.getById(CALENDAR_ID).getEvents().get("ID_E_3");
+    Optional<CalendarEvent> mayBeEvent =
+        Calendar.getById(CALENDAR_ID).getPlannedEvents().get("ID_E_3");
     assertThat(mayBeEvent.isPresent(), is(true));
 
     CalendarEvent calendarEvent = mayBeEvent.get();
@@ -98,6 +103,27 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   }
 
   @Test
+  public void getNoOccurrencesFromNoEventsPlannedInAGivenPeriod() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    List<CalendarEventOccurrence> occurrences =
+        calendar.getPlannedEvents().getOccurrences().in(Year.of(2000));
+    assertThat(occurrences.isEmpty(), is(true));
+  }
+
+  @Test
+  public void getTheSingleOccurrenceOfAPlannedEvent() {
+    Calendar calendar = Calendar.getById("ID_2");
+    List<CalendarEventOccurrence> occurrences =
+        calendar.getPlannedEvents().getOccurrences().in(YearMonth.of(2016, 1));
+    assertThat(occurrences.size(), is(1));
+    CalendarEventOccurrence occurrence = occurrences.get(0);
+    CalendarEvent event = occurrence.getCalendarEvent();
+    assertThat(event.getId(), is("ID_E_2"));
+    assertThat(occurrence.getStartDateTime(), is(event.getStartDateTime()));
+    assertThat(occurrence.getEndDateTime(), is(event.getEndDateTime()));
+  }
+
+  @Test
   public void saveANewEventOnAllDay() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     LocalDate today = LocalDate.now();
@@ -105,11 +131,11 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .createdBy(USER_ID)
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION)
-        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
-        .saveOn(calendar);
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE).planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
-    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
+    Optional<CalendarEvent> mayBeActualEvent =
+        calendar.getPlannedEvents().get(expectedEvent.getId());
     assertThat(mayBeActualEvent.isPresent(), is(true));
     assertEventProperties(mayBeActualEvent.get(), expectedEvent);
   }
@@ -123,11 +149,11 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .createdBy(USER_ID)
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION)
-        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
-        .saveOn(calendar);
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE).planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
-    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
+    Optional<CalendarEvent> mayBeActualEvent =
+        calendar.getPlannedEvents().get(expectedEvent.getId());
     assertThat(mayBeActualEvent.isPresent(), is(true));
     assertEventProperties(mayBeActualEvent.get(), expectedEvent);
   }
@@ -141,11 +167,11 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .createdBy(USER_ID)
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION)
-        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
-        .saveOn(calendar);
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE).planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
-    Optional<CalendarEvent> mayBeActualEvent = calendar.getEvents().get(expectedEvent.getId());
+    Optional<CalendarEvent> mayBeActualEvent =
+        calendar.getPlannedEvents().get(expectedEvent.getId());
     assertThat(mayBeActualEvent.isPresent(), is(true));
     assertEventProperties(mayBeActualEvent.get(), expectedEvent);
   }
@@ -153,34 +179,26 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   @Test
   public void removeAnExistingEventFromACalendar() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    calendar.getEvents().remove("ID_E_3");
+    CalendarEvent event = calendar.getPlannedEvents().get("ID_E_3").get();
+    calendar.getPlannedEvents().remove(event);
 
-    assertThat(calendar.getEvents().get("ID_E_3").isPresent(), is(false));
-  }
-
-  @Test
-  public void removeANonExistingEventFromACalendar() {
-    Calendar calendar = Calendar.getById(CALENDAR_ID);
-
-    assertThat(calendar.getEvents().get("toto").isPresent(), is(false));
-    calendar.getEvents().remove("toto");
-    assertThat(calendar.getEvents().get("toto").isPresent(), is(false));
+    assertThat(calendar.getPlannedEvents().get("ID_E_3").isPresent(), is(false));
   }
 
   @Test
   public void deleteAnExistingEvent() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    Optional<CalendarEvent> mayBeEvent = calendar.getEvents().get("ID_E_3");
+    Optional<CalendarEvent> mayBeEvent = calendar.getPlannedEvents().get("ID_E_3");
     assertThat(mayBeEvent.isPresent(), is(true));
     CalendarEvent event = mayBeEvent.get();
     event.delete();
     assertThat(event.isPersisted(), is(false));
 
-    assertThat(calendar.getEvents().get("ID_E_3").isPresent(), is(false));
+    assertThat(calendar.getPlannedEvents().get("ID_E_3").isPresent(), is(false));
   }
 
   @Test
-  public void deleteANonSavedEvent() {
+  public void deleteANonPlannedEventDoesNothing() {
     OffsetDateTime now = OffsetDateTime.now();
     OffsetDateTime inThreeHours = now.plusHours(3);
     CalendarEvent event = CalendarEvent.on(Period.between(now, inThreeHours))
@@ -192,6 +210,21 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     event.delete();
     assertThat(event.isPersisted(), is(false));
+  }
+
+  @Test
+  public void deleteTheSingleEventOccurrenceDeleteTheEventItself() {
+    Calendar calendar = Calendar.getById("ID_2");
+    List<CalendarEventOccurrence> occurrences =
+        calendar.getPlannedEvents().getOccurrences().in(YearMonth.of(2016, 1));
+    assertThat(occurrences.size(), is(1));
+    CalendarEventOccurrence occurrence = occurrences.get(0);
+    CalendarEvent event = occurrence.getCalendarEvent();
+    occurrence.delete();
+
+    assertThat(calendar.getPlannedEvents().get(event.getId()).isPresent(), is(false));
+    assertThat(calendar.getPlannedEvents().getOccurrences().in(YearMonth.of(2016, 1)).isEmpty(),
+        is(true));
   }
 
   private void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {

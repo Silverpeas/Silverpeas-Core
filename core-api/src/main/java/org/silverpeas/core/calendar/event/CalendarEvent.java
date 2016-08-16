@@ -22,8 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.calendar.event;
 
+import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
@@ -52,11 +53,15 @@ import java.time.OffsetDateTime;
     @NamedQuery(name = "byIds", query = "from CalendarEvent where calendar = :calendar and id in " +
         ":ids"), @NamedQuery(name = "count", query = "select count(e) from CalendarEvent e " +
     "where calendar = :calendar"),
-    @NamedQuery(name = "byPeriod", query = "from CalendarEvent where calendar = :calendar and " +
-        "((period.startDateTime <= :startDateTime and period.endDateTime >= :startDateTime) or " +
-        "(period.startDateTime >= :startDateTime and period.startDateTime <= :endDateTime) or " +
-        "(period.endDateTime < :startDateTime and (recurrence.endDateTime >= :startDateTime or " +
-        "recurrence.endDateTime is null))) order by period.startDateTime")})
+    @NamedQuery(name = "byPeriod", query = "select e from CalendarEvent e LEFT OUTER JOIN FETCH " +
+        "e.recurrence r where e.calendar = :calendar and (" +
+        "(e.period.startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) " +
+        "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime)" +
+        " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
+        "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
+        ") order by e.period.startDateTime"),
+    @NamedQuery(name = "deleteAll", query = "delete from CalendarEvent where calendar = " +
+        ":calendar")})
 public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized {
 
@@ -89,7 +94,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   private Priority priority = Priority.NORMAL;
 
   @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-  @JoinColumn(name = "recurrenceId", referencedColumnName = "id")
+  @JoinColumn(name = "recurrenceId", referencedColumnName = "id", unique = true)
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
 
   @Transient
@@ -314,14 +319,21 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   }
 
   @Override
-  public CalendarEvent saveOn(final Calendar calendar) {
-    return calendar.getEvents().add(this);
+  public CalendarEvent planOn(final Calendar calendar) {
+    return calendar.getPlannedEvents().add(this);
   }
 
   @Override
   public void delete() {
     if (isPersisted()) {
-      calendar.getEvents().remove(this.getId());
+      calendar.getPlannedEvents().remove(this);
+    }
+  }
+
+  @Override
+  public void update() {
+    if (isPersisted()) {
+      calendar.getPlannedEvents().update(this);
     }
   }
 

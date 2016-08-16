@@ -41,7 +41,7 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addAdministrationFeatures();
     addSilverpeasExceptionBases();
     addJpaPersistenceFeatures();
-    addPackages(false, "org.silverpeas.core.calendar.repository");
+    addPackages(true, "org.silverpeas.core.calendar");
     //addClasses(BaseCalendarTest.StubbedOrganizationController.class);
   }
 
