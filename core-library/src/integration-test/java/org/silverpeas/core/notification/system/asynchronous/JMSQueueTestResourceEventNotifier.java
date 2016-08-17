@@ -27,6 +27,7 @@ import org.silverpeas.core.notification.system.TestResource;
 import org.silverpeas.core.notification.system.TestResourceEvent;
 
 import javax.annotation.Resource;
+import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.jms.Destination;
 import javax.jms.JMSDestinationDefinition;
@@ -34,6 +35,8 @@ import javax.jms.JMSDestinationDefinitions;
 import javax.jms.Queue;
 
 /**
+ * A stateless EJB producing notification (according to the JEE spec, the definition of a queue
+ * or a topic by annotation can only be done with either Web or EJB components)
  * @author mmoquillon
  */
 @JMSDestinationDefinitions(
@@ -41,6 +44,7 @@ import javax.jms.Queue;
         name = "java:/queue/notification",
         interfaceName = "javax.jms.Queue",
         destinationName = "EventNotification")})
+@Stateless
 public class JMSQueueTestResourceEventNotifier
     extends JMSResourceEventNotifier<TestResource, TestResourceEvent> {
 
@@ -48,7 +52,7 @@ public class JMSQueueTestResourceEventNotifier
   private Queue queue;
 
   @Override
-  protected Destination getDestination() {
+  public Destination getDestination() {
     return queue;
   }
 

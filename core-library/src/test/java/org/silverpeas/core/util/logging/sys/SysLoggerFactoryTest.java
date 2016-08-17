@@ -99,6 +99,9 @@ public class SysLoggerFactoryTest {
     final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
 
+    // explicit garbage collecting to avoid its running while performing the core of this test.
+    System.gc();
+
     for (int i = 0; i < maxThreads; i++) {
       executor.execute(() -> loggers.add(loggerFactory.getLogger(LOGGER_NAMESPACE)));
     }

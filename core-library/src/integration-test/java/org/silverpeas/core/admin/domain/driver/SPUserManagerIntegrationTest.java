@@ -102,6 +102,7 @@ public class SPUserManagerIntegrationTest {
     return WarBuilder4LibCore.onWarForTestClass(SPUserManagerIntegrationTest.class)
         .addDatabaseToolFeatures()
         .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> warBuilder
+            .addPackages(true, "org.silverpeas.core.security.authentication.password")
             .addClasses(SPUserManager.class, SPUserJpaManager.class, SPUser.class, SPGroup.class))
         .build();
   }

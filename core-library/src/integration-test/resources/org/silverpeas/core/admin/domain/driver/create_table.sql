@@ -313,3 +313,90 @@ CREATE TABLE IF NOT EXISTS ST_UserFavoriteSpaces
   CONSTRAINT FK_UserFavoriteSpaces_1 FOREIGN KEY (userid) REFERENCES ST_User(id),
   CONSTRAINT FK_UserFavoriteSpaces_2 FOREIGN KEY (spaceid) REFERENCES ST_Space(id)
 );
+
+CREATE TABLE IF NOT EXISTS ST_NotifChannel
+(
+  id int NOT NULL ,
+  name varchar (20) NOT NULL ,
+  description varchar (200) NULL ,
+  couldBeAdded char (1) NOT NULL DEFAULT ('Y') ,
+  fromAvailable char (1) NOT NULL DEFAULT ('N') ,
+  subjectAvailable char (1) NOT NULL DEFAULT ('N'),
+  CONSTRAINT PK_NotifChannel PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS ST_NotifAddress
+(
+  id int NOT NULL ,
+  userId int NOT NULL ,
+  notifName varchar (20) NOT NULL ,
+  notifChannelId int NOT NULL ,
+  address varchar (250) NOT NULL ,
+  usage varchar (20) NULL ,
+  priority int NOT NULL,
+  CONSTRAINT PK_NotifAddress PRIMARY KEY(id),
+  CONSTRAINT FK_NotifAddress_1 FOREIGN KEY(notifChannelId) REFERENCES ST_NotifChannel(id),
+  CONSTRAINT FK_NotifAddress_2 FOREIGN KEY(userId) REFERENCES ST_User(id)
+);
+
+CREATE TABLE IF NOT EXISTS ST_NotifDefaultAddress
+(
+  id int NOT NULL ,
+  userId int NOT NULL ,
+  notifAddressId int NOT NULL,
+  CONSTRAINT PK_ST_NotifDefaultAddress PRIMARY KEY(id),
+  CONSTRAINT FK_NotifDefaultAddress_1 FOREIGN KEY(userId) REFERENCES ST_User(id)
+);
+
+CREATE TABLE IF NOT EXISTS ST_NotifPreference (
+  id int NOT NULL ,
+  notifAddressId int NOT NULL ,
+  componentInstanceId int NOT NULL ,
+  userId int NOT NULL ,
+  messageType int NOT NULL,
+  CONSTRAINT PK_NotifAddr_Component PRIMARY KEY(id),
+  CONSTRAINT FK_NotifPreference_1 FOREIGN KEY(componentInstanceId) REFERENCES ST_ComponentInstance (id),
+  CONSTRAINT FK_NotifPreference_2 FOREIGN KEY(userId) REFERENCES ST_User(id)
+);
+
+CREATE TABLE IF NOT EXISTS ST_NotifSendedReceiver (
+  notifId int NOT NULL,
+  userId int NOT NULL,
+  CONSTRAINT PK_NotifSendedReceiver PRIMARY KEY(notifId, userId)
+);
+
+CREATE TABLE IF NOT EXISTS st_delayednotifusersetting (
+  id int NOT NULL ,
+  userId int NOT NULL ,
+  channel int NOT NULL ,
+  frequency varchar (4) NOT NULL,
+  CONSTRAINT const_st_dnus_pk PRIMARY KEY (id),
+  CONSTRAINT const_st_dnus_fk_userId FOREIGN KEY (userId) REFERENCES ST_User(id)
+);
+
+CREATE TABLE IF NOT EXISTS st_notificationresource (
+  id int8 NOT NULL ,
+  componentInstanceId varchar(50) NOT NULL ,
+  resourceId varchar(50) NOT NULL ,
+  resourceType varchar(50) NOT NULL ,
+  resourceName varchar(500) NOT NULL ,
+  resourceDescription varchar(2000) NULL ,
+  resourceLocation varchar(500) NOT NULL ,
+  resourceUrl varchar(1000) NULL,
+  CONSTRAINT const_st_nr_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE st_delayednotification (
+  id int8 NOT NULL ,
+  userId int NOT NULL ,
+  fromUserId int NOT NULL ,
+  channel int NOT NULL ,
+  action int NOT NULL ,
+  notificationResourceId int8 NOT NULL ,
+  language varchar(2) NOT NULL ,
+  creationDate timestamp NOT NULL ,
+  message varchar(2000) NULL,
+  CONSTRAINT const_st_dn_pk PRIMARY KEY (id),
+  CONSTRAINT const_st_dn_fk_nrId FOREIGN KEY (notificationResourceId) REFERENCES st_notificationresource(id),
+  CONSTRAINT const_st_dn_fk_userId FOREIGN KEY (userId) REFERENCES ST_User(id)
+);

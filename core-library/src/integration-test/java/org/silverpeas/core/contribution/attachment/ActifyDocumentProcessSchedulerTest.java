@@ -73,7 +73,7 @@ public class ActifyDocumentProcessSchedulerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(DocumentRepositoryIntegrationTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(ActifyDocumentProcessSchedulerTest.class)
         .addJcrFeatures()
         .addSchedulerFeatures()
         .testFocusedOn(war -> war.addClasses(AttachmentServiceMockWrapper.class))

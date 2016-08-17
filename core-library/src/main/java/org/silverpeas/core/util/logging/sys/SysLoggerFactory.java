@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.util.logging.sys;
 
-import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
@@ -31,6 +30,7 @@ import org.silverpeas.core.util.logging.SilverLoggerFactory;
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of the {@code org.silverpeas.core.util.logging.LoggerFactory} interface to provide

@@ -44,7 +44,7 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
    * Gets the destination of the notification. It is either a queue or a topic in JMS.
    * @return the destination of the notifications sent by this notifier.
    */
-  protected abstract Destination getDestination();
+  public abstract Destination getDestination();
 
   /**
    * Creates a resource event about the specified cause on the specified resource.
