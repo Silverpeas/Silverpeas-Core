@@ -143,4 +143,12 @@ public class Attendees {
   public Attendees() {
 
   }
+
+  /**
+   * Adds to this attendees all those from the specified ones.
+   * @param attendees the attendees to add.
+   */
+  public void addAllFrom(final Attendees attendees) {
+    this.attendees.addAll(attendees.attendees);
+  }
 }

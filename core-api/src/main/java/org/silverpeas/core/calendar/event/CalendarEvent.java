@@ -235,6 +235,11 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     return this;
   }
 
+  @Override
+  public void unsetRecurrence() {
+    this.recurrence = null;
+  }
+
   /**
    * Sets a title to this event.
    * @param title the title to set.
@@ -318,9 +323,35 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     return getPeriod().getEndDateTime();
   }
 
+  /**
+   * Changes the planning of this event in the calendar.
+   * The change will be effective only once the {@code update} method invoked.
+   * @param newPeriod a new period of time on which this event will occur or has actually occurred.
+   */
+  public void setPeriod(final Period newPeriod) {
+    this.period = newPeriod;
+  }
+
+  /**
+   * Changes the planning of this event in the calendar.
+   * The change will be effective only once the {@code update} method invoked.
+   * @param newDay the new day at which this event will occur or has actually occurred.
+   */
+  public void setDay(final LocalDate newDay) {
+    this.period = Period.between(newDay, newDay);
+  }
+
   @Override
   public CalendarEvent planOn(final Calendar calendar) {
-    return calendar.getPlannedEvents().add(this);
+    if (!isPersisted()) {
+      return calendar.getPlannedEvents().add(this);
+    }
+    return this;
+  }
+
+  @Override
+  public boolean isPlanned() {
+    return isPersisted();
   }
 
   @Override
@@ -335,6 +366,22 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     if (isPersisted()) {
       calendar.getPlannedEvents().update(this);
     }
+  }
+
+  @Override
+  public CalendarEvent clone() {
+    // TODO : find a way to automatize this in the super class by parsing each field and set the clone with them
+    CalendarEvent event = super.clone();
+    event.recur(event.getRecurrence())
+        .withTitle(event.getTitle())
+        .withDescription(event.description)
+        .withPriority(event.getPriority())
+        .withVisibilityLevel(event.getVisibilityLevel())
+        .setPeriod(getPeriod());
+    event.getCategories().addAllFrom(getCategories());
+    event.getAttributes().addAllFrom(getAttributes());
+    event.getAttendees().addAllFrom(getAttendees());
+    return event;
   }
 
   protected void setCalendar(final Calendar calendar) {

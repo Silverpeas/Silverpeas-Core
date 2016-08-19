@@ -25,10 +25,11 @@
 package org.silverpeas.core.calendar.event;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.date.Period;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
 
 /**
  * The occurrence of an event in a Silverpeas calendar. An event occurrence starts and ends at a
@@ -38,8 +39,8 @@ import java.util.UUID;
 public class CalendarEventOccurrence {
 
   private int id;
-  private OffsetDateTime startDateTime;
-  private OffsetDateTime endDateTime;
+  private Period period;
+  private Period lastPeriod;
   private CalendarEvent event;
 
   /**
@@ -53,12 +54,18 @@ public class CalendarEventOccurrence {
       final OffsetDateTime endDateTime) {
     this.id = new HashCodeBuilder().append(event.getId()).append(startDateTime).toHashCode();
     this.event = event;
-    this.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
-    this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    this.lastPeriod = this.period = Period.between(startDateTime, endDateTime);
   }
 
   /**
-   * Gets the event to which this occurrence belongs.
+   * Gets the event from which this occurrence was spawned.
+   *
+   * From the returned event, the title, the description or any other event properties can be
+   * modified. Nevertheless, the change can be effective only by invoking the {@code update} method
+   * of either the {@link CalendarEvent} to apply the modifications to all occurrences or this
+   * occurrence to apply the modifications only to this occurrence. Only the period at which the
+   * event occur in the calendar cannot be used to update this occurrence. For doing, please use
+   * either the {@code setPeriod} or the {@code setDay} method of {@link CalendarEventOccurrence}.
    * @return the event from which this occurrence is instanciated.
    */
   public CalendarEvent getCalendarEvent() {
@@ -70,7 +77,7 @@ public class CalendarEventOccurrence {
    * @return the start date of the event occurrence.
    */
   public OffsetDateTime getStartDateTime() {
-    return startDateTime;
+    return period.getStartDateTime();
   }
 
   /**
@@ -78,7 +85,7 @@ public class CalendarEventOccurrence {
    * @return the end date of the event occurrence.
    */
   public OffsetDateTime getEndDateTime() {
-    return endDateTime;
+    return period.getEndDateTime();
   }
 
   /**
@@ -120,5 +127,65 @@ public class CalendarEventOccurrence {
   @Override
   public int hashCode() {
     return id;
+  }
+
+  /**
+   * Changes the planning of this occurrence in the calendar. The change will be effectively
+   * performed once the {@code update} method invoked.
+   * @param newPeriod a new period of time on which this occurrence will occur or has actually
+   * occurred.
+   */
+  public void setPeriod(final Period newPeriod) {
+    this.lastPeriod = this.period;
+    this.period = newPeriod;
+  }
+
+  /**
+   * Changes the planning of this occurrence in the calendar. The change will be effectively
+   * performed once the {@code update} method invoked.
+   * @param newDay the new day at which this occurrence will occur or has actually occurred.
+   */
+  public void setDay(final LocalDate newDay) {
+    Period newPeriod = Period.between(newDay, newDay);
+    setPeriod(newPeriod);
+  }
+
+  /**
+   * Applies the change done to this occurrence. According to the state of the event, this will
+   * either create a new non-recurrent event or update directly the event from which this occurrence
+   * was spawned:
+   * <ul>
+   * <li>The event is recurrent: the occurrence start date time before the change is set as an
+   * exception date in the event's recurrence and a new event is created with the modifications</li>
+   * <li>It is the only occurrence of the event: the event is then directly modified.</li>
+   * </ul>
+   */
+  public void update() {
+    getCalendarEvent().getCalendar().getPlannedEvents().getOccurrences().update(this);
+  }
+
+  /**
+   * Change the event from which this occurrence was spawned. This is for updates that come to
+   * the creation of a new event.
+   * @param event the event to set.
+   */
+  protected void setCalendarEvent(final CalendarEvent event) {
+    this.event = event;
+  }
+
+  /**
+   * Gets the date and time at which this occurrence should starts before any recent change.
+   * @return the start date of the event occurrence before any recent change.
+   */
+  protected OffsetDateTime getLastStartDateTime() {
+    return lastPeriod.getStartDateTime();
+  }
+
+  /**
+   * Gets the date at which this event should ends before any recent change.
+   * @return the end date of the event occurrence before any recent change.
+   */
+  protected OffsetDateTime getLastEndDateTime() {
+    return lastPeriod.getEndDateTime();
   }
 }

@@ -84,11 +84,18 @@ public interface Plannable extends Serializable {
   /**
    * Saves this plannable object into the specified calendar. This will add this plannable object
    * into the given calendar and it will have hence an unique identifier that will uniquely
-   * identify it among all others plannable objects in the calendar.
+   * identify it among all others plannable objects in the calendar. If this event was already
+   * planned in a calender, nothing is done.
    * @param aCalendar
    * @return itself.
    */
   Plannable planOn(final Calendar aCalendar);
+
+  /**
+   * Is this event planned in a given calendar?
+   * @return true if this event is planned in a calendar, false otherwise.
+   */
+  boolean isPlanned();
 
   /**
    * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)

@@ -48,6 +48,11 @@ public interface Recurrent {
   Recurrence getRecurrence();
 
   /**
+   * Unset the recurrence of this possibly recurrent object. It is no more recurrent.
+   */
+  void unsetRecurrence();
+
+  /**
    * Is this {@link Plannable} recurrent?
    * @return true if a recurrence has been set for this object, false otherwise.
    */

@@ -272,6 +272,14 @@ public class Recurrence {
   }
 
   /**
+   * Is this recurrence endless?
+   * @return true if this recurrence has no upper bound defined. False otherwise.
+   */
+  public boolean isEndless() {
+    return !getEndDate().isPresent() && getRecurrenceCount() == NO_RECURRENCE_COUNT;
+  }
+
+  /**
    * Gets the frequency at which the {@link Plannable} should recur.
    * @return the frequency as a RecurrencePeriod instance.
    */

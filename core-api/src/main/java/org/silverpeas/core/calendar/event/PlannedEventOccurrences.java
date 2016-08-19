@@ -28,6 +28,7 @@ import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.Transaction;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -36,6 +37,7 @@ import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.time.Month.DECEMBER;
 
@@ -112,32 +114,45 @@ public class PlannedEventOccurrences {
    * @param occurrence the occurrence to remove.
    */
   public void remove(final CalendarEventOccurrence occurrence) {
-    CalendarEvent event = occurrence.getCalendarEvent();
-    if (!event.isRecurrent()) {
-      event.delete();
-    } else {
-      if (event.getRecurrence().getEndDate().isPresent() ||
-          event.getRecurrence().getRecurrenceCount() != Recurrence.NO_RECURRENCE_COUNT) {
-        OffsetDateTime recurrenceStart = event.getStartDateTime();
-        OffsetDateTime recurrenceEnd = endDateTimeOf(event.getRecurrence(), recurrenceStart);
-        List<CalendarEventOccurrence> occurrences =
-            generator.generateOccurrencesOf(Arrays.asList(event),
-                Period.between(recurrenceStart, recurrenceEnd));
-        if (occurrences.size() == 1 && occurrences.get(0).equals(occurrence)) {
-          event.delete();
-        } else {
-          excludeOccurrence(occurrence);
-        }
-      } else {
-        excludeOccurrence(occurrence);
-      }
-    }
+    doEitherOr(occurrence, CalendarEvent::delete, this::excludeOccurrence);
+  }
+
+  /**
+   * Updates the specified occurrence.
+   * This will follow the following rules:
+   * <ul>
+   * <li>If the occurrence is the single one of an event, then the event is updated.</li>
+   * <li>If the occurrence is one of among any of an event, then the date time at which this
+   * occurrence starts is added as an exception in the recurrence rule of the event and a new event
+   * is created from the change.</li>
+   * <li>If the occurrence is the last one of the event, then the event is updated.</li>
+   * </ul>
+   * @param occurrence the occurrence to remove.
+   */
+  public void update(final CalendarEventOccurrence occurrence) {
+    doEitherOr(occurrence, e -> {
+      e.setPeriod(Period.between(occurrence.getStartDateTime(), occurrence.getEndDateTime()));
+      e.update();
+    }, o -> {
+      excludeOccurrence(o);
+      createNewEventFrom(o);
+    });
   }
 
   private void excludeOccurrence(final CalendarEventOccurrence occurrence) {
     CalendarEvent event = occurrence.getCalendarEvent();
-    event.getRecurrence().excludeEventOccurrencesStartingAt(occurrence.getStartDateTime());
+    event.getRecurrence().excludeEventOccurrencesStartingAt(occurrence.getLastStartDateTime());
     event.update();
+  }
+
+  private void createNewEventFrom(final CalendarEventOccurrence occurrence) {
+    CalendarEvent newEvent = occurrence.getCalendarEvent()
+        .clone()
+        .createdBy(occurrence.getCalendarEvent().getLastUpdatedBy());
+    newEvent.unsetRecurrence();
+    newEvent.setPeriod(Period.between(occurrence.getStartDateTime(), occurrence.getEndDateTime()));
+    newEvent.planOn(occurrence.getCalendarEvent().getCalendar());
+    occurrence.setCalendarEvent(newEvent);
   }
 
   private OffsetDateTime endDateTimeOf(final Recurrence recurrence,
@@ -157,6 +172,31 @@ public class PlannedEventOccurrences {
         default:
           throw new SilverpeasRuntimeException("Unsupported unit: " + frequency.getUnit());
       }
+    });
+  }
+
+  private void doEitherOr(final CalendarEventOccurrence withOccurrence,
+      Consumer<CalendarEvent> ifSingleOccurrence,
+      Consumer<CalendarEventOccurrence> ifManyOccurrences) {
+    Transaction.getTransaction().perform(() -> {
+      CalendarEvent event = withOccurrence.getCalendarEvent();
+      if (event.isRecurrent() && event.getRecurrence().isEndless()) {
+        ifManyOccurrences.accept(withOccurrence);
+      } else if (event.isRecurrent()) {
+        OffsetDateTime recurrenceStart = event.getStartDateTime();
+        OffsetDateTime recurrenceEnd = endDateTimeOf(event.getRecurrence(), recurrenceStart);
+        List<CalendarEventOccurrence> occurrences =
+            generator.generateOccurrencesOf(Arrays.asList(event),
+                Period.between(recurrenceStart, recurrenceEnd));
+        if (occurrences.size() == 1 && occurrences.get(0).equals(withOccurrence)) {
+          ifSingleOccurrence.accept(event);
+        } else {
+          ifManyOccurrences.accept(withOccurrence);
+        }
+      } else {
+        ifSingleOccurrence.accept(event);
+      }
+      return null;
     });
   }
 }

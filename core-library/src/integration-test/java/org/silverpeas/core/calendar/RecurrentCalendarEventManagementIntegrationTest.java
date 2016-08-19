@@ -46,6 +46,7 @@ import static java.time.DayOfWeek.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.silverpeas.core.date.TimeUnit.*;
 
 /**
@@ -284,7 +285,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   }
 
   @Test
-  public void deleteAnOccurrenceAmongSeveralOneOfARecurrentEvent() {
+  public void deleteAnOccurrenceAmongSeveralOneOfARecurrentEventAddAnExceptionDate() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     List<CalendarEventOccurrence> occurrences = calendar.getPlannedEvents()
         .getOccurrences()
@@ -322,6 +323,50 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
         .between(LocalDate.of(2016, 1, 9), LocalDate.of(2016, 3, 5));
     assertThat(occurrences.isEmpty(), is(true));
     assertThat(calendar.getPlannedEvents().get("ID_E_5").isPresent(), is(false));
+  }
+
+  @Test
+  public void updateRecurrenceOfAnEvent() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.getPlannedEvents().get("ID_E_5").get();
+    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, WEEK)));
+    assertThat(event.getRecurrence().getRecurrenceCount(), is(8));
+
+    event.setLastUpdatedBy("1");
+    event.recur(Recurrence.every(1, DAY).upTo(5));
+    event.update();
+
+    event = calendar.getPlannedEvents().get("ID_E_5").get();
+    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, DAY)));
+    assertThat(event.getRecurrence().getRecurrenceCount(), is(5));
+  }
+
+  @Test
+  public void updateOnlyOneOccurrenceOfAnEvent() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    List<CalendarEventOccurrence> occurrences = calendar.getPlannedEvents()
+        .getOccurrences()
+        .between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27));
+    CalendarEventOccurrence occurrence = occurrences.get(0);
+    assertThat(occurrences.size(), is(5));
+    assertThat(occurrence.getStartDateTime(), is(OffsetDateTime.parse("2016-01-23T00:00Z")));
+    assertThat(occurrence.getEndDateTime(), is(OffsetDateTime.parse("2016-01-23T23:59Z")));
+
+    CalendarEvent previousEvent = occurrence.getCalendarEvent();
+    occurrence.setDay(LocalDate.of(2016, 1, 24));
+    occurrence.getCalendarEvent().setLastUpdatedBy("1");
+    occurrence.update();
+
+    occurrences = calendar.getPlannedEvents()
+        .getOccurrences()
+        .between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27));
+    CalendarEventOccurrence updatedOccurrence = occurrences.get(0);
+    assertThat(occurrences.size(), is(5));
+    assertThat(updatedOccurrence.getStartDateTime(), is(OffsetDateTime.parse("2016-01-24T00:00Z")));
+    assertThat(updatedOccurrence.getEndDateTime(), is(OffsetDateTime.parse("2016-01-24T23:59Z")));
+    assertThat(updatedOccurrence.getCalendarEvent(), is(occurrence.getCalendarEvent()));
+    assertThat(updatedOccurrence.getCalendarEvent(), not(previousEvent));
+    assertThat(updatedOccurrence.getCalendarEvent().isRecurrent(), is(false));
   }
 
   private CalendarEvent anAllDayEvent() {

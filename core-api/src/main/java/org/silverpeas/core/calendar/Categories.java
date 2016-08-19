@@ -158,4 +158,12 @@ public class Categories {
   public Categories() {
 
   }
+
+  /**
+   * Adds to this categories all those from the specified ones.
+   * @param categories the categories to add.
+   */
+  public void addAllFrom(final Categories categories) {
+    this.categories.addAll(categories.categories);
+  }
 }

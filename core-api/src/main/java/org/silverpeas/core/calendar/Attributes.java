@@ -107,4 +107,12 @@ public class Attributes {
   public Attributes() {
 
   }
+
+  /**
+   * Adds to this attributes all those from the specified ones.
+   * @param attributes the attributes to add.
+   */
+  public void addAllFrom(final Attributes attributes) {
+    this.attributes.putAll(attributes.attributes);
+  }
 }
