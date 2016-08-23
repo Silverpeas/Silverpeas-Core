@@ -81,7 +81,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   }
 
   @Test
-  public void getExistingCalendarEventById() {
+  public void getExistingCalendarEventByIdWhichIsNotOnAllDay() {
     Optional<CalendarEvent> mayBeEvent =
         Calendar.getById(CALENDAR_ID).getPlannedEvents().get("ID_E_3");
     assertThat(mayBeEvent.isPresent(), is(true));
@@ -95,11 +95,30 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         is(Instant.parse("2016-01-22T13:38:00Z").atOffset(ZoneOffset.UTC)));
     assertThat(calendarEvent.getTitle(), is("title C"));
     assertThat(calendarEvent.getDescription(), is("description C"));
-    //assertThat(calendarEvent.getLocation(), is("location C"));
     assertThat(calendarEvent.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
     assertThat(calendarEvent.getPriority(), is(Priority.HIGH));
     assertThat(calendarEvent.getAttributes().get("location").isPresent(), is(true));
     assertThat(calendarEvent.getAttributes().get("location").get(), is("location C"));
+  }
+
+  @Test
+  public void getExistingCalendarEventByIdWhichIsOnAllDay() {
+    Optional<CalendarEvent> mayBeEvent =
+        Calendar.getById(CALENDAR_ID).getPlannedEvents().get("ID_E_5");
+    assertThat(mayBeEvent.isPresent(), is(true));
+
+    CalendarEvent calendarEvent = mayBeEvent.get();
+    assertThat(calendarEvent.getCalendar().getId(), is("ID_1"));
+    assertThat(calendarEvent.isOnAllDay(), is(true));
+    assertThat(calendarEvent.getStartDateTime(),
+        is(Instant.parse("2016-01-09T00:00:00Z").atOffset(ZoneOffset.UTC)));
+    assertThat(calendarEvent.getEndDateTime(),
+        is(Instant.parse("2016-01-09T23:59:00Z").atOffset(ZoneOffset.UTC)));
+    assertThat(calendarEvent.getTitle(), is("title E"));
+    assertThat(calendarEvent.getDescription(), is("description E"));
+    assertThat(calendarEvent.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
+    assertThat(calendarEvent.getPriority(), is(Priority.HIGH));
+    assertThat(calendarEvent.getAttributes().get("location").isPresent(), is(false));
   }
 
   @Test

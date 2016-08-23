@@ -47,21 +47,22 @@ import java.time.OffsetDateTime;
  */
 @Entity
 @Table(name = "sb_cal_event")
-@NamedQueries({
-    @NamedQuery(name = "byId", query = "from CalendarEvent where id = :id and calendar = " +
-        ":calendar"),
-    @NamedQuery(name = "byIds", query = "from CalendarEvent where calendar = :calendar and id in " +
-        ":ids"), @NamedQuery(name = "count", query = "select count(e) from CalendarEvent e " +
-    "where calendar = :calendar"),
-    @NamedQuery(name = "byPeriod", query = "select e from CalendarEvent e LEFT OUTER JOIN FETCH " +
-        "e.recurrence r where e.calendar = :calendar and (" +
+@NamedQueries({@NamedQuery(name = "calendarEventById", query =
+        "from CalendarEvent where id = :id and calendar = " + ":calendar"),
+    @NamedQuery(name = "calendarEventsByIds", query =
+        "from CalendarEvent where calendar = :calendar and id in " + ":ids"),
+    @NamedQuery(name = "calendarEventCount", query =
+        "select count(e) from CalendarEvent e " + "where calendar = :calendar"),
+    @NamedQuery(name = "calendarEventsByPeriod", query =
+        "select e from CalendarEvent e LEFT OUTER JOIN FETCH " + "e.recurrence r " +
+        "where e.calendar = :calendar and (" +
         "(e.period.startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) " +
         "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime)" +
         " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
         "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
         ") order by e.period.startDateTime"),
-    @NamedQuery(name = "deleteAll", query = "delete from CalendarEvent where calendar = " +
-        ":calendar")})
+    @NamedQuery(name = "calendarEventsDeleteAll", query =
+        "delete from CalendarEvent where calendar = " + ":calendar")})
 public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized {
 
@@ -86,8 +87,9 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   private String description;
 
   @Column(name = "visibility")
+  @Enumerated(EnumType.STRING)
   @NotNull
-  private String visibilityLevel = VisibilityLevel.PUBLIC.name();
+  private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
 
   @Column(name = "priority", nullable = false)
   @NotNull
@@ -147,7 +149,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
    * @return itself.
    */
   public CalendarEvent withVisibilityLevel(VisibilityLevel accessLevel) {
-    this.visibilityLevel = accessLevel.name();
+    this.visibilityLevel = accessLevel;
     return this;
   }
 
@@ -184,7 +186,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
    * @return the visibility level of this event.
    */
   public VisibilityLevel getVisibilityLevel() {
-    return VisibilityLevel.valueOf(visibilityLevel);
+    return visibilityLevel;
   }
 
   /**

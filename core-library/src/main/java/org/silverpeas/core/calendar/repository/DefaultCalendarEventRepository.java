@@ -24,19 +24,15 @@
 
 package org.silverpeas.core.calendar.repository;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 
-import javax.persistence.Query;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,7 +49,7 @@ public class DefaultCalendarEventRepository
     NamedParameters params = newNamedParameters()
         .add("id", convertToEntityIdentifier(id))
         .add("calendar", calendar);
-    return findOneByNamedQuery("byId", params);
+    return findOneByNamedQuery("calendarEventById", params);
   }
 
   @Override
@@ -66,14 +62,14 @@ public class DefaultCalendarEventRepository
     NamedParameters params = newNamedParameters()
         .add("ids", convertToEntityIdentifiers(ids))
         .add("calendar", calendar);
-    return findByNamedQuery("byIds", params);
+    return findByNamedQuery("calendarEventsByIds", params);
   }
 
   @Override
   public long size() {
     NamedParameters params = newNamedParameters()
         .add("calendar", calendar);
-    return fromNamedQuery("count", params, Long.class);
+    return fromNamedQuery("calendarEventCount", params, Long.class);
   }
 
   @Override
@@ -97,7 +93,7 @@ public class DefaultCalendarEventRepository
         .add("startDateTime", startDateTime)
         .add("endDateTime", endDateTime)
         .add("calendar", calendar);
-    return findByNamedQuery("byPeriod", params);
+    return findByNamedQuery("calendarEventsByPeriod", params);
   }
 
   @Override
@@ -108,7 +104,7 @@ public class DefaultCalendarEventRepository
   @Override
   public void deleteAll() {
     NamedParameters params = newNamedParameters().add("calendar", calendar);
-    deleteFromNamedQuery("deleteAll", params);
+    deleteFromNamedQuery("calendarEventsDeleteAll", params);
   }
 
 }

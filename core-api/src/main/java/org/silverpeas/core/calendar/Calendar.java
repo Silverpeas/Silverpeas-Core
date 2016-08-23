@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.PlannedCalendarEvents;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
@@ -131,7 +130,7 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   public void save() {
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
-      calendarRepository.save(OperationContext.fromUser(User.getCurrentRequester()), this);
+      calendarRepository.save(OperationContext.fromCurrentRequester(), this);
       return null;
     });
   }

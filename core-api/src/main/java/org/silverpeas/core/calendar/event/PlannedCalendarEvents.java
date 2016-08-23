@@ -28,12 +28,7 @@ import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
-import java.util.List;
 import java.util.Optional;
-import java.util.SortedSet;
 
 /**
  * A collection of {@link CalendarEvent} instances planned in a given calendar. Each calendar has
@@ -83,7 +78,7 @@ public class PlannedCalendarEvents {
   public CalendarEvent add(final CalendarEvent event) {
     return Transaction.getTransaction().perform(() -> {
       event.setCalendar(getCalendar());
-      return repository.save(OperationContext.fromUser(event.getCreator()), event);
+      return repository.save(OperationContext.fromCurrentRequester(), event);
     });
   }
 
@@ -106,7 +101,7 @@ public class PlannedCalendarEvents {
    */
   public void update(final CalendarEvent event) {
     Transaction.getTransaction().perform(() -> {
-      repository.save(OperationContext.fromUser(event.getLastUpdater()), event);
+      repository.save(OperationContext.fromCurrentRequester(), event);
       return null;
     });
   }

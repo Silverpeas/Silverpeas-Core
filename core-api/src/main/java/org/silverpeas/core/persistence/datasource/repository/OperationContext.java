@@ -74,6 +74,14 @@ public class OperationContext {
   }
 
   /**
+   * Creates an instance from the current requester ({@link User#getCurrentRequester()}).
+   * @return
+   */
+  public static OperationContext fromCurrentRequester() {
+    return new OperationContext().withUser(User.getCurrentRequester());
+  }
+
+  /**
    * Get the current instance of the transaction from a cache (thread cache (request cache
    * exactly)).
    * The call of this method is automatically done by tachnical JPA tools.

@@ -43,6 +43,7 @@ public class Period {
   private OffsetDateTime startDateTime;
   @Column(name = "endDate", nullable = false)
   private OffsetDateTime endDateTime;
+  @Column(name = "inDays", nullable = false)
   private boolean inDays = false;
 
   /**
