@@ -36,6 +36,8 @@
 <%-- Retrieve user menu display mode --%>
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
 
+<c:url var="icon_px" value="/util/viewGenerator/icons/px.gif"/>
+
 <%
 LookHelper 	helper 	= LookHelper.getLookHelper(session);
 SettingBundle settings 		= gef.getFavoriteLookSettings();
@@ -118,7 +120,7 @@ connectedUsersPromise.then(function(){
 </script>
 <div id="topBar">
     <div id="backHome">
-        <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
+        <a href="javaScript:goToHome();"><img src="${icon_px}" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
 	  <viewTags:displayTicker/>
 	    <div id="outils">
 		<% if (!isAnonymousAccess) { %>
@@ -169,7 +171,7 @@ connectedUsersPromise.then(function(){
         <table border="0" cellspacing="0" cellpadding="0">
 		<tr>
               <td class="gaucheShortcuts">&nbsp;</td>
-              <td nowrap="nowrap" align="center"><img src="icons/silverpeasV5/px.gif" width="40" height="1" border="0"/></td>
+              <td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
               <%
 		for ( TopItem item :topItems) {
 			//le composant est-il celui selectionne ?
@@ -178,7 +180,7 @@ connectedUsersPromise.then(function(){
 				cssStyle = "activeShortcut";
 		%>
 			<td nowrap="nowrap" align="center" id="item<%=item.getId()%>" class="<%=cssStyle%>"><nobr><a href="javaScript:goToItem('<%=item.getSpaceId()%>', '<%=item.getSubSpaceId()%>', '<%=item.getComponentId()%>', '<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>', false);"><%=item.getLabel()%></a></nobr></td>
-			<td nowrap="nowrap" align="center"><img src="icons/silverpeasV5/px.gif" width="40" height="1" border="0"/></td>
+			<td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
 		<% } %>
                 <td class="droiteShortcuts">&nbsp;</td>
             </tr>

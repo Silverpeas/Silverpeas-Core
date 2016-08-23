@@ -46,6 +46,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<c:url var="icon_px" value="/util/viewGenerator/icons/px.gif"/>
+
 <%-- Retrieve user menu display mode --%>
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
 <%-- Set resource bundle --%>
@@ -248,7 +250,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
       <form name="menuSearchForm" action="javascript:searchEngine()" method="get">
       <input name="query" size="30" id="query"/>
       <input type="hidden" name="mode" value="clear"/>
-      <a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" alt=""/></a>
+      <a href="javascript:searchEngine()"><img src="${icon_px}" width="20" height="20" border="0" alt=""/></a>
       </form>
     </div>
         <div id="bodyRecherche">
@@ -259,9 +261,9 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
   <div id="basSpaceTransverse">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-                <td class="basSpacesGauche"><img src="icons/silverpeasV5/px.gif" width="8" height="8" alt=""/></td>
-                <td class="basSpacesMilieu"><img src="icons/silverpeasV5/px.gif" width="8" height="8" alt=""/></td>
-                <td class="basSpacesDroite"><img src="icons/silverpeasV5/px.gif" width="8" height="8" alt=""/></td>
+                <td class="basSpacesGauche"><img src="${icon_px}" width="8" height="8" alt=""/></td>
+                <td class="basSpacesMilieu"><img src="${icon_px}" width="8" height="8" alt=""/></td>
+                <td class="basSpacesDroite"><img src="${icon_px}" width="8" height="8" alt=""/></td>
             </tr>
         </table>
     </div>
@@ -317,9 +319,9 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
     <div id="basSpaces">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-                <td class="basSpacesGauche"><img src="icons/silverpeasV5/px.gif" width="8" height="8" alt=""/></td>
-                <td class="basSpacesMilieu"><img src="icons/silverpeasV5/px.gif" width="8" height="8" alt=""/></td>
-                <td class="basSpacesDroite"><img src="icons/silverpeasV5/px.gif" width="8" height="8" alt=""/></td>
+                <td class="basSpacesGauche"><img src="${icon_px}" width="8" height="8" alt=""/></td>
+                <td class="basSpacesMilieu"><img src="${icon_px}" width="8" height="8" alt=""/></td>
+                <td class="basSpacesDroite"><img src="${icon_px}" width="8" height="8" alt=""/></td>
             </tr>
         </table>
     </div>
