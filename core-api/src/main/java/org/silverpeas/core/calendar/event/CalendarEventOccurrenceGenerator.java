@@ -23,17 +23,13 @@
  */
 package org.silverpeas.core.calendar.event;
 
+import org.silverpeas.core.calendar.CalendarTimeWindow;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.time.LocalDate;
-import java.time.Year;
-import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
-
-import static java.time.Month.DECEMBER;
 
 /**
  * A generator of occurrences of {@link CalendarEvent} instances that will occur in a given period
@@ -51,53 +47,18 @@ public interface CalendarEventOccurrenceGenerator {
   }
 
   /**
-   * A convenient method to improve the readability of the generation method invocation.
-   * @param period a period.
-   * @return the period.
-   */
-  static Period in(final Period period) {
-    return period;
-  }
-
-  /**
-   * Generates the occurrences of the specified events and that occur in the year.
-   * @param events the events.
-   * @param year the year during which the event occur.
-   * @return a set of event occurrences that occur in the specified period sorted by the date and
-   * time at which they start.
-   */
-  default List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
-      Year year) {
-    return generateOccurrencesOf(events,
-        Period.between(year.atDay(1), year.atMonth(DECEMBER).atEndOfMonth()));
-  }
-
-  /**
-   * Generates the occurrences of the specified events and that occur in the specified month and
-   * year.
-   * @param events the events.
-   * @param inYearMonth the month in a given year during which the event occur.
-   * @return a set of event occurrences that occur in the specified period sorted by the date and
-   * time at which they start.
-   */
-  default List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
-      YearMonth inYearMonth) {
-    return generateOccurrencesOf(events,
-        Period.between(inYearMonth.atDay(1), inYearMonth.atEndOfMonth()));
-  }
-
-  /**
    * Generates the occurrences of the specified events and that occur at the specified day.
    * @param events the events.
-   * @param inDay the day in which the event occur.
+   * @param timeWindow the time window in which the events occur.
    * @return a set of event occurrences that occur in the specified period sorted by the date and
    * time at which they start.
    */
   default List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
-      LocalDate inDay) {
-    return generateOccurrencesOf(events,
-        Period.between(inDay.atStartOfDay().atOffset(ZoneOffset.UTC),
-            inDay.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC)));
+      CalendarTimeWindow timeWindow) {
+    return generateOccurrencesOf(events, Period
+        .between(timeWindow.getStartDate().atStartOfDay().atOffset(ZoneOffset.UTC),
+            timeWindow.getEndDate().plusDays(1).atStartOfDay().minusMinutes(1)
+                .atOffset(ZoneOffset.UTC)));
   }
 
   /**

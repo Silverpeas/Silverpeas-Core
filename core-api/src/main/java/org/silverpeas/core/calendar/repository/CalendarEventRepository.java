@@ -41,40 +41,27 @@ import java.util.List;
 public interface CalendarEventRepository
     extends SilverpeasEntityRepository<CalendarEvent, UuidIdentifier> {
 
-  /**
-   * Gets the repository of events that belongs to the specified calendar.
-   * @param calendar a persisted calendar. If the given calendar isn't persisted then an
-   * {@link IllegalArgumentException} is thrown.
-   * @return an instance of the {@link CalendarEventRepository} implementation.
-   */
-  static CalendarEventRepository getFor(Calendar calendar) {
-    CalendarEventRepository repository = ServiceProvider.getService(CalendarEventRepository.class);
-    repository.setCalendar(calendar);
-    return repository;
+  static CalendarEventRepository get() {
+    return ServiceProvider.getService(CalendarEventRepository.class);
   }
 
   /**
-   * Sets the calendar instance to which all the events handled by this repository have to be
-   * related. This will set the calendar as a filter for all the repository's queries on the events.
-   * If the calendar isn't persisted, then an {@link IllegalArgumentException} is thrown.
-   * @param calendar a calendar instance.
+   * Deletes all the events that belongs to the specified calendar.
+   * @param calendar the calendar for which all the events must be deleted.
    */
-  void setCalendar(final Calendar calendar);
+  void deleteAll(final Calendar calendar);
 
   /**
-   * Deletes all the events that belongs to the underlying calendar.
+   * Gets size in events in the repository for the specified calendar.
+   * @param calendar the calendar for which all the events must be counted.
+   * @return the count of events in the given calendar.
    */
-  void deleteAll();
+  long size(final Calendar calendar);
 
   /**
-   * Gets size in events in the repository for the underlying calendar.
-   * @return the count of events in the underlying calendar.
-   */
-  long size();
-
-  /**
-   * Gets all the events belonging to the underlying calendar that occur between the two specified
+   * Gets all the events belonging to the specified calendar that occur between the two specified
    * date and times.
+   * @param calendar the calendar with with events must be linked to.
    * @param startDateTime the inclusive date and time in UTC/Greenwich at which begins the period in
    * which the events are get.
    * @param endDateTime the inclusive date and time in UTC/Greenwich at which ends the period in
@@ -82,6 +69,7 @@ public interface CalendarEventRepository
    * @return a list of events that occur between the two date times or an empty list if there
    * is no events in the specified calendar between the two date times.
    */
-  List<CalendarEvent> getAllBetween(OffsetDateTime startDateTime, OffsetDateTime endDateTime);
+  List<CalendarEvent> getAllBetween(final Calendar calendar, OffsetDateTime startDateTime,
+      OffsetDateTime endDateTime);
 
 }

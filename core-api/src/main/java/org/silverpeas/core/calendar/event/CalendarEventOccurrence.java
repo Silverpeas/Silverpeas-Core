@@ -29,7 +29,6 @@ import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 /**
  * The occurrence of an event in a Silverpeas calendar. An event occurrence starts and ends at a
@@ -106,7 +105,8 @@ public class CalendarEventOccurrence {
    * </ul>
    */
   public void delete() {
-    getCalendarEvent().getCalendar().getPlannedEvents().getOccurrences().remove(this);
+    PlannedEventOccurrences occurrences = PlannedEventOccurrences.get();
+    occurrences.remove(this);
   }
 
   @Override
@@ -161,7 +161,8 @@ public class CalendarEventOccurrence {
    * </ul>
    */
   public void update() {
-    getCalendarEvent().getCalendar().getPlannedEvents().getOccurrences().update(this);
+    PlannedEventOccurrences occurrences = PlannedEventOccurrences.get();
+    occurrences.update(this);
   }
 
   /**
@@ -169,7 +170,7 @@ public class CalendarEventOccurrence {
    * the creation of a new event.
    * @param event the event to set.
    */
-  protected void setCalendarEvent(final CalendarEvent event) {
+  void setCalendarEvent(final CalendarEvent event) {
     this.event = event;
   }
 
@@ -177,7 +178,7 @@ public class CalendarEventOccurrence {
    * Gets the date and time at which this occurrence should starts before any recent change.
    * @return the start date of the event occurrence before any recent change.
    */
-  protected OffsetDateTime getLastStartDateTime() {
+  OffsetDateTime getLastStartDateTime() {
     return lastPeriod.getStartDateTime();
   }
 

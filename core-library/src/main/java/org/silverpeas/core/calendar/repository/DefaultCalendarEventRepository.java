@@ -30,65 +30,29 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
 
+import javax.inject.Singleton;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * @author Yohann Chastagnier
  */
+@Singleton
 public class DefaultCalendarEventRepository
     extends SilverpeasJpaEntityManager<CalendarEvent, UuidIdentifier>
     implements CalendarEventRepository {
 
-  private Calendar calendar;
-
   @Override
-  public CalendarEvent getById(final String id) {
-    NamedParameters params = newNamedParameters()
-        .add("id", convertToEntityIdentifier(id))
-        .add("calendar", calendar);
-    return findOneByNamedQuery("calendarEventById", params);
-  }
-
-  @Override
-  public List<CalendarEvent> getById(final String... ids) {
-    return getById(Arrays.asList(ids));
-  }
-
-  @Override
-  public List<CalendarEvent> getById(final Collection<String> ids) {
-    NamedParameters params = newNamedParameters()
-        .add("ids", convertToEntityIdentifiers(ids))
-        .add("calendar", calendar);
-    return findByNamedQuery("calendarEventsByIds", params);
-  }
-
-  @Override
-  public long size() {
+  public long size(final Calendar calendar) {
     NamedParameters params = newNamedParameters()
         .add("calendar", calendar);
     return fromNamedQuery("calendarEventCount", params, Long.class);
   }
 
   @Override
-  public List<CalendarEvent> getAllBetween(final OffsetDateTime startDateTime,
+  public List<CalendarEvent> getAllBetween(final Calendar calendar,
+      final OffsetDateTime startDateTime,
       final OffsetDateTime endDateTime) {
-    /*Query query = getEntityManager().createNativeQuery(
-        "select distinct * from sb_cal_event as e, sb_cal_recurrence as rec, " +
-            "SB_Cal_Recurrence_DayOfWeek as rec_dow, SB_Cal_Recurrence_Exception as rec_exc where " +
-            "(e.recurrenceId is null or (e.recurrenceId = rec.id and rec_exc.recurrenceId = rec.id and rec_dow.recurrenceId = rec.id)) and " +
-            "e.calendarId = :calendar and ((e.startDate <= :startDateTime and e.endDate >= " +
-            ":startDateTime) or (e.startDate >= :startDateTime and e.startDate <= :endDateTime) " +
-            "or (e.endDate < :startDateTime and e.recurrenceId is not null and (rec.recur_endDate >= :startDateTime or rec" +
-            ".recur_endDate is null))) order by e.startDate",
-        CalendarEvent.class);
-    query.setParameter("calendar", calendar.getId());
-    query.setParameter("startDateTime", Date.from(startDateTime.toInstant()),
-        TemporalType.TIMESTAMP);
-    query.setParameter("endDateTime", Date.from(endDateTime.toInstant()), TemporalType.TIMESTAMP);
-    return query.getResultList();*/
     NamedParameters params = newNamedParameters()
         .add("startDateTime", startDateTime)
         .add("endDateTime", endDateTime)
@@ -97,14 +61,8 @@ public class DefaultCalendarEventRepository
   }
 
   @Override
-  public void setCalendar(final Calendar calendar) {
-    this.calendar = calendar;
-  }
-
-  @Override
-  public void deleteAll() {
+  public void deleteAll(final Calendar calendar) {
     NamedParameters params = newNamedParameters().add("calendar", calendar);
     deleteFromNamedQuery("calendarEventsDeleteAll", params);
   }
-
 }

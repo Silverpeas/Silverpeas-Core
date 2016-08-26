@@ -38,7 +38,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -299,7 +298,10 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
   public void delete(final List<ENTITY> entities) {
     for (ENTITY entity : entities) {
       if (entity.isPersisted()) {
-        getEntityManager().remove(getEntityManager().merge(entity));
+        ENTITY attachedEntity = getById(entity.getId());
+        getEntityManager().remove(attachedEntity);
+        flush();
+        getEntityManager().detach(entity);
         unsetId(entity);
       }
     }
@@ -623,7 +625,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    * A centralized access to the entity manager (just in case ...)
    * @return
    */
-  protected EntityManager getEntityManager() {
+  private EntityManager getEntityManager() {
     return em;
   }
 
@@ -653,7 +655,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     this.maximumItemsInClause = maximumItemsInClause;
   }
 
-  protected void unsetId(final ENTITY entity) {
+  private void unsetId(final ENTITY entity) {
     try {
       Method idSetter = AbstractEntity.class.getDeclaredMethod("setId", String.class);
       idSetter.setAccessible(true);

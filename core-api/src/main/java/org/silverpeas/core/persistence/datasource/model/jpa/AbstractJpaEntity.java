@@ -48,7 +48,7 @@ import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
  * <p/>
  * Please be careful into the child entity classes about the use of @PrePersist, @PreUpdate
  * annotations as they are all taken in charge here. In most of cases you don't need to
- * use them, but to override {@link AbstractEntity#performBeforePersist} or
+ * use them, but if it is the case then override {@link AbstractEntity#performBeforePersist} or
  * {@link AbstractEntity#performBeforeUpdate} methods without forgetting to call before the same
  * method to the parent.
  * <p/>

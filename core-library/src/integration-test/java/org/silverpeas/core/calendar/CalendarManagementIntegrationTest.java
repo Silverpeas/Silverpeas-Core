@@ -124,7 +124,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     newCalendar.save();
     assertThat(newCalendar.getId(), notNullValue());
     assertThat(newCalendar.isPersisted(), is(true));
-    assertThat(newCalendar.getPlannedEvents().isEmpty(), is(true));
+    assertThat(newCalendar.isEmpty(), is(true));
 
     // Verifying the data
     List<TableLine> persistedCalendars = getCalendarTableLines();
@@ -159,19 +159,23 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
   @Test
   public void deleteCalendarShouldWork() throws Exception {
-    TableLine beforeModify = getCalendarTableLineById("ID_3");
-    assertThat(beforeModify, notNullValue());
+    TableLine beforeDeletion = getCalendarTableLineById("ID_3");
+    List<TableLine> eventsBeforeDeletion = getCalendarEventTableLines();
+    assertThat(beforeDeletion, notNullValue());
+    assertThat(eventsBeforeDeletion, hasSize(5));
 
     Calendar calendarToModify = Calendar.getById("ID_3");
     calendarToModify.delete();
     assertThat(calendarToModify.isPersisted(), is(false));
 
 
-    TableLine afterModify = getCalendarTableLineById("ID_3");
-    assertThat(afterModify, nullValue());
+    TableLine afterDeletion = getCalendarTableLineById("ID_3");
+    List<TableLine> eventsAfterDeletion = getCalendarEventTableLines();
+    assertThat(afterDeletion, nullValue());
+    assertThat(eventsAfterDeletion, hasSize(3));
 
     thrown.expect(IllegalStateException.class);
-    calendarToModify.getPlannedEvents();
+    calendarToModify.event("ID_E_3");
   }
 
   @Test
@@ -182,7 +186,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
         .withDescription("a description");
     assertThat(event.isPersisted(), is(false));
     Calendar calendar = Calendar.getById("ID_3");
-    calendar.getPlannedEvents().add(event);
+    event.planOn(calendar);
 
     assertThat(event.isPersisted(), is(true));
     TableLine afterAdd = getCalendarEventTableLineById(event.getId());

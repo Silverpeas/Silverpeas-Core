@@ -23,26 +23,29 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.event.PlannedCalendarEvents;
+import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.security.Securable;
-import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.NamedQuery;
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
+
+import static java.time.Month.DECEMBER;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -68,8 +71,9 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   @Column(name = "title")
   private String title;
 
-  @Transient
-  private PlannedCalendarEvents events;
+  @OneToMany(mappedBy = "calendar", fetch = FetchType.LAZY, cascade = {CascadeType.ALL},
+      orphanRemoval = true)
+  private List<CalendarEvent> events;
 
   /**
    * Necessary for JPA management.
@@ -143,42 +147,95 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   public void delete() {
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
-      this.events.clear();
       calendarRepository.delete(this);
       return null;
     });
   }
 
   /**
-   * Gets the events that were planned into this calendar. This will be available only if the
-   * calendar is persisted. Otherwise an {@link IllegalStateException} is thrown.
-   * @return the {@link PlannedCalendarEvents} instance of this calendar.
+   * Gets a time window according to the specified period into which occurrences of events are
+   * requested.
+   * @param year the year during which the events occur.
+   * @return the initialized time window.
    */
-  public PlannedCalendarEvents getPlannedEvents() {
+  public CalendarTimeWindow in(final Year year) {
+    return new CalendarTimeWindow(this, year);
+  }
+
+  /**
+   * Gets a time window according to the specified period into which occurrences of events are
+   * requested.
+   * @param yearMonth the month and year during which the events occur.
+   * @return the initialized time window.
+   */
+  public CalendarTimeWindow in(final YearMonth yearMonth) {
+    return new CalendarTimeWindow(this, yearMonth);
+  }
+
+  /**
+   * Gets a time window according to the specified period into which occurrences of events are
+   * requested.
+   * @param day day during which the events occur.
+   * @return the initialized time window.
+   */
+  public CalendarTimeWindow in(final LocalDate day) {
+    return new CalendarTimeWindow(this, day);
+  }
+
+  /**
+   * Gets a time window according to the specified period into which occurrences of events are
+   * requested.
+   * @param start the start date of the period.
+   * @param end the end date of the period.
+   * @return the initialized time window.
+   */
+  public CalendarTimeWindow between(final LocalDate start, final LocalDate end) {
+    verifyCalendarIsPersisted();
+    return new CalendarTimeWindow(this, start, end);
+  }
+
+  private void verifyCalendarIsPersisted() {
     if (!isPersisted()) {
       throw new IllegalStateException(
-          "The calendar isn't persisted and then no collection of planned events was set up");
-    }
-    return events;
-  }
-
-  @PostPersist
-  @PostLoad
-  private final void initCollectionOfPlannedEvents() {
-    try {
-      Constructor<PlannedCalendarEvents> constructor =
-          PlannedCalendarEvents.class.getDeclaredConstructor(Calendar.class);
-      constructor.setAccessible(true);
-      this.events = constructor.newInstance(this);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
-        InstantiationException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
+          "The calendar isn't persisted and then no action is available");
     }
   }
 
-  @PostRemove
-  protected void performAfterDeletion() {
-    this.events = null;
+  /**
+   * Gets either the calendar event with the specified identifier or nothing if no
+   * such event exists with the given identifier.
+   * @param eventId the unique identifier of the event to get.
+   * @return optionally an event with the specified identifier.
+   */
+  public Optional<CalendarEvent> event(String eventId) {
+    verifyCalendarIsPersisted();
+    CalendarEventRepository repository = CalendarEventRepository.get();
+    CalendarEvent event = repository.getById(eventId);
+    if (event != null && !event.getCalendar().getId().equals(getId())) {
+      event = null;
+    }
+    return Optional.ofNullable(event);
   }
 
+  /**
+   * Clears this calendar of all of the planned events.
+   */
+  public void clear() {
+    verifyCalendarIsPersisted();
+    Transaction.getTransaction().perform(() -> {
+      CalendarEventRepository repository = CalendarEventRepository.get();
+      repository.deleteAll(Calendar.this);
+      return null;
+    });
+  }
+
+  /**
+   * Is this calendar empty of event?
+   * @return true if there is no events planned in the calendar. Otherwise returns false.
+   */
+  public boolean isEmpty() {
+    verifyCalendarIsPersisted();
+    CalendarEventRepository repository = CalendarEventRepository.get();
+    return repository.size(this) == 0;
+  }
 }

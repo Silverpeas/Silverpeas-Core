@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.test;
 
+import org.silverpeas.core.calendar.event.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
+import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -41,7 +45,10 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addAdministrationFeatures();
     addSilverpeasExceptionBases();
     addJpaPersistenceFeatures();
-    addPackages(true, "org.silverpeas.core.calendar");
+    addClasses(
+        ICal4JCalendarEventOccurrenceGenerator.class,
+        DefaultCalendarRepository.class,
+        DefaultCalendarEventRepository.class);
     //addClasses(BaseCalendarTest.StubbedOrganizationController.class);
   }
 

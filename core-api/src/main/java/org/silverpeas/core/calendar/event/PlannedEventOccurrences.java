@@ -24,82 +24,54 @@
 package org.silverpeas.core.calendar.event;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.calendar.CalendarTimeWindow;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.util.ServiceProvider;
 
-import java.time.LocalDate;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.time.OffsetDateTime;
-import java.time.Year;
-import java.time.YearMonth;
 import java.time.ZoneOffset;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-
-import static java.time.Month.DECEMBER;
 
 /**
  * A collection of occurrences of events planned in a given calendar.
  * @author mmoquillon
  */
+@Singleton
 public class PlannedEventOccurrences {
 
-  private final CalendarEventRepository repository;
+  static PlannedEventOccurrences get() {
+    return ServiceProvider.getService(PlannedEventOccurrences.class);
+  }
+
+  @Inject
+  private CalendarEventRepository repository;
+
+  @Inject
   private CalendarEventOccurrenceGenerator generator;
 
-  /**
-   * Gets the occurrences of the events that occur in the specified period.
-   * @param year the year during which the events occur.
-   * @return a set of event occurrences sorted by their start date time.
-   */
-  public List<CalendarEventOccurrence> in(final Year year) {
-    List<CalendarEvent> events =
-        getEventsBetween(year.atDay(1), year.atMonth(DECEMBER).atEndOfMonth());
-    return generator.generateOccurrencesOf(events, year);
+  private PlannedEventOccurrences() {
   }
 
   /**
-   * Gets the occurrences of the events that occur in the specified period.
-   * @param yearMonth the month and year during which the events occur.
-   * @return a set of event occurrences sorted by their start date time.
+   * Lists the occurrences of the events that occur in the specified time window.
+   * @param timeWindow the time window.
+   * @return a list of event occurrences sorted by their start date time.
    */
-  public List<CalendarEventOccurrence> in(final YearMonth yearMonth) {
-    List<CalendarEvent> events = getEventsBetween(yearMonth.atDay(1), yearMonth.atEndOfMonth());
-    return generator.generateOccurrencesOf(events, yearMonth);
-  }
-
-  /**
-   * Gets the occurrences of the events that occur in the specified period.
-   * @param day day during which the events occur.
-   * @return a set of event occurrences sorted by their start date time.
-   */
-  public List<CalendarEventOccurrence> in(final LocalDate day) {
-    List<CalendarEvent> events = getEventsBetween(day, day);
-    return CalendarEventOccurrenceGenerator.get().generateOccurrencesOf(events, day);
-  }
-
-  /**
-   * Gets the occurrences of the events that occur in the specified period.
-   * @param start the start date of the period.
-   * @param end the end date of the period.
-   * @return a set of event occurrences sorted by their start date time.
-   */
-  public List<CalendarEventOccurrence> between(final LocalDate start, final LocalDate end) {
-    List<CalendarEvent> events = getEventsBetween(start, end);
-    return generator.generateOccurrencesOf(events, Period.between(start, end));
-  }
-
-  protected PlannedEventOccurrences(final CalendarEventRepository repository) {
-    this.repository = repository;
-    this.generator = CalendarEventOccurrenceGenerator.get();
-  }
-
-  private List<CalendarEvent> getEventsBetween(LocalDate startDate, LocalDate endDate) {
-    return repository.getAllBetween(startDate.atStartOfDay().atOffset(ZoneOffset.UTC),
-        endDate.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC));
+  @SuppressWarnings("unused")
+  List<CalendarEventOccurrence> in(final CalendarTimeWindow timeWindow) {
+    List<CalendarEvent> events = repository.getAllBetween(timeWindow.getCalendar(),
+        timeWindow.getStartDate().atStartOfDay().atOffset(ZoneOffset.UTC),
+        timeWindow.getEndDate().plusDays(1).atStartOfDay().minusMinutes(1)
+            .atOffset(ZoneOffset.UTC));
+    return getGenerator().generateOccurrencesOf(events, timeWindow);
   }
 
   /**
@@ -113,7 +85,7 @@ public class PlannedEventOccurrences {
    * </ul>
    * @param occurrence the occurrence to remove.
    */
-  public void remove(final CalendarEventOccurrence occurrence) {
+  void remove(final CalendarEventOccurrence occurrence) {
     doEitherOr(occurrence, CalendarEvent::delete, this::excludeOccurrence);
   }
 
@@ -129,7 +101,7 @@ public class PlannedEventOccurrences {
    * </ul>
    * @param occurrence the occurrence to remove.
    */
-  public void update(final CalendarEventOccurrence occurrence) {
+  void update(final CalendarEventOccurrence occurrence) {
     doEitherOr(occurrence, e -> {
       e.setPeriod(Period.between(occurrence.getStartDateTime(), occurrence.getEndDateTime()));
       e.update();
@@ -146,8 +118,7 @@ public class PlannedEventOccurrences {
   }
 
   private void createNewEventFrom(final CalendarEventOccurrence occurrence) {
-    CalendarEvent newEvent = occurrence.getCalendarEvent()
-        .clone()
+    CalendarEvent newEvent = occurrence.getCalendarEvent().clone()
         .createdBy(occurrence.getCalendarEvent().getLastUpdatedBy());
     newEvent.unsetRecurrence();
     newEvent.setPeriod(Period.between(occurrence.getStartDateTime(), occurrence.getEndDateTime()));
@@ -186,7 +157,7 @@ public class PlannedEventOccurrences {
         OffsetDateTime recurrenceStart = event.getStartDateTime();
         OffsetDateTime recurrenceEnd = endDateTimeOf(event.getRecurrence(), recurrenceStart);
         List<CalendarEventOccurrence> occurrences =
-            generator.generateOccurrencesOf(Arrays.asList(event),
+            getGenerator().generateOccurrencesOf(Collections.singletonList(event),
                 Period.between(recurrenceStart, recurrenceEnd));
         if (occurrences.size() == 1 && occurrences.get(0).equals(withOccurrence)) {
           ifSingleOccurrence.accept(event);
@@ -198,5 +169,9 @@ public class PlannedEventOccurrences {
       }
       return null;
     });
+  }
+
+  private CalendarEventOccurrenceGenerator getGenerator() {
+    return this.generator;
   }
 }
