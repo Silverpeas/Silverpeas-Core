@@ -100,10 +100,10 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
 
   @Transient
-  private final Categories categories = new Categories();
+  private Categories categories = new Categories();
 
   @Transient
-  private final Attendees attendees = new Attendees();
+  private Attendees attendees = new Attendees();
 
   protected CalendarEvent(Period period) {
     this.period = period;
@@ -384,18 +384,14 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
 
   @Override
   public CalendarEvent clone() {
-    // TODO : find a way to automatize this in the super class by parsing each field and set the clone with them
-    CalendarEvent event = super.clone();
-    event.recur(event.getRecurrence())
-        .withTitle(event.getTitle())
-        .withDescription(event.description)
-        .withPriority(event.getPriority())
-        .withVisibilityLevel(event.getVisibilityLevel())
-        .setPeriod(getPeriod());
-    event.getCategories().addAllFrom(getCategories());
-    event.getAttributes().addAllFrom(getAttributes());
-    event.getAttendees().addAllFrom(getAttendees());
-    return event;
+    CalendarEvent clone = super.clone();
+    clone.recurrence = recurrence.clone();
+    clone.period = period.clone();
+    clone.categories = categories.clone();
+    clone.attributes = attributes.clone();
+    clone.attendees = attendees.clone();
+    return clone;
+
   }
 
   protected void setCalendar(final Calendar calendar) {

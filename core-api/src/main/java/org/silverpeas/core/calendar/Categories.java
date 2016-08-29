@@ -35,7 +35,7 @@ import java.util.stream.Stream;
  * The categories in which a {@link Plannable} planned in a calendar is classified. The categories
  * are expected to be managed by the {@link Plannable} itself.
  */
-public class Categories {
+public class Categories implements Cloneable {
 
   private Set<String> categories = new HashSet<>();
 
@@ -165,5 +165,16 @@ public class Categories {
    */
   public void addAllFrom(final Categories categories) {
     this.categories.addAll(categories.categories);
+  }
+
+  @Override
+  public Categories clone() {
+    Categories clone = null;
+    try {
+      clone = (Categories) super.clone();
+      clone.categories = new HashSet<>(categories);
+    } catch (CloneNotSupportedException ignore) {
+    }
+    return clone;
   }
 }

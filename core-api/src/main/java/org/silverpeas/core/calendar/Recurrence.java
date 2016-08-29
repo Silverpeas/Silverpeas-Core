@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "sb_cal_recurrence")
-public class Recurrence {
+public class Recurrence implements Cloneable {
 
   /**
    * A constant that defines a specific value for an empty recurrence.
@@ -389,4 +389,16 @@ public class Recurrence {
     }
   }
 
+  @Override
+  public Recurrence clone() {
+    Recurrence clone = null;
+    try {
+      clone = (Recurrence) super.clone();
+      clone.id = null;
+      clone.daysOfWeek = new HashSet<>(daysOfWeek);
+      clone.exceptionDates = new HashSet<>(exceptionDates);
+    } catch (CloneNotSupportedException ignore) {
+    }
+    return clone;
+  }
 }

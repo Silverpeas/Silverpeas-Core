@@ -43,7 +43,7 @@ import java.util.Optional;
  * @author mmoquillon
  */
 @Embeddable
-public class Attributes {
+public class Attributes implements Cloneable {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapsId
@@ -114,5 +114,16 @@ public class Attributes {
    */
   public void addAllFrom(final Attributes attributes) {
     this.attributes.putAll(attributes.attributes);
+  }
+
+  @Override
+  public Attributes clone() {
+    Attributes clone = null;
+    try {
+      clone = (Attributes) super.clone();
+      clone.attributes = new HashMap<>(attributes);
+    } catch (CloneNotSupportedException ignore) {
+    }
+    return clone;
   }
 }

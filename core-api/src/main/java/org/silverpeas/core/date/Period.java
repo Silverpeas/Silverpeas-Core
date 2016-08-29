@@ -37,7 +37,7 @@ import java.time.ZoneOffset;
  * @author mmoquillon
  */
 @Embeddable
-public class Period {
+public class Period implements Cloneable {
 
   @Column(name = "startDate", nullable = false)
   private OffsetDateTime startDateTime;
@@ -126,5 +126,15 @@ public class Period {
     if (startDate.isAfter(endDate)) {
       throw new IllegalArgumentException("The end date must be after or equal to the start date");
     }
+  }
+
+  @Override
+  public Period clone() {
+    Period period = null;
+    try {
+      period = (Period) super.clone();
+    } catch (CloneNotSupportedException ignore) {
+    }
+    return period;
   }
 }

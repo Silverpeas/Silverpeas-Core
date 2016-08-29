@@ -34,7 +34,7 @@ import java.util.Set;
  * A set of attendees to a {@link Plannable} planned in a calendar. The attendees are expected to be
  * managed by the implementation of the {@link Plannable} itself.
  */
-public class Attendees {
+public class Attendees implements Cloneable {
 
   private Set<String> attendees = new HashSet<>();
 
@@ -150,5 +150,16 @@ public class Attendees {
    */
   public void addAllFrom(final Attendees attendees) {
     this.attendees.addAll(attendees.attendees);
+  }
+
+  @Override
+  public Attendees clone() {
+    Attendees clone = null;
+    try {
+      clone = (Attendees) super.clone();
+      clone.attendees = new HashSet<>(attendees);
+    } catch (CloneNotSupportedException ignore) {
+    }
+    return clone;
   }
 }
