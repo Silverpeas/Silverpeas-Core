@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2013 Silverpeas
+    Copyright (C) 2000 - 2016 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -87,35 +87,6 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>assembly</descriptorRef>
-          </descriptorRefs>
-          <appendAssemblyId>true</appendAssemblyId>
-          <attach>true</attach>
-          <skipAssembly>true</skipAssembly>
-          <finalName>${project.artifactId}-${project.version}</finalName>
-        </configuration>
-        <executions>
-          <execution>
-            <id>manage-configuration</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.silverpeas</groupId>
-            <artifactId>configuration-assembly</artifactId>
-            <version>${config.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
@@ -127,10 +98,9 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
         <executions>
           <execution>
             <id>attach-descriptor</id>
@@ -144,26 +114,6 @@
           <generateSitemap>true</generateSitemap>
         </configuration>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>com.github.github</groupId>
-        <artifactId>site-maven-plugin</artifactId>
-        <version>0.1</version>
-        <configuration>
-          <description>Creating site</description>
-          <override>false</override>
-          <message>Deploying web site on Githbub for ${project.name} - ${project.version}</message>
-          <includeAttached>true</includeAttached>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>site</goal>
-            </goals>
-            <phase>site</phase>
-          </execution>
-        </executions>
-      </plugin>-->
     </plugins>
   </build>
 
@@ -172,7 +122,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -194,34 +143,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
       </plugin>
     </plugins>
   </reporting>
-
-  <profiles>
-    <profile>
-      <id>Quality</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy-dependencies</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-  </profiles>
 
   <modules>
     <module>core-api</module>
@@ -233,17 +157,5 @@
     <module>core-war</module>
     <module>core-configuration</module>
   </modules>
-
-  <properties>
-    <!-- Default JDBC properties for test, can be overriden by -D arguments -->
-    <test.jdbc.driver>org.postgresql.Driver</test.jdbc.driver>
-    <test.jdbc.url>jdbc:postgresql://localhost:5432/SilverpeasV5</test.jdbc.url>
-    <test.jdbc.user>postgres</test.jdbc.user>
-    <test.jdbc.password>postgres</test.jdbc.password>
-    <!-- Properties used in the site generation -->
-    <installer_stable_version>5.14</installer_stable_version>
-    <installer_izpack_version>5.14</installer_izpack_version>
-    <installer_version>${project.version}</installer_version>
-  </properties>
 
 </project>
