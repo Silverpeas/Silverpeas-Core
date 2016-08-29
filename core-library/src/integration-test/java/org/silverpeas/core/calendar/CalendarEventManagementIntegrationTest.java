@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -216,10 +217,16 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
   @Test
   public void sameAsPreviousButIntoParentTransaction() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
     Transaction.performInOne(() ->  {
-      deleteAnExistingEvent();
+      Optional<CalendarEvent> mayBeEvent = calendar.event("ID_E_5");
+      assertThat(mayBeEvent.isPresent(), is(true));
+      CalendarEvent event = mayBeEvent.get();
+      event.delete();
+      assertThat(event.isPersisted(), is(false));
       return null;
     });
+    assertThat(calendar.event("ID_E_5").isPresent(), is(false));
   }
 
   @Test

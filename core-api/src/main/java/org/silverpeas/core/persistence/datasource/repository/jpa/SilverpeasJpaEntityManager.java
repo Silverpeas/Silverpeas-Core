@@ -300,8 +300,6 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
       if (entity.isPersisted()) {
         ENTITY attachedEntity = getById(entity.getId());
         getEntityManager().remove(attachedEntity);
-        flush();
-        getEntityManager().detach(entity);
         unsetId(entity);
       }
     }
