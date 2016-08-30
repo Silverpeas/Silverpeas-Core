@@ -207,12 +207,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public String createUser(UserRequestData userRequestData, HashMap<String, String> properties,
       HttpServletRequest req) throws JobDomainPeasException, JobDomainPeasTrappedException {
     UserDetail theNewUser = new UserDetail();
-
-
-
-    String existingUser =
-        m_AdminCtrl.getUserIdByLoginAndDomain(userRequestData.getLogin(), targetDomainId);
-    if ((existingUser != null) && (existingUser.length() > 0)) {
+    if (m_AdminCtrl.isUserByLoginAndDomainExist(userRequestData.getLogin(), targetDomainId)) {
       JobDomainPeasTrappedException te = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.createUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_ALREADY_USED");

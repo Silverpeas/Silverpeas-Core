@@ -48,6 +48,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -1182,6 +1183,15 @@ public class AdminController implements java.io.Serializable {
           .error("cannot get user identifier from login ''{0}'' and domainId ''{1}'' ({2})",
               new String[]{sLogin, sDomainId, e.getLocalizedMessage()}, e);
       return null;
+    }
+  }
+
+  public boolean isUserByLoginAndDomainExist(String login, String domainId) {
+    try {
+      String userId = admin.getUserIdByLoginAndDomain(login, domainId);
+      return StringUtil.isDefined(userId);
+    } catch (AdminException e) {
+      return false;
     }
   }
 

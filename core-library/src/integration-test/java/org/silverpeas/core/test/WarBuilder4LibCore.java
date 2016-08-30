@@ -236,6 +236,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(UserReference.class)) {
       addClasses(UserReference.class);
     }
+    addPackages(true, "org.silverpeas.core.security.token");
     return this;
   }
 

@@ -92,15 +92,6 @@ public class UserFull extends UserDetail {
     return (m_password == null) ? "" : m_password;
   }
 
-  public String getToken() {
-    try {
-      UserReference ref = UserReference.fromUser(this);
-      return PersistentResourceToken.getOrCreateToken(ref).getValue();
-    } catch (TokenException e) {
-      throw new TokenRuntimeException(e.getMessage(), e);
-    }
-  }
-
   public void setPassword(String p) {
     m_password = p;
   }

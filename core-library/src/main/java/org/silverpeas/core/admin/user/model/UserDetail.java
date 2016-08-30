@@ -24,6 +24,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -32,6 +33,9 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.security.token.exception.TokenException;
+import org.silverpeas.core.security.token.exception.TokenRuntimeException;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
@@ -637,6 +641,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public String getDisplayedName() {
     return (getFirstName() + " " + getLastName()).trim();
+  }
+
+  public String getToken() {
+    try {
+      UserReference ref = UserReference.fromUser(this);
+      return PersistentResourceToken.getOrCreateToken(ref).getValue();
+    } catch (TokenException e) {
+      throw new TokenRuntimeException(e.getMessage(), e);
+    }
   }
 
   @Override
