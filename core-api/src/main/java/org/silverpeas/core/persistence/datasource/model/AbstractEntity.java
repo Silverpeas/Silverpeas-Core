@@ -110,10 +110,12 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
 
   public abstract ENTITY setLastUpdatedBy(String lastUpdatedBy);
 
+  public abstract ENTITY setLastUpdatedBy(User lastUpdater);
+
   protected abstract ENTITY setLastUpdateDate(Date lastUpdateDate);
 
   @Override
-  public User getCreator() {
+  public final User getCreator() {
     if (StringUtil.isDefined(getCreatedBy())) {
       if (createdByUser == null || !getCreatedBy().equals(createdByUser.getId())) {
         createdByUser = User.getById(getCreatedBy());
@@ -131,7 +133,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   }
 
   @Override
-  public User getLastUpdater() {
+  public final User getLastUpdater() {
     if (StringUtil.isDefined(getLastUpdatedBy())) {
       if (lastUpdatedByUser == null || !getLastUpdatedBy().equals(lastUpdatedByUser.getId())) {
         lastUpdatedByUser = User.getById(getLastUpdatedBy());
@@ -200,7 +202,6 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
       entity.setCreator(null);
       entity.setCreateDate(null);
       entity.setLastUpdater(null);
-      entity.setLastUpdatedBy(null);
       entity.setLastUpdateDate(null);
       entity.setVersion(0L);
     } catch (final CloneNotSupportedException e) {

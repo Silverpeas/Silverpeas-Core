@@ -105,7 +105,7 @@ public class OperationContext {
    * @param user
    * @return
    */
-  private OperationContext withUser(User user) {
+  public OperationContext withUser(User user) {
     this.user = user;
     return this;
   }

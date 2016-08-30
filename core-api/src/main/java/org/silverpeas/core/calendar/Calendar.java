@@ -29,7 +29,6 @@ import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.security.Securable;
 
 import javax.persistence.CascadeType;
@@ -44,8 +43,6 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
-
-import static java.time.Month.DECEMBER;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -134,7 +131,7 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
   public void save() {
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
-      calendarRepository.save(OperationContext.fromCurrentRequester(), this);
+      calendarRepository.save(this);
       return null;
     });
   }

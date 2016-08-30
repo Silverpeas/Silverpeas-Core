@@ -21,35 +21,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.test;
+
+package org.silverpeas.core.test.stub;
+
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.ServiceProvider;
+
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
  */
-public class CalendarWarBuilder extends WarBuilder4LibCore {
+@Singleton
+@Alternative
+@Priority(APPLICATION + 10)
+public class StubbedOrganizationController extends DefaultOrganizationController {
 
-  /**
-   * Constructs a war builder for the specified test class. It will load all the resources in the
-   * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
-   */
-  private <T> CalendarWarBuilder(final Class<T> test) {
-    super(test);
-    addProcessFeatures();
-    addAdministrationFeatures();
-    addSilverpeasExceptionBases();
-    addJpaPersistenceFeatures();
+  private OrganizationController mock = mock(OrganizationController.class);
+
+  public static OrganizationController getMock() {
+    return ((StubbedOrganizationController) ServiceProvider
+        .getService(OrganizationController.class)).mock;
   }
 
-  /**
-   * Constructs an instance of the calendar war archive builder for the specified test class.
-   * @param test the test class for which a war will be built. Any resources located in the same
-   * package of the test will be loaded into the war.
-   * @param <T> the type of the test.
-   * @return a calendar builder of the war archive.
-   */
-  public static <T> CalendarWarBuilder onWarForTestClass(Class<T> test) {
-    return new CalendarWarBuilder(test);
+  @Override
+  public UserDetail getUserDetail(final String sUserId) {
+    return mock.getUserDetail(sUserId);
   }
 
+  @Override
+  public String[] getUserProfiles(final String userId, final String componentId) {
+    return mock.getUserProfiles(userId, componentId);
+  }
 }

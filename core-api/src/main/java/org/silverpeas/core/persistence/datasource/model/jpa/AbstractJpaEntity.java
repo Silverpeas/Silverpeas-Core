@@ -76,6 +76,8 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @Column(name = "createdBy", nullable = false, insertable = true, updatable = false, length = 40)
   private String createdBy;
+  @Transient
+  private boolean createdBySetManually = false;
 
   @Column(name = "createDate", nullable = false, insertable = true, updatable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -83,6 +85,8 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @Column(name = "lastUpdatedBy", nullable = false, length = 40)
   private String lastUpdatedBy;
+  @Transient
+  private boolean lastUpdatedBySetManually = false;
 
   @Column(name = "lastUpdateDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -172,11 +176,13 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
       this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
     }
     performBeforePersist();
+    clearSystemDataFlags();
   }
 
   @PreUpdate
   private void beforeUpdate() {
     performBeforeUpdate();
+    clearSystemDataFlags();
   }
 
   @Override
@@ -186,14 +192,19 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @SuppressWarnings("unchecked")
   @Override
-  public ENTITY createdBy(final String createdBy) {
+  public final ENTITY createdBy(final String createdBy) {
+    this.createdBySetManually =
+        this.createdBySetManually || !isPersisted() || this.createdBy == null;
+    if (this.createdBySetManually) {
+      this.lastUpdatedBySetManually = false;
+    }
     this.createdBy = createdBy;
     return (ENTITY) this;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public ENTITY createdBy(final User creator) {
+  public final ENTITY createdBy(final User creator) {
     setCreator(creator);
     return (ENTITY) this;
   }
@@ -205,7 +216,7 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @SuppressWarnings("unchecked")
   @Override
-  protected ENTITY setCreateDate(final Date createDate) {
+  protected final ENTITY setCreateDate(final Date createDate) {
     this.createDate = createDate;
     return (ENTITY) this;
   }
@@ -217,7 +228,7 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @SuppressWarnings("unchecked")
   @Override
-  protected ENTITY setLastUpdateDate(final Date lastUpdateDate) {
+  protected final ENTITY setLastUpdateDate(final Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
     return (ENTITY) this;
   }
@@ -229,8 +240,17 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @SuppressWarnings("unchecked")
   @Override
-  public ENTITY setLastUpdatedBy(final String lastUpdatedBy) {
+  public final ENTITY setLastUpdatedBy(final String lastUpdatedBy) {
+    this.lastUpdatedBySetManually =
+        isPersisted() && this.createdBy != null && !this.createdBySetManually;
     this.lastUpdatedBy = lastUpdatedBy;
+    return (ENTITY) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public final ENTITY setLastUpdatedBy(final User lastUpdater) {
+    setLastUpdater(lastUpdater);
     return (ENTITY) this;
   }
 
@@ -241,15 +261,28 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @SuppressWarnings("unchecked")
   @Override
-  protected ENTITY setVersion(final Long version) {
+  protected final ENTITY setVersion(final Long version) {
     this.version = version;
     return (ENTITY) this;
   }
 
   @Override
-  public void markAsModified() {
+  public final void markAsModified() {
     if (getLastUpdateDate() != null) {
       setLastUpdateDate(new Date(getLastUpdateDate().getTime() + 1));
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public ENTITY clone() {
+    AbstractJpaEntity clone = (AbstractJpaEntity) super.clone();
+    clone.clearSystemDataFlags();
+    return (ENTITY) clone;
+  }
+
+  private void clearSystemDataFlags() {
+    createdBySetManually = false;
+    lastUpdatedBySetManually = false;
   }
 }

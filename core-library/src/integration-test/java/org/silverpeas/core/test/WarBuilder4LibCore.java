@@ -51,6 +51,7 @@ import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.RightRecover;
@@ -69,6 +70,9 @@ import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.calendar.event.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
+import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -106,6 +110,7 @@ import org.silverpeas.core.persistence.jdbc.SchemaPool;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComparator;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
@@ -134,7 +139,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addServiceProviderFeatures();
     addBundleBaseFeatures();
     addClasses(EntityReference.class);
-    addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
+    addCalendarFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
@@ -717,6 +722,19 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
+   * Add calendar feature in web archive (war)
+   * @return the instance of the war builder with calendar features
+   */
+  public WarBuilder4LibCore addCalendarFeatures() {
+    addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
+    addClasses(
+        ICal4JCalendarEventOccurrenceGenerator.class,
+        DefaultCalendarRepository.class,
+        DefaultCalendarEventRepository.class);
+    return this;
+  }
+
+  /**
    * Add image tool features. ImageMagick must be installed on machine.
    * @return the instance of the war with image tool feature.
    */
@@ -735,5 +753,16 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("commons-fileupload:commons-fileupload");
     return this;
   }
+
+  /**
+   * Add stubbed organization controller which is dealing behind with a mocked instance.
+   * @return the instance of the war builder with the stub.
+   */
+  public WarBuilder4LibCore addStubbedOrganizationController() {
+    addOrganisationFeatures();
+    addClasses(StubbedOrganizationController.class);
+    return this;
+  }
+
 
 }

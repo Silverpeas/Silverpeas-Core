@@ -23,18 +23,16 @@
  */
 package org.silverpeas.core.datereminder.persistence.service;
 
-import javax.inject.Inject;
-
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
-import org.silverpeas.core.datereminder.persistence.repository.PersistentResourceDateReminderRepository;
-import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.datereminder.persistence.repository
+    .PersistentResourceDateReminderRepository;
+import org.silverpeas.core.persistence.EntityReference;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-
 import java.util.Collection;
 import java.util.Date;
 
@@ -74,7 +72,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
     // Validating
     dateReminder.validate();
 
-    PersistentResourceDateReminder savedDateReminder = dateReminderRepository.save(OperationContext.fromUser(dateReminder.getCreatedBy()), dateReminder);
+    PersistentResourceDateReminder savedDateReminder = dateReminderRepository.save(dateReminder);
     return savedDateReminder;
   }
 
@@ -92,8 +90,7 @@ public class DefaultDateReminderService implements PersistentDateReminderService
     // Validating
     dateReminder.validate();
 
-    PersistentResourceDateReminder savedDateReminder = dateReminderRepository.save(OperationContext.fromUser(dateReminder.getLastUpdatedBy()),
-        dateReminder);
+    PersistentResourceDateReminder savedDateReminder = dateReminderRepository.save(dateReminder);
     return savedDateReminder;
   }
 

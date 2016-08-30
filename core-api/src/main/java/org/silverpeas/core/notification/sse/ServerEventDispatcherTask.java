@@ -107,7 +107,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   public static void unregisterBySessionId(String sessionId) {
     final List<SilverpeasAsyncContext> contextsToRemove = new ArrayList<>();
     synchronized (contexts) {
-      contexts.stream().forEach(context -> {
+      contexts.forEach(context -> {
         if (sessionId.equals(context.getSessionId())) {
           contextsToRemove.add(context);
         }

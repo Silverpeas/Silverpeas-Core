@@ -69,50 +69,45 @@ public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY
 
   /**
    * Persists entity : create (if id is null or empty) or update.
-   * @param context the context of the save operation (containing the user saver for example).
    * @param entity the entity to save.
    * @return the created or updated entity.
    */
-  ENTITY save(OperationContext context, ENTITY entity);
+  ENTITY save(ENTITY entity);
 
   /**
    * Persists entities : create (if id is null or empty) or update.
-   * @param context the context of the save operation (containing the user saver for example).
    * @param entities the entities to save.
-   * @return
+   * @return the created or updated entity.
    */
-  List<ENTITY> save(OperationContext context, ENTITY... entities);
+  List<ENTITY> save(ENTITY... entities);
 
   /**
    * Persists entities : create (if id is null or empty) or update.
-   * @param context the context of the save operation (containing the user saver for example).
    * @param entities the entities to save.
-   * @return
+   * @return the created or updated entity.
    */
-  List<ENTITY> save(OperationContext context, List<ENTITY> entities);
+  List<ENTITY> save(List<ENTITY> entities);
 
   /**
    * Deletes entities.
-   * @return
    */
   void delete(ENTITY... entity);
 
   /**
    * Deletes entities.
-   * @return
    */
   void delete(List<ENTITY> entities);
 
   /**
    * Deletes entities by their ids.
-   * @param ids
+   * @param ids the identifiers of the entity to DELETE
    * @return number of deleted entities.
    */
   long deleteById(final String... ids);
 
   /**
    * Deletes entities by their ids.
-   * @param ids
+   * @param ids the identifiers of the entity to DELETE
    * @return number of deleted entities.
    */
   long deleteById(final Collection<String> ids);

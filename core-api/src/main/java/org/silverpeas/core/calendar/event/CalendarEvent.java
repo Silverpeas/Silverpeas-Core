@@ -30,7 +30,6 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -349,7 +348,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
       return Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
         CalendarEvent.this.setCalendar(calendar);
-        return repository.save(OperationContext.fromCurrentRequester(), CalendarEvent.this);
+        return repository.save(CalendarEvent.this);
       });
     }
     return this;
@@ -376,7 +375,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
-        repository.save(OperationContext.fromCurrentRequester(), CalendarEvent.this);
+        repository.save(CalendarEvent.this);
         return null;
       });
     }

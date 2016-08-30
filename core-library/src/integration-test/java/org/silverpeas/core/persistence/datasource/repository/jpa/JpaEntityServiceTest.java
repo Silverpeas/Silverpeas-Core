@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
-import org.silverpeas.core.persistence.datasource.repository.jpa.repository.EquipmentRepository;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.persistence.datasource.repository.jpa.repository.AnimalRepository;
+import org.silverpeas.core.persistence.datasource.repository.jpa.repository.EquipmentRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.repository.PersonRepository;
 
 import javax.annotation.PostConstruct;
@@ -98,23 +97,23 @@ public class JpaEntityServiceTest {
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public List<Person> save(final OperationContext context, final Person... person) {
-    return personRepository.save(context, person);
+  public List<Person> save(final Person... person) {
+    return personRepository.save(person);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public List<Animal> save(final OperationContext context, final Animal... animal) {
-    return animalRepository.save(context, animal);
+  public List<Animal> save(final Animal... animal) {
+    return animalRepository.save(animal);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public Person save(final OperationContext context, final Person person) {
-    return personRepository.save(context, person);
+  public Person save(final Person person) {
+    return personRepository.save(person);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public Animal save(final OperationContext context, final Animal animal) {
-    return animalRepository.save(context, animal);
+  public Animal save(final Animal animal) {
+    return animalRepository.save(animal);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)

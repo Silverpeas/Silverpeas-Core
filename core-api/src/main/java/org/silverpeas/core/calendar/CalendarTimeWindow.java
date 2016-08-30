@@ -42,6 +42,9 @@ import static java.time.Month.DECEMBER;
  */
 public class CalendarTimeWindow {
 
+  private static Method peoInMethod;
+  private static Method peoGetMethod;
+
   private final Calendar calendar;
   private final LocalDate startDate, endDate;
   private PlannedEventOccurrences occurrences;
@@ -85,10 +88,12 @@ public class CalendarTimeWindow {
   public List<CalendarEventOccurrence> getEventOccurrences() {
     List<CalendarEventOccurrence> result = null;
     try {
-      Method getter =
-          PlannedEventOccurrences.class.getDeclaredMethod("in", CalendarTimeWindow.class);
-      getter.setAccessible(true);
-      result = (List<CalendarEventOccurrence>) getter.invoke(occurrences, this);
+      if (peoInMethod == null) {
+        peoInMethod =
+            PlannedEventOccurrences.class.getDeclaredMethod("in", CalendarTimeWindow.class);
+        peoInMethod.setAccessible(true);
+      }
+      result = (List<CalendarEventOccurrence>) peoInMethod.invoke(occurrences, this);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -97,9 +102,11 @@ public class CalendarTimeWindow {
 
   private void initCollectionOfPlannedEventOccurrences() {
     try {
-      Method getter = PlannedEventOccurrences.class.getDeclaredMethod("get");
-      getter.setAccessible(true);
-      this.occurrences = (PlannedEventOccurrences) getter.invoke(null);
+      if (peoGetMethod == null) {
+        peoGetMethod = PlannedEventOccurrences.class.getDeclaredMethod("get");
+        peoGetMethod.setAccessible(true);
+      }
+      this.occurrences = (PlannedEventOccurrences) peoGetMethod.invoke(null);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

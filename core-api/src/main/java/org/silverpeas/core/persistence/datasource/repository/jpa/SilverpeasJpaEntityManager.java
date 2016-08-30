@@ -24,13 +24,13 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.AbstractEntity;
-import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
-import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -48,6 +48,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
+    .isCreatedBySetManually;
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
+    .isLastUpdatedBySetManually;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A Silverpeas dedicated entity manager that wraps the JPA {@link javax.persistence.EntityManager}
@@ -70,9 +76,11 @@ import java.util.List;
  * primary key definition.
  * @author Yohann Chastagnier
  */
-public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
-    ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+public class SilverpeasJpaEntityManager<ENTITY extends AbstractJpaEntity<ENTITY,
+    ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
     implements SilverpeasEntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
+
+  private static Method idSetter;
 
   /**
    * Maximum number of items to be passed into a SQL "in" clause.
@@ -265,20 +273,26 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
   }
 
   @Override
-  public ENTITY save(final OperationContext context, final ENTITY entity) {
-    return save(context, Collections.singletonList(entity)).get(0);
+  public ENTITY save(final ENTITY entity) {
+    return save(Collections.singletonList(entity)).get(0);
   }
 
   @Override
-  public List<ENTITY> save(final OperationContext context, final ENTITY... entities) {
-    return save(context, CollectionUtil.asList(entities));
+  public List<ENTITY> save(final ENTITY... entities) {
+    return save(CollectionUtil.asList(entities));
   }
 
   @Override
-  public List<ENTITY> save(final OperationContext context, final List<ENTITY> entities) {
-    context.putIntoCache();
-    List<ENTITY> savedEntities = new ArrayList<ENTITY>(entities.size());
+  public List<ENTITY> save(final List<ENTITY> entities) {
+    List<ENTITY> savedEntities = new ArrayList<>(entities.size());
     for (ENTITY entity : entities) {
+      final OperationContext context = OperationContext.fromCurrentRequester();
+      if (isCreatedBySetManually(entity)) {
+        context.withUser(isDefined(entity.getCreatedBy()) ? entity.getCreator() : null);
+      } else if (isLastUpdatedBySetManually(entity)) {
+        context.withUser(isDefined(entity.getLastUpdatedBy()) ? entity.getLastUpdater() : null);
+      }
+      context.putIntoCache();
       if (entity.isPersisted()) {
         savedEntities.add(getEntityManager().merge(entity));
       } else {
@@ -555,7 +569,6 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     return deleteFromQuery(getEntityManager().createNamedQuery(namedQuery), parameters);
   }
 
-
   /**
    * Lists entities from a jpql query.
    * @param query
@@ -655,10 +668,12 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
 
   private void unsetId(final ENTITY entity) {
     try {
-      Method idSetter = AbstractEntity.class.getDeclaredMethod("setId", String.class);
-      idSetter.setAccessible(true);
-      idSetter.invoke(entity, new String[] {null});
-    } catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException e) {
+      if (idSetter == null) {
+        idSetter = AbstractEntity.class.getDeclaredMethod("setId", String.class);
+        idSetter.setAccessible(true);
+      }
+      idSetter.invoke(entity, new String[]{null});
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
