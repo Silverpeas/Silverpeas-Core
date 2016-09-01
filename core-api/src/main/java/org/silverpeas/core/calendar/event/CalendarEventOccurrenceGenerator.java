@@ -48,14 +48,12 @@ public interface CalendarEventOccurrenceGenerator {
 
   /**
    * Generates the occurrences of the specified events and that occur at the specified day.
-   * @param events the events.
    * @param timeWindow the time window in which the events occur.
-   * @return a set of event occurrences that occur in the specified period sorted by the date and
-   * time at which they start.
+   * @return a set of event occurrences that occur in the specified window of time sorted by the
+   * date and time at which they start.
    */
-  default List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
-      CalendarTimeWindow timeWindow) {
-    return generateOccurrencesOf(events, Period
+  default List<CalendarEventOccurrence> generateOccurrencesIn(CalendarTimeWindow timeWindow) {
+    return generateOccurrencesOf(timeWindow.getEvents(), Period
         .between(timeWindow.getStartDate().atStartOfDay().atOffset(ZoneOffset.UTC),
             timeWindow.getEndDate().plusDays(1).atStartOfDay().minusMinutes(1)
                 .atOffset(ZoneOffset.UTC)));

@@ -23,31 +23,27 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.event.PlannedEventOccurrences;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static java.time.Month.DECEMBER;
 
 /**
- * This class represents a time window into which occurrences of events will be computed.
+ * This class represents a window of time of a calendar within which events can occur.
  * @author Yohann Chastagnier
  */
 public class CalendarTimeWindow {
 
-  private static Method peoInMethod;
-  private static Method peoGetMethod;
-
   private final Calendar calendar;
   private final LocalDate startDate, endDate;
-  private PlannedEventOccurrences occurrences;
+  private final List<CalendarEvent> events;
 
   CalendarTimeWindow(final Calendar calendar, final Year year) {
     this(calendar, year.atDay(1), year.atMonth(DECEMBER).atEndOfMonth());
@@ -65,50 +61,48 @@ public class CalendarTimeWindow {
     this.calendar = calendar;
     this.startDate = startDate;
     this.endDate = endDate;
-    initCollectionOfPlannedEventOccurrences();
+    this.events = CalendarEventRepository.get()
+        .getAllBetween(this.calendar, startDate.atStartOfDay().atOffset(ZoneOffset.UTC),
+            endDate.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC));
   }
 
+  /**
+   * Gets the calendar on which this window of time is opened.
+   * @return the calendar concerned by this window of time.
+   */
   public Calendar getCalendar() {
     return calendar;
   }
 
+  /**
+   * Gets the date at which this window of time starts.
+   * @return the start date of this window of time.
+   */
   public LocalDate getStartDate() {
     return startDate;
   }
 
+  /**
+   * Gets the date at which this window of time ends.
+   * @return the end date of this window of time.
+   */
   public LocalDate getEndDate() {
     return endDate;
   }
 
   /**
-   * Gets the list of occurrences of the planned events in this collection.
-   * @return a list of planned event occurrences.
+   * Gets the list of occurrences of events that occur in this window of time.
+   * @return a list of event occurrences.
    */
-  @SuppressWarnings("unchecked")
   public List<CalendarEventOccurrence> getEventOccurrences() {
-    List<CalendarEventOccurrence> result = null;
-    try {
-      if (peoInMethod == null) {
-        peoInMethod =
-            PlannedEventOccurrences.class.getDeclaredMethod("in", CalendarTimeWindow.class);
-        peoInMethod.setAccessible(true);
-      }
-      result = (List<CalendarEventOccurrence>) peoInMethod.invoke(occurrences, this);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-    return result;
+    return CalendarEventOccurrence.getOccurrencesIn(this);
   }
 
-  private void initCollectionOfPlannedEventOccurrences() {
-    try {
-      if (peoGetMethod == null) {
-        peoGetMethod = PlannedEventOccurrences.class.getDeclaredMethod("get");
-        peoGetMethod.setAccessible(true);
-      }
-      this.occurrences = (PlannedEventOccurrences) peoGetMethod.invoke(null);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
+  /**
+   * Gets all the events that have at least one occurrence in this window of time.
+   * @return a list of events that occur in this window of time.
+   */
+  public List<CalendarEvent> getEvents() {
+    return events;
   }
 }

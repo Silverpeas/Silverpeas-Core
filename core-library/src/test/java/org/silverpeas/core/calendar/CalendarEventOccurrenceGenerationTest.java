@@ -64,25 +64,22 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void nothingDoneWithAnEmptyListOfEvents() {
-    CalendarTimeWindow timeWindow = createCalendarTimeWindowFor(Year.of(2016));
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(Collections.emptyList(), timeWindow);
+        generator.generateOccurrencesOf(Collections.emptyList(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(true));
   }
 
   @Test
   public void noOccurrencesIfNoEventInTheGivenPeriod() {
-    CalendarTimeWindow timeWindow = createCalendarTimeWindowFor(YearMonth.of(2016, 1));
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, timeWindow);
+        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, 1)));
     assertThat(occurrences.isEmpty(), is(true));
   }
 
   @Test
   public void countEventOccurrencesInYear() {
-    CalendarTimeWindow timeWindow = createCalendarTimeWindowFor(Year.of(2016));
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, timeWindow);
+        generator.generateOccurrencesOf(eventsForTest, in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(103));
 
@@ -119,9 +116,8 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void countEventOccurrencesInMay() {
-    CalendarTimeWindow timeWindow = createCalendarTimeWindowFor(YearMonth.of(2016, Month.MAY));
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, timeWindow);
+        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, Month.MAY)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(10));
     List<String> allEventIds = occurrences.stream()
@@ -137,9 +133,8 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void countEventOccurrencesInJuly() {
-    CalendarTimeWindow timeWindow = createCalendarTimeWindowFor(YearMonth.of(2016, Month.JULY));
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, timeWindow);
+        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, Month.JULY)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(4));
     List<String> allEventIds = occurrences.stream()
@@ -169,9 +164,8 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void dateOfEventOccurrencesInJuly() {
-    CalendarTimeWindow timeWindow = createCalendarTimeWindowFor(YearMonth.of(2016, Month.JULY));
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, timeWindow);
+        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, Month.JULY)));
     assertThat(occurrences.size(), is(4));
     // first occurrence
     Iterator<CalendarEventOccurrence> iterator = occurrences.iterator();
@@ -248,12 +242,23 @@ public class CalendarEventOccurrenceGenerationTest {
     return events;
   }
 
-  private CalendarTimeWindow createCalendarTimeWindowFor(Year year) {
-    return new CalendarTimeWindow(null, year);
+  private Period in(Year year) {
+    return Period.between(year.atDay(1).atStartOfDay().atOffset(ZoneOffset.UTC),
+        year.atMonth(DECEMBER)
+            .atEndOfMonth()
+            .plusDays(1)
+            .atStartOfDay()
+            .minusMinutes(1)
+            .atOffset(ZoneOffset.UTC));
   }
 
-  private CalendarTimeWindow createCalendarTimeWindowFor(final YearMonth yearMonth) {
-    return new CalendarTimeWindow(null, yearMonth);
+  private Period in(YearMonth yearMonth) {
+    return Period.between(yearMonth.atDay(1).atStartOfDay().atOffset(ZoneOffset.UTC),
+        yearMonth.atEndOfMonth()
+            .plusDays(1)
+            .atStartOfDay()
+            .minusMinutes(1)
+            .atOffset(ZoneOffset.UTC));
   }
 
 
