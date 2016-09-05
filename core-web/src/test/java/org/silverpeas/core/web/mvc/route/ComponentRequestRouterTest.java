@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -22,29 +22,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.peasCore.servlets;
+package org.silverpeas.core.web.mvc.route;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import junit.framework.TestCase;
-import org.silverpeas.servlet.HttpRequest;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.jglue.cdiunit.CdiRunner;
+import org.jglue.cdiunit.internal.servlet.MockHttpServletRequestImpl;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
  * @author ehugonnet
  */
-public class ComponentRequestRouterTest extends TestCase {
+@RunWith(CdiRunner.class)
+public class ComponentRequestRouterTest {
+
+  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public CommonAPI4Test getCommonAPI4Test() {
+    return commonAPI4Test;
+  }
+
+  @Produces
+  @Mock
+  private OrganizationController mockedOrganizationController;
+
+  @Inject
+  private SilverpeasWebUtil util;
 
   private ComponentRequestRouter router;
 
-  public ComponentRequestRouterTest() {
+  @Before
+  public void setup() {
+    commonAPI4Test.injectIntoMockedBeanContainer(util);
     router = new ComponentRequestRouter() {
 
       private static final long serialVersionUID = 2578618196722321170L;
@@ -68,8 +99,9 @@ public class ComponentRequestRouterTest extends TestCase {
     };
   }
 
+  @Test
   public void testGetComponentId() {
-    MockHttpServletRequest request = new MockHttpServletRequest();
+    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
     request.setRemoteHost("localhost");
     request.setMethod("GET");
     request.setRemotePort(8000);
@@ -78,9 +110,9 @@ public class ComponentRequestRouterTest extends TestCase {
     request.setPathInfo("/mytests2/ListeContacts");
     request.setRequestURI("/silverpeas/Rmytests/mytests2/ListeContacts");
     String[] context = ComponentRequestRouter.getComponentId(request, null);
-    assertNotNull(context);
-    assertNull(context[0]);
-    assertEquals("mytests2", context[1]);
-    assertEquals("ListeContacts", context[2]);
+    assertThat(context, notNullValue());
+    assertThat(context[0], nullValue());
+    assertThat("mytests2", is(context[1]));
+    assertThat("ListeContacts", is(context[2]));
   }
 }

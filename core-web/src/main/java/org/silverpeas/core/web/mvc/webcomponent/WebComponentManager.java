@@ -138,8 +138,8 @@ public class WebComponentManager {
    * <li>{@link org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter} </li>
    * <li>{@link org.silverpeas.core.web.mvc.webcomponent.annotation.Invokable} </li>
    * </ul>
-   * The webComponentControllerClass methods must also return a {@link com.stratelia.silverpeas
-   * .peasCore.servlets.Navigation} instance or must be annotated by a @RedirectTo...
+   * The webComponentControllerClass methods must also return a {@link Navigation} instance or
+   * must be annotated by a @RedirectTo...
    * @param webComponentControllerClass the webComponentControllerClass which exposes the method
    * that will be invoked.
    * @param <C> the type of the WebComponentController which exposes the method that will be

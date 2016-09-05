@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,29 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.peasCore.servlets;
 
-import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import com.stratelia.silverpeas.peasCore.servlets.control.AbstractTestWebComponentGenericController;
-import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+package org.silverpeas.core.web.mvc.webcomponent;
+
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.core.cache.service.InMemoryCacheService;
+import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.servlet.HttpRequest;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -65,34 +71,39 @@ import static org.mockito.Mockito.*;
  */
 public class WebComponentRequestRouterTest {
 
-  // Spring context
-  private ClassPathXmlApplicationContext context;
+  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public CommonAPI4Test getCommonAPI4Test() {
+    return commonAPI4Test;
+  }
+
+  @Inject
+  private OrganizationController mockedOrganizationController;
+
+  @Inject
+  private SilverpeasWebUtil silverpeasWebUtil;
+
+  @Inject
+  private Instance<WebComponentRequestRouter<?, ?>> webComponentRequestRouterProducer;
+
+  @Inject
+  private ComponentHelper componentHelper;
 
   @Before
   public void setUp() throws Exception {
-    OrganizationControllerProvider.getFactory().clearFactory();
-
-    // Spring
-    context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
-    SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
-
+    commonAPI4Test.injectIntoMockedBeanContainer(mock(Administration.class));
+    commonAPI4Test.injectIntoMockedBeanContainer(mock(SessionManagement.class));
+    commonAPI4Test.injectIntoMockedBeanContainer(mock(SilverStatisticsManager.class));
+    commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganizationController);
+    commonAPI4Test.injectIntoMockedBeanContainer(silverpeasWebUtil);
+    commonAPI4Test.injectIntoMockedBeanContainer(componentHelper);
     WebComponentManager.managedWebComponentRouters.clear();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    reset(getOrganisationController(),
-        AbstractTestWebComponentGenericController.getResourceLocatorMock());
-  }
-
-  @After
-  public void tearDown() {
-    OrganizationControllerProvider.getFactory().clearFactory();
-    SilverStatisticsManager.setInstanceForTest(null);
-    reset(getOrganisationController(),
-        AbstractTestWebComponentGenericController.getResourceLocatorMock());
-    context.close();
   }
 
   private OrganizationController getOrganisationController() {
-    return context.getBean(OrganizationControllerMockWrapper.class).getOrganizationControllerMock();
+    return mockedOrganizationController;
   }
 
   protected void verifyDestination(WebComponentRequestRouter routerInstance,
@@ -134,7 +145,6 @@ public class WebComponentRequestRouterTest {
     when(organisationController.getComponentInstLight(anyString()))
         .then(new Returns(new ComponentInstLight()));
     when(mainSessionController.getCurrentUserDetail()).thenReturn(new UserDetail());
-    when(mainSessionController.getOrganisationController()).thenReturn(organisationController);
     ComponentContext componentContext = mock(ComponentContext.class);
     when(componentContext.getCurrentProfile())
         .thenReturn(greaterUserRole != null ? new String[]{greaterUserRole.name()} : null);
@@ -158,7 +168,7 @@ public class WebComponentRequestRouterTest {
    */
   private WebComponentRequestRouter initRequestRouterWith(
       Class<? extends WebComponentController> controller) {
-    WebComponentRequestRouter routerInstance = new WebComponentRequestRouter();
+    WebComponentRequestRouter routerInstance = webComponentRequestRouterProducer.get();
     ServletConfig servletConfig = mock(ServletConfig.class);
     when(servletConfig.getInitParameter(
         org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class
@@ -175,26 +185,23 @@ public class WebComponentRequestRouterTest {
   }
 
   @SuppressWarnings("unchecked")
-  protected <
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
+  protected <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
       WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
-      WebComponentController>> ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT>
+          WebComponentController>> ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT>
   onController(
       Class<CONTROLLER> controllerClass) {
     return new ControllerTest(controllerClass);
   }
 
-  protected class TestResult<
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
-      WebComponentController>> {
+  protected class TestResult<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<?
+      extends WebComponentController>> {
     public WebComponentRequestRouter router = null;
     public WEB_COMPONENT_REQUEST_CONTEXT requestContext = null;
   }
 
-  protected class ControllerTest<
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
-      WebComponentController>> {
+  protected class ControllerTest<CONTROLLER extends
+      WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT
+      extends WebComponentRequestContext<? extends WebComponentController>> {
     private Class<CONTROLLER> controllerClass = null;
     private SilverpeasRole greaterUserRole = null;
 
@@ -214,10 +221,9 @@ public class WebComponentRequestRouterTest {
     }
   }
 
-  protected class RequestTest<
-      CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
-      WebComponentController>> {
+  protected class RequestTest<CONTROLLER extends
+      WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT
+      extends WebComponentRequestContext<? extends WebComponentController>> {
     private ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> controller;
     private String httpMethod = HttpMethod.GET;
     private String suffixPath = "Main";
@@ -238,11 +244,19 @@ public class WebComponentRequestRouterTest {
 
     @SuppressWarnings("unchecked")
     public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
-      InMemoryCacheService sessionCache = CacheServiceProvider.getRequestCacheService()
-          .get("@SessionCache@", InMemoryCacheService.class);
+      SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
       CacheServiceProvider.getRequestCacheService().clearAllCaches();
-      CacheServiceProvider.getRequestCacheService().put("@SessionCache@",
-          (sessionCache != null ? sessionCache : new InMemoryCacheService()));
+      if (sessionCache != null) {
+        // Session cache is not trashed
+        ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+            .setCurrentSessionCache(sessionCache);
+      } else {
+        // Putting a current requester for the next actions of this test.
+        User user = mock(User.class);
+        when(user.getId()).thenReturn("400");
+        ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+      }
+
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
       if (HttpMethod.GET.equals(httpMethod)) {
@@ -263,7 +277,7 @@ public class WebComponentRequestRouterTest {
                 response);
       }
       WEB_COMPONENT_REQUEST_CONTEXT requestContext =
-          (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService()
+          (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService().getCache()
               .get(WebComponentRequestContext.class.getName());
       assertThat(requestContext, notNullValue());
       assertThat(requestContext.getHttpMethodClass().getName(), Matchers.endsWith(httpMethod));

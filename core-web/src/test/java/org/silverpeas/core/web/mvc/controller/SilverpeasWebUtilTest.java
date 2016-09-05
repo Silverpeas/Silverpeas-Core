@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -26,20 +26,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.stratelia.silverpeas.peasCore;
+package org.silverpeas.core.web.mvc.controller;
 
-import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
-import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
-import org.junit.After;
-import org.junit.Before;
+import org.jglue.cdiunit.CdiRunner;
+import org.jglue.cdiunit.internal.servlet.MockHttpServletRequestImpl;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.mock.web.MockHttpServletRequest;
 
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -51,40 +49,18 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
+@RunWith(CdiRunner.class)
 public class SilverpeasWebUtilTest {
 
-  // Spring context
-  private ClassPathXmlApplicationContext context;
+  @Produces
+  @Mock
+  private OrganizationController mockedOrganizationController;
 
-  @Before
-  public void setUp() throws Exception {
-    OrganizationControllerProvider.getFactory().clearFactory();
-
-    // Spring
-    context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
-    SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
-    reset(getOrganisationController());
-  }
-
-  @After
-  public void tearDown() {
-    OrganizationControllerProvider.getFactory().clearFactory();
-    SilverStatisticsManager.setInstanceForTest(null);
-    context.close();
-  }
+  @Inject
+  private SilverpeasWebUtil util;
 
   private OrganizationController getOrganisationController() {
-    return context.getBean(OrganizationControllerMockWrapper.class).getOrganizationControllerMock();
-  }
-
-  /**
-   * Test of getMainSessionController method, of class SilverpeasWebUtil.
-   */
-  @Test
-  public void checkDefaultOrganizationController() {
-    OrganizationControllerProvider.getFactory().clearFactory();
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
-    assertEquals(DefaultOrganizationController.class.getName(), util.getOrganisationController().getClass().getName());
+    return mockedOrganizationController;
   }
 
   /**
@@ -97,7 +73,6 @@ public class SilverpeasWebUtilTest {
     MainSessionController controller = mock(MainSessionController.class);
     when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).thenReturn(controller);
     when(request.getSession()).thenReturn(session);
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
     MainSessionController result = util.getMainSessionController(request);
     assertEquals(controller, result);
   }
@@ -107,8 +82,8 @@ public class SilverpeasWebUtilTest {
    */
   @Test
   public void getComponentIdForURLWithFunction() {
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
-    MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://localhost:8000/silverpeas/Rtoolbox/toolbox8/ViewAttachments");
+    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
+    request.setMethod("GET");
     request.setPathInfo("/toolbox8/ViewAttachments");
     String[] expResult = new String[]{null, "toolbox8", "ViewAttachments"};
     String[] result = util.getComponentId(request);
@@ -117,15 +92,15 @@ public class SilverpeasWebUtilTest {
 
   @Test
   public void getComponentIdForMainURL() {
-    MockHttpServletRequest request = new MockHttpServletRequest("GET",
-        "http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
+    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
+    request.setMethod("GET");
     request.setPathInfo("/toolbox8/Main");
+
     OrganizationController controller = getOrganisationController();
     ComponentInstLight component = mock(ComponentInstLight.class);
     String spaceId = "12";
     when(component.getDomainFatherId()).thenReturn(spaceId);
     when(controller.getComponentInstLight("toolbox8")).thenReturn(component);
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
     String[] result = util.getComponentId(request);
     String[] expResult = new String[]{"12", "toolbox8", "Main"};
     assertArrayEquals(expResult, result);
@@ -133,9 +108,9 @@ public class SilverpeasWebUtilTest {
 
   @Test
   public void getComponentIdWithNullPathInfo() {
-    MockHttpServletRequest request = new MockHttpServletRequest("GET",
-        "http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
+    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
+    request.setMethod("GET");
+    request.setRequestURL("http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
     String[] result = util.getComponentId(request);
     String[] expResult = new String[]{"-1", "-1", "Error"};
     assertArrayEquals(expResult, result);
@@ -143,10 +118,9 @@ public class SilverpeasWebUtilTest {
 
   @Test
   public void getComponentIdWithJspPathInfo() {
-    MockHttpServletRequest request = new MockHttpServletRequest("GET",
-        "http://localhost:8000/silverpeas/jsp/javaScript/forums.js");
+    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
+    request.setMethod("GET");
     request.setPathInfo("/jsp/javaScript/forums.js");
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
     String[] result = util.getComponentId(request);
     String[] expResult = new String[]{null, null, "javaScript/forums.js"};
     assertArrayEquals(expResult, result);
@@ -165,7 +139,6 @@ public class SilverpeasWebUtilTest {
     when(request.getSession()).thenReturn(session);
     when(request.getPathInfo()).thenReturn("/toolbox8/ViewAttachments");
 
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
     util.getRoles(request);
     verify(getOrganisationController()).getUserProfiles("18", "toolbox8");
   }
