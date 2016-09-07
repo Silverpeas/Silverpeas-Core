@@ -33,6 +33,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ include file="import.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
+<c:set var="cause" value="${requestScope['Cause']}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -45,7 +49,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <view:frame>
 <br/>
 	<div class="inlineMessage-nok">
-		<h3><%=generalMessage.getString("GML.ForbiddenAccessContent")%></h3>
+		<h3>
+      <c:if test="${not empty cause}">
+        <c:out value="${cause}"/>
+      </c:if>
+      <c:if test="${empty cause}">
+        <%=generalMessage.getString("GML.ForbiddenAccessContent")%>
+      </c:if>
+    </h3>
 	</div>
 <%
 	ButtonPane buttons = gef.getButtonPane();
