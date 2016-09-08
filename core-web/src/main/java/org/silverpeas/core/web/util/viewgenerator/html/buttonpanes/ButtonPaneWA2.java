@@ -57,22 +57,15 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
     StringBuilder result = new StringBuilder();
     List<Button> buttons = getButtons();
 
-    result.append("<div class=\"buttonPane\">");
-    result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
-    result.append("<td width=\"100\">&nbsp;</td>");
+    result.append("<div class=\"sp_buttonPane\">");
+
     if (buttons.size() > 0) {
-      result.append("<td>");
       result.append(buttons.get(0).print());
-      result.append("</td>");
     }
     for (int i = 1; i < buttons.size(); i++) {
-      result.append("<td>&nbsp;</td>");
-      result.append("<td>");
       result.append(buttons.get(i).print());
-      result.append("</td>");
     }
-    result.append("<td width=\"100\">&nbsp;</td>");
-    result.append("</tr></table>");
+  
     result.append("</div>");
 
     return result.toString();
@@ -89,16 +82,12 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
     List<Button> buttons = getButtons();
     String verticalWidth = getVerticalWidth();
     result.append(
-        "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"").append(verticalWidth).
-        append("\">");
-    result.append("<tr>");
-    result.append("<td width=\"").append(verticalWidth).append("\">");
+        "<div class=\"sp_buttonPane verticalPane\" style=\"width:").append(verticalWidth).
+        append(";\">");
     for (Button button : buttons) {
       result.append(button.print());
     }
-    result.append("</td>");
-    result.append("</tr>");
-    result.append("</table>");
+    result.append("</div>");
     return result.toString();
   }
 

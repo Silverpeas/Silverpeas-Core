@@ -59,16 +59,8 @@ public class ButtonSilverpeasV5 extends AbstractButton {
     }
 
     StringBuilder str = new StringBuilder();
-    str.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
-    str.append("<tr>");
-    str.append("<td align=\"left\" class=\"gaucheBoutonV5\"><img src=\"")
-        .append(iconsPath).append("/px.gif\" alt=\"\"/></td>");
-    str.append("<td nowrap=\"nowrap\" class=\"milieuBoutonV5\"><a ").append(theAction)
-        .append(" >").append(label).append("</a></td>");
-    str.append("<td align=\"right\" class=\"droiteBoutonV5\"><img src=\"")
-        .append(iconsPath).append("/px.gif\" alt=\"\"/></td>");
-    str.append("</tr>");
-    str.append("</table>");
+    str.append("<a class=\"sp_button\" ").append(theAction)
+        .append(" >").append(label).append("</a>");
 
     return str.toString();
   }

@@ -58,23 +58,17 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
     result.append("<div id=\"gef-tabs\">");
     for (int j = 0; j < nbLines; j++) {
       tabs = tabLines.get(j);
-      result.append("<table id=\"tabbedPane");
+      result.append("<div class =\"tabbedPane\" id=\"tabbedPane");
       if (nbLines > 1) {
         result.append(j);
       }
-      result.append("\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">");
-      result.append("<tr><td align=\"right\" width=\"100%\">");
+      result.append("\" >");
       result.append(printTabLine(tabs));
-      result.append("</td><td><img src=\"").append(iconsPath).append(
-          "/tabs/1px.gif\" width=\"").append(incr * 17).append(
-          "\" height=\"1\" alt=\"\"/></td></tr></table>");
+      result.append("</div>");
       incr--;
     }
     result
-        .append("<table id=\"sousTabbedPane\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\"><tr><td width=\"100%\" class=\"sousOnglets\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/tabs/1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td></tr></table>");
-    result.append("</div>");
+        .append("<div id=\"sousTabbedPane\"><div class=\"sousOnglets\"></div></div></div>");
     return result.toString();
   }
 
@@ -90,12 +84,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
     String iconsPath = getIconsPath();
     int indentation = getIndentation();
 
-    result.append("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">");
-    result.append("<tr align=\"right\">");
-    if (indentation == RIGHT) {
-      result.append("<td width=\"100%\">&nbsp;</td>\n");
-    }
-
+ 
     int i = 0;
     for (Tab tab : tabs) {
       String style = null;
@@ -103,21 +92,14 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
       String styleDroite = null;
 
       if (tab.getSelected()) {
-        style = "milieuOngletOn";
-        styleGauche = "gaucheOngletOn";
-        styleDroite = "droiteOngletOn";
+        style = "sp_tabOn";
       } else {
-        style = "milieuOngletOff";
-        styleGauche = "gaucheOngletOff";
-        styleDroite = "droiteOngletOff";
+        style = "sp_tabOff";
       }
 
-      result.append("<td id=\"tableft").append(i)
-          .append("\" align=\"center\" nowrap=\"nowrap\" class=\"")
-          .append(styleGauche).append("\">");
-      result.append("<img src=\"").append(iconsPath).append("/tabs/1px.gif\" alt=\"\"/></td>\n");
-      result.append("<td id=\"tab").append(i)
-          .append("\" align=\"center\" nowrap=\"nowrap\" class=\"")
+      
+      result.append("<div id=\"tab").append(i)
+          .append("\" class=\"")
           .append(style).append("\">");
       if (tab.getEnabled()) {
         result.append("<a href=\"").append(tab.getAction()).append("\">");
@@ -128,20 +110,10 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
         result.append(tab.getLabel());
         result.append("</span>");
       }
-      result.append("</td>\n");
-      result.append("<td id=\"tabright").append(i)
-          .append("\" align=\"center\" nowrap=\"nowrap\" class=\"").append(styleDroite)
-          .append("\"><img src=\"").append(iconsPath).append(
-              "/tabs/1px.gif\" alt=\"\"/></td>\n");
+      result.append("</div>\n");
       i++;
     }
 
-    if (indentation == LEFT) {
-      result.append("<td width=\"100%\">&nbsp;</td>\n");
-    }
-    result.append("<td><img src=\"").append(iconsPath).append(
-        "/tabs/1px.gif\" width=\"13\" alt=\"\"/></td></tr>\n");
-    result.append("</table>\n");
     return result.toString();
   }
 
