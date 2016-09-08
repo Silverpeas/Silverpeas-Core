@@ -106,50 +106,46 @@ function newMessage() {
 <%
   // Arraypane
   ArrayPane list = gef.getArrayPane( "silvermail", "Main.jsp", request,session );
-  ArrayColumn col = list.addArrayColumn( silvermailScc.getString("date") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("source") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("from") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("url") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("subject") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("operation") );
-  col.setSortable(false);
+  list.addArrayColumn( silvermailScc.getString("date") );
+  list.addArrayColumn( silvermailScc.getString("source") );
+  list.addArrayColumn( silvermailScc.getString("from") );
+  list.addArrayColumn( silvermailScc.getString("url") ).setSortable(false);
+  list.addArrayColumn( silvermailScc.getString("subject") );
+  list.addArrayColumn( silvermailScc.getString("operation") ).setSortable(false);
 
   Iterator	messageIterator = silvermailScc.getFolderMessageList( "INBOX" ).iterator();
   String	hasBeenReadenOrNotBegin	= "";
   String	hasBeenReadenOrNotEnd	= "";
   while( messageIterator.hasNext() == true )
   {
-	hasBeenReadenOrNotBegin = "";
-	hasBeenReadenOrNotEnd = "";
+    hasBeenReadenOrNotBegin = "";
+    hasBeenReadenOrNotEnd = "";
     SILVERMAILMessage message = (SILVERMAILMessage)messageIterator.next();
-	if (message.getReaden() == 0) {
-		hasBeenReadenOrNotBegin = "<b>";
-		hasBeenReadenOrNotEnd = "</b>";
-	}	
+    if (message.getReaden() == 0) {
+      hasBeenReadenOrNotBegin = "<b>";
+      hasBeenReadenOrNotEnd = "</b>";
+    }
     String link = "<a href=\"javascript:onClick=readMessage(" + message.getId() + ");\">";
     ArrayLine line = list.addArrayLine();
-	Date date = message.getDate();
+    Date date = message.getDate();
     ArrayCellText cell = line.addArrayCellText(hasBeenReadenOrNotBegin + resource.getOutputDate(date) + hasBeenReadenOrNotEnd);
     cell.setCompareOn(date);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>" + hasBeenReadenOrNotEnd);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</a>" + hasBeenReadenOrNotEnd);
+    ArrayCellText cell1 = line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>" + hasBeenReadenOrNotEnd);
+    cell1.setCompareOn(message.getSource());
+    ArrayCellText cell2 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</a>" + hasBeenReadenOrNotEnd);
+    cell2.setCompareOn(message.getSenderName());
     if ( message.getUrl()!=null && message.getUrl().length()>0 )
     	line.addArrayCellText(hasBeenReadenOrNotBegin + "<a href =\"" + EncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=\"_top\"><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"/></a>" + hasBeenReadenOrNotEnd);
     else
-		line.addArrayCellText( "" );    
-    
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + message.getSubject() + "</a>" + hasBeenReadenOrNotEnd);
+		  line.addArrayCellText( "" );
+
+    ArrayCellText cell3 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + message.getSubject() + "</a>" + hasBeenReadenOrNotEnd);
+    cell3.setCompareOn(message.getSubject());
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();
     Icon del = actions.addIcon();
-    //del.setProperties(delete, silvermailScc.getString("delete") , "DeleteMessage.jsp?ID=" + message.getId() );
-	del.setProperties(delete, silvermailScc.getString("delete") , "javascript:onClick=deleteMessage('" + message.getId() +"');");
+	  del.setProperties(delete, silvermailScc.getString("delete") , "javascript:onClick=deleteMessage('" + message.getId() +"');");
     line.addArrayCellIconPane(actions);
   }
 

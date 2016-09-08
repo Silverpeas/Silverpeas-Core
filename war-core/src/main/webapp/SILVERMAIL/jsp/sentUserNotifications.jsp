@@ -96,23 +96,20 @@ function deleteAllMessages() {
 
   // Arraypane
   ArrayPane list = gef.getArrayPane( "silvermail", "SentUserNotifications.jsp", request,session );
-  ArrayColumn col = list.addArrayColumn( silvermailScc.getString("date") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("source") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("subject") );
-  col.setSortable(true);
-  col = list.addArrayColumn( silvermailScc.getString("operation") );
-  col.setSortable(false);
+  list.addArrayColumn( silvermailScc.getString("date") );
+  list.addArrayColumn( silvermailScc.getString("source") );
+  list.addArrayColumn( silvermailScc.getString("subject") );
+  list.addArrayColumn(silvermailScc.getString("operation")).setSortable(false);
 
   for (SentNotificationDetail message : sentNotifs) {			
     String link = "<a href=\"javascript:onclick=readMessage(" + message.getNotifId() + ");\">";
     ArrayLine line = list.addArrayLine();
-	Date notifDate = message.getNotifDate();
+	  Date notifDate = message.getNotifDate();
     ArrayCellText cell = line.addArrayCellText(link + resource.getOutputDate(notifDate) + "</a>");
     cell.setCompareOn(notifDate);
-    line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>");
-    line.addArrayCellText(link + message.getTitle() + "</a>");
+    ArrayCellText cell1 = line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>");
+    cell1.setCompareOn(message.getSource());
+    line.addArrayCellText(link + message.getTitle() + "</a>").setCompareOn(message.getTitle());
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();
@@ -125,7 +122,7 @@ function deleteAllMessages() {
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-<form id="genericForm" action="" method="POST">
+<form id="genericForm" action="" method="post">
   <input id="NotifId" name="NotifId" type="hidden"/>
 </form>
 </body>
