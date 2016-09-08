@@ -82,7 +82,7 @@ public class ProcessModelButtonPane extends TagSupport {
 
     try {
       pageContext.getOut().println(
-          "<BR><center>" + buttonPane.print() + "</center><BR>");
+          "<div class='sp_buttonPane'>" + buttonPane.print() + "</div>");
     } catch (IOException e) {
       throw new JspException("Error when printing the Workflow Designer tabs",
           e);

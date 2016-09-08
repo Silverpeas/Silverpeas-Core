@@ -59,7 +59,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
       classes += " " + getClasses();
     }
 
-    return "<table class=\"" + classes + "\"><tr><td>";
+    return "<div class=\"" + classes + "\">";
   }
 
   /**
@@ -70,7 +70,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
   public String printAfter() {
     StringBuilder result = new StringBuilder(20);
 
-    result.append("</td></tr></table>");
+    result.append("</div>");
 
     return result.toString();
   }

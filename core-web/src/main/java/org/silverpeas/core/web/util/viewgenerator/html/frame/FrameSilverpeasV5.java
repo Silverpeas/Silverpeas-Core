@@ -47,9 +47,8 @@ public class FrameSilverpeasV5 extends AbstractFrame {
     String result = "";
 
     result +=
-        "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"tableFrame\">\n";
-    result += "\t<tr>\n";
-    result += "\t\t<td colspan=\"3\" class=\"hautFrame\">\n";
+        "<div class=\"tableFrame\">\n";
+    result += "<div class=\"hautFrame\">\n";
     if (getTitle() != null) {
       result += "<span class=\"titreFenetre\">\n";
       result += getTitle();
@@ -69,10 +68,8 @@ public class FrameSilverpeasV5 extends AbstractFrame {
   public String printMiddle() {
     String result = "";
 
-    result += "\t\t</td>\n";
-    result += "\t</tr>\n";
-    result += "\t<tr>\n";
-    result += "\t\t<td colspan=\"3\" class=\"milieuFrame\">\n";
+    result += "</div>\n";
+    result += "<div class=\"milieuFrame\">\n";
 
     setMiddle();
     return result;
@@ -93,17 +90,8 @@ public class FrameSilverpeasV5 extends AbstractFrame {
 
     }
 
-    result += "\t\t</td>\n";
-    result += "\t</tr>\n";
-    result += "<tr>\n";
-    result += "\t\t<td class=\"basGaucheFrame\"><img src=\"" + iconsPath
-        + "/1px.gif\" height=\"15\" alt=\"\"/></td>\n";
-    result += "\t\t<td class=\"basMilieuFrame\"><img src=\"" + iconsPath
-        + "/1px.gif\" height=\"15\" alt=\"\"/></td>\n";
-    result += "\t\t<td class=\"basDroiteFrame\"><img src=\"" + iconsPath
-        + "/1px.gif\" height=\"15\" alt=\"\"/></td>\n";
-    result += "\t</tr>\n";
-    result += "</table>\n";
+    result += "</div>\n";
+    result += "</div>\n";
     return result;
   }
 

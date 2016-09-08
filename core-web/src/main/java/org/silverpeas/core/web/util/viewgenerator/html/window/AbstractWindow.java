@@ -349,30 +349,26 @@ public abstract class AbstractWindow implements Window {
       result.append(contextualDiv);
     }
 
-    result.append("<table width=\"").append(width).append(
-        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
+    result.append("<div id=\"topPage\">");
     if (isBrowseBarVisible()) {
       if (isPopup()) {
         getBrowseBar().setClickable(false);
       }
-      result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
+      result.append("<div class=\"cellBrowseBar\" >");
       result.append(getBrowseBar().print());
-      result.append("</td>");
+      result.append("</div>");
       if (nbCols == 2) {
-        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+        result.append("<div class=\"cellOperation\" >");
         result.append(getOperationPane().print());
-        result.append("</td>");
+        result.append("</div>");
       } else {
-        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+        result.append("<div class=\"cellOperation\" >");
         result.append("&nbsp;");
-        result.append("</td>");
+        result.append("</div>");
       }
-      result.append("</tr>");
+
     }
-    result.append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
-    result
-        .append(
-        "<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
+    result.append("<div class=\"cellBodyWindows\">");
     return result.toString();
   }
 
@@ -380,28 +376,11 @@ public abstract class AbstractWindow implements Window {
   public String printAfter() {
     StringBuilder result = new StringBuilder(200);
     String iconsPath = getIconsPath();
-    result.append("</td></tr></table></td></tr></table>");
+    result.append("</div>");
 
     if (!isPopup()) {
-      result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-      result.append("<tr><td class=\"basGaucheWindow\">");
-      result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-      result.append("</td><td class=\"basMilieuWindow\">");
-      result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-      result.append("</td><td class=\"basDroiteWindow\">");
-      result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
-      result.append("</td></tr></table>");
-
-      result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-      result.append("<tr><td>");
-      result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
+      result.append("<div class=\"sp_goToTop\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
           "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
-      result.append("</td><td width=\"100%\">");
-      result.append("&nbsp;");
-      result.append("</td><td>");
-      result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
-          .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
-      result.append("</td></tr></table>");
     } else {
       Object includePopupResizeJsDone =
           CacheServiceProvider.getRequestCacheService().get("@includePopupResizeJsDone@");

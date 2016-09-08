@@ -115,6 +115,10 @@ td.title {
   font-weight: bold;
 }
 
+#topPage {
+  width:98%;
+}
+
 /***************************************
 Definition des class de style Silverpeas
 ***************************************/
@@ -910,55 +914,73 @@ Style Utilise par le ViewGenerator
 /******  ViewGenerator *********/
 /****************************************/
 /* objet window */
-.cellBrowseBar ,
-.cellOperation {
+.cellBrowseBar  {
   border-bottom: 1px solid #CCC;
+  padding-right:230px;
 }
 
-.cellBodyWindows {}
+.cellOperation {
+  display: inline-block;
+  width:210px;
+  position:absolute;
+  right:1em;
+  top:0;
+}
+
+.cellBodyWindows {
+  margin-top:0.5em;
+}
 
 /* Objet Button */
-a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a , button.button{
+
+.sp_buttonPane {
+  text-align:center;
+}
+.sp_button , button.button{
   background-color:#7eb73b;
+  color:#FFF;
+  display:inline-block;
+  padding:0.5em 1em;
+  margin-right:1em;
+}
+
+.sp_button:hover , button.button:hover {
+  background-color:#75af30;
   color:#FFF;
 }
 
-a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:hover , button.button:hover {
-  background-color:#75af30;
-}
-
-/* pour encadrer les boutons et remplacer la balise center utilis?e dans les anciennes pages */
-.buttonPane {
-  text-align:center;
-}
-.buttonPane table {
-  margin:0 auto;
-}
-
 /* Objet Tabs */
-#gef-tabs img {
-  width: 5px;
+#gef-tabs {
+  margin-top:1em;
 }
-.milieuOngletOn a, .milieuOngletOff a, .milieuOngletOn span, .milieuOngletOff span {
+.tabbedPane {
+  display:flex;
+  flex-flow:row wrap;
+  justify-content:flex-end;
+}
+
+.sp_tabOn , .sp_tabOff   {
+}
+.sp_tabOn a, .sp_tabOff a, .sp_tabOn span, .sp_tabOff span {
   display: block;
   margin-right: 4px;
   border-radius: 8px 8px 0 0;
   padding: 8px 10px 6px;
 }
-.sousOnglets,.milieuOngletOn a,.milieuOngletOff a:hover,.milieuOngletOn span {
+.sousOnglets,.sp_tabOn a,.sp_tabOff a:hover,.sp_tabOn span {
   background-color:#7eb73b;
   color:#fff
 }
 .sousOnglets {
   height: 2px;
 }
-.milieuOngletOff a,.milieuOngletOff span {
+.sp_tabOff a,.sp_tabOff span {
   background-color:#d6d7d9
 }
-.milieuOngletOff a {
+.sp_tabOff a {
   color:#666
 }
-.milieuOngletOff a:hover {
+.sp_tabOff a:hover {
   color:#fff
 }
 
@@ -1653,13 +1675,7 @@ a.milieuBoutonV5:hover, .milieuBoutonV5 a:hover,#domainsBar .milieuBoutonV5 a:ho
 /*- [ portlet MyFeed END] --------------------------- */
 
 
-#browseBar {
-  float:left;
-  width: 100%;
-}
-
 #browseBar #breadCrumb {
-  float:left;
   font-weight: bold;
 }
 
@@ -2127,11 +2143,7 @@ caption {
   margin-left: 5px;
 }
 
-#directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{
-  display:none;
-}
-
-#directory #indexAndSearch .milieuBoutonV5 {
+#directory #indexAndSearch .sp_button {
   padding:0 5px;
   border-right:1px solid #588ABB;
 }
@@ -4101,7 +4113,7 @@ input.search:focus {
   opacity: 0.3;
 }
 
-.compulsory-subscription-management .buttonPane{
+.compulsory-subscription-management .sp_buttonPane{
   float:right;
   margin:8px -92px 0 0;
 }
@@ -4438,7 +4450,7 @@ input.search:focus {
   vertical-align:middle;
   text-align:center;
   height:auto;
-  margin:1em;
+  margin:0.5em;
 }
 
 #attachment-creation-actions {
