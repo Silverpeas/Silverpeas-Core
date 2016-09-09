@@ -52,11 +52,11 @@
               type="java.lang.String"
               description="Indicates the type of attachment (attachment, wysiwyg, image, ...)" %>
 
-<%@ attribute name="greatestUserRole" required="false"
+<%@ attribute name="highestUserRole" required="false"
               type="org.silverpeas.core.admin.user.model.SilverpeasRole"
-              description="The greatest role the user has" %>
-<c:if test="${empty greatestUserRole}">
-  <c:set var="greatestUserRole" value="${silfn:getGreatestRoleOfCurrentUserOn(componentInstanceId)}"/>
+              description="The highest role the user has" %>
+<c:if test="${empty highestUserRole}">
+  <c:set var="highestUserRole" value="${silfn:getHighestRoleOfCurrentUserOn(componentInstanceId)}"/>
 </c:if>
 <%@ attribute name="helpCoverClass" required="false"
               type="java.lang.String"
@@ -77,7 +77,7 @@
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 <jsp:useBean id="publisherRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
-<c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
+<c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <c:set var="domIdSuffix" value="${fn:replace(resourceId, '-', '_')}"/>
 
@@ -93,7 +93,7 @@
   <c:url var="uploadCompletedUrl" value="/DragAndDrop/drop">
     <c:param name="ComponentId" value="${componentInstanceId}"/>
     <c:param name="ResourceId" value="${resourceId}"/>
-    <c:param name="IndexIt" value="${hasToBeIndexed and greatestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
+    <c:param name="IndexIt" value="${hasToBeIndexed and highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
     <c:param name="DocumentType" value="${documentType}"/>
   </c:url>
 

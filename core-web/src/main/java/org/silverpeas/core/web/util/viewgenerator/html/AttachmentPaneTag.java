@@ -85,7 +85,7 @@ public class AttachmentPaneTag extends TagSupport {
         String[] roles = OrganizationControllerProvider.getOrganisationController()
             .getUserProfiles(userId, getComponentId());
         if (roles.length > 0) {
-          role = SilverpeasRole.getGreaterFrom(SilverpeasRole.from(roles)).getName();
+          role = SilverpeasRole.getHighestFrom(SilverpeasRole.from(roles)).getName();
         }
       }
     }

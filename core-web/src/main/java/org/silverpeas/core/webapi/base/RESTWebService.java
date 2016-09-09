@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SilverpeasSettings;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
-import org.silverpeas.core.util.SilverpeasSettings;
-import org.silverpeas.core.security.token.Token;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +80,7 @@ public abstract class RESTWebService implements WebResource {
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
   private Collection<SilverpeasRole> userRoles = null;
-  private SilverpeasRole greaterUserRole;
+  private SilverpeasRole highestUserRole;
 
   private LocalizationBundle bundle = null;
 
@@ -232,14 +232,14 @@ public abstract class RESTWebService implements WebResource {
   }
 
   /**
-   * Gets the greater role of the user behind the service call.
+   * Gets the highest role of the user behind the service call.
    * @return
    */
-  public SilverpeasRole getGreaterUserRole() {
-    if (greaterUserRole == null) {
-      greaterUserRole = SilverpeasRole.getGreaterFrom(getUserRoles());
+  public SilverpeasRole getHighestUserRole() {
+    if (highestUserRole == null) {
+      highestUserRole = SilverpeasRole.getHighestFrom(getUserRoles());
     }
-    return greaterUserRole;
+    return highestUserRole;
   }
 
   /**
@@ -295,8 +295,8 @@ public abstract class RESTWebService implements WebResource {
      */
     public RETURN_VALUE execute() {
       try {
-        if (lowestRoleAccess != null && (getGreaterUserRole() == null ||
-            !getGreaterUserRole().isGreaterThanOrEquals(lowestRoleAccess))) {
+        if (lowestRoleAccess != null && (getHighestUserRole() == null ||
+            !getHighestUserRole().isGreaterThanOrEquals(lowestRoleAccess))) {
           throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
         return webTreatment.execute();
@@ -312,7 +312,8 @@ public abstract class RESTWebService implements WebResource {
    * Inner class handled by
    * @param <RETURN_VALUE>
    */
-  protected abstract class WebTreatment<RETURN_VALUE> {
-    public abstract RETURN_VALUE execute();
+  @FunctionalInterface
+  protected interface WebTreatment<RETURN_VALUE> {
+    RETURN_VALUE execute();
   }
 }

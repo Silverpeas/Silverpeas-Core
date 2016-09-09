@@ -52,11 +52,11 @@
               type="java.lang.Boolean"
               description="Indicates if folders will be ignored (after upload)" %>
 
-<%@ attribute name="greatestUserRole" required="false"
+<%@ attribute name="highestUserRole" required="false"
               type="org.silverpeas.core.admin.user.model.SilverpeasRole"
-              description="The greatest role the user has" %>
-<c:if test="${empty greatestUserRole}">
-  <c:set var="greatestUserRole" value="${silfn:getGreatestRoleOfCurrentUserOn(componentInstanceId)}"/>
+              description="The highest role the user has" %>
+<c:if test="${empty highestUserRole}">
+  <c:set var="highestUserRole" value="${silfn:getHighestRoleOfCurrentUserOn(componentInstanceId)}"/>
 </c:if>
 
 <%@ attribute name="helpContentUrl" required="false"
@@ -72,7 +72,7 @@
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
-<c:if test="${greatestUserRole.isGreaterThanOrEquals(writerRole)}">
+<c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <view:includePlugin name="dragAndDropUpload"/>
 

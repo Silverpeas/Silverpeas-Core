@@ -25,8 +25,8 @@ package org.silverpeas.core.admin.user.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -35,7 +35,8 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider
+    .getOrganisationController;
 
 public enum SilverpeasRole {
   admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor;
@@ -43,8 +44,8 @@ public enum SilverpeasRole {
   // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
   public static EnumSet<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);
 
-  private static final String GREATEST_ROLE_OF_CURRENT_USER_PREFIX =
-      "@GREATEST_ROLE_OF_CURRENT_USER_PREFIX@";
+  private static final String HIGHEST_ROLE_OF_CURRENT_USER_PREFIX =
+      "@HIGHEST_ROLE_OF_CURRENT_USER_PREFIX@";
 
   @JsonValue
   public String getName() {
@@ -150,61 +151,47 @@ public enum SilverpeasRole {
   }
 
   /**
-   * @deprecated use instead {@link #getGreatestFrom(SilverpeasRole...)}
-   */
-  public static SilverpeasRole getGreaterFrom(SilverpeasRole... roles) {
-    return getGreatestFrom(Arrays.asList(roles));
-  }
-
-  /**
-   * Gets the greatest role from the given ones.
+   * Gets the highest role from the given ones.
    * @param roles
    * @return
    */
-  public static SilverpeasRole getGreatestFrom(SilverpeasRole... roles) {
-    return getGreatestFrom(Arrays.asList(roles));
+  public static SilverpeasRole getHighestFrom(SilverpeasRole... roles) {
+    return getHighestFrom(Arrays.asList(roles));
   }
 
   /**
-   * @deprecated use instead {@link #getGreatestFrom(Collection)}
-   */
-  public static SilverpeasRole getGreaterFrom(Collection<SilverpeasRole> roles) {
-    return getGreatestFrom(roles);
-  }
-
-  /**
-   * Gets the greater role from the given ones.
+   * Gets the highest role from the given ones.
    * @param roles
    * @return
    */
-  public static SilverpeasRole getGreatestFrom(Collection<SilverpeasRole> roles) {
+  public static SilverpeasRole getHighestFrom(Collection<SilverpeasRole> roles) {
     if (CollectionUtil.isEmpty(roles)) {
       return null;
     }
     @SuppressWarnings("unchecked") EnumSet<SilverpeasRole> givenRoles =
         (roles instanceof EnumSet) ? (EnumSet) roles : EnumSet.copyOf(roles);
 
-    // For now, the greatest is the first of the EnumSet
+    // For now, the highest is the first of the EnumSet
     return givenRoles.iterator().next();
   }
 
   /**
-   * Gets the greatest role on the component represented by the given identifier the current user
+   * Gets the highest role on the component represented by the given identifier the current user
    * has.
    * @param componentInstanceId a component instance identifier.
    * @return a {@link SilverpeasRole} instance or null if none.
    */
-  public static SilverpeasRole getGreatestOfCurrentUserOn(String componentInstanceId) {
-    String cacheKey = GREATEST_ROLE_OF_CURRENT_USER_PREFIX + componentInstanceId;
+  public static SilverpeasRole getHighestOfCurrentUserOn(String componentInstanceId) {
+    String cacheKey = HIGHEST_ROLE_OF_CURRENT_USER_PREFIX + componentInstanceId;
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
-    SilverpeasRole greatestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
-    if (greatestOfCurrentUser == null) {
+    SilverpeasRole highestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
+    if (highestOfCurrentUser == null) {
       Collection<SilverpeasRole> roles = from(getOrganisationController()
           .getUserProfiles(User.getCurrentRequester().getId(), componentInstanceId));
       roles.remove(SilverpeasRole.Manager);
-      greatestOfCurrentUser = SilverpeasRole.getGreatestFrom(roles);
-      cache.put(cacheKey, greatestOfCurrentUser);
+      highestOfCurrentUser = SilverpeasRole.getHighestFrom(roles);
+      cache.put(cacheKey, highestOfCurrentUser);
     }
-    return greatestOfCurrentUser;
+    return highestOfCurrentUser;
   }
 }

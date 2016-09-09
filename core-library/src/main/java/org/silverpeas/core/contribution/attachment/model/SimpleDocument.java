@@ -913,8 +913,8 @@ public class SimpleDocument implements Serializable {
 
     // If the intersection of the allowed roles compared to the given ones is empty,
     // then the download is allowed.
-    return SilverpeasRole.getGreaterFrom(roles)
-        .isGreaterThan(SilverpeasRole.getGreaterFrom(getVersionMaster().forbiddenDownloadForRoles));
+    return SilverpeasRole.getHighestFrom(roles)
+        .isGreaterThan(SilverpeasRole.getHighestFrom(getVersionMaster().forbiddenDownloadForRoles));
   }
 
   /**

@@ -111,7 +111,7 @@ public class WebComponentRequestRouterTest {
     verify(servletContextMock, times(1)).getRequestDispatcher(expectedDestination);
   }
 
-  private HttpRequest mockRequest(String path, SilverpeasRole greaterUserRole) {
+  private HttpRequest mockRequest(String path, SilverpeasRole highestUserRole) {
     HttpRequest request = mock(HttpRequest.class);
     HttpSession session = mock(HttpSession.class);
     MainSessionController mainSessionController = mock(MainSessionController.class);
@@ -146,7 +146,7 @@ public class WebComponentRequestRouterTest {
     when(mainSessionController.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext componentContext = mock(ComponentContext.class);
     when(componentContext.getCurrentProfile())
-        .thenReturn(greaterUserRole != null ? new String[]{greaterUserRole.name()} : null);
+        .thenReturn(highestUserRole != null ? new String[]{highestUserRole.name()} : null);
     when(componentContext.getCurrentComponentName()).thenReturn("componentName");
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
     when(componentContext.getCurrentComponentLabel()).thenReturn("componentLabel");
@@ -202,14 +202,14 @@ public class WebComponentRequestRouterTest {
       WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT
       extends WebComponentRequestContext<? extends WebComponentController>> {
     private Class<CONTROLLER> controllerClass = null;
-    private SilverpeasRole greaterUserRole = null;
+    private SilverpeasRole highestUserRole = null;
 
     protected ControllerTest(Class<CONTROLLER> controllerClass) {
       this.controllerClass = controllerClass;
     }
 
-    public ControllerTest setGreaterUserRole(SilverpeasRole greaterUserRole) {
-      this.greaterUserRole = greaterUserRole;
+    public ControllerTest setHighestUserRole(SilverpeasRole highestUserRole) {
+      this.highestUserRole = highestUserRole;
       return this;
     }
 
@@ -260,19 +260,19 @@ public class WebComponentRequestRouterTest {
       HttpServletResponse response = mock(HttpServletResponse.class);
       if (HttpMethod.GET.equals(httpMethod)) {
         routerInstance
-            .doGet(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doGet(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       } else if (HttpMethod.POST.equals(httpMethod)) {
         routerInstance
-            .doPost(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doPost(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       } else if (HttpMethod.PUT.equals(httpMethod)) {
         routerInstance
-            .doPut(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doPut(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       } else if (HttpMethod.DELETE.equals(httpMethod)) {
         routerInstance
-            .doDelete(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doDelete(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       }
       WEB_COMPONENT_REQUEST_CONTEXT requestContext =

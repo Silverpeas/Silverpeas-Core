@@ -185,7 +185,7 @@ public class WebComponentManager {
         } else if (annotation instanceof LowestRoleAccess) {
           if (lowestRoleAccess != null) {
             throw new IllegalArgumentException(
-                "Only one greatest Silverpeas Role must be specified for method: " +
+                "Only one lowest Silverpeas Role must be specified for method: " +
                     resourceMethod.getName());
           }
           lowestRoleAccess = (LowestRoleAccess) annotation;
@@ -391,8 +391,8 @@ public class WebComponentManager {
 
     // Has the user enough rights to access the aimed treatment?
     if (pathToPerform.getLowestRoleAccess() != null &&
-        (webComponentContext.getGreaterUserRole() == null ||
-            !webComponentContext.getGreaterUserRole()
+        (webComponentContext.getHighestUserRole() == null ||
+            !webComponentContext.getHighestUserRole()
                 .isGreaterThanOrEquals(pathToPerform.getLowestRoleAccess().value()))) {
       RedirectTo redirectTo = pathToPerform.getLowestRoleAccess().onError();
       if (StringUtil.isNotDefined(redirectTo.value())) {

@@ -93,7 +93,7 @@
          value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
-  <c:set var="greatestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
+  <c:set var="highestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
   <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
   <c:choose>
@@ -1401,7 +1401,7 @@
 <view:progressMessage/>
 <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
   <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${param.Id}"
-                                  greatestUserRole="${greatestUserRole}"
+                                  highestUserRole="${highestUserRole}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${param.Id}"
                                   contentLanguage="${contentLanguage}"

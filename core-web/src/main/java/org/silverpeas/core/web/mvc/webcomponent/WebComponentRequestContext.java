@@ -68,11 +68,11 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
   private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
   private Collection<SilverpeasRole> userRoles;
-  private SilverpeasRole greaterUserRole;
+  private SilverpeasRole highestUserRole;
 
   /**
    * This methods permits to perform initializations before the HTTP method (and associated
-   * method invokation) aimed is performed.
+   * method invocation) aimed is performed.
    */
   public void beforeRequestProcessing() {
     // Nothing to do by default.
@@ -191,14 +191,14 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return userRoles;
   }
 
-  public SilverpeasRole getGreaterUserRole() {
-    if (greaterUserRole == null) {
-      greaterUserRole = SilverpeasRole.getGreaterFrom(getUserRoles());
-      if (greaterUserRole == null) {
-        greaterUserRole = SilverpeasRole.reader;
+  public SilverpeasRole getHighestUserRole() {
+    if (highestUserRole == null) {
+      highestUserRole = SilverpeasRole.getHighestFrom(getUserRoles());
+      if (highestUserRole == null) {
+        highestUserRole = SilverpeasRole.reader;
       }
     }
-    return greaterUserRole;
+    return highestUserRole;
   }
 
   public boolean isComingFromRedirect() {
