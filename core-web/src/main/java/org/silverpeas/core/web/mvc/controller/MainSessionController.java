@@ -25,11 +25,14 @@ package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
@@ -57,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
@@ -406,38 +410,49 @@ public class MainSessionController implements Clipboard, SessionCloseable {
 
   /**
    * Helper function. Create a new CurrentSessionControl object and fill it with the values of the
-   * current space Id and component Id passed in parameters
+   * current space Id and component instance Id passed in parameters
    */
-  public ComponentContext createComponentContext(String sSpaceId,
-      String sComponent) {
-    ComponentContext newInfos = new ComponentContext();
+  @SuppressWarnings("ConstantConditions")
+  public ComponentContext createComponentContext(String spaceId, String componentInstanceId) {
+    ComponentContext componentContext = new ComponentContext();
 
     try {
       // Set the space
-      if (sSpaceId != null) {
-        SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(sSpaceId);
+      if (spaceId != null) {
+        SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(spaceId);
 
-        newInfos.setCurrentSpaceId(sSpaceId);
-        newInfos.setCurrentSpaceName(spaceInst.getName(getFavoriteLanguage()));
+        componentContext.setCurrentSpaceId(spaceId);
+        componentContext.setCurrentSpaceName(spaceInst.getName(getFavoriteLanguage()));
       }
       // Set the current component and profiles
-      if (sComponent != null) {
+      if (componentInstanceId != null) {
         String sCurCompoLabel;
-        ComponentInst componentInst = getAdminService().getComponentInst(sComponent);
+        final SilverpeasComponentInstance componentInst;
+        Optional<PersonalComponentInstance> personalComponentInstance =
+            PersonalComponentInstance.from(componentInstanceId);
+        if (personalComponentInstance.isPresent()) {
+          componentInst = personalComponentInstance.get();
+        } else {
+          componentInst = getAdminService().getComponentInst(componentInstanceId);
+        }
 
         sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
-        newInfos.setCurrentComponentId(sComponent);
-        newInfos.setCurrentComponentName(componentInst.getName());
-        newInfos.setCurrentComponentLabel(sCurCompoLabel);
-        newInfos.setCurrentProfile(getAdminService().getCurrentProfiles(this.getUserId(),
-            componentInst));
+        componentContext.setCurrentComponentId(componentInstanceId);
+        componentContext.setCurrentComponentName(componentInst.getName());
+        componentContext.setCurrentComponentLabel(sCurCompoLabel);
+        if (componentInst.isPersonal()) {
+          componentContext.setCurrentProfile(new String[]{SilverpeasRole.admin.getName()});
+        } else {
+          componentContext.setCurrentProfile(getAdminService()
+              .getCurrentProfiles(this.getUserId(), (ComponentInst) componentInst));
+        }
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("can not create component context with spaceId={0} and componentId={1}",
-              new String[]{sSpaceId, sComponent}, e);
+              new String[]{spaceId, componentInstanceId}, e);
     }
-    return newInfos;
+    return componentContext;
   }
 
   public void initServerProps(String sName, String sPort) {

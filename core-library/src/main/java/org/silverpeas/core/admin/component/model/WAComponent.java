@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * <p>
@@ -54,10 +55,10 @@ import java.util.Optional;
  * registry).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "WAComponentType", propOrder = { "name", "behaviors", "label", "description", "suite",
-    "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
-    "groupsOfParameters", "parameters" })
-public class WAComponent {
+@XmlType(name = "WAComponentType", propOrder = {"name", "behaviors", "label", "description",
+    "suite", "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
+    "groupsOfParameters", "parameters"})
+public class WAComponent implements SilverpeasComponent {
 
   /**
    * Gets the WAComponent instance with the specified name.
@@ -75,7 +76,6 @@ public class WAComponent {
   public static Collection<WAComponent> getAll() {
     return WAComponentRegistry.get().getAllWAComponents().values();
   }
-
 
   @XmlTransient
   private ParameterSorter sorter = new ParameterSorter();
@@ -159,13 +159,6 @@ public class WAComponent {
     return label;
   }
 
-  public String getLabel(String lang) {
-    if (getLabel().containsKey(lang)) {
-      return getLabel().get(lang);
-    }
-    return getLabel().get(DisplayI18NHelper.getDefaultLanguage());
-  }
-
   /**
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
@@ -183,13 +176,6 @@ public class WAComponent {
       description = new HashMap<>();
     }
     return description;
-  }
-
-  public String getDescription(String lang) {
-    if (getDescription().containsKey(lang)) {
-      return getDescription().get(lang);
-    }
-    return getDescription().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
   /**
@@ -369,17 +355,6 @@ public class WAComponent {
     return this.parameters;
   }
 
-  public ParameterList getAllParameters() {
-    ParameterList result = new ParameterList();
-    for (Parameter param : getParameters()) {
-      result.add(param);
-    }
-    for (GroupOfParameters group : getGroupsOfParameters()) {
-      result.addAll(group.getParameters());
-    }
-    return result;
-  }
-
   public List<GroupOfParameters> getGroupsOfParameters() {
     if (groupsOfParameters == null) {
       groupsOfParameters = new ArrayList<>();
@@ -411,5 +386,4 @@ public class WAComponent {
     return getBehaviors() != null &&
         getBehaviors().getBehavior().contains(ComponentBehavior.TOPIC_TRACKER);
   }
-
 }

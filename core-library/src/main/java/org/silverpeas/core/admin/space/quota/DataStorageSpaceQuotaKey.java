@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.space.PersonalSpaceController;
+import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
@@ -40,7 +40,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   public static DataStorageSpaceQuotaKey from(final UserDetail user) {
     return new DataStorageSpaceQuotaKey(
-        PersonalSpaceController.getInstance().getPersonalSpace(user.getId()), user);
+        PersonalSpaceManager.get().getPersonalSpace(user.getId()), user);
   }
 
   public static DataStorageSpaceQuotaKey from(final SpaceInst space) {

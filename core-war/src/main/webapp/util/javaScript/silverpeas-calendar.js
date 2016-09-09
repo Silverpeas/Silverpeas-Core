@@ -195,3 +195,68 @@
   }
 
 })(jQuery);
+
+(function($window) {
+
+  if (!$window.CalendarSettings) {
+    $window.CalendarSettings = new SilverpeasPluginSettings();
+  }
+
+  if (!$window.CalendarBundle) {
+    $window.CalendarBundle = new SilverpeasPluginBundle();
+  }
+
+  var calendarDebug = true;
+  sp.log.debugActivated = sp.log.debugActivated || calendarDebug;
+
+  /**
+   * Handling the rendering of the Silverpeas's calendar.
+   * @constructor
+   */
+  $window.SilverpeasCalendar = function(selector) {
+    applyReadyBehaviorOn(this);
+    __logDebug("initializing the plugin");
+
+    document.addEventListener('DOMContentLoaded', function() {
+      __logDebug("initializing the view");
+      __logDebug("view is ready");
+      this.notifyReady();
+    }.bind(this));
+  };
+
+  function __showProgressPopup() {
+    jQuery.progressMessage();
+  }
+
+  function __hideProgressPopup() {
+    jQuery.closeProgressMessage();
+  }
+
+  /**
+   * Logs errors.
+   * @param message
+   * @private
+   */
+  function __logError(message) {
+    sp.log.error("Calendar - " + message);
+  }
+
+  /**
+   * Logs debug messages.
+   * @param message
+   * @private
+   */
+  function __logDebug(message) {
+    if (calendarDebug) {
+      sp.log.debug("Calendar - " + message);
+    }
+  }
+
+  function __displayError(error) {
+    notyError(error);
+  }
+})(window);
+
+function initializeSilverpeasCalendar(selector) {
+  return new SilverpeasCalendar(selector);
+}

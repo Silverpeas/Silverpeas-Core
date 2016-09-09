@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
-    implements Serializable, Cloneable {
+    implements Cloneable, SilverpeasComponentInstance {
 
   private static final long serialVersionUID = 1L;
   public static final String STATUS_REMOVED = "R";
@@ -110,6 +110,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return clonedArray;
   }
 
+  @Override
   public String getId() {
     return name + id;
   }
@@ -148,6 +149,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     super.setName(sLabel);
   }
 
+  @Override
   public String getLabel() {
     return super.getName();
   }
@@ -325,6 +327,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return getParameterValue(parameterName.name());
   }
 
+  @Override
   public String getLabel(String language) {
     return super.getName(language);
   }

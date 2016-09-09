@@ -29,8 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * User: Yohann Chastagnier
- * Date: 23/04/13
+ * @author Yohann Chastagnier
  */
 public class CalendarDateTime extends CalendarDay {
 

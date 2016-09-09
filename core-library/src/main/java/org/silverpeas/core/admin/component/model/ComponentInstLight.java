@@ -37,7 +37,8 @@ import java.util.List;
 /**
  * The class ComponentInstLight is the representation in memory of a component instance
  */
-public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implements Serializable {
+public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
+    implements SilverpeasComponentInstance {
 
   private static final long serialVersionUID = 4859368422448142768L;
 
@@ -106,6 +107,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
     publicApp = compo.publicAccess == 1;
   }
 
+  @Override
   public String getId() {
     return m_sName + m_sId;
   }
@@ -158,6 +160,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
    * Get the component type
    * @return the component type
    */
+  @Override
   public String getLabel() {
     return super.getName();
   }
@@ -288,6 +291,10 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
 
   public boolean isWorkflow() {
     return WAComponent.get(getName()).get().isWorkflow();
+  }
+
+  public boolean isTopicTracker() {
+    return WAComponent.get(getName()).get().isTopicTracker();
   }
 
   public String getIcon(boolean bigOne) {

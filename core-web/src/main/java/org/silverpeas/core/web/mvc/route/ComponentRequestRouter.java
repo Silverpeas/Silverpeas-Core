@@ -23,31 +23,32 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
-import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.mvc.processor.UserAndGroupSelectionProcessor;
-import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.util.security.SecuritySettings;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.SilverpeasTransverseWebErrorUtil;
+import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
@@ -283,8 +284,15 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller, String componentId) {
-    return componentId == null || getOrganizationController()
-        .isComponentAvailable(componentId, controller.getUserId());
+    boolean[] userAllowed = {componentId == null ||
+        getOrganizationController().isComponentAvailable(componentId, controller.getUserId())};
+    if (!userAllowed[0]) {
+      // Maybe a case of a personal component instance
+      PersonalComponentInstance.from(componentId).ifPresent(
+          personalComponentInstance -> userAllowed[0] =
+              (personalComponentInstance.getUser().getId().equals(controller.getUserId())));
+    }
+    return userAllowed[0];
   }
 
   private void redirectService(HttpServletRequest request, HttpServletResponse response,

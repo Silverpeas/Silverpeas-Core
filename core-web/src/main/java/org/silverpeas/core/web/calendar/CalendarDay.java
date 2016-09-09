@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * An almanach day is a day within a calendar.
+ * A day within a calendar.
  */
 public class CalendarDay {
 

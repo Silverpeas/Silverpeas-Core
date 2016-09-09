@@ -646,6 +646,15 @@
     <servlet-class>org.silverpeas.web.chat.ChatUserRegistrationServlet</servlet-class>
     <async-supported>true</async-supported>
   </servlet>
+  <servlet>
+    <display-name>UserCalendarRequestRouter</display-name>
+    <servlet-name>UserCalendarRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.web.usercalendar.UserCalendarWebController</param-value>
+    </init-param>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>LoginDispatcher</servlet-name>
@@ -1049,6 +1058,10 @@
   <servlet-mapping>
     <servlet-name>ChatUserRegistration</servlet-name>
     <url-pattern>/chat/users/register</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>UserCalendarRequestRouter</servlet-name>
+    <url-pattern>/RuserCalendar/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

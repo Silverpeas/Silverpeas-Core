@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.session.SessionInfo;
@@ -180,7 +181,15 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   @Override
   public void validateUserAuthorizationOnComponentInstance(final UserDetail user, String instanceId)
       throws WebApplicationException {
-    if (user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
+    boolean[] notAuthorized =
+        {(user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId))};
+    if (notAuthorized[0] && user != null) {
+      // Maybe a case of personal component instance
+      PersonalComponentInstance.from(instanceId).ifPresent(
+          personalComponentInstance -> notAuthorized[0] =
+              (!personalComponentInstance.getUser().getId().equals(user.getId())));
+    }
+    if (notAuthorized[0]) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

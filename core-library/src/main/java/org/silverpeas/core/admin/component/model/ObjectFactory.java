@@ -105,6 +105,15 @@ public class ObjectFactory {
    */
   @XmlElementDecl(namespace = "http://silverpeas.org/xml/ns/component", name = "WAComponent")
   public JAXBElement<WAComponent> createWAComponent(WAComponent value) {
-    return new JAXBElement<WAComponent>(_WAComponent_QNAME, WAComponent.class, null, value);
+    return new JAXBElement<>(_WAComponent_QNAME, WAComponent.class, null, value);
+  }
+
+  /**
+   * Create an instance of {@link JAXBElement }{@code <}{@link WAComponent }{@code >}
+   */
+  @SuppressWarnings("unused")
+  @XmlElementDecl(namespace = "http://silverpeas.org/xml/ns/component", name = "PersonalComponent")
+  public JAXBElement<PersonalComponent> createPersonalComponent(PersonalComponent value) {
+    return new JAXBElement<>(_WAComponent_QNAME, PersonalComponent.class, null, value);
   }
 }

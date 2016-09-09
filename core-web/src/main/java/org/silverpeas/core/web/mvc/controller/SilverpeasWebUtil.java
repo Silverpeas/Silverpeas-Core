@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -103,9 +104,12 @@ public class SilverpeasWebUtil {
             || function.equalsIgnoreCase("searchresult")
             || function.startsWith("portlet")
             || function.equals("GoToFilesTab")) {
-          ComponentInstLight component =
-              getOrganisationController().getComponentInstLight(componentId);
-          spaceId = component.getDomainFatherId();
+
+          if (!PersonalComponentInstance.from(componentId).isPresent()) {
+            ComponentInstLight component =
+                getOrganisationController().getComponentInstLight(componentId);
+            spaceId = component.getDomainFatherId();
+          }
         }
       }
     } else {

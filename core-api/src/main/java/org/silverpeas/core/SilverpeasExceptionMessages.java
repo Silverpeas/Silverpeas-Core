@@ -340,8 +340,7 @@ public class SilverpeasExceptionMessages {
    * @return an exception message.
    */
   public static String undefined(String resource) {
-    return UNDEFINED_RESOURCE.format(resource);
+    return UNDEFINED_RESOURCE.format(new Object[]{resource});
   }
-
 }
   

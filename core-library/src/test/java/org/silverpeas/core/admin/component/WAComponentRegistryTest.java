@@ -27,17 +27,19 @@
  */
 package org.silverpeas.core.admin.component;
 
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.apache.commons.io.FileUtils;
 import org.jglue.cdiunit.CdiRunner;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
@@ -64,37 +66,46 @@ import static org.junit.Assert.assertThat;
 @RunWith(CdiRunner.class)
 public class WAComponentRegistryTest {
 
-  private File TEMPLATES_PATH;
-  private File TARGET_DIR;
+  private static File TEMPLATES_PATH;
+  private static File TARGET_DIR;
 
   private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  private WAComponentRegistry registry;
+
+  @Inject
+  private Provider<PublicationTemplateManager> managerProvider;
+
+  @BeforeClass
+  public static void generalSetup() {
+    TARGET_DIR = getFile(
+        WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
+            .getFile());
+    TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
+
+    FileUtils.deleteQuietly(
+        Paths.get(TARGET_DIR.getPath(), "xmlcomponents", "workflows", "newWorkflow.xml").toFile());
+  }
 
   @Rule
   public CommonAPI4Test getCommonAPI4Test() {
     return commonAPI4Test;
   }
 
-  @Inject
-  private Provider<PublicationTemplateManager> managerProvider;
-
   @Before
   public void setup() throws Exception {
-    TARGET_DIR = getFile(
-        WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-    TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
-
+    // Context
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
-
     commonAPI4Test.injectIntoMockedBeanContainer(managerProvider.get());
+    // Tested registry
+    registry = new WAComponentRegistry();
+    registry.init();
+
   }
 
   @Test
   public void testLoadComponent() throws Exception {
-    WAComponentRegistry registry = new WAComponentRegistry();
-    registry.init();
-
     Optional<WAComponent> result = registry.getWAComponent("almanach");
     assertThat(result.isPresent(), is(true));
 
@@ -119,9 +130,6 @@ public class WAComponentRegistryTest {
 
   @Test
   public void testLoadComponentWithXmlTemplates() throws Exception {
-    WAComponentRegistry registry = new WAComponentRegistry();
-    registry.init();
-
     Optional<WAComponent> result = registry.getWAComponent("kmelia");
     assertThat(result.isPresent(), is(true));
     WAComponent kmelia = result.get();
@@ -164,9 +172,6 @@ public class WAComponentRegistryTest {
 
   @Test
   public void testLoadComponentWithOneTemplate() throws Exception {
-    WAComponentRegistry registry = new WAComponentRegistry();
-    registry.init();
-
     Optional<WAComponent> result = registry.getWAComponent("classifieds");
     assertThat(result.isPresent(), is(true));
     WAComponent classifieds = result.get();
@@ -203,9 +208,6 @@ public class WAComponentRegistryTest {
 
   @Test
   public void testSaveWorkflow() throws Exception {
-    WAComponentRegistry registry = new WAComponentRegistry();
-    registry.init();
-
     String componentName = "newWorkflow";
     String label = "Nouveau Workflow";
 
@@ -223,8 +225,9 @@ public class WAComponentRegistryTest {
     assertThat(result.get().getLabel().get("fr"), is(label));
     assertThat(registry.getAllWAComponents().size(), is(5));
 
-    Path descriptor = Paths.get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "xmlcomponents",
-        "workflows", componentName + ".xml");
+    Path descriptor = Paths
+        .get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "xmlcomponents", "workflows",
+            componentName + ".xml");
     assertThat(Files.exists(descriptor), is(true));
   }
 

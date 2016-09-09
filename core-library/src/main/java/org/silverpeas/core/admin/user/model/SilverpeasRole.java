@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.CollectionUtil;
@@ -32,7 +33,9 @@ import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider
@@ -186,9 +189,19 @@ public enum SilverpeasRole {
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     SilverpeasRole highestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
     if (highestOfCurrentUser == null) {
-      Collection<SilverpeasRole> roles = from(getOrganisationController()
-          .getUserProfiles(User.getCurrentRequester().getId(), componentInstanceId));
-      roles.remove(SilverpeasRole.Manager);
+      Collection<SilverpeasRole> roles = Collections.emptyList();
+      Optional<PersonalComponentInstance> personalComponentInstance =
+          PersonalComponentInstance.from(componentInstanceId);
+      if (personalComponentInstance.isPresent()) {
+        if (User.getCurrentRequester().getId()
+            .equals(personalComponentInstance.get().getUser().getId())) {
+          roles  = EnumSet.of(admin);
+        }
+      } else {
+        roles = from(getOrganisationController()
+            .getUserProfiles(User.getCurrentRequester().getId(), componentInstanceId));
+        roles.remove(SilverpeasRole.Manager);
+      }
       highestOfCurrentUser = SilverpeasRole.getHighestFrom(roles);
       cache.put(cacheKey, highestOfCurrentUser);
     }

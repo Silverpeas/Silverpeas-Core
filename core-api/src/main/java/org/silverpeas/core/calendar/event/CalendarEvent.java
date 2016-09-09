@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
+import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
@@ -148,7 +149,16 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   protected CalendarEvent() {
+  }
 
+  /**
+   * Gets a calendar event by its identifier.
+   * @param id the identifier of the aimed calendar event.
+   * @return the instance of the aimed calendar event or null if it does not exist.
+   */
+  public static CalendarEvent getById(final String id) {
+    CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
+    return calendarEventRepository.getById(id);
   }
 
   /**

@@ -25,11 +25,14 @@ package org.silverpeas.core.admin.space;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.PersonalComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -41,24 +44,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
-public class PersonalSpaceController {
+public class PersonalSpaceManager {
 
   private static final String MESSAGES_LOCATION =
       "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle";
 
-  public static PersonalSpaceController getInstance() {
-    return ServiceProvider.getService(PersonalSpaceController.class);
+  public static PersonalSpaceManager get() {
+    return ServiceProvider.getService(PersonalSpaceManager.class);
   }
 
-  protected PersonalSpaceController() {
+  protected PersonalSpaceManager() {
+  }
 
+  /**
+   * Gets visible personal component instances linked to the given user.
+   * @param user a silverpeas user.
+   * @return list of personal component instance.
+   */
+  public List<PersonalComponentInstance> getVisiblePersonalComponentInstances(User user) {
+    Collection<PersonalComponent> personalComponents = PersonalComponent.getAll();
+    return personalComponents.stream().filter(PersonalComponent::isVisible)
+        .map(personalComponent -> PersonalComponentInstance.from(user, personalComponent))
+        .collect(Collectors.toList());
   }
 
   public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
-    List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
+    List<WAComponent> visibleComponents = new ArrayList<>();
     Collection<WAComponent> components = orgaController.getAllComponents().values();
     for (WAComponent component : components) {
       if (component.isVisibleInPersonalSpace()) {
@@ -68,22 +83,22 @@ public class PersonalSpaceController {
     return visibleComponents;
   }
 
-  public String addComponent(String userId, String componentName, String componentLabel)
+  public String addComponent(User user, String componentName)
       throws AdminException, QuotaException {
-    ComponentInst component = new ComponentInst();
-    component.setCreatorUserId(userId);
-    component.setInheritanceBlocked(false);
-    component.setLabel(componentLabel);
-    component.setName(componentName);
-
-    Optional<WAComponent> wac = WAComponent.get(componentName);
-    if (!wac.isPresent() || !wac.get().isVisibleInPersonalSpace()) {
-      UserDetail user = UserDetail.getById(userId);
+    Optional<WAComponent> optionalWAComponent = WAComponent.get(componentName);
+    if (!optionalWAComponent.isPresent() || !optionalWAComponent.get().isVisibleInPersonalSpace()) {
       LocalizationBundle messages = getMessages(user.getUserPreferences().getLanguage());
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");
       throw new AdminException(MessageFormat.format(errorText, componentName));
     }
-    List<Parameter> parameters = wac.get().getAllParameters();
+    WAComponent wac = optionalWAComponent.get();
+    String userId = user.getId();
+    ComponentInst component = new ComponentInst();
+    component.setCreatorUserId(userId);
+    component.setInheritanceBlocked(false);
+    component.setName(wac.getName());
+    component.setLabel(wac.getLabel(DisplayI18NHelper.getDefaultLanguage()));
+    List<Parameter> parameters = wac.getAllParameters();
 
     // set specific parameter values for personal space context
     for (Parameter parameter : parameters) {

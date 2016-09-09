@@ -28,8 +28,9 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.PersonalSpaceController;
+import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.StringUtil;
@@ -56,7 +57,7 @@ public class AdminPersonalWebDelegate {
   private final LookWebDelegate lookDelegate;
   private ToolDelegate toolDelegate;
 
-  private PersonalSpaceController psc = null;
+  private PersonalSpaceManager psc = null;
   private Map<String, WAComponent> indexedNotUsedComponents = null;
   private Map<String, ComponentInst> indexedUsedComponents = null;
   private Map<String, AbstractTool> indexedUsedTools = null;
@@ -67,9 +68,8 @@ public class AdminPersonalWebDelegate {
    * @return the component label
    */
   public String getComponentLabel(final WAComponent component) {
-    String label =
-        getLookDelegate().getHelper().getString(
-            "lookSilverpeasV5.personalSpace." + component.getName());
+    String label = getLookDelegate().getHelper()
+        .getString("lookSilverpeasV5.personalSpace." + component.getName());
     if (!StringUtil.isDefined(label)) {
       label = component.getName();
     }
@@ -114,8 +114,7 @@ public class AdminPersonalWebDelegate {
     }
 
     // User's component registration
-    getPersonalSpaceController().addComponent(getUserId(), component.getName(),
-        getComponentLabel(component));
+    getPersonalSpaceManager().addComponent(getUser(), component.getName());
 
     // Returning the instatiated component
     clearCache();
@@ -139,7 +138,7 @@ public class AdminPersonalWebDelegate {
     }
 
     // User's component unregistration
-    getPersonalSpaceController().removeComponent(getUserId(),
+    getPersonalSpaceManager().removeComponent(getUserId(),
         component.getId());
 
     // Returning the instatiated component
@@ -156,7 +155,7 @@ public class AdminPersonalWebDelegate {
   private Map<String, WAComponent> getCachedNotUsedComponents() {
     if (indexedNotUsedComponents == null) {
       indexedNotUsedComponents = new LinkedHashMap<>();
-      for (final WAComponent component : getPersonalSpaceController().getVisibleComponents(
+      for (final WAComponent component : getPersonalSpaceManager().getVisibleComponents(
           getOrganisationController())) {
         if (!isComponentUsed(component)) {
           indexedNotUsedComponents.put(component.getName().toLowerCase(), component);
@@ -175,7 +174,7 @@ public class AdminPersonalWebDelegate {
   private Map<String, ComponentInst> getCachedUsedComponents() {
     if (indexedUsedComponents == null) {
       indexedUsedComponents = new LinkedHashMap<>();
-      final SpaceInst space = getPersonalSpaceController().getPersonalSpace(getUserId());
+      final SpaceInst space = getPersonalSpaceManager().getPersonalSpace(getUserId());
       if (space != null) {
         for (final ComponentInst component : space.getAllComponentsInst()) {
           indexedUsedComponents.put(component.getName().toLowerCase(), component);
@@ -251,6 +250,13 @@ public class AdminPersonalWebDelegate {
   /**
    * @return the user identifier
    */
+  private User getUser() {
+    return user;
+  }
+
+  /**
+   * @return the user identifier
+   */
   private String getUserId() {
     return user.getId();
   }
@@ -275,9 +281,9 @@ public class AdminPersonalWebDelegate {
     return toolDelegate;
   }
 
-  private PersonalSpaceController getPersonalSpaceController() {
+  private PersonalSpaceManager getPersonalSpaceManager() {
     if (psc == null) {
-      psc = PersonalSpaceController.getInstance();
+      psc = PersonalSpaceManager.get();
     }
     return psc;
   }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -48,6 +49,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
+import java.util.EnumSet;
 
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
@@ -190,8 +192,12 @@ public abstract class RESTWebService implements WebResource {
    */
   protected Collection<SilverpeasRole> getUserRoles() {
     if (userRoles == null) {
-      userRoles = SilverpeasRole
-          .from(organizationController.getUserProfiles(getUserDetail().getId(), getComponentId()));
+      if (PersonalComponentInstance.from(getComponentId()).isPresent()) {
+        userRoles = EnumSet.of(SilverpeasRole.admin);
+      } else {
+        userRoles = SilverpeasRole.from(
+            organizationController.getUserProfiles(getUserDetail().getId(), getComponentId()));
+      }
     }
     return userRoles;
   }

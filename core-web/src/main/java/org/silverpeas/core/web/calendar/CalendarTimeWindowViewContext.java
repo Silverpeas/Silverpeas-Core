@@ -35,10 +35,10 @@ import java.util.Date;
 import java.util.EnumSet;
 
 /**
- * User: Yohann Chastagnier
- * Date: 17/04/13
+ * Handles a time window context for calendar managements.
+ * @author Yohann Chastagnier
  */
-public class CalendarViewContext {
+public class CalendarTimeWindowViewContext {
   private final static EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
       EnumSet.of(PeriodType.week, PeriodType.day);
 
@@ -54,7 +54,7 @@ public class CalendarViewContext {
    * @param componentInstanceId the component instance identifier
    * @param locale the locale
    */
-  public CalendarViewContext(final String componentInstanceId, final String locale) {
+  public CalendarTimeWindowViewContext(final String componentInstanceId, final String locale) {
     this.componentInstanceId = componentInstanceId;
     this.locale = locale;
     setReferenceDay(DateUtil.getDate());
@@ -63,7 +63,7 @@ public class CalendarViewContext {
   /**
    * Reset to null all filters.
    */
-  public CalendarViewContext resetFilters() {
+  public CalendarTimeWindowViewContext resetFilters() {
     setViewType(CalendarViewType.MONTHLY);
     today();
     return this;
