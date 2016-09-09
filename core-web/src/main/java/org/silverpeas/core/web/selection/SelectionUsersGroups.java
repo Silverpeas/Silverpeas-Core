@@ -49,6 +49,13 @@ public class SelectionUsersGroups {
   List<String> profileIds = null;
   List<String> profileNames = null;
 
+  public String getJoinedProfileNames() {
+    if (profileNames != null && !profileNames.isEmpty()) {
+      return String.join(",", profileNames);
+    }
+    return null;
+  }
+
   public void setProfileNames(List<String> profileNames) {
     this.profileNames = profileNames;
     ComponentInst componentInst = organizationController.getComponentInst(componentId);
