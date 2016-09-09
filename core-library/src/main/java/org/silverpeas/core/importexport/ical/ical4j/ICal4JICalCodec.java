@@ -31,10 +31,13 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.Categories;
+import net.fortuna.ical4j.model.property.Priority;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
+import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
 import org.silverpeas.core.util.StringUtil;
@@ -147,9 +150,9 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }
       // Add attendees
-      for (String attendee : event.getAttendees().asList()) {
+      for (org.silverpeas.core.calendar.Attendee attendee : event.getAttendees()) {
         try {
-          iCalEvent.getProperties().add(new Attendee(attendee));
+          iCalEvent.getProperties().add(new Attendee(attendee.getId()));
         } catch (URISyntaxException ex) {
           throw new EncodingException("Malformed attendee URI: " + attendee, ex);
         }

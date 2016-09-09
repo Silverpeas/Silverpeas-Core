@@ -129,4 +129,13 @@ public abstract class BaseCalendarTest extends DataSetTest {
             .addSqlPart("join sb_cal_calendar c on c.id = ce.calendarId").where("ce.id = ?", id)));
   }
 
+  protected List<TableLine> getAttributesTableLinesByEventId(String id) throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from SB_Cal_Attributes").where("id = ?", id));
+  }
+
+  protected List<TableLine> getAttendeesTableLines() throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from SB_Cal_Attendees"));
+  }
 }

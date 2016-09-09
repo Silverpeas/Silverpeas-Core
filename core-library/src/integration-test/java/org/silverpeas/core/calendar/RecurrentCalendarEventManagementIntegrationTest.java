@@ -33,7 +33,9 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
+import org.silverpeas.core.test.rule.DbSetupRule;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -310,6 +312,28 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   }
 
   @Test
+  public void deleteAnEventShouldDeleteItsRecurrenceRule() throws Exception {
+    List<DbSetupRule.TableLine> allRecurrences = getRecurrenceTableLines();
+    List<DbSetupRule.TableLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
+    List<DbSetupRule.TableLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+
+    assertThat(allRecurrences.isEmpty(), is(false));
+    assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(false));
+    assertThat(allRecurrenceExceptions.isEmpty(), is(false));
+
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event("ID_E_5").get();
+    event.delete();
+
+    allRecurrences = getRecurrenceTableLines();
+    allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
+    allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+    assertThat(allRecurrences.isEmpty(), is(true));
+    assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(true));
+    assertThat(allRecurrenceExceptions.isEmpty(), is(true));
+  }
+
+  @Test
   public void updateRecurrenceOfAnEvent() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_5").get();
@@ -380,4 +404,18 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(actual.getRecurrence(), is(expected.getRecurrence()));
   }
 
+  protected List<DbSetupRule.TableLine> getRecurrenceTableLines() throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence"));
+  }
+
+  protected List<DbSetupRule.TableLine> getRecurrenceDayOfWeekTableLines() throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence_DayOfWeek"));
+  }
+
+  protected List<DbSetupRule.TableLine> getRecurrenceExceptionTableLines() throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence_Exception"));
+  }
 }

@@ -161,7 +161,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
   }
 
   @Override
-  public final int hashCode() {
+  public int hashCode() {
     HashCodeBuilder hash = new HashCodeBuilder();
     hash.append(getId() != null ? getId() : super.hashCode());
     return hash.toHashCode();
@@ -169,7 +169,7 @@ public abstract class AbstractEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TY
 
   @SuppressWarnings("unchecked")
   @Override
-  public final boolean equals(Object obj) {
+  public boolean equals(Object obj) {
     if (obj == null) {
       return false;
     }

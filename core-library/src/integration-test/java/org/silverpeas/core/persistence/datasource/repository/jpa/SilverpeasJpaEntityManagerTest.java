@@ -414,23 +414,24 @@ public class SilverpeasJpaEntityManagerTest {
   }
 
   @Test
-  public void savePersonWithIdSetManually() {
+  public void saveAsUsualAPersonWithIdSetManually() {
+    final String manualId = "id_that_will_be_changed";
     Person newPerson =
-        new Person().setId("id_that_will_be_changed").setFirstName("Aurore").setLastName("Allibe")
+        new Person().setId(manualId).setFirstName("Aurore").setLastName("Allibe")
             .createdBy("400").setLastUpdatedBy("not_registred_I_hope");
     assertThat(newPerson.getVersion(), is(0L));
-    assertThat(newPerson.getId(), is("id_that_will_be_changed"));
+    assertThat(newPerson.getId(), is(manualId));
     Person personSaveResult = jpaEntityServiceTest.save(newPerson);
-    assertThat(personSaveResult, not(sameInstance(newPerson)));
+    assertThat(personSaveResult, sameInstance(newPerson));
     assertThat(newPerson.getId(), notNullValue());
-    Person personCreated = jpaEntityServiceTest.getPersonById(newPerson.getId());
+    assertThat(personSaveResult.getId(), not(is(manualId)));
+    Person personCreated = jpaEntityServiceTest.getPersonById(manualId);
     assertThat(personCreated, nullValue());
     personCreated = jpaEntityServiceTest.getPersonById(personSaveResult.getId());
     assertThat(personCreated, notNullValue());
     assertThat(personCreated, not(sameInstance(newPerson)));
     assertThat(personCreated, is(personCreated));
     assertThat(personCreated.getCreatedBy(), is("400"));
-    assertThat(newPerson.getCreateDate(), nullValue());
     assertThat(personCreated.getCreateDate(), is(personSaveResult.getCreateDate()));
     assertThat(personCreated.getLastUpdatedBy(), is(personCreated.getCreatedBy()));
     assertThat(personCreated.getLastUpdateDate(), is(personCreated.getCreateDate()));

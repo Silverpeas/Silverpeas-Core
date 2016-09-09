@@ -3,10 +3,10 @@ package org.silverpeas.core.persistence.datasource.model;
 /**
  * A composite entity identifier is a unique identifier that is made up of several identification
  * values. Usually, these values are the unique identifier of one or more external entities.
- * @author: ebonnet
+ * @author ebonnet
  */
 public interface CompositeEntityIdentifier extends ExternalEntityIdentifier {
-  public static final String COMPOSITE_SEPARATOR = ":";
+  String COMPOSITE_SEPARATOR = ":";
 
   @Override
   default EntityIdentifier fromString(String id) {

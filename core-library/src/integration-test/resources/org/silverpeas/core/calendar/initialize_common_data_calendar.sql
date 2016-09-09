@@ -69,3 +69,11 @@ INSERT INTO sb_cal_attributes (id, name, value) VALUES
   ('ID_E_1', 'location', 'location A'),
   ('ID_E_2', 'location', 'location B'),
   ('ID_E_3', 'location', 'location C');
+
+INSERT INTO sb_cal_attendees (id, attendeeId, eventId, type, participation, presence,
+                              createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+VALUES
+  ('ID_A_E1_1', '1', 'ID_E_1', 0, 'ACCEPTED', 'OPTIONAL',
+                '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
+  ('ID_A_E1_2', 'john.doe@silverpeas.org', 'ID_E_1', 1, 'TENTATIVE', 'REQUIRED',
+                '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0);

@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 /**
  * A plannable object is a object that can be planned in a calendar and that can be serialized
@@ -82,9 +83,16 @@ public interface Plannable extends Serializable {
   String getTitle();
 
   /**
+   * Sets a title to this plannable object. A title is a short resume or the subject of the
+   * plannable object.
+   * @param title a short text about the reason of this plannable object.
+   */
+  void setTitle(String title);
+
+  /**
    * Saves this plannable object into the specified calendar. This will add this plannable object
    * into the given calendar and it will have hence an unique identifier that will uniquely
-   * identify it among all others plannable objects in the calendar. If this event was already
+   * identify it among all others plannable objects in the calendar. If this was already
    * planned in a calender, nothing is done.
    * @param aCalendar
    * @return itself.
@@ -92,10 +100,16 @@ public interface Plannable extends Serializable {
   Plannable planOn(final Calendar aCalendar);
 
   /**
-   * Is this event planned in a given calendar?
+   * Is this planned in a given calendar?
    * @return true if this event is planned in a calendar, false otherwise.
    */
   boolean isPlanned();
+
+  /**
+   * Gets all the attendees to this plannable object.
+   * @return a set of attendees.
+   */
+  Set<Attendee> getAttendees();
 
   /**
    * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)
@@ -108,4 +122,5 @@ public interface Plannable extends Serializable {
    * (aka saved) in a given calendar, then nothing is done.
    */
   void update();
+
 }

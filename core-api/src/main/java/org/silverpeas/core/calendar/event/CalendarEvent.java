@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.calendar.event;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
@@ -36,6 +37,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
@@ -43,7 +47,7 @@ import java.time.OffsetDateTime;
  * we ensures an event is unique in a per-calendar basis.
  * It occurs on a {@link Period} and as a such it must be well limited in the time (id est it must
  * have a start and an end dates/date times).
- * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendees}.
+ * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}.
  * In order to be customized for different kinds of use, some additional information can be set
  * through its {@link Attributes} property.
  */
@@ -73,7 +77,7 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   @Embedded
   private Attributes attributes = new Attributes();
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
   private Calendar calendar;
 
@@ -101,8 +105,9 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   @Transient
   private Categories categories = new Categories();
 
-  @Transient
-  private Attendees attendees = new Attendees();
+  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true,
+      fetch = FetchType.EAGER)
+  private Set<Attendee> attendees = new HashSet<>();
 
   protected CalendarEvent(Period period) {
     this.period = period;
@@ -140,6 +145,30 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     return calendar;
   }
 
+  @Override
+  public String getTitle() {
+    return title;
+  }
+
+  @Override
+  public void setTitle(String title) {
+    if (title == null) {
+      this.title = "";
+    } else {
+      this.title = title;
+    }
+  }
+
+  /**
+   * Specifies a title to this event.
+   * @param title the title of the event
+   * @return itself.
+   */
+  public CalendarEvent withTitle(String title) {
+    setTitle(title);
+    return this;
+  }
+
   /**
    * Specifies the visibility level to this event. In generally, it defines the intention of the
    * user about the visibility on the event he accepts to give. Usual values are PUBLIC, PRIVATE or
@@ -161,14 +190,6 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   public CalendarEvent withPriority(Priority priority) {
     this.priority = priority;
     return this;
-  }
-
-  /**
-   * Gets the attendees to this event.
-   * @return the attendees to this event.
-   */
-  public Attendees getAttendees() {
-    return this.attendees;
   }
 
   /**
@@ -195,14 +216,6 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
    */
   public String getDescription() {
     return description;
-  }
-
-  /**
-   * Gets the title of this event.
-   * @return the event title or an empty string if the event has no title.
-   */
-  public String getTitle() {
-    return title;
   }
 
   /**
@@ -239,20 +252,6 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
   @Override
   public void unsetRecurrence() {
     this.recurrence = null;
-  }
-
-  /**
-   * Sets a title to this event.
-   * @param title the title to set.
-   * @return itself.
-   */
-  public CalendarEvent withTitle(String title) {
-    if (title == null) {
-      this.title = "";
-    } else {
-      this.title = title;
-    }
-    return this;
   }
 
   /**
@@ -344,14 +343,14 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
 
   @Override
   public CalendarEvent planOn(final Calendar calendar) {
-    if (!isPersisted()) {
-      return Transaction.getTransaction().perform(() -> {
+    return Transaction.getTransaction().perform(() -> {
+      if (!isPersisted()) {
         CalendarEventRepository repository = CalendarEventRepository.get();
-        CalendarEvent.this.setCalendar(calendar);
-        return repository.save(CalendarEvent.this);
-      });
-    }
-    return this;
+        setCalendar(calendar);
+        return repository.save(this);
+      }
+      return this;
+    });
   }
 
   @Override
@@ -361,24 +360,40 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
 
   @Override
   public void delete() {
-    if (isPersisted()) {
-      Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = CalendarEventRepository.get();
-        repository.delete(CalendarEvent.this);
-        return null;
-      });
-    }
+    performInTransaction(repository -> repository.delete(this));
   }
 
   @Override
   public void update() {
-    if (isPersisted()) {
-      Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = CalendarEventRepository.get();
-        repository.save(CalendarEvent.this);
-        return null;
-      });
-    }
+    performInTransaction(repository -> repository.save(this));
+  }
+
+  @Override
+  public Set<Attendee> getAttendees() {
+    return this.attendees;
+  }
+
+  /**
+   * Adds an attendee to this event and returns itself. It is a short write of
+   * {@code event.getAttendees().add(InternalAttendee.fromUser(user).to(event))}
+   * @param user the user whose participation to this event is required.
+   * @return the event itself.
+   */
+  public CalendarEvent withAttendee(User user) {
+    getAttendees().add(InternalAttendee.fromUser(user).to(this));
+    return this;
+  }
+
+  /**
+   * Adds an attendee to this event and returns itself. It is a short write of
+   * {@code event.getAttendees().add(ExternalAttendee.withEmail(email).to(event))}
+   * @param email the email of a user external to Silverpeas and whose the participation to this
+   * event is required.
+   * @return the event itself.
+   */
+  public CalendarEvent withAttendee(String email) {
+    getAttendees().add(ExternalAttendee.withEmail(email).to(this));
+    return this;
   }
 
   @Override
@@ -388,16 +403,26 @@ public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifi
     clone.period = period.clone();
     clone.categories = categories.clone();
     clone.attributes = attributes.clone();
-    clone.attendees = attendees.clone();
+    clone.attendees = new HashSet<>();
+    attendees.forEach(a -> a.cloneFor(clone));
     return clone;
-
   }
 
-  protected void setCalendar(final Calendar calendar) {
+  private void setCalendar(final Calendar calendar) {
     this.calendar = calendar;
   }
 
   private Period getPeriod() {
     return this.period;
+  }
+
+  private void performInTransaction(Consumer<CalendarEventRepository> persistenceOperation) {
+    if (isPersisted()) {
+      Transaction.getTransaction().perform(() -> {
+        CalendarEventRepository repository = CalendarEventRepository.get();
+        persistenceOperation.accept(repository);
+        return null;
+      });
+    }
   }
 }

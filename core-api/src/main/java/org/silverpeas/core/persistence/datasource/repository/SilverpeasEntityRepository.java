@@ -122,6 +122,18 @@ public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY
   }
 
   /**
+   * Synchronizes the persistence context to the underlying data source. Within a transactional
+   * context, the persistence context is directly put to the data source but will be effective
+   * only when the transaction will be committed. The consequence of the synchronization within
+   * a transaction context is the persistence context is then validated by the data source. Making
+   * it work, the data source has to support the transactions.
+   * <p>
+   * Warning, the behavior of this method is implementation-dependent. According to the type of
+   * the repository or of the underlying data source, the flush can not to be working.
+   */
+  void flush();
+
+  /**
    * Does this repository contains the specified entity? It contains the entity if its persistence
    * context is taken in charge by the instances of the repository class.
    * @param entity an entity.

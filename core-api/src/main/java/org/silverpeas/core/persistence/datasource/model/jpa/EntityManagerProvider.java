@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,31 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.persistence.datasource.model;
+package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.util.ServiceProvider;
 
-import javax.persistence.Embeddable;
-import java.io.Serializable;
+import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
- * All Silverpeas entities must use this interface for their identifier.
- * By this way, all entities have a typed identifier that only the entity knows.
- * @author Yohann Chastagnier
+ * A provider of the JPA entity manager with which the persistence of entities can be managed.
+ * It shouldn't be used directly; it is dedicated to be used by the repositories of entities
+ * themselves. It is for example used directly by the
+ * {@link org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager}.
+ * @author mmoquillon
  */
-public interface EntityIdentifier extends ResourceIdentifier, Serializable {
+@Singleton
+public class EntityManagerProvider {
 
-  /**
-   * Sets the id value from a String.
-   * @return
-   */
-  EntityIdentifier fromString(String id);
+  @PersistenceContext
+  private EntityManager em;
 
-  /**
-   * Generate a new ID.
-   * "Auto-Increment" identifiers must implement this method.
-   * @param tableName
-   * @param tableColumnIdName
-   */
-  EntityIdentifier generateNewId(final String tableName, final String tableColumnIdName);
+  public static EntityManagerProvider get() {
+    return ServiceProvider.getService(EntityManagerProvider.class);
+  }
+
+  public EntityManager getEntityManager() {
+    return em;
+  }
 }

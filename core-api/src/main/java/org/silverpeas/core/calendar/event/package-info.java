@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,31 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.persistence.datasource.model;
-
-import org.silverpeas.core.ResourceIdentifier;
-
-import javax.persistence.Embeddable;
-import java.io.Serializable;
-
 /**
- * All Silverpeas entities must use this interface for their identifier.
- * By this way, all entities have a typed identifier that only the entity knows.
- * @author Yohann Chastagnier
+ * Provides the definition of events as a component plannable in a calendar. An event occurs in
+ * a given period of a calendar and it can be recurrent over the time. It is the base component
+ * upon which more business-specific plannable objects can be made.
+ * @author mmoquillon
  */
-public interface EntityIdentifier extends ResourceIdentifier, Serializable {
-
-  /**
-   * Sets the id value from a String.
-   * @return
-   */
-  EntityIdentifier fromString(String id);
-
-  /**
-   * Generate a new ID.
-   * "Auto-Increment" identifiers must implement this method.
-   * @param tableName
-   * @param tableColumnIdName
-   */
-  EntityIdentifier generateNewId(final String tableName, final String tableColumnIdName);
-}
+package org.silverpeas.core.calendar.event;

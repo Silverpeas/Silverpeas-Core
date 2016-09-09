@@ -24,6 +24,7 @@
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.AbstractEntity;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
@@ -59,7 +60,6 @@ import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
  * @author Yohann Chastagnier
  */
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
     IDENTIFIER_TYPE extends EntityIdentifier>
     extends AbstractEntity<ENTITY, IDENTIFIER_TYPE> {
@@ -128,7 +128,11 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
 
   @Override
   public boolean isPersisted() {
-    return super.isPersisted() && StringUtil.isDefined(getId());
+    if (super.isPersisted()) {
+      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
+      return entityManager.find(getClass(), id) != null;
+    }
+    return false;
   }
 
   @Override

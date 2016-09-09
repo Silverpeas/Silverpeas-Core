@@ -150,7 +150,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .createdBy(USER_ID)
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION)
-        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE).planOn(calendar);
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
+        .planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
     Optional<CalendarEvent> mayBeActualEvent = calendar.event(expectedEvent.getId());
@@ -184,7 +185,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .createdBy(USER_ID)
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION)
-        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE).planOn(calendar);
+        .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
+        .planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
     Optional<CalendarEvent> mayBeActualEvent = calendar.event(expectedEvent.getId());
@@ -278,6 +280,23 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(calendar.event(eventIdBeforeDeletion).isPresent(), is(false));
     assertThat(calendar.in(YearMonth.of(2016, 1)).getEventOccurrences().isEmpty(),
         is(true));
+  }
+
+  @Test
+  public void deleteAnEventShouldDeleteAllItsAttributesAndAttendees() throws Exception {
+    List<TableLine> allAttributes = getAttributesTableLinesByEventId("ID_E_1");
+    List<TableLine> allAttendees = getAttendeesTableLines();
+    assertThat(allAttributes.isEmpty(), is(false));
+    assertThat(allAttendees.isEmpty(), is(false));
+
+    Calendar calendar = Calendar.getById("ID_3");
+    CalendarEvent event = calendar.event("ID_E_1").get();
+    event.delete();
+
+    allAttributes = getAttributesTableLinesByEventId("ID_E_1");
+    allAttendees = getAttendeesTableLines();
+    assertThat(allAttributes.isEmpty(), is(true));
+    assertThat(allAttendees.isEmpty(), is(true));
   }
 
   @Test

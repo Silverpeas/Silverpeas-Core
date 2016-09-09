@@ -26,6 +26,7 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 import org.silverpeas.core.persistence.datasource.model.AbstractEntity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
@@ -99,9 +100,6 @@ public class SilverpeasJpaEntityManager<ENTITY extends AbstractJpaEntity<ENTITY,
   private Class<ENTITY> entityClass;
 
   private Class<ENTITY_IDENTIFIER_TYPE> entityIdentifierClass;
-
-  @PersistenceContext
-  private EntityManager em;
 
   /**
    * Gets the entity class managed by the repository.
@@ -182,16 +180,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends AbstractJpaEntity<ENTITY,
     return identifiers;
   }
 
-  /**
-   * Synchronizes the persistence context to the underlying data source. Within a transactional
-   * context, the persistence context is directly put to the data source but will be effective
-   * only when the transaction will be committed. The consequence of the synchronization within
-   * a transaction context is the persistence context is then validated by the data source. Making
-   * it work, the data source has to support the transactions.
-   * <p>
-   * Warning, the behavior of this method is implementation-dependent. According to the type of
-   * the repository or of the underlying data source, the flush can not to be working.
-   */
+  @Override
   public void flush() {
     getEntityManager().flush();
   }
@@ -314,7 +303,6 @@ public class SilverpeasJpaEntityManager<ENTITY extends AbstractJpaEntity<ENTITY,
       if (entity.isPersisted()) {
         ENTITY attachedEntity = getById(entity.getId());
         getEntityManager().remove(attachedEntity);
-        unsetId(entity);
       }
     }
   }
@@ -634,10 +622,10 @@ public class SilverpeasJpaEntityManager<ENTITY extends AbstractJpaEntity<ENTITY,
 
   /**
    * A centralized access to the entity manager (just in case ...)
-   * @return
+   * @return the entity manager.
    */
   private EntityManager getEntityManager() {
-    return em;
+    return EntityManagerProvider.get().getEntityManager();
   }
 
   /**
@@ -664,18 +652,6 @@ public class SilverpeasJpaEntityManager<ENTITY extends AbstractJpaEntity<ENTITY,
    */
   protected void setMaximumItemsInClause(final int maximumItemsInClause) {
     this.maximumItemsInClause = maximumItemsInClause;
-  }
-
-  private void unsetId(final ENTITY entity) {
-    try {
-      if (idSetter == null) {
-        idSetter = AbstractEntity.class.getDeclaredMethod("setId", String.class);
-        idSetter.setAccessible(true);
-      }
-      idSetter.invoke(entity, new String[]{null});
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
   }
 
   private String jpqlQueryFrom(QueryCriteria criteria) {

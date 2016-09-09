@@ -32,14 +32,14 @@ import java.io.Serializable;
  */
 public interface IdentifiableEntity extends Serializable {
   /**
-   * Gets the id of the entity.
-   * @return
+   * Gets the unique identifier of this entity.
+   * @return the entity unique identifier.
    */
   String getId();
 
   /**
-   * Indicates if the entity is persisted (commonly if the entity has an id)
-   * @return
+   * Indicates if the entity is persisted.
+   * @return true if the entity is stored in a data source, false otherwise.
    */
   boolean isPersisted();
 

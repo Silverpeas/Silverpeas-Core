@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Calendar (
   lastUpdateDate TIMESTAMP     NOT NULL,
   lastUpdatedBy  VARCHAR(40)   NOT NULL,
   version        INT8          NOT NULL,
-  CONSTRAINT PK_CALENDAR PRIMARY KEY (id)
+  CONSTRAINT PK_CALENDAR PRIMARY KEY (id),
 );
 
 CREATE TABLE IF NOT EXISTS SB_Cal_Recurrence (
@@ -80,13 +80,14 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Event (
   attributes     VARCHAR(40)   NULL,
   visibility     VARCHAR(50)   NOT NULL,
   priority       INT           NOT NULL,
+  recurrenceId   VARCHAR(40)    NULL,
   createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate TIMESTAMP     NOT NULL,
   lastUpdatedBy  VARCHAR(40)   NOT NULL,
   version        INT8          NOT NULL,
-  recurrenceId  VARCHAR(40)    NULL,
   CONSTRAINT PK_Event PRIMARY KEY (id),
+  CONSTRAINT FK_Calendar FOREIGN KEY (calendarId) REFERENCES SB_Cal_Calendar(id),
   CONSTRAINT FK_Recurrence FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
 );
 
@@ -95,4 +96,22 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Attributes (
   name       VARCHAR(255) NOT NULL,
   value      VARCHAR(255) NOT NULL,
   CONSTRAINT PK_Attributes PRIMARY KEY (id, name)
+);
+
+CREATE TABLE IF NOT EXISTS SB_Cal_Attendees (
+  id                VARCHAR(40) NOT NULL,
+  attendeeId        VARCHAR(40) NOT NULL,
+  eventId           VARCHAR(40) NOT NULL,
+  type              INT         NOT NULL,
+  participation     VARCHAR(10) NOT NULL DEFAULT 'AWAITING',
+  presence          VARCHAR(10) NOT NULL DEFAULT 'REQUIRED',
+  delegate          VARCHAR(40) NULL,
+  createDate        TIMESTAMP     NOT NULL,
+  createdBy         VARCHAR(40)   NOT NULL,
+  lastUpdateDate    TIMESTAMP     NOT NULL,
+  lastUpdatedBy     VARCHAR(40)   NOT NULL,
+  version           INT8          NOT NULL,
+  CONSTRAINT PK_Attendee PRIMARY KEY (id),
+  CONSTRAINT FK_Event    FOREIGN KEY (eventId) REFERENCES SB_Cal_Event(id),
+  CONSTRAINT FK_Delegate FOREIGN KEY (delegate) REFERENCES SB_Cal_Attendees(id)
 );
