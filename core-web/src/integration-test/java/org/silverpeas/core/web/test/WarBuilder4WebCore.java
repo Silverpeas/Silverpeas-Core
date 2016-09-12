@@ -49,12 +49,12 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
     addClasses(SilverpeasSessionOpener.class, TestJcrRepositoryProvider.class);
     addPackages(true, "org.silverpeas.core.web.http");
-    addPackages(true, "org.silverpeas.core.web.mvc");
     addPackages(true, "org.silverpeas.core.web.panel");
     addPackages(true, "org.silverpeas.core.web.selection");
     addPackages(true, "org.silverpeas.core.web.subscription");
     addPackages(true, "org.silverpeas.core.web.util.security");
     addPackages(true, "org.silverpeas.core.web.util.servlet");
+    addPackages(true, "org.silverpeas.core.web.session");
     // Bundles & Settings
     addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
     addAsResource("org/silverpeas/publication/publicationSettings.properties");
@@ -99,6 +99,15 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    */
   public WarBuilder4WebCore addStringTemplateFeatures() {
     addAsResource("org/silverpeas/util/stringtemplate.properties");
+    return this;
+  }
+
+  /**
+   * Adds the MVC framework.
+   * @return itself.
+   */
+  public WarBuilder4WebCore addMVCFeatures() {
+    addPackages(true, "org.silverpeas.core.web.mvc");
     return this;
   }
 }

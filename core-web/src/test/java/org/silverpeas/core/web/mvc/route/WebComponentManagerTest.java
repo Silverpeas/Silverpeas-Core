@@ -143,9 +143,10 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     try {
       onController(TwoHomepagesController.class).defaultRequest().perform();
     } catch (IllegalArgumentException e) {
+      System.out.printf(e.getMessage());
       assertThat(e.getMessage(),
           is("@Homepage is specified on otherHome method, but @Homepage has already been defined " +
-              "one another one")
+              "on another one")
       );
       throw e;
     }

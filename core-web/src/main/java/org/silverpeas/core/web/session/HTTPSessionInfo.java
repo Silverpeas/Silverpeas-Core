@@ -18,15 +18,16 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.mvc.controller;
+package org.silverpeas.core.web.session;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.http.HttpSession;
-import org.silverpeas.core.security.authentication.Authentication;
 
 /**
  * Information on the HTTP session opened by a Silverpeas user to access the Silverpeas Web pages.
@@ -62,7 +63,7 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
       try {
         httpSession.invalidate();
       } catch (IllegalStateException ex) {
-        SilverTrace.warn("peasCore", "SessionInfo.onClosed()", null, ex.getMessage());
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       }
     }
     super.onClosed();
@@ -86,24 +87,19 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
         }
       }
       for (Object element : controllers) {
-        String elementName = element.getClass().getSimpleName();
         try {
-          if (element instanceof AbstractComponentSessionController) {
-            AbstractComponentSessionController controller
-                = (AbstractComponentSessionController) element;
-            controller.close();
-          } else if (element instanceof MainSessionController) {
-            MainSessionController controller = (MainSessionController) element;
-            controller.clear();
+          if (element instanceof SessionCloseable) {
+            ((SessionCloseable) element).close();
           }
         } catch (Exception ex) {
-          SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
-              "root.MSG_GEN_PARAM_VALUE", "ERROR while cleaning " + elementName, ex);
+          SilverLogger.getLogger(this)
+              .error(
+                  "Error while cleaning the HTTP session in " + element.getClass().getSimpleName(),
+                  ex);
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
-          "root.MSG_GEN_PARAM_VALUE", "ERROR !!!", e);
+      SilverLogger.getLogger(this).error("Error while cleaning the HTTP session", e);
     }
   }
 

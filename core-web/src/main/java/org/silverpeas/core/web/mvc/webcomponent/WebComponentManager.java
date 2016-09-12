@@ -264,7 +264,7 @@ public class WebComponentManager {
               if (webComponentManager.defaultPath != null) {
                 throw new IllegalArgumentException(
                     "@Homepage is specified on " + resourceMethod.getName() +
-                        " method, but @Homepage has already been defined one another one"
+                        " method, but @Homepage has already been defined on another one"
                 );
               }
               webComponentManager.defaultPath = registredPaths.get(0);

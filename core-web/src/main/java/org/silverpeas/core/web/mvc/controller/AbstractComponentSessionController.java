@@ -45,6 +45,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.io.UnsupportedEncodingException;
@@ -57,7 +58,8 @@ import java.util.List;
 /**
  * Base class for all component session controller.
  */
-public class AbstractComponentSessionController implements ComponentSessionController {
+public abstract class AbstractComponentSessionController implements ComponentSessionController,
+    SessionCloseable {
 
   /**
    * The default character encoded supported by Silverpeas.

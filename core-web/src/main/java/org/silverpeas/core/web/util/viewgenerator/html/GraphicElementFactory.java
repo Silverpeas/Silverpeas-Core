@@ -66,6 +66,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
 
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
+
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
  * factory for each client (for future evolution). The GraphicElementFactory is responsible from
@@ -629,7 +632,12 @@ public class GraphicElementFactory {
   }
 
   public void setHttpRequest(HttpRequest request) {
-    mainSessionController = request.getMainSessionController();
+    mainSessionController = null;
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+      mainSessionController =
+          (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+    }
     boolean isComponentMainPage =
         request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
             endsWith("/jsp/Main");

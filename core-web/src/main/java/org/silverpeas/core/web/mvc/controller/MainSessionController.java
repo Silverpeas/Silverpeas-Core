@@ -46,6 +46,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcSettings;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -62,7 +63,7 @@ import static org.silverpeas.core.admin.service.AdministrationServiceProvider.ge
  It provides functions to get information about the logged user (which is unique).
  It is also used to update the current environnement of the user (current domain, current component).
  */
-public class MainSessionController implements Clipboard {
+public class MainSessionController implements Clipboard, SessionCloseable {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
   private Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
@@ -562,6 +563,11 @@ public class MainSessionController implements Clipboard {
   public void removeObject(int index) throws ClipboardException {
     Clipboard clipboard = getClipboard();
       clipboard.removeObject(index);
+  }
+
+  @Override
+  public void close() {
+    clear();
   }
 
   @Override

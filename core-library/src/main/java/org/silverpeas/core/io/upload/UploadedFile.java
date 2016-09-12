@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.upload;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -66,7 +67,7 @@ public class UploadedFile {
    * @return
    */
   public static UploadedFile from(HttpServletRequest request, String uploadSessionId,
-      UserDetail uploader) {
+      User uploader) {
     UploadSession uploadSession = UploadSession.from(uploadSessionId);
     return new UploadedFile(uploadSession, getUploadedFile(uploadSession),
         request.getParameter(uploadSessionId + "-title"),

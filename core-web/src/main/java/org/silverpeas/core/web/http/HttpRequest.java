@@ -24,23 +24,22 @@
 package org.silverpeas.core.web.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileUploadUtil;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -52,8 +51,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * An HTTP request decorating an HTTP servlet request with some additional methods and by changing
@@ -104,8 +101,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * is for an anonymous user.
    */
   public boolean isWithinAnonymousUserSession() {
-    MainSessionController controller = getMainSessionController();
-    return controller != null && controller.getCurrentUserDetail().isAnonymous();
+    User user = User.getCurrentRequester();
+    return user != null && user.isAnonymous();
   }
 
   /**
@@ -114,7 +111,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return true if the request is sent in the context of a Silvepreas user session.
    */
   public boolean isWithinUserSession() {
-    return getMainSessionController() != null;
+    return User.getCurrentRequester() != null;
   }
 
   /**
@@ -204,29 +201,15 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
-   * Gets the main controller in the current user session. If the current session doesn't match an
-   * opened user session in Silverpeas, then null is returned.
-   *
-   * @return the main session controller mapped with this request.
-   */
-  public MainSessionController getMainSessionController() {
-    HttpSession session = getSession(false);
-    if (session != null) {
-      return (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    }
-    return null;
-  }
-
-  /**
    * Gets the language of the user behind this request.
    *
    * @return the language of the user as he has chosen in its profile in Silverpeas.
    */
   public String getUserLanguage() {
     String language = I18NHelper.defaultLanguage;
-    MainSessionController mainSessionController = getMainSessionController();
-    if (mainSessionController != null) {
-      language = mainSessionController.getFavoriteLanguage();
+    User user = User.getCurrentRequester();
+    if (user != null) {
+      language = user.getUserPreferences().getLanguage();
     }
     return language;
   }
@@ -238,10 +221,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public Collection<UploadedFile> getUploadedFiles() {
     Collection<UploadedFile> uploadedFiles = new ArrayList<>();
-    MainSessionController mainSessionController = getMainSessionController();
-    if (mainSessionController != null) {
-      uploadedFiles =
-          FileUploadManager.getUploadedFiles(this, mainSessionController.getCurrentUserDetail());
+    User user = User.getCurrentRequester();
+    if (user != null) {
+      uploadedFiles = FileUploadManager.getUploadedFiles(this, user);
     }
     return uploadedFiles;
   }

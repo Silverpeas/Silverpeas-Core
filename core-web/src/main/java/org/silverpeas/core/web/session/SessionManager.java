@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.mvc.controller;
+package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
@@ -52,7 +52,6 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.controller.notification.UserSessionServerEvent;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
