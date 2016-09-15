@@ -22,7 +22,7 @@
 package org.silverpeas.core.contribution.rating.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +51,7 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "updateInstanceId",
         query = "update Rating set instanceId = :newInstanceId where instanceId = :instanceId " +
             "and contributionId = :contributionId and contributionType = :contributionType")})
-public class Rating extends AbstractJpaCustomEntity<Rating, UniqueIntegerIdentifier> {
+public class Rating extends BasicJpaEntity<Rating, UniqueIntegerIdentifier> {
 
   @Column(name = "author", nullable = false)
   @NotNull

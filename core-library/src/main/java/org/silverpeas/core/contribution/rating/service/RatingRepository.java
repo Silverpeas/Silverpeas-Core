@@ -25,11 +25,15 @@ import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rating;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameter;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
+import org.silverpeas.core.util.StringUtil;
 
+import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +43,7 @@ import java.util.Map;
  * ratings.
  * @author mmoquillon
  */
-public class RatingRepository extends JpaBasicEntityManager<Rating, UniqueIntegerIdentifier> {
+public class RatingRepository extends BasicJpaEntityRepository<Rating> {
 
   public void deleteAllRatingsOfAContribution(ContributionRatingPK contribution) {
     NamedParameters parameters = newNamedParameters();
@@ -93,4 +97,13 @@ public class RatingRepository extends JpaBasicEntityManager<Rating, UniqueIntege
         .add("newInstanceId", instanceId);
     updateFromNamedQuery("updateInstanceId", parameters);
   }
+
+  private long updateFromNamedQuery(String namedQuery, NamedParameters parameters) {
+    return updateFromQuery(getEntityManager().createNamedQuery(namedQuery), parameters);
+  }
+
+  private long updateFromQuery(Query updateQuery, NamedParameters parameters) {
+    return parameters.applyTo(updateQuery).executeUpdate();
+  }
+
 }

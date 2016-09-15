@@ -21,7 +21,7 @@
 package org.silverpeas.core.sharing.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +33,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "sb_filesharing_history")
-public class DownloadDetail extends AbstractJpaCustomEntity<DownloadDetail, UniqueLongIdentifier>
+public class DownloadDetail extends BasicJpaEntity<DownloadDetail, UniqueLongIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = -3552579238204831286L;

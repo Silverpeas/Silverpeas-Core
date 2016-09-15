@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.sharing.repository;
 
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author ehugonnet
  */
-public interface TicketRepository extends BasicEntityRepository<Ticket, UuidIdentifier> {
+public interface TicketRepository extends EntityRepository<Ticket>, WithSaveAndFlush<Ticket> {
 
   List<Ticket> findAllTicketForSharedObjectId(Long sharedObjectId, String ticketType);
 

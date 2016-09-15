@@ -28,7 +28,7 @@ import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.security.Securable;
 
 import javax.persistence.CascadeType;
@@ -60,7 +60,7 @@ import java.util.Optional;
     query = "from Calendar c where c.componentInstanceId = :componentInstanceId " +
             "order by c.componentInstanceId, c.title, c.id")
 @Table(name = "sb_cal_calendar")
-public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implements Securable {
+public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> implements Securable {
 
   @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
@@ -110,7 +110,10 @@ public class Calendar extends AbstractJpaEntity<Calendar, UuidIdentifier> implem
     return calendarRepository.getByComponentInstanceId(instanceId);
   }
 
-  @Override
+  /**
+   * Gets the identifier of the component instance which the calendar is attached.
+   * @return the identifier of the component instance which the calendar is attached.
+   */
   public String getComponentInstanceId() {
     return componentInstanceId;
   }

@@ -161,39 +161,7 @@ public class JpaEntityServiceTest {
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public long updateAnimalName(Animal animal) {
-    return animalRepository.updateAnimalName(animal);
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
   public long deleteAnimalsByType(AnimalType type) {
     return animalRepository.deleteAnimalsByType(type);
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long updatePersonFirstNameHavingAtLeastOneAnimal(Person person) {
-    return personRepository.updatePersonFirstNameHavingAtLeastOneAnimal(person);
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long deletePersonFirstNamesHavingAtLeastOneAnimal() {
-    return personRepository.deletePersonFirstNamesHavingAtLeastOneAnimal();
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long badUpdateMissingLastUpdatedBy() {
-    return personRepository.badUpdateMissingLastUpdatedBy();
-  }
-
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long badUpdateMissingLastUpdateDate() {
-    return personRepository.badUpdateMissingLastUpdateDate();
-  }
-
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long badUpdateMissingVersionManagement() {
-    return personRepository.badUpdateMissingVersionManagement();
   }
 }

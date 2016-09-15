@@ -27,7 +27,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalCustomEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalTypeCustomEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonCustomEntity;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 @Singleton
 public class AnimalCustomEntityRepository
-    extends JpaBasicEntityManager<AnimalCustomEntity, UniqueLongIdentifier> {
+    extends BasicJpaEntityRepository<AnimalCustomEntity> {
 
   public List<AnimalCustomEntity> getByType(AnimalTypeCustomEntity type) {
     return listFromNamedQuery("getAnimalsByTypeCustom", newNamedParameters().add("type", type));
@@ -52,12 +52,6 @@ public class AnimalCustomEntityRepository
     String jpqlQuery = "select a.person from AnimalCustomEntity a where a.type like :type";
     return listFromJpqlString(jpqlQuery, newNamedParameters().add("type", type),
         PersonCustomEntity.class);
-  }
-
-  public long updateAnimalName(AnimalCustomEntity animalCustomEntity) {
-    return updateFromNamedQuery("updateAnimalNameCustom",
-        newNamedParameters().add("id", UniqueLongIdentifier.from(animalCustomEntity.getId()))
-            .add("name", animalCustomEntity.getName()));
   }
 
   public long deleteAnimalsByType(AnimalTypeCustomEntity type) {

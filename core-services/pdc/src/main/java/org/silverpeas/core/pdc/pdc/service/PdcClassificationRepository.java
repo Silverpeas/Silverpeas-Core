@@ -27,7 +27,7 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 @Singleton
 public class PdcClassificationRepository
-    extends JpaBasicEntityManager<PdcClassification, UniqueLongIdentifier> {
+    extends BasicJpaEntityRepository<PdcClassification> {
 
   /**
    * Finds the predefined classification on the PdC that is set for the whole specified component
@@ -50,7 +50,7 @@ public class PdcClassificationRepository
   public PdcClassification findPredefinedClassificationByComponentInstanceId(String instanceId) {
     NamedParameters parameters = newNamedParameters();
     parameters.add("instanceId", instanceId);
-    return findOneByNamedQuery("findByComponentInstanceId", parameters);
+    return getFromNamedQuery("findByComponentInstanceId", parameters);
   }
 
   /**
@@ -64,7 +64,7 @@ public class PdcClassificationRepository
   public PdcClassification findPredefinedClassificationByNodeId(String nodeId, String instanceId) {
     NamedParameters parameters = newNamedParameters();
     parameters.add("nodeId", nodeId).add("instanceId", instanceId);
-    return findOneByNamedQuery("findByNodeId", parameters);
+    return getFromNamedQuery("findByNodeId", parameters);
   }
 
   /**

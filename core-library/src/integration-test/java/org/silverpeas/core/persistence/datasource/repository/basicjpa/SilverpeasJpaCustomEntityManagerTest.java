@@ -439,19 +439,6 @@ public class SilverpeasJpaCustomEntityManagerTest {
   }
 
   @Test
-  public void updateAnimalName() {
-    AnimalCustomEntity animalCustomEntity = jpaCustomEntityServiceTest.getAnimalById("1");
-    String previousName = animalCustomEntity.getName();
-    assertThat(animalCustomEntity, notNullValue());
-    animalCustomEntity.setName(previousName + "_toto");
-    assertThat(jpaCustomEntityServiceTest.updateAnimalName(animalCustomEntity), is(1L));
-    AnimalCustomEntity animalCustomEntityReloaded =
-        jpaCustomEntityServiceTest.getAnimalById(animalCustomEntity.getId());
-    assertThat(animalCustomEntityReloaded, notNullValue());
-    assertThat(animalCustomEntityReloaded.getName(), is(previousName + "_toto"));
-  }
-
-  @Test
   public void deleteAnimalsByType() {
     AnimalCustomEntity animalCustomEntity = jpaCustomEntityServiceTest.getAnimalById("1");
     assertThat(animalCustomEntity, notNullValue());
@@ -463,62 +450,6 @@ public class SilverpeasJpaCustomEntityManagerTest {
     AnimalCustomEntity animalCustomEntityReloaded =
         jpaCustomEntityServiceTest.getAnimalById(animalCustomEntity.getId());
     assertThat(animalCustomEntityReloaded, nullValue());
-  }
-
-  @Test
-  public void updatePersonFirstNamesHavingAtLeastOneAnimal() {
-    PersonCustomEntity personCustomEntity1 = jpaCustomEntityServiceTest.getPersonById("person_1");
-    PersonCustomEntity personCustomEntity2 = jpaCustomEntityServiceTest.getPersonById("person_2");
-    PersonCustomEntity personCustomEntity3 = jpaCustomEntityServiceTest.getPersonById("person_3");
-    String previousPerson1Name = personCustomEntity1.getFirstName();
-    String previousPerson2Name = personCustomEntity2.getFirstName();
-    String previousPerson3Name = personCustomEntity3.getFirstName();
-    assertThat(personCustomEntity1, notNullValue());
-    assertThat(personCustomEntity2, notNullValue());
-    assertThat(personCustomEntity3, notNullValue());
-
-    personCustomEntity1.setFirstName(previousPerson1Name + "_updated");
-    personCustomEntity2.setFirstName(previousPerson2Name + "_updated");
-    personCustomEntity3.setFirstName(previousPerson3Name + "_updated");
-    assertThat(
-        jpaCustomEntityServiceTest.updatePersonFirstNameHavingAtLeastOneAnimal(personCustomEntity1),
-        is(1L));
-    assertThat(
-        jpaCustomEntityServiceTest.updatePersonFirstNameHavingAtLeastOneAnimal(personCustomEntity2),
-        is(1L));
-    assertThat(
-        jpaCustomEntityServiceTest.updatePersonFirstNameHavingAtLeastOneAnimal(personCustomEntity3),
-        is(0L));
-    PersonCustomEntity personCustomEntity1Reloaded =
-        jpaCustomEntityServiceTest.getPersonById("person_1");
-    PersonCustomEntity personCustomEntity2Reloaded =
-        jpaCustomEntityServiceTest.getPersonById("person_2");
-    PersonCustomEntity personCustomEntity3Reloaded =
-        jpaCustomEntityServiceTest.getPersonById("person_3");
-    assertThat(personCustomEntity1Reloaded, notNullValue());
-    assertThat(personCustomEntity1Reloaded.getFirstName(), is(previousPerson1Name + "_updated"));
-    assertThat(personCustomEntity2Reloaded, notNullValue());
-    assertThat(personCustomEntity2Reloaded.getFirstName(), is(previousPerson2Name + "_updated"));
-    assertThat(personCustomEntity3Reloaded, notNullValue());
-    assertThat(personCustomEntity3Reloaded.getFirstName(), is(previousPerson3Name));
-  }
-
-  @Test
-  public void deletePersonFirstNamesHavingAtLeastOneAnimal() {
-    PersonCustomEntity personCustomEntity1 = jpaCustomEntityServiceTest.getPersonById("person_1");
-    PersonCustomEntity personCustomEntity2 = jpaCustomEntityServiceTest.getPersonById("person_2");
-    PersonCustomEntity personCustomEntity3 = jpaCustomEntityServiceTest.getPersonById("person_3");
-    assertThat(personCustomEntity1, notNullValue());
-    assertThat(personCustomEntity2, notNullValue());
-    assertThat(personCustomEntity3, notNullValue());
-    assertThat(jpaCustomEntityServiceTest.deletePersonFirstNamesHavingAtLeastOneAnimal(), is(4L));
-    assertThat(jpaCustomEntityServiceTest.deletePersonFirstNamesHavingAtLeastOneAnimal(), is(0L));
-    personCustomEntity1 = jpaCustomEntityServiceTest.getPersonById("person_1");
-    personCustomEntity2 = jpaCustomEntityServiceTest.getPersonById("person_2");
-    personCustomEntity3 = jpaCustomEntityServiceTest.getPersonById("person_3");
-    assertThat(personCustomEntity1, nullValue());
-    assertThat(personCustomEntity2, nullValue());
-    assertThat(personCustomEntity3, notNullValue());
   }
 
   /**

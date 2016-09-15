@@ -56,10 +56,10 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
   @Inject
-  private SPUserManager userManager;
+  private SPUserRepository userManager;
 
   @Inject
-  private SPGroupManager groupManager;
+  private SPGroupRepository groupManager;
 
   /**
    * Constructor

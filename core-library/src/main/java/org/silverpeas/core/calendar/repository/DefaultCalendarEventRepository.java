@@ -26,9 +26,8 @@ package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
@@ -38,15 +37,14 @@ import java.util.List;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class DefaultCalendarEventRepository
-    extends SilverpeasJpaEntityManager<CalendarEvent, UuidIdentifier>
+public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepository<CalendarEvent>
     implements CalendarEventRepository {
 
   @Override
   public long size(final Calendar calendar) {
     NamedParameters params = newNamedParameters()
         .add("calendar", calendar);
-    return fromNamedQuery("calendarEventCount", params, Long.class);
+    return getFromNamedQuery("calendarEventCount", params, Long.class);
   }
 
   @Override

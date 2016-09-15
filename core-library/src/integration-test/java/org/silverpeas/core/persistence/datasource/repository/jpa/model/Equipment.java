@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,7 +40,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "test_equipments")
-public class Equipment extends AbstractJpaEntity<Equipment, UuidIdentifier> implements
+public class Equipment extends SilverpeasJpaEntity<Equipment, UuidIdentifier> implements
     Serializable {
 
   @Column(name = "name", nullable = false)

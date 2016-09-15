@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.basicjpa.repository;
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.EquipmentCustomEntity;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import javax.inject.Singleton;
 
@@ -35,4 +34,5 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class EquipmentCustomEntityRepository extends
-    JpaBasicEntityManager<EquipmentCustomEntity, UuidIdentifier> {}
+    BasicJpaEntityRepository<EquipmentCustomEntity> {
+}

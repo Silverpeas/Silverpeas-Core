@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
 import java.util.Optional;
@@ -45,7 +45,7 @@ import java.util.Optional;
 @Table(name = "sb_cal_attendees")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class Attendee extends AbstractJpaEntity<Attendee, UuidIdentifier> {
+public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentifier> {
 
   @Column(nullable = false)
   private String attendeeId;

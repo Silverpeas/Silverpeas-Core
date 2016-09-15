@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,112 +23,56 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.model.AbstractEntity;
-import org.silverpeas.core.persistence.datasource.model.Entity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.ExternalEntityIdentifier;
+import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.EntityManager;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.lang.reflect.ParameterizedType;
-import java.util.Date;
+import java.lang.reflect.Type;
 
 import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
     .searchClassThatDeclaresAnnotation;
 
 /**
- * This abstract class must be extended by all Silverpeas JPA entity definitions.
- * All technical data, excepted the identifier, are handled at this level.
- * <p/>
- * The {@link AbstractEntity#performBeforePersist()} and {@link
- * AbstractEntity#performBeforeUpdate()}
- * method calls are handled at this level for JPA.
- * <p/>
- * Please be careful into the child entity classes about the use of @PrePersist, @PreUpdate
- * annotations as they are all taken in charge here. In most of cases you don't need to
- * use them, but if it is the case then override {@link AbstractEntity#performBeforePersist} or
- * {@link AbstractEntity#performBeforeUpdate} methods without forgetting to call before the same
- * method to the parent.
- * <p/>
- * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
- * manager.
- * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
- * definition.
- * @author Yohann Chastagnier
+ * Abstract implementation of the {@link IdentifiableEntity} interface that uses the JPA API.
+ * This implementation defines all the common methods that can be required by the more concrete
+ * entities and that puts in place the JPA mechanical required for their persistence according
+ * to the basic JPA related rules in the Silverpeas Persistence API such as the unique identifier
+ * management.
+ *
+ * Please be careful with the child entity classes about the use of @PrePersist and @PreUpdate
+ * annotations. In most of cases you don't need to use them, but to override {@link
+ * AbstractJpaEntity#performBeforePersist} or {@link AbstractJpaEntity#performBeforeUpdate} methods.
+ * @param <T> the class name of the represented entity.
+ * @param <U> the unique identifier class used by the entity to identify it uniquely in the
+ * persistence context.
+ * @author mmoquillon
  */
 @MappedSuperclass
-public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
-    IDENTIFIER_TYPE extends EntityIdentifier>
-    extends AbstractEntity<ENTITY, IDENTIFIER_TYPE> {
-  private static final long serialVersionUID = 5862667014447543891L;
-
-  @Transient
-  private String tableName;
-
-  @Transient
-  private Class<IDENTIFIER_TYPE> entityIdentifierClass;
+public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends EntityIdentifier>
+    implements IdentifiableEntity, Cloneable {
 
   @EmbeddedId
-  private IDENTIFIER_TYPE id;
+  private U id;
 
-  @Column(name = "createdBy", nullable = false, insertable = true, updatable = false, length = 40)
-  private String createdBy;
-  @Transient
-  private boolean createdBySetManually = false;
-
-  @Column(name = "createDate", nullable = false, insertable = true, updatable = false)
-  @Temporal(value = TemporalType.TIMESTAMP)
-  private Date createDate;
-
-  @Column(name = "lastUpdatedBy", nullable = false, length = 40)
-  private String lastUpdatedBy;
-  @Transient
-  private boolean lastUpdatedBySetManually = false;
-
-  @Column(name = "lastUpdateDate", nullable = false)
-  @Temporal(value = TemporalType.TIMESTAMP)
-  private Date lastUpdateDate;
-
-  @Version
-  @Column(name = "version", nullable = false)
-  private Long version = 0L;
-
-  /**
-   * Gets the identifier class of the entity managed by the repository.
-   * @return
-   */
-  protected Class<IDENTIFIER_TYPE> getEntityIdentifierClass() {
-    initializeEntityClasses();
-    return entityIdentifierClass;
-  }
-
-  /**
-   * Gets the identifier class of the entity.
-   * @return
-   */
-  @SuppressWarnings("unchecked")
-  private void initializeEntityClasses() {
-    if (entityIdentifierClass == null) {
-      try {
-        Class<?> classThatDeclaresTable =
-            searchClassThatDeclaresAnnotation(Table.class, this.getClass());
-        entityIdentifierClass =
-            ((Class<IDENTIFIER_TYPE>) ((ParameterizedType) classThatDeclaresTable.
-            getGenericSuperclass()).getActualTypeArguments()[1]);
-
-        tableName = classThatDeclaresTable.getAnnotation(Table.class).name();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
+  @Override
+  public String getId() {
+    return id == null ? null : id.asString();
   }
 
   @Override
   public boolean isPersisted() {
-    if (super.isPersisted()) {
+    if (this.id != null) {
       EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
       return entityManager.find(getClass(), id) != null;
     }
@@ -136,22 +80,65 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
   }
 
   @Override
-  public String getId() {
-    return id == null ? null : id.asString();
-  }
-
-  @SuppressWarnings("unchecked")
-  protected IDENTIFIER_TYPE newIdentifierInstance() {
-    try {
-      return getEntityIdentifierClass().newInstance();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  public int hashCode() {
+    HashCodeBuilder hash = new HashCodeBuilder();
+    hash.append(getId() != null ? getId() : super.hashCode());
+    return hash.toHashCode();
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  protected ENTITY setId(final String id) {
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (super.equals(obj)) {
+      return true;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final T other = (T) obj;
+    if (getId() != null && other.getId() != null) {
+      EqualsBuilder matcher = new EqualsBuilder();
+      matcher.append(getId(), other.getId());
+      return matcher.isEquals();
+    }
+    return false;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see java.lang.Object#clone()
+   */
+  @SuppressWarnings({"unchecked", "CloneDoesntDeclareCloneNotSupportedException"})
+  @Override
+  public T clone() {
+    AbstractJpaEntity entity;
+    try {
+      entity = (AbstractJpaEntity) super.clone();
+      entity.setId(null);
+    } catch (final CloneNotSupportedException e) {
+      entity = null;
+    }
+    return (T) entity;
+  }
+
+  /**
+   * Gets the native representation of the entity identifier.
+   * @return the native representation of the unique identifier of this entity.
+   */
+  protected U getNativeId() {
+    return id;
+  }
+
+  /**
+   * Sets the specified unique identifier to this entity.
+   * @param id the new unique identifier of the entity.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  protected T setId(final String id) {
     if (StringUtil.isDefined(id)) {
       try {
         this.id = newIdentifierInstance();
@@ -162,14 +149,33 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
     } else {
       this.id = null;
     }
-    return (ENTITY) this;
+    return (T) this;
+  }
+
+  /**
+   * Performs some treatments before this entity is persisted into a repository.
+   */
+  abstract protected void performBeforePersist();
+
+  /**
+   * Performs some treatments before its counterpart in a repository is updated with the changes in
+   * this entity.
+   */
+  abstract protected void performBeforeUpdate();
+
+  private U newIdentifierInstance() {
+    try {
+      return getEntityIdentifierClass().newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @SuppressWarnings("unchecked")
   @PrePersist
   private void beforePersist() {
     boolean isExternalIdentifier =
-        getEntityIdentifierClass().isAssignableFrom(ExternalEntityIdentifier.class);
+        ExternalEntityIdentifier.class.isAssignableFrom(getEntityIdentifierClass());
     if (!isExternalIdentifier) {
       if (this.id != null && StringUtil.isDefined(this.id.asString())) {
         SilverLogger.getLogger(this)
@@ -177,116 +183,25 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
                 "identifier value should not exist on a persist operation... (ID=" + getId() +
                 ")");
       }
-      this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
+      Class<?> classThatDeclaresTable =
+          searchClassThatDeclaresAnnotation(Table.class, this.getClass());
+      String tableName = classThatDeclaresTable.getAnnotation(Table.class).name();
+      this.id = (U) newIdentifierInstance().generateNewId(tableName, "id");
     }
     performBeforePersist();
-    clearSystemDataFlags();
   }
 
   @PreUpdate
   private void beforeUpdate() {
     performBeforeUpdate();
-    clearSystemDataFlags();
-  }
-
-  @Override
-  public String getCreatedBy() {
-    return createdBy;
   }
 
   @SuppressWarnings("unchecked")
-  @Override
-  public final ENTITY createdBy(final String createdBy) {
-    this.createdBySetManually =
-        this.createdBySetManually || !isPersisted() || this.createdBy == null;
-    if (this.createdBySetManually) {
-      this.lastUpdatedBySetManually = false;
+  private Class<U> getEntityIdentifierClass() {
+    Type parent = this.getClass().getGenericSuperclass();
+    while (!(parent instanceof ParameterizedType)) {
+      parent = this.getClass().getSuperclass().getGenericSuperclass();
     }
-    this.createdBy = createdBy;
-    return (ENTITY) this;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public final ENTITY createdBy(final User creator) {
-    setCreator(creator);
-    return (ENTITY) this;
-  }
-
-  @Override
-  public Date getCreateDate() {
-    return createDate;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected final ENTITY setCreateDate(final Date createDate) {
-    this.createDate = createDate;
-    return (ENTITY) this;
-  }
-
-  @Override
-  public Date getLastUpdateDate() {
-    return lastUpdateDate;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected final ENTITY setLastUpdateDate(final Date lastUpdateDate) {
-    this.lastUpdateDate = lastUpdateDate;
-    return (ENTITY) this;
-  }
-
-  @Override
-  public String getLastUpdatedBy() {
-    return lastUpdatedBy;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public final ENTITY setLastUpdatedBy(final String lastUpdatedBy) {
-    this.lastUpdatedBySetManually =
-        isPersisted() && this.createdBy != null && !this.createdBySetManually;
-    this.lastUpdatedBy = lastUpdatedBy;
-    return (ENTITY) this;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public final ENTITY setLastUpdatedBy(final User lastUpdater) {
-    setLastUpdater(lastUpdater);
-    return (ENTITY) this;
-  }
-
-  @Override
-  public Long getVersion() {
-    return version;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected final ENTITY setVersion(final Long version) {
-    this.version = version;
-    return (ENTITY) this;
-  }
-
-  @Override
-  public final void markAsModified() {
-    if (getLastUpdateDate() != null) {
-      setLastUpdateDate(new Date(getLastUpdateDate().getTime() + 1));
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public ENTITY clone() {
-    AbstractJpaEntity clone = (AbstractJpaEntity) super.clone();
-    clone.clearSystemDataFlags();
-    return (ENTITY) clone;
-  }
-
-  private void clearSystemDataFlags() {
-    createdBySetManually = false;
-    lastUpdatedBySetManually = false;
+    return (Class<U>) ((ParameterizedType) parent).getActualTypeArguments()[1];
   }
 }

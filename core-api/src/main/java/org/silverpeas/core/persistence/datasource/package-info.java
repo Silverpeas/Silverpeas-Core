@@ -23,8 +23,9 @@
  * @author mmoquillon
  */
 /**
- * Provides interfaces and classes for persisting a large of kinds of data into datasource (usually
- * a database).
+ * Defines the default Persistence API for Silverpeas. It provides interfaces and classes for
+ * persisting a large of kinds of data into datasource (usually a database). Currently it wraps
+ * JPA for the persistence with databases.
  * @author mmoquillon
  */
 package org.silverpeas.core.persistence.datasource;

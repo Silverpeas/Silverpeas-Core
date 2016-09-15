@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.user.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,7 +47,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 })
 
 public class NotificationResourceData
-    extends AbstractJpaCustomEntity<NotificationResourceData, UniqueLongIdentifier>
+    extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier>
     implements Cloneable {
 
   public final static String LOCATION_SEPARATOR = "@#@#@";

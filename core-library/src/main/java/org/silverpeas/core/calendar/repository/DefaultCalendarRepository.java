@@ -25,9 +25,8 @@
 package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class DefaultCalendarRepository extends SilverpeasJpaEntityManager<Calendar, UuidIdentifier>
+public class DefaultCalendarRepository extends SilverpeasJpaEntityRepository<Calendar>
     implements CalendarRepository {
 
   @Override

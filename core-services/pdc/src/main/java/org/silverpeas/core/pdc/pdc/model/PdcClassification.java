@@ -22,7 +22,7 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.persistence.CascadeType;
@@ -65,7 +65,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
     @NamedQuery(name = "findByPdcAxisValues", query = "select distinct c from PdcClassification c" +
         " join c.positions p join p.axisValues v where v in :values")})
 public class PdcClassification
-    extends AbstractJpaCustomEntity<PdcClassification, UniqueLongIdentifier> implements Cloneable {
+    extends BasicJpaEntity<PdcClassification, UniqueLongIdentifier> implements Cloneable {
 
   /**
    * Represents an empty classification (id est no classification on the PdC).

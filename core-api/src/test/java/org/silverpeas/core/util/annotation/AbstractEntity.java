@@ -24,7 +24,7 @@
 package org.silverpeas.core.util.annotation;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Inheritance;
@@ -35,5 +35,5 @@ import java.io.Serializable;
 @Table(name = "st_abstract_entity")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "shared_object_type")
-public abstract class AbstractEntity extends AbstractJpaCustomEntity<AbstractEntity, UuidIdentifier>
+public abstract class AbstractEntity extends BasicJpaEntity<AbstractEntity, UuidIdentifier>
     implements Serializable {}

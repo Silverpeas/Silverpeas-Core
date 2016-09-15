@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.socialnetwork.model;
 
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +38,7 @@ import java.io.Serializable;
 @NamedQueries({@NamedQuery(name = "ExternalAccount.findBySilverpeasUserId",
     query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId")})
 public class ExternalAccount
-    extends AbstractJpaCustomEntity<ExternalAccount, ExternalAccountIdentifier>
+    extends BasicJpaEntity<ExternalAccount, ExternalAccountIdentifier>
     implements Serializable {
 
   @Column(name = "silverpeasUserId")

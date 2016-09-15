@@ -22,7 +22,7 @@
 package org.silverpeas.core.admin.domain.driver;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -71,7 +71,7 @@ import java.util.Set;
         query = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
     @NamedQuery(name = "SPUser.findByEmail",
         query = "SELECT s FROM SPUser s WHERE s.email = :email")})
-public class SPUser extends AbstractJpaCustomEntity<SPUser, UniqueIntegerIdentifier>
+public class SPUser extends BasicJpaEntity<SPUser, UniqueIntegerIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = 2645559023438948622L;

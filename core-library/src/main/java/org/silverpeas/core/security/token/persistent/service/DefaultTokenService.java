@@ -29,10 +29,7 @@ import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.security.token.TokenGenerationParameter;
 import org.silverpeas.core.security.token.TokenGenerator;
-import org.silverpeas.core.security.token.TokenGeneratorProvider;
-import org.silverpeas.core.security.token.exception.TokenException;
-import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.core.security.token.persistent.repository.PersistentResourceTokenManager;
+import org.silverpeas.core.security.token.persistent.repository.PersistentResourceTokenRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -50,7 +47,7 @@ import static org.silverpeas.core.security.token.persistent.PersistentResourceTo
 public class DefaultTokenService implements PersistentResourceTokenService {
 
   @Inject
-  private PersistentResourceTokenManager tokenRepository;
+  private PersistentResourceTokenRepository tokenRepository;
 
   /**
    * @throws TokenException if an error occurs while initializing a token.

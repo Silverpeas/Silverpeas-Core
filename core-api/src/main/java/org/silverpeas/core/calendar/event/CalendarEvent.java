@@ -30,7 +30,7 @@ import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -66,7 +66,7 @@ import java.util.function.Consumer;
         ") order by e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsDeleteAll", query =
         "delete from CalendarEvent e where e.calendar = " + ":calendar")})
-public class CalendarEvent extends AbstractJpaEntity<CalendarEvent, UuidIdentifier>
+public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized {
 
   private static final long serialVersionUID = 1L;

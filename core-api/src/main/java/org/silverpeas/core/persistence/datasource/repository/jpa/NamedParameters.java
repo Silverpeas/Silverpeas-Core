@@ -66,6 +66,15 @@ public class NamedParameters implements Parameters {
   }
 
   /**
+   * Gets the specified parameter.
+   * @param parameterName the name of the parameter.
+   * @return the parameter or null if no such parameter exists.
+   */
+  public NamedParameter getParameter(final String parameterName) {
+    return namedParameters.get(parameterName);
+  }
+
+  /**
    * Adding a new named parameter.
    * @param name
    * @param value

@@ -25,10 +25,9 @@ package org.silverpeas.core.security.token.persistent;
 
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.security.token.annotation.TokenGenerator;
 import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.security.token.annotation.TokenGenerator;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.security.token.persistent.service.PersistentResourceTokenService;
@@ -61,7 +60,7 @@ import java.util.Date;
     @NamedQuery(name = "PersistentResourceToken.getByToken",
         query = "from PersistentResourceToken where token = :token")})
 public class PersistentResourceToken
-    extends AbstractJpaCustomEntity<PersistentResourceToken, UniqueLongIdentifier>
+    extends BasicJpaEntity<PersistentResourceToken, UniqueLongIdentifier>
     implements Token {
 
   private static final long serialVersionUID = 5956074363457906409L;

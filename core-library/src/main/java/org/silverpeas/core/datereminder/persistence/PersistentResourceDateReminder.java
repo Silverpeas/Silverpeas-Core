@@ -35,7 +35,7 @@ import javax.persistence.TemporalType;
 
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.datereminder.exception.DateReminderValidationException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -56,7 +56,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
         "where processStatus = 0 and dateReminder <= :dateReminder")
 })
 public class PersistentResourceDateReminder
-    extends AbstractJpaEntity<PersistentResourceDateReminder, UuidIdentifier> {
+    extends SilverpeasJpaEntity<PersistentResourceDateReminder, UuidIdentifier> {
 
   private static final long serialVersionUID = 5956074363457906409L;
 

@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource.repository.basicjpa.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +43,7 @@ import java.util.List;
 @Entity
 @Table(name = "test_persons")
 @NamedQuery(name = "getPersonsByNameCustom", query = "from PersonCustomEntity p where p.lastName = :name")
-public class PersonCustomEntity extends AbstractJpaCustomEntity<PersonCustomEntity, UuidIdentifier>
+public class PersonCustomEntity extends BasicJpaEntity<PersonCustomEntity, UuidIdentifier>
     implements Serializable {
 
   @Column(name = "firstName", nullable = false)

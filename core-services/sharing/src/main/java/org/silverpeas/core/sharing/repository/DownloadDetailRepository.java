@@ -24,14 +24,15 @@
  */
 package org.silverpeas.core.sharing.repository;
 
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 import org.silverpeas.core.sharing.model.DownloadDetail;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.BasicEntityRepository;
 
 /**
  *
  * @author ehugonnet
  */
-public interface DownloadDetailRepository extends BasicEntityRepository<DownloadDetail, UniqueLongIdentifier> {
+public interface DownloadDetailRepository extends EntityRepository<DownloadDetail>,
+    WithSaveAndFlush<DownloadDetail> {
 
 }

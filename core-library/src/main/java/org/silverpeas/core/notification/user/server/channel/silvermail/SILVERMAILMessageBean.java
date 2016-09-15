@@ -25,7 +25,7 @@
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +44,7 @@ import javax.validation.constraints.NotNull;
         query = "select m from SILVERMAILMessageBean m where m.userId = :userId and m.folderId = " +
             ":folderId order by m.id desc")})
 public class SILVERMAILMessageBean
-    extends AbstractJpaCustomEntity<SILVERMAILMessageBean, UniqueLongIdentifier> {
+    extends BasicJpaEntity<SILVERMAILMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = -3073514330044912996L;
 
   @Column(nullable = false)

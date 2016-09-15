@@ -49,7 +49,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class DocumentPermalinkRepositoryTest {
 
-  private DocumentPermalinkManager manager;
+  private DocumentPermalinkRepository manager;
 
   public DocumentPermalinkRepositoryTest() {
   }
@@ -71,7 +71,7 @@ public class DocumentPermalinkRepositoryTest {
     Operation preparation = Operations.sequenceOf(TABLES_CREATION, CLEAN_UP, INSERT_DATA);
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
     dbSetupTracker.launchIfNecessary(dbSetup);
-    manager = ServiceProvider.getService(DocumentPermalinkManager.class);
+    manager = ServiceProvider.getService(DocumentPermalinkRepository.class);
   }
 
   @Deployment

@@ -25,7 +25,6 @@ public class QuotaTest {
     assertValidate(quota, true);
 
     quota = initializeQuota();
-    quota.setId(null);
     assertValidate(quota, true);
 
     quota = initializeQuota();

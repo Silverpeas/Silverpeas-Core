@@ -26,8 +26,7 @@ package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.OffsetDateTime;
@@ -38,8 +37,7 @@ import java.util.List;
  * calendar; a calendar event is always related to an existing calendar.
  * @author Yohann Chastagnier
  */
-public interface CalendarEventRepository
-    extends SilverpeasEntityRepository<CalendarEvent, UuidIdentifier> {
+public interface CalendarEventRepository extends EntityRepository<CalendarEvent> {
 
   static CalendarEventRepository get() {
     return ServiceProvider.getService(CalendarEventRepository.class);

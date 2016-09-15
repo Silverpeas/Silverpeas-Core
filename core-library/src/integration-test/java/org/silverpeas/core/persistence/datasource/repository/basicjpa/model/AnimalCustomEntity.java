@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource.repository.basicjpa.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,7 +45,7 @@ import java.util.List;
     @NamedQuery(name = "deleteAnimalsByTypeCustom", query = "delete from AnimalCustomEntity a " +
         "where a.type = :type")})
 public class AnimalCustomEntity
-    extends AbstractJpaCustomEntity<AnimalCustomEntity, UniqueLongIdentifier>
+    extends BasicJpaEntity<AnimalCustomEntity, UniqueLongIdentifier>
     implements Serializable {
 
   @Column(name = "type", nullable = false)

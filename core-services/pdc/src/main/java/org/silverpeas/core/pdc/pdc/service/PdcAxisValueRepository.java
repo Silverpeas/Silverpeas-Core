@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValuePk;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
@@ -36,7 +36,7 @@ import java.util.List;
  * DAO that handles the persistence of PdcAxisValue beans.
  */
 @Singleton
-public class PdcAxisValueRepository extends JpaBasicEntityManager<PdcAxisValue, PdcAxisValuePk> {
+public class PdcAxisValueRepository extends BasicJpaEntityRepository<PdcAxisValue> {
 
   /**
    * Finds all the values of the specified PdC's axis.

@@ -28,8 +28,10 @@ import org.silverpeas.core.admin.user.model.User;
 import java.util.Date;
 
 /**
- * This interface must be implemented by all Silverpeas entity definitions that have to be
+ * An entity is an object managed or handled by Silverpeas and that can be persisted into a data
+ * source. This interface must be implemented by all Silverpeas entity definitions that have to be
  * persisted.
+ *
  * It provides signatures for the following technical data :
  * <ul>
  * <li>entity identifier</li>
@@ -48,12 +50,6 @@ import java.util.Date;
  */
 public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
     extends IdentifiableEntity {
-
-  /**
-   * Gets the identifier of the component instance which the entity is attached.
-   * @return the identifier of the component instance which the entity is attached.
-   */
-  String getComponentInstanceId();
 
   /**
    * Gets the date of the entity creation (in the persistence environment).

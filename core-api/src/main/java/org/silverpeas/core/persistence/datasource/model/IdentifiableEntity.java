@@ -28,12 +28,18 @@ import java.io.Serializable;
 /**
  * An identifiable entity is a serializable business entity that is uniquely identifiable over the
  * time and over different runtime. All entities to be persisted should implement this interface.
+ * The persistence of an identifiable entity should be ensures by a
+ * {@link org.silverpeas.core.persistence.datasource.repository.EntityRepository}.
+ *
+ * Because an identifiable entity is a business object, it is strongly recommended to expose the
+ * business operations related to the entity itself directly within its interface. In the
+ * same way, we recommend to perform repository related operations through the entity itself.
  * @author: ebonnet
  */
 public interface IdentifiableEntity extends Serializable {
   /**
    * Gets the unique identifier of this entity.
-   * @return the entity unique identifier.
+   * @return the entity unique identifier in the form of a string.
    */
   String getId();
 

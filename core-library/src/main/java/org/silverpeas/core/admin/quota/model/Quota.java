@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,7 +50,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @Table(name = "st_quota")
 @NamedQueries({@NamedQuery(name = "Quota.getByTypeAndResourceId",
     query = "from Quota where type = :type and resourceId = :resourceId")})
-public class Quota extends AbstractJpaCustomEntity<Quota, UniqueLongIdentifier>
+public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
     implements Serializable, Cloneable {
   private static final long serialVersionUID = 6564633879921455848L;
 

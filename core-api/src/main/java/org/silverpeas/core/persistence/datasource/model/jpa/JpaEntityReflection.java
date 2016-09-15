@@ -36,11 +36,11 @@ public class JpaEntityReflection {
   private static Field createdBySetManuallyField = null;
   private static Field lastUpdatedBySetManuallyField = null;
 
-  public static boolean isCreatedBySetManually(final AbstractJpaEntity entity) {
+  public static boolean isCreatedBySetManually(final SilverpeasJpaEntity entity) {
     try {
       if (createdBySetManuallyField == null) {
         createdBySetManuallyField =
-            AbstractJpaEntity.class.getDeclaredField("createdBySetManually");
+            SilverpeasJpaEntity.class.getDeclaredField("createdBySetManually");
         createdBySetManuallyField.setAccessible(true);
       }
       return (boolean) createdBySetManuallyField.get(entity);
@@ -50,11 +50,11 @@ public class JpaEntityReflection {
     }
   }
 
-  public static boolean isLastUpdatedBySetManually(final AbstractJpaEntity entity) {
+  public static boolean isLastUpdatedBySetManually(final SilverpeasJpaEntity entity) {
     try {
       if (lastUpdatedBySetManuallyField == null) {
         lastUpdatedBySetManuallyField =
-            AbstractJpaEntity.class.getDeclaredField("lastUpdatedBySetManually");
+            SilverpeasJpaEntity.class.getDeclaredField("lastUpdatedBySetManually");
         lastUpdatedBySetManuallyField.setAccessible(true);
       }
       return (boolean) lastUpdatedBySetManuallyField.get(entity);

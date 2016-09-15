@@ -163,40 +163,7 @@ public class JpaCustomEntityServiceTest {
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public long updateAnimalName(AnimalCustomEntity animalCustomEntity) {
-    return animalCustomEntityRepository.updateAnimalName(animalCustomEntity);
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
   public long deleteAnimalsByType(AnimalTypeCustomEntity type) {
     return animalCustomEntityRepository.deleteAnimalsByType(type);
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long updatePersonFirstNameHavingAtLeastOneAnimal(PersonCustomEntity personCustomEntity) {
-    return personCustomEntityRepository
-        .updatePersonFirstNameHavingAtLeastOneAnimal(personCustomEntity);
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long deletePersonFirstNamesHavingAtLeastOneAnimal() {
-    return personCustomEntityRepository.deletePersonFirstNamesHavingAtLeastOneAnimal();
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long badUpdateMissingLastUpdatedBy() {
-    return personCustomEntityRepository.badUpdateMissingLastUpdatedBy();
-  }
-
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long badUpdateMissingLastUpdateDate() {
-    return personCustomEntityRepository.badUpdateMissingLastUpdateDate();
-  }
-
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  public long badUpdateMissingVersionManagement() {
-    return personCustomEntityRepository.badUpdateMissingVersionManagement();
   }
 }

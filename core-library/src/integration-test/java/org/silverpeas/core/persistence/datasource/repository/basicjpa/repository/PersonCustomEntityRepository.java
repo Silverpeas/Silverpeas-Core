@@ -26,7 +26,7 @@ package org.silverpeas.core.persistence.datasource.repository.basicjpa.repositor
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalCustomEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonCustomEntity;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 @Singleton
 public class PersonCustomEntityRepository
-    extends JpaBasicEntityManager<PersonCustomEntity, UuidIdentifier> {
+    extends BasicJpaEntityRepository<PersonCustomEntity> {
 
   public PersonCustomEntity getByFirstName(String firstName) {
     String jpqlQuery = "from PersonCustomEntity p where p.firstName = :firstName";
@@ -52,48 +52,6 @@ public class PersonCustomEntityRepository
     String jpqlQuery = "select a from AnimalCustomEntity a where a.person.lastName like :lastName";
     return listFromJpqlString(jpqlQuery, newNamedParameters().add("lastName", lastName),
         AnimalCustomEntity.class);
-  }
-
-  public long updatePersonFirstNameHavingAtLeastOneAnimal(PersonCustomEntity personCustomEntity) {
-    String jpqlQuery =
-        "update PersonCustomEntity p set p.firstName = :name where p.id = :id and p.animals is " +
-            "not empty";
-    return updateFromJpqlQuery(jpqlQuery,
-        newNamedParameters().add("name", personCustomEntity.getFirstName())
-            .add("id", UuidIdentifier.from(personCustomEntity.getId())));
-  }
-
-  /**
-   * Missing technical data
-   * @return
-   */
-  public long badUpdateMissingLastUpdatedBy() {
-    String jpqlQuery =
-        "update PersonCustomEntity p set p.firstName = concat(p.firstName, '_updated') where p" +
-            ".animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery, noParameter());
-  }
-
-  /**
-   * Missing technical data
-   * @return
-   */
-  public long badUpdateMissingLastUpdateDate() {
-    String jpqlQuery =
-        "update PersonCustomEntity p set p.firstName = concat(p.firstName, '_updated') where p" +
-            ".animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery, noParameter());
-  }
-
-  /**
-   * Missing technical data
-   * @return
-   */
-  public long badUpdateMissingVersionManagement() {
-    String jpqlQuery =
-        "update PersonCustomEntity p set p.firstName = concat(p.firstName, '_updated') where p" +
-            ".animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery, newNamedParameters());
   }
 
   public long deletePersonFirstNamesHavingAtLeastOneAnimal() {

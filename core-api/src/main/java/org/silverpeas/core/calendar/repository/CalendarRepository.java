@@ -25,8 +25,7 @@
 package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.SilverpeasEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
  * the Silverpeas data source.
  * @author Yohann Chastagnier
  */
-public interface CalendarRepository extends SilverpeasEntityRepository<Calendar, UuidIdentifier> {
+public interface CalendarRepository extends EntityRepository<Calendar> {
 
   /**
    * Gets an instance of the implementation of a {@link CalendarRepository}.

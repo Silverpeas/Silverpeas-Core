@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -33,10 +33,9 @@ import javax.persistence.PersistenceContext;
  * A provider of the JPA entity manager with which the persistence of entities can be managed.
  * It shouldn't be used directly; it is dedicated to be used by the repositories of entities
  * themselves. It is for example used directly by the
- * {@link org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager}.
+ * {@link SilverpeasJpaEntityRepository}.
  * @author mmoquillon
  */
-@Singleton
 public class EntityManagerProvider {
 
   @PersistenceContext
