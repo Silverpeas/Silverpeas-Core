@@ -273,7 +273,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     DirectoryItemList results = new DirectoryItemList();
 
     QueryDescription queryDescription = new QueryDescription(query);
-    queryDescription.addSpaceComponentPair(null, "users");
+    queryDescription.addComponent("users");
     for (String appId : getContactComponentIds()) {
       queryDescription.addComponent(appId);
     }

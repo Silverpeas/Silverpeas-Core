@@ -64,10 +64,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-
     try {
-      String ComponentIndexPath = IndexFileManager
-          .getAbsoluteIndexPath(null, componentId);
+      String ComponentIndexPath = IndexFileManager.getAbsoluteIndexPath(componentId);
       DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);
     } catch (Exception e) {
       SilverLogger.getLogger(this)
@@ -97,11 +95,10 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
       }
       String[] paths = file.list(filter);
       for (String personalComponentName : paths != null ? paths : new String[0]) {
-        String personalComponentIndexPath =
-            IndexFileManager.getAbsoluteIndexPath(null, personalComponentName);
+        String personalComponentIndexPath = IndexFileManager
+            .getAbsoluteIndexPath(personalComponentName);
         DidYouMeanIndexer.createSpellIndex("content", personalComponentIndexPath);
       }
-
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("failure while indexing personal component of type ''{0}''",
@@ -114,8 +111,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   public void indexPdc() {
     SilverLogger.getLogger(this).info("starting indexation of PDC");
-    String pdcIndexPath = IndexFileManager
-        .getAbsoluteIndexPath(null, "pdc");
+    String pdcIndexPath = IndexFileManager.getAbsoluteIndexPath("pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
     SilverLogger.getLogger(this).info("ending indexation of PDC");
   }

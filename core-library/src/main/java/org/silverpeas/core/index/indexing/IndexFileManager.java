@@ -44,12 +44,7 @@ public class IndexFileManager {
   private static String indexUpLoadPath =
       ResourceLocator.getGeneralSettingBundle().getString("uploadsIndexPath");
 
-  static public String getAbsoluteIndexPath(String particularSpace, String sComponentId) {
-    if (particularSpace != null && (particularSpace.startsWith("user@")
-            || "transverse".equals(particularSpace))) {
-      return getIndexUpLoadPath() + particularSpace + separatorChar + sComponentId + separatorChar
-              + "index";
-    }
+  static public String getAbsoluteIndexPath(String sComponentId) {
     return getIndexUpLoadPath() + sComponentId + separatorChar + "index";
   }
 

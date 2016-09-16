@@ -97,7 +97,7 @@ public class DidYouMeanSearcher {
 
       // gets spelling index paths
       Set<String> spellIndexPaths =
-          indexSearcher.getIndexPathSet(queryDescription.getSpaceComponentPairSet());
+          indexSearcher.getIndexPathSet(queryDescription.getWhereToSearch());
 
       try {
         while (tokens.hasMoreTokens()) {

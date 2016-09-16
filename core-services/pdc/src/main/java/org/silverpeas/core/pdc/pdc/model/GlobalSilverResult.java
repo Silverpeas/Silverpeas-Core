@@ -69,7 +69,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setLocation(gsc.getLocation());
     super.setURL(gsc.getURL());
     super.setScore(1);
-
+    super.setType(gsc.getType());
     super.setThumbnailURL(gsc.getThumbnailURL());
   }
 

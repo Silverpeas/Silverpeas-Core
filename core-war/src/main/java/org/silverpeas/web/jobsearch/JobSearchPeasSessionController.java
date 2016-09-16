@@ -225,7 +225,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "Spaces");
+      query.addComponent("Spaces");
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
       for (MatchingIndexEntry result : plainSearchResults) {
@@ -361,7 +361,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "Components");
+      query.addComponent("Components");
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
 
@@ -542,7 +542,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "groups");
+      query.addComponent("groups");
 
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
@@ -687,7 +687,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "users");
+      query.addComponent("users");
 
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();

@@ -46,7 +46,6 @@ import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.indexing.model.IndexReadersCache;
-import org.silverpeas.core.index.indexing.model.SpaceComponentPair;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
@@ -146,9 +145,8 @@ public class IndexSearcher {
    * @return MatchingIndexEntry wrapping the result, else null
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType) {
-    SpaceComponentPair pair = new SpaceComponentPair(null, component);
-    Set<SpaceComponentPair> set = new HashSet<>(1);
-    set.add(pair);
+    Set<String> set = new HashSet<>(1);
+    set.add(component);
 
     IndexEntryKey indexEntryKey = new IndexEntryKey(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
@@ -468,9 +466,8 @@ public class IndexSearcher {
   /**
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
-  private org.apache.lucene.search.IndexSearcher getSearcher(
-      Set<SpaceComponentPair> spaceComponentPairSet) {
-    Set<String> indexPathSet = getIndexPathSet(spaceComponentPairSet);
+  private org.apache.lucene.search.IndexSearcher getSearcher(Set<String> componentIds) {
+    Set<String> indexPathSet = getIndexPathSet(componentIds);
 
     List<IndexReader> readers = new ArrayList<>();
     for (String path : indexPathSet) {
@@ -487,7 +484,7 @@ public class IndexSearcher {
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
   private org.apache.lucene.search.IndexSearcher getSearcher(QueryDescription query) {
-    Set<String> indexPathSet = getIndexPathSet(query.getSpaceComponentPairSet());
+    Set<String> indexPathSet = getIndexPathSet(query.getWhereToSearch());
     List<IndexReader> readers = new ArrayList<>();
     for (String path : indexPathSet) {
       IndexReader indexReader = getIndexReader(path);
@@ -518,20 +515,10 @@ public class IndexSearcher {
    * Build the set of all the path to the directories index corresponding the given (space,
    * component) pairs.
    */
-  public Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
+  public Set<String> getIndexPathSet(Set<String> componentIds) {
     Set<String> pathSet = new HashSet<>();
-
-    for (SpaceComponentPair pair : spaceComponentPairSet) {
-
-      // Both cases.
-      // 1 - space == null && component != null : search in an component's
-      // instance
-      // 2 - space != null && component != null : search in pdc or user's
-      // components (todo, agenda...)
-
-      if (pair != null && pair.getComponent() != null) {
-        pathSet.add(indexManager.getIndexDirectoryPath(pair.getSpace(), pair.getComponent()));
-      }
+    for (String componentId : componentIds) {
+      pathSet.add(indexManager.getIndexDirectoryPath(componentId));
     }
     return pathSet;
   }

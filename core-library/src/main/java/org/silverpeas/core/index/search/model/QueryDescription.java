@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.index.indexing.model.SpaceComponentPair;
 
 import org.silverpeas.core.util.StringUtil;
 
@@ -42,10 +41,9 @@ public final class QueryDescription implements Serializable {
   private static final long serialVersionUID = 1L;
   /**
    * The searched components' instance is built empty. To be searched any space or component must
-   * be
-   * explicitly added with the addSpaceComponent() method. This Set is a set of SpaceComponentPair.
-   */
-  private Set<SpaceComponentPair> spaceComponentPairSet = new HashSet<>();
+   * be explicitly added with the addSpaceComponent() method.
+   **/
+  private HashSet<String> whereToSearch = new HashSet<>();
   /**
    * The query defaults to the empty query. This is an error to set the query to null : a query is
    * needed to perform the search.
@@ -80,7 +78,7 @@ public final class QueryDescription implements Serializable {
   private Set<ExternalComponent> extComponents = new HashSet<>();
 
   /**
-   * The no parameters constructor builds an empty query. The setQuery and addSpaceComponentPair()
+   * The no parameters constructor builds an empty query. The setQuery and addComponent()
    * methods should be called to initialize the query. Other criterium (language, creation date
    * ...)
    * can be set before the request is sent to the searchEngine.
@@ -89,7 +87,7 @@ public final class QueryDescription implements Serializable {
   }
 
   /**
-   * The constructor set only the query string. The addSpaceComponentPair() method should be called
+   * The constructor set only the query string. The addComponent() method should be called
    * to set the components instances whose documents will be searched. Other criterium (language,
    * creation date ...) can be set before the request is sent to the searchEngine.
    */
@@ -136,19 +134,8 @@ public final class QueryDescription implements Serializable {
     return searchingUser;
   }
 
-  /**
-   * Add the given instance of the component to the searched instances set.
-   * @param space
-   * @param component
-   */
-  public void addSpaceComponentPair(String space, String component) {
-
-    spaceComponentPairSet.add(new SpaceComponentPair(space, component));
-  }
-
   public void addComponent(String component) {
-
-    spaceComponentPairSet.add(new SpaceComponentPair(null, component));
+    whereToSearch.add(component);
   }
 
   /**
@@ -156,8 +143,8 @@ public final class QueryDescription implements Serializable {
    * return Set is a set of SpaceComponentPair.
    * @return
    */
-  public Set<SpaceComponentPair> getSpaceComponentPairSet() {
-    return spaceComponentPairSet;
+  public Set<String> getWhereToSearch() {
+    return whereToSearch;
   }
 
   /**

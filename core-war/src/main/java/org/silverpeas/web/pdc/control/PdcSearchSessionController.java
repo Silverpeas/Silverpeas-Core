@@ -61,7 +61,6 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
@@ -241,15 +240,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ***************************************************************************************************************
-   */
-  /**
-   * PDC search methods (via DomainsBar) /
-   *
-   * @throws Exception
+   * **************************************************************************************************************
+   * PDC search methods (via DomainsBar)
    * ****************************************************************************************************************
    */
-
   public int getNbItemsPerPage() {
     if (nbItemsPerPage == -1) {
       nbItemsPerPage = new Integer(getSettings().getString("NbItemsParPage", "20"));
@@ -378,15 +372,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
           // personnels.
-          query.addSpaceComponentPair(null, "user@" + getUserId() + "_mailService");
-          query.addSpaceComponentPair(null, "user@" + getUserId() + "_todo");
-          query.addSpaceComponentPair(null, "user@" + getUserId() + "_agenda");
-          query.addSpaceComponentPair(null, "pdc");
+          query.addComponent("user@" + getUserId() + "_mailService");
+          query.addComponent("user@" + getUserId() + "_todo");
+          query.addComponent("user@" + getUserId() + "_agenda");
+          query.addComponent("pdc");
           // pour retrouver les espaces et les composants
-          query.addSpaceComponentPair(null, "Spaces");
-          query.addSpaceComponentPair(null, "Components");
+          query.addComponent("Spaces");
+          query.addComponent("Components");
           if (includeUsers) {
-            query.addSpaceComponentPair(null, "users");
+            query.addComponent("users");
           }
         } else if (getQueryParameters().getSpaceId() != null) {
           // used for search by space without keywords

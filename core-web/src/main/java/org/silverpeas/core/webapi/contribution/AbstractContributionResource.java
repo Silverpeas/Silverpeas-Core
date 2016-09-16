@@ -43,6 +43,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -156,7 +158,19 @@ public abstract class AbstractContributionResource extends RESTWebService {
           // Field value entity
           if (keyValuePairs.isEmpty()) {
             // Simple value
-            entity = FormFieldValueEntity.createFrom(null, fieldValue);
+            if (fieldTemplate.isRepeatable()) {
+              int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+              List<String> values = new ArrayList<>();
+              for (int occ = 0; occ < maxOccurrences; occ++) {
+                field = data.getField(fieldTemplate.getFieldName(), occ);
+                if (field != null) {
+                  values.add(field.getValue(lang));
+                }
+              }
+              entity = FormFieldValueEntity.createFrom(null, values);
+            } else {
+              entity = FormFieldValueEntity.createFrom(null, fieldValue);
+            }
           } else {
             // Value like checkbox for example.
             // Value is empty if "##" string is detected.
