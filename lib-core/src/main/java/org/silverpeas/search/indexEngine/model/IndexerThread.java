@@ -115,6 +115,7 @@ public class IndexerThread extends Thread {
                   queueSemaphore.availablePermits());
           if (!requestList.isEmpty()) {
             request = requestList.remove(0);
+            queueSemaphore.release();
           }
         }
 
@@ -123,8 +124,11 @@ public class IndexerThread extends Thread {
          * the requests) will not be blocked.
          */
         if (request != null) {
-          queueSemaphore.release();
-          request.process(indexManager);
+          try {
+            request.process(indexManager);
+          } catch (Exception e) {
+            SilverTrace.error("indexEngine", "IndexerThread", "indexEngine.INFO_PROCESS_ERROR", e);
+          }
         }
 
       } while (request != null);
@@ -141,7 +145,6 @@ public class IndexerThread extends Thread {
       try {
         synchronized (requestList) {
           if (requestList.isEmpty()) {
-            queueSemaphore.release(queueLimit - queueSemaphore.availablePermits());
             requestList.wait();
           }
         }
