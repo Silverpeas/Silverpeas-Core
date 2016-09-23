@@ -396,6 +396,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
     assertThat(actual.getTitle(), is(expected.getTitle()));
     assertThat(actual.getDescription(), is(expected.getDescription()));
+    assertThat(actual.getLocation(), is(expected.getLocation()));
     assertThat(actual.getAttributes().isEmpty(), is(true));
     assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
     assertThat(actual.getAttendees(), is(expected.getAttendees()));

@@ -91,6 +91,9 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   @Column(name = "description")
   private String description;
 
+  @Column(name = "location")
+  private String location;
+
   @Column(name = "visibility")
   @Enumerated(EnumType.STRING)
   @NotNull
@@ -104,7 +107,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   @JoinColumn(name = "recurrenceId", referencedColumnName = "id", unique = true)
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
 
-  @Transient
+  @Embedded
   private Categories categories = new Categories();
 
   @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true,
@@ -172,6 +175,16 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   /**
+   * Specifies a location where this event will occur.
+   * @param location a location: an address, a designation, a GPS coordinates, ...
+   * @return itself.
+   */
+  public CalendarEvent inLocation(String location) {
+    setLocation(location);
+    return this;
+  }
+
+  /**
    * Specifies the visibility level to this event. In generally, it defines the intention of the
    * user about the visibility on the event he accepts to give. Usual values are PUBLIC, PRIVATE or
    * CONFIDENTIAL for example. By default, the visibility level is PUBLIC.
@@ -221,6 +234,18 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   /**
+   * Sets a new description to this event.
+   * @param description a new description of the event.
+   */
+  public void setDescription(final String description) {
+    if (description == null) {
+      this.description = "";
+    } else {
+      this.description = description;
+    }
+  }
+
+  /**
    * Gets the priority of this event.
    * @return the priority of the event.
    */
@@ -235,6 +260,23 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   public Attributes getAttributes() {
     return attributes;
+  }
+
+  /**
+   * Gets the location where the event occurs. It can be an address, a designation or a GPS
+   * coordinates.
+   * @return the event's location.
+   */
+  public String getLocation() {
+    return (this.location == null ? "":this.location);
+  }
+
+  /**
+   * Sets a new location for this event. It can be an address, a designation or a GPS coordinates.
+   * @param location a location where the event occurs.
+   */
+  public void setLocation(String location) {
+    this.location = location;
   }
 
   /**
@@ -262,11 +304,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return itself.
    */
   public CalendarEvent withDescription(String description) {
-    if (description == null) {
-      this.description = "";
-    } else {
-      this.description = description;
-    }
+    setDescription(description);
     return this;
   }
 
@@ -281,6 +319,19 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   public CalendarEvent withAttribute(String attrName, String attrValue) {
     getAttributes().add(attrName, attrValue);
+    return this;
+  }
+
+  /**
+   * Adds the specified categories to the event. Same as
+   * <pre>{@code
+   * getCategories().addAll(categories);
+   * return this;}</pre>
+   * @param categories one or more categories with which this event will be categorized.
+   * @return itself.
+   */
+  public CalendarEvent withCategories(String ...categories) {
+    getCategories().addAll(categories);
     return this;
   }
 
@@ -429,6 +480,8 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     clone.period = period.clone();
     clone.categories = categories.clone();
     clone.attributes = attributes.clone();
+    clone.categories = categories.clone();
+    clone.location = this.location;
     clone.attendees = new HashSet<>();
     attendees.forEach(a -> a.cloneFor(clone));
     return clone;

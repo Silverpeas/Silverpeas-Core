@@ -150,7 +150,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .createdBy(USER_ID)
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION)
+        .inLocation("Salle Chamrousse")
         .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE)
+        .withCategories("Professional", "Meeting")
         .planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
@@ -363,6 +365,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
     assertThat(actual.getTitle(), is(expected.getTitle()));
     assertThat(actual.getDescription(), is(expected.getDescription()));
+    assertThat(actual.getLocation(), is(expected.getLocation()));
     assertThat(actual.getAttributes().isEmpty(), is(false));
     assertThat(actual.getAttributes(), is(expected.getAttributes()));
     assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));

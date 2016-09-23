@@ -24,6 +24,12 @@
 
 package org.silverpeas.core.calendar;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,8 +41,12 @@ import java.util.stream.Stream;
  * The categories in which a {@link Plannable} planned in a calendar is classified. The categories
  * are expected to be managed by the {@link Plannable} itself.
  */
+@Embeddable
 public class Categories implements Cloneable {
 
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "sb_cal_categories", joinColumns = {@JoinColumn(name = "id")})
+  @Column(name = "category")
   private Set<String> categories = new HashSet<>();
 
   /**
