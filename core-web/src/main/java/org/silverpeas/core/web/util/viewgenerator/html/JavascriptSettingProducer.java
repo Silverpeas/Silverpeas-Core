@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.silverpeas.core.util.EncodeHelper.javaStringToJsString;
+import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 /**
  * This tool permits the creates dynamically javascript settings that javascript plugins can used

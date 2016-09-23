@@ -38,7 +38,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 	out.println("<li class='field' id='"+parameter.getName()+"'>");
 	String help = parameter.getHelp();
 	if (help != null) {
-		help = EncodeHelper.javaStringToHtmlString(help);
+		help = WebEncodeHelper.javaStringToHtmlString(help);
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 	}
 
@@ -110,7 +110,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 		  value = "";
 		}
 
-		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(value)+"\" "+disabled+"/>");
+		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+WebEncodeHelper.javaStringToHtmlString(value)+"\" "+disabled+"/>");
 
 		if (mandatory) {
 			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\"/>");
@@ -260,7 +260,7 @@ out.println(window.printBefore());
       <div class="champs">
         <select name="ComponentBefore" id="ComponentBefore">
           <% for (ComponentInst brother : brothers) { %>
-              <option value="<%=brother.getId()%>"><%=EncodeHelper.javaStringToHtmlString(brother.getLabel())%></option>
+              <option value="<%=brother.getId()%>"><%=WebEncodeHelper.javaStringToHtmlString(brother.getLabel())%></option>
           <% } %>
           <option value="-1" selected><%=resource.getString("JSPP.PlaceLast")%></option>
         </select>

@@ -1,6 +1,6 @@
 <%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %><%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -129,7 +129,7 @@ out.println(frame.printBefore());
 				cellLabel = line.addArrayCellText(space.getName());
 			else
 				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+
-            EncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+EncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
+            WebEncodeHelper.javaStringToJsString(space.getPath(" > "))+"\"/>"+WebEncodeHelper.javaStringToHtmlString(space.getName())+"</a>");
 			cellLabel.setCompareOn(space.getName());
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemoveDate())+"&nbsp;("+space.getRemoverName()+")");
 			cell.setCompareOn(space.getRemoveDate());
@@ -163,7 +163,7 @@ out.println(frame.printBefore());
 			ArrayLine line = arrayPane.addArrayLine();
 			ComponentInstLight component = (ComponentInstLight) it.next();
 			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+
-					EncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
+					WebEncodeHelper.javaStringToHtmlString(component.getLabel())+"</a>");
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemoveDate())+"&nbsp;("+component.getRemoverName()+")");
 			cell.setCompareOn(component.getRemoveDate());
 

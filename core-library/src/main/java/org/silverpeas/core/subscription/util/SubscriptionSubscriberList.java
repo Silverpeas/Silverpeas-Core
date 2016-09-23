@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription.util;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -93,7 +94,7 @@ public class SubscriptionSubscriberList extends ArrayList<SubscriptionSubscriber
       final OrganizationController organisationController =
           OrganizationControllerProvider.getOrganisationController();
       for (String groupId : groupIds) {
-        for (UserDetail user : organisationController.getAllUsersOfGroup(groupId)) {
+        for (User user : organisationController.getAllUsersOfGroup(groupId)) {
           allUserSubscriberIds.add(user.getId());
         }
       }

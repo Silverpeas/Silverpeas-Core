@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -107,7 +107,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
           SilverLogger.getLogger(this).error("Incorrect type for value " + field.getValue(), e);
         }
       } else {
-        value = EncodeHelper.convertWhiteSpacesForHTMLDisplay(field.getValue(language));
+        value = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(field.getValue(language));
       }
     }
 

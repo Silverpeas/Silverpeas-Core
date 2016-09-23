@@ -47,9 +47,9 @@
 
   if (action.equals("save"))
   {
-        notifName = EncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName")) ;
+        notifName = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtNotifName")) ;
         channelId = request.getParameter("channelId") ;
-        address = EncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
+        address = WebEncodeHelper.htmlStringToJavaString(request.getParameter("txtAddress")) ;
         personalizationScc.saveNotifAddress(id, notifName, channelId, address, null) ;
         %>
         <HTML>

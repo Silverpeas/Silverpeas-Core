@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.core.mylinks.model.LinkDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
@@ -52,7 +52,7 @@ if (!links.hasNext()) {
 		LinkDetail link = (LinkDetail) links.next();
 		if (link.isVisible()) {
 			String lien = link.getUrl();
-			String name = EncodeHelper.convertHTMLEntities(link.getName());
+			String name = WebEncodeHelper.convertHTMLEntities(link.getName());
 			if (!StringUtil.isDefined(name)) {
 				name = lien;
 			}

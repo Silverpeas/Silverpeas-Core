@@ -29,6 +29,7 @@
 
 <%@ page import="org.silverpeas.core.i18n.I18NHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
@@ -41,7 +42,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
   out.println("<li class='field' id='"+parameter.getName()+"'>");
   String help = parameter.getHelp();
 	if (help != null) {
-	  help = EncodeHelper.javaStringToHtmlString(help);
+	  help = WebEncodeHelper.javaStringToHtmlString(help);
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 	}
 
@@ -150,8 +151,8 @@ window.setPopup(popupMode);
 var currentLanguage = "<%=compoInst.getLanguage()%>";
 <%
 	for (String lang : compoInst.getTranslations().keySet()) {
-		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(compoInst.getLabel(lang)))+"\";\n");
-		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(compoInst.getDescription(lang)))+"\";\n");
+		out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(WebEncodeHelper.javaStringToHtmlString(compoInst.getLabel(lang)))+"\";\n");
+		out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(WebEncodeHelper.javaStringToHtmlString(compoInst.getDescription(lang)))+"\";\n");
 	}
 %>
 
@@ -171,7 +172,7 @@ function openPopup(action, larg, haut) {
 
 function deleteInstance() {
   jQuery.popup.confirm(
-      "<%=resource.getStringWithParams("JSPP.MessageSuppressionInstance", EncodeHelper.escapeXml(compoInst.getLabel()))%>",
+      "<%=resource.getStringWithParams("JSPP.MessageSuppressionInstance", WebEncodeHelper.escapeXml(compoInst.getLabel()))%>",
       function() {
         var $form = jQuery('#infoInstance');
         jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
@@ -230,13 +231,13 @@ out.println(tabbedPane.print());
     </div>
 
     <div class="principalContent">
-      <h2 class="title-principal"><%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel(resource.getLanguage()))%></h2>
+      <h2 class="title-principal"><%=WebEncodeHelper.javaStringToHtmlString(compoInst.getLabel(resource.getLanguage()))%></h2>
       <div class="general-info">
         <img class="icons-application" alt="" src="../../util/icons/component/<%=compoInst.getName()%>Big.png" />
         <div class="general-info-type">
           <b>Type : </b><%=m_JobPeas.getLabel(resource.getLanguage())%>
           <% if (descDefined) { %>
-          <img class="applicationInfo" src="../../util/icons/info.gif" title="<%=EncodeHelper.javaStringToHtmlString(m_JobPeas.getDescription(resource.getLanguage()))%>"/>
+          <img class="applicationInfo" src="../../util/icons/info.gif" title="<%=WebEncodeHelper.javaStringToHtmlString(m_JobPeas.getDescription(resource.getLanguage()))%>"/>
           <% } %>
         </div>
         <% if (isInHeritanceEnable) { %>
@@ -251,7 +252,7 @@ out.println(tabbedPane.print());
         <% } %>
       </div>
       <% if (descDefined) { %>
-        <p class="descriptionType"><%=EncodeHelper.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></p>
+        <p class="descriptionType"><%=WebEncodeHelper.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></p>
       <% } else { %>
         <div class="inlineMessage"><%=m_JobPeas.getDescription(resource.getLanguage())%></div>
       <% } %>

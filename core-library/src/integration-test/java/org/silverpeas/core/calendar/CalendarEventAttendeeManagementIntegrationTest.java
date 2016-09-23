@@ -29,7 +29,10 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.event.Attendee;
 import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.event.ExternalAttendee;
+import org.silverpeas.core.calendar.event.InternalAttendee;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.util.Optional;

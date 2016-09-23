@@ -86,14 +86,14 @@
     row = parameterPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("GML.name") );
     cellText.setStyleSheet( "txtlibform" );
-    cellInput = row.addArrayCellInputText( "name", EncodeHelper.javaStringToHtmlString( parameter.getName() ) );
+    cellInput = row.addArrayCellInputText( "name", WebEncodeHelper.javaStringToHtmlString( parameter.getName() ) );
     cellInput.setSize( "50" );
 
 
     row = parameterPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.value") );
     cellText.setStyleSheet( "txtlibform" );
-    cellInput = row.addArrayCellInputText( "value", EncodeHelper.javaStringToHtmlString( parameter.getValue() ) );
+    cellInput = row.addArrayCellInputText( "value", WebEncodeHelper.javaStringToHtmlString( parameter.getValue() ) );
     cellInput.setSize( "80" );
 
 
@@ -102,8 +102,8 @@
     out.println(board.printBefore());
 %>
 <FORM NAME="parameterForm" METHOD="POST" ACTION="UpdateParameter">
-	<input type="hidden" name="name_original" value="<%=EncodeHelper.javaStringToHtmlString( parameter.getName() )%>">
-    <input type="hidden" name="context" value="<%=EncodeHelper.javaStringToHtmlString( strContext)%>" />
+	<input type="hidden" name="name_original" value="<%=WebEncodeHelper.javaStringToHtmlString( parameter.getName() )%>">
+    <input type="hidden" name="context" value="<%=WebEncodeHelper.javaStringToHtmlString( strContext)%>" />
 <%
     out.println( parameterPane.print() );
 %>

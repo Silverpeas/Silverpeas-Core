@@ -26,8 +26,10 @@ package org.silverpeas.core.calendar.event;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.*;
+import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
@@ -38,8 +40,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
@@ -343,7 +345,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
   @Override
   public CalendarEvent planOn(final Calendar calendar) {
-    return Transaction.getTransaction().perform(() -> {
+    CalendarEvent event = Transaction.getTransaction().perform(() -> {
       if (!isPersisted()) {
         CalendarEventRepository repository = CalendarEventRepository.get();
         setCalendar(calendar);
@@ -351,6 +353,8 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
       }
       return this;
     });
+    notify(ResourceEvent.Type.CREATION, event);
+    return event;
   }
 
   @Override
@@ -360,23 +364,45 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
   @Override
   public void delete() {
-    performInTransaction(repository -> repository.delete(this));
+    if (isPersisted()) {
+      Transaction.getTransaction().perform(() -> {
+        CalendarEventRepository repository = CalendarEventRepository.get();
+        repository.delete(this);
+        return null;
+      });
+    }
+    notify(ResourceEvent.Type.DELETION, this);
   }
 
   @Override
   public void update() {
-    performInTransaction(repository -> repository.save(this));
+    if (getNativeId() != null) {
+      Optional<CalendarEvent> before = getCalendar().event(getId());
+      if (before.isPresent()) {
+        CalendarEvent event = Transaction.getTransaction().perform(() -> {
+          CalendarEventRepository repository = CalendarEventRepository.get();
+          return repository.save(this);
+        });
+        notify(ResourceEvent.Type.UPDATE, before.get(), event);
+      }
+    }
   }
 
-  @Override
+  /**
+   * Gets the attendees. The adding or the removing of an attendee should be done
+   * only by the creator of this event. Nevertheless, there is actually no validation of this
+   * rule and it is left to the services to perform such a rule validation according to their own
+   * requirements.
+   * @return a set of attendees to this event.
+   */
   public Set<Attendee> getAttendees() {
     return this.attendees;
   }
 
   /**
-   * Adds an attendee to this event and returns itself. It is a short write of
+   * Adds an attendee in this event and returns itself. It is a short write of
    * {@code event.getAttendees().add(InternalAttendee.fromUser(user).to(event))}
-   * @param user the user whose participation to this event is required.
+   * @param user the user in Silverpeas whose participation in this event is required.
    * @return the event itself.
    */
   public CalendarEvent withAttendee(User user) {
@@ -385,9 +411,9 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   /**
-   * Adds an attendee to this event and returns itself. It is a short write of
+   * Adds an attendee in this event and returns itself. It is a short write of
    * {@code event.getAttendees().add(ExternalAttendee.withEmail(email).to(event))}
-   * @param email the email of a user external to Silverpeas and whose the participation to this
+   * @param email the email of a user external to Silverpeas and whose the participation in this
    * event is required.
    * @return the event itself.
    */
@@ -416,13 +442,8 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     return this.period;
   }
 
-  private void performInTransaction(Consumer<CalendarEventRepository> persistenceOperation) {
-    if (isPersisted()) {
-      Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = CalendarEventRepository.get();
-        persistenceOperation.accept(repository);
-        return null;
-      });
-    }
+  private void notify(ResourceEvent.Type type, CalendarEvent... events) {
+    CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
+    notifier.notifyEventOn(type, events);
   }
 }

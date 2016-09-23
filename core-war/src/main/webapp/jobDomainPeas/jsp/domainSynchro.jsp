@@ -64,7 +64,7 @@ function ValidForm(){
                             <%=resource.getString("GML.name")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="domainName" size="50" maxlength="20" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>">
+                            <input type="text" name="domainName" size="50" maxlength="20" VALUE="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getName())%>">
                         </td>
                     </tr>
                     <tr>
@@ -72,7 +72,7 @@ function ValidForm(){
                             <%=resource.getString("GML.description")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="domainDescription" size="50" maxlength="20" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>">
+                            <input type="text" name="domainDescription" size="50" maxlength="20" VALUE="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getDescription())%>">
                         </td>
                     </tr>
 			<tr>

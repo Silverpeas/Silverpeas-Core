@@ -215,7 +215,7 @@
             sb.append( "', '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
-            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.workingUsers") ) );
+            sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.workingUsers") ) );
             sb.append( " ?');" );
 
             row.addArrayCellLink( resource.getString("workflowDesigner.workingUsers"),
@@ -262,7 +262,7 @@
             sb.append( "', '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
-            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.interestedUsers") ) );
+            sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.interestedUsers") ) );
             sb.append( " ?');" );
 
             row.addArrayCellLink( resource.getString("workflowDesigner.interestedUsers"),

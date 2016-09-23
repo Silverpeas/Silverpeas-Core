@@ -42,7 +42,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.exception.SilverpeasException;
 
@@ -453,7 +453,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
     Pair<String, String>[] hostPath = new Pair[2];
     hostPath[0] =
         new Pair<>(getString("thesaurus.thesaurus") + " > ", "/Rthesaurus/jsp/Back");
-    String nomVoca = EncodeHelper.javaStringToHtmlString(getCurrentVoca().getName());
+    String nomVoca = WebEncodeHelper.javaStringToHtmlString(getCurrentVoca().getName());
     hostPath[1] = new Pair<>(getString("thesaurus.BBlistAffectations")
         + nomVoca, "/Rthesaurus/jsp/EditAssignments");
     String hostUrl = m_context + "/Rthesaurus/jsp/SaveAssignUser";

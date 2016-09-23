@@ -150,10 +150,10 @@ function newMessage() {
 	Date date = message.getDate();
     ArrayCellText cell = line.addArrayCellText(hasBeenReadenOrNotBegin + resource.getOutputDate(date) + hasBeenReadenOrNotEnd);
     cell.setCompareOn(date);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>" + hasBeenReadenOrNotEnd);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</a>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + WebEncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + WebEncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</a>" + hasBeenReadenOrNotEnd);
     if ( message.getUrl()!=null && message.getUrl().length()>0 )
-	line.addArrayCellText(hasBeenReadenOrNotBegin + "<a href =\"" + EncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=\"_top\"><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"/></a>" + hasBeenReadenOrNotEnd);
+	line.addArrayCellText(hasBeenReadenOrNotBegin + "<a href =\"" + WebEncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=\"_top\"><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"/></a>" + hasBeenReadenOrNotEnd);
     else
 		line.addArrayCellText( "" );
 

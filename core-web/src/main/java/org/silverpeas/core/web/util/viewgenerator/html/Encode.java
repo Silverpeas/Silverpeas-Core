@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 /**
  * Util class to encode special string or characters
  * @author lloiseau
  * @version 1.0
- * @deprecated Use {@link EncodeHelper} instead
+ * @deprecated Use {@link WebEncodeHelper} instead
  */
 public class Encode {
   /**
@@ -39,7 +39,7 @@ public class Encode {
    * @return javascript string encoded
    */
   public static String javaStringToJsString(String javastring) {
-    return EncodeHelper.javaStringToJsString(javastring);
+    return WebEncodeHelper.javaStringToJsString(javastring);
   }
 
   /**
@@ -48,15 +48,11 @@ public class Encode {
    * @return html string encoded
    */
   public static String javaStringToHtmlString(String javastring) {
-    return EncodeHelper.javaStringToHtmlString(javastring);
-  }
-
-  public static String javaStringToXmlString(String javastring) {
-    return EncodeHelper.javaStringToXmlString(javastring);
+    return WebEncodeHelper.javaStringToHtmlString(javastring);
   }
 
   public static String escapeXml(String javastring) {
-    return EncodeHelper.escapeXml(javastring);
+    return WebEncodeHelper.escapeXml(javastring);
   }
 
   /**
@@ -65,54 +61,11 @@ public class Encode {
    * @return html string encoded
    */
   public static String javaStringToHtmlParagraphe(String javastring) {
-    return EncodeHelper.javaStringToHtmlParagraphe(javastring);
-  }
-
-  /**
-   * Convert a html string to a java string Replace &quot
-   * @param HTML string to encode
-   * @return html string JAVA encoded
-   */
-  public static String htmlStringToJavaString(String htmlstring) {
-    return EncodeHelper.htmlStringToJavaString(htmlstring);
-  }
-
-  /**
-   * This method transforms a text with caracter specificly encoded for HTML by a text encoded in
-   * according to the Java code.
-   * @param text (String) a single text which contains a lot of forbidden caracters. This text must
-   * not be null
-   * @return Returns the transformed text without specific codes.
-   */
-  public static String transformHtmlCode(String text) {
-    return EncodeHelper.transformHtmlCode(text);
-  }
-
-  /**
-   * Convert a java string to a html string for textArea Replace euro symbol
-   * @param javastring Java string to encode
-   * @return html string encoded
-   * @deprecated
-   */
-  public static String encodeSpecialChar(String javastring) {
-    if (javastring == null)
-      return "";
-
-    return javastring;
-  }
-
-  /**
-   * This method transforms a string to replace the 'special' caracters to store them correctly in
-   * the database
-   * @param text (String) a single text which may contains 'special' caracters
-   * @return Returns the transformed text without specific codes.
-   */
-  public static String transformStringForBD(String sText) {
-    return EncodeHelper.transformStringForBD(sText);
+    return WebEncodeHelper.javaStringToHtmlParagraphe(javastring);
   }
 
   public static String convertHTMLEntities(String text) {
-    return EncodeHelper.convertHTMLEntities(text);
+    return WebEncodeHelper.convertHTMLEntities(text);
   }
 
 }

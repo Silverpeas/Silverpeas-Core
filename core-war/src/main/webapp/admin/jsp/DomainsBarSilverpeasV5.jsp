@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 
@@ -162,7 +162,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
 
     function getSpaceIdToInit()
     {
-      return "<%=EncodeHelper.javaStringToHtmlString(spaceId)%>";
+      return "<%=WebEncodeHelper.javaStringToHtmlString(spaceId)%>";
     }
 
     function getComponentIdToInit()
@@ -211,9 +211,9 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
     function getPersonalSpaceLabels()
     {
         var labels = new Array(2);
-        labels[0] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.select"))%>";
-        labels[1] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.remove.confirm"))%>";
-        labels[2] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.add"))%>";
+        labels[0] = "<%=WebEncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.select"))%>";
+        labels[1] = "<%=WebEncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.remove.confirm"))%>";
+        labels[2] = "<%=WebEncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.add"))%>";
         return labels;
     }
 

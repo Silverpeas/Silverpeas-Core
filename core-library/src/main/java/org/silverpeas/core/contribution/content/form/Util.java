@@ -25,7 +25,8 @@
 package org.silverpeas.core.contribution.content.form;
 
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -134,7 +135,7 @@ public class Util {
     out.println("   var filename = field.value.substring(lastIndexOfPathSeparator); ");
     out.println("   if (filename.length > 100) { ");
     out.println("       errorMsg+=\"  - '" +
-        EncodeHelper.javaStringToJsString(template.getLabel(pageContext.getLanguage())) + "' " +
+        WebEncodeHelper.javaStringToJsString(template.getLabel(pageContext.getLanguage())) + "' " +
         Util.getString("form.field.file.toolong", language) + "\\n \";");
     out.println("       errorNb++;");
     out.println("   } ");

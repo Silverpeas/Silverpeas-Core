@@ -75,7 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.silverpeas.core.util.EncodeHelper.javaStringToHtmlString;
+import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
 /**
  * @author Nabil Bensalem

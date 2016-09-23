@@ -150,7 +150,7 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }
       // Add attendees
-      for (org.silverpeas.core.calendar.Attendee attendee : event.getAttendees()) {
+      for (org.silverpeas.core.calendar.event.Attendee attendee : event.getAttendees()) {
         try {
           iCalEvent.getProperties().add(new Attendee(attendee.getId()));
         } catch (URISyntaxException ex) {

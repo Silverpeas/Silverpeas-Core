@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.content.form.field;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -150,7 +150,7 @@ public class TextFieldImpl extends TextField {
     while (itRes.hasNext()) {
       val = itRes.next();
 
-      out.println("\"" + EncodeHelper.javaStringToJsString(val) + "\"");
+      out.println("\"" + WebEncodeHelper.javaStringToJsString(val) + "\"");
 
       if (itRes.hasNext()) {
         out.println(",");

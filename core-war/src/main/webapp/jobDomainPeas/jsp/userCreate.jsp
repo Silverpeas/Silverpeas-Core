@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -219,7 +220,7 @@ out.println(window.printBefore());
                 <%=userObject.getLastName()%>
               <% } else { %>
                 <input type="text" name="userLastName" id="userLastName" size="50" maxlength="99"
-			value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />
+			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />
 			&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
               <% } %>
 			</div>
@@ -232,7 +233,7 @@ out.println(window.printBefore());
 		<%=userObject.getFirstName()%>
 		<% } else { %>
 		<input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99"
-			value="<%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
+			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
 		<% } %>
 			</div>
 		</div>
@@ -242,10 +243,10 @@ out.println(window.printBefore());
 			<div class="champs">
 				<% if (action.equals("userCreate")) { %>
                   <input type="text" name="userLogin" size="50" maxlength="50"
-			value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>
+			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>
 			&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
                 <% } else { %>
-                  <%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>
+                  <%=WebEncodeHelper.javaStringToHtmlString(userObject.getLogin())%>
                 <% } %>
 			</div>
 		</div>
@@ -257,7 +258,7 @@ out.println(window.printBefore());
 		<%=userObject.geteMail()%>
 		<% } else { %>
                   <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99"
-			value="<%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" />
+			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" />
                 <% } %>
 			</div>
 		</div>

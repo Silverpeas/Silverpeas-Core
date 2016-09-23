@@ -24,17 +24,18 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.hamcrest.Matchers;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
@@ -74,8 +75,14 @@ public class NotificationMetaDataTest {
         invocation -> new UserDetail());
     when(mockedOrganizationController.getUserDetail(anyString())).thenAnswer(
         invocation -> new UserDetail());
+    when(GroupProvider.get().getGroup(anyString())).thenAnswer(invocation -> {
+      GroupDetail group = new GroupDetail();
+      group.setId((String) invocation.getArguments()[0]);
+      group.setUserIds(new String[]{"1", "2", "3", "4", "5"});
+      return group;
+    });
     when(mockedOrganizationController.getGroup(anyString())).thenAnswer(invocation -> {
-      Group group = new Group();
+      GroupDetail group = new GroupDetail();
       group.setId((String) invocation.getArguments()[0]);
       group.setUserIds(new String[] {"1", "2", "3", "4", "5"});
       return group;

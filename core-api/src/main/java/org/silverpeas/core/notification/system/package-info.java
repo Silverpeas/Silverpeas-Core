@@ -23,8 +23,10 @@
  * @author mmoquillon
  */
 /**
- * Provides the System Notification API within which the objects in Silverpeas can notify or can be
- * notified about internal or user events.
+ * Provides the System Notification Bus API with which the objects in Silverpeas can notify or can
+ * be notified about some resource's state change. With the API, state change can be notified to
+ * any beans in Silverpeas that have to react on such events. Actually the notification bus is
+ * built atop of the CDI Event Bus.
  * @author mmoquillon
  */
 package org.silverpeas.core.notification.system;

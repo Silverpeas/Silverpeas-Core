@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -151,7 +152,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
           .getGroup(getSubscriber().getId());
       if (group == null) {
         // Prevents from NullPointerException
-        group = new Group();
+        group = new GroupDetail();
       }
     }
     return group;

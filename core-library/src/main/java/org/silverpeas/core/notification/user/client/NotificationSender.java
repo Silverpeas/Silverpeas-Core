@@ -64,7 +64,7 @@ public class NotificationSender implements java.io.Serializable {
    */
   public NotificationSender(String instanceId) {
     this.instanceId = extractLastNumber(instanceId);
-    notificationManager = new NotificationManager(null);
+    notificationManager = NotificationManager.get();
   }
 
   /**

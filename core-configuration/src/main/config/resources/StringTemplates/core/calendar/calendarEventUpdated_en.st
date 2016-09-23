@@ -1,0 +1,1 @@
+$sender$ has updated the event <b>$event.title$</b>

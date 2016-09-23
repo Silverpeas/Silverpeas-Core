@@ -23,7 +23,8 @@
  * @author mmoquillon
  */
 /**
- * Provides APIs for notifying either users or system components.
+ * Provides APIs for notifying either users or system components about some actions or changes
+ * occurring in some resources managed or handled by Silverpeas.
  * @author mmoquillon
  */
 package org.silverpeas.core.notification;

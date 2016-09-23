@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -41,7 +41,7 @@ public class JavascriptEncoderTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      pageContext.getOut().print(EncodeHelper.javaStringToJsString(string));
+      pageContext.getOut().print(WebEncodeHelper.javaStringToJsString(string));
     } catch (IOException ex) {
       throw new JspException("Silverpeas Javascript Converter Tag", ex);
     }

@@ -28,7 +28,7 @@
 
 <%@ page import="org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController"%>
 
-<%@ page import=" org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import=" org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%

@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.JdbcField;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -220,7 +220,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     Iterator<String> itRes = entries.iterator();
     while (itRes.hasNext()) {
       html.append("\"").
-          append(EncodeHelper.javaStringToJsString(itRes.next())).append("\"");
+          append(WebEncodeHelper.javaStringToJsString(itRes.next())).append("\"");
       if (itRes.hasNext()) {
         html.append(",\n");
       }

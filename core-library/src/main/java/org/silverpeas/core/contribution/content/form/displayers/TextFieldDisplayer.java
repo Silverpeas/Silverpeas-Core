@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -113,7 +113,7 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
     input textInput = new input();
     textInput.setName(fieldName);
     textInput.setID(fieldName);
-    textInput.setValue(EncodeHelper.javaStringToHtmlString(value));
+    textInput.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     textInput.setType(template.isHidden() ? input.hidden : input.text);
     textInput.setMaxlength(parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters
         .get(TextField.PARAM_MAXLENGTH) : "1000");

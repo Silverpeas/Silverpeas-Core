@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.dao.Dynamic
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.model.DynamicValue;
 import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.pool.ConnectionFactory;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -156,7 +156,7 @@ public class DynamicValueReplacement {
 
     // get the dynamic value corresponding to a key
     DynamicValue value =
-        DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher
+        DynamicValueDAO.getValidDynamicValue(conn, WebEncodeHelper.htmlStringToJavaString(matcher
         .group(1)));
 
     if (value != null) {
@@ -170,7 +170,7 @@ public class DynamicValueReplacement {
 
     } else {
       SilverTrace.warn("wysiwyg", DynamicValueReplacement.class.toString(),
-          " key not found in database : " + EncodeHelper.htmlStringToJavaString(matcher.group(1)));
+          " key not found in database : " + WebEncodeHelper.htmlStringToJavaString(matcher.group(1)));
     }
 
     // if value == null, we do nothing

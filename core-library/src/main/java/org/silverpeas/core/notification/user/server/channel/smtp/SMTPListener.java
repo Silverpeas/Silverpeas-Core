@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.user.server.channel.AbstractListener;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -86,7 +86,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     // process the target param string, containing the FROM and the SUBJECT email fields.
     Map<String, Object> keyValue = notification.getTargetParam();
     String tmpFromString = (String) keyValue.get(NotificationParameterNames.FROM);
-    String tmpSubjectString = EncodeHelper.htmlStringToJavaString((String) keyValue.get(NotificationParameterNames.SUBJECT));
+    String tmpSubjectString = WebEncodeHelper.htmlStringToJavaString((String) keyValue.get(NotificationParameterNames.SUBJECT));
     String serverUrl = (String) keyValue.get(NotificationParameterNames.SERVERURL);
     String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL);
     String linkLabel = (String) keyValue.get(NotificationParameterNames.LINKLABEL);
@@ -127,7 +127,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       // Body Message
       String messageBody = notification.getMessage();
         // Transform text to html format
-      messageBody = EncodeHelper.convertWhiteSpacesForHTMLDisplay(messageBody + "\n\n");
+      messageBody = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(messageBody + "\n\n");
       body.append(messageBody);
 
       if(tmpUrlString != null) {

@@ -35,7 +35,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -117,7 +117,7 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
       input inputField = new input();
       inputField.setName(fieldName);
       inputField.setID(fieldName);
-      inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+      inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength(100);
       inputField.setSize(parameters.containsKey(PARAM_SIZE) ? parameters.get(PARAM_SIZE) : "50");

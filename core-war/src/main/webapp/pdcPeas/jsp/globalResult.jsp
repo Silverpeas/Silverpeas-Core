@@ -35,6 +35,7 @@
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 
@@ -139,7 +140,7 @@ String keywords = (String) request.getAttribute("Keywords");
 if (keywords == null) {
 	keywords = "";
 } else {
-	keywords = EncodeHelper.javaStringToHtmlString(keywords);
+	keywords = WebEncodeHelper.javaStringToHtmlString(keywords);
 }
 
 // Contenu
@@ -408,7 +409,7 @@ function markAsRead(id) {
 
 	<% if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){ %>
 		function dymsend() {
-			document.AdvancedSearch.query.value = '<%=EncodeHelper.javaStringToJsString(spellingWords.get(0))%>';
+			document.AdvancedSearch.query.value = '<%=WebEncodeHelper.javaStringToJsString(spellingWords.get(0))%>';
 			document.AdvancedSearch.submit();
 		}
 	<% } %>

@@ -27,7 +27,7 @@ import com.novell.ldap.LDAPModification;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -188,7 +188,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
+  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
       throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -229,7 +229,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
     result = groupTranslator.endSynchronization();
     if (result != null && result.length() > 0) {
-      valret.append("LDAP Domain Group specific errors :\n").append(result).append("\n\n");
+      valret.append("LDAP Domain GroupDetail specific errors :\n").append(result).append("\n\n");
     }
     synchroInProcess = false;
     return valret.toString();
@@ -484,7 +484,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @return The group object that contain new group information
    */
   @Override
-  public Group importGroup(String groupName) throws AdminException {
+  public GroupDetail importGroup(String groupName) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
     try {
       return groupTranslator.getGroupByName(ld, groupName);
@@ -508,12 +508,12 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @return The group object that contain new group information
    */
   @Override
-  public Group synchroGroup(String groupId) throws AdminException {
+  public GroupDetail synchroGroup(String groupId) throws AdminException {
     return getGroup(groupId);
   }
 
   @Override
-  public String createGroup(Group m_Group) throws AdminException {
+  public String createGroup(GroupDetail m_Group) throws AdminException {
     return null;
   }
 
@@ -522,16 +522,16 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public void updateGroup(Group m_Group) throws AdminException {
+  public void updateGroup(GroupDetail m_Group) throws AdminException {
   }
 
   /**
    * Retrieve group information from database
    * @param groupId The group id as stored in the database
-   * @return The Group object that contains user information
+   * @return The GroupDetail object that contains user information
    */
   @Override
-  public Group getGroup(String groupId) throws AdminException {
+  public GroupDetail getGroup(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
     try {
@@ -542,17 +542,17 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public Group getGroupByName(String groupName) throws AdminException {
+  public GroupDetail getGroupByName(String groupName) throws AdminException {
     return null;
   }
 
   /**
    * Retrieve all groups contained in the given group
    * @param groupId The group id as stored in the database
-   * @return Group[] An array of Group Objects that contain groups information
+   * @return GroupDetail[] An array of GroupDetail Objects that contain groups information
    */
   @Override
-  public Group[] getGroups(String groupId) throws AdminException {
+  public GroupDetail[] getGroups(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
     try {
@@ -564,10 +564,10 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups from the database
-   * @return Group[] An array of Group Objects that contain groups information
+   * @return GroupDetail[] An array of GroupDetail Objects that contain groups information
    */
   @Override
-  public Group[] getAllGroups() throws AdminException {
+  public GroupDetail[] getAllGroups() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
     try {
@@ -579,10 +579,10 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all root groups from the database
-   * @return Group[] An array of Group Objects that contain root groups information
+   * @return GroupDetail[] An array of GroupDetail Objects that contain root groups information
    */
   @Override
-  public Group[] getAllRootGroups() throws AdminException {
+  public GroupDetail[] getAllRootGroups() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
     try {

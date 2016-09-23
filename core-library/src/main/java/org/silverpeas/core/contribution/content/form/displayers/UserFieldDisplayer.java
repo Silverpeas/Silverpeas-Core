@@ -33,8 +33,9 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '"
-          + EncodeHelper.javaStringToJsString(template.getLabel(language))
+          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
           + "' " + Util.getString("GML.MustBeFilled", language)
           + "\\n\";");
       out.println("      errorNb++;");
@@ -122,13 +123,13 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     }
     html +=
         "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\""
-        + EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
+        + WebEncodeHelper.javaStringToHtmlString(userId) + "\"/>";
 
     if (!template.isHidden()) {
       html +=
           "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
           + "id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\""
-          + EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
+          + WebEncodeHelper.javaStringToHtmlString(userName) + "\"/>";
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {

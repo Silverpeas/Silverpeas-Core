@@ -31,7 +31,7 @@
 <%@page import="org.silverpeas.web.socialnetwork.invitation.servlets.InvitationJSONActions"%>
 <%@page import="org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes"%>
 <%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page import="java.util.List"%>
 
@@ -219,7 +219,7 @@ function showEmptyListMessage() {
 				<fmt:message key="myProfile.invitations.date" /> <%= resource.getOutputDateAndHour(invitation.getInvitation().getInvitationDate())%>
 	                    </p>
 	                    <p class="message">
-	                    <%=EncodeHelper.javaStringToHtmlParagraphe(invitation.getInvitation().getMessage()) %>
+	                    <%=WebEncodeHelper.javaStringToHtmlParagraphe(invitation.getInvitation().getMessage()) %>
 				</p>
 					</div>
 	      </div>

@@ -43,6 +43,7 @@
 %>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -257,12 +258,12 @@ function submitLink() {
        if (lien.indexOf("://") == -1 && !lien.startsWith("/website")) {
          lien = m_context + lien;
        }
-       ArrayCellLink monLien = line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(name), lien);
+       ArrayCellLink monLien = line.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(name), lien);
        if (link.isPopup()) {
          monLien.setTarget("_blank");
        }
 
-     line.addArrayCellText(EncodeHelper.javaStringToHtmlString(desc));
+     line.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(desc));
 
      IconPane iconPane = gef.getIconPane();
      Icon updateIcon = iconPane.addIcon();

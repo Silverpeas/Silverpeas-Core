@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.LdapField;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -247,7 +247,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
       Iterator<String> itRes = listRes.iterator();
       while (itRes.hasNext()) {
         html.append("\"").
-            append(EncodeHelper.javaStringToJsString(itRes.next())).append("\"");
+            append(WebEncodeHelper.javaStringToJsString(itRes.next())).append("\"");
         if (itRes.hasNext()) {
           html.append(",\n");
         }

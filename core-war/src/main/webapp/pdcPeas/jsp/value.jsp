@@ -91,8 +91,8 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
 		while (codes.hasNext())
 		{
 			lang = (String) codes.next();
-			out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(value.getName(lang))+"\";\n");
-			out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToHtmlParagraphe(value.getDescription(lang))+"\";\n");
+			out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(value.getName(lang))+"\";\n");
+			out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToHtmlParagraphe(value.getDescription(lang))+"\";\n");
 		}
 	}
 	%>
@@ -156,11 +156,11 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
   <% }%>
     <tr>
       <td class="txtlibform"><%=resource.getString("pdcPeas.value")%>&nbsp;:</td>
-      <td class="textePetitBold" id="ValueName"><%=EncodeHelper.javaStringToHtmlString(valueName)%></td>
+      <td class="textePetitBold" id="ValueName"><%=WebEncodeHelper.javaStringToHtmlString(valueName)%></td>
     </tr>
 	<tr>
 		<td valign="top" class="txtlibform"><%=resource.getString("pdcPeas.definition")%>&nbsp;:</td>
-		<td id="ValueDescription"><%=EncodeHelper.javaStringToHtmlParagraphe(valueDescription)%></td>
+		<td id="ValueDescription"><%=WebEncodeHelper.javaStringToHtmlParagraphe(valueDescription)%></td>
 	</tr>
 	<tr>
 	<td class="txtlibform" nowrap="nowrap"><%=resource.getString("pdcPeas.docsNumber")%>&nbsp;:</td>

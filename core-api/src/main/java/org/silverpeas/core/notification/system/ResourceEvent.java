@@ -24,13 +24,14 @@ package org.silverpeas.core.notification.system;
 import java.io.Serializable;
 
 /**
- * An event implying a resource in Silverpeas. The resource can be either a contribution,
- * a content, an organizational object or any bean managed by Silverpeas.
+ * A notification event on the change of the state of a given resource in Silverpeas. The resource
+ * can be either a contribution, a content, an organizational object or any bean managed or handled
+ * by Silverpeas.
  * <p>
- * This event is about a change on a resource in Silverpeas. A such change can be a creation (the
- * resource is spawn to life), an update, a removing, a deletion and so on. A change is then
- * manifested by a transition between two states of the related resource. Hence, the event is
- * characterized by a type that indicates the nature of the change occurring on
+ * This event is on a change of the state of a resource in Silverpeas. A such change can be a
+ * creation (the resource is spawn to life), an update, a removing, a deletion and so on. A change
+ * is then manifested by a transition between two states of the related resource. Hence, the event
+ * is characterized by a type that indicates the nature of the change occurring on
  * the resource, and by the state transition of the resource implied by this change. This state
  * transition carries an instance of the resource as it was before the change and an instance of
  * the resource as it is actually.

@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.PdcUserField;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -84,7 +84,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
           + PagesContext.getFormName() + "'].elements['"
           + fieldName + "$$id'].value))) {");
       out.println("      errorMsg+=\"  - '"
-          + EncodeHelper.javaStringToJsString(template.getLabel(language))
+          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
           + "' " + Util.getString("GML.MustBeFilled", language)
           + "\\n\";");
       out.println("      errorNb++;");
@@ -133,14 +133,14 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
 
     html +=
         "<INPUT type=hidden"
-        + " name=\"" + fieldName + "$$id\" value=\"" + EncodeHelper.javaStringToHtmlString(
+        + " name=\"" + fieldName + "$$id\" value=\"" + WebEncodeHelper.javaStringToHtmlString(
         userCardIds) + "\" >";
 
     if (!template.isHidden()) {
       html +=
           "<INPUT type=\"text\" disabled size=\"50\" "
           + " id=\"" + fieldName + "$$name\" name=\"" + fieldName + "$$name\" value=\""
-          + EncodeHelper.javaStringToHtmlString(userNames) + "\" >";
+          + WebEncodeHelper.javaStringToHtmlString(userNames) + "\" >";
     }
 
     if (!template.isHidden() && !template.isDisabled()

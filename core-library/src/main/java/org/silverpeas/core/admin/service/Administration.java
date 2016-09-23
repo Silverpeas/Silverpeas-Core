@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -459,7 +459,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  Group getGroup(String groupId) throws AdminException;
+  GroupDetail getGroup(String groupId) throws AdminException;
 
   List<String> getPathToGroup(String groupId) throws AdminException;
 
@@ -470,7 +470,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  Group getGroupByNameInDomain(String groupName, String domainFatherId) throws AdminException;
+  GroupDetail getGroupByNameInDomain(String groupName, String domainFatherId) throws AdminException;
 
   /**
    * Get groups information with the given ids.
@@ -478,7 +478,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  Group[] getGroups(String[] asGroupId) throws AdminException;
+  GroupDetail[] getGroups(String[] asGroupId) throws AdminException;
 
   /**
    * Add the given group in Silverpeas.
@@ -486,7 +486,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  String addGroup(Group group) throws AdminException;
+  String addGroup(GroupDetail group) throws AdminException;
 
   /**
    * Add the given group in Silverpeas.
@@ -495,7 +495,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  String addGroup(Group group, boolean onlyInSilverpeas) throws AdminException;
+  String addGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException;
 
   /**
    * Delete the group with the given Id The delete is apply recursively to the sub-groups.
@@ -520,7 +520,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  String updateGroup(Group group) throws AdminException;
+  String updateGroup(GroupDetail group) throws AdminException;
 
   /**
    * Update the given group in Silverpeas and specific
@@ -529,7 +529,7 @@ public interface Administration {
    * @return
    * @throws AdminException
    */
-  String updateGroup(Group group, boolean onlyInSilverpeas) throws AdminException;
+  String updateGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException;
 
   void removeUserFromGroup(String sUserId, String sGroupId) throws AdminException;
 
@@ -562,7 +562,7 @@ public interface Administration {
    * @throws AdminException if an error occurs whil getting the
    * root user groups.
    */
-  Group[] getAllRootGroups() throws AdminException;
+  GroupDetail[] getAllRootGroups() throws AdminException;
 
   /**
    * Get the group profile instance corresponding to the given ID
@@ -795,9 +795,9 @@ public interface Administration {
    */
   long getDomainActions(String domainId) throws AdminException;
 
-  Group[] getRootGroupsOfDomain(String domainId) throws AdminException;
+  GroupDetail[] getRootGroupsOfDomain(String domainId) throws AdminException;
 
-  Group[] getSynchronizedGroups() throws AdminException;
+  GroupDetail[] getSynchronizedGroups() throws AdminException;
 
   String[] getRootGroupIdsOfDomain(String domainId) throws AdminException;
 
@@ -840,7 +840,7 @@ public interface Administration {
 
   UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) throws AdminException;
 
-  Group[] searchGroups(Group modelGroup, boolean isAnd) throws AdminException;
+  GroupDetail[] searchGroups(GroupDetail modelGroup, boolean isAnd) throws AdminException;
 
   /**
    * Get the spaces ids allowed for the given user Id
@@ -1082,7 +1082,7 @@ public interface Administration {
   /**
    * For use in userPanel : return the direct sub-groups
    */
-  Group[] getAllSubGroups(String parentGroupId) throws AdminException;
+  GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException;
 
   /**
    * For use in userPanel : return the users that are direct child of a given group
@@ -1219,10 +1219,10 @@ public interface Administration {
 
   ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
 
-  ListSlice<Group> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
+  ListSlice<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
 
   String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-      Group modelGroup) throws AdminException;
+      GroupDetail modelGroup) throws AdminException;
 
   // -------------------------------------------------------------------------
   // For DB connection reset

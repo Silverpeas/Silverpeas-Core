@@ -33,7 +33,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
 import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -154,7 +154,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         if (serverMessage != null) {
           if (serverMessage.getWhat().equals("ALERT")) {
             str.append("alert ('");
-            str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
+            str.append(WebEncodeHelper.javaStringToJsString(serverMessage.getContent()));
             str.append("');");
             str
                 .append(
@@ -162,7 +162,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
                 .
                 append(serverMessage.getID()).append("';");
           } else if (serverMessage.getWhat().equals("JAVASCRIPT")) {
-            str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
+            str.append(WebEncodeHelper.javaStringToJsString(serverMessage.getContent()));
           }
         } else {
           org.silverpeas.core.notification.user.server.channel.popup.SilverMessage popupMessage =
@@ -178,7 +178,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
                   append(new Long(new Date().getTime()).toString()).append(
                   "',500,260,'scrollbars=yes');");
             } else if (popupMessage.getWhat().equals("JAVASCRIPT")) {
-              str.append(EncodeHelper.javaStringToJsString(popupMessage.getContent()));
+              str.append(WebEncodeHelper.javaStringToJsString(popupMessage.getContent()));
             } else if (popupMessage.getWhat().equals("COMMUNICATION")) {
               request.setAttribute("MessageID", popupMessage.getID());
               str.append("OpenDiscussion('../..").

@@ -39,7 +39,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -133,7 +133,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
           .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
               "') {\n")
           .append("     errorMsg+=\"  - '")
-          .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
+          .append(WebEncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
           .append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n")
           .append("     errorNb++;\n")
           .append("   }\n")

@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.DateUtil;
 import java.io.PrintWriter;
 import java.util.Collections;
@@ -146,7 +146,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       input inputField = new input();
       inputField.setName(template.getFieldName());
       inputField.setID(template.getFieldName());
-      inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+      inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength("5");
       inputField.setSize("10");

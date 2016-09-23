@@ -29,6 +29,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.util.logging.Level" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -186,7 +187,7 @@ out.println(window.printBefore());
 			<span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
 		</div>
 		<% if (StringUtil.isDefined(domObject.getDescription()) && !mixedDomain) { %>
-			<p id="description-domainContent"><%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%></p>
+			<p id="description-domainContent"><%=WebEncodeHelper.javaStringToHtmlString(domObject.getDescription())%></p>
 		<% } %>
 	</div>
 </div>
@@ -221,9 +222,9 @@ out.println(window.printBefore());
 	          } else {
               arrayLine.addArrayCellIconPane(iconPanel);
 	          }
-            arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), groupCommonLinkPart + group.getId());
+            arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(group.getName()), groupCommonLinkPart + group.getId());
 	          arrayLine.addArrayCellText(group.getTotalNbUsers());
-	          arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
+	          arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(group.getDescription()));
 	  }
       }
   }
@@ -261,8 +262,8 @@ out.println(window.printBefore());
             String iconAltText = iconAndLabel.getRight();
 	          ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\""+icon+"\" alt=\""+iconAltText+"\" title=\""+iconAltText+"\"/>");
 	          cellIcon.setCompareOn(user.getState().name());
-            arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), userCommonLinkPart + user.getId());
-	          arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
+            arrayLineUser.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(user.getLastName()), userCommonLinkPart + user.getId());
+	          arrayLineUser.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(user.getFirstName()));
 	          if (JobDomainSettings.lastConnectionColumnEnabled) {
 		          Date lastConnection = user.getLastLoginDate();
 		          ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));

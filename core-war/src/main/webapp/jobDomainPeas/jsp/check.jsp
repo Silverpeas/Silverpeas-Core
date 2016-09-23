@@ -42,7 +42,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 
 <%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>
@@ -73,6 +73,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%!
@@ -83,7 +84,7 @@ String getDomainLabel(Domain domObject, MultiSilverpeasBundle resource)
 	{
 		domName = resource.getString("JDP.domainMixt");
 	}
-	return EncodeHelper.javaStringToHtmlString(domName);
+	return WebEncodeHelper.javaStringToHtmlString(domName);
 }
 %>
 

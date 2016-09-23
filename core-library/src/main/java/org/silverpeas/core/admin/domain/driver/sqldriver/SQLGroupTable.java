@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.domain.driver.sqldriver;
 
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
@@ -56,8 +56,8 @@ public class SQLGroupTable {
   /**
    * Fetch the current group row from a resultSet.
    */
-  protected Group fetchGroup(ResultSet rs) throws SQLException {
-    Group g = new Group();
+  protected GroupDetail fetchGroup(ResultSet rs) throws SQLException {
+    GroupDetail g = new GroupDetail();
 
     g.setSpecificId(Integer.toString(rs.getInt(1)));
     g.setSuperGroupId(Integer.toString(rs.getInt(2)));
@@ -69,9 +69,9 @@ public class SQLGroupTable {
   }
 
   /**
-   * Inserts in the database a new Group row.
+   * Inserts in the database a new GroupDetail row.
    */
-  public int createGroup(Connection c, Group group) throws AdminException {
+  public int createGroup(Connection c, GroupDetail group) throws AdminException {
     PreparedStatement statement = null;
     int nextId = 0;
     String theQuery = "insert into " + drvSettings.getGroupTableName() + "("
@@ -114,7 +114,7 @@ public class SQLGroupTable {
     }
   }
 
-  public void updateGroup(Connection c, Group g) throws AdminException {
+  public void updateGroup(Connection c, GroupDetail g) throws AdminException {
     PreparedStatement statement = null;
     String theQuery = "update " + drvSettings.getGroupTableName() + " set "
         + drvSettings.getGroupNameColumnName() + " = ?,"
@@ -135,9 +135,9 @@ public class SQLGroupTable {
   }
 
   /**
-   * Returns the Group whith the given id.
+   * Returns the GroupDetail whith the given id.
    */
-  public Group getGroup(Connection c, int groupId) throws AdminException {
+  public GroupDetail getGroup(Connection c, int groupId) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
     String theQuery = "select " + getColumns() + " from "
@@ -160,9 +160,9 @@ public class SQLGroupTable {
   }
 
   /**
-   * Returns the Group whith the given name.
+   * Returns the GroupDetail whith the given name.
    */
-  public Group getGroupByName(Connection c, String groupName)
+  public GroupDetail getGroupByName(Connection c, String groupName)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
@@ -187,10 +187,10 @@ public class SQLGroupTable {
   /**
    * Returns the User whith the given id.
    */
-  public List<Group> getAllGroups(Connection c) throws AdminException {
+  public List<GroupDetail> getAllGroups(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<Group> theResult = new ArrayList<>();
+    List<GroupDetail> theResult = new ArrayList<>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName();
 
@@ -211,11 +211,11 @@ public class SQLGroupTable {
   /**
    * Returns the User whith the given id.
    */
-  public List<Group> getDirectSubGroups(Connection c, int groupId)
+  public List<GroupDetail> getDirectSubGroups(Connection c, int groupId)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<Group> theResult = new ArrayList<>();
+    List<GroupDetail> theResult = new ArrayList<>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName() + " where "
         + drvSettings.getGroupParentIdColumnName();

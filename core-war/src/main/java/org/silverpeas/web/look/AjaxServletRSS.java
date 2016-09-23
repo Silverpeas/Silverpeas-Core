@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import org.apache.commons.io.IOUtils;
@@ -74,7 +74,7 @@ public class AjaxServletRSS extends HttpServlet {
       IOException {
     String enc = getEncodingParameter(req);
     res.setContentType("text/xml;charset=" + enc);
-    String loadedUrl = EncodeHelper.transformHtmlCode(req.getParameter("loadedUrl"));
+    String loadedUrl = WebEncodeHelper.htmlStringToJavaString(req.getParameter("loadedUrl"));
     InputStream rss = null;
     try {
       URL url = new URL(loadedUrl);

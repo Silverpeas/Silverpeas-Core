@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -57,7 +58,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
@@ -411,10 +412,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       if (nomRegroup != null && nomRegroup.length() > 0) {
         // Recherche le groupe dans le domaine
-        Group group = m_AdminCtrl.getGroupByNameInDomain(nomRegroup, targetDomainId);
+        GroupDetail group = m_AdminCtrl.getGroupByNameInDomain(nomRegroup, targetDomainId);
         if (group == null) {
           // le groupe n'existe pas, on le crée
-          group = new Group();
+          group = new GroupDetail();
           group.setId("-1");
           group.setDomainId(targetDomainId);
           group.setSuperGroupId(null); // groupe à la racine
@@ -1272,9 +1273,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           || (toAppendAtEnd != null)) {
         strPath.append("<a href=\"").append(baseURL).append("groupReturn?Idgroup=").
             append(theGroup.getId()).append("\">").
-            append(EncodeHelper.javaStringToHtmlString(theGroup.getName())).append("</a>");
+            append(WebEncodeHelper.javaStringToHtmlString(theGroup.getName())).append("</a>");
       } else {
-        strPath.append(EncodeHelper.javaStringToHtmlString(theGroup.getName()));
+        strPath.append(WebEncodeHelper.javaStringToHtmlString(theGroup.getName()));
       }
     }
     if (m_TargetUserId != null) {
@@ -1284,10 +1285,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (toAppendAtEnd != null) {
         strPath.append("<a href=\"").append(baseURL).append("userContent?Iduser=").
             append(m_TargetUserId).append("\">").
-            append(EncodeHelper.javaStringToHtmlString(getTargetUserDetail().getDisplayedName())).
+            append(WebEncodeHelper.javaStringToHtmlString(getTargetUserDetail().getDisplayedName())).
             append("</a>");
       } else {
-        strPath.append(EncodeHelper
+        strPath.append(WebEncodeHelper
             .javaStringToHtmlString(getTargetUserDetail().getDisplayedName()));
       }
     }
@@ -1295,14 +1296,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (strPath.length() > 0) {
         strPath.append(" &gt ");
       }
-      strPath.append(EncodeHelper.javaStringToHtmlString(toAppendAtEnd));
+      strPath.append(WebEncodeHelper.javaStringToHtmlString(toAppendAtEnd));
     }
     return strPath.toString();
   }
 
   public boolean createGroup(String idParent, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
-    Group theNewGroup = new Group();
+    GroupDetail theNewGroup = new GroupDetail();
 
     boolean isSynchronizationToPerform = StringUtil.isDefined(groupRule);
     if (isSynchronizationToPerform) {
@@ -1333,7 +1334,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       String groupDescription, String groupRule) throws JobDomainPeasException {
 
 
-    Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
+    GroupDetail theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
       throw new JobDomainPeasException(unknown("group", idGroup));
     }
@@ -1358,7 +1359,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throws JobDomainPeasException {
 
 
-    Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
+    GroupDetail theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
       throw new JobDomainPeasException(unknown("group", idGroup));
     }

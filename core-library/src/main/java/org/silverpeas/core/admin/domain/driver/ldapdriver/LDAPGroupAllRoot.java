@@ -25,6 +25,7 @@ import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -278,7 +279,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   }
 
   @Override
-  public Group[] getAllChangedGroups(String lds, String extraFilter) throws AdminException {
+  public GroupDetail[] getAllChangedGroups(String lds, String extraFilter) throws AdminException {
     Map<String, Group> groupsManaged = new HashMap<>();
     LDAPEntry[] les = getChildGroupsEntry(lds, null, extraFilter);
 
@@ -307,7 +308,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return groupsManaged.values().toArray(new Group[groupsManaged.size()]);
+    return groupsManaged.values().toArray(new GroupDetail[groupsManaged.size()]);
   }
 
   private String getGroupId(LDAPEntry entry) {

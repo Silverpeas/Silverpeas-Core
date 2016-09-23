@@ -31,7 +31,7 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.workflow.api.model.DataFolder;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -105,7 +105,7 @@ public class ItemList extends TagSupport {
           sb.append("', '");
           sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
           sb.append(" ");
-          sb.append(EncodeHelper.javaStringToJsString(item.getName()));
+          sb.append(WebEncodeHelper.javaStringToJsString(item.getName()));
           sb.append(" ?');");
 
           iconPane = gef.getIconPane();

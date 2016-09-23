@@ -20,6 +20,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.personalization.UserMenuDisplay;
@@ -36,7 +37,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -272,13 +273,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
           updateEmailIsAllowed ? request.getParameter("userEMail") : currentUser.geteMail();
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion =
-          (userLoginQuestion != null ? EncodeHelper.htmlStringToJavaString(userLoginQuestion) :
+          (userLoginQuestion != null ? WebEncodeHelper.htmlStringToJavaString(userLoginQuestion) :
               currentUser.getLoginQuestion());
       String userLoginAnswer = request.getParameter("userLoginAnswer");
 
       // user has filled a new login answer
       if (StringUtil.isDefined(userLoginAnswer)) {
-        userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
+        userLoginAnswer = WebEncodeHelper.htmlStringToJavaString(userLoginAnswer);
         // encrypt the answser if needed
         boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
         if (answerCrypted) {
@@ -301,12 +302,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         }
       }
 
-      sc.modifyUser(currentUser.getId(), EncodeHelper.htmlStringToJavaString(userLastName),
-          EncodeHelper.htmlStringToJavaString(userFirstName),
-          EncodeHelper.htmlStringToJavaString(userEmail),
-          EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
-          EncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
-          EncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
+      sc.modifyUser(currentUser.getId(), WebEncodeHelper.htmlStringToJavaString(userLastName),
+          WebEncodeHelper.htmlStringToJavaString(userFirstName),
+          WebEncodeHelper.htmlStringToJavaString(userEmail),
+          WebEncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+          WebEncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
+          WebEncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
           userLoginQuestion, userLoginAnswer, properties);
       request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {

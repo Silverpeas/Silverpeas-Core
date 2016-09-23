@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
@@ -60,7 +60,7 @@ if (applications.isEmpty()) { %>
 				<div class="applicationTitle">
 					<img src="<%=appli.getIcon(false)%>" class="iconComponent" />
 					<a class="" href="<%=url%>" target="<%=target%>">
-						<span class="" id="readSpanId_0"><%=EncodeHelper.convertHTMLEntities(appli.getLabel(language))%></span>
+						<span class="" id="readSpanId_0"><%=WebEncodeHelper.convertHTMLEntities(appli.getLabel(language))%></span>
 					</a>
 				</div>
 				<div class="location"><%=appli.getPath(" > ")%></div>

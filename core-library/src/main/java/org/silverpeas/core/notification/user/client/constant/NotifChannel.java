@@ -34,7 +34,7 @@ public enum NotifChannel {
 
   private int id;
 
-  private NotifChannel(final int id) {
+  NotifChannel(final int id) {
     this.id = id;
   }
 

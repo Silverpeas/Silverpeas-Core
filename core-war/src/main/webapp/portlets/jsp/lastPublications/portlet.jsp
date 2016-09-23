@@ -28,7 +28,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.web.portlets.FormNames" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
@@ -74,7 +74,7 @@ for (PublicationDetail pub : publications) {
 <% } else {
     first = false;
   }%>
-  <a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=EncodeHelper.javaStringToHtmlString(pub.getName(language))%></b></a>
+  <a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></b></a>
     <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
     .getOutputDate(pub.getUpdateDate(), language)%>
@@ -86,7 +86,7 @@ for (PublicationDetail pub : publications) {
     <% } %>
     <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil
         .isDefined(pub.getDescription(language))) { %>
-      <br/><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(EncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
+      <br/><%=WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(WebEncodeHelper.javaStringToHtmlString(pub.getDescription(language))) %>
     <% } %>
 <% } %>
 <br/>

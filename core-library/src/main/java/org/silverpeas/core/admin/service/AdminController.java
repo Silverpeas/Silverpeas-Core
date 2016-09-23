@@ -42,7 +42,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -676,7 +676,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   // ----------------------------------------------
-  // Group Profile related functions
+  // GroupDetail Profile related functions
   // ----------------------------------------------
   /**
    * All the profiles to which the group belongs
@@ -837,18 +837,18 @@ public class AdminController implements java.io.Serializable {
   /**
    * Get ALL the domain's groups
    */
-  public Group[] getRootGroupsOfDomain(String domainId) {
+  public GroupDetail[] getRootGroupsOfDomain(String domainId) {
 
     try {
       return admin.getRootGroupsOfDomain(domainId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return new Group[0];
+      return new GroupDetail[0];
     }
   }
 
   /**
-   * Get ALL Group Ids for the domain's groups
+   * Get ALL GroupDetail Ids for the domain's groups
    */
   public String[] getRootGroupIdsOfDomain(String domainId) {
 
@@ -1095,7 +1095,7 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  /** Delete the Group Profile */
+  /** Delete the GroupDetail Profile */
   public String deleteGroupProfile(String groupId) {
 
     try {
@@ -1106,7 +1106,7 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  /** Update the Group Profile */
+  /** Update the GroupDetail Profile */
   public String updateGroupProfile(GroupProfileInst profile) {
 
     try {
@@ -1344,7 +1344,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   // ----------------------------------------------
-  // Admin Group Detail related functions
+  // Admin GroupDetail Detail related functions
   // ----------------------------------------------
   /** Return all the groups Id available in webactiv */
   public String[] getAllGroupIds() {
@@ -1369,7 +1369,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   /** Return the admin group detail corresponding to the given id */
-  public Group getGroupById(String sGroupId) {
+  public GroupDetail getGroupById(String sGroupId) {
 
     try {
       return admin.getGroup(sGroupId);
@@ -1391,7 +1391,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   /** Return the admin group detail corresponding to the given group Name */
-  public Group getGroupByNameInDomain(String sGroupName, String sDomainFatherId) {
+  public GroupDetail getGroupByNameInDomain(String sGroupName, String sDomainFatherId) {
 
     try {
       return admin.getGroupByNameInDomain(sGroupName, sDomainFatherId);
@@ -1402,7 +1402,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   /** Add the given group */
-  public String addGroup(Group group) {
+  public String addGroup(GroupDetail group) {
 
     try {
       return admin.addGroup(group);
@@ -1424,7 +1424,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   /** Update the given group */
-  public String updateGroup(Group group) {
+  public String updateGroup(GroupDetail group) {
 
     try {
       return admin.updateGroup(group);

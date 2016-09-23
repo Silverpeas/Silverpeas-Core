@@ -167,8 +167,8 @@
 var currentLanguage = "<%=space.getLanguage()%>";
 <%
 	for (String lang : space.getTranslations().keySet()) {
-		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
+		out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
 	}
 %>
 
@@ -192,7 +192,7 @@ function openPopup(action, larg, haut) {
     if (isUserAdmin || (m_SubSpace != null)) { %>
   function deleteSpace() {
     jQuery.popup.confirm(
-        "<%=resource.getStringWithParams("JSPP.MessageSuppressionSpace", EncodeHelper.escapeXml(m_SpaceName))%>",
+        "<%=resource.getStringWithParams("JSPP.MessageSuppressionSpace", WebEncodeHelper.escapeXml(m_SpaceName))%>",
         function() {
           $('#spaceForm').attr('action', 'DeleteSpace');
           $('#Id').val('<%=space.getId()%>');
@@ -308,11 +308,11 @@ out.println(tabbedPane.print());
                                quotaBean="<%=space.getDataStorageQuota()%>"/>
         <% } %>
       </div>
-      <h2 id="spaceName" class="principal-content-title"><%=EncodeHelper.javaStringToHtmlString(m_SpaceName)%>
+      <h2 id="spaceName" class="principal-content-title"><%=WebEncodeHelper.javaStringToHtmlString(m_SpaceName)%>
       </h2>
 
       <%if (StringUtil.isDefined(m_Description)) {%>
-      <p class="descriptionType" id="description-adminSpace"><%=EncodeHelper
+      <p class="descriptionType" id="description-adminSpace"><%=WebEncodeHelper
           .javaStringToHtmlParagraphe(m_Description)%>
       </p>
       <%}%>

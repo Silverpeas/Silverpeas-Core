@@ -78,7 +78,7 @@ String			folder				= null;
 if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
-	keywords			= EncodeHelper.javaStringToHtmlString(query.getKeywords());
+	keywords			= WebEncodeHelper.javaStringToHtmlString(query.getKeywords());
 	createAfterDate		= DateUtil.getInputDate(query.getAfterDate(), language);
 	createBeforeDate	= DateUtil.getInputDate(query.getBeforeDate(), language);
 	updateAfterDate		= DateUtil.getInputDate(query.getAfterUpdateDate(), language);
@@ -522,7 +522,7 @@ out.println(window.printBefore());
 						selected = " selected=\"selected\"";
 					}
 
-					out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+EncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
+					out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+WebEncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
 				}
              %>
              </select></td>
@@ -540,7 +540,7 @@ out.println(window.printBefore());
 							if (component.getId().equals(componentSelected)){
 								selected = " selected=\"selected\"";
 							}
-							out.println("<option value=\""+component.getId()+"\""+selected+">"+EncodeHelper.javaStringToHtmlString(component.getLabel(language)) +"</option>");
+							out.println("<option value=\""+component.getId()+"\""+selected+">"+WebEncodeHelper.javaStringToHtmlString(component.getLabel(language)) +"</option>");
 					}
 				}
 				out.println("</select>");

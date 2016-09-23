@@ -50,7 +50,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <!-- import PDC -->
 <%@ page import="org.silverpeas.core.util.DateUtil"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.WAAttributeValuePair"%>

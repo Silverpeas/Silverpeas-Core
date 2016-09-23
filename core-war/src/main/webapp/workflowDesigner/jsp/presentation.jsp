@@ -84,7 +84,7 @@ while ( iterColumns.hasNext() )
                           "javascript:confirmRemove('RemoveColumns?columns="
                           + URLEncoder.encode(columns.getRoleName(), UTF8) + "', '"
                           + resource.getString("workflowDesigner.confirmRemoveJS") + " "
-                          + EncodeHelper.javaStringToJsString( columns.getRoleName() ) + " ?');" );
+                          + WebEncodeHelper.javaStringToJsString( columns.getRoleName() ) + " ?');" );
     iconPane.setSpacing("30px");
 
     // Build a comma-separated list of refrenced items to put in the 'column list' column

@@ -53,7 +53,7 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.QueryParameters;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
@@ -61,6 +61,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
@@ -1050,9 +1051,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 underLink.length());
             StringBuilder titleLinkBuilder = new StringBuilder(256);
             titleLinkBuilder.append("javascript:").append(markAsReadJS).append(" window.open('").
-                append(EncodeHelper.javaStringToJsString(downloadLink)).append(
+                append(WebEncodeHelper.javaStringToJsString(downloadLink)).append(
                 "');jumpToComponent('").append(componentId).
-                append("');document.location.href='").append(EncodeHelper.javaStringToJsString(
+                append("');document.location.href='").append(WebEncodeHelper.javaStringToJsString(
                 underLink)).append("&FileOpened=1';");
             titleLink = titleLinkBuilder.toString();
           } else {
@@ -1190,10 +1191,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       String underLink, boolean openFile) {
     StringBuilder titleLinkBuilder = new StringBuilder(256);
     titleLinkBuilder.append("javascript:").append(markAsReadJS).append(" window.open('");
-    titleLinkBuilder.append(EncodeHelper.javaStringToJsString(downloadLink));
+    titleLinkBuilder.append(WebEncodeHelper.javaStringToJsString(downloadLink));
     titleLinkBuilder.append("');jumpToComponent('").append(componentId);
     titleLinkBuilder.append("');document.location.href='");
-    titleLinkBuilder.append(EncodeHelper.javaStringToJsString(underLink));
+    titleLinkBuilder.append(WebEncodeHelper.javaStringToJsString(underLink));
     if (openFile) {
       titleLinkBuilder.append("&FileOpened=1");
     }

@@ -29,7 +29,7 @@ import org.silverpeas.core.personalization.service.PersonalizationServiceProvide
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
@@ -50,14 +50,14 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
     MultiSilverpeasBundle settings = searchResult.getSettings();
 
     componentTemplate.setAttribute("gsr", silverResult);
-    componentTemplate.setAttribute("name", EncodeHelper.javaStringToHtmlString(silverResult
+    componentTemplate.setAttribute("name", WebEncodeHelper.javaStringToHtmlString(silverResult
         .getName()));
     String sDescription = silverResult.getDescription();
     if (sDescription != null && sDescription.length() > 400) {
       sDescription = sDescription.substring(0, 400) + "...";
     }
     if (StringUtil.isDefined(sDescription)) {
-      componentTemplate.setAttribute("description", EncodeHelper
+      componentTemplate.setAttribute("description", WebEncodeHelper
           .javaStringToHtmlParagraphe(sDescription));
     }
     componentTemplate.setAttribute("url", silverResult.getTitleLink());
@@ -67,11 +67,11 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
     }
     String location = silverResult.getLocation();
     if (StringUtil.isDefined(location)) {
-      componentTemplate.setAttribute("location", EncodeHelper.javaStringToHtmlString(location));
+      componentTemplate.setAttribute("location", WebEncodeHelper.javaStringToHtmlString(location));
     }
     String sCreatorName = silverResult.getCreatorName();
     if (StringUtil.isDefined(sCreatorName)) {
-      componentTemplate.setAttribute("creatorName", EncodeHelper
+      componentTemplate.setAttribute("creatorName", WebEncodeHelper
           .javaStringToHtmlString(sCreatorName));
     }
     componentTemplate.setAttribute("spaceId", silverResult.getSpaceId());

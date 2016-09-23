@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -114,7 +114,7 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
       html += " readonly=\"readonly\"";
     }
 
-    html += " >" + EncodeHelper.javaStringToHtmlString(value) + "</textarea>";
+    html += " >" + WebEncodeHelper.javaStringToHtmlString(value) + "</textarea>";
 
     if (StringUtil.isDefined(cssClass)) {
       html += "</span>";

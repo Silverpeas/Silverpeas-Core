@@ -95,7 +95,7 @@
     row = itemPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("GML.name") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellInputText( "name", EncodeHelper.javaStringToHtmlString( item.getName() ) );
+    row.addArrayCellInputText( "name", WebEncodeHelper.javaStringToHtmlString( item.getName() ) );
 
     // Computed
     //
@@ -136,7 +136,7 @@
     row = itemPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.formula") );
     cellText.setStyleSheet( "txtlibform" );
-    cellInput = row.addArrayCellInputText( "formula", EncodeHelper.javaStringToHtmlString( item.getFormula() ) );
+    cellInput = row.addArrayCellInputText( "formula", WebEncodeHelper.javaStringToHtmlString( item.getFormula() ) );
     cellInput.setSize( "80" );
 
     //Fill the 'parameters' section
@@ -172,7 +172,7 @@
         sb.append( "', '" );
         sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
         sb.append( " " );
-        sb.append( EncodeHelper.javaStringToJsString( parameter.getName() ) );
+        sb.append( WebEncodeHelper.javaStringToJsString( parameter.getName() ) );
         sb.append( " ?');" );
 
         row = parametersPane.addArrayLine();
@@ -210,8 +210,8 @@
     out.println(board.printBefore());
 %>
 <FORM NAME="itemForm" METHOD="POST" ACTION="UpdateItem">
-	<input type="hidden" name="name_original" value="<%=EncodeHelper.javaStringToHtmlString(item.getName())%>"/>
-    <input type="hidden" name="context" value="<%=EncodeHelper.javaStringToHtmlString(strContext)%>" />
+	<input type="hidden" name="name_original" value="<%=WebEncodeHelper.javaStringToHtmlString(item.getName())%>"/>
+    <input type="hidden" name="context" value="<%=WebEncodeHelper.javaStringToHtmlString(strContext)%>" />
 <%
     out.println( itemPane.print() );
     out.println( "<br>" );

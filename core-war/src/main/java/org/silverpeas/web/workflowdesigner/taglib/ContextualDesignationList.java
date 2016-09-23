@@ -31,7 +31,7 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -126,9 +126,9 @@ public class ContextualDesignationList extends TagSupport {
         sb.append("', '");
         sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
         sb.append(" ");
-        sb.append(EncodeHelper.javaStringToJsString(designation.getLanguage()));
+        sb.append(WebEncodeHelper.javaStringToJsString(designation.getLanguage()));
         sb.append(", ");
-        sb.append(EncodeHelper.javaStringToJsString(designation.getRole()));
+        sb.append(WebEncodeHelper.javaStringToJsString(designation.getRole()));
         sb.append(" ?');");
 
         iconPane = gef.getIconPane();

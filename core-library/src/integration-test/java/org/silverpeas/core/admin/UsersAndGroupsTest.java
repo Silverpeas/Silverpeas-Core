@@ -23,6 +23,7 @@ package org.silverpeas.core.admin;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
@@ -307,7 +308,7 @@ public class UsersAndGroupsTest {
 
   @Test
   public void shouldAddGroup() throws Exception {
-    Group group = new Group();
+    GroupDetail group = new GroupDetail();
     group.setDomainId("0");
     group.setName("Groupe 2");
     String groupId = admin.addGroup(group);
@@ -318,7 +319,7 @@ public class UsersAndGroupsTest {
   @Test
   public void testUpdateGroup() throws Exception {
     String desc = "New description";
-    Group group = admin.getGroup("1");
+    GroupDetail group = admin.getGroup("1");
     group.setDescription(desc);
     admin.updateGroup(group);
     group = admin.getGroup("1");
@@ -338,7 +339,7 @@ public class UsersAndGroupsTest {
 
   @Test
   public void shouldFindUsersInGroup() throws Exception {
-    Group subGroup = new Group();
+    GroupDetail subGroup = new GroupDetail();
     subGroup.setDomainId("0");
     subGroup.setName("Groupe 1-1");
     subGroup.setSuperGroupId("1");

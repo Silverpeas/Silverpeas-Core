@@ -125,8 +125,8 @@ String lang = "";
 Iterator<String> codes = space.getTranslations().keySet().iterator();
 while (codes.hasNext()) {
 	lang = codes.next();
-	out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
-	out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
+	out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
+	out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
 }
 %>
 
@@ -151,11 +151,11 @@ function removeTranslation() {
 		<%=I18NHelper.getFormLine(resource, space, translation)%>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></td>
+			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
-			<td><textarea id="spaceDescription" name="Description" rows="4" cols="49"><%=EncodeHelper.javaStringToHtmlString(space.getDescription(translation))%></textarea></td>
+			<td><textarea id="spaceDescription" name="Description" rows="4" cols="49"><%=WebEncodeHelper.javaStringToHtmlString(space.getDescription(translation))%></textarea></td>
 		</tr>
     <% if (isComponentSpaceQuotaActivated) { %>
       <tr>

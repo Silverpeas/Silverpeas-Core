@@ -21,7 +21,7 @@
 package org.silverpeas.core.util;
 
 import org.junit.Test;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,24 +33,24 @@ import static org.junit.Assert.assertThat;
 public class EncodeHelperTest {
 
   /**
-   * Test of encodeFilename method, of class EncodeHelper.
+   * Test of encodeFilename method, of class WebEncodeHelper.
    *
    * @throws Exception
    */
   @Test
   public void testEncodeFilename() throws Exception {
     String filename = "test.pdf";
-    String result = EncodeHelper.encodeFilename(filename);
+    String result = WebEncodeHelper.encodeFilename(filename);
     assertThat(result, is("=?UTF-8?B?dGVzdC5wZGY=?="));
     filename = "TestAccentué.pdf";
-    result = EncodeHelper.encodeFilename(filename);
+    result = WebEncodeHelper.encodeFilename(filename);
     assertThat(result, is("=?UTF-8?B?VGVzdEFjY2VudHXDqS5wZGY=?="));
   }
 
   @Test
   public void testEncodeHtmlParagraph() {
     String content = "Ceci est un test avec\nune nouvelle ligne\r\nun retour à la ligne\r\tindenté";
-    String result = EncodeHelper.javaStringToHtmlParagraphe(content);
+    String result = WebEncodeHelper.javaStringToHtmlParagraphe(content);
     assertThat(result, is("Ceci est un test avec<br/>une nouvelle ligne<br/>un retour &agrave; "
         + "la ligne&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;indent&eacute;"));
   }

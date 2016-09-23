@@ -34,12 +34,13 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
@@ -222,7 +223,7 @@ public class HtmlSearchResultTag extends TagSupport {
         "\" class=\"fileDownload\" alt=\"" + resources.getString("pdcPeas.DownloadInfo") +
         "\" title=\"" + resources.getString("pdcPeas.DownloadInfo") + "\"/>";
     String language = getResources().getLanguage();
-    String sName = EncodeHelper.javaStringToHtmlString(gsr.getName(language));
+    String sName = WebEncodeHelper.javaStringToHtmlString(gsr.getName(language));
     String sDescription = StringUtil.abbreviate(gsr.getDescription(language), 400);
     String sURL = gsr.getTitleLink();
     String sDownloadURL = gsr.getDownloadLink();
@@ -355,7 +356,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (StringUtil.isDefined(sDescription)) {
       result.append("<div class=\"description\">")
-          .append(EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</div>");
+          .append(WebEncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</div>");
     }
 
     if (StringUtil.isDefined(extraInformation)) {
@@ -376,7 +377,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (StringUtil.isDefined(sCreatorName)) {
       result.append("<div class=\"creatorName\">")
-          .append(EncodeHelper.javaStringToHtmlString(sCreatorName)).append(" | </div>");
+          .append(WebEncodeHelper.javaStringToHtmlString(sCreatorName)).append(" | </div>");
     }
 
     if (StringUtil.isDefined(serverName)) {
@@ -385,7 +386,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (StringUtil.isDefined(sLocation)) {
       result.append("<div class=\"location\">")
-          .append(EncodeHelper.javaStringToHtmlString(sLocation)).append("</div>");
+          .append(WebEncodeHelper.javaStringToHtmlString(sLocation)).append("</div>");
     }
 
     result.append("</div>");

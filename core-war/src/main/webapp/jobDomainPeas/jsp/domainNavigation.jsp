@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -193,7 +193,7 @@ function refreshCurrentLevel() {
 								%>
 								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br>
                 <img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">
-                &nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName()) + " (" + group.getTotalNbUsers() + ")"%></a><br>
+                &nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=WebEncodeHelper.javaStringToHtmlString(group.getName()) + " (" + group.getTotalNbUsers() + ")"%></a><br>
 								<%
                             }
 						%>

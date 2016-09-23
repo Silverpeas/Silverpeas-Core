@@ -30,11 +30,9 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
-import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.util.CollectionUtil;
@@ -46,6 +44,10 @@ import org.silverpeas.core.i18n.I18NHelper;
 import java.util.Collection;
 
 /**
+ * Abstract implementation of the {@link UserNotificationBuilder} in which common code to build
+ * a user notification is already defined.
+ * It is recommended to extend this class instead of the {@link UserNotificationBuilder}
+ * interface.
  * @author Yohann Chastagnier
  */
 public abstract class AbstractUserNotificationBuilder implements UserNotificationBuilder {
@@ -88,9 +90,13 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * Create the user notification container
    * @return
    */
-  protected UserNotification createNotification() {
-    return new DefaultUserNotification(getTitle(), getContent());
-  }
+  protected abstract UserNotification createNotification();
+
+  /**
+   * Is the specified
+   * @return
+   */
+  protected abstract boolean isUserSubscriptionNotificationEnabled();
 
   /**
    * Gets the type of action on a resource
@@ -140,8 +146,8 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   @Override
   public final UserNotification build() {
     try {
-      if (this instanceof UserSubscriptionNotificationBehavior &&
-          !UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest() &&
+      if (isUserSubscriptionNotification() &&
+          !isUserSubscriptionNotificationEnabled() &&
           NotifAction.UPDATE == getAction()) {
         // In that case, the user requested to not send subscription notification
         stop();
@@ -282,5 +288,9 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   private class Stop extends RuntimeException {
     private static final long serialVersionUID = 1L;
     // Nothing to do
+  }
+
+  private boolean isUserSubscriptionNotification() {
+    return this instanceof UserSubscriptionNotificationBehavior;
   }
 }

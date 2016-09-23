@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Vector;
@@ -75,9 +75,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
   public void addOperationOfCreation(final String icon, final String label, final String action,
       final String classes) {
     addOperation(icon, label, action, classes);
-    getCreationItems().add("<a href=\"" + EncodeHelper.javaStringToJsString(action)
+    getCreationItems().add("<a href=\"" + WebEncodeHelper.javaStringToJsString(action)
         + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon + "\" alt=\"\"/>"
-        + EncodeHelper.javaStringToJsString(label) + "</span></a>");
+        + WebEncodeHelper.javaStringToJsString(label) + "</span></a>");
   }
 
   @Override

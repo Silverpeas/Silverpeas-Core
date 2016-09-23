@@ -6,21 +6,20 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.WAComponent;
-
-import java.util.List;
-import java.util.Map;
-
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.List;
+import java.util.Map;
 
 public interface OrganizationController extends java.io.Serializable {
 
@@ -152,38 +151,38 @@ public interface OrganizationController extends java.io.Serializable {
   String getUserDetailByDBId(int id);
 
   /**
-   * Return the UserDetail of the user with the given ldap Id
+   * Return the full detail of the user with the given ldap Id
    */
   UserFull getUserFull(String sUserId);
 
   /**
-   * Return the UserDetail of the user with the given ldap Id
+   * Return the detail of the user with the given ldap Id
    */
-  UserDetail getUserDetail(String sUserId);
+  <T extends User> T getUserDetail(String sUserId);
 
   /**
-   * Return an array of UserDetail corresponding to the given user Id array
+   * Return an array of users corresponding to the given user Id array
    */
-  UserDetail[] getUserDetails(String[] asUserIds);
+  <T extends User> T[] getUserDetails(String[] asUserIds);
 
   /**
-   * @deprecated use getAllUsers(String componentId) Return all the users allowed to acces the given
-   * component of the given space
+   * @deprecated use getAllUsers(String componentId) Return all the users allowed to access the
+   * given component of the given space
    */
-  UserDetail[] getAllUsers(String sPrefixTableName, String sComponentName);
+  <T extends User> T[] getAllUsers(String sPrefixTableName, String sComponentName);
 
   /**
    * Return all the users allowed to acces the given component
    */
-  UserDetail[] getAllUsers(String componentId);
+  <T extends User> T[] getAllUsers(String componentId);
 
   /**
    * Gets all the users that belong to the specified domain.
    *
    * @param domainId the unique identifier of the domain.
-   * @return an array of UserDetail objects or null if no such domain exists.
+   * @return an array of users objects or null if no such domain exists.
    */
-  UserDetail[] getAllUsersInDomain(String domainId);
+  <T extends User> T[] getAllUsersInDomain(String domainId);
 
   /**
    * Searches the users that match the specified criteria.
@@ -194,7 +193,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @throws AdminException if an error occurs while getting the
    * user details.
    */
-  ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria criteria);
+  <T extends User> ListSlice<T> searchUsers(UserDetailsSearchCriteria criteria);
 
   /**
    * Gets all the user groups that belong to the specified domain.
@@ -202,17 +201,17 @@ public interface OrganizationController extends java.io.Serializable {
    * @param domainId the unique identifier of the domain.
    * @return an array of Group objects or null if no such domain exists.
    */
-  Group[] getAllRootGroupsInDomain(String domainId);
+  <T extends Group> T[] getAllRootGroupsInDomain(String domainId);
 
   /**
    * For use in userPanel : return the users that are direct child of a given group
    */
-  UserDetail[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter);
+  <T extends User> T[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter);
 
   /**
-   * Return an array of UserDetail corresponding to the founded users
+   * Return an array of users corresponding to the founded users
    */
-  UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd);
+  <T extends User> T[] searchUsers(T modelUser, boolean isAnd);
 
   /**
    * Searches the groups that match the specified criteria.
@@ -223,12 +222,12 @@ public interface OrganizationController extends java.io.Serializable {
    * @throws AdminException if an error occurs while getting the
    * user groups.
    */
-  ListSlice<Group> searchGroups(GroupsSearchCriteria criteria);
+  <T extends Group> ListSlice<T> searchGroups(GroupsSearchCriteria criteria);
 
   /**
    * Return an array of Group corresponding to the founded groups
    */
-  Group[] searchGroups(Group modelGroup, boolean isAnd);
+  <T extends Group> T[] searchGroups(T modelGroup, boolean isAnd);
 
   /**
    * Returns the total number of distinct users recursively contained in the specified group
@@ -238,18 +237,18 @@ public interface OrganizationController extends java.io.Serializable {
   /**
    * For use in userPanel : return the direct sub-groups
    */
-  Group[] getAllSubGroups(String parentGroupId);
+  <T extends Group> T[] getAllSubGroups(String parentGroupId);
 
   /**
    * Return all the users of Silverpeas
    */
-  UserDetail[] getAllUsers();
+  <T extends User> T[] getAllUsers();
 
   /**
    * Return all the users with the given profile allowed to access the given component of the given
    * space
    */
-  UserDetail[] getUsers(String sPrefixTableName, String sComponentName, String sProfile);
+  <T extends User> T[] getUsers(String sPrefixTableName, String sComponentName, String sProfile);
 
   String[] getUserProfiles(String userId, String componentId);
 
@@ -270,27 +269,27 @@ public interface OrganizationController extends java.io.Serializable {
   /**
    * Return the Group of the group with the given Id
    */
-  Group getGroup(String sGroupId);
+  <T extends Group> T getGroup(String sGroupId);
 
   /**
    * Return all groups specified by the groupsIds
    */
-  Group[] getGroups(String[] groupsId);
+  <T extends Group> T[] getGroups(String[] groupsId);
 
   /**
    * Return all the groups of silverpeas
    */
-  Group[] getAllGroups();
+  <T extends Group> T[] getAllGroups();
 
   /**
    * Return all root groups of silverpeas or null if an error occured when getting the root groups.
    */
-  Group[] getAllRootGroups();
+  <T extends Group> T[] getAllRootGroups();
 
   /**
    * Get ALL the users that are in a group or his sub groups
    */
-  UserDetail[] getAllUsersOfGroup(String groupId);
+  <T extends User> T[] getAllUsersOfGroup(String groupId);
 
   /**
    * Get path to Group
@@ -385,8 +384,8 @@ public interface OrganizationController extends java.io.Serializable {
    * @param filterUser
    * @return
    */
-  String[] searchUsersIds(String groupId, String componentId, String[] profileId,
-      UserDetail filterUser);
+  <T extends User> String[] searchUsersIds(String groupId, String componentId, String[] profileId,
+      T filterUser);
 
   /**
    * Return userIds according to a list of profile names
@@ -400,8 +399,8 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
       List<String> profileNames);
 
-  String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-      Group modelGroup);
+  <T extends Group> String[] searchGroupsIds(boolean isRootGroup, String componentId,
+      String[] profileId, T modelGroup);
 
   /**
    * Get a domain with given id
@@ -435,13 +434,11 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getAllowedComponentIds(String userId);
 
-  public List<UserDetail> getAllUsersFromNewestToOldest();
+  <T extends User> List<T> getAllUsersFromNewestToOldest();
 
-  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(
-      List<String> domainIds);
+  <T extends User> List<T> getUsersOfDomainsFromNewestToOldest(List<String> domainIds);
 
-  public List<UserDetail> getUsersOfDomains(
-      List<String> domainIds);
+  <T extends User> List<T> getUsersOfDomains(List<String> domainIds);
 
   /**
    * Is the specified tool belongs to the administration component?

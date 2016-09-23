@@ -25,6 +25,7 @@
 package org.silverpeas.core.test.rule;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
@@ -78,6 +79,7 @@ public class CommonAPI4Test implements TestRule {
   protected void beforeEvaluate(final TestContext context) {
     reset(TestBeanContainer.getMockedBeanContainer());
     userProvider();
+    groupProvider();
     systemWrapper();
     loggerConfigurationManager();
     silverTrace();
@@ -119,6 +121,12 @@ public class CommonAPI4Test implements TestRule {
     doCallRealMethod().when(userProvider).getCurrentRequester();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class))
         .thenReturn(userProvider);
+  }
+
+  private void groupProvider() {
+    GroupProvider groupProvider = mock(GroupProvider.class);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(GroupProvider.class))
+        .thenReturn(groupProvider);
   }
 
   private void systemWrapper() {

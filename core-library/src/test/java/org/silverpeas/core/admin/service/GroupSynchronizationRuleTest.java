@@ -41,6 +41,7 @@ import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
@@ -759,7 +760,7 @@ public class GroupSynchronizationRuleTest {
    * @return the initialized instance.
    */
   private Group group4Rule(Domain domain, String rule) {
-    Group group = new Group();
+    GroupDetail group = new GroupDetail();
     group.setId(GROUP_ID);
     group.setDomainId(domain.getId());
     group.setRule(rule);
@@ -789,7 +790,7 @@ public class GroupSynchronizationRuleTest {
    * @return the initialized group.
    */
   private static Group initializeGroup(String id, final UserDetail ... users) {
-    Group group = new Group(){
+    GroupDetail group = new GroupDetail(){
       private static final long serialVersionUID = 387818815569157277L;
 
       @Override

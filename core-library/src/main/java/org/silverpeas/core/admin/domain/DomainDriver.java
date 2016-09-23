@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.SettingBundle;
@@ -66,7 +66,7 @@ public interface DomainDriver {
    */
   long ACTION_CREATE_USER = 0x00000010;
   /**
-   * Create Group action Mask
+   * Create GroupDetail action Mask
    * @see #getDriverActions
    */
   long ACTION_CREATE_GROUP = 0x00000020;
@@ -76,7 +76,7 @@ public interface DomainDriver {
    */
   long ACTION_DELETE_USER = 0x00000040;
   /**
-   * Delete Group action Mask
+   * Delete GroupDetail action Mask
    * @see #getDriverActions
    */
   long ACTION_DELETE_GROUP = 0x00000080;
@@ -175,7 +175,7 @@ public interface DomainDriver {
 
   UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws Exception;
 
-  Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception;
+  GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception;
 
   void beginSynchronization() throws Exception;
 
@@ -214,27 +214,27 @@ public interface DomainDriver {
 
   UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception;
 
-  Group importGroup(String groupName) throws Exception;
+  GroupDetail importGroup(String groupName) throws Exception;
 
   void removeGroup(String groupId) throws Exception;
 
-  Group synchroGroup(String groupId) throws Exception;
+  GroupDetail synchroGroup(String groupId) throws Exception;
 
-  String createGroup(Group m_Group) throws Exception;
+  String createGroup(GroupDetail m_Group) throws Exception;
 
   void deleteGroup(String groupId) throws Exception;
 
-  void updateGroup(Group m_Group) throws Exception;
+  void updateGroup(GroupDetail m_Group) throws Exception;
 
-  Group getGroup(String groupId) throws Exception;
+  GroupDetail getGroup(String groupId) throws Exception;
 
-  Group getGroupByName(String groupName) throws Exception;
+  GroupDetail getGroupByName(String groupName) throws Exception;
 
-  Group[] getGroups(String groupId) throws Exception;
+  GroupDetail[] getGroups(String groupId) throws Exception;
 
-  Group[] getAllGroups() throws Exception;
+  GroupDetail[] getAllGroups() throws Exception;
 
-  Group[] getAllRootGroups() throws Exception;
+  GroupDetail[] getAllRootGroups() throws Exception;
 
   String[] getGroupMemberGroupIds(String groupId) throws Exception;
 

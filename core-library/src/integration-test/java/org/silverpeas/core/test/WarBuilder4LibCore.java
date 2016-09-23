@@ -169,7 +169,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link CollectionUtil}</li>
    * <li>{@link MapUtil}</li>
    * <li>{@link ArgumentAssertion}</li>
-   * <li>{@link EncodeHelper}</li>
+   * <li>{@link WebEncodeHelper}</li>
    * <li>{@link ActionType} and classes in {@link org.silverpeas.core.annotation}</li>
    * <li>{@link #addSilverpeasContentFeatures()}</li>
    * <li>{@link AbstractComplexComparator}</li>
@@ -185,8 +185,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(MapUtil.class)) {
       addClasses(MapUtil.class);
     }
-    if (!contains(EncodeHelper.class)) {
-      addClasses(EncodeHelper.class);
+    if (!contains(WebEncodeHelper.class)) {
+      addClasses(WebEncodeHelper.class);
     }
     if (!contains(Charsets.class)) {
       addClasses(Charsets.class);

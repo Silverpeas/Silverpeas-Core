@@ -28,16 +28,18 @@ import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasTrappedException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -344,13 +346,13 @@ public class JobDomainPeasRequestRouter extends
         } // Operation functions
         else if (function.startsWith("groupCreate")) {
           bHaveToRefreshDomain = jobDomainSC.createGroup(request.getParameter("Idparent"),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("groupName")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
+              WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupName")),
+              WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
               request.getParameter("groupRule"));
         } else if (function.startsWith("groupModify")) {
           bHaveToRefreshDomain = jobDomainSC.modifyGroup(request.getParameter("Idgroup"),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("groupName")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
+              WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupName")),
+              WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
               request.getParameter("groupRule"));
         } else if (function.startsWith("groupAddRemoveUsers")) {
           bHaveToRefreshDomain = jobDomainSC.updateGroupSubUsers(
@@ -362,7 +364,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
-          bHaveToRefreshDomain = jobDomainSC.importGroup(EncodeHelper.htmlStringToJavaString(
+          bHaveToRefreshDomain = jobDomainSC.importGroup(WebEncodeHelper.htmlStringToJavaString(
               request.getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
@@ -450,47 +452,47 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.returnIntoGroup(null);
           } // Operation functions
           else if (function.startsWith("domainCreate")) {
-            String newDomainId = jobDomainSC.createDomain(EncodeHelper.htmlStringToJavaString(
+            String newDomainId = jobDomainSC.createDomain(WebEncodeHelper.htmlStringToJavaString(
                 request
                 .getParameter("domainName")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                EncodeHelper.htmlStringToJavaString(request
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
+                WebEncodeHelper.htmlStringToJavaString(request
                     .getParameter("domainAuthentication")),
-                EncodeHelper
+                WebEncodeHelper
                 .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
-            String newDomainId = jobDomainSC.createSQLDomain(EncodeHelper.htmlStringToJavaString(
+            String newDomainId = jobDomainSC.createSQLDomain(WebEncodeHelper.htmlStringToJavaString(
                 request
-                .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainDescription")), EncodeHelper
+                .getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainDescription")), WebEncodeHelper
                 .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
                 .getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
-            String modifiedDomainId = jobDomainSC.modifyDomain(EncodeHelper.htmlStringToJavaString(
+            String modifiedDomainId = jobDomainSC.modifyDomain(WebEncodeHelper.htmlStringToJavaString(
                 request.
                 getParameter("domainName")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                EncodeHelper
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
+                WebEncodeHelper
                 .htmlStringToJavaString(request.getParameter("domainAuthentication")),
-                EncodeHelper
+                WebEncodeHelper
                 .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
-            String modifiedDomainId = jobDomainSC.modifySQLDomain(EncodeHelper.
+            String modifiedDomainId = jobDomainSC.modifySQLDomain(WebEncodeHelper.
                 htmlStringToJavaString(request
-                    .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainDescription")), EncodeHelper
+                    .getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainDescription")), WebEncodeHelper
                 .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
                 .getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain="
@@ -537,7 +539,7 @@ public class JobDomainPeasRequestRouter extends
         }
       } else if (function.startsWith("display")) {
         if (function.startsWith("displayGroupCreate")) {
-          Group newGroup = new Group();
+          GroupDetail newGroup = new GroupDetail();
 
           newGroup.setSuperGroupId(request.getParameter("Idgroup"));
           request.setAttribute("groupObject", newGroup);

@@ -106,12 +106,6 @@ public interface Plannable extends Serializable {
   boolean isPlanned();
 
   /**
-   * Gets all the attendees to this plannable object.
-   * @return a set of attendees.
-   */
-  Set<Attendee> getAttendees();
-
-  /**
    * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)
    * in a given calendar, then nothing is done.
    */

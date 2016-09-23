@@ -36,7 +36,7 @@
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
@@ -318,7 +318,7 @@
     CKEDITOR.instances.editor1.updateElement();
     jQuery(document.recupHtml).submit();
     $deferred.then(function() {
-      location.href = '<%=EncodeHelper.javaStringToJsString(returnUrl)%>';
+      location.href = '<%=WebEncodeHelper.javaStringToJsString(returnUrl)%>';
     });
   }
 

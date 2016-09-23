@@ -66,7 +66,7 @@
               <td>
                 <table border=0 cellPadding=1 cellSpacing=1 width="389" align="center">
                   <tr>
-                    <td width="369" align="center"><%=EncodeHelper.javaStringToHtmlString(resource.getString("AlertsConfirmation"))%></td>
+                    <td width="369" align="center"><%=WebEncodeHelper.javaStringToHtmlString(resource.getString("AlertsConfirmation"))%></td>
                   </tr>
                 </table>
               </td>

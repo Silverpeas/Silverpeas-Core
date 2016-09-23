@@ -24,6 +24,7 @@
 
 package org.silverpeas.web.directory.control;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.web.directory.model.DirectoryItemList;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -67,7 +68,7 @@ public class DirectorySessionControllerTest {
 
   @Test
   public void testGetAllUsers() throws Exception {
-    List<UserDetail> users = new ArrayList<>();
+    List<User> users = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
     user1.setLastName("bourakbi");
@@ -129,7 +130,7 @@ public class DirectorySessionControllerTest {
 
   @Test
   public void testGetAllUsersByGroup() throws Exception {
-    List<UserDetail> groupOfUsers = new ArrayList<>();
+    List<User> groupOfUsers = new ArrayList<>();
     UserDetail user2 = new UserDetail();
     user2.setId("2");
     user2.setLastName("bensalem");
@@ -187,7 +188,7 @@ public class DirectorySessionControllerTest {
 
   @Test
   public void testGetAllUsersByDomain() throws Exception {
-    List<UserDetail> usersOfDomain = new ArrayList<>();
+    List<User> usersOfDomain = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
     user1.setLastName("durand");
@@ -263,7 +264,7 @@ public class DirectorySessionControllerTest {
 
   @Test
   public void testGetAllUsersBySpace() throws Exception {
-    List<UserDetail> usersOfSpace = new ArrayList<>();
+    List<User> usersOfSpace = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
     user1.setLastName("durand");
@@ -347,7 +348,7 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> ol = new ArrayList<>();
+    List<User> ol = new ArrayList<>();
     UserDetail[] nl = new UserDetail[3];
     UserDetail u1 = new UserDetail();
     u1.setId("1");

@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -87,7 +87,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
       StringBuilder html = new StringBuilder();
       html.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       html.append("      errorMsg+=\"  - '")
-          .append(EncodeHelper.javaStringToJsString(template.getLabel(language)))
+          .append(WebEncodeHelper.javaStringToJsString(template.getLabel(language)))
           .append("' ").append(Util.getString("GML.MustBeFilled", language))
           .append("\\n\";");
       html.append("      errorNb++;");
@@ -140,14 +140,14 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     }
     html.append("<input type=\"hidden\" id=\"").append(fieldName).append("\" name=\"")
         .append(fieldName)
-        .append("\" value=\"").append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
+        .append("\" value=\"").append(WebEncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
 
     if (!template.isHidden()) {
       html.append("<textarea id=\"").append(fieldName).append("_name\" name=\"").append(fieldName)
           .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"")
           .append(cols)
           .append("\">")
-          .append(EncodeHelper.javaStringToHtmlString(userNames)).append("</textarea>");
+          .append(WebEncodeHelper.javaStringToHtmlString(userNames)).append("</textarea>");
     }
 
     if (!template.isHidden() && !template.isDisabled()

@@ -64,7 +64,7 @@ import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 
@@ -901,7 +901,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
             getId(), xmlField.getName(), language);
       } else {
-        fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
+        fieldValue = WebEncodeHelper.javaStringToHtmlParagraphe(fieldValue);
       }
     }
     return fieldValue;

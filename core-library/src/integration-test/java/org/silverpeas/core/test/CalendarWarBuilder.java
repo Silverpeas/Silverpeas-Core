@@ -39,6 +39,8 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addAdministrationFeatures();
     addSilverpeasExceptionBases();
     addJpaPersistenceFeatures();
+    addNotificationFeatures();
+    addPackages(true, "org.silverpeas.core.notification.user.delayed.model");
   }
 
   /**
