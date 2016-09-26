@@ -24,17 +24,80 @@
 package org.silverpeas.core.notification.user.client.constant;
 
 /**
+ * The user action related to a contribution that is behind the notification.
  * @author Yohann Chastagnier
  */
 public enum NotifAction {
-  CREATE(1, 1), UPDATE(2, 2), DELETE(3, 3), REPORT(4, 4), COMMENT(5, 5), SUSPEND(6, 6),
-  PENDING_VALIDATION(7, 7), REFUSE(8, 8), VALIDATE(9, 9), RESPONSE(10, 10), CLASSIFIED(11, 11),
-  DECLASSIFIED(12, 12), PUBLISHED(13, 13);
+  /**
+   * A contribution has been created.
+   */
+  CREATE(1, 1),
+
+  /**
+   * A contribution has been updated.
+   */
+  UPDATE(2, 2),
+
+  /**
+   * A contribution has been deleted.
+   */
+  DELETE(3, 3),
+
+  /**
+   * A report of information about a contribution. For example, a request for validation of a
+   * contribution in order to be published.
+   */
+  REPORT(4, 4),
+
+  /**
+   * A contribution has been commented.
+   */
+  COMMENT(5, 5),
+
+  /**
+   * The publishing of a contribution has been suspended.
+   */
+  SUSPEND(6, 6),
+
+  /**
+   * A contribution is in validation pending.
+   */
+  PENDING_VALIDATION(7, 7),
+
+  /**
+   * The publishing of a contribution has been refused.
+   */
+  REFUSE(8, 8),
+
+  /**
+   * The publishing of a contribution has been validated.
+   */
+  VALIDATE(9, 9),
+
+  /**
+   * In waiting of response.
+   */
+  RESPONSE(10, 10),
+
+  /**
+   * A contribution has been classified.
+   */
+  CLASSIFIED(11, 11),
+
+  /**
+   * A contribution has been unclassified.
+   */
+  DECLASSIFIED(12, 12),
+
+  /**
+   * A contribution has been published.
+   */
+  PUBLISHED(13, 13);
 
   private int id;
   private int priority;
 
-  private NotifAction(final int id, final int priority) {
+  NotifAction(final int id, final int priority) {
     this.id = id;
     this.priority = priority;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,48 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.notification.user.client.constant;
+package org.silverpeas.core.admin.i18n;
 
-import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Set;
 
 /**
- * The level of information carried by the message.
- * @author Yohann Chastagnier
+ * This interface defines all the i18n related stuff as it is configured in Silverpeas: the default
+ * language, all the languages supported in the current Silverpeas, and so on.
+ * @author mmoquillon
  */
-public enum NotifMessageType {
-  /**
-   * The message is an usual one.
-   */
-  NORMAL(NotificationParameters.NORMAL),
+public interface I18n {
 
   /**
-   * The message is for an urgency.
+   * Gets an instance of {@link I18n}.
+   * @return an instance of {@link I18n}
    */
-  URGENT(NotificationParameters.URGENT),
+  static I18n get() {
+    return ServiceProvider.getService(I18n.class);
+  }
 
   /**
-   * The message is about an error.
+   * Gets the default language of the platform when no one is explicitly specified.
+   * @return the ISO 639-1 code of the default language.
    */
-  ERROR(NotificationParameters.ERROR);
+  String getDefaultLanguage();
 
-  private int id;
-
-  NotifMessageType(final int id) {
-    this.id = id;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public static NotifMessageType decode(final Integer id) {
-    if (id != null) {
-      for (NotifMessageType notifMessageType : NotifMessageType.values()) {
-        if (id == notifMessageType.id) {
-          return notifMessageType;
-        }
-      }
-    }
-    return null;
-  }
+  /**
+   * Gets the languages that are supported by the platform and from which users can choose their
+   * preferred one.
+   * @return an array of ISO 639-1 codes of languages.
+   */
+  Set<String> getSupportedLanguages();
 }

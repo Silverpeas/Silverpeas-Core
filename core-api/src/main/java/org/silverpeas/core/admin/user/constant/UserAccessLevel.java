@@ -27,21 +27,49 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
+ * The access level of a user account in Silverpeas.
  * @author  Yohann Chastagnier
  */
 public enum UserAccessLevel {
 
+  /**
+   * Unknown. The access level isn't defined.
+   */
   UNKNOWN(""),
+
+  /**
+   * The user is an administrator.
+   */
   ADMINISTRATOR("A"),
+
+  /**
+   * The user is an administrator of domains.
+   */
   DOMAIN_ADMINISTRATOR("D"),
+
+  /**
+   * The user is an administrator of spaces.
+   */
   SPACE_ADMINISTRATOR("S"),
+
+  /**
+   * The user is a basic Silverpeas user.
+   */
   USER("U"),
+
+  /**
+   * The user is guest in the platform. Its rights of access are strongly limited to what is public.
+   */
   GUEST("G"),
+
+  /**
+   * The user is a manager of the PdC.
+   */
   PDC_MANAGER("K");
 
   private final String code;
 
-  private UserAccessLevel(String code) {
+  UserAccessLevel(String code) {
     this.code = code;
   }
 

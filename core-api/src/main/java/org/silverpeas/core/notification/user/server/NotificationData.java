@@ -23,13 +23,17 @@
  */
 package org.silverpeas.core.notification.user.server;
 
-import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Data on the notifications to the user. The data are used to store all the information required to
+ * send a message from a sender to its recipient through a given channel. Such an instance is sent
+ * from the notification client to the server responsible to transmit it to the recipients.
+ */
 public class NotificationData implements Serializable {
 
   private static final long serialVersionUID = -3772511721152323046L;
@@ -374,7 +378,7 @@ public class NotificationData implements Serializable {
     if (!Objects.equals(mTargetName, that.mTargetName)) {
       return false;
     }
-    if (!MapUtil.equals(mTargetParam, that.mTargetParam)) {
+    if (!Objects.equals(mTargetParam, that.mTargetParam)) {
       return false;
     }
     if (!Objects.equals(mTargetReceipt, that.mTargetReceipt)) {

@@ -27,14 +27,38 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
+ * The state of the user account in Silverpeas.
  * @author Yohann Chastagnier
  */
 public enum UserState {
+  /**
+   * The state is unknown. It is not defined.
+   */
   UNKNOWN,
+
+  /**
+   * The user account is a valid and the user can sign in Silverpeas.
+   */
   VALID,
+
+  /**
+   * The user account is blocked and the user cannot sign in Silverpeas.
+   */
   BLOCKED,
+
+  /**
+   * The user account is temporally deactivated.
+   */
   DEACTIVATED,
+
+  /**
+   * The user account is expired.
+   */
   EXPIRED,
+
+  /**
+   * The user account is deleted.
+   */
   DELETED;
 
   @JsonValue

@@ -37,6 +37,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
+ * Data on the notification about an action operated on a resource in Silverpeas. A resource can
+ * be a contribution, a business object, or any entities handled or managed in Silverpeas.
  * @author Yohann Chastagnier
  */
 @Entity

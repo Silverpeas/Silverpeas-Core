@@ -23,17 +23,24 @@
  */
 package org.silverpeas.core.notification.user.delayed.model;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.*;
-
-import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.util.List;
+
 /**
+ * The user settings about the delayed notifications. They are about the frequency at which the
+ * delayed notifications have to be sent to the user as well as the notification channel to use.
  * @author Yohann Chastagnier
  */
 @Entity

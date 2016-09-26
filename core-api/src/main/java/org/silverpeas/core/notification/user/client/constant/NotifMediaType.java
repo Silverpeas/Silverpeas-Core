@@ -26,21 +26,54 @@ package org.silverpeas.core.notification.user.client.constant;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 
 /**
+ * The different type of media that can be used to transmit a notification.
  * @author Yohann Chastagnier
  */
 public enum NotifMediaType {
+
+  /**
+   * Use the notification channel that is set up by the user in its preferences.
+   */
   DEFAULT(NotificationParameters.ADDRESS_DEFAULT),
+
+  /**
+   * Use the notification channel that is defined by the component instance itself.
+   */
   COMPONENT_DEFINED(NotificationParameters.ADDRESS_COMPONENT_DEFINED),
+
+  /**
+   * Use explicitly {@link NotifChannel#POPUP}.
+   */
   BASIC_POPUP(NotificationParameters.ADDRESS_BASIC_POPUP),
+
+  /**
+   * Use explicitly {@link NotifChannel#REMOVE}.
+   */
   BASIC_REMOVE(NotificationParameters.ADDRESS_BASIC_REMOVE),
+
+  /**
+   * Use explicitly {@link NotifChannel#SILVERMAIL}.
+   */
   BASIC_SILVERMAIL(NotificationParameters.ADDRESS_BASIC_SILVERMAIL),
+
+  /**
+   * Use explicitly {@link NotifChannel#SMTP}.
+   */
   BASIC_SMTP(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL),
+
+  /**
+   * Use explicitly {@link NotifChannel#SERVER}.
+   */
   BASIC_SERVER(NotificationParameters.ADDRESS_BASIC_SERVER),
+
+  /**
+   * Use explicitly {@link NotifChannel#SMS}.
+   */
   BASIC_USER_COMMUNICATION(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER);
 
   private int id;
 
-  private NotifMediaType(final int id) {
+  NotifMediaType(final int id) {
     this.id = id;
   }
 

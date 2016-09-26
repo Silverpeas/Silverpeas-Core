@@ -25,6 +25,7 @@
 package org.silverpeas.core.i18n;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.i18n.I18n;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -48,7 +49,7 @@ import java.util.StringTokenizer;
  * Be careful, this class handles possible content languages and not possible user languages.<br/>
  * The different user languages are managed by {@link DisplayI18NHelper}.
  */
-public class I18NHelper {
+public class I18NHelper implements I18n {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
@@ -148,6 +149,16 @@ public class I18NHelper {
 
   public static Iterator<String> getLanguages() {
     return allContentLanguages.keySet().iterator();
+  }
+
+  @Override
+  public String getDefaultLanguage() {
+    return I18NHelper.defaultLanguage;
+  }
+
+  @Override
+  public Set<String> getSupportedLanguages() {
+    return I18NHelper.getAllSupportedLanguages();
   }
 
   public static Set<String> getAllSupportedLanguages() {

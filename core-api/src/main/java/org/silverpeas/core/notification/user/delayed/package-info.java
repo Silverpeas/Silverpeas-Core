@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,48 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.notification.user.client.constant;
-
-import org.silverpeas.core.notification.user.client.NotificationParameters;
 
 /**
- * The level of information carried by the message.
- * @author Yohann Chastagnier
+ * Provides all the classes that take in charge the delayed notifications. A notification is delayed
+ * when it isn't sent immediately and it is sent at a regular time according to some given user
+ * settings.
+ * @author mmoquillon
  */
-public enum NotifMessageType {
-  /**
-   * The message is an usual one.
-   */
-  NORMAL(NotificationParameters.NORMAL),
-
-  /**
-   * The message is for an urgency.
-   */
-  URGENT(NotificationParameters.URGENT),
-
-  /**
-   * The message is about an error.
-   */
-  ERROR(NotificationParameters.ERROR);
-
-  private int id;
-
-  NotifMessageType(final int id) {
-    this.id = id;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public static NotifMessageType decode(final Integer id) {
-    if (id != null) {
-      for (NotifMessageType notifMessageType : NotifMessageType.values()) {
-        if (id == notifMessageType.id) {
-          return notifMessageType;
-        }
-      }
-    }
-    return null;
-  }
-}
+package org.silverpeas.core.notification.user.delayed;

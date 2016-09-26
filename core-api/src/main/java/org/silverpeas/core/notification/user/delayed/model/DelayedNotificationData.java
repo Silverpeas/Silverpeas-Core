@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.notification.user.delayed.model;
 
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.admin.i18n.I18n;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,6 +39,8 @@ import java.util.Date;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
+ * Data on a delayed notification to users. A notification is delayed when it is sent not
+ * immediately but later according to some specific user settings.
  * @author Yohann Chastagnier
  */
 @Entity
@@ -112,7 +114,7 @@ public class DelayedNotificationData
     super.performBeforePersist();
     creationDate = new Date();
     if (!isNotBlank(language)) {
-      language = I18NHelper.defaultLanguage;
+      language = I18n.get().getDefaultLanguage();
     }
   }
 

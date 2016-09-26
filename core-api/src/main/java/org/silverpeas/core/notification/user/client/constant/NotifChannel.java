@@ -27,10 +27,40 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * Channel used to notify users.
  * @author Yohann Chastagnier
  */
 public enum NotifChannel {
-  SMTP(1), SMS(2), POPUP(3), SILVERMAIL(4), REMOVE(5), SERVER(6);
+  /**
+   * The notification is sent by email.
+   */
+  SMTP(1),
+
+  /**
+   * The notification is sent by SMS.
+   */
+  SMS(2),
+
+  /**
+   * The notification is sent to the recipient's web browser to be rendered within a popup.
+   */
+  POPUP(3),
+
+  /**
+   * The notification is stored into Silverpeas to be rendered within the user's notifications page
+   * in Silverpeas.
+   */
+  SILVERMAIL(4),
+
+  /**
+   * The notification is sent to nowhere (it's lost).
+   */
+  REMOVE(5),
+
+  /**
+   * The notification is sent to a remote server.
+   */
+  SERVER(6);
 
   private int id;
 
