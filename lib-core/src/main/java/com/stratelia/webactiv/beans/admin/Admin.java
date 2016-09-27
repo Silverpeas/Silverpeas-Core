@@ -4816,14 +4816,15 @@ public class Admin {
     boolean manageable = getUserDetail(userId).isAccessAdmin();
     if (!manageable) {
       // check if user is manager of at least one space parent
-      String[] spaceIds = getUserManageableSpaceIds(userId);
-      ComponentInstLight component = getComponentInstLight(componentId);
-      if (component != null) {
-        List<String> toCheck = Arrays.asList(spaceIds);
-        manageable = toCheck.contains(getDriverSpaceId(component.getDomainFatherId()));
+      List<String> toCheck = Arrays.asList(getUserManageableSpaceIds(userId));
+      List<SpaceInstLight> path = getPathToComponent(componentId);
+      for (SpaceInstLight space : path) {
+        if (toCheck.contains(space.getShortId())) {
+          return true;
+        }
       }
     }
-    return manageable;
+    return false;
   }
 
   /**
