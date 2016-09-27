@@ -746,7 +746,7 @@ class Admin implements Administration {
 
   @Override
   public List<SpaceInstLight> getPathToComponent(String componentId) throws AdminException {
-    List<SpaceInstLight> path = new ArrayList<>(0);
+    List<SpaceInstLight> path = new ArrayList<>();
     ComponentInstLight component = getComponentInstLight(componentId);
     if (component != null) {
       String spaceId = component.getDomainFatherId();
@@ -4037,15 +4037,15 @@ class Admin implements Administration {
     boolean manageable = getUserDetail(userId).isAccessAdmin();
     if (!manageable) {
       // check if user is manager of at least one space parent
-      String[] spaceIds = getUserManageableSpaceIds(userId);
-      ComponentInstLight component = getComponentInstLight(componentId);
-      if (component != null) {
-        List<String> toCheck = Arrays.asList(spaceIds);
-        final int driverSpaceId = getDriverSpaceId(component.getDomainFatherId());
-        manageable = toCheck.contains(String.valueOf(driverSpaceId));
+      List<String> toCheck = Arrays.asList(getUserManageableSpaceIds(userId));
+      List<SpaceInstLight> path = getPathToComponent(componentId);
+      for (SpaceInstLight space : path) {
+        if (toCheck.contains(space.getLocalId())) {
+          return true;
+        }
       }
     }
-    return manageable;
+    return false;
   }
 
   @Override
