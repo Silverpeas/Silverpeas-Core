@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -49,7 +48,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
-import java.util.EnumSet;
 
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
 import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
@@ -192,12 +190,8 @@ public abstract class RESTWebService implements WebResource {
    */
   protected Collection<SilverpeasRole> getUserRoles() {
     if (userRoles == null) {
-      if (PersonalComponentInstance.from(getComponentId()).isPresent()) {
-        userRoles = EnumSet.of(SilverpeasRole.admin);
-      } else {
-        userRoles = SilverpeasRole.from(
-            organizationController.getUserProfiles(getUserDetail().getId(), getComponentId()));
-      }
+      userRoles =
+          organizationController.getUserSilverpeasRolesOn(getUserDetail(), getComponentId());
     }
     return userRoles;
   }
@@ -249,15 +243,22 @@ public abstract class RESTWebService implements WebResource {
   }
 
   /**
-   * This method permits to start the setting of a {@link RESTWebService
-   * .WebTreatment}.
+   * This method permits to start the setting of a {@link RESTWebService.WebTreatment}.
    * @param webTreatment
    * @param <RETURN_VALUE>
    * @return
    */
   protected <RETURN_VALUE> WebProcess<RETURN_VALUE> process(
       WebTreatment<RETURN_VALUE> webTreatment) {
-    return new WebProcess<RETURN_VALUE>(webTreatment);
+    WebProcess<RETURN_VALUE> process = new WebProcess<>(webTreatment);
+    switch (getHttpRequest().getMethod().toUpperCase()) {
+      case "GET":
+        // No lowest role as the access of the component has been already computed
+        break;
+      default:
+        process.lowestAccessRole(SilverpeasRole.writer);
+    }
+    return process;
   }
 
   /**

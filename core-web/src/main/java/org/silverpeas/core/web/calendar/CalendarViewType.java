@@ -136,7 +136,7 @@ public enum CalendarViewType {
   public static CalendarViewType from(String name) {
     if (name != null) {
       for (CalendarViewType viewType : CalendarViewType.values()) {
-        if (name.equalsIgnoreCase(viewType.name())) {
+        if (name.equalsIgnoreCase(viewType.name()) || name.equalsIgnoreCase(viewType.toString())) {
           return viewType;
         }
       }

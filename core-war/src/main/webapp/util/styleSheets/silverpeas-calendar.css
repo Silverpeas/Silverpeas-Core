@@ -50,3 +50,81 @@
   font-weight: normal;
   padding-right: 2px;
 }
+
+/**
+ * AngularJS component templates
+ */
+
+silverpeas-calendar-list ul {
+  display: inline-flex;
+}
+
+silverpeas-calendar-list ul li {
+  list-style: none;
+  padding: 2px;
+  margin-right: 10px;
+}
+
+.silverpeas-calendar-list-item {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.silverpeas-calendar-list-item div span,
+.silverpeas-calendar-list-item div a {
+  vertical-align: middle;
+}
+
+.silverpeas-calendar-list-item.unselected {
+  opacity: 0.2;
+}
+
+silverpeas-calendar-event-occurrence-tip-actions .sp_buttonPane {
+  display: inline-flex;
+}
+
+silverpeas-calendar-event-form .field {
+  width: 98%;
+  clear: both;
+}
+
+silverpeas-calendar-event-form .champs label {
+  font-weight: normal;
+}
+
+silverpeas-calendar-event-form-main legend {
+  background: transparent url(../../util/icons/mini_publi.gif) 11px 0px no-repeat;
+}
+
+silverpeas-calendar-event-form-recurrence legend {
+  background: transparent url(../../util/icons/periodicity.gif) 11px 0px no-repeat;
+}
+
+silverpeas-calendar-event-form-recurrence .champs label {
+  font-weight: normal;
+  display: inline;
+}
+
+silverpeas-calendar-event-form-recurrence input[name="interval"],
+silverpeas-calendar-event-form-recurrence input[name="count"] {
+  width: 30px;
+}
+
+silverpeas-calendar-event-form-recurrence .month-rule-area {
+  padding-top: 5px;
+  display: inline-flex;
+}
+
+.silverpeas-calendar-event-management-update-popin ul li,
+.silverpeas-calendar-event-management-attendee-answer-popin ul li,
+.silverpeas-calendar-event-management-delete-popin ul li {
+  list-style: none;
+  padding: 2px;
+  margin-right: 10px;
+}
+
+.silverpeas-calendar-event-management-update-popin label,
+.silverpeas-calendar-event-management-attendee-answer-popin label,
+.silverpeas-calendar-event-management-delete-popin label {
+  font-weight: normal;
+}

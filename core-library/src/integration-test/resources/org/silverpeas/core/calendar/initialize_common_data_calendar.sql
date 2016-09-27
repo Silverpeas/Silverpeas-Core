@@ -77,4 +77,9 @@ VALUES
   ('ID_A_E1_1', '1', 'ID_E_1', 0, 'ACCEPTED', 'OPTIONAL',
                 '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
   ('ID_A_E1_2', 'john.doe@silverpeas.org', 'ID_E_1', 1, 'TENTATIVE', 'REQUIRED',
+                '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
+  ('ID_A_E5_1', '1', 'ID_E_5', 0, 'AWAITING', 'OPTIONAL',
                 '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0);
+
+INSERT INTO SB_Cal_Attendees_PartDate (id, startDate, participation) VALUES
+  ('ID_A_E5_1', '2016-01-16T00:00:00Z', 'DECLINED');

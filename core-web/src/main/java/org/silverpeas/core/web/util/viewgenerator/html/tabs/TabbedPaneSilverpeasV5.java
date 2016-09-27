@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
+import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
+
 import java.util.Collection;
 import java.util.Vector;
 
@@ -101,7 +103,8 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
           .append("\" class=\"")
           .append(style).append("\">");
       if (tab.getEnabled()) {
-        result.append("<a href=\"").append(tab.getAction()).append("\">");
+        String href = TagUtil.formatHrefFromAction(tab.getAction());
+        result.append("<a ").append(href).append(" >");
         result.append(tab.getLabel());
         result.append("</a>");
       } else {

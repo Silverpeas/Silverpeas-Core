@@ -26,7 +26,9 @@ package org.silverpeas.core.security.authorization;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -38,6 +40,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
@@ -85,7 +88,7 @@ public class TestComponentAccessController {
     controller =
         mockByReflectionRule.mockField(instance, OrganizationController.class, "controller");
     commonAPI4Test.injectIntoMockedBeanContainer(controller);
-    when(controller.getComponentInst(anyString())).thenAnswer(invocation -> {
+    Answer<ComponentInst> componentInstanceAnswer = invocation -> {
       String instanceIdArg = (String) invocation.getArguments()[0];
       ComponentInst componentInst = mock(ComponentInst.class);
       when(componentInst.isPublic()).thenAnswer(
@@ -95,6 +98,11 @@ public class TestComponentAccessController {
           invocation1 -> instanceIdArg.startsWith("kmelia") || instanceIdArg.startsWith("kmax") ||
               instanceIdArg.startsWith("toolbox"));
       return componentInst;
+    };
+    when(controller.getComponentInst(anyString())).thenAnswer(componentInstanceAnswer);
+    when(controller.getComponentInstance(anyString())).thenAnswer(invocation -> {
+      ComponentInst componentInst = componentInstanceAnswer.answer(invocation);
+      return Optional.ofNullable(componentInst);
     });
 
     when(controller.isToolAvailable(toolId)).thenReturn(true);

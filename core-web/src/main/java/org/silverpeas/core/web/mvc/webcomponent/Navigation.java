@@ -24,9 +24,10 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 /**
- * Each method from Web Routers exposed must return an instance of this class.
+ * Each method from Web Routers exposed must return an instance of this class, if no
+ * <code>@Produce</code> or <code>@RedirectTo...</code> annotation has been set.
  * For now, it permits to specify the destination of the navigation.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class Navigation {
   private final String destination;

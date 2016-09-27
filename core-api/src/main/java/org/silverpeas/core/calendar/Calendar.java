@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
@@ -30,6 +33,11 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -161,6 +169,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public void delete() {
     Transaction.performInOne(() -> {
+      this.clear();
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.delete(this);
       return null;
@@ -237,7 +246,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public void clear() {
     verifyCalendarIsPersisted();
-    Transaction.getTransaction().perform(() -> {
+    Transaction.performInOne(() -> {
       CalendarEventRepository repository = CalendarEventRepository.get();
       repository.deleteAll(Calendar.this);
       return null;
@@ -254,4 +263,24 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
     return repository.size(this) == 0;
   }
 
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    SilverpeasComponentInstance instance =
+        SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
+    if (instance.isPersonal()) {
+      return getCreator().getId().equals(user.getId()) &&
+          !getTitle().equals(user.getDisplayedName());
+    }
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+  }
 }

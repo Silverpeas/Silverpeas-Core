@@ -23,16 +23,21 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 
 /**
  * The class ComponentInstLight is the representation in memory of a component instance
@@ -281,14 +286,17 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     this.isInheritanceBlocked = isInheritanceBlocked;
   }
 
+  @Override
   public boolean isHidden() {
     return hidden;
   }
 
+  @Override
   public boolean isPublic() {
     return publicApp;
   }
 
+  @Override
   public boolean isWorkflow() {
     return WAComponent.get(getName()).get().isWorkflow();
   }
@@ -304,6 +312,14 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     }
     String size = bigOne ? "Big.png" : "Small.gif";
     return URLUtil.getApplicationURL() + "/util/icons/component/" + app + size;
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
+    Set<SilverpeasRole> silverpeasRoles =
+        SilverpeasRole.from(OrganizationController.get().getUserProfiles(user.getId(), getId()));
+    silverpeasRoles.remove(Manager);
+    return silverpeasRoles;
   }
 
   @Override

@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar.event;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 
 import javax.persistence.DiscriminatorValue;
@@ -60,8 +61,9 @@ public class InternalAttendee extends Attendee {
 
   @Override
   protected Attendee getFromPersistenceContext() {
-    EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
-    return entityManager.find(InternalAttendee.class, getNativeId());
+    return Transaction.performInNew(() -> {
+      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
+      return entityManager.find(InternalAttendee.class, getNativeId());
+    });
   }
-
 }

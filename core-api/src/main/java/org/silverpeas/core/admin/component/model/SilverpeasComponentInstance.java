@@ -24,14 +24,28 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface SilverpeasComponentInstance extends Serializable {
+
+  /**
+   * Gets the highest reference of a component instance from the specified identifier.
+   * @param componentInstanceId the unique identifier of a component instance to get.
+   * @return an optional silverpeas component instance of {@link SilverpeasComponentInstance}.
+   */
+  static Optional<SilverpeasComponentInstance> getById(String componentInstanceId) {
+    return SilverpeasComponentInstanceProvider.get().getById(componentInstanceId);
+  }
 
   /**
    * Gets the unique identifier of the component instance.
@@ -82,5 +96,47 @@ public interface SilverpeasComponentInstance extends Serializable {
    */
   default boolean isPersonal() {
     return false;
+  }
+
+  /**
+   * Indicates if the component instance is public.
+   * @return true if public, false otherwise.
+   */
+  default boolean isPublic() {
+    return false;
+  }
+
+  /**
+   * Indicates if the component instance is hidden.
+   * @return true if hidden, false otherwise.
+   */
+  default boolean isHidden() {
+    return false;
+  }
+
+  /**
+   * Indicates if the component instance is a workflow one.
+   * @return true if is a workflow, false otherwise.
+   */
+  default boolean isWorkflow() {
+    return false;
+  }
+
+  /**
+   * Gets the silverpeas role the given user has on the component instance.<br/>
+   * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
+   * @param user the user for which the roles are retrieved.
+   * @return a list of {@link SilverpeasRole}, empty of no roles.
+   */
+  Collection<SilverpeasRole> getSilverpeasRolesFor(User user);
+
+  /**
+   * Gets the highest silverpeas role the given user has on the component instance.<br/>
+   * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
+   * @param user the user for which the roles are retrieved.
+   * @return a role if any, null otherwise.
+   */
+  default SilverpeasRole getHighestSilverpeasRolesFor(User user) {
+    return SilverpeasRole.getHighestFrom(getSilverpeasRolesFor(user));
   }
 }

@@ -481,6 +481,10 @@
 
     return $this.each(function() {
       var $_this = $(this);
+      if (!options.title) {
+        options.title = $_this.attr('title');
+      }
+
       $_this.dialog({
         closeOnEscape: options.closeOnEscape,
         title: options.title,

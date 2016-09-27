@@ -24,12 +24,19 @@
 package org.silverpeas.core.web.calendar;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
@@ -38,7 +45,10 @@ import java.util.EnumSet;
  * Handles a time window context for calendar managements.
  * @author Yohann Chastagnier
  */
-public class CalendarTimeWindowViewContext {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class CalendarTimeWindowViewContext implements Serializable {
+
   private final static EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
       EnumSet.of(PeriodType.week, PeriodType.day);
 
@@ -58,6 +68,16 @@ public class CalendarTimeWindowViewContext {
     this.componentInstanceId = componentInstanceId;
     this.locale = locale;
     setReferenceDay(DateUtil.getDate());
+  }
+
+  public String toJSonScript(String jsVariableName) {
+    return new script().setType("text/javascript")
+        .addElement("var " + jsVariableName + " = " + getAsJSonString() + ";").toString();
+  }
+
+  @XmlTransient
+  public String getAsJSonString() {
+    return JSONCodec.encode(this);
   }
 
   /**
@@ -223,12 +243,13 @@ public class CalendarTimeWindowViewContext {
     LocalizationBundle bundle = getBundle(language);
     StringBuilder periodLabel = new StringBuilder();
     boolean displayWeek = DISPLAY_WEEK_PERIODS.contains(period.getPeriodType());
-    if (period.getPeriodType().isWeek()) {
+    if (period.getPeriodType().isDay()) {
+      periodLabel.append(DateUtil.getOutputDate(period.getBeginDate().getDate(), language));
+    } else if (period.getPeriodType().isWeek()) {
       // Month of the begin date of the period
       periodLabel.append(bundle.getString("GML.mois" + period.getBeginDate().getMonth()));
       // Verifies if months are different between the beginning and the end of the period
       if (period.getBeginDate().getMonth() != period.getEndDate().getMonth()) {
-        displayWeek = true;
         // Verifies if years are different between the beginning and the end of the period
         if (period.getBeginDate().getYear() != period.getEndDate().getYear()) {
           // Appends the year of the beginning date after the month of this same date
@@ -239,18 +260,18 @@ public class CalendarTimeWindowViewContext {
       }
       // Appends the year of the end date after the month of this same date
       periodLabel.append(" ").append(period.getEndDate().getYear());
-      // Appends the week number if it is necessary
-      if (displayWeek) {
-        periodLabel.append(" - ")
-            .append(bundle.getString("GML.week"))
-            .append(' ')
-            .append(period.getBeginDate().getWeekOfYear());
-      }
     } else if (period.getPeriodType().isMonth()) {
       periodLabel.append(bundle.getString("GML.mois" + period.getBeginDate().getMonth()))
           .append(" ").append(period.getBeginDate().getYear());
     } else if (period.getPeriodType().isYear()) {
       periodLabel.append(period.getBeginDate().getYear());
+    }
+    // Appends the week number if it is necessary
+    if (displayWeek) {
+      periodLabel.append(" - ")
+          .append(bundle.getString("GML.week"))
+          .append(' ')
+          .append(period.getBeginDate().getWeekOfYear());
     }
     // Result
     return periodLabel.toString();

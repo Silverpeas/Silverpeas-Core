@@ -133,12 +133,16 @@ public final class WebComponentRequestRouter<
   @Override
   public final String getDestination(final String path, final T componentSC,
       final HttpRequest request) {
-    String destination;
+    String destination = null;
     try {
-
-      // Performing the request.
-      destination = WebComponentManager.perform(componentSC, path).getDestination();
-
+      PathExecutionResponse response = WebComponentManager.perform(componentSC, path);
+      if (response.produces().isPresent()) {
+        destination = response.produces().get();
+      } else if (response.navigation().isPresent()) {
+        destination = response.navigation().get().getDestination();
+      } else {
+        throwHttpForbiddenError();
+      }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";

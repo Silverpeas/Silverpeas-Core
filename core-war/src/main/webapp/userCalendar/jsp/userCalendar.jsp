@@ -28,7 +28,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/calendar" prefix="calendarTags" %>
 
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
@@ -42,38 +41,62 @@
 <c:set var="componentId"            value="${requestScope.browseContext[3]}"/>
 <c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
+<jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <fmt:message key="usercalendar.name" var="userCalendarLabel"/>
+<fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
-
-<c:url var="userCalendarJS"         value="/userCalendar/jsp/javaScript/angularjs/usercalendar.js"/>
+<fmt:message key="usercalendar.menu.item.viewuserparticipation" var="viewUserParticipationEventLabel"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.userCalendar">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.usercalendar">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
   <view:includePlugin name="calendar"/>
+  <view:script src="/userCalendar/jsp/javaScript/angularjs/services/usercalendar.js"/>
+  <view:script src="/userCalendar/jsp/javaScript/angularjs/usercalendar.js"/>
 </head>
-<body ng-controller="mainController">
+<body ng-controller="calendarController">
 <view:operationPane>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+    <silverpeas-calendar-management api="calMng"
+                                    on-created="userCalendar.addCalendar(calendar)"></silverpeas-calendar-management>
+    <view:operation action="angularjs:calMng.add()" altText="${createCalendarLabel}"/>
     <fmt:message key="userCalendar.icons.addEvent" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
-    <view:operationOfCreation action="${componentUriBase}calendars/events/new" altText="${addEventLabel}" icon="${opIcon}"/>
+    <view:operationOfCreation action="angularjs:newEvent(userCalendar.getCalendars())"
+                              altText="${addEventLabel}" icon="${opIcon}"/>
+    <view:operation action="angularjs:selectUsersForViewingTheirEvents()"
+                              altText="${viewUserParticipationEventLabel}"/>
   </c:if>
 </view:operationPane>
+<input type="text" ng-disabled="true" style="display: none;" class="user-ids"
+       id="userParticipation-userIds"
+       name="userParticipationUserPanelCurrentUserIds"
+       ng-model="participationIds"
+       ng-list>
 <view:window>
   <view:frame>
     <view:areaOfOperationOfCreation/>
-    <calendarTags:displayCalendar currentUser="${currentUser}"
-                                  componentInstanceId="${componentId}"
-                                  componentUriBase="${componentUriBase}"
-                                  timeWindowViewContext="${timeWindowViewContext}"/>
+    <silverpeas-calendar api="userCalendar"
+                         participation-user-ids="participationIds"
+                         on-day-click="newEvent(userCalendar.getCalendars(), startMoment)"
+                         on-event-occurrence-view="viewEventOccurrence(userCalendar.getCalendars(), occurrence)"
+                         on-event-occurrence-modify="editEventOccurrence(userCalendar.getCalendars(), occurrence)"></silverpeas-calendar>
   </view:frame>
 </view:window>
-<script type="text/javascript" src="${userCalendarJS}"></script>
+
+<script type="text/javascript">
+  userCalendar.value('context', {
+    currentUserId : '${currentUserId}',
+    currentUserLanguage : '${currentUserLanguage}',
+    component : '${componentId}',
+    componentUriBase : '${componentUriBase}',
+    userRole: '${highestUserRole}'
+  });
+</script>
 </body>
 </html>

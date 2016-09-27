@@ -23,17 +23,23 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     implements Cloneable, SilverpeasComponentInstance {
@@ -332,6 +338,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return super.getName(language);
   }
 
+  @Override
   public boolean isHidden() {
     return isHidden;
   }
@@ -340,6 +347,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     this.isHidden = isHidden;
   }
 
+  @Override
   public boolean isPublic() {
     return isPublic;
   }
@@ -398,6 +406,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     profiles = newProfiles;
   }
 
+  @Override
   public boolean isWorkflow() {
     return WAComponent.get(getName()).get().isWorkflow();
   }
@@ -412,5 +421,13 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public String getInternalLink() {
     return URLUtil.getURL(getName(), "", getId()) + "Main";
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
+    Set<SilverpeasRole> silverpeasRoles =
+        SilverpeasRole.from(OrganizationController.get().getUserProfiles(user.getId(), getId()));
+    silverpeasRoles.remove(Manager);
+    return silverpeasRoles;
   }
 }

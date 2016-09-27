@@ -61,6 +61,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
@@ -426,25 +427,20 @@ public class MainSessionController implements Clipboard, SessionCloseable {
       }
       // Set the current component and profiles
       if (componentInstanceId != null) {
-        String sCurCompoLabel;
-        final SilverpeasComponentInstance componentInst;
-        Optional<PersonalComponentInstance> personalComponentInstance =
-            PersonalComponentInstance.from(componentInstanceId);
-        if (personalComponentInstance.isPresent()) {
-          componentInst = personalComponentInstance.get();
-        } else {
-          componentInst = getAdminService().getComponentInst(componentInstanceId);
-        }
-
-        sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
+        final SilverpeasComponentInstance componentInst =
+            getAdminService().getComponentInstance(componentInstanceId);
+        String sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
         componentContext.setCurrentComponentId(componentInstanceId);
         componentContext.setCurrentComponentName(componentInst.getName());
         componentContext.setCurrentComponentLabel(sCurCompoLabel);
         if (componentInst.isPersonal()) {
-          componentContext.setCurrentProfile(new String[]{SilverpeasRole.admin.getName()});
+          Collection<SilverpeasRole> silverpeasRolesFor =
+              componentInst.getSilverpeasRolesFor(getCurrentUserDetail());
+          componentContext.setCurrentProfile(
+              silverpeasRolesFor.stream().map(SilverpeasRole::getName).toArray(String[]::new));
         } else {
-          componentContext.setCurrentProfile(getAdminService()
-              .getCurrentProfiles(this.getUserId(), (ComponentInst) componentInst));
+          componentContext.setCurrentProfile(
+              getAdminService().getCurrentProfiles(this.getUserId(), componentInst.getId()));
         }
       }
     } catch (Exception e) {

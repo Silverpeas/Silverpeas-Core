@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.web.http;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -42,7 +40,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +55,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.split;
+import static org.silverpeas.core.web.http.RequestParameterDecoder.*;
 
 /**
  * An HTTP request decorating an HTTP servlet request with some additional methods and by changing
@@ -439,7 +437,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return the value of the parameter as a list of boolean.
    */
   public List<Boolean> getParameterAsBooleanList(String parameterName) {
-    return getParameterAsList(parameterName).stream().map(this::asBoolean)
+    return getParameterAsList(parameterName).stream().map(RequestParameterDecoder::asBoolean)
         .collect(Collectors.toList());
   }
 
@@ -460,7 +458,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return the value of the parameter as a list of long.
    */
   public List<Long> getParameterAsLongList(String parameterName) {
-    return getParameterAsList(parameterName).stream().map(this::asLong)
+    return getParameterAsList(parameterName).stream().map(RequestParameterDecoder::asLong)
         .collect(Collectors.toList());
   }
 
@@ -481,7 +479,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return the value of the parameter as a list of integer.
    */
   public List<Integer> getParameterAsIntegerList(String parameterName) {
-    return getParameterAsList(parameterName).stream().map(this::asInteger)
+    return getParameterAsList(parameterName).stream().map(RequestParameterDecoder::asInteger)
         .collect(Collectors.toList());
   }
 
@@ -493,7 +491,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @throws java.text.ParseException if the parameter value isn't a date.
    */
   public Date getParameterAsDate(String dateParameterName) throws ParseException {
-    return asDate(getParameter(dateParameterName), null);
+    return asDate(getParameter(dateParameterName), null, getUserLanguage());
   }
 
   /**
@@ -505,7 +503,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
   public List<Date> getParameterAsDateList(String dateParameterName) {
     return getParameterAsList(dateParameterName).stream().map(p -> {
       try {
-        return asDate(p, null);
+        return asDate(p, null, getUserLanguage());
       } catch (ParseException e) {
         throw new SilverpeasRuntimeException(e);
       }
@@ -522,7 +520,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public Date getParameterAsDate(String dateParameterName, String hourParameterName)
       throws ParseException {
-    return asDate(getParameter(dateParameterName), getParameter(hourParameterName));
+    return asDate(getParameter(dateParameterName), getParameter(hourParameterName),
+        getUserLanguage());
   }
 
   /**
@@ -548,97 +547,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
     return getParameterAsList(parameterName).stream().map(p -> asEnum(p, enumClass))
         .collect(Collectors.toList());
   }
-
-  private <T> boolean asBoolean(T object) {
-    if (object instanceof Boolean) {
-      return (Boolean) object;
-    } else if (object instanceof String) {
-      String typedObject = ((String) object).trim();
-      return StringUtil.getBooleanValue(typedObject);
-    }
-    if (object != null) {
-      throw new IllegalArgumentException();
-    }
-    return false;
-  }
-
-  private <T> Long asLong(T object) {
-    if (object instanceof Number) {
-      return ((Number) object).longValue();
-    } else if (object instanceof String) {
-      String typedObject = ((String) object).trim();
-      if (StringUtil.isLong(typedObject)) {
-        return Long.valueOf(typedObject);
-      }
-      return null;
-    }
-    if (object != null) {
-      throw new IllegalArgumentException();
-    }
-    return null;
-  }
-
-  private <T> Integer asInteger(T object) {
-    if (object instanceof Number) {
-      return ((Number) object).intValue();
-    } else if (object instanceof String) {
-      String typedObject = ((String) object).trim();
-      if (StringUtil.isInteger(typedObject)) {
-        return Integer.valueOf(typedObject);
-      }
-      return null;
-    }
-    if (object != null) {
-      throw new IllegalArgumentException();
-    }
-    return null;
-  }
-
-  private <T> Date asDate(T date, T hour) throws ParseException {
-    if (date instanceof String) {
-      String typedDate = (String) date;
-      String typedHour = (String) hour;
-      if (StringUtil.isDefined(typedDate)) {
-        return DateUtil.stringToDate(typedDate, typedHour, getUserLanguage());
-      }
-      return null;
-    }
-    if (date != null) {
-      throw new IllegalArgumentException();
-    }
-    return null;
-  }
-
-  @SuppressWarnings({"unchecked", "ConstantConditions"})
-  private <E extends Enum> E asEnum(String enumValue, Class<E> enumClass) {
-    Method fromMethod = null;
-
-    for (Method method : enumClass.getMethods()) {
-      Class[] methodParameterTypes = method.getParameterTypes();
-      if (method.getAnnotation(JsonCreator.class) != null && methodParameterTypes.length == 1 &&
-          methodParameterTypes[0].isAssignableFrom(String.class)) {
-        fromMethod = method;
-        break;
-      }
-    }
-
-    if (fromMethod == null) {
-      try {
-        fromMethod = enumClass.getMethod("valueOf", String.class);
-      } catch (Exception e) {
-        throw new SilverpeasRuntimeException(e);
-      }
-    }
-
-    try {
-      return (E) fromMethod.invoke(null, enumValue);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
-    }
-
-    return null;
-  }
-
 
   /**
    * Is the content in this request is encoded in a multipart stream.

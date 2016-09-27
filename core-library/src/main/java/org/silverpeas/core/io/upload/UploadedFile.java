@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.io.upload;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.Map;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -61,17 +61,17 @@ public class UploadedFile {
   /**
    * Creates a representation of an uploaded file from HttpServletRequest and a given uploaded file
    * identifier.
-   * @param request
+   * @param parameters
    * @param uploadSessionId
    * @param uploader
    * @return
    */
-  public static UploadedFile from(HttpServletRequest request, String uploadSessionId,
+  public static UploadedFile from(Map<String, String> parameters, String uploadSessionId,
       User uploader) {
     UploadSession uploadSession = UploadSession.from(uploadSessionId);
     return new UploadedFile(uploadSession, getUploadedFile(uploadSession),
-        request.getParameter(uploadSessionId + "-title"),
-        request.getParameter(uploadSessionId + "-description"), uploader.getId());
+        parameters.get(uploadSessionId + "-title"),
+        parameters.get(uploadSessionId + "-description"), uploader.getId());
   }
 
   /**
@@ -154,11 +154,44 @@ public class UploadedFile {
    * @param contributionLanguage
    * @param indexIt
    */
-  public void registerAttachment(WAPrimaryKey resourcePk, String contributionLanguage,
-      boolean indexIt) {
+  public void registerAttachment(WAPrimaryKey resourcePk, String contributionLanguage, boolean indexIt) {
+    registerAttachment(resourcePk.getId(), resourcePk.getInstanceId(), contributionLanguage,
+        indexIt);
+  }
+
+  /**
+   * Register an attachment attached in relation to the given contribution identifiers. Please
+   * notice that the original content is deleted from its original location. For now, as this
+   * method
+   * is exclusively used for contribution creations, the treatment doesn't search for existing
+   * attachments. In the future and if updates will be handled, the treatment must evolve to search
+   * for existing attachments ...
+   * @param resourceId
+   * @param componentInstanceId
+   * @param contributionLanguage
+   */
+  public void registerAttachment(String resourceId, String componentInstanceId,
+      String contributionLanguage) {
+    registerAttachment(resourceId, componentInstanceId, contributionLanguage, true);
+  }
+
+  /**
+   * Register an attachment in relation to the given contribution identifiers. Please notice that
+   * the original content is deleted from its original location. For now, as this method is
+   * exclusively used for contribution creations, the treatment doesn't search for existing
+   * attachments. In the future and if updates will be handled, the treatment must evolve to search
+   * for existing attachments ...
+   * @param resourceId
+   * @param componentInstanceId
+   * @param contributionLanguage
+   * @param indexIt
+   */
+  public void registerAttachment(String resourceId, String componentInstanceId,
+      String contributionLanguage, boolean indexIt) {
 
     // Retrieve the simple document
-    SimpleDocument document = retrieveSimpleDocument(resourcePk, contributionLanguage);
+    SimpleDocument document = retrieveSimpleDocument(new ForeignPK(resourceId, componentInstanceId),
+        contributionLanguage);
 
     // Create attachment (please read the method documentation ...)
     AttachmentServiceProvider.getAttachmentService()

@@ -39,12 +39,12 @@
           for(var prop in arguments[0]) {
             this[prop] = arguments[0][prop];
           }
-        };
+        }
 
         this.rate = function(value) {
           return adapter.post(this.uri, value);
         };
-      }
+      };
 
       var adapter = RESTAdapter.get(webContext + '/services/rating', Rating);
 

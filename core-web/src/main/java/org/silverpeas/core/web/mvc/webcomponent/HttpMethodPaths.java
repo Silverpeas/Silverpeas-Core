@@ -28,6 +28,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 
+import javax.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ class HttpMethodPaths {
 
   private final Class<? extends Annotation> httpMethodClass;
 
-  private Map<String, Path> pathRoutes = new HashMap<String, Path>();
+  private Map<String, Path> pathRoutes = new HashMap<>();
 
   /**
    * Default and unique constructor.
@@ -57,7 +58,6 @@ class HttpMethodPaths {
 
   /**
    * Gets the class of Http Method annotation handled by this instance.
-   * @return
    */
   public Class<? extends Annotation> getHttpMethodClass() {
     return httpMethodClass;
@@ -71,6 +71,7 @@ class HttpMethodPaths {
    * @param resourceMethod the method that has to be called for the path.
    * @param navigationStep the identifier of the navigation step associated to the path.
    * @param redirectTo the redirection to be performed after the end of the treatment.
+   * @param produces the content to produce.
    * @param invokeBefore the list of identifiers of methods to invoke before the treatment of
    * HTTP method.
    * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
@@ -78,19 +79,19 @@ class HttpMethodPaths {
    * @return registred paths.
    */
   List<Path> addPaths(Set<javax.ws.rs.Path> paths, LowestRoleAccess lowestRoleAccess,
-      Method resourceMethod, final NavigationStep navigationStep,
-      final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
-    List<Path> registredPaths = new ArrayList<Path>();
+      Method resourceMethod, final NavigationStep navigationStep, final Annotation redirectTo,
+      final Produces produces, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
+    List<Path> registredPaths = new ArrayList<>();
     if (paths.isEmpty()) {
       registredPaths.add(
-          addPath("/", lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
+          addPath("/", lowestRoleAccess, resourceMethod, navigationStep, redirectTo, produces,
               invokeBefore, invokeAfter)
       );
     } else {
       for (javax.ws.rs.Path path : paths) {
         registredPaths.add(
             addPath(path.value(), lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
-                invokeBefore, invokeAfter)
+                produces, invokeBefore, invokeAfter)
         );
       }
     }
@@ -105,17 +106,17 @@ class HttpMethodPaths {
    * @param resourceMethod the method that has to be called for the path.
    * @param navigationStep the identifier of the navigation step associated to the path.
    * @param redirectTo the redirection to be performed after the end of the treatment.
+   * @param produces the content to produce.
    * @param invokeBefore the list of identifiers of methods to invoke before the treatment of
    * HTTP method.
    * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
-   * method.    @return the registred path.
    */
   private Path addPath(String path, LowestRoleAccess lowestRoleAccess, Method resourceMethod,
-      final NavigationStep navigationStep, final Annotation redirectTo,
+      final NavigationStep navigationStep, final Annotation redirectTo, final Produces produces,
       final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     Path pathToRegister =
         new Path(path.replaceFirst("^/", ""), lowestRoleAccess, resourceMethod, navigationStep,
-            redirectTo, invokeBefore, invokeAfter);
+            redirectTo, produces, invokeBefore, invokeAfter);
     Path pathRoute = pathRoutes.get(pathToRegister.getPath());
     if (pathRoute != null) {
       throw new IllegalArgumentException(
@@ -131,7 +132,7 @@ class HttpMethodPaths {
    * Finds the right paths
    * @param path
    * @param skipPathsWithVariables indicates if registred paths containing variables must be
-   * skiped from the matching.
+   * skipped from the matching.
    * @param requestContext
    * @return
    */

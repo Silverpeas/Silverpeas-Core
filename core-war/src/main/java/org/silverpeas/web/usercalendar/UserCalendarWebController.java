@@ -24,32 +24,26 @@
 package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.date.Period;
-import org.silverpeas.core.web.calendar.CalendarViewType;
-import org.silverpeas.core.web.calendar.service.CalendarEventEntity;
-import org.silverpeas.core.web.calendar.service.CalendarWebServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
+import org.silverpeas.core.webapi.calendar.CalendarEventEntity;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.time.LocalDate;
-import java.util.Date;
 
 @WebComponentController(UserCalendarSettings.COMPONENT_NAME)
 public class UserCalendarWebController extends
-    org.silverpeas.core.web.mvc.webcomponent.WebComponentController<UserCalendarWebRequestContext> {
+    AbstractCalendarWebController<UserCalendarWebRequestContext> {
 
   // Some navigation step identifier definitions
   private static final String EVENT_VIEW_NS_ID = "eventViewNavStepIdentifier";
@@ -67,8 +61,10 @@ public class UserCalendarWebController extends
         UserCalendarSettings.ICONS_PATH, UserCalendarSettings.SETTINGS_PATH);
   }
 
-  public static CalendarWebServiceProvider getWebServiceProvider() {
-    return CalendarWebServiceProvider.get();
+  @SuppressWarnings("unchecked")
+  @Override
+  protected UserCalendarTimeWindowViewContext getCalendarTimeWindowContext() {
+    return timeWindowViewContext;
   }
 
   @Override
@@ -96,48 +92,6 @@ public class UserCalendarWebController extends
   }
 
   /**
-   * Prepares the rendering of the home page.
-   * @param context the context of the incoming request.
-   */
-  @GET
-  @Path("calendars/context")
-  @RedirectToPreviousNavigationStep
-  public void view(UserCalendarWebRequestContext context) {
-    CalendarViewType calendarViewType =
-        CalendarViewType.from(context.getRequest().getParameter("view"));
-    if (calendarViewType != null) {
-      timeWindowViewContext.setViewType(calendarViewType);
-    }
-  }
-
-  /**
-   * Asks for purposing a new calendar. It renders an HTML page to input the content of a new
-   * calendar.
-   * @param context the context of the incoming request.
-   */
-  @GET
-  @Path("calendars/new")
-  @RedirectToInternalJsp("calendarEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.admin)
-  public void newCalendar(UserCalendarWebRequestContext context) {
-  }
-
-  /**
-   * Adds a new event into the current calendar. The event's data are
-   * carried within the request's context.
-   * @param context the context of the incoming request.
-   */
-  @POST
-  @Path("calendars/add")
-  @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.admin)
-  public void addCalendar(UserCalendarWebRequestContext context) {
-    Calendar calendar = new Calendar(context.getComponentInstanceId());
-    calendar.setTitle(context.getRequest().getParameter("title"));
-    getWebServiceProvider().saveCalendar(calendar);
-  }
-
-  /**
    * Asks for purposing a new event. It renders an HTML page to input the content of a new
    * event.
    * @param context the context of the incoming request.
@@ -147,24 +101,6 @@ public class UserCalendarWebController extends
   @RedirectToInternalJsp("eventEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.admin)
   public void newEvent(UserCalendarWebRequestContext context) {
-  }
-
-  /**
-   * Adds a new event into the current calendar. The event's data are
-   * carried within the request's context.
-   * @param context the context of the incoming request.
-   */
-  @POST
-  @Path("calendars/{calendarId}/events/add")
-  @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.admin)
-  public void addEvent(UserCalendarWebRequestContext context) throws Exception {
-    Calendar userCalendar = context.getUserCalendarById();
-    Date startDate = context.getRequest().getParameterAsDate("startDate", "startHour");
-    Date endDate = context.getRequest().getParameterAsDate("endDate", "endHour");
-    CalendarEvent event = CalendarEvent.on(Period
-        .between(LocalDate.from(startDate.toInstant()), LocalDate.from(endDate.toInstant())));
-    getWebServiceProvider().planEvent(userCalendar, event);
   }
 
   /**
@@ -179,8 +115,13 @@ public class UserCalendarWebController extends
   public void viewEvent(UserCalendarWebRequestContext context) {
     CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
     if (userCalendarEvent != null) {
-      CalendarEventEntity entity = getWebServiceProvider().asEventWebEntity(userCalendarEvent);
+      CalendarEventEntity entity =
+          CalendarEventEntity.fromEvent(userCalendarEvent, context.getComponentInstanceId());
       context.getRequest().setAttribute("event", entity);
+
+      context.getNavigationContext().navigationStepFrom(EVENT_VIEW_NS_ID)
+          .withLabel(StringUtil.truncate(entity.getTitle(), 50))
+          .setUriMustBeUsedByBrowseBar(false);
     } else {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
@@ -196,43 +137,6 @@ public class UserCalendarWebController extends
   @RedirectToInternalJsp("eventEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.admin)
   public void editEvent(UserCalendarWebRequestContext context) {
-    CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
-    if (userCalendarEvent != null) {
-      CalendarEventEntity entity = getWebServiceProvider().asEventWebEntity(userCalendarEvent);
-      context.getRequest().setAttribute("event", entity);
-    } else {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
-  }
-
-  /**
-   * Adds a new event into the current calendar. The event's data are
-   * carried within the request's context.
-   * @param context the context of the incoming request.
-   */
-  @POST
-  @Path("calendars/events/{eventId}")
-  @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.admin)
-  public void updateEvent(UserCalendarWebRequestContext context) throws Exception {
-    CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
-    if (userCalendarEvent != null) {
-
-    } else {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
-  }
-
-  @POST
-  @Path("calendars/events/{eventId}/delete")
-  @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.admin)
-  public void deleteEvent(UserCalendarWebRequestContext context) {
-    CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
-    if (userCalendarEvent != null) {
-
-    } else {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
+    viewEvent(context);
   }
 }

@@ -27,17 +27,16 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.admin.service.OrganizationController;
-
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**
  * @author ehugonnet

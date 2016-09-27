@@ -33,12 +33,17 @@
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle" var="calendarBundle"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+
+<fmt:message var="modifyMenuLabel" key="GML.modify"/>
+
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 
 <c:set var="currentUser"            value="${requestScope.currentUser}"/>
 <c:set var="currentUserId"          value="${currentUser.id}"/>
 <c:set var="componentId"            value="${requestScope.browseContext[3]}"/>
-<c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 
 <c:set var="event" value="${requestScope.event}"/>
@@ -47,53 +52,92 @@
   <c:set var="target" value="${event.id}"/>
 </c:if>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-
-<fmt:message var="save" key="GML.validate"/>
-<fmt:message var="cancel" key="GML.cancel"/>
-
-<fmt:message key="calendar.menu.item.event.add" var="addEventLabel"/>
+<c:if test="${not highestUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:redirect url="/Error403.jsp"/>
+</c:if>
 
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 
+<c:choose>
+  <c:when test="${event == null}">
+    <fmt:message var="browseBarPathLabel" key="calendar.menu.item.event.add" bundle="${calendarBundle}"/>
+  </c:when>
+  <c:otherwise>
+    <c:set var="browseBarPathLabel">${modifyMenuLabel}</c:set>
+  </c:otherwise>
+</c:choose>
+
+<fmt:message key="GML.delete" var="deleteLabel"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.usercalendar">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel/>
-  <script type="text/javascript">
-
-    function save() {
-      notyWarning("Not yet implemented");
-    }
-
-    function cancel() {
-      <c:choose>
-      <c:when test="${event == null}">
-      silverpeasFormSubmit(sp.formConfig('${backUri}'));
-      </c:when>
-      <c:otherwise>
-      silverpeasFormSubmit(sp.formConfig('${componentUriBase}calendars/events/${target}'));
-      </c:otherwise>
-      </c:choose>
-    }
-  </script>
+  <view:looknfeel withFieldsetStyle="true"/>
+  <view:includePlugin name="calendar"/>
+  <view:script src="/userCalendar/jsp/javaScript/angularjs/services/usercalendar.js"/>
+  <view:script src="/userCalendar/jsp/javaScript/angularjs/usercalendar.js"/>
 </head>
-<body>
+<body ng-controller="editController">
+<view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}">
+  <view:browseBarElt link="#" label="${browseBarPathLabel}"/>
+</view:browseBar>
 <view:operationPane>
-  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-    <fmt:message key="userCalendar.icons.addEvent" var="opIcon" bundle="${icons}"/>
-    <c:url var="opIcon" value="${opIcon}"/>
-    <view:operationOfCreation action="${componentUriBase}calendars/events/new" altText="${addEventLabel}" icon="${opIcon}"/>
+  <silverpeas-calendar-event-management api="eventMng"
+                                        on-created="goToPage('${backUri}')"
+                                        on-occurrence-updated="goToPage('${backUri}')"
+                                        on-occurrence-deleted="goToPage('${backUri}')">
+  </silverpeas-calendar-event-management>
+  <c:if test="${event != null}">
+    <view:operation action="angularjs:eventMng.removeOccurrence(ceo)" altText="${deleteLabel}"/>
   </c:if>
 </view:operationPane>
 <view:window>
   <view:frame>
-    <view:buttonPane>
-      <view:button label="${save}" action="javascript:save();"/>
-      <view:button label="${cancel}" action="javascript:cancel();"/>
-    </view:buttonPane>
+    <silverpeas-calendar-event-form ng-if="ceo"
+                                    api="userCalendarEventApi"
+                                    calendar-event-occurrence="ceo"
+                                    data="data"
+                                    on-add-validated="eventMng.add(event)"
+                                    on-modify-occurrence-validated="eventMng.modifyOccurrence(occurrence, previousOccurrence)"
+                                    on-cancel="goToPage('${backUri}')">
+      <silverpeas-calendar-event-form-main
+          form-validation-priority="0"
+          calendars="calendars"
+          calendar-event-api="userCalendarEventApi"
+          data="data"
+          default-visibility="defaultVisibility"
+          default-priority="defaultPriority">
+      </silverpeas-calendar-event-form-main>
+      <silverpeas-calendar-event-form-recurrence
+          form-validation-priority="1"
+          calendar-event-api="userCalendarEventApi"
+          data="data">
+      </silverpeas-calendar-event-form-recurrence>
+      <silverpeas-calendar-event-form-attendees
+          form-validation-priority="2"
+          calendar-event-api="userCalendarEventApi"
+          data="data">
+      </silverpeas-calendar-event-form-attendees>
+      <%--<silverpeas-calendar-event-form-attachments--%>
+          <%--ng-if="!data.id"--%>
+          <%--form-validation-priority="3"--%>
+          <%--calendar-event-api="userCalendarEventApi"--%>
+          <%--data="data">--%>
+      <%--</silverpeas-calendar-event-form-attachments>--%>
+    </silverpeas-calendar-event-form>
   </view:frame>
 </view:window>
+<view:progressMessage/>
+
+<script type="text/javascript">
+  userCalendar.value('context', {
+    currentUserId : '${currentUserId}',
+    currentUserLanguage : '${currentUserLanguage}',
+    component : '${componentId}',
+    componentUriBase : '${componentUriBase}',
+    userRole : '${highestUserRole}'
+  });
+</script>
 </body>
 </html>

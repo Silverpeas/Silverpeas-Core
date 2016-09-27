@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -229,6 +230,16 @@ public class Recurrence implements Cloneable {
   }
 
   /**
+   * Sets that the recurrence is not linked to a specific day. So the occurrence generation will
+   * take into account only the start date time of the event.
+   * @return itself.
+   */
+  public Recurrence onNoSpecificDay() {
+    this.daysOfWeek.clear();
+    return this;
+  }
+
+  /**
    * Sets a termination to this recurrence by specifying the number of time a {@link Plannable}
    * should recur.
    * Settings this termination unset the recurrence end date.
@@ -255,6 +266,7 @@ public class Recurrence implements Cloneable {
   public Recurrence upTo(final OffsetDateTime endDateTime) {
     this.count = NO_RECURRENCE_COUNT;
     this.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    clearsUnnecessaryExceptionDates();
     return this;
   }
 
@@ -267,6 +279,48 @@ public class Recurrence implements Cloneable {
   public Recurrence upTo(final LocalDate endDate) {
     this.count = NO_RECURRENCE_COUNT;
     this.endDateTime = endDate.atTime(23, 59).atOffset(ZoneOffset.UTC);
+    clearsUnnecessaryExceptionDates();
+    return this;
+  }
+
+  /**
+   * Clears all the registered exception dates which are after the end date time of the recurrence.
+   * If no end date time is specified in this recurrence, nothing is done.
+   */
+  private void clearsUnnecessaryExceptionDates() {
+    if (this.exceptionDates == null) {
+      return;
+    }
+    Iterator<OffsetDateTime> exceptionDateIt = exceptionDates.iterator();
+    while (exceptionDateIt.hasNext()) {
+      OffsetDateTime exceptionDate = exceptionDateIt.next();
+      if (!this.endDateTime.isAfter(exceptionDate)) {
+        exceptionDateIt.remove();
+      }
+    }
+  }
+
+  /**
+   * Sets that the recurrence never ends.
+   * @return itself.
+   */
+  public Recurrence endless() {
+    this.count = NO_RECURRENCE_COUNT;
+    this.endDateTime = NO_RECURRENCE_END_DATE;
+    return this;
+  }
+
+  /**
+   * Sets a frequency to this recurrence by specifying a recurrence period.<br/>
+   * When the new frequency is a daily or a yearly one, days of weeks are reset.
+   * @param frequency the frequency to set.
+   * @return itself.
+   */
+  public Recurrence withFrequency(final RecurrencePeriod frequency) {
+    this.frequency = frequency;
+    if(getFrequency().isDaily() || getFrequency().isYearly()) {
+      this.daysOfWeek.clear();
+    }
     return this;
   }
 
@@ -379,7 +433,7 @@ public class Recurrence implements Cloneable {
    * @param frequency the frequency of the recurrence.
    */
   private Recurrence(final RecurrencePeriod frequency) {
-    this.frequency = frequency;
+    withFrequency(frequency);
   }
 
   private void checkRecurrenceStateForSpecificDaySetting() {

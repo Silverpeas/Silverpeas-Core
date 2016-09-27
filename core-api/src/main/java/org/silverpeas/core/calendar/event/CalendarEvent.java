@@ -23,25 +23,37 @@
  */
 package org.silverpeas.core.calendar.event;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
-import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
@@ -78,7 +90,7 @@ import java.util.Set;
             "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
             "order by e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query = "select distinct e from " +
-        "CalendarEvent e LEFT OUTER JOIN FETCH e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
+        "CalendarEvent e LEFT OUTER JOIN e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
         " where (e" +
         ".createdBy in :participantIds or a.attendeeId in :participantIds) and ((e.period" +
         ".startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) or (e" +
@@ -88,18 +100,16 @@ import java.util.Set;
         ".createdBy, e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByCalendarByParticipantsByPeriod", query =
         "select distinct e from " +
-        "CalendarEvent e LEFT OUTER JOIN FETCH e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
+        "CalendarEvent e LEFT OUTER JOIN e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
         " where e.calendar in :calendars and (e" +
         ".createdBy in :participantIds or a.attendeeId in :participantIds) and ((e.period" +
         ".startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) or (e" +
         ".period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime) or " +
         "(e.period.endDateTime < :startDateTime and e.recurrence is not null and (e.recurrence" +
         ".endDateTime >= :startDateTime or e.recurrence.endDateTime is null))) order by e" +
-        ".createdBy, e.period.startDateTime"),
-    @NamedQuery(name = "calendarEventsDeleteAll", query =
-        "delete from CalendarEvent e where e.calendar = " + ":calendar")})
+        ".createdBy, e.period.startDateTime")})
 public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdentifier>
-    implements Plannable, Recurrent, Categorized, Prioritized {
+    implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
   private static final long serialVersionUID = 1L;
 
@@ -177,6 +187,10 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   public static CalendarEvent on(final LocalDate day) {
     return new CalendarEvent(Period.between(day, day));
+  }
+
+  private static CalendarEventOccurrenceGenerator generator() {
+    return CalendarEventOccurrenceGenerator.get();
   }
 
   /**
@@ -334,7 +348,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
   @Override
   public void unsetRecurrence() {
-    this.recurrence = null;
+    this.recurrence = Recurrence.NO_RECURRENCE;
   }
 
   /**
@@ -455,8 +469,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     return isPersisted();
   }
 
-  @Override
-  public void delete() {
+  private void deleteFromPersistence() {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
@@ -467,10 +480,9 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     notify(ResourceEvent.Type.DELETION, this);
   }
 
-  @Override
-  public void update() {
+  private void updateIntoPersistence() {
     if (getNativeId() != null) {
-      Optional<CalendarEvent> before = getCalendar().event(getId());
+      Optional<CalendarEvent> before = Transaction.performInNew(() -> getCalendar().event(getId()));
       if (before.isPresent()) {
         CalendarEvent event = Transaction.getTransaction().perform(() -> {
           CalendarEventRepository repository = CalendarEventRepository.get();
@@ -518,7 +530,11 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   @Override
   public CalendarEvent clone() {
     CalendarEvent clone = super.clone();
-    clone.recurrence = recurrence.clone();
+    if (recurrence == Recurrence.NO_RECURRENCE) {
+      clone.recurrence = Recurrence.NO_RECURRENCE;
+    } else {
+      clone.recurrence = recurrence.clone();
+    }
     clone.period = period.clone();
     clone.categories = categories.clone();
     clone.attributes = attributes.clone();
@@ -538,7 +554,334 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   private void notify(ResourceEvent.Type type, CalendarEvent... events) {
-    CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
-    notifier.notifyEventOn(type, events);
+    Transaction.performInNew(() -> {
+      CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
+      notifier.notifyEventOn(type, events);
+      return null;
+    });
+  }
+
+  /**
+   * Handles the simple deletion of an event.
+   */
+  @Transient
+  private final Function<CalendarEvent, CalendarEventModificationResult> simpleDeletion =
+      (previousEvent) -> {
+        if (previousEvent != null) {
+          previousEvent.deleteFromPersistence();
+        }
+        return new CalendarEventModificationResult();
+      };
+
+  /**
+   * Deletes entirely the event referenced by this occurrence.
+   */
+  @Override
+  public CalendarEventModificationResult delete() {
+    return Transaction.performInOne(() -> simpleDeletion.apply(getPreviousEventData()));
+  }
+
+  /**
+   * Deletes from this event the occurrence represented by the given occurrence identifier.
+   * <ul>
+   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
+   * <li>If the occurrence is one of among any of the event, then the date time at which this
+   * occurrence starts is added as an exception in the recurrence rule of the event.</li>
+   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
+   * </ul>
+   * @param data the occurrence necessary data to perform the operation.
+   */
+  public CalendarEventModificationResult delete(CalendarEventOccurrenceReferenceData data) {
+    return doEitherOr(data, simpleDeletion, (previousEvent) -> {
+      previousEvent.getRecurrence()
+          .excludeEventOccurrencesStartingAt(data.getOriginalStartDateTime());
+      previousEvent.getAttendees()
+          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDateTime()));
+      previousEvent.updateIntoPersistence();
+      return new CalendarEventModificationResult(previousEvent);
+    });
+  }
+
+  /**
+   * Deletes from this event the occurrence represented by the given occurrence identifier and
+   * all the ones after.
+   * <ul>
+   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
+   * <li>If the occurrence is one of among any of the event, then recurrence end date time is
+   * updated.</li>
+   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
+   * </ul>
+   * @param data the occurrence necessary data to perform the operation.
+   */
+  public CalendarEventModificationResult deleteFrom(CalendarEventOccurrenceReferenceData data) {
+    return doEitherOr(data, simpleDeletion, (previousEvent) -> {
+      previousEvent.getRecurrence().upTo(data.getOriginalStartDayTime());
+      previousEvent.getAttendees()
+          .forEach(attendee -> attendee.resetParticipationFrom(data.getOriginalStartDateTime()));
+      previousEvent.updateIntoPersistence();
+      return new CalendarEventModificationResult(previousEvent);
+    });
+  }
+
+  /**
+   * Verifies if the recurrence has changed or not.
+   */
+  @Transient
+  private final Predicate<Recurrence> hasRecurrenceChanged = (otherRecurrence) -> {
+    final CalendarEvent me = this;
+    return (me.getRecurrence() != null && otherRecurrence == null) ||
+        (me.getRecurrence() == null && otherRecurrence != null) ||
+        (me.getRecurrence() != null && me.getRecurrence().equals(otherRecurrence));
+  };
+
+  /**
+   * Handles the simple update of an event.
+   */
+  @Transient
+  private final Function<CalendarEvent, CalendarEventModificationResult> simpleUpdate =
+      (previousEvent) -> {
+        if (previousEvent == null) {
+          return new CalendarEventModificationResult();
+        }
+        final CalendarEvent me = this;
+
+        // Verify date changes
+        final boolean dateChanged =
+            !previousEvent.getStartDateTime().isEqual(me.getStartDateTime()) ||
+                !previousEvent.getEndDateTime().isEqual(me.getEndDateTime());
+
+        final boolean recurrenceChanged;
+        final Recurrence currentRecurrence = me.getRecurrence();
+        final Recurrence previousRecurrence = previousEvent.getRecurrence();
+        if ((currentRecurrence != null && previousRecurrence == null) ||
+            (currentRecurrence == null && previousRecurrence != null)) {
+          recurrenceChanged = true;
+        } else if (currentRecurrence != null) {
+          if (!currentRecurrence.getDaysOfWeek().equals(previousRecurrence.getDaysOfWeek()) ||
+              !currentRecurrence.getFrequency().equals(previousRecurrence.getFrequency()) ||
+              currentRecurrence.getRecurrenceCount() != previousRecurrence.getRecurrenceCount()) {
+            recurrenceChanged = true;
+          } else {
+            recurrenceChanged = false;
+            if (!currentRecurrence.getExceptionDates()
+                .equals(previousRecurrence.getExceptionDates())) {
+              // Removing participation dates
+              currentRecurrence.getExceptionDates().forEach(dateTime -> getAttendees()
+                  .forEach(attendee -> attendee.resetParticipationOn(dateTime)));
+            }
+            if (currentRecurrence.getEndDate().isPresent() &&
+                !currentRecurrence.getEndDate().equals(previousRecurrence.getEndDate())) {
+              // Removing also participation dates
+              getAttendees().forEach(attendee -> attendee
+                  .resetParticipationFrom(currentRecurrence.getEndDate().get()));
+            }
+          }
+        } else {
+          recurrenceChanged = false;
+        }
+
+        // If it exists date or recurrence changes, participation of attendees are reset.
+        if (dateChanged || recurrenceChanged) {
+          me.getAttendees().forEach(Attendee::resetParticipation);
+        }
+
+        final boolean hasCalendarChanged =
+            !previousEvent.getCalendar().getId().equals(me.getCalendar().getId());
+        if (hasCalendarChanged) {
+          // New event is created on other calendar
+          CalendarEvent newEvent = me.clone();
+          newEvent.planOn(me.getCalendar());
+          // Deleting previous event
+          simpleDeletion.apply(previousEvent);
+          return new CalendarEventModificationResult(me);
+        } else {
+          me.updateIntoPersistence();
+          return new CalendarEventModificationResult(me);
+        }
+      };
+
+  /**
+   * Updates entirely the event referenced by this occurrence.
+   */
+  @Override
+  public CalendarEventModificationResult update() {
+    return Transaction.performInOne(() -> simpleUpdate.apply(getPreviousEventData()));
+  }
+
+  /**
+   * Applies the change done to this event the occurrence represented by the given occurrence
+   * identifier. According to the state of the event, this will either create a new non-recurrent
+   * event or update directly the event from which this occurrence was spawned:
+   * <ul>
+   * <li>The event is recurrent: the occurrence start date time before the change is set as an
+   * exception date in the event's recurrence and a new event is created with the
+   * modifications</li>
+   * <li>It is the only occurrence of the event: the event is then directly modified.</li>
+   * </ul>
+   * @param data the occurrence necessary data to perform the operation.
+   * event.
+   */
+  public CalendarEventModificationResult update(CalendarEventOccurrenceReferenceData data) {
+    return doEitherOr(data, simpleUpdate, (previousEvent) -> {
+      final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), true);
+      previousEvent.getRecurrence()
+          .excludeEventOccurrencesStartingAt(data.getOriginalStartDateTime());
+      previousEvent.getAttendees()
+          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDateTime()));
+      previousEvent.updateIntoPersistence();
+      return new CalendarEventModificationResult(previousEvent, createdEvent);
+    });
+  }
+
+  /**
+   * Applies the change done to this occurrence from this occurrence period. According to the
+   * state of the event, this will either create a new non-recurrent event or update directly the
+   * event from which this occurrence was spawned:
+   * <ul>
+   * <li>The event is recurrent: the occurrence start date time before the change is set as the
+   * end date minus one day of the event's recurrence and a new event is created with the
+   * modifications</li>
+   * <li>It is the only occurrence of the event: the event is then directly modified.</li>
+   * </ul>
+   * @param data the occurrence necessary data to perform the operation.
+   * event.
+   */
+  public CalendarEventModificationResult updateFrom(CalendarEventOccurrenceReferenceData data) {
+    return doEitherOr(data, simpleUpdate, (previousEvent) -> {
+      final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), false);
+      previousEvent.getRecurrence().upTo(data.getOriginalStartDayTime());
+      previousEvent.getAttendees()
+          .forEach(attendee -> attendee.resetParticipationFrom(data.getOriginalStartDateTime()));
+      previousEvent.updateIntoPersistence();
+      return new CalendarEventModificationResult(previousEvent, createdEvent);
+    });
+  }
+
+  private CalendarEvent createNewEventFromMe(Period newPeriod, final boolean unsetRecurrence) {
+    CalendarEvent me = this;
+    CalendarEvent newEvent = me.clone();
+    if (unsetRecurrence) {
+      newEvent.unsetRecurrence();
+    }
+    newEvent.getAttendees().forEach(Attendee::resetParticipation);
+    newEvent.setPeriod(newPeriod);
+    newEvent.planOn(me.getCalendar());
+    return newEvent;
+  }
+
+  private OffsetDateTime endDateTimeOf(final Recurrence recurrence,
+      final OffsetDateTime fromRecurrenceStart) {
+    return recurrence.getEndDate().orElseGet(() -> {
+      RecurrencePeriod frequency = recurrence.getFrequency();
+      long timeCount = frequency.getInterval() * recurrence.getRecurrenceCount();
+      final OffsetDateTime result;
+      switch (frequency.getUnit()) {
+        case DAY:
+          result = fromRecurrenceStart.plusDays(timeCount);
+          break;
+        case WEEK:
+          result = fromRecurrenceStart.plusWeeks(timeCount);
+          break;
+        case MONTH:
+          result = fromRecurrenceStart.plusMonths(timeCount);
+          break;
+        case YEAR:
+          result = fromRecurrenceStart.plusYears(timeCount);
+          break;
+        default:
+          throw new SilverpeasRuntimeException("Unsupported unit: " + frequency.getUnit());
+      }
+      return result;
+    });
+  }
+
+  /**
+   * Gets the previous data of an event from the persistence.
+   * @return an instance of calendar event which contains data loaded from the persistence
+   * without taking into account entity manager caches.
+   */
+  private CalendarEvent getPreviousEventData() {
+    if (StringUtil.isNotDefined(this.getId())) {
+      return null;
+    }
+
+    // Getting previous data from the persistence.
+    final CalendarEvent event = Transaction.performInNew(() -> CalendarEvent.getById(this.getId()));
+
+    // Checking that previous and new data concerns the same scope specified by the identifier of
+    // a component instance.
+    if (!event.getCalendar().getComponentInstanceId()
+        .equals(this.getCalendar().getComponentInstanceId())) {
+      throw new IllegalArgumentException("Impossible to recur hourly an event on all day!");
+    }
+
+    return event;
+  }
+
+  private CalendarEventModificationResult doEitherOr(CalendarEventOccurrenceReferenceData data,
+      Function<CalendarEvent, CalendarEventModificationResult> ifSingleOccurrence,
+      Function<CalendarEvent, CalendarEventModificationResult> ifManyOccurrences) {
+
+    // Getting previous data from the persistence.
+    final CalendarEvent previousEvent = getPreviousEventData();
+    if (previousEvent == null) {
+      return new CalendarEventModificationResult();
+    }
+
+    // Performing the treatment
+    return Transaction.getTransaction().perform(() -> {
+      final CalendarEventModificationResult result;
+      if (previousEvent.isRecurrent() && previousEvent.getRecurrence().isEndless()) {
+        result = ifManyOccurrences.apply(previousEvent);
+      } else if (previousEvent.isRecurrent()) {
+        OffsetDateTime recurrenceStart = previousEvent.getStartDateTime();
+        OffsetDateTime recurrenceEnd = endDateTimeOf(previousEvent.getRecurrence(), recurrenceStart);
+        List<CalendarEventOccurrence> occurrences = generator()
+            .generateOccurrencesOf(Collections.singletonList(previousEvent),
+                Period.between(recurrenceStart, recurrenceEnd));
+        if (occurrences.size() == 1 && data.concerns(occurrences.get(0))) {
+          result = ifSingleOccurrence.apply(previousEvent);
+        } else {
+          result = ifManyOccurrences.apply(previousEvent);
+        }
+      } else {
+        result = ifSingleOccurrence.apply(previousEvent);
+      }
+      return result;
+    });
+  }
+
+  public static class CalendarEventModificationResult extends ModificationResult<CalendarEvent> {
+
+    CalendarEventModificationResult() {
+      this(null);
+    }
+
+    CalendarEventModificationResult(final CalendarEvent updatedEvent) {
+      this(updatedEvent, null);
+    }
+
+    CalendarEventModificationResult(final CalendarEvent updatedEvent,
+        final CalendarEvent createdEvent) {
+      super(updatedEvent, createdEvent);
+    }
+  }
+
+  @Transient
+  private final Predicate<User> isUserParticipant =
+      (user) -> !getAttendees().stream().filter(attendee -> attendee.getId().equals(user.getId()))
+          .collect(Collectors.toList()).isEmpty();
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return getCalendar().canBeAccessedBy(user) || isUserParticipant.test(user);
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getCalendar().getComponentInstanceId(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 }

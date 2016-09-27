@@ -56,6 +56,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.UriBuilder;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -103,6 +106,12 @@ public class WebComponentRequestRouterTest {
 
   private OrganizationController getOrganisationController() {
     return mockedOrganizationController;
+  }
+
+  protected void verifyNoNavigation(TestResult testResult) throws Exception {
+    ServletContext servletContextMock = testResult.router.getServletContext();
+    verify(servletContextMock, times(0)).getRequestDispatcher(anyString());
+    verify(testResult.requestContext.getResponse(), times(1)).getWriter();
   }
 
   protected void verifyDestination(WebComponentRequestRouter routerInstance,
@@ -258,6 +267,7 @@ public class WebComponentRequestRouterTest {
 
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
+      when(response.getWriter()).thenReturn(new PrintWriter4Test(new ByteArrayOutputStream()));
       if (HttpMethod.GET.equals(httpMethod)) {
         routerInstance
             .doGet(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
@@ -286,6 +296,19 @@ public class WebComponentRequestRouterTest {
       testResult.router = routerInstance;
       testResult.requestContext = requestContext;
       return testResult;
+    }
+  }
+
+  private static class PrintWriter4Test extends PrintWriter {
+    ByteArrayOutputStream baos;
+    PrintWriter4Test(final ByteArrayOutputStream out) {
+      super(out);
+      baos = out;
+    }
+
+    @Override
+    public String toString() {
+      return baos.toString();
     }
   }
 }

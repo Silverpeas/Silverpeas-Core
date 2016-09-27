@@ -25,13 +25,15 @@ package org.silverpeas.core.calendar.event;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.event.notification.AttendeeLifeCycleEventNotifier;
+import org.silverpeas.core.calendar.event.view.AttendeeParticipationOn;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 /**
@@ -60,6 +62,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Column(name = "participation", nullable = false)
   @Enumerated(EnumType.STRING)
   private ParticipationStatus participationStatus = ParticipationStatus.AWAITING;
+  @Embedded
+  private AttendeeParticipationOn participationOn = new AttendeeParticipationOn();
   @Column(name = "presence", nullable = false)
   @Enumerated(EnumType.STRING)
   private PresenceStatus presenceStatus = PresenceStatus.REQUIRED;
@@ -113,6 +117,14 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
+   * Gets the participation on specified dates.
+   * @return participation on specific dates.
+   */
+  public AttendeeParticipationOn getParticipationOn() {
+    return participationOn;
+  }
+
+  /**
    * The delegate to whom or from whom the attendance as been delegated.
    * If the participation status of this attendee is {@link ParticipationStatus#DELEGATED} then
    * this method returns the attendee to whom the delegation has been done. Otherwise, it returns
@@ -155,10 +167,19 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
+   * Resets the attendance.
+   */
+  void resetParticipation() {
+    this.participationStatus = ParticipationStatus.AWAITING;
+    this.participationOn.clear();
+  }
+
+  /**
    * Accepts the attendance.
    */
   public void accept() {
     this.participationStatus = ParticipationStatus.ACCEPTED;
+    this.participationOn.clear();
   }
 
   /**
@@ -166,6 +187,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void decline() {
     this.participationStatus = ParticipationStatus.DECLINED;
+    this.participationOn.clear();
   }
 
   /**
@@ -173,6 +195,42 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void tentativelyAccept() {
     this.participationStatus = ParticipationStatus.TENTATIVE;
+    this.participationOn.clear();
+  }
+
+  /**
+   * Resets the attendance on the specified date.
+   */
+  void resetParticipationOn(OffsetDateTime dateTime) {
+    this.participationOn.clearOn(dateTime);
+  }
+
+  /**
+   * Resets the attendance from the specified date.
+   */
+  void resetParticipationFrom(OffsetDateTime dateTime) {
+    this.participationOn.clearFrom(dateTime);
+  }
+
+  /**
+   * Accepts the attendance on specified date only.
+   */
+  public void acceptOn(OffsetDateTime dateTime) {
+    this.participationOn.set(dateTime, ParticipationStatus.ACCEPTED);
+  }
+
+  /**
+   * Declines the attendance on specified date only.
+   */
+  public void declineOn(OffsetDateTime dateTime) {
+    this.participationOn.set(dateTime, ParticipationStatus.DECLINED);
+  }
+
+  /**
+   * Tentatively accepts the attendance on specified date only.
+   */
+  public void tentativelyAcceptOn(OffsetDateTime dateTime) {
+    this.participationOn.set(dateTime, ParticipationStatus.TENTATIVE);
   }
 
   /**
@@ -248,8 +306,9 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * @return the clone of this attendee but for the specified event.
    */
   public Attendee cloneFor(CalendarEvent event) {
-    Attendee clone = super.clone();
+    Attendee clone = clone();
     clone.event = event;
+    clone.participationOn = participationOn.clone();
     event.getAttendees().add(clone);
     return clone;
   }
@@ -278,8 +337,11 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   private void notify(final ResourceEvent.Type type, final Attendee... states) {
-    AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
-    notifier.notifyEventOn(type, states);
+    Transaction.performInNew(() -> {
+      AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
+      notifier.notifyEventOn(type, states);
+      return null;
+    });
   }
 
   /**
@@ -327,7 +389,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     OPTIONAL,
 
     /**
-     * The attendee is just referred for information purpose only. He has has not to be available.
+     * The attendee is just referred for information purpose only. He has not to be available.
      */
     INFORMATIVE
   }

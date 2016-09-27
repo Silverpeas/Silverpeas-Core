@@ -539,6 +539,61 @@ if (typeof SilverpeasClass === 'undefined') {
     return child;
   };
 }
+if (!window.SilverpeasCache) {
+  (function() {
+
+    function __clearCache(storage, name) {
+      storage.removeItem(name);
+    }
+
+    function __getCache(storage, name) {
+      var cache = storage.getItem(name);
+      if (!cache) {
+        cache = {};
+        __setCache(storage, name, cache);
+      } else {
+        cache = JSON.parse(cache);
+      }
+      return cache;
+    }
+
+    function __setCache(storage, name, cache) {
+      storage.setItem(name, JSON.stringify(cache));
+    }
+
+    window.SilverpeasCache = SilverpeasClass.extend({
+      initialize : function(cacheName) {
+        this.cacheName = cacheName;
+      },
+      getCacheStorage : function() {
+        return localStorage;
+      },
+      clear : function() {
+        __clearCache(this.getCacheStorage(), this.cacheName);
+      },
+      put : function(key, value) {
+        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        cache[key] = value;
+        __setCache(this.getCacheStorage(), this.cacheName, cache);
+      },
+      get : function(key) {
+        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        return cache[key];
+      },
+      remove : function(key) {
+        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        delete cache[key];
+        __setCache(this.getCacheStorage(), this.cacheName, cache);
+      }
+    });
+
+    window.SilverpeasSessionCache = SilverpeasCache.extend({
+      getCacheStorage : function() {
+        return sessionStorage;
+      }
+    });
+  })();
+}
 
 if (!window.SilverpeasAjaxConfig) {
   SilverpeasRequestConfig = SilverpeasClass.extend({
@@ -959,6 +1014,76 @@ if (typeof window.sp === 'undefined') {
       },
       rejectDirectlyWith : function(data) {
         return Promise.reject(data);
+      }
+    },
+    moment : {
+      /**
+       * Adjusts the the time minutes in order to get a rounded time.
+       * @param date a data like the one given to the moment constructor.
+       * @param hasToCurrentTime true to set current time, false otherwise
+       * @private
+       */
+      adjustTimeMinutes : function(date, hasToCurrentTime) {
+        var myMoment = moment(date);
+        if (hasToCurrentTime) {
+          var $timeToSet = moment();
+          myMoment.hour($timeToSet.hour());
+          myMoment.minute($timeToSet.minute());
+        }
+        var minutes = myMoment.minutes();
+        var minutesToAdjust = minutes ? minutes % 10 : 0;
+        var offset = minutesToAdjust < 5 ? 0 : 10;
+        return myMoment.add((offset - minutesToAdjust), 'm');
+      },
+      /**
+       * Gets the nth day of month from the given moment in order to display it as a date.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      nthDayOfMonth : function(date) {
+        var dayInMonth = moment(date).date();
+        return Math.ceil(dayInMonth / 7);
+      },
+      /**
+       * Formats the given moment in order to display it as a date.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsDate : function(date) {
+        return moment(date).format('L');
+      },
+      /**
+       * Formats the given moment in order to display it as a date time.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsDateTime : function(date) {
+        return sp.moment.displayAsDate(date) + moment(date).format('LT');
+      },
+      /**
+       * Replaces from the given text date or date time which are specified into an ISO format.
+       * Two kinds of replacement are performed :
+       * - "${[ISO string date],date}" is replaced by a readable date
+       * - "${[ISO string date],datetime}" is replaced by a readable date and time
+       * @param text
+       * @returns {*}
+       */
+      formatText : function(text) {
+        var formattedText = text;
+        var dateOrDateTimeRegExp = /\$\{([^,]+),date(time|)}/g;
+        var match = dateOrDateTimeRegExp.exec(text);
+        while (match) {
+          var toReplace = match[0];
+          var temporal = match[1];
+          var isTime = match[2];
+          if (isTime) {
+            formattedText = formattedText.replace(toReplace, sp.moment.displayAsDateTime(temporal));
+          } else {
+            formattedText = formattedText.replace(toReplace, sp.moment.displayAsDate(temporal));
+          }
+          match = dateOrDateTimeRegExp.exec(text);
+        }
+        return formattedText;
       }
     },
     formConfig : function(url) {

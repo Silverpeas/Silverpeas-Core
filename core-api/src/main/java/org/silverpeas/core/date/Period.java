@@ -39,6 +39,8 @@ import java.time.ZoneOffset;
 @Embeddable
 public class Period implements Cloneable {
 
+  private  static final long ONE_DAY_DURATION_IN_SECONDS = 60 * 60 * 24;
+
   @Column(name = "startDate", nullable = false)
   private OffsetDateTime startDateTime;
   @Column(name = "endDate", nullable = false)
@@ -86,6 +88,27 @@ public class Period implements Cloneable {
   }
 
   /**
+   * Creates a new period of time between the two specified date times. The period starts at the
+   * specified date and time and it ends at the specified other date and time.<br/>
+   * It must exist exactly a number of day between start date and end date.
+   * @param startDateTime the start date and time of the period. It defines the inclusive date
+   * time at which the period starts.
+   * @param endDateTime the end date and time of the period. It defines the inclusive date time
+   * at which the period ends. The end date time must be after the start date time.
+   * @return the period of days between the two specified date times.
+   * @throw IllegalArgumentException if it does not exist exactly a number of day between start
+   * date time and end date time.
+   */
+  public static Period allDaysBetween(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
+    checkDayPeriod(startDateTime, endDateTime);
+    Period period = new Period();
+    period.startDateTime = startDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    period.endDateTime = endDateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    period.inDays = true;
+    return period;
+  }
+
+  /**
    * Gets the date and the time in UTC/Greenwich at which this period starts on the timeline.
    * In the case of a period in days, the time is set at midnight. Nevertheless, in a such period,
    * the time is meaningless and it is then recommended to get the local date from the returned
@@ -113,6 +136,17 @@ public class Period implements Cloneable {
    */
   public boolean isInDays() {
     return inDays;
+  }
+
+  private static void checkDayPeriod(final OffsetDateTime startDateTime,
+      final OffsetDateTime endDateTime) {
+    checkPeriod(startDateTime, endDateTime);
+    long seconds = endDateTime.toEpochSecond() - startDateTime.toEpochSecond();
+    if ((seconds % ONE_DAY_DURATION_IN_SECONDS) != 0) {
+      throw new IllegalArgumentException(
+          "It must exist a positive integer of number of days between start date time and end " +
+              "date time");
+    }
   }
 
   private static void checkPeriod(final OffsetDateTime startDateTime,

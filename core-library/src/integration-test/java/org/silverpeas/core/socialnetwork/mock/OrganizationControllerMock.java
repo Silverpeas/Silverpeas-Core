@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceProfile;
@@ -50,9 +50,11 @@ import org.silverpeas.core.util.ListSlice;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.mockito.Mockito.mock;
@@ -109,11 +111,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public Map<String, WAComponent> getAllComponents() {
-    return null;
-  }
-
-  @Override
   public CompoSpace[] getCompoForUser(final String sUserId, final String sCompoName) {
     return new CompoSpace[0];
   }
@@ -136,6 +133,12 @@ public class OrganizationControllerMock implements OrganizationController {
 
   @Override
   public String getComponentParameterValue(final String sComponentId, final String parameterName) {
+    return null;
+  }
+
+  @Override
+  public Optional<SilverpeasComponentInstance> getComponentInstance(
+      final String componentInstanceIdentifier) {
     return null;
   }
 
@@ -248,6 +251,12 @@ public class OrganizationControllerMock implements OrganizationController {
   public UserDetail[] getUsers(final String sPrefixTableName, final String sComponentName,
       final String sProfile) {
     return new UserDetail[0];
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getUserSilverpeasRolesOn(final User user,
+      final String componentInstanceIdentifier) {
+    return Collections.emptyList();
   }
 
   @Override

@@ -42,6 +42,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@Deprecated
 public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> implements WebEntity {
   private static final long serialVersionUID = -7592985250664860865L;
 

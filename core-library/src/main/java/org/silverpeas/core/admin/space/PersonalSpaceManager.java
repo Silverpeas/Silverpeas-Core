@@ -40,7 +40,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -73,14 +72,9 @@ public class PersonalSpaceManager {
   }
 
   public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
-    List<WAComponent> visibleComponents = new ArrayList<>();
-    Collection<WAComponent> components = orgaController.getAllComponents().values();
-    for (WAComponent component : components) {
-      if (component.isVisibleInPersonalSpace()) {
-        visibleComponents.add(component);
-      }
-    }
-    return visibleComponents;
+    Collection<WAComponent> components = WAComponent.getAll();
+    return components.stream().filter(WAComponent::isVisibleInPersonalSpace)
+        .collect(Collectors.toList());
   }
 
   public String addComponent(User user, String componentName)

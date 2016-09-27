@@ -23,16 +23,27 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.silverpeas.core.util.WebEncodeHelper;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
 import javax.xml.bind.annotation.XmlElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.net.URI;
+import java.text.ParseException;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class decodes the request parameters in order to set them to a simple specified POJO which
@@ -87,6 +98,109 @@ public class RequestParameterDecoder {
     return getInstance()._decode(request, objectClass);
   }
 
+  public static <T> OffsetDateTime asOffsetDateTime(T object) {
+    if (object instanceof OffsetDateTime) {
+      return (OffsetDateTime) object;
+    } else if (object instanceof String) {
+      String typedObject = ((String) object).trim();
+      return OffsetDateTime.parse(typedObject);
+    }
+    if (object != null) {
+      throw new IllegalArgumentException();
+    }
+    return null;
+  }
+
+  public static <T> boolean asBoolean(T object) {
+    if (object instanceof Boolean) {
+      return (Boolean) object;
+    } else if (object instanceof String) {
+      String typedObject = ((String) object).trim();
+      return StringUtil.getBooleanValue(typedObject);
+    }
+    if (object != null) {
+      throw new IllegalArgumentException();
+    }
+    return false;
+  }
+
+  public static <T> Long asLong(T object) {
+    if (object instanceof Number) {
+      return ((Number) object).longValue();
+    } else if (object instanceof String) {
+      String typedObject = ((String) object).trim();
+      if (StringUtil.isLong(typedObject)) {
+        return Long.valueOf(typedObject);
+      }
+      return null;
+    }
+    if (object != null) {
+      throw new IllegalArgumentException();
+    }
+    return null;
+  }
+
+  public static <T> Integer asInteger(T object) {
+    if (object instanceof Number) {
+      return ((Number) object).intValue();
+    } else if (object instanceof String) {
+      String typedObject = ((String) object).trim();
+      if (StringUtil.isInteger(typedObject)) {
+        return Integer.valueOf(typedObject);
+      }
+      return null;
+    }
+    if (object != null) {
+      throw new IllegalArgumentException();
+    }
+    return null;
+  }
+
+  public static <T> Date asDate(T date, T hour, String userLanguage) throws ParseException {
+    if (date instanceof String) {
+      String typedDate = (String) date;
+      String typedHour = (String) hour;
+      if (StringUtil.isDefined(typedDate)) {
+        return DateUtil.stringToDate(typedDate, typedHour, userLanguage);
+      }
+      return null;
+    }
+    if (date != null) {
+      throw new IllegalArgumentException();
+    }
+    return null;
+  }
+
+  @SuppressWarnings({"unchecked", "ConstantConditions"})
+  public static <E extends Enum> E asEnum(String enumValue, Class<E> enumClass) {
+    Method fromMethod = null;
+
+    for (Method method : enumClass.getMethods()) {
+      Class[] methodParameterTypes = method.getParameterTypes();
+      if (method.getAnnotation(JsonCreator.class) != null && methodParameterTypes.length == 1 &&
+          methodParameterTypes[0].isAssignableFrom(String.class)) {
+        fromMethod = method;
+        break;
+      }
+    }
+
+    if (fromMethod == null) {
+      try {
+        fromMethod = enumClass.getMethod("valueOf", String.class);
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    }
+
+    try {
+      return (E) fromMethod.invoke(null, enumValue);
+    } catch (Exception ignore) {
+      // ignore this exception as it should never occur
+    }
+
+    return null;
+  }
+
   /**
    * The private implementation.
    */
@@ -118,8 +232,24 @@ public class RequestParameterDecoder {
         }
         if (paramName != null) {
           field.setAccessible(true);
-          Object value = getParameterValue(request, paramName, field.getType(),
-              field.getAnnotation(UnescapeHtml.class) != null);
+          final boolean unescapeHtml = field.getAnnotation(UnescapeHtml.class) != null;
+          Class<?> parameterClass = field.getType();
+          final Object value;
+          if (Collection.class.isAssignableFrom(parameterClass)) {
+            final Collection values;
+            if (parameterClass.isAssignableFrom(Set.class)) {
+              values = new HashSet<>();
+            } else {
+              values = new ArrayList<>();
+            }
+            Class<?> collectionHandledType =
+                (Class<?>) ((ParameterizedType) field.getAnnotatedType().getType())
+                    .getActualTypeArguments()[0];
+            value = getParameterValues(values, request.getParameterValues(paramName),
+                collectionHandledType, unescapeHtml);
+          } else {
+            value = getParameterValue(request, paramName, parameterClass, unescapeHtml);
+          }
           if (!field.getType().isPrimitive() || value != null) {
             field.set(newInstance, value);
           }
@@ -148,31 +278,61 @@ public class RequestParameterDecoder {
     final Object value;
     if (parameterClass.isAssignableFrom(RequestFile.class)) {
       value = request.getParameterAsRequestFile(parameterName);
-    } else if (parameterClass.isAssignableFrom(String.class)) {
-      if (unescapeHtml) {
-        value = WebEncodeHelper.htmlStringToJavaString(request.getParameter(parameterName));
-      } else {
-        value = request.getParameter(parameterName);
-      }
-    } else if (parameterClass.isAssignableFrom(Long.class)) {
-      value = request.getParameterAsLong(parameterName);
-    } else if (parameterClass.getName().equals("long")) {
-      value = request.getParameterAsLong(parameterName);
-    } else if (parameterClass.isAssignableFrom(Integer.class)) {
-      value = request.getParameterAsInteger(parameterName);
-    } else if (parameterClass.getName().equals("int")) {
-      value = request.getParameterAsInteger(parameterName);
     } else if (parameterClass.isAssignableFrom(Date.class)) {
       value = request.getParameterAsDate(parameterName);
+    } else {
+      value = getValueAs(request.getParameter(parameterName), parameterClass, unescapeHtml);
+    }
+    return value;
+  }
+
+  private Object getParameterValues(Collection<?> finalValues, String[] values,
+      Class<?> parameterClass, boolean unescapeHtml) throws Exception {
+    if (values != null) {
+      for (String value : values) {
+        finalValues.add(getValueAs(value, parameterClass, unescapeHtml));
+      }
+      return finalValues;
+    }
+    return null;
+  }
+
+  /**
+   * Gets the  value according to the type of the specified field.
+   * @param parameterValue the value to get as.
+   * @param parameterClass the class into which the parameter value must be converted.
+   * @return the decoded value.
+   * @throws Exception
+   */
+  @SuppressWarnings("unchecked")
+  private <T> T getValueAs(String parameterValue, Class<?> parameterClass, boolean unescapeHtml)
+      throws Exception {
+    final Object value;
+    if (parameterClass.isAssignableFrom(String.class)) {
+      if (unescapeHtml) {
+        value = WebEncodeHelper.htmlStringToJavaString(parameterValue);
+      } else {
+        value = parameterValue;
+      }
+    } else if (parameterClass.isAssignableFrom(OffsetDateTime.class)) {
+      value = asOffsetDateTime(parameterValue);
+    } else if (parameterClass.isAssignableFrom(Long.class)) {
+      value = asLong(parameterValue);
+    } else if (parameterClass.getName().equals("long")) {
+      value = asLong(parameterValue);
+    } else if (parameterClass.isAssignableFrom(Integer.class)) {
+      value = asInteger(parameterValue);
+    } else if (parameterClass.getName().equals("int")) {
+      value = asInteger(parameterValue);
     } else if (parameterClass.isAssignableFrom(Boolean.class)) {
-      value = request.getParameterAsBoolean(parameterName);
+      value = asBoolean(parameterValue);
     } else if (parameterClass.getName().equals("boolean")) {
-      value = request.getParameterAsBoolean(parameterName);
+      value = asBoolean(parameterValue);
     } else if (parameterClass.isEnum()) {
-      value = request.getParameterAsEnum(parameterName, (Class) parameterClass);
+      value = asEnum(parameterValue, (Class) parameterClass);
     } else if (parameterClass.isAssignableFrom(URI.class)) {
-      if (StringUtil.isDefined(request.getParameter(parameterName))) {
-        value = URI.create(request.getParameter(parameterName));
+      if (StringUtil.isDefined(parameterValue)) {
+        value = URI.create(parameterValue);
       } else {
         value = null;
       }
@@ -180,6 +340,6 @@ public class RequestParameterDecoder {
       throw new UnsupportedOperationException(
           "The type " + parameterClass.getName() + " is not handled...");
     }
-    return value;
+    return (T) value;
   }
 }

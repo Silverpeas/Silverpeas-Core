@@ -26,12 +26,16 @@ package org.silverpeas.core.web.calendar;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * User: Yohann Chastagnier
- * Date: 23/04/13
+ * @author Yohann Chastagnier
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class CalendarPeriod {
 
   private Period period;

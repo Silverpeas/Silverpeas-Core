@@ -33,7 +33,7 @@ public class OperationsOfCreationAreaTag extends TagSupport {
 
   private static final long serialVersionUID = 1L;
   public static final String CREATION_AREA_ID = "menubar-creation-actions";
-  private static final String CREATION_AREA = "<div id=\"menubar-creation-actions\"></div>";
+  private static final String CREATION_AREA = "<div id=\"" + CREATION_AREA_ID + "\"></div>";
 
   @Override
   public int doStartTag() throws JspException {

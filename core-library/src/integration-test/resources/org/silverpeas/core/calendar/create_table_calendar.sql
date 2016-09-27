@@ -224,3 +224,10 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Attendees (
   CONSTRAINT FK_Event    FOREIGN KEY (eventId) REFERENCES SB_Cal_Event(id),
   CONSTRAINT FK_Delegate FOREIGN KEY (delegate) REFERENCES SB_Cal_Attendees(id)
 );
+
+CREATE TABLE IF NOT EXISTS SB_Cal_Attendees_PartDate (
+  id                VARCHAR(40) NOT NULL,
+  startDate         TIMESTAMP   NOT NULL,
+  participation     VARCHAR(12) NOT NULL,
+  CONSTRAINT PK_Cal_Attendees_PartDate PRIMARY KEY (id, startDate)
+);

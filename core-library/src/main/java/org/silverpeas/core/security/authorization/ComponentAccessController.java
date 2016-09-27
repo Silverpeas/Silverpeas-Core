@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -131,18 +131,29 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return;
     }
     if (Administration.ADMIN_COMPONENT_ID.equals(componentId)) {
-      if (getOrganisationController().getUserDetail(userId).isAccessAdmin()) {
+      if (User.getById(userId).isAccessAdmin()) {
         userRoles.add(SilverpeasRole.admin);
       }
       return;
     }
 
-    ComponentInst componentInst = getOrganisationController().getComponentInst(componentId);
-    if (componentInst == null) {
+    SilverpeasComponentInstance componentInstance =
+        getOrganisationController().getComponentInstance(componentId).orElse(null);
+    if (componentInstance == null) {
       return;
     }
 
-    if (componentInst.isPublic() || getBooleanValue(
+    if (componentInstance.isPersonal()) {
+      userRoles.addAll(componentInstance.getSilverpeasRolesFor(User.getById(userId)));
+      if (AccessControlOperation.isPersistActionFrom(context.getOperations()) ||
+          AccessControlOperation.isDownloadActionFrom(context.getOperations()) ||
+          AccessControlOperation.isSharingActionFrom(context.getOperations())) {
+        userRoles.remove(SilverpeasRole.user);
+      }
+      return;
+    }
+
+    if (componentInstance.isPublic() || getBooleanValue(
         getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
       userRoles.add(SilverpeasRole.user);
       if (!AccessControlOperation.isPersistActionFrom(context.getOperations()) &&

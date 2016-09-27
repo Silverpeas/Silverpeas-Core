@@ -27,6 +27,8 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.notification.message.Message;
 import org.silverpeas.core.notification.message.MessageNotifier;
 
+import java.time.temporal.Temporal;
+
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
  * notifier plugin.
@@ -84,5 +86,19 @@ public final class WebMessager {
    */
   public Message addInfo(String message, Object... parameters) {
     return MessageNotifier.addInfo(message, parameters);
+  }
+
+  /**
+   * @see MessageNotifier#formatDate(Temporal)
+   */
+  public String formatDate(Temporal temporal) {
+    return MessageNotifier.formatDate(temporal);
+  }
+
+  /**
+   * @see MessageNotifier#formatDateTime(Temporal)
+   */
+  public String formatDateTime(Temporal temporal) {
+    return MessageNotifier.formatDateTime(temporal);
   }
 }

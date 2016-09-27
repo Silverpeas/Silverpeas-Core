@@ -118,7 +118,7 @@
       div.pageNav .pages_indication {display: none}
     </style>
   </head>
-    <body class="userPanel">
+  <body class="userPanel">
     <div class="container_userPanel" ng-controller="mainController"  ng-cloak>
 
       <div id="filter_userPanel">
@@ -131,7 +131,7 @@
           <li id="filter_groups">
             <div class="filter" id="breadcrumb"></div>
             <ul class="listing_groups_filter">
-              <li ng-repeat="group in groupsFilter">
+              <li ng-repeat="group in groupsFilter track by group.uri">
                 <a href="#" ng-click="goToGroup(group)" class="filter">{{ group.name }}<span class="nb_results_by_filter"> ({{ group.userCount }})</span></a>
               </li>
               <li><a href="#" ng-show="groupsFilter.length < groupsFilter.maxlength" ng-click="displayNextGroups()" class="filter"><fmt:message key='selection.NextGroups'/></a></li>
@@ -148,7 +148,7 @@
               <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
               <a href="#" ng-show="selectedGroups.multipleSelection && !isSelectedUserLimitEnabled()" ng-click="selectAllGroups()" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all"><fmt:message key="selection.AddAllGroups"/></a>
               <ul id="group_list">
-                <li ng-repeat="group in groups" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="group in groups track by group.uri" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
                   <span class="name_group"><a href="#" title="<fmt:message key='selection.group.goto'/>" ng-click="goToGroup(group)">{{ group.name }}</a></span>
                   <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
@@ -167,7 +167,7 @@
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
               <a href="#" ng-show="selectedUsers.multipleSelection && !isSelectedUserLimitEnabled()" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
               <ul id="user_list">
-                <li ng-repeat="user in users" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="user in users track by user.uri" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
                   <span class="name_user">{{ userFullName(user) }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
                   <span class="mail_user">{{ user.eMail }}</span>
@@ -195,7 +195,7 @@
               <p class="nb_results" id="group_selected_count">{{ selectedGroups.length }} ${selectedGroupText}</p>
               <a href="#" ng-show="selectedGroups.multipleSelection" ng-click="deselectAllGroups()" title="${removeAllGroupsFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
               <ul id="selected_group_list">
-                <li ng-repeat="group in selectedGroups.currentpage()" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="group in selectedGroups.currentpage() track by group.uri" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
                   <span class="name_group">{{ group.name }}</span>
                   <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
@@ -214,7 +214,7 @@
               <p class="nb_results" id="user_selected_count">{{ selectedUsers.length }} ${selectedUserText}</p>
               <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="deselectAllUsers()" title="${removeAllUsersFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
               <ul id="selected_user_list">
-                <li ng-repeat="user in selectedUsers.currentpage()" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="user in selectedUsers.currentpage() track by user.uri" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
                   <span class="name_user">{{ userFullName(user) }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
                   <span class="mail_user">{{ user.eMail }}</span>
@@ -777,7 +777,7 @@
 
         $(document).ready(function() {
           try {
-            var documentWidth = 990;
+            var documentWidth = 1090;
             if ($(window).width() < documentWidth) {
               window.resizeTo(documentWidth, 600);
             }

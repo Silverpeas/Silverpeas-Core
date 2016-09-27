@@ -63,6 +63,8 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
  */
 public class JavascriptPluginInclusion {
 
+  private static final int NB_MONTHS = 12;
+  private static final int NB_WEEK_DAYS = 7;
   private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
   private static final String JAVASCRIPT_PATH = URLUtil.getApplicationURL() + "/util/javaScript/";
   private static final String FLASH_PATH = URLUtil.getApplicationURL() + "/util/flash/";
@@ -74,6 +76,7 @@ public class JavascriptPluginInclusion {
   private static final String ANGULARJS_I18N_PATH = ANGULARJS_PATH + "i18n/";
   private static final String ANGULARJS_SERVICES_PATH = ANGULARJS_PATH + "services/";
   private static final String ANGULARJS_DIRECTIVES_PATH = ANGULARJS_PATH + "directives/";
+  private static final String ANGULARJS_CONTROLLERS_PATH = ANGULARJS_PATH + "controllers/";
   private static final String ANGULAR_JS = "angular.min.js";
   private static final String ANGULAR_LOCALE_JS = "angular-locale_{0}.js";
   private static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
@@ -355,6 +358,17 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static ElementContainer includeTabsWebComponent(final ElementContainer xhtml) {
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "silverpeas-tabs.js"));
+    return xhtml;
+  }
+
+  public static ElementContainer includeColorPickerWebComponent(final ElementContainer xhtml) {
+    includeQTip(xhtml);
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-color-picker.js"));
+    return xhtml;
+  }
+
   public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
     xhtml.addElement(link(JQUERY_PATH + LIGHTSLIDESHOW_CSS));
     xhtml.addElement(script(JQUERY_PATH + LIGHTSLIDESHOW_JS));
@@ -419,6 +433,8 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DATE_UTILS));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DATECHECKER));
     xhtml.addElement(scriptContent("jQuery.datechecker.settings.language = '" + language + "';"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-date-picker.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-time-picker.js"));
     return xhtml;
   }
 
@@ -546,12 +562,67 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeCalendar(final ElementContainer xhtml) {
+  public static ElementContainer includeAttendeeWebComponent(final ElementContainer xhtml) {
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-attendees.js"));
+    return xhtml;
+  }
+
+  public static ElementContainer includeCalendar(final ElementContainer xhtml,
+      final String language) {
+    includeTabsWebComponent(xhtml);
+    includeColorPickerWebComponent(xhtml);
+    includeDatePicker(xhtml, language);
+    includeAttendeeWebComponent(xhtml);
+    includeDragAndDropUpload(xhtml, language);
+
+    LocalizationBundle bundle = ResourceLocator
+        .getLocalizationBundle("org.silverpeas.calendar.multilang.calendarBundle", language);
+    JavascriptBundleProducer bundleProducer =
+        JavascriptBundleProducer.bundleVariableName("CalendarBundle");
+    for (int i = 0; i < NB_MONTHS; i++) {
+      bundleProducer.add("c.m." + i, bundle.getString("GML.mois" + i));
+    }
+    for (int i = 0; i < NB_WEEK_DAYS; i++) {
+      bundleProducer.add("c.d." + i, bundle.getString("GML.jour" + (i + 1)));
+      bundleProducer.add("c.sd." + i, bundle.getString("GML.shortJour" + (i + 1)));
+    }
+    bundleProducer.add("c.t", bundle.getString("GML.Today"));
+    bundleProducer.add("c.m", bundle.getString("GML.month"));
+    bundleProducer.add("c.w", bundle.getString("GML.week"));
+    bundleProducer.add("c.d", bundle.getString("GML.day"));
+    bundleProducer.add("c.e.v.public", bundle.getString("calendar.label.event.visibility.public"));
+    bundleProducer.add("c.e.v.private", bundle.getString("calendar.label.event.visibility.private"));
+    bundleProducer.add("c.e.p.normal", bundle.getString("calendar.label.event.priority.normal"));
+    bundleProducer.add("c.e.p.high", bundle.getString("calendar.label.event.priority.high"));
+    bundleProducer.add("c.e.r.none", bundle.getString("calendar.label.event.recurrence.type.none"));
+    bundleProducer.add("c.e.r.day", bundle.getString("calendar.label.event.recurrence.type.day"));
+    bundleProducer.add("c.e.r.week", bundle.getString("calendar.label.event.recurrence.type.week"));
+    bundleProducer.add("c.e.r.month", bundle.getString("calendar.label.event.recurrence.type.month"));
+    bundleProducer.add("c.e.r.year", bundle.getString("calendar.label.event.recurrence.type.year"));
+    bundleProducer.add("c.e.r.day.s", bundle.getString("calendar.label.event.recurrence.type.day.short"));
+    bundleProducer.add("c.e.r.week.s", bundle.getString("calendar.label.event.recurrence.type.week.short"));
+    bundleProducer.add("c.e.r.month.s", bundle.getString("calendar.label.event.recurrence.type.month.short"));
+    bundleProducer.add("c.e.r.year.s", bundle.getString("calendar.label.event.recurrence.type.year.short"));
+    bundleProducer.add("c.e.r.m.r.first", bundle.getString("calendar.label.event.recurrence.month.rule.dayofweek.first"));
+    bundleProducer.add("c.e.r.m.r.second", bundle.getString("calendar.label.event.recurrence.month.rule.dayofweek.second"));
+    bundleProducer.add("c.e.r.m.r.third", bundle.getString("calendar.label.event.recurrence.month.rule.dayofweek.third"));
+    bundleProducer.add("c.e.r.m.r.fourth", bundle.getString("calendar.label.event.recurrence.month.rule.dayofweek.fourth"));
+    bundleProducer.add("c.e.r.m.r.last", bundle.getString("calendar.label.event.recurrence.month.rule.dayofweek.last"));
+    xhtml.addElement(scriptContent(bundleProducer.produce()));
+
     xhtml.addElement(link(JQUERY_CSS_PATH + STYLESHEET_JQUERY_CALENDAR));
     xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_SILVERPEAS_CALENDAR));
     xhtml.addElement(script(JQUERY_PATH + JQUERY_CALENDAR));
-    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_CALENDAR));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_CALENDAR));
+    String calendarPath = "calendar/";
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-management.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-management.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-occurrence-tip.js"));
+    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + calendarPath + SILVERPEAS_CALENDAR));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + SILVERPEAS_CALENDAR));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-list.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-form.js"));
+    xhtml.addElement(script(ANGULARJS_CONTROLLERS_PATH + calendarPath + SILVERPEAS_CALENDAR));
     return xhtml;
   }
 
@@ -708,6 +779,9 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent(JavascriptBundleProducer
         .fromCoreTemplate("ddUpload", SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST, language)));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
+    includeIFrameAjaxTransport(xhtml);
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-fileUpload.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-file-upload.js"));
     return xhtml;
   }
 

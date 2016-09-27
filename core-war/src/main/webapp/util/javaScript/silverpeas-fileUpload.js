@@ -49,6 +49,17 @@
      */
     init: function(options) {
       return __init($(this), options);
+    },
+
+    /**
+     * Gets API of first jQuery instance found.
+     */
+    api : function() {
+      var $instances = $(this);
+      if ($instances.length) {
+        return __getApi($instances[0]);
+      }
+      return undefined;
     }
   };
 
@@ -105,6 +116,8 @@
         uploadCount: 0
       };
 
+      __setApi($target, params);
+
       // Options
       var _options = __buildOptions(options);
 
@@ -124,6 +137,55 @@
   function __renderFileUploadContainer(params) {
     __handleFormSubmits(params);
     __renderBlocs(params);
+  }
+
+  /**
+   * Sets API methods.
+   * @param $target
+   * @param params
+   * @private
+   */
+  function __setApi($target, params) {
+    var _api = {
+      /**
+       * Verifies is the system is currently uploading files.
+       * True if an upload is currently performing, false otherwise.
+       */
+      verifyIsCurrentlySendingFiles : function() {
+        return (__getNbFilesBeingTransfer(params) > 0);
+      },
+      /**
+       * Checks that it does not exist an upload. Nothing is done if none.
+       * An exception is sent otherwise (with the appropriate i18n message).
+       */
+      checkNoFileSending : function() {
+        if (_api.verifyIsCurrentlySendingFiles()) {
+          throw params.options.labels.sendingWaitingWarning;
+        }
+      },
+      /**
+       * Encodes a set of form elements as a string for submission.
+       */
+      serialize : function() {
+        return $target.serialize();
+      },
+      /**
+       * Encodes a set of form elements as an array of names and values.
+       */
+      serializeArray : function() {
+        return $target.serializeArray();
+      }
+    };
+    $target.data('fileUploadApi', _api);
+  }
+
+  /**
+   * Gets API methods.
+   * @param target
+   * @private
+   */
+  function __getApi(target) {
+    return $(target).data('fileUploadApi');
   }
 
   /**

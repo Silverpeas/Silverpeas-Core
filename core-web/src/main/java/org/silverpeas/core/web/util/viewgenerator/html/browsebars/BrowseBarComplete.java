@@ -24,21 +24,19 @@
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
 import org.owasp.encoder.Encode;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The default implementation of ArrayPane interface
@@ -97,10 +95,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
     SilverpeasComponentInstance componentInst = null;
     if (StringUtil.isDefined(getComponentId())) {
-      Optional<PersonalComponentInstance> personalComponentInstance =
-          PersonalComponentInstance.from(getComponentId());
-      componentInst = personalComponentInstance.isPresent() ? personalComponentInstance.get() :
-          organizationController.getComponentInstLight(getComponentId());
+      componentInst = organizationController.getComponentInstance(getComponentId()).orElse(null);
     }
 
     // Display spaces path from root to component

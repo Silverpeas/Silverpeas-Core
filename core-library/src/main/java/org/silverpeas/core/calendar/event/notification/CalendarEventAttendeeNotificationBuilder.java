@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar.event.notification;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.Attendee;
@@ -144,7 +144,7 @@ class CalendarEventAttendeeNotificationBuilder
 
   @Override
   protected String getMultilangPropertyFile() {
-    return "org.silverpeas.calendar.multilang.notification";
+    return "org.silverpeas.calendar.multilang.usernotification";
   }
 
   @Override
@@ -190,8 +190,11 @@ class CalendarEventAttendeeNotificationBuilder
   protected String getTemplatePath() {
     String componentId = getComponentInstanceId();
     if (componentId != null) {
-      ComponentInst componentInst = OrganizationController.get().getComponentInst(componentId);
-      return componentInst.getName();
+      SilverpeasComponentInstance componentInst =
+          OrganizationController.get().getComponentInstance(componentId).orElse(null);
+      if (componentInst != null) {
+        return componentInst.getName();
+      }
     }
     return "calendar";
   }
@@ -205,7 +208,7 @@ class CalendarEventAttendeeNotificationBuilder
   protected String getComponentInstanceId() {
     final String componentId = getResource().getCalendar().getComponentInstanceId();
     if (SilverpeasStringTemplateUtil.isComponentTemplateExist(componentId, getFileName())) {
-      return getResource().getCalendar().getComponentInstanceId();
+      return componentId;
     }
     return null;
   }

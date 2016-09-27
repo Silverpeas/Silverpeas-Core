@@ -299,7 +299,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       String destination) {
     // Open the destination page
     try {
-      if (destination.startsWith("http") || destination.startsWith("ftp")) {
+      if (destination.startsWith("PRODUCES_")) {
+        response.flushBuffer();
+      } else if (destination.startsWith("http") || destination.startsWith("ftp")) {
         response.sendRedirect(destination);
       } else {
         request.setAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI",

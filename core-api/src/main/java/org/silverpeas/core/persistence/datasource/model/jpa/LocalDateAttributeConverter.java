@@ -26,9 +26,7 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * An automatic converter of {@link LocalDate} values to SQL {@link Date} values for

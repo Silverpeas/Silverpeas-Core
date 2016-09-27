@@ -40,6 +40,7 @@ CREATE TABLE SB_Cal_Event (
   endDate        TIMESTAMP     NOT NULL,
   title          VARCHAR(2000) NOT NULL,
   description    VARCHAR(4000) NOT NULL,
+  location       VARCHAR(255)  NULL,
   attributes     VARCHAR(40)   NULL,
   visibility     VARCHAR(50)   NOT NULL,
   priority       INTEGER       NOT NULL,
@@ -59,6 +60,12 @@ CREATE TABLE SB_Cal_Attributes (
   name       VARCHAR(255) NOT NULL,
   value      VARCHAR(255) NOT NULL,
   CONSTRAINT PK_Attributes PRIMARY KEY (id, name)
+);
+
+CREATE TABLE SB_Cal_Categories (
+  id       VARCHAR(40)  NOT NULL,
+  category VARCHAR(255) NOT NULL,
+  CONSTRAINT Pk_Categories PRIMARY KEY (id, category)
 );
 
 CREATE TABLE SB_Cal_Attendees (

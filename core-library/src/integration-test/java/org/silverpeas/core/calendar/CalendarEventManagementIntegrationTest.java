@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -49,6 +48,8 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData
+    .fromOccurrenceId;
 
 /**
  * Integration tests on the getting, on the saving, on the deletion and on the update of the events
@@ -276,7 +277,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEventOccurrence occurrence = occurrences.get(0);
     CalendarEvent event = occurrence.getCalendarEvent();
     String eventIdBeforeDeletion = event.getId();
-    occurrence.delete();
+    event.delete(fromOccurrenceId(occurrence.getId()));
 
     assertThat(calendar.event(eventIdBeforeDeletion).isPresent(), is(false));
     assertThat(calendar.in(YearMonth.of(2016, 1)).getEventOccurrences().isEmpty(),
@@ -287,8 +288,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   public void deleteAnEventShouldDeleteAllItsAttributesAndAttendees() throws Exception {
     List<TableLine> allAttributes = getAttributesTableLinesByEventId("ID_E_1");
     List<TableLine> allAttendees = getAttendeesTableLines();
-    assertThat(allAttributes.isEmpty(), is(false));
-    assertThat(allAttendees.isEmpty(), is(false));
+    assertThat(allAttributes, hasSize(1));
+    assertThat(allAttendees, hasSize(3));
 
     Calendar calendar = Calendar.getById("ID_3");
     CalendarEvent event = calendar.event("ID_E_1").get();
@@ -296,8 +297,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     allAttributes = getAttributesTableLinesByEventId("ID_E_1");
     allAttendees = getAttendeesTableLines();
-    assertThat(allAttributes.isEmpty(), is(true));
-    assertThat(allAttendees.isEmpty(), is(true));
+    assertThat(allAttributes, hasSize(0));
+    assertThat(allAttendees, hasSize(1));
   }
 
   @Test
@@ -343,9 +344,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     CalendarEvent event = occurrence.getCalendarEvent();
     event.setLastUpdatedBy("1");
-    occurrence.setPeriod(Period.between(occurrence.getStartDateTime(),
-        OffsetDateTime.parse("2016-01-05T10:30:00Z")));
-    occurrence.update();
+    final Period newPeriod =
+        Period.between(occurrence.getStartDateTime(), OffsetDateTime.parse("2016-01-05T10:30:00Z"));
+    event.update(fromOccurrenceId(occurrence.getId()).withPeriod(newPeriod, ZoneOffset.UTC));
 
     occurrences = calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));

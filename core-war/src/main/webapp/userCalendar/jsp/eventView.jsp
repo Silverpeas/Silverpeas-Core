@@ -33,33 +33,49 @@
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle" var="calendarBundle"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+
+<fmt:message var="modifyMenuLabel" key="GML.modify"/>
+
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 
 <c:set var="currentUser"            value="${requestScope.currentUser}"/>
 <c:set var="currentUserId"          value="${currentUser.id}"/>
 <c:set var="componentId"            value="${requestScope.browseContext[3]}"/>
-<c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 
 <c:set var="event" value="${requestScope.event}"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-
 <fmt:message var="back" key="GML.back"/>
+<fmt:message var="modifyLabel" key="GML.modify"/>
+<fmt:message key="GML.delete" var="deleteLabel"/>
 
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.usercalendar">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
-  <script type="text/javascript">
-  </script>
+  <view:includePlugin name="calendar"/>
+  <view:script src="/userCalendar/jsp/javaScript/angularjs/services/usercalendar.js"/>
+  <view:script src="/userCalendar/jsp/javaScript/angularjs/usercalendar.js"/>
 </head>
-<body>
+<body ng-controller="viewController">
+<view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}"/>
 <view:operationPane>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+    <silverpeas-calendar-event-management api="eventMng"
+                                          on-occurrence-deleted="goToPage('${backUri}')">
+    </silverpeas-calendar-event-management>
+    <view:operation
+        action="angularjs:editEventOccurrence(calendars, ceo)"
+        altText="${modifyLabel}"/>
+    <view:operation
+        action="angularjs:eventMng.removeOccurrence(ceo)"
+        altText="${deleteLabel}"/>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -69,5 +85,16 @@
     </view:buttonPane>
   </view:frame>
 </view:window>
+<view:progressMessage/>
+
+<script type="text/javascript">
+  userCalendar.value('context', {
+    currentUserId : '${currentUserId}',
+    currentUserLanguage : '${currentUserLanguage}',
+    component : '${componentId}',
+    componentUriBase : '${componentUriBase}',
+    userRole : '${highestUserRole}'
+  });
+</script>
 </body>
 </html>

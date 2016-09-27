@@ -25,6 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
 
 import java.util.Vector;
 
@@ -55,17 +56,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
       operationClasses += " " + classes.trim();
     }
 
-    String ref = "href=\"" + action + "\"";
-    if (action.startsWith("angularjs:")) {
-      ref = action.substring(10);
-      if (ref.contains("{{") && ref.contains("}}")) {
-        ref = "ng-href=\"" + ref + "\"";
-      } else {
-        ref = "href=\"#\" ng-click=\"" + ref + "\"";
-      }
-    }
+    String href = TagUtil.formatHrefFromAction(action);
     operation.append("<li class=\"yuimenuitem\"><a class=\"").append(operationClasses)
-        .append("\" ").append(ref).append(">").append(operationLabel)
+        .append("\" ").append(href).append(">").append(operationLabel)
         .append("</a></li>");
 
     getStack().add(operation.toString());
@@ -75,9 +68,10 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
   public void addOperationOfCreation(final String icon, final String label, final String action,
       final String classes) {
     addOperation(icon, label, action, classes);
-    getCreationItems().add("<a href=\"" + WebEncodeHelper.javaStringToJsString(action)
-        + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon + "\" alt=\"\"/>"
-        + WebEncodeHelper.javaStringToJsString(label) + "</span></a>");
+    String href = TagUtil.formatHrefFromAction(action);
+    getCreationItems().add("<a " + href +
+        " class=\"menubar-creation-actions-item\" style=\"display:none\"><span><img src=\"" + icon +
+        "\" alt=\"\"/>" + WebEncodeHelper.javaStringToHtmlString(label) + "</span></a>");
   }
 
   @Override
@@ -123,6 +117,10 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append("</div>");
     result.append("</div>");
 
+    if(highlightCreationItems()) {
+      getCreationItems().forEach(result::append);
+    }
+
     result.append("<!-- Page-specific script -->");
 
     result.append("<script type=\"text/javascript\">");
@@ -160,15 +158,13 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
         .append("$('#whatNextMenu').bind('touchstart', function() { oMenu.show(); });");
 
     if (highlightCreationItems()) {
-      result.append("if ($('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
-          .append("').length > 0) {");
+      result.append(
+          "var $creationArea = $('#" + OperationsOfCreationAreaTag.CREATION_AREA_ID + "');");
+      result.append("if ($creationArea.length > 0) {");
       if (!getCreationItems().isEmpty()) {
-        result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
-            .append("').css({'display':'block'});");
-        for (String item : getCreationItems()) {
-          result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
-              .append("').append('").append(item).append("');");
-        }
+        result.append("$('.menubar-creation-actions-item').appendTo($creationArea);");
+        result.append("$('a', $creationArea).css({'display':''});");
+        result.append("$creationArea.css({'display':'block'});");
       }
       result.append("}");
     }

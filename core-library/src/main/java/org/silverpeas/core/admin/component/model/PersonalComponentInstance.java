@@ -24,9 +24,12 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -133,5 +136,18 @@ public class PersonalComponentInstance implements SilverpeasComponentInstance {
   @Override
   public boolean isPersonal() {
     return true;
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
+    final Collection<SilverpeasRole> roles;
+    if (getUser().getId().equals(user.getId())) {
+      roles = EnumSet.of(SilverpeasRole.admin);
+    } else if (isPublic()) {
+      roles = EnumSet.of(SilverpeasRole.user);
+    } else {
+      roles = EnumSet.noneOf(SilverpeasRole.class);
+    }
+    return roles;
   }
 }

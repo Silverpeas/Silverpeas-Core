@@ -23,16 +23,11 @@
  */
 package org.silverpeas.core.calendar.event;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.CalendarTimeWindow;
-import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.persistence.Transaction;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -46,6 +41,26 @@ public class CalendarEventOccurrence {
   private String id;
   private Period period;
   private CalendarEvent event;
+
+  /**
+   * Hidden constructor.
+   */
+  private CalendarEventOccurrence() {
+  }
+
+  /**
+   * Constructs a new occurrence from the specified calendar event, starting and ending at the
+   * specified dates.
+   * @param event the event from which the occurrence is instantiated.
+   * @param startDateTime the start date and time of the occurrence.
+   * @param endDateTime the end date and time of the occurrence.
+   */
+  CalendarEventOccurrence(final CalendarEvent event, final OffsetDateTime startDateTime,
+      final OffsetDateTime endDateTime) {
+    this.id = event.getId() + "@" + startDateTime;
+    this.event = event;
+    this.period = Period.between(startDateTime, endDateTime);
+  }
 
   private static CalendarEventOccurrenceGenerator generator() {
     return CalendarEventOccurrenceGenerator.get();
@@ -63,17 +78,12 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Constructs a new occurrence from the specified calendar event, starting and ending at the
-   * specified dates.
-   * @param event the event from which the occurrence is instantiated.
-   * @param startDateTime the start date and time of the occurrence.
-   * @param endDateTime the end date and time of the occurrence.
+   * Gets the date and time from an occurrence identifier.
+   * @param occurrenceId an occurrence identifier.
+   * @return the start date of the event occurrence before any recent change.
    */
-  CalendarEventOccurrence(final CalendarEvent event, final OffsetDateTime startDateTime,
-      final OffsetDateTime endDateTime) {
-    this.id = event.getId() + "@" + startDateTime;
-    this.event = event;
-    this.period = Period.between(startDateTime, endDateTime);
+  static OffsetDateTime getLastStartDateTimeFrom(String occurrenceId) {
+    return OffsetDateTime.parse(occurrenceId.split("@")[1]);
   }
 
   /**
@@ -115,6 +125,14 @@ public class CalendarEventOccurrence {
     return String.valueOf(id);
   }
 
+  /**
+   * Gets the date and time at which this occurrence originally starts before any changes.
+   * @return the start date of the event occurrence before any recent change.
+   */
+  public OffsetDateTime getLastStartDateTime() {
+    return getLastStartDateTimeFrom(getId());
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -145,6 +163,14 @@ public class CalendarEventOccurrence {
   }
 
   /**
+   * Gets the period of this occurrence in the calendar.
+   * @return a period.
+   */
+  public Period getPeriod() {
+    return period;
+  }
+
+  /**
    * Changes the planning of this occurrence in the calendar. The change will be effectively
    * performed once the {@code update} method invoked.
    * @param newDay the new day at which this occurrence will occur or has actually occurred.
@@ -152,114 +178,5 @@ public class CalendarEventOccurrence {
   public void setDay(final LocalDate newDay) {
     Period newPeriod = Period.between(newDay, newDay);
     setPeriod(newPeriod);
-  }
-
-  /**
-   * Deletes this event occurrence.
-   * <ul>
-   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
-   * <li>If the occurrence is one of among any of the event, then the date time at which this
-   * occurrence starts is added as an exception in the recurrence rule of the event.</li>
-   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
-   * </ul>
-   */
-  public void delete() {
-    doEitherOr(() -> getCalendarEvent().delete(), this::excludeMe);
-  }
-
-  /**
-   * Applies the change done to this occurrence. According to the state of the event, this will
-   * either create a new non-recurrent event or update directly the event from which this occurrence
-   * was spawned:
-   * <ul>
-   * <li>The event is recurrent: the occurrence start date time before the change is set as an
-   * exception date in the event's recurrence and a new event is created with the modifications</li>
-   * <li>It is the only occurrence of the event: the event is then directly modified.</li>
-   * </ul>
-   */
-  public void update() {
-    doEitherOr(() -> {
-      CalendarEvent event = getCalendarEvent();
-      event.setPeriod(Period.between(this.getStartDateTime(), this.getEndDateTime()));
-      event.update();
-    }, () -> {
-      excludeMe();
-      createNewEventFromMe();
-    });
-  }
-
-  /**
-   * Change the event from which this occurrence was spawned. This is for updates that come to
-   * the creation of a new event.
-   * @param event the event to set.
-   */
-  void setCalendarEvent(final CalendarEvent event) {
-    this.event = event;
-  }
-
-  /**
-   * Gets the date and time at which this occurrence originally starts before any changes.
-   * @return the start date of the event occurrence before any recent change.
-   */
-  OffsetDateTime getLastStartDateTime() {
-    return OffsetDateTime.parse(getId().split("@")[1]);
-  }
-
-  private void excludeMe() {
-    CalendarEvent event = getCalendarEvent();
-    event.getRecurrence().excludeEventOccurrencesStartingAt(getLastStartDateTime());
-    event.update();
-  }
-
-  private void createNewEventFromMe() {
-    CalendarEvent newEvent =
-        getCalendarEvent().clone().createdBy(getCalendarEvent().getLastUpdatedBy());
-    newEvent.unsetRecurrence();
-    newEvent.setPeriod(Period.between(getStartDateTime(), getEndDateTime()));
-    newEvent.planOn(getCalendarEvent().getCalendar());
-    setCalendarEvent(newEvent);
-  }
-
-  private OffsetDateTime endDateTimeOf(final Recurrence recurrence,
-      final OffsetDateTime fromRecurrenceStart) {
-    return recurrence.getEndDate().orElseGet(() -> {
-      RecurrencePeriod frequency = recurrence.getFrequency();
-      long timeCount = frequency.getInterval() * recurrence.getRecurrenceCount();
-      switch (frequency.getUnit()) {
-        case DAY:
-          return fromRecurrenceStart.plusDays(timeCount);
-        case WEEK:
-          return fromRecurrenceStart.plusWeeks(timeCount);
-        case MONTH:
-          return fromRecurrenceStart.plusMonths(timeCount);
-        case YEAR:
-          return fromRecurrenceStart.plusYears(timeCount);
-        default:
-          throw new SilverpeasRuntimeException("Unsupported unit: " + frequency.getUnit());
-      }
-    });
-  }
-
-  private void doEitherOr(Runnable ifSingleOccurrence, Runnable ifManyOccurrences) {
-    Transaction.getTransaction().perform(() -> {
-      CalendarEvent event = this.getCalendarEvent();
-      if (event.isRecurrent() && event.getRecurrence().isEndless()) {
-        ifManyOccurrences.run();
-      } else if (event.isRecurrent()) {
-        OffsetDateTime recurrenceStart = event.getStartDateTime();
-        OffsetDateTime recurrenceEnd = endDateTimeOf(event.getRecurrence(), recurrenceStart);
-        List<CalendarEventOccurrence> occurrences =
-            generator().generateOccurrencesOf(Collections.singletonList(event),
-                Period.between(recurrenceStart, recurrenceEnd));
-        if (occurrences.size() == 1 && occurrences.get(0).equals(this)) {
-          ifSingleOccurrence.run();
-        } else {
-          ifManyOccurrences.run();
-        }
-      } else {
-        ifSingleOccurrence.run();
-      }
-      return null;
-    });
   }
 }

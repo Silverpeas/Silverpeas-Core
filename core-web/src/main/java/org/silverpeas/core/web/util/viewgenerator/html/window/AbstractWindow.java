@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.util.viewgenerator.html.window;
 
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.cache.model.SimpleCache;
@@ -208,7 +208,7 @@ public abstract class AbstractWindow implements Window {
     this.popup = popup;
   }
 
-  private String getWelcomeMessage(ComponentInstLight component, String language) {
+  private String getWelcomeMessage(SilverpeasComponentInstance component, String language) {
     String message = null;
     String fileName = null;
     try {
@@ -235,7 +235,7 @@ public abstract class AbstractWindow implements Window {
     return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
   }
 
-  private String getWelcomeMessageScript(ComponentInstLight component) {
+  private String getWelcomeMessageScript(SilverpeasComponentInstance component) {
     StringBuilder sb = new StringBuilder(100);
     sb.append("<script type=\"text/javascript\">\n");
     sb.append("var welcomeMessageAlreadyShown = false;\n");
@@ -271,24 +271,24 @@ public abstract class AbstractWindow implements Window {
     return sb.toString();
   }
 
+  @SuppressWarnings("StatementWithEmptyBody")
   public String displayWelcomeMessage() {
     if (getGEF().isComponentMainPage()) {
       String componentId = getGEF().getComponentIdOfCurrentRequest();
       if (StringUtil.isDefined(componentId)) {
         StringBuilder sb = new StringBuilder(300);
-        ComponentInstLight component = OrganizationControllerProvider.getOrganisationController()
-                .getComponentInstLight(componentId);
-        String language = getGEF().getMainSessionController().getFavoriteLanguage();
-        if (component != null) {
-          String message = getWelcomeMessage(component, language);
-          if (message == null) {
-            // Welcome message is not yet defined for this application
-            // So, display nothing at all !
-            return "";
-          }
-          sb.append(message);
-          sb.append(getWelcomeMessageScript(component));
-        }
+        OrganizationControllerProvider.getOrganisationController().getComponentInstance(componentId)
+            .ifPresent(component -> {
+              String language = getGEF().getMainSessionController().getFavoriteLanguage();
+              String message = getWelcomeMessage(component, language);
+              if (message != null) {
+                sb.append(message);
+                sb.append(getWelcomeMessageScript(component));
+              } else {
+                // Welcome message is not yet defined for this application
+                // So, display nothing at all !
+              }
+            });
         return sb.toString();
       }
     }

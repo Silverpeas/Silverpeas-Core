@@ -27,16 +27,28 @@
  * Its aim is to wraps the JQuery plugin used to display a calendar. It also predefine the look&feel
  * as well to extends it with some additional features.
  */
-(function($) {
+(function($window, $) {
 
-  $.calendar = {
-    initialized: false
-  };
+  if (!$window.CalendarSettings) {
+    $window.CalendarSettings = new SilverpeasPluginSettings();
+  }
 
-  var CALENDAR_KEY = 'calendar';
+  if (!$window.CalendarBundle) {
+    $window.CalendarBundle = new SilverpeasPluginBundle();
+  }
 
-  var silverpeasCalendarPromise;
+  var monthNames = [];
+  var dayNames = [];
+  var shortDayNames = [];
+  for (var i = 0; i < 12; i++) {
+    monthNames.push($window.CalendarBundle.get('c.m.' + i));
+    if (i < 7) {
+      dayNames.push($window.CalendarBundle.get('c.d.' + i));
+      shortDayNames.push($window.CalendarBundle.get('c.sd.' + i));
+    }
+  }
 
+  $.calendar = {};
 
   /**
    * The Silverpeas calendar plugin accepts as parameter an object representing the calendar to
@@ -61,168 +73,363 @@
    * international format "yyyy-MM-dd'T'HH:mm"
    */
   $.fn.calendar = function(calendar) {
-
-    var _self = this;
-
-    if (!this.length || !calendar)
+    if (!this.length || !calendar) {
       return this;
-
-    silverpeasCalendarPromise = new Promise(function(resolve, reject) {
-      _self.resolvePromise = resolve;
-      _self.rejectPromise = reject;
-    });
-
-    if (!$.calendar.initialized) {
-      $.calendar.initialized = true;
-      window.i18n.properties({
-        name: 'generalMultilang',
-        path: webContext + '/services/bundles/org/silverpeas/multilang/',
-        language: '$$', /* by default the language of the user in the current session */
-        mode: 'map',
-        async: true,
-        callback: function() {
-          _self.resolvePromise();
-        }
-      });
     }
-
     return this.each(function() {
-      var $this = $(this);
-      $this.data(CALENDAR_KEY, calendar);
-      if (calendar.view === 'weekly')
-        renderWeeklyView($this);
-      else if (calendar.view === 'yearly')
-        renderYearlyView($this);
-      else
-        renderMonthlyView($this);
+      initializeSilverpeasCalendar($(this)[0], calendar);
     });
   };
 
-  function renderMonthlyView(target) {
-    renderFullCalendar(target);
-  }
+  /**
+   * VANILLA IMPLEMENTATION
+   */
 
-  function renderWeeklyView(target) {
-    renderFullCalendar(target);
-  }
-
-  function renderYearlyView(target) {
-    renderFullCalendar(target);
-  }
-
-  function renderFullCalendar(target) {
-    silverpeasCalendarPromise.then(function() {
-      var calendar = target.data(CALENDAR_KEY);
-      calendar.currentDate = moment(calendar.currentDate);
-      var options = {
-        header: false,
-        contentHeight:550,
-        monthNames: [window.i18n.prop("GML.mois0"), window.i18n.prop("GML.mois1"), window.i18n.prop("GML.mois2"), window.i18n.prop("GML.mois3"),
-          window.i18n.prop("GML.mois4"), window.i18n.prop("GML.mois5"), window.i18n.prop("GML.mois6"), window.i18n.prop("GML.mois7"),
-          window.i18n.prop("GML.mois8"), window.i18n.prop("GML.mois9"), window.i18n.prop("GML.mois10"), window.i18n.prop("GML.mois11")],
-        dayNames: [window.i18n.prop("GML.jour1"), window.i18n.prop("GML.jour2"), window.i18n.prop("GML.jour3"), window.i18n.prop("GML.jour4"),
-          window.i18n.prop("GML.jour5"), window.i18n.prop("GML.jour6"), window.i18n.prop("GML.jour7")],
-        dayNamesShort: [window.i18n.prop("GML.shortJour1"), window.i18n.prop("GML.shortJour2"), window.i18n.prop("GML.shortJour3"),
-          window.i18n.prop("GML.shortJour4"), window.i18n.prop("GML.shortJour5"), window.i18n.prop("GML.shortJour6"), window.i18n.prop("GML.shortJour7")],
-        buttonText: {
-          prev: '&nbsp;&#9668;&nbsp;', // left triangle
-          next: '&nbsp;&#9658;&nbsp;', // right triangle
-          prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-          nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-          today: window.i18n.prop("GML.Today"),
-          month: window.i18n.prop("GML.month"),
-          week: window.i18n.prop("GML.week"),
-          day: window.i18n.prop("GML.day")
-        },
-        minTime: "08:00:00",
-        allDayText: '',
-        allDayDefault: false,
-        timezone: false,
-        timeFormat: 'HH:mm',
-        displayEventEnd: true,
-        slotLabelFormat: 'HH:mm',
-        views: {
-          agendaWeek: {
-            columnFormat: 'ddd DD'
-          }
-        },
-        firstDay: calendar.firstDayOfWeek - 1,
-        defaultView: getFullCalendarView(calendar.view),
-        dayClick: function(date, jsEvent, view) {
-          if (calendar.onday) {
-            var dayDate = date.format("YYYY-MM-DD[T]HH:mm");
-            calendar.onday(dayDate);
-          }
-        },
-        eventClick: function(calEvent, jsEvent, view) {
-          if (calendar.onevent) {
-            calendar.onevent(calEvent);
-          }
-        },
-        eventMouseover: function(calEvent, jsEvent, view) {
-          if (calendar.oneventmouseover) {
-            calendar.oneventmouseover(calEvent);
-          }
-        },
-        events: calendar.events,
-        weekends: calendar.weekends
-      };
-
-      if (typeof calendar.allDaySlot !== 'undefined') {
-        options.allDaySlot = calendar.allDaySlot;
-      }
-
-      if (calendar.eventrender) {
-        options.eventRender = function(calEvent, $element, view) {
-          calendar.eventrender(calEvent, $element);
-        };
-      }
-
-      target.fullCalendar(options);
-
-      target.fullCalendar('gotoDate', calendar.currentDate);
-    });
-  }
-
-  function getFullCalendarView(view) {
-    if (view === 'monthly')
-      return 'month';
-    else if (view === 'yearly')
-      return 'year';
-    else if (view === 'weekly')
-      return 'agendaWeek';
-    return undefined;
-  }
-
-})(jQuery);
-
-(function($window) {
-
-  if (!$window.CalendarSettings) {
-    $window.CalendarSettings = new SilverpeasPluginSettings();
-  }
-
-  if (!$window.CalendarBundle) {
-    $window.CalendarBundle = new SilverpeasPluginBundle();
-  }
-
-  var calendarDebug = true;
+  var calendarDebug = false;
   sp.log.debugActivated = sp.log.debugActivated || calendarDebug;
+
+  /**
+   * Some tool method in order to centralize common treatments.
+   * @type {SilverpeasCalendarTool}
+   */
+  $window.SilverpeasCalendarTool = new function() {
+
+    /**
+     * Extracts from an UI JavaScript bean the necessary data about the representation of an
+     * occurrence which can be sent to the server.
+     * @param occurrence
+     */
+    this.extractEventOccurrenceEntityData = function(occurrence) {
+      occurrence = occurrence ? occurrence : {};
+      return {
+        id : occurrence.id,
+        lastStartDateTime : occurrence.lastStartDateTime,
+        startDateTime : occurrence.startDateTime,
+        endDateTime : occurrence.endDateTime,
+        event : occurrence.event,
+        attendees : occurrence.attendees
+      }
+    }
+  };
 
   /**
    * Handling the rendering of the Silverpeas's calendar.
    * @constructor
    */
-  $window.SilverpeasCalendar = function(selector) {
+  $window.SilverpeasCalendar = function(target, calendarOptions) {
     applyReadyBehaviorOn(this);
     __logDebug("initializing the plugin");
 
-    document.addEventListener('DOMContentLoaded', function() {
+    /**
+     * Navigates to the given date.
+     * @param date the date to navigate to, can be a Moment object, or anything the Moment
+     *     constructor accepts.
+     */
+    this.gotoDate = function(date) {
+      this.$fc.fullCalendar('gotoDate', date);
+    }.bind(this);
+
+    /**
+     * Changes the view of the calendar by applying the given one.
+     * @param viewName the name of the requested view.
+     */
+    this.changeView = function(viewName) {
+      this.$fc.fullCalendar('changeView', __getFullCalendarView(viewName));
+    }.bind(this);
+
+    var __eventSourceCache = {};
+
+    /**
+     * Hides an event source from a calendar .
+     * @param calendar a calendar.
+     */
+    this.hideEventSource = function(calendar) {
+      var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
+      this.$fc.fullCalendar('removeEventSource', eventSource);
+      return eventSource;
+    }.bind(this);
+
+    /**
+     * Shows an event source from a calendar .
+     * @param calendar a calendar.
+     */
+    this.showEventSource = function(calendar) {
+      var cachedEventSource = __eventSourceCache[calendar.uri];
+      if (cachedEventSource) {
+        var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
+        if (eventSource) {
+          eventSource.backgroundColor = calendar.color;
+          eventSource.color = calendar.color;
+          this.$fc.fullCalendar('refetchEventSources', eventSource);
+        } else {
+          cachedEventSource.backgroundColor = calendar.color;
+          cachedEventSource.color = calendar.color;
+          this.$fc.fullCalendar('addEventSource', cachedEventSource);
+        }
+      }
+      return cachedEventSource;
+    }.bind(this);
+
+    /**
+     * Registers (or update) an event source from a calendar and a list of calendar event
+     * occurrences, but don't display it.
+     * @param calendar a calendar.
+     * @param occurrences an array or a promise which provides an array. The array must contains
+     *     the event occurrences belonging the calendar.
+     */
+    this.registerEventSource = function(calendar, occurrences) {
+      var cachedEventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
+      if (!cachedEventSource) {
+        cachedEventSource = __eventSourceCache[calendar.uri];
+      }
+      if (cachedEventSource) {
+        cachedEventSource.events = __createEvents(occurrences);
+        cachedEventSource.backgroundColor = calendar.color;
+        cachedEventSource.color = calendar.color;
+      } else {
+        cachedEventSource = {
+          id : calendar.uri,
+          events : __createEvents(occurrences),
+          color : calendar.color,
+          backgroundColor : calendar.color
+        };
+      }
+      __eventSourceCache[calendar.uri] = cachedEventSource;
+      return cachedEventSource;
+    }.bind(this);
+
+    /**
+     * Sets an event source from a calendar and a list of calendar event occurrences.
+     * @param calendar a calendar.
+     * @param occurrences an array or a promise which provides an array. The array must contains
+     *     the event occurrences belonging the calendar.
+     */
+    this.setEventSource = function(calendar, occurrences) {
+      var cachedEventSource = this.registerEventSource(calendar, occurrences);
+      var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
+      if (eventSource) {
+        this.$fc.fullCalendar('refetchEventSources', cachedEventSource);
+      } else {
+        this.$fc.fullCalendar('addEventSource', cachedEventSource);
+      }
+      return cachedEventSource;
+    }.bind(this);
+
+    /**
+     * Removes an event source from a calendar .
+     * @param calendar a calendar.
+     */
+    this.removeEventSource = function(calendar) {
+      var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
+      this.$fc.fullCalendar('removeEventSource', eventSource);
+      delete __eventSourceCache[calendar.uri];
+      return eventSource;
+    }.bind(this);
+
+    /**
+     * Apply the given callback on each event of each event sources registered into the calendar.
+     * @param callback the callback to apply on an event.
+     */
+    this.forEachEvent = function(callback) {
+      var events = this.$fc.fullCalendar('clientEvents') || [];
+      for (var i = 0; i < events.length; i++) {
+        var event = events[i];
+        callback(event);
+      }
+    }.bind(this);
+
+    /**
+     * Provides the events dynamically.
+     * @param events an array or a promise which provides an array of events.
+     * @returns {Function}
+     * @private
+     */
+    function __createEvents(events) {
+      return function(start, end, timezone, callback) {
+        if (sp.promise.isOne(events)) {
+          events.then(function(events) {
+            callback(events);
+          })
+        } else {
+          callback(events);
+        }
+      };
+    }
+
+    whenSilverpeasReady(function() {
       __logDebug("initializing the view");
+
+      this.container = target;
+      this.$fc = __renderFullCalendar(this.container, calendarOptions);
+      this.gotoDate(calendarOptions.currentDate);
+
       __logDebug("view is ready");
       this.notifyReady();
     }.bind(this));
   };
+
+  $window.SilverpeasCalendarConst = {
+    visibilities : [{
+      name : 'PUBLIC', label : CalendarBundle.get('c.e.v.public')
+    }, {
+      name : 'PRIVATE', label : CalendarBundle.get('c.e.v.private')
+    }],
+    priorities : [{
+      name : 'NORMAL', label : CalendarBundle.get('c.e.p.normal')
+    }, {
+      name : 'HIGH', label : CalendarBundle.get('c.e.p.high')
+    }],
+    recurrences : [{
+      name : 'NONE', label : CalendarBundle.get('c.e.r.none')
+    },{
+      name : 'DAY', label : CalendarBundle.get('c.e.r.day'), shortLabel : CalendarBundle.get('c.e.r.day.s')
+    },{
+      name : 'WEEK', label : CalendarBundle.get('c.e.r.week'), shortLabel : CalendarBundle.get('c.e.r.week.s')
+    },{
+      name : 'MONTH', label : CalendarBundle.get('c.e.r.month'), shortLabel : CalendarBundle.get('c.e.r.month.s')
+    },{
+      name : 'YEAR', label : CalendarBundle.get('c.e.r.year'), shortLabel : CalendarBundle.get('c.e.r.year.s')
+    }],
+    daysOfWeek : [{
+      name : 'MONDAY', label : dayNames[1], shortLabel : shortDayNames[1], isoWeekday : 1
+    },{
+      name : 'TUESDAY', label : dayNames[2], shortLabel : shortDayNames[2], isoWeekday : 2
+    },{
+      name : 'WEDNESDAY', label : dayNames[3], shortLabel : shortDayNames[3], isoWeekday : 3
+    },{
+      name : 'THURSDAY', label : dayNames[4], shortLabel : shortDayNames[4], isoWeekday : 4
+    },{
+      name : 'FRIDAY', label : dayNames[5], shortLabel : shortDayNames[5], isoWeekday : 5
+    },{
+      name : 'SATURDAY', label : dayNames[6], shortLabel : shortDayNames[6], isoWeekday : 6
+    },{
+      name : 'SUNDAY', label : dayNames[0], shortLabel : shortDayNames[0], isoWeekday : 7
+    }],
+    nthDaysOfWeek : [{
+      name : 'FIRST', label : CalendarBundle.get('c.e.r.m.r.first'), nth : 1
+    },{
+      name : 'SECOND', label : CalendarBundle.get('c.e.r.m.r.second'), nth : 2
+    },{
+      name : 'THIRD', label : CalendarBundle.get('c.e.r.m.r.third'), nth : 3
+    },{
+      name : 'FOURTH', label : CalendarBundle.get('c.e.r.m.r.fourth'), nth : 4
+    },{
+      name : 'LAST', label : CalendarBundle.get('c.e.r.m.r.last'), nth : -1
+    }]
+  };
+
+  /**
+   * Render the calendar with its events.
+   * @private
+   */
+  function __renderFullCalendar(target, options) {
+    var calendarOptions = extendsObject({}, options);
+    calendarOptions.currentDate = moment(calendarOptions.currentDate);
+    var fullCalendarOptions = {
+      header: false,
+      contentHeight:550,
+      monthNames: monthNames,
+      dayNames: dayNames,
+      dayNamesShort: shortDayNames,
+      buttonText: {
+        prev: '&nbsp;&#9668;&nbsp;', // left triangle
+        next: '&nbsp;&#9658;&nbsp;', // right triangle
+        prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+        nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+        today: $window.CalendarBundle.get("c.t"),
+        month: $window.CalendarBundle.get("c.m"),
+        week: $window.CalendarBundle.get("c.w"),
+        day: $window.CalendarBundle.get("c.d")
+      },
+      scrollTime: "08:00:00",
+      allDayText: '',
+      allDayDefault: false,
+      slotLabelInterval : '01:00:00',
+      slotDuration: '00:30:00',
+      defaultTimedEventDuration: '01:00:00',
+      defaultAllDayEventDuration : {days : 1},
+      forceEventDuration : true,
+      timezone: 'local',
+      timeFormat: 'HH:mm',
+      displayEventEnd: true,
+      slotLabelFormat: 'HH:mm',
+      views: {
+        agendaWeek: {
+          columnFormat: 'ddd DD'
+        }
+      },
+      firstDay: calendarOptions.firstDayOfWeek - 1,
+      defaultView: __getFullCalendarView(calendarOptions.view),
+      dayClick: function(momentDate, jsEvent, view) {
+        if (calendarOptions.onday) {
+          var dayDate = momentDate.format("YYYY-MM-DD[T]HH:mm");
+          calendarOptions.onday(dayDate);
+        }
+        if (calendarOptions.ondayclick) {
+          calendarOptions.ondayclick(momentDate);
+        }
+      },
+      eventClick: function(calEvent, jsEvent, view) {
+        if (calendarOptions.onevent) {
+          calendarOptions.onevent(calEvent);
+        }
+      },
+      eventMouseover: function(calEvent, jsEvent, view) {
+        if (calendarOptions.oneventmouseover) {
+          calendarOptions.oneventmouseover(calEvent);
+        }
+      },
+      eventDrop: function(calEvent, delta, revertFunc) {
+        if (calendarOptions.oneventdrop) {
+          calendarOptions.oneventdrop(calEvent, delta, revertFunc);
+        }
+      },
+      eventResize: function(calEvent, delta, revertFunc) {
+        if (calendarOptions.oneventresize) {
+          calendarOptions.oneventresize(calEvent, delta, revertFunc);
+        }
+      },
+      events: calendarOptions.events,
+      weekends: calendarOptions.weekends
+    };
+
+    if (typeof calendarOptions.allDaySlot !== 'undefined') {
+      fullCalendarOptions.allDaySlot = calendarOptions.allDaySlot;
+    }
+
+    if (calendarOptions.eventrender) {
+      fullCalendarOptions.eventRender = function(calEvent, $element, view) {
+        calendarOptions.eventrender(calEvent, $element, view);
+      };
+    }
+
+    var $fullCalendar = jQuery(target);
+    $fullCalendar.fullCalendar(fullCalendarOptions);
+    return $fullCalendar;
+  }
+
+  /**
+   * Gets the default fullCalendar view from the Silverpeas's one.
+   * @private
+   */
+  function __getFullCalendarView(view) {
+    if (typeof view === 'string') {
+      view = view.toLowerCase();
+    }
+    if (view === 'monthly') {
+      return 'month';
+    }
+    else if (view === 'yearly') {
+      return 'year';
+    }
+    else if (view === 'weekly') {
+      return 'agendaWeek';
+    }
+    else if (view === 'daily') {
+      return 'agendaDay';
+    }
+    return view;
+  }
 
   function __showProgressPopup() {
     jQuery.progressMessage();
@@ -255,8 +462,8 @@
   function __displayError(error) {
     notyError(error);
   }
-})(window);
+})(window, jQuery);
 
-function initializeSilverpeasCalendar(selector) {
-  return new SilverpeasCalendar(selector);
+function initializeSilverpeasCalendar(target, calendarOptions) {
+  return new SilverpeasCalendar(target, calendarOptions);
 }

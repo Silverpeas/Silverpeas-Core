@@ -85,7 +85,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     String recurrenceType = getRecurrentType(recurrence.getFrequency().getUnit());
     Recur recur;
     if (recurrence.getEndDate().isPresent()) {
-      recur = new Recur(recurrenceType, asDateTime(recurrence.getEndDate().get()));
+      recur = new Recur(recurrenceType, asDateTime(recurrence.getEndDate().get().minusMinutes(1)));
     } else if (recurrence.getRecurrenceCount() != Recurrence.NO_RECURRENCE_COUNT) {
       recur = new Recur(recurrenceType, recurrence.getRecurrenceCount());
     } else {

@@ -60,7 +60,7 @@ angular.module('silverpeas', ['ngSanitize']).config(['$httpProvider', function($
  * services in Silverpeas.
  * By default, the context is empty.
  */
-angular.module('silverpeas').value('context', {});
+var __silverpeasAngularModule = angular.module('silverpeas').value('context', {});
 
 /**
  * @module silverpeas.adapters
@@ -81,7 +81,7 @@ angular.module('silverpeas.adapters', ['silverpeas']);
  * @requires silverpeas
  * @requires silverpeas.adapters
  */
-angular.module('silverpeas.services', ['silverpeas', 'silverpeas.adapters']);
+angular.module('silverpeas.services', ['silverpeas.adapters']);
 
 /**
  * @module silverpeas.directives
@@ -90,13 +90,48 @@ angular.module('silverpeas.services', ['silverpeas', 'silverpeas.adapters']);
  * application.
  * @requires silverpeas
  */
-angular.module('silverpeas.directives', ['silverpeas', 'silverpeas.services']);
+angular.module('silverpeas.directives', ['silverpeas.services']);
+
+/**
+ * @module silverpeas.components
+ * @desc The AngularJS directives should be defined in this module. A directive is an AngularJS component
+ * linked to an HTML object (element or attribute) that can be reused anywhere in an AngularJS
+ * application.
+ * @requires silverpeas
+ */
+angular.module('silverpeas.components', ['silverpeas.directives']);
+
+/**
+ * @module silverpeas.controllers
+ * @desc The AngularJS controllers should be defined in this module. It that can be reused anywhere
+ * in an AngularJS application.
+ * @requires silverpeas
+ */
+angular.module('silverpeas.controllers', ['silverpeas.services']);
 
 /**
  * Provider of the promise manager in AngularJS to be used in plain old javascript.
  * @type {promise}
  */
 var AngularPromise = angular.injector(['ng']).get('$q');
+
+/**
+ * This filter permits to transform javascript newlines into html newlines.
+ */
+__silverpeasAngularModule.filter('newlines', function () {
+  return function(text) {
+    return text ? text.convertNewLineAsHtml() : text;
+  }
+})
+
+/**
+ * This filter permits to transform javascript newlines into html newlines.
+ */
+__silverpeasAngularModule.filter('noHTML', function () {
+  return function(text) {
+    return text ? text.noHTML() : text;
+  }
+})
 
 /**
  * Common directive to provide solution to update HTML DOM with partial HTML

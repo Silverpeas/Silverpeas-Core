@@ -65,17 +65,34 @@
         console.warn("An unknown and unexpected error occurred");
     }
 
+    function _http(config, data, convert) {
+      if (typeof data === 'object') {
+        config.headers =
+            extendsObject({'Content-Type' : 'application/json; charset=UTF-8'}, config.headers);
+        config.data = data;
+      } else if (data) {
+        config.headers =
+            extendsObject({'Content-Type' : 'application/json; charset=UTF-8'}, config.headers);
+        config.data = "" + data;
+      }
+      var deferred = $q.defer();
+      $http(config).
+      then(function(response) {
+        var result = _fetchData(response.data, convert, response.headers);
+        deferred.resolve(result);
+      }, function(response) {
+        if (response.headers) {
+          var responseData = response.data;
+          _error(responseData, response.status, response.headers);
+        }
+        deferred.reject(responseData);
+      });
+      return deferred.promise;
+    }
+
     function _get(url, convert) {
       var _realGet = function(url, convert) {
-        var deferred = $q.defer();
-        $http.get(url).error(function(data, status, headers) {
-          _error(data, status, headers);
-          deferred.reject(data);
-        }).success(function(data, status, headers) {
-          var result = _fetchData(data, convert, headers);
-          deferred.resolve(result);
-        });
-        return deferred.promise;
+        return _http({method: 'GET', url: url}, undefined, convert);
       };
       var urls = new UrlParamSplitter(url).getUrls();
       if (urls.length > 1) {
@@ -93,16 +110,16 @@
       return _realGet(urls[0], convert);
     }
 
+    function _post(url, data, convert) {
+     return  _http({method: 'POST', url: url}, data, convert);
+    }
+
     function _put(url, data, convert) {
-      var deferred = $q.defer();
-      $http.put(url, data).error(function(data, status, headers) {
-        _error(data, status, headers);
-        deferred.reject(data);
-      }).success(function(data, status, headers) {
-        var result = _fetchData(data, convert, headers);
-        deferred.resolve(result);
-      });
-      return deferred.promise;
+     return  _http({method: 'PUT', url: url}, data, convert);
+    }
+
+    function _delete(url, data, convert) {
+      return _http({method : 'DELETE', url : url}, data, convert);
     }
 
     /**
@@ -127,26 +144,48 @@
      */
     RESTAdapter.prototype.post = function() {
       var requestedUrl = this.url;
+      var data = arguments[0];
+      if (arguments.length > 1) {
+        requestedUrl = arguments[0];
+        data = arguments[1];
+      }
+      return _post(requestedUrl, data, this.converter);
+    };
+
+    /**
+     * Puts the specified object in JSON either at the base URL for which this adapter was
+     * instantiated or at a specified URL.
+     * @param {string}[url] - optionally the URL at which the object has to be posted. If the URL is
+     * not passed as parameter, then the base URL defined in this adapter will be used.
+     * @param {object} - the object to push
+     * @returns {promise|a.fn.promise} - the new created resource.
+     */
+    RESTAdapter.prototype.put = function() {
+      var requestedUrl = this.url;
+      var data = arguments[0];
+      if (arguments.length > 1) {
+        requestedUrl = arguments[0];
+        data = arguments[1];
+      }
+      return _put(requestedUrl, data, this.converter);
+    };
+
+    /**
+     * Deletes the specified object in JSON either at the base URL for which this adapter was
+     * instantiated or at a specified URL.
+     * @param {string}[url] - optionally the URL at which the object has to be posted. If the URL is
+     * not passed as parameter, then the base URL defined in this adapter will be used.
+     * @param {object} - the object to push
+     * @returns {promise|a.fn.promise} - the new created resource.
+     */
+    RESTAdapter.prototype.delete = function() {
+      var requestedUrl = this.url;
       var value = arguments[0];
       if (arguments.length > 1) {
         requestedUrl = arguments[0];
         value = arguments[1];
       }
-      if (typeof value === 'object') {
-        $http.defaults.headers.post['Content-Type'] = 'application/json; charset=UTF-8';
-      } else {
-        value = "" + value;
-        $http.defaults.headers.post['Content-Type'] = 'text/plain; charset=UTF-8';
-      }
-      var deferred = $q.defer();
-      $http.post(requestedUrl, value).error(function(data, status, headers) {
-        _error(data, status, headers);
-        deferred.reject(data);
-      }).success(function(data, status, headers) {
-        var result = _fetchData(data, this.converter, headers);
-        deferred.resolve(result);
-      });
-      return deferred.promise;
+      return _delete(requestedUrl, value, this.converter);
     };
 
     /**
@@ -289,6 +328,9 @@
           var object = new type.prototype.constructor();
           for (var prop in properties) {
             object[prop] = properties[prop];
+          }
+          if (typeof object.$onInit === 'function') {
+            object.$onInit();
           }
           return object;
         };

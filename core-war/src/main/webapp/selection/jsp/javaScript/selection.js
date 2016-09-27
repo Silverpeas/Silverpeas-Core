@@ -57,13 +57,23 @@ function Selection(multiselection, pageSize) {
 
 Selection.prototype.add = function(item) {
   if (this.multipleSelection) {
+    var i, userOrGroup, existingUris = [];
+    for (i = 0; i < this.items.length; i++) {
+      userOrGroup = this.items[i];
+      existingUris[userOrGroup.uri] = userOrGroup;
+    }
     if (item instanceof Array) {
-      for (var i = 0; i < item.length; i++) {
-        this.items.push(item[i]);
+      for (i = 0; i < item.length; i++) {
+        userOrGroup = item[i];
+        if (!existingUris[userOrGroup.uri]) {
+          this.items.push(userOrGroup);
+        }
       } 
     }
     else {
-      this.items.push(item);
+      if (!existingUris[item.uri]) {
+        this.items.push(item);
+      }
     }
   } else {
     this.items.splice(0, 1);

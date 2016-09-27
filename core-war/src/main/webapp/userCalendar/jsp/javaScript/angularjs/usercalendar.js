@@ -23,18 +23,82 @@
  */
 
 /* The angularjs application with its dependencies */
-var userCalendar = angular.module('silverpeas.userCalendar',
-    ['silverpeas.services', 'silverpeas.directives']);
+var userCalendar = angular.module('silverpeas.usercalendar',
+    ['silverpeas.services', 'silverpeas.components', 'silverpeas.controllers']);
 
 /* the main controller of the application */
-userCalendar.controller('mainController',
-    ['context', 'Calendar', '$scope', function(context, Calendar, $scope) {
-      Calendar.list().then(function(userCalendars) {
-        console.log(userCalendars);
-        $scope.userCalendars = userCalendars;
-      });
+userCalendar.controller('mainController', ['$controller', 'context', 'CalendarService', '$scope',
+  function($controller, context, CalendarService, $scope) {
+    $controller('silverpeasCalendarController', {$scope : $scope});
 
-      $scope.goAt = function(url) {
-        window.location = url;
-      };
-    }]);
+    $scope.getCalendarService = function() {
+      return CalendarService;
+    };
+    $scope.newEvent = function(calendars, startMoment) {
+      var uri = context.componentUriBase + 'calendars/events/new';
+      $scope.goToPage(uri, {
+        calendars : calendars,
+        startMoment : startMoment
+      });
+    };
+    var _goToOccurrencePage = function(uri, calendars, occurrence) {
+      $scope.goToPage(uri, {
+        calendars : calendars,
+        eventOccurrence : occurrence
+      });
+    };
+    $scope.viewEventOccurrence = function(calendars, occurrence) {
+      var uri = context.componentUriBase + 'calendars/events/' + occurrence.event.id;
+      _goToOccurrencePage(uri, calendars, occurrence);
+    };
+    $scope.editEventOccurrence = function(calendars, occurrence) {
+      var uri = context.componentUriBase + 'calendars/events/' + occurrence.event.id + '/edit';
+      _goToOccurrencePage(uri, calendars, occurrence);
+    };
+    $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[1].name;
+  }]);
+
+/* the calendar controller of the application */
+userCalendar.controller('calendarController', ['$controller', 'context', 'CalendarService', '$scope',
+  function($controller, context, CalendarService, $scope) {
+    $controller('mainController', {$scope : $scope});
+
+    $scope.participationIds = $scope.participation.getParticipants() || [];
+    $scope.selectUsersForViewingTheirEvents = function() {
+      var uri = context.componentUriBase  + 'calendars/events/users/participation';
+      SP_openUserPanel({
+        url : uri,
+        params : {
+          "UserPanelCurrentUserIds" : $scope.participationIds,
+          "UserPanelCurrentGroupIds" : []
+        }
+      }, "userPanel");
+    };
+    $scope.$watchCollection('participationIds', function(participationIds) {
+      participationIds.removeElement(context.currentUserId);
+      $scope.participation.setParticipants(participationIds);
+    });
+  }]);
+
+/* the edit controller of the application */
+userCalendar.controller('editController', ['$controller', 'context', 'CalendarService', '$scope',
+  function($controller, context, CalendarService, $scope) {
+    $controller('mainController', {$scope : $scope});
+
+    $scope.calendars = $scope.navigation.getCalendars();
+    $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+        function(reloadedOccurrence) {
+          $scope.ceo = reloadedOccurrence;
+        });
+  }]);
+
+/* the view controller of the application */
+userCalendar.controller('viewController', ['$controller', 'context', 'CalendarService', '$scope',
+  function($controller, context, CalendarService, $scope) {
+    $controller('mainController', {$scope : $scope});
+
+    $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+        function(reloadedOccurrence) {
+          $scope.ceo = reloadedOccurrence;
+        });
+  }]);

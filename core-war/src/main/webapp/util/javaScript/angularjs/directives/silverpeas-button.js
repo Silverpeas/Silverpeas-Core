@@ -25,6 +25,24 @@
 (function() {
 
   /**
+   * silverpeas-button-pane is an HTML element which is built to contain silverpeas-button elements.
+   * Nevertheless, all kinds of HTML or AngularJS component can be included.
+   *
+   * The following example illustrates two possible use of the directive:
+   * @example <silverpeas-button ng-click='back()'>Cancel</silverpeas-button>
+   * @example <div silverpeas-button ng-click='back()'>Cancel</div>
+   * (you can replace div by any other HTML element)
+   */
+  angular.module('silverpeas.directives').directive('silverpeasButtonPane', function() {
+    return {
+      templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-button-pane.html',
+      transclude: true,
+      scope: true,
+      restrict: 'E'
+    };
+  });
+
+  /**
    * silverpeas-button is an HTML element to render a button in a Silverpeas way by using the
    * AngularJS framework.
    *
@@ -41,11 +59,8 @@
     return {
       templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-button.html',
       transclude: true,
-      scope: {
-        doAction: '&ngClick' // the action to trigger when the button is clicked
-      },
-      restrict: 'AE',
-      replace: true
+      scope: true,
+      restrict: 'E'
     };
   });
 })();

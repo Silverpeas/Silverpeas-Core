@@ -65,7 +65,7 @@ public class ICal4JRecurrenceCodec {
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
       } else if (eventRecurrence.getEndDate().isPresent()) {
-        Date endDate = iCal4JDateCodec.encode(eventRecurrence.getEndDate().get());
+        Date endDate = iCal4JDateCodec.encode(eventRecurrence.getEndDate().get().minusMinutes(1));
         recur.setUntil(endDate);
       }
       for (DayOfWeekOccurrence dayOfWeekOccurrence : eventRecurrence.getDaysOfWeek()) {

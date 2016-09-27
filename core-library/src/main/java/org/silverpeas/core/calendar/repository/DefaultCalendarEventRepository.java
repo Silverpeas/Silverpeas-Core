@@ -32,6 +32,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,13 @@ public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepositor
   @Override
   public void deleteAll(final Calendar calendar) {
     NamedParameters params = newNamedParameters().add("calendar", calendar);
-    deleteFromNamedQuery("calendarEventsDeleteAll", params);
+    String idQuery = "select e.id.id from CalendarEvent e where e.calendar = :calendar";
+    String eventBatchQuery = "select e from CalendarEvent e where e.id.id in :eventIds";
+    List<String> ids = listFromJpqlString(idQuery, params, String.class);
+    for(Collection<String> batchIds : split(ids)) {
+      params = newNamedParameters().add("eventIds", batchIds);
+      List<CalendarEvent> events = listFromJpqlString(eventBatchQuery, params);
+      delete(events);
+    }
   }
 }

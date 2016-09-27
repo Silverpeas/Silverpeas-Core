@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -77,7 +78,7 @@ public class CalendarEventFilter {
    * @param users the users in Silverpeas that participate for at least one event.
    * @return itself.
    */
-  public CalendarEventFilter onParticipants(List<User> users) {
+  public CalendarEventFilter onParticipants(Collection<User> users) {
     this.participants.addAll(users);
     return this;
   }

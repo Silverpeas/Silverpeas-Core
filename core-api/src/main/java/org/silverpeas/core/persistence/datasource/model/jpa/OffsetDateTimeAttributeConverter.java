@@ -26,7 +26,9 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 /**
@@ -41,11 +43,12 @@ public class OffsetDateTimeAttributeConverter
 
   @Override
   public Timestamp convertToDatabaseColumn(OffsetDateTime dateTime) {
-    return (dateTime == null ? null : Timestamp.from(dateTime.toInstant()));
+    return (dateTime == null ? null :
+        Timestamp.valueOf(dateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime()));
   }
 
   @Override
   public OffsetDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
-    return (sqlTimestamp == null ? null : sqlTimestamp.toInstant().atOffset(ZoneOffset.UTC));
+    return (sqlTimestamp == null ? null : sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC));
   }
 }

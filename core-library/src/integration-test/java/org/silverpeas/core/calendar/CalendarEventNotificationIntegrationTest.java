@@ -47,6 +47,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -145,7 +146,10 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     assertThat(eventListener.hasBeenNotified(), is(true));
     assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(false));
+    // Modifying recurrence reset the participation of attendees
+    assertThat(attendeeListener.hasBeenNotified(), is(true));
+    assertThat(attendeeListener.getRecievedNotifAction(),
+        contains(NotifAction.UPDATE, NotifAction.UPDATE));
   }
 
   @Test

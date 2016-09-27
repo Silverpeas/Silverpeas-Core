@@ -283,10 +283,10 @@
               </c:if>
                  - <view:formatDateTime value="${currentAttachment.updated}"/>
               <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
-                <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
+                <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview.file"/>" title="<fmt:message key="GML.preview.file" />"/>
               </c:if>
               <c:if test="${silfn:isViewable(currentAttachment.attachmentPath)}">
-                <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
+                <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view.file"/>" title="<fmt:message key="GML.view.file" />"/>
               </c:if>
               <c:if test="${!currentAttachment.downloadAllowedForReaders}">
                 <img class="forbidden-download-file" src='<c:url value="/util/icons/forbidden-download.png"/>' alt="${forbiddenDownloadHelp}" title="${forbiddenDownloadHelp}"/>

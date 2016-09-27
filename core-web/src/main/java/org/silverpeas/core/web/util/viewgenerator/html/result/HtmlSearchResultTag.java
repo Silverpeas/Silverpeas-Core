@@ -325,15 +325,15 @@ public class HtmlSearchResultTag extends TagSupport {
           .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"preview-file\" src=\"")
           .append(resources.getIcon("pdcPeas.file.preview")).append("\" alt=\"")
-          .append(resources.getString("GML.preview")).append("\" title=\"")
-          .append(resources.getString("GML.preview")).append("\"/>");
+          .append(resources.getString("GML.preview.file")).append("\" title=\"")
+          .append(resources.getString("GML.preview.file")).append("\"/>");
     }
     if (gsr.isViewable()) {
       result.append(" <img onclick=\"javascript:viewFile(this, '").append(gsr.getAttachmentId())
           .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"view-file\" src=\"").append(resources.getIcon("pdcPeas.file.view"))
-          .append("\" alt=\"").append(resources.getString("GML.view")).append("\" title=\"")
-          .append(resources.getString("GML.view")).append("\"/>");
+          .append("\" alt=\"").append(resources.getString("GML.view.file")).append("\" title=\"")
+          .append(resources.getString("GML.view.file")).append("\"/>");
     }
     if (!gsr.isDownloadAllowedForReaders()) {
       String forbiddenDownloadHelp = "";

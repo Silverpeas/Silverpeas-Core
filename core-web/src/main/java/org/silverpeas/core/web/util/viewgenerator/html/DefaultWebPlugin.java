@@ -55,7 +55,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(WYSIWYG, (xhtml, language) -> includeWysiwygEditor(xhtml));
     WebPluginConsumerRegistry.add(RESPONSIBLES, (xhtml, language) -> includeResponsibles(xhtml, language));
     WebPluginConsumerRegistry.add(POPUP, (xhtml, language) -> includePopup(xhtml));
-    WebPluginConsumerRegistry.add(CALENDAR, (xhtml, language) -> includeCalendar(xhtml));
+    WebPluginConsumerRegistry.add(CALENDAR, (xhtml, language) -> includeCalendar(xhtml, language));
     WebPluginConsumerRegistry.add(IFRAMEAJAXTRANSPORT, (xhtml, language) -> includeIFrameAjaxTransport(xhtml));
     WebPluginConsumerRegistry.add(PREVIEW, (xhtml, language) -> includePreview(xhtml));
     WebPluginConsumerRegistry.add(NOTIFIER, (xhtml, language) -> includeNotifier(xhtml));
@@ -67,6 +67,8 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(TKN, (xhtml, language) -> includeSecurityTokenizing(xhtml));
     WebPluginConsumerRegistry.add(RATING, (xhtml, language) -> includeRating(xhtml));
     WebPluginConsumerRegistry.add(TOGGLE, (xhtml, language) -> includeToggle(xhtml));
+    WebPluginConsumerRegistry.add(TABS, (xhtml, language) -> includeTabsWebComponent(xhtml));
+    WebPluginConsumerRegistry.add(COLORPICKER, (xhtml, language) -> includeColorPickerWebComponent(xhtml));
     WebPluginConsumerRegistry.add(LIGHTSLIDESHOW, (xhtml, language) -> includeLightweightSlideshow(xhtml));
     WebPluginConsumerRegistry.add(LANG, (xhtml, language) -> includeLang(xhtml));
     WebPluginConsumerRegistry.add(TICKER, (xhtml, language) -> includeTicker(xhtml, language));

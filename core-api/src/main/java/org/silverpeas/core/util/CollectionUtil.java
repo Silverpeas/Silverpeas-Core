@@ -182,26 +182,52 @@ public class CollectionUtil {
    * @param <T> the type of the items in the list.
    * @return the union between the two lists.
    */
+  @SuppressWarnings("unchecked")
   public static <T> List<T> union(List<T> list1, List<T> list2) {
-    Set<T> set = new LinkedHashSet<T>();
-    set.addAll(list1);
-    set.addAll(list2);
-    return new ArrayList<T>(set);
+    return new ArrayList<T>(union((Collection) list1, (Collection) list2));
   }
 
   /**
-   * Makes an intersection betwwen both of the given lists.<br>
+   * Makes an union between both of the given collections.<br/>
+   * The result contains unique values.
+   * @param col1 the first collection.
+   * @param col2 the second collection.
+   * @param <T>
+   * @return the union between the two collections.
+   */
+  public static <T> Collection<T> union(Collection<T> col1, Collection<T> col2) {
+    Set<T> set = new LinkedHashSet<T>();
+    set.addAll(col1);
+    set.addAll(col2);
+    return set;
+  }
+
+  /**
+   * Makes an intersection between both of the given lists.<br/>
    * The result contains unique values.
    * @param list1 the first list.
    * @param list2 the second list.
    * @param <T> the type of the items in the list
    * @return the intersection between the two lists.
    */
+  @SuppressWarnings("unchecked")
   public static <T> List<T> intersection(List<T> list1, List<T> list2) {
-    List<T> list = new ArrayList<T>(new LinkedHashSet<T>(list1));
+    return (List) intersection((Collection) list1, (Collection) list2);
+  }
+
+  /**
+   * Makes an intersection between both of the given collections.<br/>
+   * The result contains unique values.
+   * @param col1 the first collection.
+   * @param col2 the second collection.
+   * @param <T>
+   * @return the intersection between the two collections.
+   */
+  public static <T> Collection<T> intersection(Collection<T> col1, Collection<T> col2) {
+    List<T> list = new ArrayList<T>(new LinkedHashSet<T>(col1));
     Iterator<T> iterator = list.iterator();
     while(iterator.hasNext()) {
-      if (!list2.contains(iterator.next())) {
+      if (!col2.contains(iterator.next())) {
         iterator.remove();
       }
     }
