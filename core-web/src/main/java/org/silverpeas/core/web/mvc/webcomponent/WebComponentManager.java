@@ -156,130 +156,119 @@ public class WebComponentManager {
       // Taking into account only those that has one WebRouterContext parameter and no other one.
       // The method must return nothing.
       Class<?>[] parameterTypes = resourceMethod.getParameterTypes();
-      if (parameterTypes.length == 1 &&
-          WebComponentRequestContext.class.isAssignableFrom(parameterTypes[0])) {
-        Set<Class<? extends Annotation>> httpMethods = new LinkedHashSet<>();
-        Set<Path> paths = new LinkedHashSet<>();
-        LowestRoleAccess lowestRoleAccess = null;
-        boolean isDefaultPaths = false;
-        Annotation redirectTo = null;
-        Invokable invokable = null;
-        InvokeBefore invokeBefore = null;
-        InvokeAfter invokeAfter = null;
-        NavigationStep navigationStep = null;
-        for (Annotation annotation : resourceMethod.getDeclaredAnnotations()) {
-          if (annotation instanceof GET) {
-            httpMethods.add(GET.class);
-          } else if (annotation instanceof POST) {
-            httpMethods.add(POST.class);
-          } else if (annotation instanceof PUT) {
-            httpMethods.add(PUT.class);
-          } else if (annotation instanceof DELETE) {
-            httpMethods.add(DELETE.class);
-          } else if (annotation instanceof Path) {
-            paths.add((Path) annotation);
-          } else if (annotation instanceof NavigationStep) {
-            navigationStep = (NavigationStep) annotation;
-          } else if (annotation instanceof LowestRoleAccess) {
-            if (lowestRoleAccess != null) {
-              throw new IllegalArgumentException(
-                  "Only one greatest Silverpeas Role must be specified for method: " +
-                      resourceMethod.getName()
-              );
-            }
-            lowestRoleAccess = (LowestRoleAccess) annotation;
-          } else if (annotation instanceof Homepage) {
-            if (isDefaultPaths) {
-              throw new IllegalArgumentException(
-                  "The homepage method is already specified, error on method " +
-                      resourceMethod.getName()
-              );
-            }
-            isDefaultPaths = true;
-          } else if (annotation instanceof RedirectTo ||
-              annotation instanceof RedirectToInternal ||
-              annotation instanceof RedirectToInternalJsp ||
-              annotation instanceof RedirectToNavigationStep||
-              annotation instanceof RedirectToPreviousNavigationStep) {
-            if (redirectTo != null) {
-              throw new IllegalArgumentException(
-                  "One, and only one, redirection must be specified for method " +
-                      resourceMethod.getName()
-              );
-            }
-            redirectTo = annotation;
-          } else if (annotation instanceof Invokable) {
-            if (invokable != null) {
-              throw new IllegalArgumentException(
-                  "@Invokable must be specified one time for method " + resourceMethod.getName());
-            }
-            invokable = (Invokable) annotation;
-          } else if (annotation instanceof InvokeBefore) {
-            if (invokeBefore != null) {
-              throw new IllegalArgumentException(
-                  "@InvokeBefore must be specified one time for method " +
-                      resourceMethod.getName());
-            }
-            invokeBefore = (InvokeBefore) annotation;
-          } else if (annotation instanceof InvokeAfter) {
-            if (invokeAfter != null) {
-              throw new IllegalArgumentException(
-                  "@InvokeAfter must be specified one time for method " + resourceMethod.getName());
-            }
-            invokeAfter = (InvokeAfter) annotation;
+      if (parameterTypes.length != 1 ||
+          !WebComponentRequestContext.class.isAssignableFrom(parameterTypes[0])) {
+        continue;
+      }
+      Set<Class<? extends Annotation>> httpMethods = new LinkedHashSet<>();
+      Set<Path> paths = new LinkedHashSet<>();
+      LowestRoleAccess lowestRoleAccess = null;
+      boolean isDefaultPath = false;
+      Annotation redirectTo = null;
+      Invokable invokable = null;
+      InvokeBefore invokeBefore = null;
+      InvokeAfter invokeAfter = null;
+      NavigationStep navigationStep = null;
+      for (Annotation annotation : resourceMethod.getDeclaredAnnotations()) {
+        if (annotation instanceof GET) {
+          httpMethods.add(GET.class);
+        } else if (annotation instanceof POST) {
+          httpMethods.add(POST.class);
+        } else if (annotation instanceof PUT) {
+          httpMethods.add(PUT.class);
+        } else if (annotation instanceof DELETE) {
+          httpMethods.add(DELETE.class);
+        } else if (annotation instanceof Path) {
+          paths.add((Path) annotation);
+        } else if (annotation instanceof NavigationStep) {
+          navigationStep = (NavigationStep) annotation;
+        } else if (annotation instanceof LowestRoleAccess) {
+          if (lowestRoleAccess != null) {
+            throw new IllegalArgumentException(
+                "Only one greatest Silverpeas Role must be specified for method: " +
+                    resourceMethod.getName());
           }
-        }
-
-        if (!httpMethods.isEmpty()) {
+          lowestRoleAccess = (LowestRoleAccess) annotation;
+        } else if (annotation instanceof Homepage) {
+          isDefaultPath = true;
+        } else if (annotation instanceof RedirectTo || annotation instanceof RedirectToInternal ||
+            annotation instanceof RedirectToInternalJsp ||
+            annotation instanceof RedirectToNavigationStep ||
+            annotation instanceof RedirectToPreviousNavigationStep) {
+          if (redirectTo != null) {
+            throw new IllegalArgumentException(
+                "One, and only one, redirection must be specified for method " +
+                    resourceMethod.getName());
+          }
+          redirectTo = annotation;
+        } else if (annotation instanceof Invokable) {
           if (invokable != null) {
             throw new IllegalArgumentException(
-                "Http Method " + resourceMethod.getName() + " can not be annoted with @Invokable");
+                "@Invokable must be specified one time for method " + resourceMethod.getName());
           }
-
-          if (redirectTo == null &&
-              !resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
-            throw new IllegalArgumentException(resourceMethod.getName() +
-                " method must return a Navigation instance or be annoted by one of @RedirectTo..." +
-                " annotations");
-          }
-
-          if (redirectTo != null &&
-              resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
-            throw new IllegalArgumentException(resourceMethod.getName() +
-                " method must, either return a Navigation instance, either be annoted by one of " +
-                "@RedirectTo... annotation");
-          }
-
-          for (Class<? extends Annotation> httpMethodClass : httpMethods) {
-            HttpMethodPaths httpMethodPaths =
-                webComponentManager.httpMethodPaths.get(httpMethodClass.getName());
-            if (httpMethodPaths == null) {
-              httpMethodPaths = new HttpMethodPaths(httpMethodClass);
-              webComponentManager.httpMethodPaths.put(httpMethodClass.getName(), httpMethodPaths);
-            }
-            List<org.silverpeas.core.web.mvc.webcomponent.Path> registredPaths = httpMethodPaths
-                .addPaths(paths, lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
-                    invokeBefore, invokeAfter);
-            if (isDefaultPaths) {
-              if (webComponentManager.defaultPath != null) {
-                throw new IllegalArgumentException(
-                    "@Homepage is specified on " + resourceMethod.getName() +
-                        " method, but @Homepage has already been defined on another one"
-                );
-              }
-              webComponentManager.defaultPath = registredPaths.get(0);
-            }
-            allRegisteredPaths.addAll(registredPaths);
-          }
-        }
-
-        if (invokable != null) {
-          if (webComponentManager.invokables.containsKey(invokable.value())) {
+          invokable = (Invokable) annotation;
+        } else if (annotation instanceof InvokeBefore) {
+          if (invokeBefore != null) {
             throw new IllegalArgumentException(
-                invokable.value() + " invokable identifier has already been set");
+                "@InvokeBefore must be specified one time for method " + resourceMethod.getName());
           }
-          webComponentManager.invokables.put(invokable.value(), resourceMethod);
+          invokeBefore = (InvokeBefore) annotation;
+        } else if (annotation instanceof InvokeAfter) {
+          if (invokeAfter != null) {
+            throw new IllegalArgumentException(
+                "@InvokeAfter must be specified one time for method " + resourceMethod.getName());
+          }
+          invokeAfter = (InvokeAfter) annotation;
         }
+      }
+
+      if (!httpMethods.isEmpty()) {
+        if (invokable != null) {
+          throw new IllegalArgumentException(
+              "Http Method " + resourceMethod.getName() + " can not be annotated with @Invokable");
+        }
+
+        if (redirectTo == null &&
+            !resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
+          throw new IllegalArgumentException(resourceMethod.getName() +
+              " method must return a Navigation instance or be annotated by one of @RedirectTo..." +
+              " annotations");
+        }
+
+        if (redirectTo != null &&
+            resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
+          throw new IllegalArgumentException(resourceMethod.getName() +
+              " method must, either return a Navigation instance, either be annotated by one of " +
+              "@RedirectTo... annotation");
+        }
+
+        for (Class<? extends Annotation> httpMethodClass : httpMethods) {
+          HttpMethodPaths httpMethodPaths =
+              webComponentManager.httpMethodPaths.get(httpMethodClass.getName());
+          if (httpMethodPaths == null) {
+            httpMethodPaths = new HttpMethodPaths(httpMethodClass);
+            webComponentManager.httpMethodPaths.put(httpMethodClass.getName(), httpMethodPaths);
+          }
+          List<org.silverpeas.core.web.mvc.webcomponent.Path> registeredPaths = httpMethodPaths
+              .addPaths(paths, lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
+                  invokeBefore, invokeAfter);
+          if (isDefaultPath) {
+            if (webComponentManager.defaultPath != null) {
+              throw new IllegalArgumentException(
+                  "@Homepage is specified several times while it should be once");
+            }
+            webComponentManager.defaultPath = registeredPaths.get(0);
+          }
+          allRegisteredPaths.addAll(registeredPaths);
+        }
+      }
+
+      if (invokable != null) {
+        if (webComponentManager.invokables.containsKey(invokable.value())) {
+          throw new IllegalArgumentException(
+              invokable.value() + " invokable identifier has already been set");
+        }
+        webComponentManager.invokables.put(invokable.value(), resourceMethod);
       }
     }
 
@@ -287,20 +276,20 @@ public class WebComponentManager {
       throw new IllegalArgumentException("The homepage method must be specified with @Homepage");
     }
 
-    // Verifying method identifier invokation
+    // Verifying method identifier invocation
     for (org.silverpeas.core.web.mvc.webcomponent.Path path : allRegisteredPaths) {
       for (String invokableIdentifier : path.getInvokeBeforeIdentifiers()) {
         if (!webComponentManager.invokables.containsKey(invokableIdentifier)) {
           throw new IllegalArgumentException("method behind '" + invokableIdentifier +
               "' invokable identifier must be performed before the execution of HTTP method " +
-              path.getResourceMethod().getName() + ", but it is not registred");
+              path.getResourceMethod().getName() + ", but it is not registered");
         }
       }
       for (String invokableIdentifier : path.getInvokeAfterIdentifiers()) {
         if (!webComponentManager.invokables.containsKey(invokableIdentifier)) {
           throw new IllegalArgumentException("method behind '" + invokableIdentifier +
               "' invokable identifier must be performed after the execution of HTTP method " +
-              path.getResourceMethod().getName() + ", but it is not registred");
+              path.getResourceMethod().getName() + ", but it is not registered");
         }
       }
     }
@@ -353,8 +342,7 @@ public class WebComponentManager {
               .getTargetException() instanceof WebApplicationException)) {
         webComponentRequestContext.getResponse().sendError(
             ((WebApplicationException) ((InvocationTargetException) e).getTargetException())
-                .getResponse().getStatus()
-        );
+                .getResponse().getStatus());
       }
       throw e;
     }
@@ -412,8 +400,7 @@ public class WebComponentManager {
         webComponentContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
         throw new AccessForbiddenException("WebRouteManager.executePath", SilverpeasException.ERROR,
             "User id " + webComponentContext.getUser().getId() + " has not right access to " +
-                webComponentContext.getRequest().getRequestURI()
-        );
+                webComponentContext.getRequest().getRequestURI());
       }
       // A redirection is asked on an error
       return webComponentContext.redirectTo(redirectTo);

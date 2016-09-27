@@ -48,7 +48,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @RunWith(CdiRunner.class)
 @AdditionalPackages({WebComponentRequestRouter.class, ComponentRequestRouter.class})
@@ -145,9 +145,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       System.out.printf(e.getMessage());
       assertThat(e.getMessage(),
-          is("@Homepage is specified on otherHome method, but @Homepage has already been defined " +
-              "on another one")
-      );
+          is("@Homepage is specified several times while it should be once"));
       throw e;
     }
   }
@@ -230,7 +228,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     try {
       onController(HttpMethodWithInvokableAnnotationController.class).defaultRequest().perform();
     } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), is("Http Method homeMethod can not be annoted with @Invokable"));
+      assertThat(e.getMessage(), is("Http Method homeMethod can not be annotated with @Invokable"));
       throw e;
     }
   }
@@ -242,7 +240,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("method behind 'invokable_2' invokable identifier must be performed before the " +
-              "execution of HTTP method homeMethod, but it is not registred")
+              "execution of HTTP method homeMethod, but it is not registered")
       );
       throw e;
     }
@@ -255,7 +253,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
           is("method behind 'invokable_1' invokable identifier must be performed after the " +
-              "execution of HTTP method homeMethod, but it is not registred")
+              "execution of HTTP method homeMethod, but it is not registered")
       );
       throw e;
     }
@@ -357,8 +355,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
       onController(MissingNavigationController.class).defaultRequest().perform();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("home method must return a Navigation instance or be annoted by one of @RedirectTo.." +
-              ". annotations")
+          is("home method must return a Navigation instance or be annotated by one of " +
+              "@RedirectTo... annotations")
       );
       throw e;
     }
@@ -371,8 +369,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
       onController(TwoNavigationsSpecifiedController.class).defaultRequest().perform();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("home method must, either return a Navigation instance, either be annoted by one of " +
-              "@RedirectTo... annotation")
+          is("home method must, either return a Navigation instance, either be annotated by one " +
+              "of @RedirectTo... annotation")
       );
       throw e;
     }
