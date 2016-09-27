@@ -36,7 +36,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
   out.println("<li class='field' id='"+parameter.getName()+"'>");
 	String help = parameter.getHelp();
 	if (help != null) {
-		help = EncodeHelper.javaStringToHtmlString(help);
+		help = WebEncodeHelper.javaStringToHtmlString(help);
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 	}
 
@@ -108,7 +108,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 		  value = "";
 		}
 
-		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(value)+"\" "+disabled+"/>");
+		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+WebEncodeHelper.javaStringToHtmlString(value)+"\" "+disabled+"/>");
 
 		if (mandatory) {
 			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\"/>");
@@ -234,8 +234,8 @@ function toDoOnLoad() {
 
 <%
 for (String lang : compoInst.getTranslations().keySet()) {
-	out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
-	out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
+	out.println("var name_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
+	out.println("var desc_"+lang+" = \""+WebEncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
 }
 %>
 
@@ -279,12 +279,12 @@ out.println(tabbedPane.print());
 	<ul class="fields">
 		<li class="field entireWidth">
 		<label class="txtlibform"><%=resource.getString("GML.name")%> </label>
-		<div class="champs"><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></div>
+		<div class="champs"><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=WebEncodeHelper.javaStringToHtmlString(compoInst.getLabel(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></div>
 	</li>
 
 	<li class="field entireWidth">
 		<label class="txtlibform"><%=resource.getString("GML.description")%></label>
-		<div class="champs"><textarea name="Description" id="compoDesc" rows="3" cols="59"><%=EncodeHelper.javaStringToHtmlString(compoInst.getDescription(translation))%></textarea></div>
+		<div class="champs"><textarea name="Description" id="compoDesc" rows="3" cols="59"><%=WebEncodeHelper.javaStringToHtmlString(compoInst.getDescription(translation))%></textarea></div>
 	</li>
 	<% if (isInHeritanceEnable) { %>
 

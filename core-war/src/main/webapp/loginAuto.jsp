@@ -193,7 +193,7 @@
   <input type="hidden" name="DomainId" value="0"/>
 </form>
 
-<script language="javascript1.2">
+<script>
   var form = document.getElementById("EDform");
   form.submit();
 </script>

@@ -33,8 +33,7 @@ import java.io.IOException;
 /**
  * This servlet is the parent one of Silverpeas application.
  * It provides common HTTP servlet tools.
- * User: Yohann Chastagnier
- * Date: 20/09/13
+ * @author  Yohann Chastagnier
  */
 public class SilverpeasHttpServlet extends HttpServlet {
 
@@ -55,13 +54,10 @@ public class SilverpeasHttpServlet extends HttpServlet {
 
   /**
    * Handle the sendRedirect or the forward.
-   * @param request
-   * @param response
-   * @param destination
    * @throws ServletException
    * @throws IOException
    */
-  protected void redirectOrForwardService(HttpServletRequest request, HttpServletResponse response,
+  void redirectOrForwardService(HttpServletRequest request, HttpServletResponse response,
       String destination) throws ServletException, IOException {
     if (destination.startsWith("http") || destination.startsWith("ftp")) {
       response.sendRedirect(response.encodeRedirectURL(destination));
@@ -102,18 +98,55 @@ public class SilverpeasHttpServlet extends HttpServlet {
   }
 
   /**
+   * The precondition given in one or more of the request-header fields evaluated to false when
+   * it was tested on the server. This response code allows the client to place preconditions on
+   * the current resource metainformation (header field data) and thus prevent the requested
+   * method from being applied to a resource other than the one intended.
+   */
+  protected void throwHttpPreconditionFailedError(String message) {
+    throw new HttpError(HttpServletResponse.SC_PRECONDITION_FAILED, message);
+  }
+
+  /**
+   * The HTTP server understood the request, but is refusing to fulfill it. This status code is
+   * commonly used when the server does not wish to reveal exactly why the request has been
+   * refused, or when no other response is applicable (for example the server is an Intranet and
+   * only the LAN machines are authorized to connect).
+   */
+  protected void throwHttpForbiddenError(String message) {
+    throw new HttpError(HttpServletResponse.SC_FORBIDDEN, message);
+  }
+
+  /**
+   * The server has not found anything matching the requested address (URI) ( not found ).
+   * This means the URL you have typed or cliked on is wrong or obsolete and does not match any
+   * document existing on the server (you may try to gradualy remove the URL components from the
+   * right to the left to eventualy retrieve an existing path).
+   */
+  protected void throwHttpNotFoundError(String message) {
+    throw new HttpError(HttpServletResponse.SC_NOT_FOUND, message);
+  }
+
+  /**
    * Internal exception class management
    */
   private class HttpError extends RuntimeException {
     private static final long serialVersionUID = -4303217388313620495L;
     private final int errorCode;
+    private final String message;
 
-    public HttpError(int errorCode) {
+    HttpError(int errorCode) {
       this.errorCode = errorCode;
+      this.message = null;
     }
 
-    public void performResponse(HttpServletResponse response) throws IOException {
-      response.sendError(errorCode);
+    HttpError(int errorCode, String message) {
+      this.errorCode = errorCode;
+      this.message = message;
+    }
+
+    void performResponse(HttpServletResponse response) throws IOException {
+      response.sendError(errorCode, message);
     }
   }
 }

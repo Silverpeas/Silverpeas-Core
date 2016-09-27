@@ -24,7 +24,7 @@ package org.silverpeas.core.comment.service.notification;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
@@ -154,12 +154,12 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     List<Comment> comments = getCommentService().getAllCommentsOnPublication(content.
         getContributionType(), pk);
     for (Comment aComment : comments) {
-      UserDetail author = aComment.getCreator();
+      User author = aComment.getCreator();
       if (!author.getId().equals(commentAuthorId) && canBeSent(content, author)) {
         interestedUsers.add(author.getId());
       }
     }
-    UserDetail contentCreator = content.getCreator();
+    User contentCreator = content.getCreator();
     if (!commentAuthorId.equals(contentCreator.getId()) && canBeSent(content, contentCreator)) {
       interestedUsers.add(contentCreator.getId());
     }
@@ -186,7 +186,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     return commentService;
   }
 
-  private boolean canBeSent(SilverpeasContent content, UserDetail recipient) {
+  private boolean canBeSent(SilverpeasContent content, User recipient) {
     return content.canBeAccessedBy(recipient);
   }
 }

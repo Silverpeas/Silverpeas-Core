@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.DateTime;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -725,19 +725,19 @@ public class DateUtil {
   }
 
   /**
-   * Converts the specified date as a Datable object with the time set or not.
+   * Converts the specified date as a Temporal object with the time set or not.
    * @param aDate a Java date to convert.
    * @param withTime the time in the Java date has to be taken into account.
-   * @return a Datable object.
+   * @return a Temporal object.
    */
-  public static Datable<?> asDatable(final java.util.Date aDate, boolean withTime) {
-    Datable<?> datable;
+  public static Temporal<?> asTemporal(final java.util.Date aDate, boolean withTime) {
+    Temporal<?> temporal;
     if (withTime) {
-      datable = new DateTime(aDate);
+      temporal = new DateTime(aDate);
     } else {
-      datable = new org.silverpeas.core.date.Date(aDate);
+      temporal = new org.silverpeas.core.date.Date(aDate);
     }
-    return datable;
+    return temporal;
   }
 
   /**

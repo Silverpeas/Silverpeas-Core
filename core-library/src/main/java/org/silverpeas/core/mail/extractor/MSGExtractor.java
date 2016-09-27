@@ -24,7 +24,7 @@
 package org.silverpeas.core.mail.extractor;
 
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -118,7 +118,7 @@ public class MSGExtractor implements MailExtractor {
       if (body == null) {
         body = getRtfText(message.getRtfBody());
         if (body == null) {
-          body = EncodeHelper.javaStringToHtmlParagraphe(message.getTextBody());
+          body = WebEncodeHelper.javaStringToHtmlParagraphe(message.getTextBody());
         }
       }
       mail.setBody(body);

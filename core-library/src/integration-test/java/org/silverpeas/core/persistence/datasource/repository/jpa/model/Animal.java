@@ -24,7 +24,7 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -43,7 +43,7 @@ import java.util.List;
             "a.lastUpdatedBy = :lastUpdatedBy, a.lastUpdateDate = :lastUpdateDate, " +
             "a.version = :version where a.id = :id"),
     @NamedQuery(name = "deleteAnimalsByType", query = "delete from Animal a where a.type = :type")})
-public class Animal extends AbstractJpaEntity<Animal, UniqueLongIdentifier> implements
+public class Animal extends SilverpeasJpaEntity<Animal, UniqueLongIdentifier> implements
     Serializable {
 
   @Column(name = "type", nullable = false)

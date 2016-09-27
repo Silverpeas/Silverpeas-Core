@@ -1,0 +1,1 @@
+$sender$ $participation$ an der Veranstaltung <b>$event.title$</b>

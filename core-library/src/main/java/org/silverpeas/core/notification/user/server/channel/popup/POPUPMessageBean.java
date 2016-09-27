@@ -25,7 +25,7 @@
 package org.silverpeas.core.notification.user.server.channel.popup;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +43,7 @@ import javax.validation.constraints.NotNull;
         query = "delete from POPUPMessageBean m where m.userId = :userId and m.senderId = " +
             ":senderId")})
 public class POPUPMessageBean
-    extends AbstractJpaCustomEntity<POPUPMessageBean, UniqueLongIdentifier> {
+    extends BasicJpaEntity<POPUPMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = 7025111830012761169L;
 
   @Column(nullable = false)

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import com.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.web.ResourceGettingTest;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;

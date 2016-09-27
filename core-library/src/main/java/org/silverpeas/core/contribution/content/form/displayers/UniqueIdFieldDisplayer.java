@@ -39,7 +39,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.util.Collections;
 import java.util.List;
@@ -102,7 +102,7 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     Input input = new Input();
     input.setName(fieldName);
     input.setID(fieldName);
-    input.setValue(EncodeHelper.javaStringToHtmlString(value));
+    input.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     input.setType(template.isHidden() ? Input.hidden : Input.text);
     input.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
     input.setReadOnly(true);

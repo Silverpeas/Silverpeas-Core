@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.annotation.constraint;
 
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.DateTime;
+
 import java.lang.reflect.Field;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -58,9 +59,9 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
       Field endDateField = object.getClass().getDeclaredField(endDateFieldName);
       startDateField.setAccessible(true);
       endDateField.setAccessible(true);
-      Datable<?> startDate = (Datable<?>) startDateField.get(object);
-      Datable<?> endDate = (Datable<?>) endDateField.get(object);
-      if (startDate instanceof Date || endDate instanceof Date) {
+      Temporal<?> startDate = (Temporal<?>) startDateField.get(object);
+      Temporal<?> endDate = (Temporal<?>) endDateField.get(object);
+      if (!startDate.isTimeSupported() || !endDate.isTimeSupported()) {
         Date start = new Date(startDate.asDate());
         Date end = new Date(endDate.asDate());
         isValid = start.isBefore(end) || start.isEqualTo(end);

@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.questioncontainer.container.model;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerContentManager;
+import org.silverpeas.core.questioncontainer.question.model.Question;
+import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.questioncontainer.question.model.Question;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerContentManager;
-import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Collection;
@@ -168,7 +168,7 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
    * @return true if the user can access this container of questions, false otherwise.
    */
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<String> accessController = AccessControllerProvider
         .getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
@@ -180,8 +180,8 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(getHeader().getCreatorId());
+  public User getCreator() {
+    return User.getById(getHeader().getCreatorId());
   }
 
   @Override

@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * It is an abstract implementation of a resource event. It defines the common properties all
- * the concrete events should have. A concrete resource event can extend this class to inherit the
- * basic properties without to implement them by itself.
+ * It is an abstract implementation of a notification event on a resource's state change. It defines
+ * the common properties all the concrete events should have. A concrete resource event can
+ * extend this class to inherit the basic properties without to implement them by itself.
  * <p>
  * The properties of this abstract class are all annotated with JAXB annotations so that they are
  * ready to be serialized into a text stream (in XML or in JSON). This is particularly useful when
@@ -48,7 +48,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
   @XmlElement
   private Type type;
   @XmlElement
-  private StateTransition<T> resource;
+  private StateTransition<T> transition;
   @XmlElement
   private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -58,9 +58,9 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
 
   /**
    * Constructs a new instance representing the specified event type in relation to the specified
-   * resource.
+   * state change of the concerned resource.
    * @param type the type of the event.
-   * @param resource the resource implied in the event. For an update, two instances of the same
+   * @param resource the resources implied in the event. For an update, two instances of the same
    * resource is expected:  the first being the resource before the update, the second being the
    * resource after the update (the result of the update).
    */
@@ -68,16 +68,16 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
     this.type = type;
     switch (type) {
       case CREATION:
-        this.resource = StateTransition.transitionBetween(null, resource[0]);
+        this.transition = StateTransition.transitionBetween(null, resource[0]);
         break;
       case UPDATE:
-        this.resource = StateTransition.transitionBetween(resource[0], resource[1]);
+        this.transition = StateTransition.transitionBetween(resource[0], resource[1]);
         break;
       case REMOVING:
-        this.resource = StateTransition.transitionBetween(resource[0], resource[0]);
+        this.transition = StateTransition.transitionBetween(resource[0], resource[0]);
         break;
       case DELETION:
-        this.resource = StateTransition.transitionBetween(resource[0], null);
+        this.transition = StateTransition.transitionBetween(resource[0], null);
         break;
     }
   }
@@ -89,7 +89,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
 
   @Override
   public StateTransition<T> getTransition() {
-    return resource;
+    return transition;
   }
 
   /**
@@ -131,7 +131,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
 
     final AbstractResourceEvent that = (AbstractResourceEvent) o;
 
-    if (!resource.equals(that.resource)) {
+    if (!transition.equals(that.transition)) {
       return false;
     }
     if (type != that.type) {
@@ -144,7 +144,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
   @Override
   public int hashCode() {
     int result = type.hashCode();
-    result = 31 * result + resource.hashCode();
+    result = 31 * result + transition.hashCode();
     return result;
   }
 }

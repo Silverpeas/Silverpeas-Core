@@ -252,7 +252,7 @@ class Admin implements Administration {
     domainSynchroScheduler.initialize(m_domainSynchroCron, synchroDomainIds);
 
     // init synchronization of groups
-    Group[] groups = null;
+    GroupDetail[] groups = null;
     try {
       groups = getSynchronizedGroups();
     } catch (AdminException e) {
@@ -261,7 +261,7 @@ class Admin implements Administration {
     }
     List<String> synchronizedGroupIds = new ArrayList<>();
     if (groups != null) {
-      for (Group group : groups) {
+      for (GroupDetail group : groups) {
         if (group.isSynchronized()) {
           synchronizedGroupIds.add(group.getId());
         }
@@ -2265,7 +2265,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group getGroup(String groupId) throws AdminException {
+  public GroupDetail getGroup(String groupId) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     return groupManager.getGroup(domainDriverManager, groupId);
@@ -2279,7 +2279,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group getGroupByNameInDomain(String groupName, String domainFatherId)
+  public GroupDetail getGroupByNameInDomain(String groupName, String domainFatherId)
       throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
@@ -2287,11 +2287,11 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group[] getGroups(String[] asGroupId) throws AdminException {
+  public GroupDetail[] getGroups(String[] asGroupId) throws AdminException {
     if (asGroupId == null) {
-      return new Group[0];
+      return new GroupDetail[0];
     }
-    Group[] aGroup = new Group[asGroupId.length];
+    GroupDetail[] aGroup = new GroupDetail[asGroupId.length];
     for (int nI = 0; nI < asGroupId.length; nI++) {
       aGroup[nI] = getGroup(asGroupId[nI]);
     }
@@ -2299,7 +2299,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String addGroup(Group group) throws AdminException {
+  public String addGroup(GroupDetail group) throws AdminException {
     try {
       return addGroup(group, false);
     } catch (Exception e) {
@@ -2308,7 +2308,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String addGroup(Group group, boolean onlyInSilverpeas) throws AdminException {
+  public String addGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
@@ -2357,7 +2357,7 @@ class Admin implements Administration {
 
   @Override
   public String deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException {
-    Group group = null;
+    GroupDetail group = null;
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
@@ -2405,7 +2405,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String updateGroup(Group group) throws AdminException {
+  public String updateGroup(GroupDetail group) throws AdminException {
     try {
       return updateGroup(group, false);
     } catch (Exception e) {
@@ -2414,7 +2414,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String updateGroup(Group group, boolean onlyInSilverpeas) throws AdminException {
+  public String updateGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
@@ -2534,7 +2534,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group[] getAllRootGroups() throws AdminException {
+  public GroupDetail[] getAllRootGroups() throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     return groupManager.getAllRootGroups(domainDriverManager);
@@ -2569,7 +2569,7 @@ class Admin implements Administration {
       }
 
       // Create the space profile instance
-      Group group = getGroup(groupProfileInst.getGroupId());
+      GroupDetail group = getGroup(groupProfileInst.getGroupId());
       String sProfileId = groupProfileManager.createGroupProfileInst(
           groupProfileInst, domainDriverManager, group.getId());
       groupProfileInst.setId(sProfileId);
@@ -2723,7 +2723,7 @@ class Admin implements Administration {
   @Override
   public UserDetail[] getUserDetails(String[] userIds) {
     if (userIds == null) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
 
     List<UserDetail> users = new ArrayList<>(userIds.length);
@@ -3235,10 +3235,10 @@ class Admin implements Administration {
         }
       }
       // Remove all groups
-      Group[] toRemoveGroups = groupManager.getGroupsOfDomain(domainDriverManager,
+      GroupDetail[] toRemoveGroups = groupManager.getGroupsOfDomain(domainDriverManager,
           domainId);
       if (toRemoveGroups != null) {
-        for (Group group : toRemoveGroups) {
+        for (GroupDetail group : toRemoveGroups) {
           try {
             deleteGroupById(group.getId(), false);
           } catch (Exception e) {
@@ -3307,7 +3307,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group[] getRootGroupsOfDomain(String domainId) throws AdminException {
+  public GroupDetail[] getRootGroupsOfDomain(String domainId) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
@@ -3318,7 +3318,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group[] getSynchronizedGroups() throws AdminException {
+  public GroupDetail[] getSynchronizedGroups() throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
@@ -3358,7 +3358,7 @@ class Admin implements Administration {
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       if (domainId != null && "-1".equals(domainId)) {
-        return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+        return new UserDetail[0];
       }
       return userManager.getUsersOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
@@ -3477,7 +3477,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group[] searchGroups(Group modelGroup, boolean isAnd) throws AdminException {
+  public GroupDetail[] searchGroups(GroupDetail modelGroup, boolean isAnd) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
@@ -4352,7 +4352,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public Group[] getAllSubGroups(String parentGroupId) throws AdminException {
+  public GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     String[] theIds = groupManager.getAllSubGroupIds(domainDriverManager, parentGroupId);
@@ -4362,14 +4362,14 @@ class Admin implements Administration {
   @Override
   public UserDetail[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter)
       throws AdminException {
-    Group theGroup = getGroup(sGroupId);
+    GroupDetail theGroup = getGroup(sGroupId);
 
     if (theGroup == null) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
     String[] usersIds = theGroup.getUserIds();
     if (usersIds == null || usersIds.length <= 0) {
-      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
     if (sUserLastNameFilter == null || sUserLastNameFilter.length() <= 0) {
       return getUserDetails(usersIds);
@@ -4595,7 +4595,7 @@ class Admin implements Administration {
   @Override
   public void synchronizeGroupByRule(String groupId, boolean scheduledMode) throws AdminException {
 
-    Group group = getGroup(groupId);
+    GroupDetail group = getGroup(groupId);
     String rule = group.getRule();
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
@@ -4740,7 +4740,7 @@ class Admin implements Administration {
   @Override
   public String synchronizeGroup(String groupId, boolean recurs) throws Exception {
 
-    Group theGroup = getGroup(groupId);
+    GroupDetail theGroup = getGroup(groupId);
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     if (theGroup.isSynchronized()) {
@@ -4748,7 +4748,7 @@ class Admin implements Administration {
     } else {
       DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theGroup
           .getDomainId()));
-      Group gr = synchroDomain.synchroGroup(theGroup.getSpecificId());
+      GroupDetail gr = synchroDomain.synchroGroup(theGroup.getSpecificId());
 
       gr.setId(groupId);
       gr.setDomainId(theGroup.getDomainId());
@@ -4766,7 +4766,7 @@ class Admin implements Administration {
         getCurrentDomainDriverManager();
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
-    Group gr;
+    GroupDetail gr;
 
     if (isIdKey) {
       gr = synchroDomain.synchroGroup(groupKey);
@@ -4826,7 +4826,7 @@ class Admin implements Administration {
 
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
-    Group theGroup = getGroup(groupId);
+    GroupDetail theGroup = getGroup(groupId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(
         Integer.parseInt(theGroup.getDomainId()));
     synchroDomain.removeGroup(theGroup.getSpecificId());
@@ -4834,22 +4834,22 @@ class Admin implements Administration {
   }
 
   protected void internalSynchronizeGroup(DomainDriver synchroDomain,
-      Group latestGroup, boolean recurs) throws Exception {
+      GroupDetail latestGroup, boolean recurs) throws Exception {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     latestGroup.setUserIds(translateUserIds(latestGroup.getDomainId(),
         latestGroup.getUserIds()));
     updateGroup(latestGroup, true);
     if (recurs) {
-      Group[] childs = synchroDomain.getGroups(latestGroup.getSpecificId());
+      GroupDetail[] childs = synchroDomain.getGroups(latestGroup.getSpecificId());
 
-      for (final Group child : childs) {
+      for (final GroupDetail child : childs) {
         String existingGroupId = null;
         try {
           existingGroupId = groupManager
               .getGroupIdBySpecificIdAndDomainId(domainDriverManager, child.getSpecificId(),
                   latestGroup.getDomainId());
-          Group existingGroup = getGroup(existingGroupId);
+          GroupDetail existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
             // Only synchronize the group if latestGroup is his true parent
             synchronizeGroup(existingGroupId, recurs);
@@ -4903,7 +4903,7 @@ class Admin implements Administration {
           // performed to the group -> Remove it
           incGroupsId.remove(oldGroupId);
         } else {
-          Group grpToRemove = groupManager.getGroup(domainDriverManager, oldGroupId);
+          GroupDetail grpToRemove = groupManager.getGroup(domainDriverManager, oldGroupId);
           if (theUserDetail.getDomainId().equals(grpToRemove.getDomainId())) {
             // Remove the user from this group
             groupManager.removeUserFromGroup(domainDriverManager, userId, oldGroupId);
@@ -5332,8 +5332,8 @@ class Admin implements Administration {
       String fromTimeStamp, String toTimeStamp) throws Exception {
     boolean bFound;
     String specificId;
-    String sReport = "Group synchronization : \n";
-    Map<String, Group> allDistantGroups = new HashMap<>();
+    String sReport = "GroupDetail synchronization : \n";
+    Map<String, GroupDetail> allDistantGroups = new HashMap<>();
     int iNbGroupsAdded = 0;
     int iNbGroupsMaj = 0;
     int iNbGroupsDeleted = 0;
@@ -5342,9 +5342,9 @@ class Admin implements Administration {
     SynchroDomainReport.warn("admin.synchronizeGroups", "Starting groups synchronization...");
     try {
       // Get all root groups of the domain from distant datasource
-      Group[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
+      GroupDetail[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
       // Get all groups of the domain from Silverpeas
-      Group[] silverpeasGroups = groupManager.getGroupsOfDomain(domainDriverManager, domainId);
+      GroupDetail[] silverpeasGroups = groupManager.getGroupsOfDomain(domainDriverManager, domainId);
 
       SynchroDomainReport.info("admin.synchronizeGroups", "Adding or updating groups in database...");
       // Check for new groups resursively
@@ -5353,9 +5353,9 @@ class Admin implements Administration {
 
       // Delete obsolete groups
       SynchroDomainReport.info("admin.synchronizeGroups", "Removing groups from database...");
-      Group[] distantGroups = allDistantGroups.values().toArray(
-          new Group[allDistantGroups.size()]);
-      for (Group silverpeasGroup : silverpeasGroups) {
+      GroupDetail[] distantGroups = allDistantGroups.values().toArray(
+          new GroupDetail[allDistantGroups.size()]);
+      for (GroupDetail silverpeasGroup : silverpeasGroups) {
         bFound = false;
         specificId = silverpeasGroup.getSpecificId();
 
@@ -5374,7 +5374,7 @@ class Admin implements Administration {
             groupManager.deleteGroupById(domainDriverManager, silverpeasGroup, true);
             iNbGroupsDeleted++;
             sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn("admin.synchronizeGroups", "Group " + silverpeasGroup.getName()
+            SynchroDomainReport.warn("admin.synchronizeGroups", "GroupDetail " + silverpeasGroup.getName()
                 + " deleted (SpecificId:" + specificId + ")");
           } catch (AdminException aeDel) {
             SilverLogger.getLogger(this).error("Full synchro: error while deleting group " +
@@ -5406,21 +5406,21 @@ class Admin implements Administration {
   // allDistantGroups(vide), userIds, null)
   // No need to refresh cache : the cache is reseted at the end of the
   // synchronization
-  private String checkOutGroups(String domainId, Group[] existingGroups, Group[] testedGroups,
-      Map<String, Group> allIncluededGroups, Map<String, String> userIds, String superGroupId,
+  private String checkOutGroups(String domainId, GroupDetail[] existingGroups, GroupDetail[] testedGroups,
+      Map<String, GroupDetail> allIncluededGroups, Map<String, String> userIds, String superGroupId,
       int iNbGroupsAdded, int iNbGroupsMaj, int iNbGroupsDeleted) throws Exception {
     boolean bFound;
     String specificId;
     String silverpeasId = null;
     String report = "";
     String result;
-    for (Group testedGroup : testedGroups) {
+    for (GroupDetail testedGroup : testedGroups) {
       allIncluededGroups.put(testedGroup.getSpecificId(), testedGroup);
     }
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     // Add new groups or update existing ones from distant datasource
-    for (Group testedGroup : testedGroups) {
+    for (GroupDetail testedGroup : testedGroups) {
       bFound = false;
       specificId = testedGroup.getSpecificId();
 
@@ -5438,7 +5438,7 @@ class Admin implements Administration {
           testedGroup.setId(existingGroups[nJ].getId());
         }
       }
-      // Prepare Group to be at Silverpeas format
+      // Prepare GroupDetail to be at Silverpeas format
       testedGroup.setDomainId(domainId);
 
       // Set the Parent Id
@@ -5520,9 +5520,9 @@ class Admin implements Administration {
       }
       // Recurse with subgroups
       if (silverpeasId != null && silverpeasId.length() > 0) {
-        Group[] subGroups = domainDriverManager.getGroups(silverpeasId);
+        GroupDetail[] subGroups = domainDriverManager.getGroups(silverpeasId);
         if (subGroups != null && subGroups.length > 0) {
-          Group[] cleanSubGroups = removeCrossReferences(subGroups,
+          GroupDetail[] cleanSubGroups = removeCrossReferences(subGroups,
               allIncluededGroups, specificId);
           if (cleanSubGroups != null && cleanSubGroups.length > 0) {
             SynchroDomainReport.info("admin.checkOutGroups",
@@ -5541,11 +5541,11 @@ class Admin implements Administration {
   /**
    * Remove cross reference risk between groups
    */
-  private Group[] removeCrossReferences(Group[] subGroups, Map<String, Group> allIncluededGroups,
+  private GroupDetail[] removeCrossReferences(GroupDetail[] subGroups, Map<String, GroupDetail> allIncluededGroups,
       String fatherId) throws Exception {
-    ArrayList<Group> cleanSubGroups = new ArrayList<>();
+    ArrayList<GroupDetail> cleanSubGroups = new ArrayList<>();
     //noinspection UnusedAssignment,UnusedAssignment,UnusedAssignment
-    for (Group subGroup : subGroups) {
+    for (GroupDetail subGroup : subGroups) {
       if (allIncluededGroups.get(subGroup.getSpecificId()) == null) {
         cleanSubGroups.add(subGroup);
       } else {
@@ -5553,7 +5553,7 @@ class Admin implements Administration {
             "Cross removed for child : " + subGroup.getSpecificId() + " of father : " + fatherId);
       }
     }
-    return cleanSubGroups.toArray(new Group[cleanSubGroups.size()]);
+    return cleanSubGroups.toArray(new GroupDetail[cleanSubGroups.size()]);
   }
 
   // -------------------------------------------------------------------------
@@ -5743,7 +5743,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public ListSlice<Group> searchGroups(final GroupsSearchCriteria searchCriteria) throws
+  public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) throws
       AdminException {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
@@ -5812,7 +5812,7 @@ class Admin implements Administration {
 
   @Override
   public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-      Group modelGroup) throws AdminException {
+      GroupDetail modelGroup) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     try {

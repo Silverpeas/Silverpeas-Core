@@ -25,7 +25,7 @@
 package org.silverpeas.core.socialnetwork.service;
 
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
-import org.silverpeas.core.socialnetwork.dao.ExternalAccountManager;
+import org.silverpeas.core.socialnetwork.dao.ExternalAccountRepository;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.ExternalAccountIdentifier;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
@@ -55,7 +55,7 @@ public class SocialNetworkService {
   private SocialNetworkConnector linkedIn;
 
   @Inject
-  private ExternalAccountManager dao;
+  private ExternalAccountRepository dao;
 
   protected SocialNetworkService() {
   }
@@ -115,7 +115,7 @@ public class SocialNetworkService {
   @Transactional(Transactional.TxType.REQUIRED)
   public void createExternalAccount(SocialNetworkID networkId, String userId, String profileId) {
     ExternalAccount account = new ExternalAccount();
-    account.setId(networkId.name() + ExternalAccountIdentifier.COMPOSITE_SEPARATOR + profileId);
+    account.setExternalId(networkId, profileId);
     account.setSilverpeasUserId(userId);
 
     dao.saveAndFlush(account);

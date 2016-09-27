@@ -57,7 +57,7 @@
             out.print("<FONT COLOR=#00FF00>");
           }
         }
-        out.print(EncodeHelper.javaStringToHtmlString(toDisp) + "<BR>");
+        out.print(WebEncodeHelper.javaStringToHtmlString(toDisp) + "<BR>");
         out.print("</FONT>");
         out.flush();
       }

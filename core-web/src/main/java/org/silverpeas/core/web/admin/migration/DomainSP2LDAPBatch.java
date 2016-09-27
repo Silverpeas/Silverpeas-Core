@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -133,9 +134,9 @@ public class DomainSP2LDAPBatch {
 
             if (processGroup) {
               int nextId = DBUtil.getNextId("ST_GROUP", "specificId");
-              group.setSpecificId(Integer.toString(nextId));
-              group.setDomainId(null);
-              adminController.updateGroup(group);
+              ((GroupDetail)group).setSpecificId(Integer.toString(nextId));
+              ((GroupDetail)group).setDomainId(null);
+              adminController.updateGroup((GroupDetail) group);
               SynchroDomainReport.info("DomainSP2LDAPBatch.processMigration()",
                   "- Groupe " + group.getName() + " avec " + group.getUserIds().length +
                   " utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte");

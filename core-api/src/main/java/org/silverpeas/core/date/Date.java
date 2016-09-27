@@ -26,6 +26,9 @@ package org.silverpeas.core.date;
 
 import org.silverpeas.core.util.DateUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -35,7 +38,7 @@ import static java.util.Calendar.*;
  * A date on a day of a month and in year. The time isn't represented here. Please refers to
  * DateTime to models also the time.
  */
-public class Date extends AbstractDateDatable<Date> {
+public class Date extends AbstractDateTemporal<Date> {
 
   private static final long serialVersionUID = 7970735205076340522L;
   private TimeZone timeZone = TimeZone.getDefault();
@@ -140,12 +143,25 @@ public class Date extends AbstractDateDatable<Date> {
   }
 
   /**
+   * Gets the {@link LocalDate} representation of this Silverpeas date.
+   * @return the local date of this date.
+   */
+  public LocalDate toLocalDate() {
+    return LocalDateTime.ofInstant(toInstant(), getTimeZone().toZoneId()).toLocalDate();
+  }
+
+  /**
    * The time zone has no meaning for a date.
    * @return the time zone in which this date is set.
    */
   @Override
   public TimeZone getTimeZone() {
     return (TimeZone) timeZone.clone();
+  }
+
+  @Override
+  public boolean isTimeSupported() {
+    return false;
   }
 
   /**

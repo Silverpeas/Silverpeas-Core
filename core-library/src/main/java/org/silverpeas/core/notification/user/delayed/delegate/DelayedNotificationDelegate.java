@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.notification.user.delayed.delegate;
 
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.client.AbstractNotification;
+import org.silverpeas.core.notification.user.client.NotificationParameterNames;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.DelayedNotificationProvider;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
@@ -31,26 +38,19 @@ import org.silverpeas.core.notification.user.delayed.synthese.DelayedNotificatio
 import org.silverpeas.core.notification.user.delayed.synthese.SyntheseResource;
 import org.silverpeas.core.notification.user.delayed.synthese.SyntheseResourceNotification;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.notification.user.client.AbstractNotification;
-import org.silverpeas.core.notification.user.client.NotificationParameterNames;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.util.*;
 
@@ -428,7 +428,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     syntheseResource.setDescription(resource.getResourceDescription());
     if (syntheseResource.getDescription() != null) {
       syntheseResource.setDescription(
-          EncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseResource.getDescription()));
+          WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseResource.getDescription()));
     }
     syntheseResource.setLocation(resource.getResourceLocation()
         .replaceAll(NotificationResourceData.LOCATION_SEPARATOR, LOCATION_SEPARATOR));
@@ -467,7 +467,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
       if (syntheseNotification.getMessage() != null) {
         isPreviousHasMessage = true;
         syntheseNotification.setMessage(
-            EncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseNotification.getMessage()));
+            WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseNotification.getMessage()));
       } else {
         isPreviousHasMessage = false;
       }

@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -95,7 +95,7 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
         }
         html =
             "<a target=\"_blank\" href=\"" + value + "\">"
-            + EncodeHelper.javaStringToHtmlString(value) + "</a>";
+            + WebEncodeHelper.javaStringToHtmlString(value) + "</a>";
       }
     } else {
       // Suggestions used ?
@@ -113,7 +113,7 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
       input inputField = new input();
       inputField.setName(fieldName);
       inputField.setID(fieldName);
-      inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+      inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
       inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
           : "1000");

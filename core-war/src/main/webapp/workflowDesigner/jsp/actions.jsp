@@ -1,6 +1,6 @@
 <%@ page import="org.silverpeas.core.workflow.api.model.Actions" %>
 <%@ page import="org.silverpeas.core.workflow.api.model.Action" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %><%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -88,7 +88,7 @@ if ( actions != null )
                               "javascript:confirmRemove('RemoveAction?action="
                               + URLEncoder.encode(strActionName, UTF8) + "', '"
                               + resource.getString("workflowDesigner.confirmRemoveJS")
-                              + " " + EncodeHelper.javaStringToJsString(strActionName) + " ?');" );
+                              + " " + WebEncodeHelper.javaStringToJsString(strActionName) + " ?');" );
 
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
                                  resource.getString("GML.modify"),

@@ -20,15 +20,15 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPaneSilverpeasV5;
 import org.silverpeas.core.web.util.viewgenerator.html.board.Board;
@@ -48,7 +48,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPaneWA;
 import org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList;
 import org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListSilverpeasV5;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane;
-import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneSilverpeasV5Web20;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes
+    .OperationPaneSilverpeasV5Web20;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationSP;
 import org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessage;
@@ -64,6 +65,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
+
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -211,12 +215,12 @@ public class GraphicElementFactory {
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
-    CacheServiceProvider.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService().getCache()
         .put(REQUEST_EXTERNAL_STYLESHEET, externalStylesheet);
   }
 
   public String getExternalStylesheet() {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheServiceProvider.getRequestCacheService().getCache()
         .get(REQUEST_EXTERNAL_STYLESHEET, String.class);
   }
 
@@ -614,11 +618,13 @@ public class GraphicElementFactory {
   }
 
   public void setComponentIdForCurrentRequest(String componentId) {
-    CacheServiceProvider.getRequestCacheService().put(REQUEST_COMPONENT_ID, componentId);
+    CacheServiceProvider.getRequestCacheService().getCache().put(REQUEST_COMPONENT_ID, componentId);
   }
 
   public String getComponentIdOfCurrentRequest() {
-    return CacheServiceProvider.getRequestCacheService().get(REQUEST_COMPONENT_ID, String.class);
+    return CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(REQUEST_COMPONENT_ID, String.class);
   }
 
   public MainSessionController getMainSessionController() {
@@ -626,16 +632,21 @@ public class GraphicElementFactory {
   }
 
   public void setHttpRequest(HttpRequest request) {
-    mainSessionController = request.getMainSessionController();
+    mainSessionController = null;
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+      mainSessionController =
+          (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+    }
     boolean isComponentMainPage =
         request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
             endsWith("/jsp/Main");
-    CacheServiceProvider.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService().getCache()
         .put(REQUEST_IS_COMPONENT_MAIN_PAGE, isComponentMainPage);
   }
 
   public boolean isComponentMainPage() {
-    Boolean isComponentMainPage = CacheServiceProvider.getRequestCacheService()
+    Boolean isComponentMainPage = CacheServiceProvider.getRequestCacheService().getCache()
         .get(REQUEST_IS_COMPONENT_MAIN_PAGE, Boolean.class);
     return isComponentMainPage != null && isComponentMainPage;
   }
@@ -644,14 +655,16 @@ public class GraphicElementFactory {
    * @return the space identifier
    */
   public String getSpaceIdOfCurrentRequest() {
-    return CacheServiceProvider.getRequestCacheService().get(REQUEST_SPACE_ID, String.class);
+    return CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(REQUEST_SPACE_ID, String.class);
   }
 
   /**
    * @param spaceId the space identifier to set (full identifier with WA + number)
    */
   public void setSpaceIdForCurrentRequest(String spaceId) {
-    CacheServiceProvider.getRequestCacheService().put(REQUEST_SPACE_ID, spaceId);
+    CacheServiceProvider.getRequestCacheService().getCache().put(REQUEST_SPACE_ID, spaceId);
   }
 
   /**

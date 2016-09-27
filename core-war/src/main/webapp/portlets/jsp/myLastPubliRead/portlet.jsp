@@ -28,7 +28,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 
@@ -77,7 +77,7 @@ if (publications.isEmpty()) { %>
 			first = false;
 		}
 %>
-	<a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=EncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
+	<a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
     <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
     .getOutputDate(pub.getUpdateDate(), language)%>

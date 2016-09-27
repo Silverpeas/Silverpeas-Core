@@ -28,7 +28,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCell"%>
@@ -185,7 +185,7 @@ if(listResult != null) {
 		arrayPane.addArrayColumn(resource.getString("JSP.path"));
 
 		for(SearchResult searchResult : listResult) {
-			String name = EncodeHelper.javaStringToHtmlString(searchResult.getName());
+			String name = WebEncodeHelper.javaStringToHtmlString(searchResult.getName());
 			String url	= searchResult.getUrl();
 			ArrayLine arrayLine = arrayPane.addArrayLine();
 			arrayLine.addArrayCellText("<a href=\"#\" onclick=\""+url+"\">"+name+"</a>");

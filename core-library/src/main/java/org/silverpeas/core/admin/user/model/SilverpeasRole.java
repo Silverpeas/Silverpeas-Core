@@ -26,7 +26,7 @@ package org.silverpeas.core.admin.user.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SimpleCacheService;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -196,11 +196,11 @@ public enum SilverpeasRole {
    */
   public static SilverpeasRole getGreatestOfCurrentUserOn(String componentInstanceId) {
     String cacheKey = GREATEST_ROLE_OF_CURRENT_USER_PREFIX + componentInstanceId;
-    SimpleCacheService cache = CacheServiceProvider.getRequestCacheService();
+    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     SilverpeasRole greatestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
     if (greatestOfCurrentUser == null) {
       Collection<SilverpeasRole> roles = from(getOrganisationController()
-          .getUserProfiles(UserDetail.getCurrentRequester().getId(), componentInstanceId));
+          .getUserProfiles(User.getCurrentRequester().getId(), componentInstanceId));
       roles.remove(SilverpeasRole.Manager);
       greatestOfCurrentUser = SilverpeasRole.getGreatestFrom(roles);
       cache.put(cacheKey, greatestOfCurrentUser);

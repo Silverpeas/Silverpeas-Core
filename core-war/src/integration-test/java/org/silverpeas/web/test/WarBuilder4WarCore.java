@@ -60,7 +60,7 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-web");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
-    warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-calendar");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-contact");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-mylinks");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-importexport");

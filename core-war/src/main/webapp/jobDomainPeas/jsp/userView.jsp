@@ -130,7 +130,7 @@ out.println(board.printBefore());
 		  %>
 			<li id="form-row-<%=property%>" class="field">
 				<label class="txtlibform">
-					<%=EncodeHelper.javaStringToHtmlString(userObject.
+					<%=WebEncodeHelper.javaStringToHtmlString(userObject.
 					    getSpecificLabel(resource.getLanguage(),
 					       property))%>
 				</label>
@@ -139,7 +139,7 @@ out.println(board.printBefore());
 		            if ("STRING".equals(userObject.getPropertyType(property)) ||
 		                "USERID".equals(userObject.getPropertyType(property))) {
 					%>
-					<%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
+					<%=WebEncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
 					<%
 		            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
 

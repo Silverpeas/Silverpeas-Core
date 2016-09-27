@@ -41,8 +41,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.admin.user.model.Group"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -159,14 +160,14 @@ $(function () {
           <div id="subjectArea" class="field">
             <label class="txtlibform"><fmt:message key="GML.notification.subject"/></label>
             <div class="champs">
-		<input id="subject" type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=EncodeHelper.javaStringToHtmlString(notification.getSubject())%>"/>
+		<input id="subject" type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=WebEncodeHelper.javaStringToHtmlString(notification.getSubject())%>"/>
               <img src="<%=mandatoryField%>" width="5" height="5"/>
             </div>
           </div>
           <div id="messageArea" class="field">
             <label class="txtlibform"><fmt:message key="GML.notification.message"/></label>
             <div class="champs">
-              <textarea id="message" name="txtMessage" cols="49" rows="9"><%=EncodeHelper.javaStringToHtmlString(notification.getBody())%></textarea>
+              <textarea id="message" name="txtMessage" cols="49" rows="9"><%=WebEncodeHelper.javaStringToHtmlString(notification.getBody())%></textarea>
             </div>
           </div>
         </div>

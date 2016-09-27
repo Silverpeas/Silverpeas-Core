@@ -24,7 +24,8 @@
 
 package org.silverpeas.core.web.util;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -233,7 +234,7 @@ public class ClientBrowserUtil {
    */
   public static String rfc2047EncodeFilename(HttpServletRequest request, String filename) {
     if (isFirefox(request) || isChrome(request) || isSafari(request)) {
-      return EncodeHelper.encodeFilename(filename);
+      return WebEncodeHelper.encodeFilename(filename);
     }
     return filename;
   }
@@ -245,7 +246,7 @@ public class ClientBrowserUtil {
    */
   public static String rfc2047EncodeFilename(String userAgent, String filename) {
     if (isFirefox(userAgent) || isChrome(userAgent) || isSafari(userAgent)) {
-      return EncodeHelper.encodeFilename(filename);
+      return WebEncodeHelper.encodeFilename(filename);
     }
     return filename;
   }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletRequest;
@@ -150,7 +150,7 @@ public class RequestParameterDecoder {
       value = request.getParameterAsRequestFile(parameterName);
     } else if (parameterClass.isAssignableFrom(String.class)) {
       if (unescapeHtml) {
-        value = EncodeHelper.htmlStringToJavaString(request.getParameter(parameterName));
+        value = WebEncodeHelper.htmlStringToJavaString(request.getParameter(parameterName));
       } else {
         value = request.getParameter(parameterName);
       }

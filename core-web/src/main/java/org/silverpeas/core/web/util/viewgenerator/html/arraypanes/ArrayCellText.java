@@ -24,7 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import java.util.function.Function;
@@ -83,7 +83,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
   public String getText() {
     if (text == null && lazyInstance != null && lazyText != null) {
       text = defaultStringIfNotDefined(
-          EncodeHelper.javaStringToHtmlString(lazyText.apply(lazyInstance)));
+          WebEncodeHelper.javaStringToHtmlString(lazyText.apply(lazyInstance)));
     }
     return text;
   }

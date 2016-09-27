@@ -31,11 +31,15 @@ import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class DataSetTest {
+
+  private DbSetupRule dbSetupRule;
 
   /**
    * Gets the path of sql script that contains the creation of the tables.
@@ -57,28 +61,31 @@ public abstract class DataSetTest {
 
   @Rule
   public DbSetupRule getDbSetupRule() {
-    Object dbSetupInitializations = getDbSetupInitializations();
-    if (dbSetupInitializations instanceof Operation) {
+    if (dbSetupRule == null) {
+      Object dbSetupInitializations = getDbSetupInitializations();
+      if (dbSetupInitializations instanceof Operation) {
 
-      return loadFrom(new Operation[]{(Operation) dbSetupInitializations});
+        dbSetupRule = loadFrom(new Operation[]{(Operation) dbSetupInitializations});
 
-    } else if (dbSetupInitializations instanceof Operation[]) {
+      } else if (dbSetupInitializations instanceof Operation[]) {
 
-      return loadFrom((Operation[]) dbSetupInitializations);
+        dbSetupRule = loadFrom((Operation[]) dbSetupInitializations);
 
-    } else if (dbSetupInitializations instanceof String) {
+      } else if (dbSetupInitializations instanceof String) {
 
-      return loadFrom(new String[]{(String) dbSetupInitializations});
+        dbSetupRule = loadFrom(new String[]{(String) dbSetupInitializations});
 
-    } else if (dbSetupInitializations instanceof String[]) {
+      } else if (dbSetupInitializations instanceof String[]) {
 
-      return loadFrom((String[]) dbSetupInitializations);
+        dbSetupRule = loadFrom((String[]) dbSetupInitializations);
 
-    } else {
-      throw new IllegalArgumentException(
-          "getDbSetupInitializations method returns an unexpected result. Please consult the " +
-              "method documentation.");
+      } else {
+        throw new IllegalArgumentException(
+            "getDbSetupInitializations method returns an unexpected result. Please consult the " +
+                "method documentation.");
+      }
     }
+    return dbSetupRule;
   }
 
   private DbSetupRule loadFrom(Operation[] operations) {

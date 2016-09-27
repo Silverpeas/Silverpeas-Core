@@ -36,8 +36,10 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -59,8 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
-import static org.silverpeas.core.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
 
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement,
@@ -381,9 +382,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<UserDetail> getUsersOfDomains(List<String> domainIds) {
+  public <T extends User> List<T> getUsersOfDomains(List<String> domainIds) {
     try {
-      return getAdminService().getUsersOfDomains(domainIds);
+      return (List<T>) getAdminService().getUsersOfDomains(domainIds);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -391,9 +392,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
+  public <T extends User> List<T> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
     try {
-      return getAdminService().getUsersOfDomainsFromNewestToOldest(domainIds);
+      return (List<T>) getAdminService().getUsersOfDomainsFromNewestToOldest(domainIds);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -401,9 +402,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria criteria) {
+  public <T extends User> ListSlice<T> searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
-      return getAdminService().searchUsers(criteria);
+      return (ListSlice<T>) getAdminService().searchUsers(criteria);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -433,9 +434,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) {
+  public <T extends User> T[] searchUsers(T modelUser, boolean isAnd) {
     try {
-      return getAdminService().searchUsers(modelUser, isAnd);
+      return (T[]) getAdminService().searchUsers((UserDetail) modelUser, isAnd);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -443,9 +444,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
+  public <T extends Group> ListSlice<T> searchGroups(final GroupsSearchCriteria criteria) {
     try {
-      return getAdminService().searchGroups(criteria);
+      return (ListSlice<T>) getAdminService().searchGroups(criteria);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -455,7 +456,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public Group[] searchGroups(Group modelGroup, boolean isAnd) {
     try {
-      return getAdminService().searchGroups(modelGroup, isAnd);
+      return getAdminService().searchGroups((GroupDetail) modelGroup, isAnd);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -648,7 +649,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllUsersOfGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_USER_DETAIL_ARRAY;
+      return new UserDetail[0];
     }
   }
 
@@ -659,7 +660,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getPathToGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return new ArrayList<String>();
+      return new ArrayList<>();
     }
   }
 
@@ -939,9 +940,10 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public String[] searchUsersIds(String groupId, String componentId, String[] profileId,
-      UserDetail filterUser) {
+      User filterUser) {
     try {
-      return getAdminService().searchUsersIds(groupId, componentId, profileId, filterUser);
+      return getAdminService().searchUsersIds(groupId, componentId, profileId,
+          (UserDetail) filterUser);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -1005,7 +1007,8 @@ public class DefaultOrganizationController implements OrganizationController {
   public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
       Group modelGroup) {
     try {
-      return getAdminService().searchGroupsIds(isRootGroup, componentId, profileId, modelGroup);
+      return getAdminService().searchGroupsIds(isRootGroup, componentId, profileId,
+          (GroupDetail) modelGroup);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;

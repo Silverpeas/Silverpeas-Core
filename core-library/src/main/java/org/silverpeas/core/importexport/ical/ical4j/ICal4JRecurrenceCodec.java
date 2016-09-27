@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.importexport.ical.ical4j;
 
-import org.silverpeas.core.calendar.CalendarEventRecurrence;
+import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.importexport.EncodingException;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.text.ParseException;
 
-import static org.silverpeas.core.calendar.CalendarEventRecurrence.*;
+import static org.silverpeas.core.calendar.Recurrence.*;
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
 
 /**
@@ -54,7 +54,7 @@ public class ICal4JRecurrenceCodec {
    * @return the encoded iCal4J recurrence.
    * @throws EncodingException if the encoding fails.
    */
-  public Recur encode(final CalendarEventRecurrence eventRecurrence) throws EncodingException {
+  public Recur encode(final Recurrence eventRecurrence) throws EncodingException {
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
     }
@@ -65,8 +65,8 @@ public class ICal4JRecurrenceCodec {
       }
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
-      } else if (eventRecurrence.getEndDate() != NO_RECURRENCE_END_DATE) {
-        Date endDate = iCal4JDateCodec.encodeInUTC(eventRecurrence.getEndDate());
+      } else if (eventRecurrence.getEndDate().isPresent()) {
+        Date endDate = iCal4JDateCodec.encode(eventRecurrence.getEndDate().get());
         recur.setUntil(endDate);
       }
       for (DayOfWeekOccurrence dayOfWeekOccurrence : eventRecurrence.getDaysOfWeek()) {

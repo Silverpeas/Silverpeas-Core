@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -156,20 +156,20 @@ if (showTabs) {
 		%>
 		<td><img src="<%=icon%>" alt="<%=resource.getString("GML.groupe") %>" title="<%=resource.getString("GML.groupe")%>" align="absmiddle"/></td>
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
+		<td align=left valign="baseline" width="100%"><%=WebEncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
 	</tr>
   <c:if test="${not empty groupData.description}">
 	<tr>
 	    <td></td>
 		<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.description") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
+		<td align=left valign="baseline" width="100%"><%=WebEncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
 	</tr>
   </c:if>
   <c:if test="${not empty groupData.rule}">
 	<tr>
 	<td></td>
 	<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("JDP.synchroRule") %> :</td>
-	<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
+	<td align=left valign="baseline" width="100%"><%=WebEncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
     </tr>
   </c:if>
   <tr>
@@ -208,9 +208,9 @@ if (showTabs) {
 			        else
 					groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
 					arrayLine.addArrayCellIconPane(iconPane1);
-					arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
+					arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
 			        arrayLine.addArrayCellText(group.getTotalNbUsers());
-			        arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
+			        arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(group.getDescription()));
 			}
 			}
 		}
@@ -238,8 +238,8 @@ if (showTabs) {
         ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\"" + userIcon
               + "\" alt=\"" + iconAltText + "\" title=\"" + iconAltText + "\"/>");
         cellIcon.setCompareOn(user.getState().name());
-        arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
-        arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
+        arrayLineUser.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
+        arrayLineUser.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(user.getFirstName()));
         Date lastConnection = user.getLastLoginDate();
         ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));
         cell.setCompareOn(lastConnection);

@@ -35,8 +35,9 @@ import org.silverpeas.core.contribution.content.form.field.ExplorerField;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     if (template.isMandatory() && pageContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '" +
-          EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " +
+          WebEncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " +
           Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("      errorNb++;");
       out.println("   }");
@@ -130,12 +131,12 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     }
     html +=
         "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
-            EncodeHelper.javaStringToHtmlString(nodePK) + "\"/>";
+            WebEncodeHelper.javaStringToHtmlString(nodePK) + "\"/>";
 
     if (!template.isHidden()) {
       html += "<input type=\"text\" disabled=\"disabled\" size=\"50\" " + "id=\"" + fieldName +
           "_path\" name=\"" + fieldName + "$$path\" value=\"" +
-          EncodeHelper.javaStringToHtmlString(path) + "\"/>";
+          WebEncodeHelper.javaStringToHtmlString(path) + "\"/>";
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {

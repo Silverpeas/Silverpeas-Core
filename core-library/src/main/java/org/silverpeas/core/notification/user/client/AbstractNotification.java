@@ -33,7 +33,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
  * @author
  * @version %I%, %G%
  */
-public class AbstractNotification {
+public abstract class AbstractNotification {
 
   public String getApplicationURL() {
     return URLUtil.getApplicationURL();

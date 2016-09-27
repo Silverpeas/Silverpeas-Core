@@ -25,7 +25,10 @@ import java.io.Serializable;
 
 /**
  * It is a generic representation of a transition between two states of a state-machine, whatever
- * the state-machine is. All classes presenting a transition with business logic should extend
+ * the state-machine is. Usually many of the resources managed or handled in Silverpeas are
+ * state-machine alike.
+ *
+ * All classes presenting a transition with business logic should extend
  * this class and adds the treatment specific to the transition they represent.
  * @param <T> the type representing a state in the state-machine.
  * @author mmoquillon

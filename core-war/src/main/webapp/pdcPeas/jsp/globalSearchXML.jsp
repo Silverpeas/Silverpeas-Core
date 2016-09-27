@@ -181,7 +181,7 @@ function viewXmlSearch(){
 						if (space.getId().equals(spaceSelected))
 							selected = " selected";
 
-						out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+EncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
+						out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+WebEncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
 				}
              %>
              </select></td>
@@ -199,7 +199,7 @@ function viewXmlSearch(){
 						if (component.getId().equals(componentSelected)){
 							selected = " selected";
 						}
-						out.println("<option value=\""+component.getId()+"\""+selected+">"+EncodeHelper.javaStringToHtmlString(component.getLabel(language))+"</option>");
+						out.println("<option value=\""+component.getId()+"\""+selected+">"+WebEncodeHelper.javaStringToHtmlString(component.getLabel(language))+"</option>");
 				}
 			%>
 			</select>

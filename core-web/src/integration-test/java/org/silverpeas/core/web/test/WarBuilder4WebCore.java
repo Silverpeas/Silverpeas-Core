@@ -28,6 +28,7 @@ import org.silverpeas.core.test.BasicCoreWarBuilder;
 import org.silverpeas.core.test.WarBuilder;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.test.JcrContext;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
@@ -46,19 +47,21 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
-    addClasses(SilverpeasSessionOpener.class);
+    addClasses(SilverpeasSessionOpener.class, TestJcrRepositoryProvider.class);
     addPackages(true, "org.silverpeas.core.web.http");
-    addPackages(true, "org.silverpeas.core.web.mvc");
     addPackages(true, "org.silverpeas.core.web.panel");
     addPackages(true, "org.silverpeas.core.web.selection");
     addPackages(true, "org.silverpeas.core.web.subscription");
     addPackages(true, "org.silverpeas.core.web.util.security");
     addPackages(true, "org.silverpeas.core.web.util.servlet");
+    addPackages(true, "org.silverpeas.core.web.session");
     // Bundles & Settings
+    addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
     addAsResource("org/silverpeas/publication/publicationSettings.properties");
     addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
     addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");
     addAsResource("org/silverpeas/peasCore/SessionManager.properties");
+    addAsResource("org/silverpeas/index/indexing/Parser.properties");
     addAsResource("org/silverpeas/index/indexing/StopWords.properties");
     addAsResource("org/silverpeas/index/search/searchEngineSettings.properties");
     addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
@@ -96,6 +99,15 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
    */
   public WarBuilder4WebCore addStringTemplateFeatures() {
     addAsResource("org/silverpeas/util/stringtemplate.properties");
+    return this;
+  }
+
+  /**
+   * Adds the MVC framework.
+   * @return itself.
+   */
+  public WarBuilder4WebCore addMVCFeatures() {
+    addPackages(true, "org.silverpeas.core.web.mvc");
     return this;
   }
 }

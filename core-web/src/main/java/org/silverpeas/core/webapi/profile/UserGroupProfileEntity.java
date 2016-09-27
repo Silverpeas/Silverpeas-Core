@@ -25,6 +25,8 @@ package org.silverpeas.core.webapi.profile;
 
 import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.admin.user.model.Group;
 import java.net.URI;
@@ -44,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserGroupProfileEntity extends Group implements WebEntity {
+public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
 
   private static final long serialVersionUID = 6383835034479351000L;
 
@@ -87,16 +89,16 @@ public class UserGroupProfileEntity extends Group implements WebEntity {
   private int userCount = -1;
   @XmlElement @NotNull @Size(min=1)
   private String domainName;
-  private final Group group;
+  private final GroupDetail group;
 
   private UserGroupProfileEntity(Group group) {
-    this.group = group;
-    this.domainName = Group.getOrganisationController().getDomain(group.getDomainId()).getName();
+    this.group = (GroupDetail) group;
+    this.domainName = GroupDetail.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalNbUsers();
   }
 
   protected UserGroupProfileEntity() {
-    this.group = new Group();
+    this.group = new GroupDetail();
   }
 
   public UserGroupProfileEntity withAsUri(URI groupUri) {
@@ -198,7 +200,7 @@ public class UserGroupProfileEntity extends Group implements WebEntity {
   @Override
   public void setDomainId(String newDomainId) {
     this.group.setDomainId(newDomainId);
-    this.domainName = Group.getOrganisationController().getDomain(newDomainId).getName();
+    this.domainName = GroupDetail.getOrganisationController().getDomain(newDomainId).getName();
   }
 
   @Override
@@ -218,11 +220,6 @@ public class UserGroupProfileEntity extends Group implements WebEntity {
   @Override
   public List<? extends Group> getSubGroups() {
     return this.group.getSubGroups();
-  }
-
-  @Override
-  public void traceGroup() {
-    group.traceGroup();
   }
 
   @Override

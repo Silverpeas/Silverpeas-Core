@@ -37,7 +37,7 @@ import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
 import org.apache.ecs.xhtml.title;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -79,7 +79,7 @@ public class HtmlExportGenerator {
   public static String encode(String javastring) {
     StringBuilder sb = new StringBuilder("");
     if (javastring != null) {
-      String res = EncodeHelper.javaStringToHtmlString(javastring);
+      String res = WebEncodeHelper.javaStringToHtmlString(javastring);
       for (int i = 0; i < res.length(); i++) {
         switch (res.charAt(i)) {
           case '\n':
@@ -442,7 +442,7 @@ public class HtmlExportGenerator {
       } else if (node.getLevel() == 3) {
         sb.append("<option value=\"").append(node.getNodePK().getId());
         sb.append("\" class=\"intfdcolor51\">");
-        sb.append(EncodeHelper.javaStringToHtmlString(node.getName(language)))
+        sb.append(WebEncodeHelper.javaStringToHtmlString(node.getName(language)))
             .append("</option>\n");
       } else {
         StringBuilder spaces = new StringBuilder();
@@ -450,7 +450,7 @@ public class HtmlExportGenerator {
           spaces.append("&nbsp;&nbsp;");
           sb.append("<option value=\"").append(node.getNodePK().getId());
           sb.append("\" class=\"intfdcolor5\">").append(spaces.toString());
-          sb.append(EncodeHelper.javaStringToHtmlString(node.getName(language)));
+          sb.append(WebEncodeHelper.javaStringToHtmlString(node.getName(language)));
           sb.append("</option>\n");
         }
       }

@@ -36,6 +36,8 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 
 /**
+ * A notification that isn't sent immediately. It will be sent lately according to some of the
+ * user's preferences related to the user notification.
  * @author Yohann Chastagnier
  */
 public interface DelayedNotification {

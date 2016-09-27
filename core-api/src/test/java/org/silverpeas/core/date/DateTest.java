@@ -34,7 +34,7 @@ import org.junit.Test;
 
 import java.util.Calendar;
 
-import static org.silverpeas.core.date.DatableMatcher.*;
+import static org.silverpeas.core.date.TemporalMatcher.*;
 import static java.util.Calendar.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -228,7 +228,7 @@ public class DateTest {
 
   @Test
   public void isDefinedNotDefined() {
-    Datable date = new Date(DateUtil.getNow());
+    Temporal date = new Date(DateUtil.getNow());
     assertThat(date.isDefined(), is(true));
     assertThat(date.isNotDefined(), is(false));
 

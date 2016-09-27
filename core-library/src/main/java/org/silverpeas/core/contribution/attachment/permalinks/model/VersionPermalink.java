@@ -25,7 +25,7 @@
 package org.silverpeas.core.contribution.attachment.permalinks.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -37,7 +37,7 @@ import java.io.Serializable;
 @Table(name = "permalinks_version")
 @AttributeOverride(name = "id", column = @Column(name = "versionId"))
 public class VersionPermalink
-    extends AbstractJpaCustomEntity<VersionPermalink, UniqueIntegerIdentifier>
+    extends BasicJpaEntity<VersionPermalink, UniqueIntegerIdentifier>
     implements Serializable {
   private static final long serialVersionUID = 1L;
 

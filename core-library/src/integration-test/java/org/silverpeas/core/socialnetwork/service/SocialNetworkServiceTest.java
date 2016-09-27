@@ -19,6 +19,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.DefaultUserProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -74,7 +75,7 @@ public class SocialNetworkServiceTest {
               SpaceInst.class, UserFull.class, ComponentInstLight.class, SpaceInstLight.class,
               UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, ProfileInst.class,
               ObjectType.class, ComponentSearchCriteria.class, SearchCriteria.class, Domain.class,
-              CompoSpace.class, ListSlice.class, WAComponent.class,
+              CompoSpace.class, ListSlice.class, WAComponent.class, DefaultUserProvider.class,
               OrganizationControllerMock.class, OrganizationControllerProvider.class);
           warBuilder.testFocusedOn(
               war -> war.addPackages(true, "org.silverpeas.core.socialnetwork.service")

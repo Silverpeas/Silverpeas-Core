@@ -129,7 +129,7 @@ public class PublicationEntity implements WebEntity {
     this.pubDetail = publication;
     this.setUri(uri);
     this.setUpdateDate(publication.getUpdateDate());
-    this.creator = UserProfileEntity.fromUser(publication.getCreator());
+    this.creator = UserProfileEntity.fromUser((UserDetail) publication.getCreator());
     if (StringUtil.isDefined(publication.getUpdaterId())) {
       this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
     }

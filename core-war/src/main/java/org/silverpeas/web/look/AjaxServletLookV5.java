@@ -47,7 +47,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -404,8 +404,8 @@ public class AjaxServletLookV5 extends HttpServlet {
     }
 
     return "id=\"" + space.getId() + "\" name=\"" +
-        EncodeHelper.escapeXml(space.getName(language)) + "\" description=\"" +
-        EncodeHelper.escapeXml(space.getDescription()) + "\" type=\"" + attributeType +
+        WebEncodeHelper.escapeXml(space.getName(language)) + "\" description=\"" +
+        WebEncodeHelper.escapeXml(space.getDescription()) + "\" type=\"" + attributeType +
         "\" kind=\"space\" level=\"" + space.getLevel() + "\" look=\"" + spaceLook +
         "\" wallpaper=\"" + spaceWallpaper + "\"" + " css=\"" + spaceCSS + "\"";
   }
@@ -531,9 +531,9 @@ public class AjaxServletLookV5 extends HttpServlet {
           }
 
           out.write("<item id=\"" + component.getId() + "\" name=\"" +
-              EncodeHelper.escapeXml(component.getLabel(language)) + "\" description=\"" +
-              EncodeHelper.escapeXml(component.getDescription(language)) +
-              "\" type=\"component\" kind=\"" + EncodeHelper.escapeXml(kind) + "\" level=\"" +
+              WebEncodeHelper.escapeXml(component.getLabel(language)) + "\" description=\"" +
+              WebEncodeHelper.escapeXml(component.getDescription(language)) +
+              "\" type=\"component\" kind=\"" + WebEncodeHelper.escapeXml(kind) + "\" level=\"" +
               level + "\" open=\"" + open + "\" url=\"" + url + "\"/>");
         }
       }
@@ -569,7 +569,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         axis = primaryAxi;
         if (axis != null && axis.getNbObjects() > 0) {
           out.write("<axis id=\"" + axis.getAxisId() + "\" name=\"" +
-              EncodeHelper.escapeXml(axis.getAxisName()) +
+              WebEncodeHelper.escapeXml(axis.getAxisName()) +
               "\" description=\"\" level=\"0\" open=\"false\" nbObjects=\"" + axis.getNbObjects() +
               "\"/>");
         }
@@ -633,7 +633,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         value = daughter;
         if (value != null && value.getMotherId().equals(valueId)) {
           out.write("<value id=\"" + value.getFullPath() + "\" name=\"" +
-              EncodeHelper.escapeXml(value.getName()) + "\" description=\"\" level=\"" +
+              WebEncodeHelper.escapeXml(value.getName()) + "\" description=\"\" level=\"" +
               value.getLevelNumber() + "\" open=\"false\" nbObjects=\"" + value.getNbObjects() +
               "\"/>");
         }
@@ -676,41 +676,41 @@ public class AjaxServletLookV5 extends HttpServlet {
     if (!isAnonymousAccess && settings.getBoolean("personnalSpaceVisible", true)) {
       if (settings.getBoolean("agendaVisible", true)) {
         writer.write(
-            "<item id=\"agenda\" name=\"" + EncodeHelper.escapeXml(message.getString("Diary")) +
+            "<item id=\"agenda\" name=\"" + WebEncodeHelper.escapeXml(message.getString("Diary")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"" +
                 URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("todoVisible", true)) {
         writer
-            .write("<item id=\"todo\" name=\"" + EncodeHelper.escapeXml(message.getString("ToDo")) +
+            .write("<item id=\"todo\" name=\"" + WebEncodeHelper.escapeXml(message.getString("ToDo")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"" +
                 URLUtil.getURL(URLUtil.CMP_TODO, null, null) + "todo.jsp\"/>");
       }
       if (settings.getBoolean("notificationVisible", true)) {
         writer.write("<item id=\"notification\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("Mail")) +
+            WebEncodeHelper.escapeXml(message.getString("Mail")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
             URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("interestVisible", true)) {
         writer.write("<item id=\"subscriptions\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("MyInterestCenters")) +
+            WebEncodeHelper.escapeXml(message.getString("MyInterestCenters")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
             URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION, null, null) +
             "subscriptionList.jsp\"/>");
       }
       if (settings.getBoolean("favRequestVisible", true)) {
         writer.write("<item id=\"requests\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("FavRequests")) +
+            WebEncodeHelper.escapeXml(message.getString("FavRequests")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
             URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS, null, null) +
             "iCenterList.jsp\"/>");
       }
       if (settings.getBoolean("linksVisible", true)) {
         writer.write(
-            "<item id=\"links\" name=\"" + EncodeHelper.escapeXml(message.getString("FavLinks")) +
+            "<item id=\"links\" name=\"" + WebEncodeHelper.escapeXml(message.getString("FavLinks")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"" +
                 URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS, null, null) + "Main\"/>");
@@ -718,7 +718,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (settings.getBoolean("fileSharingVisible", true)) {
         if (!SharingServiceProvider.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"sharingTicket\" name=\"" +
-              EncodeHelper.escapeXml(message.getString("FileSharing")) +
+              WebEncodeHelper.escapeXml(message.getString("FileSharing")) +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
               URLUtil.getURL(URLUtil.CMP_FILESHARING, null, null) + "Main\"/>");
         }
@@ -728,7 +728,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         WebConnectionsInterface webConnections = WebConnectionsInterface.get();
         if (webConnections.listWebConnectionsOfUser(userId).size() > 0) {
           writer.write("<item id=\"webConnections\" name=\"" +
-              EncodeHelper.escapeXml(message.getString("WebConnections")) +
+              WebEncodeHelper.escapeXml(message.getString("WebConnections")) +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
               URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS, null, null) + "Main\"/>");
         }
@@ -737,26 +737,26 @@ public class AjaxServletLookV5 extends HttpServlet {
       // fonctionnalité "Trouver une date"
       if (settings.getBoolean("scheduleEventVisible", false)) {
         writer.write("<item id=\"scheduleevent\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("ScheduleEvent")) +
+            WebEncodeHelper.escapeXml(message.getString("ScheduleEvent")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
             URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + "Main\"/>");
       }
 
       if (settings.getBoolean("customVisible", true)) {
         writer.write("<item id=\"personalize\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("Personalization")) +
+            WebEncodeHelper.escapeXml(message.getString("Personalization")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
             URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("mailVisible", true)) {
         writer.write("<item id=\"notifAdmins\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("Feedback")) +
+            WebEncodeHelper.escapeXml(message.getString("Feedback")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
             "url=\"javascript:notifyAdministrators()\"/>");
       }
       if (settings.getBoolean("clipboardVisible", true)) {
         writer.write("<item id=\"clipboard\" name=\"" +
-            EncodeHelper.escapeXml(message.getString("Clipboard")) +
+            WebEncodeHelper.escapeXml(message.getString("Clipboard")) +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
             "url=\"javascript:openClipboard()\"/>");
       }
@@ -774,7 +774,7 @@ public class AjaxServletLookV5 extends HttpServlet {
             writer.write("<item id=\"" +
                 component.getId() +
                 "\" name=\"" +
-                EncodeHelper.escapeXml(label) +
+                WebEncodeHelper.escapeXml(label) +
                 "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" " +
                 "open=\"false\" url=\"" +
                 url + "\"/>");
@@ -786,7 +786,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           if (personalSpace == null ||
               personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
             writer.write("<item id=\"addComponent\" name=\"" +
-                EncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add")) +
+                WebEncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add")) +
                 "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
                 "url=\"javascript:listComponents()\"/>");
           }

@@ -1,0 +1,1 @@
+$sender$ has updated your presence status in the event <b>$event.title$</b>

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -128,7 +128,7 @@ public class EMLExtractor implements MailExtractor {
         // if present, return always HTML part
         return (String) part.getContent();
       } else if (part.isMimeType(MimeTypes.PLAIN_TEXT_MIME_TYPE)) {
-        body = EncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
+        body = WebEncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
       } else if (part.getContent() instanceof Multipart) {
         return getBody((Multipart) part.getContent());
       }
@@ -171,7 +171,7 @@ public class EMLExtractor implements MailExtractor {
       if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
         return (String) part.getContent();
       } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
-        return EncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
+        return WebEncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
       }
     }
     return "";

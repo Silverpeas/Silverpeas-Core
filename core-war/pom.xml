@@ -96,7 +96,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-calendar</artifactId>
+      <artifactId>silverpeas-core-personalorganizer</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

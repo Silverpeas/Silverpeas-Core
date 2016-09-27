@@ -37,7 +37,7 @@ import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;
@@ -88,7 +88,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("			errorMsg+=\"  - '"
-          + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+          + WebEncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("			errorNb++;");
       out.println("		}");
@@ -98,7 +98,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
         + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language
         + "'))) {");
     out.println("				errorMsg+=\"  - '"
-        + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+        + WebEncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
         + Util.getString("GML.MustContainsCorrectDate", language) + "\\n\";");
     out.println("				errorNb++;");
     out.println("		}}");
@@ -150,7 +150,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     input inputField = new input();
     inputField.setID(fieldName);
     inputField.setName(fieldName);
-    inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+    inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
     inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
         : "10");

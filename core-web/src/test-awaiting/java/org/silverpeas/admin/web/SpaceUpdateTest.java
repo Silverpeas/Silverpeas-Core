@@ -118,7 +118,7 @@ public class SpaceUpdateTest extends ResourceUpdateTest<AdminTestResources> {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.ResourceUpdateTest#updateOfResourceByANonAuthorizedUser()
+   * @see ResourceUpdateTest#updateOfResourceByANonAuthorizedUser()
    */
   @Ignore
   @Override
@@ -127,7 +127,7 @@ public class SpaceUpdateTest extends ResourceUpdateTest<AdminTestResources> {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.ResourceUpdateTest#updateOfAResourceFromAnInvalidOne()
+   * @see ResourceUpdateTest#updateOfAResourceFromAnInvalidOne()
    */
   @Ignore
   @Override

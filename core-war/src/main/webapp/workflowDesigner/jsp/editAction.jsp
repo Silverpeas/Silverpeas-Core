@@ -108,7 +108,7 @@
     row = actionPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("GML.name") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellInputText( "name", EncodeHelper.javaStringToHtmlString( action.getName() ) );
+    row.addArrayCellInputText( "name", WebEncodeHelper.javaStringToHtmlString( action.getName() ) );
 
     // Form
     //
@@ -178,7 +178,7 @@
             sb.append( "', '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
-            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.allowedUsers") ) );
+            sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.allowedUsers") ) );
             sb.append( " ?');" );
 
             row.addArrayCellLink( resource.getString("workflowDesigner.allowedUsers"),
@@ -247,7 +247,7 @@
             sb.append( "', '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
-            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.consequence") ) );
+            sb.append( WebEncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.consequence") ) );
             sb.append( " ?');" );
 
             row = consequencesPane.addArrayLine();
@@ -316,7 +316,7 @@
     out.println(board.printBefore());
 %>
 <FORM NAME="actionForm" METHOD="POST" ACTION="UpdateAction">
-	<input type="hidden" name="name_original" value="<%=EncodeHelper.javaStringToHtmlString(action.getName())%>">
+	<input type="hidden" name="name_original" value="<%=WebEncodeHelper.javaStringToHtmlString(action.getName())%>">
 <%
     out.println( actionPane.print() );
     out.println( "<br>" );

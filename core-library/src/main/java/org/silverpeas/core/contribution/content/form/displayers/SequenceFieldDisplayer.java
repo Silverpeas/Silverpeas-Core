@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.field.SequenceField;
 import org.apache.ecs.html.Input;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.IOException;
@@ -99,7 +99,7 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
     Input input = new Input();
     input.setID(fieldName);
     input.setName(fieldName);
-    input.setValue(EncodeHelper.javaStringToHtmlString(value));
+    input.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     input.setType(Input.text);
     input.setSize(value.length() + 2);
     input.setReadOnly(true);

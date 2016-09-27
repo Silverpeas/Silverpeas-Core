@@ -24,6 +24,7 @@
 
 package org.silverpeas.web.directory.model;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contact.model.CompleteContact;
 
@@ -38,11 +39,11 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     super();
   }
 
-  public DirectoryItemList(List<UserDetail> users) {
+  public DirectoryItemList(List<User> users) {
     addUsers(users);
   }
 
-  public DirectoryItemList(UserDetail[] users) {
+  public DirectoryItemList(User[] users) {
     addUsers(users);
   }
 
@@ -57,15 +58,15 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     }
   }
 
-  public void addUsers(List<UserDetail> users) {
-    for (UserDetail user : users) {
-      add(user);
+  public void addUsers(List<User> users) {
+    for (User user : users) {
+      add((UserDetail) user);
     }
   }
 
-  public void addUsers(UserDetail[] users) {
-    for (UserDetail user : users) {
-      add(user);
+  public void addUsers(User[] users) {
+    for (User user : users) {
+      add((UserDetail) user);
     }
   }
 

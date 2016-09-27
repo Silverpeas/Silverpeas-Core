@@ -27,13 +27,20 @@ package org.silverpeas.core.date;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.util.DateUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * A date and time.
+ * A date and time, expressed in a given timezone. If no timezone is specified explicitly, then
+ * the one of the JVM is used by default.
  */
-public class DateTime extends AbstractDateDatable<DateTime> {
+public class DateTime extends AbstractDateTemporal<DateTime> {
 
   private static final long serialVersionUID = -2562622075317046753L;
   private TimeZone timeZone = TimeZone.getDefault();
@@ -152,6 +159,11 @@ public class DateTime extends AbstractDateDatable<DateTime> {
   }
 
   @Override
+  public boolean isTimeSupported() {
+    return true;
+  }
+
+  @Override
   public boolean isBefore(DateTime anotherDatable) {
     return super.before(anotherDatable);
   }
@@ -220,5 +232,23 @@ public class DateTime extends AbstractDateDatable<DateTime> {
    */
   public Date toDate() {
     return new Date(this);
+  }
+
+  /**
+   * Converts this date time to a {@link ZonedDateTime} instance. The time part as well its
+   * timezone is kept.
+   * @return a zoned date time representation of this date time.
+   */
+  public ZonedDateTime toZoneDateTime() {
+    return ZonedDateTime.ofInstant(toInstant(), timeZone.toZoneId());
+  }
+
+  /**
+   * Gets the time of this date time by taking into account the offset from UTC/Greenwich in the
+   * ISO-8601 calendar system.
+   * @return the time of this date time.
+   */
+  public OffsetTime getOffsetTime() {
+    return OffsetDateTime.ofInstant(toInstant(), timeZone.toZoneId()).toOffsetTime();
   }
 }

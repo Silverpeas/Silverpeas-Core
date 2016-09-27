@@ -95,39 +95,33 @@ public class ViewServiceConcurrencyDemonstrationTest extends AbstractViewerTest 
 
       for (int i = 0; i < LAST_REQUEST_INDEX; i++) {
         final int index = i;
-        SubThreadManager.addAndStart(new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              final long startThreadTime = System.currentTimeMillis();
-              final DocumentView viewFirstRequest = viewService
-                  .getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.ppt")));
-              final long endThreadTime = System.currentTimeMillis();
-              durationTimes[index] = endThreadTime - startThreadTime;
-              endTimes[index] = endThreadTime;
-              results[index] = viewFirstRequest;
-            } catch (Exception e) {
-              throwables.add(e);
-              SubThreadManager.killAll();
-            }
+        SubThreadManager.addAndStart(new Thread(() -> {
+          try {
+            final long startThreadTime = System.currentTimeMillis();
+            final DocumentView viewFirstRequest = viewService
+                .getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.ppt")));
+            final long endThreadTime = System.currentTimeMillis();
+            durationTimes[index] = endThreadTime - startThreadTime;
+            endTimes[index] = endThreadTime;
+            results[index] = viewFirstRequest;
+          } catch (Exception e) {
+            throwables.add(e);
+            SubThreadManager.killAll();
           }
         }));
       }
 
-      SubThreadManager.addAndStart(new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Thread.sleep(500);
+      SubThreadManager.addAndStart(new Thread(() -> {
+        try {
+          Thread.sleep(500);
 
-            // Technical verification
-            assertThat("At this level, the cache has 2 elements", serviceCache.size(), is(2));
-            assertThat(getTemporaryPath().listFiles(), arrayWithSize(2));
+          // Technical verification
+          assertThat("At this level, the cache has 2 elements", serviceCache.size(), is(2));
+          assertThat(getTemporaryPath().listFiles(), arrayWithSize(2));
 
-          } catch (Throwable e) {
-            throwables.add(e);
-            SubThreadManager.killAll();
-          }
+        } catch (Throwable e) {
+          throwables.add(e);
+          SubThreadManager.killAll();
         }
       }));
 
@@ -194,39 +188,30 @@ public class ViewServiceConcurrencyDemonstrationTest extends AbstractViewerTest 
       final int NB_VIEW_CALLS = 100;
 
       for (int i = 0; i < NB_VIEW_CALLS; i++) {
-        SubThreadManager.addAndStart(new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odp")));
-            } catch (Exception ignore) {
-            }
+        SubThreadManager.addAndStart(new Thread(() -> {
+          try {
+            viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odp")));
+          } catch (Exception ignore) {
           }
         }));
-        SubThreadManager.addAndStart(new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
-            } catch (Exception ignore) {
-            }
+        SubThreadManager.addAndStart(new Thread(() -> {
+          try {
+            viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
+          } catch (Exception ignore) {
           }
         }));
       }
 
-      SubThreadManager.addAndStart(new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Thread.sleep(500);
+      SubThreadManager.addAndStart(new Thread(() -> {
+        try {
+          Thread.sleep(500);
 
-            // Technical verification
-            assertThat(getTemporaryPath().listFiles(), arrayWithSize(4));
+          // Technical verification
+          assertThat(getTemporaryPath().listFiles(), arrayWithSize(4));
 
-          } catch (Throwable e) {
-            throwables.add(e);
-            SubThreadManager.killAll();
-          }
+        } catch (Throwable e) {
+          throwables.add(e);
+          SubThreadManager.killAll();
         }
       }));
 

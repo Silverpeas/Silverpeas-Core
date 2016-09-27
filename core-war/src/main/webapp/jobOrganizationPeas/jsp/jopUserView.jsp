@@ -28,7 +28,8 @@
 
 <%@page import="org.silverpeas.web.joborganization.control.JobOrganizationPeasSessionController"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="check.jsp" %>
 
@@ -351,7 +352,7 @@
 					<!--Specific Info-->
 					<li id="form-row-<%=currentKey%>" class="field">
 							<label class="txtlibform">
-								<%=EncodeHelper.javaStringToHtmlString(userInfos.
+								<%=WebEncodeHelper.javaStringToHtmlString(userInfos.
 						    getSpecificLabel(resource.getLanguage(),
 							currentKey))%>
 					</label>
@@ -360,7 +361,7 @@
 					            if ("STRING".equals(userInfos.getPropertyType(currentKey)) ||
 					                "USERID".equals(userInfos.getPropertyType(currentKey))) {
 								%>
-								<%=EncodeHelper.javaStringToHtmlString(userInfos.getValue(currentKey))%>
+								<%=WebEncodeHelper.javaStringToHtmlString(userInfos.getValue(currentKey))%>
 								<%
 					            } else if ("BOOLEAN".equals(userInfos.getPropertyType(currentKey))) {
 
@@ -489,7 +490,7 @@
             for (int i = 0; i < spaces.length; i++) {
               //création des ligne de l'arrayPane
               ArrayLine arrayLine = arrayPane.addArrayLine();
-              arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(spaces[i]));
+              arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(spaces[i]));
             }
             if (arrayPane.getColumnToSort() == 0) {
               arrayPane.setColumnToSort(1);
@@ -522,10 +523,10 @@
 
               //création des ligne de l'arrayPane
               ArrayLine arrayLine = arrayPane.addArrayLine();
-              arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(profile[0]));
+              arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(profile[0]));
               arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openComponent('" + profile[2] + profile[1]
                   + "')\" rel=\"/silverpeas/JobDomainPeasComponentPathServlet?ComponentId=" + profile[1]
-                  + "\">" + EncodeHelper.javaStringToHtmlString(profile[3]) + "</a>");
+                  + "\">" + WebEncodeHelper.javaStringToHtmlString(profile[3]) + "</a>");
               arrayLine.addArrayCellText(profile[4]);
               arrayLine.addArrayCellText(profile[5]);
             }

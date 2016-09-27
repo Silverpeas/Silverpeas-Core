@@ -65,7 +65,7 @@ function B_VALIDER_ONCLICK() {
 			<td>
 	            <select name="SpaceBefore" id="SpaceBefore">
 	                <% for (SpaceInst space : brothers) { %>
-	                        <option value="<%=space.getId() %>"><%=EncodeHelper.javaStringToHtmlString(space.getName()) %></option>
+	                        <option value="<%=space.getId() %>"><%=WebEncodeHelper.javaStringToHtmlString(space.getName()) %></option>
 	                <% } %>
 	                <option value="-1" selected="selected"><%=resource.getString("JSPP.PlaceLast")%></option>
 	            </select>

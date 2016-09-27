@@ -25,7 +25,7 @@
 package org.silverpeas.core.admin.domain.driver;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -45,7 +45,7 @@ import java.util.Set;
         query = "SELECT s FROM SPGroup s WHERE s.description = :description"),
     @NamedQuery(name = "SPGroup.listAllRootGroups",
         query = "SELECT s FROM SPGroup s WHERE s.parent is null")})
-public class SPGroup extends AbstractJpaCustomEntity<SPGroup, UniqueIntegerIdentifier>
+public class SPGroup extends BasicJpaEntity<SPGroup, UniqueIntegerIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = 287775215176520067L;

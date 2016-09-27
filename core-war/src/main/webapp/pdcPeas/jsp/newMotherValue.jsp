@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -114,16 +114,16 @@ if (valueToCreate != null){
       <tr>
         <td class="txtlibform" valign="top"><%=resource.getString("pdcPeas.motherValue")%>&nbsp;:</td>
         <td>
-          <input type="text" style="text-align:left;" name="Name" maxlength="75" size="75" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" <%=nameFieldDisabled%>  onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle">
+          <input type="text" style="text-align:left;" name="Name" maxlength="75" size="75" value="<%=WebEncodeHelper.javaStringToHtmlString(name)%>" <%=nameFieldDisabled%>  onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle">
         </td>
       </tr>
       <tr>
         <td class="txtlibform" width="30%" valign="top"><%=resource.getString("pdcPeas.currentValue")%>&nbsp;:</td>
-        <td class="textePetitBold"><%=EncodeHelper.javaStringToHtmlString(currentValueName)%></td>
+        <td class="textePetitBold"><%=WebEncodeHelper.javaStringToHtmlString(currentValueName)%></td>
       </tr>
 	  <tr>
 		<td class="txtlibform" valign="top" width="30%"><%=resource.getString("pdcPeas.definition")%>&nbsp;:</td>
-		<td><TEXTAREA name="Description" rows="4" cols="75" <%=nameFieldDisabled%>><%=EncodeHelper.javaStringToHtmlString(description)%></TEXTAREA></td>
+		<td><TEXTAREA name="Description" rows="4" cols="75" <%=nameFieldDisabled%>><%=WebEncodeHelper.javaStringToHtmlString(description)%></TEXTAREA></td>
 	  </tr>
       <tr>
         <td class="txtlibform" valign="top"><%=resource.getString("pdcPeas.sistersValue")%>&nbsp;:</td>
@@ -134,7 +134,7 @@ if (valueToCreate != null){
 					// affiche les soeurs de la valeur courante
 					while (it.hasNext()){
 						sister = (Value)it.next();
-						sisterValueName = EncodeHelper.javaStringToHtmlString(sister.getName());
+						sisterValueName = WebEncodeHelper.javaStringToHtmlString(sister.getName());
 						order = (new Integer( sister.getOrderNumber() )).toString();
 							out.println("<option value=\""+sisterValueName+sepOptionValueTag+order+"\">"+sisterValueName+"</option>");
 					}

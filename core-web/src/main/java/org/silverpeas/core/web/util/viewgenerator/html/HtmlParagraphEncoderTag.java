@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -39,7 +39,7 @@ public class HtmlParagraphEncoderTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      pageContext.getOut().print(EncodeHelper.javaStringToHtmlParagraphe(string));
+      pageContext.getOut().print(WebEncodeHelper.javaStringToHtmlParagraphe(string));
     } catch (IOException ex) {
       throw new JspException("Silverpeas Java to html paragraph Converter Tag", ex);
     }

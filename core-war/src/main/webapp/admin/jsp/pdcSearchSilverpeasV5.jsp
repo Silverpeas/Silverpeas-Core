@@ -29,7 +29,7 @@
 <%@page import="java.io.IOException"%>
 <%@page import="org.silverpeas.core.pdc.thesaurus.model.ThesaurusException"%>
 <%@page import="org.silverpeas.core.pdc.thesaurus.model.Jargon"%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
@@ -41,6 +41,7 @@
 
 <%@page import="org.silverpeas.web.pdc.control.PdcSearchSessionController"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -98,7 +99,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
             for (int i=0; i<axis.size(); i++){
 				searchAxis		= (SearchAxis) axis.get(i);
                 axisId			= searchAxis.getAxisId();
-                axisName		= EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName(language));
+                axisName		= WebEncodeHelper.javaStringToHtmlString(searchAxis.getAxisName(language));
                 nbPositions 	= searchAxis.getNbObjects();
                 valueInContext 	= getValueIdFromPdcSearchContext(axisId, searchContext);
                 if (nbPositions != 0)
@@ -226,8 +227,8 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
   <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_OnlyPDC %>"/>
   <input type="hidden" name="ResultPage" value=""/>
   <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
-  <input type="hidden" name="spaces" value="<%=EncodeHelper.javaStringToHtmlString(parameters.getSpaceId())%>"/>
-  <input type="hidden" name="componentSearch" value="<%=EncodeHelper.javaStringToHtmlString(parameters.getInstanceId())%>"/>
+  <input type="hidden" name="spaces" value="<%=WebEncodeHelper.javaStringToHtmlString(parameters.getSpaceId())%>"/>
+  <input type="hidden" name="componentSearch" value="<%=WebEncodeHelper.javaStringToHtmlString(parameters.getInstanceId())%>"/>
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
 	<tr>

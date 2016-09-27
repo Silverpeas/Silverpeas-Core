@@ -37,7 +37,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.viewer.service.ViewerProvider;
@@ -132,7 +132,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                   .append("',type : 'Attachment', id: '")
                   .append(attachment.getOldSilverpeasId())
                   .append("', name : '")
-                  .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
+                  .append(WebEncodeHelper.javaStringToJsString(attachment.getFilename()))
                   .append("'});\" class=\"share-file\" src=\"")
                   .append(webContext)
                   .append("/util/icons/share.png\" alt=\"")

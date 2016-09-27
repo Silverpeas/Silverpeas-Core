@@ -88,19 +88,19 @@ out.println(board.printBefore());
                     <tr>
                         <td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
                         <td>
-                            <input type="text" name="domainName" size="40" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+                            <input type="text" name="domainName" size="40" maxlength="99" value="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getName())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
                         </td>
                     </tr>
                     <tr>
                         <td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
                         <td>
-                            <input type="text" name="domainDescription" size="40" maxlength="399" value="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>"/>
+                            <input type="text" name="domainDescription" size="40" maxlength="399" value="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getDescription())%>"/>
                         </td>
                     </tr>
                     <tr>
                         <td class="txtlibform"><%=resource.getString("JDP.silverpeasServerURL")%> :</td>
                         <td>
-                            <input type="text" name="silverpeasServerURL" size="40" maxlength="399" value="<%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> <%=resource.getString("JDP.silverpeasServerURLEx")%>
+                            <input type="text" name="silverpeasServerURL" size="40" maxlength="399" value="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> <%=resource.getString("JDP.silverpeasServerURLEx")%>
                         </td>
                     </tr>
                     <% if (JobDomainSettings.usersInDomainQuotaActivated) { %>

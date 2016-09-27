@@ -24,12 +24,6 @@
 
 package org.silverpeas.core.web.calendar.ical;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
-import org.silverpeas.core.calendar.model.Category;
-import org.silverpeas.core.calendar.model.Schedulable;
 import com.sun.syndication.io.XmlReader;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
@@ -44,11 +38,16 @@ import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.personalorganizer.model.Category;
+import org.silverpeas.core.personalorganizer.model.Schedulable;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +56,8 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class ImportIcalManager {
 
@@ -84,13 +85,13 @@ public class ImportIcalManager {
     XmlReader xr = null;
     try {
       String charsetUsed = agendaSessionController.getSettings().getString("defaultCharset");
-      if (StringUtil.isDefined(charset)) {
+      if (isDefined(charset)) {
         charsetUsed = charset;
       }
 
       // File Encoding detection
       xr = new XmlReader(file);
-      if (StringUtil.isDefined(xr.getEncoding())) {
+      if (isDefined(xr.getEncoding())) {
         charsetUsed = xr.getEncoding();
       }
       inputStream = new InputStreamReader(new FileInputStream(file), charsetUsed);
@@ -102,13 +103,13 @@ public class ImportIcalManager {
         String name = getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
 
         String description = null;
-        if (StringUtil.isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION)))) {
+        if (isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION)))) {
           description = getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION));
         }
 
         // Name is mandatory in the Silverpeas Agenda
-        if (!StringUtil.isDefined(name)) {
-          if (StringUtil.isDefined(description)) {
+        if (!isDefined(name)) {
+          if (isDefined(description)) {
             name = description;
           } else {
             name = " ";
@@ -116,7 +117,7 @@ public class ImportIcalManager {
         }
 
         String priority = getFieldEvent(eventIcal.getProperty(Property.PRIORITY));
-        if (!StringUtil.isDefined(priority)) {
+        if (!isDefined(priority)) {
           priority = Priority.UNDEFINED.getValue();
         }
         String classification = getFieldEvent(eventIcal.getProperty(Property.CLASS));
@@ -133,7 +134,7 @@ public class ImportIcalManager {
         // All day case
         // I don't know why ??
         if (("00:00".equals(startHour) && "00:00".equals(endHour)) ||
-            (!StringUtil.isDefined(startHour) && !StringUtil.isDefined(endHour))) {
+            (!isDefined(startHour) && !isDefined(endHour))) {
           // For complete Day
           startHour = "";
           endHour = "";
@@ -147,7 +148,7 @@ public class ImportIcalManager {
         if (reccurenceDates == null) {
           String idEvent = isExist(eventIcal);
           // update if event already exists, create if does not exist
-          if (StringUtil.isDefined(idEvent)) {
+          if (isDefined(idEvent)) {
             agendaSessionController
                 .updateJournal(idEvent, name, description, priority, classification, startDay,
                     startHour, endDay, endHour);
@@ -175,7 +176,7 @@ public class ImportIcalManager {
             }
             String idEvent = isExist(eventIcal, startDay, endDay, startHour);
             // update if event already exists, create if does not exist
-            if (StringUtil.isDefined(idEvent)) {
+            if (isDefined(idEvent)) {
               agendaSessionController
                   .updateJournal(idEvent, name, description, priority, classification, startDay,
                       startHour, endDay, endHour);
@@ -220,11 +221,11 @@ public class ImportIcalManager {
       String startHourReccurent) throws Exception {
     String name = getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
     String description = null;
-    if (StringUtil.isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION)))) {
+    if (isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION)))) {
       description = getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION));
     }
-    if (!StringUtil.isDefined(name)) {
-      if (StringUtil.isDefined(description)) {
+    if (!isDefined(name)) {
+      if (isDefined(description)) {
         name = description;
       } else {
         name = " ";
@@ -253,8 +254,7 @@ public class ImportIcalManager {
           Schedulable eventAgenda = (Schedulable) obj;
           if (eventAgenda.getName().equals(name) &&
               DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(startDate)) {
-            if (StringUtil.isDefined(eventAgenda.getStartHour()) &&
-                StringUtil.isDefined(startHour)) {
+            if (isDefined(eventAgenda.getStartHour()) && isDefined(startHour)) {
               if (eventAgenda.getStartHour().equals(startHour)) {
                 return eventAgenda.getId();
               }
@@ -285,7 +285,7 @@ public class ImportIcalManager {
         String categIcal = st.nextToken();
         // Agenda Categories
         for (Category category : agendaSessionController.getAllCategories()) {
-          if (categIcal.equals(EncodeHelper.htmlStringToJavaString(category.getName()))) {
+          if (categIcal.equals(WebEncodeHelper.htmlStringToJavaString(category.getName()))) {
             addCategoryToEvent = true;
             categoryIds[j++] = category.getId();
           }
@@ -349,7 +349,7 @@ public class ImportIcalManager {
   private String getFieldEvent(Property property) {
     String fieldValue = null;
     if (property != null) {
-      fieldValue = EncodeHelper.transformStringForBD(property.getValue());
+      fieldValue = transformStringForBD(property.getValue());
     }
 
     return fieldValue;
@@ -374,5 +374,37 @@ public class ImportIcalManager {
       return dates;
     }
     return null;
+  }
+
+  /**
+   * This method transforms a string to replace the 'special' caracters to store them correctly in
+   * the database
+   * @param sText a single text which may contains 'special' caracters
+   * @return Returns the transformed text without specific codes.
+   */
+  public static String transformStringForBD(String sText) {
+    if (!isDefined(sText)) {
+      return "";
+    }
+
+    int nStringLength = sText.length();
+    StringBuilder resSB = new StringBuilder(nStringLength + 10);
+
+    for (int i = 0; i < nStringLength; i++) {
+      switch (sText.charAt(i)) {
+        case '€':
+          resSB.append('\u20ac'); // Euro Symbol
+          break;
+        // case '’':
+        case '\u2019':
+          resSB.append('\''); // ’ quote word
+          break;
+        default:
+          resSB.append(sText.charAt(i));
+      }
+    }
+
+
+    return resSB.toString();
   }
 }

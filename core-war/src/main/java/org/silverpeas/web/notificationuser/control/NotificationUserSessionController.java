@@ -79,7 +79,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   public ArrayList<Properties> getDefaultAddresses() throws NotificationManagerException {
     // Retreive all default addresses except Trashbean address
     ArrayList<Properties> al = new ArrayList<Properties>();
-    NotificationManager nm = new NotificationManager(getLanguage());
+    NotificationManager nm = NotificationManager.get().forLanguage(getLanguage());
     int uId = Integer.parseInt(getUserId());
 
     al.add(nm.getNotificationAddress(

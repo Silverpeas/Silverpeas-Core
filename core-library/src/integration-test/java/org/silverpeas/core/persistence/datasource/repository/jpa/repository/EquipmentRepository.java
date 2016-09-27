@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa.repository;
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
 
 import javax.inject.Singleton;
@@ -34,4 +33,5 @@ import javax.inject.Singleton;
  * Date: 20/11/13
  */
 @Singleton
-public class EquipmentRepository extends SilverpeasJpaEntityManager<Equipment, UuidIdentifier> {}
+public class EquipmentRepository extends SilverpeasJpaEntityRepository<Equipment> {
+}

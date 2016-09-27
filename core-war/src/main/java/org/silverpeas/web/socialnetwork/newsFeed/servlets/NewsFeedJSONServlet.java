@@ -27,12 +27,13 @@ package org.silverpeas.web.socialnetwork.newsfeed.servlets;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -205,7 +206,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
         jsonSocialInfo.putJSONObject("author", userDetailToJSON(contactUser1));
         jsonSocialInfo.put("title", information.getTitle());
         jsonSocialInfo.put("description",
-            EncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
+            WebEncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
         // if time not identified display string empty
         if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
           jsonSocialInfo.put("hour", "");

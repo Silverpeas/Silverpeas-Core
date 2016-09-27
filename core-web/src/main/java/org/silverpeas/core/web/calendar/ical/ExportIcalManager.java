@@ -20,39 +20,42 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.date.Datable;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.calendar.event.ExternalAttendee;
+import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.Priority;
+import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.ExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
+import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.personalorganizer.model.Category;
+import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
-import org.silverpeas.core.calendar.model.Attendee;
-import org.silverpeas.core.calendar.model.Category;
-import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.core.calendar.model.ParticipationStatus;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
 
 import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.silverpeas.core.calendar.CalendarEvent.anEventAt;
+import java.util.TimeZone;
 
 /**
  * @author dle
@@ -227,18 +230,28 @@ public class ExportIcalManager {
     Collection<JournalHeader> schedulables = getSchedulableCalendar(fromDate, toDate);
     for (JournalHeader schedulable : schedulables) {
       // creates an event corresponding to the current schedulable object
-      Datable<?> eventStartDate = DateUtil.asDatable(schedulable.getStartDate(),
-          StringUtil.isDefined(schedulable.getStartHour()));
-      Datable<?> eventEndDate = DateUtil.asDatable(schedulable.getEndDate(),
-          StringUtil.isDefined(schedulable.getEndHour()));
-      CalendarEvent event = anEventAt((Datable) eventStartDate, eventEndDate).
-          identifiedBy("event", schedulable.getId()).
+      OffsetDateTime startDateTime =
+          OffsetDateTime.ofInstant(schedulable.getStartDate().toInstant(),
+              TimeZone.getDefault().toZoneId());
+      OffsetDateTime endDateTime = OffsetDateTime.ofInstant(schedulable.getEndDate().toInstant(),
+          TimeZone.getDefault().toZoneId());
+      boolean allDay = StringUtil.isDefined(schedulable.getStartHour()) &&
+          StringUtil.isDefined(schedulable.getEndHour());
+      CalendarEvent event;
+      if (allDay) {
+        event = CalendarEvent.on(
+            Period.between(startDateTime.toLocalDate(), endDateTime.toLocalDate()));
+      } else {
+        event = CalendarEvent.on(Period.between(startDateTime, endDateTime));
+      }
+      event.identifiedBy("event", schedulable.getId()).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());
 
       // set access level (confidential, private or public) and the event priority
-      event.withAccessLevel(schedulable.getClassification().getString());
-      event.withPriority(schedulable.getPriority().getValue());
+      event.withVisibilityLevel(
+          VisibilityLevel.valueOf(schedulable.getClassification().getString().toUpperCase()));
+      event.withPriority(Priority.valueOf(schedulable.getPriority().getValue()));
 
       // set the categories in which the event is
       Collection<Category> categories = calendarBm.getJournalCategories(schedulable.getId());
@@ -254,7 +267,7 @@ public class ExportIcalManager {
         if (user != null) {
           String email = user.geteMail();
           if (StringUtil.isDefined(email)) {
-            event.getAttendees().add(email);
+            event.getAttendees().add(ExternalAttendee.withEmail(email).to(event));
           }
         }
       }

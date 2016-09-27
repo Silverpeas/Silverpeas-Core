@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.domain.driver;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.UtilException;
@@ -56,10 +56,10 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
   @Inject
-  private SPUserManager userManager;
+  private SPUserRepository userManager;
 
   @Inject
-  private SPGroupManager groupManager;
+  private SPGroupRepository groupManager;
 
   /**
    * Constructor
@@ -83,8 +83,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return new Group[0];
+  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return new GroupDetail[0];
   }
 
   @Override
@@ -272,7 +272,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public Group importGroup(String groupName) throws Exception {
+  public GroupDetail importGroup(String groupName) throws Exception {
     return null;
   }
 
@@ -281,7 +281,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public Group synchroGroup(String groupId) throws Exception {
+  public GroupDetail synchroGroup(String groupId) throws Exception {
     return null;
   }
 
@@ -290,7 +290,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return String
    */
   @Override
-  public String createGroup(Group group) {
+  public String createGroup(GroupDetail group) {
     try {
       SPGroup spGroup = new SPGroup();
       int id = DBUtil.getNextId("domainsp_group", "id");
@@ -345,7 +345,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @throws AdminException
    */
   @Override
-  public void updateGroup(Group group) throws AdminException {
+  public void updateGroup(GroupDetail group) throws AdminException {
     Set<SPUser> addedUsers = new HashSet<>();
     if (group == null || !StringUtil.isDefined(group.getName()) || !StringUtil.isDefined(
         group.getId())) {
@@ -378,55 +378,55 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   /**
    * @param groupId
-   * @return Group
+   * @return GroupDetail
    */
   @Override
-  public Group getGroup(String groupId) {
+  public GroupDetail getGroup(String groupId) {
     SPGroup gr = groupManager.getById(groupId);
     return convertToGroup(gr);
   }
 
   @Override
-  public Group getGroupByName(String groupName) throws Exception {
+  public GroupDetail getGroupByName(String groupName) throws Exception {
     return null;
   }
 
   /**
    * @param groupId
-   * @return Group[]
+   * @return GroupDetail[]
    */
   @Override
-  public Group[] getGroups(String groupId) {
+  public GroupDetail[] getGroups(String groupId) {
     SPGroup gr = groupManager.getById(groupId);
     Set<SPGroup> subGroups = gr.getSubGroups();
-    List<Group> groups = new ArrayList<>(subGroups.size());
+    List<GroupDetail> groups = new ArrayList<>(subGroups.size());
     for (SPGroup spGroup : subGroups) {
       groups.add(convertToGroup(spGroup));
     }
-    return groups.toArray(new Group[groups.size()]);
+    return groups.toArray(new GroupDetail[groups.size()]);
   }
 
   /**
-   * @return Group[]
+   * @return GroupDetail[]
    */
   @Override
-  public Group[] getAllGroups() {
+  public GroupDetail[] getAllGroups() {
     List<SPGroup> groups = groupManager.getAll();
-    List<Group> result = new ArrayList<>(groups.size());
+    List<GroupDetail> result = new ArrayList<>(groups.size());
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
     }
-    return result.toArray(new Group[result.size()]);
+    return result.toArray(new GroupDetail[result.size()]);
   }
 
   @Override
-  public Group[] getAllRootGroups() {
+  public GroupDetail[] getAllRootGroups() {
     List<SPGroup> groups = groupManager.listAllRootGroups();
-    List<Group> result = new ArrayList<>(groups.size());
+    List<GroupDetail> result = new ArrayList<>(groups.size());
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
     }
-    return result.toArray(new Group[result.size()]);
+    return result.toArray(new GroupDetail[result.size()]);
   }
 
   @Override
@@ -472,9 +472,9 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   /**
-   * Convert Group to SPGroupRow
+   * Convert GroupDetail to SPGroupRow
    */
-  SPGroup convertToSPGroup(Group group, SPGroup spGroup) {
+  SPGroup convertToSPGroup(GroupDetail group, SPGroup spGroup) {
     if (StringUtil.isDefined(group.getSpecificId()) && StringUtil.isInteger(group.getSpecificId())) {
       spGroup.setId(Integer.valueOf(group.getSpecificId()));
     }
@@ -488,8 +488,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return spGroup;
   }
 
-  Group convertToGroup(SPGroup gr) {
-    Group group = new Group();
+  GroupDetail convertToGroup(SPGroup gr) {
+    GroupDetail group = new GroupDetail();
     group.setSpecificId(String.valueOf(gr.getId()));
     group.setName(gr.getName());
     group.setDescription(gr.getDescription());

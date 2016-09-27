@@ -20,9 +20,9 @@
  */
 package org.silverpeas.core.web.tools.agenda.control;
 
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
-import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.core.calendar.model.ParticipationStatus;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;

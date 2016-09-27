@@ -27,7 +27,6 @@ package org.silverpeas.core.test;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.IdentifiableResource;
-import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
@@ -52,6 +51,7 @@ import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.RightRecover;
@@ -65,11 +65,14 @@ import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.admin.user.DefaultUserProvider;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.event.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
+import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -90,15 +93,15 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.WithNested;
-import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -107,6 +110,7 @@ import org.silverpeas.core.persistence.jdbc.SchemaPool;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComparator;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
@@ -135,7 +139,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addServiceProviderFeatures();
     addBundleBaseFeatures();
     addClasses(EntityReference.class);
-    addMavenDependencies("org.silverpeas.core:silverpeas-core-api");
+    addCalendarFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
@@ -165,7 +169,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link CollectionUtil}</li>
    * <li>{@link MapUtil}</li>
    * <li>{@link ArgumentAssertion}</li>
-   * <li>{@link EncodeHelper}</li>
+   * <li>{@link WebEncodeHelper}</li>
    * <li>{@link ActionType} and classes in {@link org.silverpeas.core.annotation}</li>
    * <li>{@link #addSilverpeasContentFeatures()}</li>
    * <li>{@link AbstractComplexComparator}</li>
@@ -181,11 +185,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(MapUtil.class)) {
       addClasses(MapUtil.class);
     }
-    if (!contains(EncodeHelper.class)) {
-      addClasses(EncodeHelper.class);
-    }
-    if (!contains(CalendarEvent.class)) {
-      addPackages(true, "org.silverpeas.core.calendar");
+    if (!contains(WebEncodeHelper.class)) {
+      addClasses(WebEncodeHelper.class);
     }
     if (!contains(Charsets.class)) {
       addClasses(Charsets.class);
@@ -222,7 +223,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addCommonUserBeans() {
     if (!contains(UserDetail.class)) {
-      addClasses(UserDetail.class, UserAccessLevel.class, UserState.class);
+      addClasses(UserDetail.class, UserAccessLevel.class, UserState.class,
+          DefaultUserProvider.class);
     }
     if (!contains(UserFull.class)) {
       addClasses(UserFull.class);
@@ -267,7 +269,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
     if (!contains(MimeTypes.class)) {
-      addClasses(FileUtil.class, Mail.class, MimeTypes.class,
+      addClasses(FileUtil.class, Mail.class, MimeTypes.class, MetaData.class, Definition.class,
           RelativeFileAccessException.class, MetadataExtractor.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
@@ -370,13 +372,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addCommonBasicUtilities();
     addBundleBaseFeatures();
     addCommonUserBeans();
-    if (!contains(AbstractJpaEntity.class)) {
-      addClasses(ResourceIdentifier.class);
-      addPackages(true, "org.silverpeas.core.admin.user.constant");
-      addPackages(true, "org.silverpeas.core.persistence.datasource.model");
-      addPackages(true, "org.silverpeas.core.persistence.datasource.repository");
-      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
-    }
     return this;
   }
 
@@ -727,6 +722,19 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
+   * Add calendar feature in web archive (war)
+   * @return the instance of the war builder with calendar features
+   */
+  public WarBuilder4LibCore addCalendarFeatures() {
+    addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
+    addClasses(
+        ICal4JCalendarEventOccurrenceGenerator.class,
+        DefaultCalendarRepository.class,
+        DefaultCalendarEventRepository.class);
+    return this;
+  }
+
+  /**
    * Add image tool features. ImageMagick must be installed on machine.
    * @return the instance of the war with image tool feature.
    */
@@ -745,5 +753,16 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("commons-fileupload:commons-fileupload");
     return this;
   }
+
+  /**
+   * Add stubbed organization controller which is dealing behind with a mocked instance.
+   * @return the instance of the war builder with the stub.
+   */
+  public WarBuilder4LibCore addStubbedOrganizationController() {
+    addOrganisationFeatures();
+    addClasses(StubbedOrganizationController.class);
+    return this;
+  }
+
 
 }

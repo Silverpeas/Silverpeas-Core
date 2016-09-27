@@ -38,12 +38,14 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Named;
+import javax.jws.soap.SOAPBinding;
 import java.util.List;
 import java.util.Map;
 
@@ -220,7 +222,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(final UserDetail modelUser, final boolean isAnd) {
+  public UserDetail[] searchUsers(final User modelUser, final boolean isAnd) {
     return new UserDetail[0];
   }
 
@@ -424,7 +426,7 @@ public class OrganizationControllerMock implements OrganizationController {
 
   @Override
   public String[] searchUsersIds(final String groupId, final String componentId,
-      final String[] profileId, final UserDetail filterUser) {
+      final String[] profileId, final User filterUser) {
     return new String[0];
   }
 
@@ -487,12 +489,12 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(final List<String> domainIds) {
+  public <T extends User> List<T> getUsersOfDomainsFromNewestToOldest(final List<String> domainIds) {
     return null;
   }
 
   @Override
-  public List<UserDetail> getUsersOfDomains(final List<String> domainIds) {
+  public <T extends User> List<T> getUsersOfDomains(final List<String> domainIds) {
     return null;
   }
 

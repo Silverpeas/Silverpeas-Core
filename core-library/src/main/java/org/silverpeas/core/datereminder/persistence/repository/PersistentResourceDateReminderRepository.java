@@ -23,30 +23,29 @@
  */
 package org.silverpeas.core.datereminder.persistence.repository;
 
-import java.util.Date;
-import java.util.Collection;
-import javax.inject.Singleton;
-
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
+
+import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Cécile Bonin
  */
 @Singleton
 public class PersistentResourceDateReminderRepository extends
-    SilverpeasJpaEntityManager<PersistentResourceDateReminder, UuidIdentifier> {
+    SilverpeasJpaEntityRepository<PersistentResourceDateReminder> {
 
   public PersistentResourceDateReminder getByTypeAndResourceId(String type,
       String resourceId) {
     NamedParameters namedParameters = newNamedParameters().add("type", type).add("resourceId", resourceId);
-    return findOneByNamedQuery("getResource", namedParameters);
+    return getFromNamedQuery("getResource", namedParameters);
   }
 
   public Collection<PersistentResourceDateReminder> getByDeadLine(Date deadLine) {
     NamedParameters namedParameters = newNamedParameters().add("dateReminder", deadLine);
-    return findByNamedQuery("getListResourceByDeadLine", namedParameters);
+    return listFromNamedQuery("getListResourceByDeadLine", namedParameters);
   }
 }

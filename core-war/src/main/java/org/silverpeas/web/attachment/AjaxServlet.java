@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.attachment;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -91,13 +92,13 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     return new ForeignPK(id, componentId);
   }
 
-  private String getUserId(HttpRequest req) {
-    return req.getMainSessionController().getCurrentUserDetail().getId();
+  private String getUserId() {
+    return User.getCurrentRequester().getId();
   }
 
   private String checkout(HttpRequest req) {
     String idAttachment = req.getParameter("Id");
-    String userId = getUserId(req);
+    String userId = getUserId();
     String fileLanguage = req.getParameter("FileLanguage");
     boolean checkOutOK = attachmentService.lock(idAttachment, userId, fileLanguage);
     if (checkOutOK) {
@@ -109,7 +110,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
   }
 
   private String checkin(HttpRequest req) {
-    UnlockContext context = new UnlockContext(req.getParameter("Id"), getUserId(req), req.
+    UnlockContext context = new UnlockContext(req.getParameter("Id"), getUserId(), req.
         getParameter("FileLanguage"));
     if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
       context.addOption(UnlockOption.WEBDAV);

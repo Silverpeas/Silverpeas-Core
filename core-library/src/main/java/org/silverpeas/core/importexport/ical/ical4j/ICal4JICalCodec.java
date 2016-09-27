@@ -20,14 +20,6 @@
  */
 package org.silverpeas.core.importexport.ical.ical4j;
 
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventRecurrence;
-import org.silverpeas.core.date.Datable;
-import org.silverpeas.core.importexport.EncodingException;
-import org.silverpeas.core.importexport.ical.ICalCodec;
-
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.html.HtmlCleaner;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
@@ -39,15 +31,28 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.Categories;
+import net.fortuna.ical4j.model.property.Priority;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
+import org.silverpeas.core.calendar.*;
+import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.importexport.EncodingException;
+import org.silverpeas.core.importexport.ical.ICalCodec;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.html.HtmlCleaner;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -85,8 +90,8 @@ public class ICal4JICalCodec implements ICalCodec {
     List<VEvent> iCalEvents = new ArrayList<>();
     ByteArrayOutputStream output = new ByteArrayOutputStream(10240);
     for (CalendarEvent event : events) {
-      Date startDate = iCal4JDateCodec.encode(event.getStartDate());
-      Date endDate = iCal4JDateCodec.encode(event.getEndDate());
+      Date startDate = iCal4JDateCodec.encode(event.getStartDateTime());
+      Date endDate = iCal4JDateCodec.encode(event.getEndDateTime());
       VEvent iCalEvent;
       if (event.isOnAllDay() && startDate.equals(endDate)) {
         iCalEvent = new VEvent(startDate, event.getTitle());
@@ -98,8 +103,8 @@ public class ICal4JICalCodec implements ICalCodec {
       iCalEvent.getProperties().add(generateUid(event));
 
       // Add recurring data if any
-      if (event.isRecurring()) {
-        CalendarEventRecurrence eventRecurrence = event.getRecurrence();
+      if (event.isRecurrent()) {
+        Recurrence eventRecurrence = event.getRecurrence();
         Recur recur = iCal4JRecurrenceCodec.encode(eventRecurrence);
         iCalEvent.getProperties().add(new RRule(recur));
         iCalEvent.getProperties().add(exceptionDatesFrom(eventRecurrence));
@@ -119,19 +124,21 @@ public class ICal4JICalCodec implements ICalCodec {
       }
 
       // Add Classification
-      iCalEvent.getProperties().add(new Clazz(event.getAccessLevel()));
+      iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
       // Add Priority
-      iCalEvent.getProperties().add(new Priority(event.getPriority()));
+      iCalEvent.getProperties().add(new Priority(event.getPriority().ordinal()));
 
       // Add location if any
-      if (!event.getLocation().isEmpty()) {
-        iCalEvent.getProperties().add(new Location(event.getLocation()));
+      Optional<String> location = event.getAttributes().get("location");
+      if (location.isPresent()) {
+        iCalEvent.getProperties().add(new Location(location.get()));
       }
 
       // Add event URL if any
-      if (event.getUrl() != null) {
+      Optional<String> url = event.getAttributes().get("url");
+      if (url.isPresent()) {
         try {
-          iCalEvent.getProperties().add(new Url(event.getUrl().toURI()));
+          iCalEvent.getProperties().add(new Url(new URI(url.get())));
         } catch (URISyntaxException ex) {
           throw new EncodingException(ex.getMessage(), ex);
         }
@@ -143,9 +150,9 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }
       // Add attendees
-      for (String attendee : event.getAttendees().asList()) {
+      for (org.silverpeas.core.calendar.event.Attendee attendee : event.getAttendees()) {
         try {
-          iCalEvent.getProperties().add(new Attendee(attendee));
+          iCalEvent.getProperties().add(new Attendee(attendee.getId()));
         } catch (URISyntaxException ex) {
           throw new EncodingException("Malformed attendee URI: " + attendee, ex);
         }
@@ -166,8 +173,8 @@ public class ICal4JICalCodec implements ICalCodec {
     }
   }
 
-  private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
-    List<Datable<?>> exceptionDates = recurrence.getExceptionDates();
+  private ExDate exceptionDatesFrom(final Recurrence recurrence) {
+    Set<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
         .collect(Collectors.toCollection(DateList::new));
     return new ExDate(exDatesList);

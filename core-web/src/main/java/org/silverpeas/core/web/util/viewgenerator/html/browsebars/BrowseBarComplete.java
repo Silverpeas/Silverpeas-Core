@@ -26,7 +26,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -187,7 +187,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
           result.append(" id=\"").append(element.getId()).append("\"");
         }
         result.append(">");
-        result.append(EncodeHelper.javaStringToHtmlString(element.getLabel()));
+        result.append(WebEncodeHelper.javaStringToHtmlString(element.getLabel()));
         result.append("</a>");
         emptyBreadCrumb = false;
       }

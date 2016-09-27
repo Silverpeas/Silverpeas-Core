@@ -156,7 +156,7 @@
     row = inputPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.value") );
     cellText.setStyleSheet( "txtlibform" );
-    cellInput = row.addArrayCellInputText( "value", EncodeHelper.javaStringToHtmlString( input.getValue() ) );
+    cellInput = row.addArrayCellInputText( "value", WebEncodeHelper.javaStringToHtmlString( input.getValue() ) );
     cellInput.setSize( "80" );
 
     // Displayer
@@ -199,7 +199,7 @@
     out.println(board.printBefore());
 %>
 <FORM NAME="inputForm" METHOD="POST" ACTION="UpdateInput">
-    <input type="hidden" name="context" value="<%=EncodeHelper.javaStringToHtmlString(strContext)%>" />
+    <input type="hidden" name="context" value="<%=WebEncodeHelper.javaStringToHtmlString(strContext)%>" />
 <%
     out.println( inputPane.print() );
 %>

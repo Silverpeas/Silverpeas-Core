@@ -25,7 +25,7 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.persistence.Entity;
@@ -54,7 +54,7 @@ import java.util.Set;
 @Table(name = "pdcaxisvalue")
 @NamedQueries({
     @NamedQuery(name = "findByAxisId", query = "from PdcAxisValue where axisId = :axisId")})
-public class PdcAxisValue extends AbstractJpaCustomEntity<PdcAxisValue, PdcAxisValuePk> {
+public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
 
   private static final long serialVersionUID = 2345886411781136417L;
   @Transient

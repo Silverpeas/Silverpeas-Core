@@ -33,50 +33,22 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.web.look.LookHelper" %>
-<%@ page import="org.silverpeas.core.security.session.SessionManagement" %>
-<%@ page import="org.silverpeas.core.security.session.SessionManagementProvider" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
 
-<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
-<%@ page import="org.silverpeas.core.util.URLUtil" %>
-<%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="java.util.Enumeration" %>
-<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 
 <%
-  String m_context = URLUtil.getApplicationURL();
-  MainSessionController m_MainSessionCtrl = (MainSessionController) session
-      .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   ClipboardSessionController clipboardSC =
       (ClipboardSessionController) request.getAttribute("clipboardScc");
   String javascripTask = "";
   if (clipboardSC != null) {
     clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
     javascripTask = clipboardSC.getHF_JavaScriptTask(request);
-  }
-  LookHelper lookHelper = LookHelper.getLookHelper(session);
-
-  int nbConnectedUsers = 0;
-  String language = m_MainSessionCtrl.getFavoriteLanguage();
-  LocalizationBundle message =
-      ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
-  SettingBundle homePageSettings =
-      ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
-  boolean displayConnectedUsers =
-      homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null &&
-          lookHelper.getSettings("displayConnectedUsers", true);
-  if (displayConnectedUsers) {
-    SessionManagement sessionManagement =
-        SessionManagementProvider.getSessionManagement();
-    nbConnectedUsers =
-        sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
   }
 
 %>
@@ -90,6 +62,7 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <%}%>
+  <view:script src="/util/javaScript/polyfill/eventsource.min.js"/>
   <view:script src="/util/javaScript/silverpeas.js"/>
   <script type="text/javascript">
     var counter = 0;
@@ -107,24 +80,12 @@
     // call Update function in 1 second after first load
     ID = window.setTimeout("DoIdle(" + interval + ");", interval * 1000);
 
-    <% if (displayConnectedUsers) { %>
-    // call "TopBar refresh" in x second after first load
-    ID = window.setTimeout("refreshTopBar(" + interval + ");", interval * 500);
-    <% } %>
     //--------------------------------------------------------------------------------------DoIdle
     // Idle function
     function DoIdle() {
       counter++;
       self.location.href = "../../Rclipboard/jsp/Idle.jsp?message=IDLE";
     }
-
-    <% if (displayConnectedUsers) { %>
-    function refreshTopBar() {
-      if (typeof top.setConnectedUsers === 'function') {
-        top.setConnectedUsers(<%=nbConnectedUsers%>);
-      }
-    }
-    <% } %>
 
     //--------------------------------------------------------------------------------------DoTask
     // Do taks javascript function

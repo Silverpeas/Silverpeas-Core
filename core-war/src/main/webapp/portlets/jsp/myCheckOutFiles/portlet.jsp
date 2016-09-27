@@ -25,11 +25,8 @@
 --%>
 
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.*" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -83,9 +80,9 @@ LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle
 		while (attachments.hasNext()) {
 			SimpleDocument att =  attachments.next();
 			String url 	= m_sContext+URLUtil.getURL(null,null,att.getInstanceId())+"GoToFilesTab?Id="+att.getForeignId();
-			String name = EncodeHelper.convertHTMLEntities(att.getTitle());
+			String name = org.silverpeas.core.util.WebEncodeHelper.convertHTMLEntities(att.getTitle());
 			if (StringUtil.isDefined(att.getFilename())) {
-				name = EncodeHelper.convertHTMLEntities(att.getFilename());
+				name = WebEncodeHelper.convertHTMLEntities(att.getFilename());
 			}
 
 			out.println("<li><a href=\"javaScript:goTo('"+url+"','"+att.getInstanceId()+"')\">"+name+"</a>");

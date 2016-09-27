@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import com.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.web.ResourceGettingTest;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

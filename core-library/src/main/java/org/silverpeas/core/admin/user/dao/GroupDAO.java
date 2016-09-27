@@ -21,7 +21,7 @@
 package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import java.sql.Connection;
@@ -53,7 +53,7 @@ public class GroupDAO {
    * @return a list of user groups.
    * @throws SQLException if an error occurs while getting the user groups from the data source.
    */
-  public List<Group> getAllGroups(Connection connection) throws SQLException {
+  public List<GroupDetail> getAllGroups(Connection connection) throws SQLException {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
     try {
@@ -78,9 +78,9 @@ public class GroupDAO {
    * found. The slice is set by the pagination criteriion. If no such criterion is provided, then it
    * is the whole list of groups matching the other criteria.
    */
-  public ListSlice<Group> getGroupsByCriteria(Connection connection,
+  public ListSlice<GroupDetail> getGroupsByCriteria(Connection connection,
       GroupSearchCriteriaForDAO criteria) throws SQLException {
-    ListSlice<Group> groups;
+    ListSlice<GroupDetail> groups;
     PreparedStatement statement = null;
     ResultSet resultSet = null;
     try {
@@ -94,7 +94,7 @@ public class GroupDAO {
         int end = start + page.getPageSize();
         groups = theGroupsFrom(resultSet, start, end);
       } else {
-        groups = new ListSlice<Group>(theGroupsFrom(resultSet));
+        groups = new ListSlice<GroupDetail>(theGroupsFrom(resultSet));
       }
     } finally {
       DBUtil.close(resultSet, statement);
@@ -102,7 +102,7 @@ public class GroupDAO {
     return groups;
   }
 
-  public Group getGroup(Connection con, String groupId)
+  public GroupDetail getGroup(Connection con, String groupId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -113,7 +113,7 @@ public class GroupDAO {
 
       rs = stmt.executeQuery();
 
-      Group group = null;
+      GroupDetail group = null;
       if (rs.next()) {
         group = fetchGroup(rs);
       }
@@ -125,12 +125,12 @@ public class GroupDAO {
   static final private String queryGetSubGroups = "select " + GROUP_COLUMNS
       + " from ST_Group where superGroupId = ?";
 
-  public List<Group> getSubGroups(Connection con, String groupId) throws SQLException {
+  public List<GroupDetail> getSubGroups(Connection con, String groupId) throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
     try {
-      List<Group> groups = new ArrayList<Group>();
+      List<GroupDetail> groups = new ArrayList<GroupDetail>();
       stmt = con.prepareStatement(queryGetSubGroups);
       stmt.setInt(1, Integer.parseInt(groupId));
 
@@ -268,9 +268,9 @@ public class GroupDAO {
   /**
    * Fetch the current group row from a resultSet.
    */
-  private static Group fetchGroup(ResultSet rs) throws SQLException {
+  private static GroupDetail fetchGroup(ResultSet rs) throws SQLException {
 
-    Group group = new Group();
+    GroupDetail group = new GroupDetail();
     group.setId(Integer.toString(rs.getInt("id")));
     group.setSpecificId(rs.getString("specificId"));
     if (group.getSpecificId().equals("-1")) {
@@ -287,8 +287,8 @@ public class GroupDAO {
     return group;
   }
 
-  private static List<Group> theGroupsFrom(ResultSet rs) throws SQLException {
-    List<Group> groups = new ArrayList<Group>();
+  private static List<GroupDetail> theGroupsFrom(ResultSet rs) throws SQLException {
+    List<GroupDetail> groups = new ArrayList<GroupDetail>();
     while (rs.next()) {
       groups.add(fetchGroup(rs));
     }
@@ -296,8 +296,8 @@ public class GroupDAO {
   }
 
   @SuppressWarnings("empty-statement")
-  private static ListSlice<Group> theGroupsFrom(ResultSet rs, int start, int end) throws SQLException {
-    ListSlice<Group> groups = new ListSlice<Group>(start, end);
+  private static ListSlice<GroupDetail> theGroupsFrom(ResultSet rs, int start, int end) throws SQLException {
+    ListSlice<GroupDetail> groups = new ListSlice<GroupDetail>(start, end);
     if (start > 0) {
       rs.next();
       rs.relative(start - 1);

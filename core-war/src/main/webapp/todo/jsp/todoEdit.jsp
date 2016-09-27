@@ -27,14 +27,14 @@
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.calendar.model.Attendee"%>
-<%@ page import="org.silverpeas.core.calendar.model.Classification" %>
-<%@ page import="org.silverpeas.core.calendar.model.Priority" %>
-<%@ page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Attendee"%>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Classification" %>
+<%@ page import="org.silverpeas.core.personalorganizer.model.Priority" %>
+<%@ page import="org.silverpeas.core.personalorganizer.model.ToDoHeader"%>
 <%@ page import="org.silverpeas.web.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
@@ -46,6 +46,7 @@
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Iterator" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkTodo.jsp" %>
 
@@ -386,7 +387,7 @@ function test(){
             // en cas de modification
                 operationPane.addOperation(m_context + "/util/icons/task_del.gif",
                         todo.getString("supprimerTodo"),
-                        "javascript:onClick=deleteConfirm('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(todoHeader.getName()))+"')"
+                        "javascript:onClick=deleteConfirm('"+ WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(todoHeader.getName()))+"')"
                 );
         operationPane.addOperation(m_context + "/util/icons/task_assignment.gif",
                         todo.getString("modifierTodo"),
@@ -442,7 +443,7 @@ function test(){
                                 <td>
                                         <input type="text" name="Name" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%
                                                 if (todoHeader.getName() != null)
-                                                        out.print("value=\""+EncodeHelper.javaStringToHtmlString(todoHeader.getName())+"\" ");
+                                                        out.print("value=\""+WebEncodeHelper.javaStringToHtmlString(todoHeader.getName())+"\" ");
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 %>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"/>
@@ -482,7 +483,7 @@ function test(){
                                 <td><textarea name="Description" rows="6" cols="49" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
-                                                %>><%if (todoHeader.getDescription() != null) out.print(EncodeHelper.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></td>
+                                                %>><%if (todoHeader.getDescription() != null) out.print(WebEncodeHelper.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></td>
                         </tr>
                         <tr>
 

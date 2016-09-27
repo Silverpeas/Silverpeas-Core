@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
@@ -81,17 +81,17 @@ while(messageIterator.hasNext())
       .getOutputDate(date, language) + hasBeenReadenOrNotEnd );
 	cell1.setCompareOn(date);
 
-	ArrayCellText cell2 = line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(smMessage.getSource()) + "</A>" + hasBeenReadenOrNotEnd );
+	ArrayCellText cell2 = line.addArrayCellText(hasBeenReadenOrNotBegin + WebEncodeHelper.javaStringToHtmlString(smMessage.getSource()) + "</A>" + hasBeenReadenOrNotEnd );
 	cell2.setCompareOn(smMessage.getSource());
 
-	ArrayCellText cell3 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(smMessage.getSenderName()) + "</A>" + hasBeenReadenOrNotEnd );
+	ArrayCellText cell3 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + WebEncodeHelper.javaStringToHtmlString(smMessage.getSenderName()) + "</A>" + hasBeenReadenOrNotEnd );
 	cell3.setCompareOn(smMessage.getSenderName());
 
 	if ( smMessage.getUrl()!=null && smMessage.getUrl().length()>0 )
-		line.addArrayCellText(hasBeenReadenOrNotBegin + "<A HREF =\"" + EncodeHelper.javaStringToHtmlString(smMessage.getUrl()) + "\" target=_top><img src=\""+m_sContext+"/util/icons/Lien.gif\" border=\"0\"></A>" + hasBeenReadenOrNotEnd );
+		line.addArrayCellText(hasBeenReadenOrNotBegin + "<A HREF =\"" + WebEncodeHelper.javaStringToHtmlString(smMessage.getUrl()) + "\" target=_top><img src=\""+m_sContext+"/util/icons/Lien.gif\" border=\"0\"></A>" + hasBeenReadenOrNotEnd );
 	else
 		line.addArrayCellText( "" );
-	ArrayCellText cell5 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(smMessage.getSubject()) + "</A>" + hasBeenReadenOrNotEnd );
+	ArrayCellText cell5 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + WebEncodeHelper.javaStringToHtmlString(smMessage.getSubject()) + "</A>" + hasBeenReadenOrNotEnd );
 	cell5.setCompareOn(smMessage.getSubject());
 }
 out.println(list.print());

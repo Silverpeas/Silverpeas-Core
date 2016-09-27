@@ -1,0 +1,1 @@
+You don't participate anymore in the event <b>$event.title$</b>

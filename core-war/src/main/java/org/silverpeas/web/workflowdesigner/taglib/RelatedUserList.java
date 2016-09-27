@@ -24,7 +24,7 @@
 
 package org.silverpeas.web.workflowdesigner.taglib;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -125,7 +125,7 @@ public class RelatedUserList extends TagSupport {
         sb.append("', '");
         sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
         sb.append(" ");
-        sb.append(EncodeHelper.javaStringToJsString(resource
+        sb.append(WebEncodeHelper.javaStringToJsString(resource
             .getString("workflowDesigner.relatedUser")));
         sb.append(" ?');");
 

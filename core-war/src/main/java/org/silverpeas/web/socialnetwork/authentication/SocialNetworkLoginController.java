@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.socialnetwork.authentication;
 
-import org.silverpeas.core.admin.user.UserService;
+import org.silverpeas.core.admin.user.UserRegistrationService;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
@@ -53,7 +53,7 @@ public class SocialNetworkLoginController extends HttpServlet {
   private static final long serialVersionUID = 3019716885114707069L;
 
   @Inject
-  private UserService userService;
+  private UserRegistrationService userRegistrationService;
   private RegistrationSettings registrationSettings = null;
 
   @Override
@@ -159,7 +159,7 @@ public class SocialNetworkLoginController extends HttpServlet {
       String domainId = registrationSettings.userSelfRegistrationDomainId();
 
       try {
-        String userId = userService.registerUser(firstName, lastName, email, domainId);
+        String userId = userRegistrationService.registerUser(firstName, lastName, email, domainId);
         AccessToken authorizationToken = SocialNetworkService.getInstance().
             getStoredAuthorizationToken(req.getSession(true),
                 networkId);

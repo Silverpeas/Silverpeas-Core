@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaFullException;
 import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
-import org.silverpeas.core.admin.quota.repository.QuotaManager;
+import org.silverpeas.core.admin.quota.repository.QuotaRepository;
 
 import javax.inject.Inject;
 
@@ -44,7 +44,7 @@ import javax.inject.Inject;
 public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaService<T> {
 
   @Inject
-  private QuotaManager quotaRepository;
+  private QuotaRepository quotaRepository;
 
   @Override
   public Quota initialize(final T key, final long maxCount) throws QuotaException {
@@ -181,7 +181,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   private <RETURN_VALUE> RETURN_VALUE requiredTransaction(
       final Transaction.Process<RETURN_VALUE> process) throws QuotaException {
     try {
-      return Transaction.performInOne(process::execute);
+      return Transaction.performInOne(process);
     } catch (TransactionRuntimeException e) {
       if (e.getCause() instanceof QuotaException) {
         throw (QuotaException) e.getCause();

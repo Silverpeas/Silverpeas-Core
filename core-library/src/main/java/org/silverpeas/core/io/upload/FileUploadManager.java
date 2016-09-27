@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.upload;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
@@ -52,7 +53,7 @@ public class FileUploadManager {
    */
   @SuppressWarnings("unchecked")
   public static Collection<UploadedFile> getUploadedFiles(HttpServletRequest request,
-      final UserDetail uploader) {
+      final User uploader) {
     Collection<UploadedFile> uploadedFiles = new ArrayList<UploadedFile>();
     if (request != null) {
       Enumeration<String> attributeNames = request.getParameterNames();

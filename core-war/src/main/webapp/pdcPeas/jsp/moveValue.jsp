@@ -105,7 +105,7 @@ function sendData(action) {
       </tr>
       <tr>
         <td class="txtlibform" width="30%"><%=resource.getString("pdcPeas.value")%> :</td>
-        <td><%=EncodeHelper.javaStringToHtmlString(valueName)%></td>
+        <td><%=WebEncodeHelper.javaStringToHtmlString(valueName)%></td>
       </tr>
 	  <tr>
 	<td class="txtlibform" width="30%"><%=resource.getString("pdcPeas.docsNumber")%> :</td>
@@ -172,7 +172,7 @@ function sendData(action) {
 					// affiche les soeurs de la valeur courante
 					while (itSisters.hasNext()){
 						tempValue = (Value)itSisters.next();
-						sisterValueName = EncodeHelper.javaStringToHtmlString(tempValue.getName(translation));
+						sisterValueName = WebEncodeHelper.javaStringToHtmlString(tempValue.getName(translation));
 						order = (new Integer( tempValue.getOrderNumber() )).toString();
 						out.println("<option value=\""+sisterValueName+sepOptionValueTag+order+"\">"+sisterValueName+"</option>");
 					}

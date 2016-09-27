@@ -21,16 +21,14 @@
 
 package org.silverpeas.core.notification.user.server.channel.server;
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 /**
  * JPA repository of <code>ServerMessageBean</code> instances.
  * @author mmoquillon
  */
-public class ServerMessageBeanRepository
-    extends JpaBasicEntityManager<ServerMessageBean, UniqueLongIdentifier> {
+public class ServerMessageBeanRepository extends BasicJpaEntityRepository<ServerMessageBean> {
 
   public ServerMessageBean findFirstMessageByUserIdAndSessionId(String userId, String sessionId) {
     NamedParameters parameters = newNamedParameters();

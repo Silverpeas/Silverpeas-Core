@@ -21,9 +21,9 @@
 
 package org.silverpeas.web.webdav;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 
 import javax.jcr.Credentials;
@@ -49,8 +49,9 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
     Credentials credentials;
     String authToken = getWebdavContext(request.getPathInfo()).getToken();
     if (!authToken.isEmpty()) {
-      UserDetail user =
-          CacheServiceProvider.getApplicationCacheService().get(authToken, UserDetail.class);
+      UserDetail user = CacheServiceProvider.getApplicationCacheService()
+          .getCache()
+          .get(authToken, UserDetail.class);
       if (user != null) {
         String userID = MessageFormat.format(USERID_TEMPLATE, user.getLogin(), user.getDomainId());
         credentials = new TokenCredentials(authToken);

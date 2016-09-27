@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util;
 
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -59,7 +59,7 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
    * @return
    */
   public static String performAppletAlertExceptionMessage(Exception exception, String language) {
-    return EncodeHelper.htmlStringToJavaString(performExceptionMessage(exception, language))
+    return WebEncodeHelper.htmlStringToJavaString(performExceptionMessage(exception, language))
         .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9 ]*/?>", "").replaceAll("\\n", "\\\\n");
   }
 }

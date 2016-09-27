@@ -48,33 +48,33 @@ public class SilverpeasJcrWebdavContextTest {
 
   @Before
   public void setup() {
-    getApplicationCacheService().clear();
-    getApplicationCacheService().put(SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", "dummy");
+    getApplicationCacheService().clearAllCaches();
+    getApplicationCacheService().getCache().put(SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", "dummy");
   }
 
   @After
   public void tearDown() {
-    assertThat(getApplicationCacheService().get(
+    assertThat(getApplicationCacheService().getCache().get(
         SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", String.class),
         is("dummy"));
-    getApplicationCacheService().clear();
+    getApplicationCacheService().clearAllCaches();
   }
 
   @Test
   public void shouldClearTheCache() {
-    assertThat(getApplicationCacheService().get(
+    assertThat(getApplicationCacheService().getCache().get(
         SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + AUTH_TOKEN), nullValue());
 
     createWebdavContext("/webdav/document/" + FILENAME_WITH_SPECIAL_CHARS, AUTH_TOKEN)
         .getWebDavUrl();
 
-    assertThat(getApplicationCacheService().get(
+    assertThat(getApplicationCacheService().getCache().get(
         SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + AUTH_TOKEN, String.class),
         is("document/" + EncodeUtil.escape(FILENAME_WITH_SPECIAL_CHARS)));
 
     SilverpeasJcrWebdavContext.clearFromToken(AUTH_TOKEN);
 
-    assertThat(getApplicationCacheService().get(
+    assertThat(getApplicationCacheService().getCache().get(
         SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + AUTH_TOKEN), nullValue());
   }
 

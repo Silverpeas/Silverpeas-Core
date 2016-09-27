@@ -27,7 +27,7 @@
 <%@page import="org.owasp.encoder.Encode"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneType"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
@@ -308,7 +308,7 @@ $(document).ready(function() {
                           <h1 class="spaceName"><%=Encode.forHtml(space.getName(helper.getLanguage())) %></h1>
 
 				<% if (StringUtil.isDefined(space.getDescription(helper.getLanguage()))) { %>
-                          <p class="spaceDescription"><%=EncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(space.getDescription(helper.getLanguage()))) %></p>
+                          <p class="spaceDescription"><%=WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(space.getDescription(helper.getLanguage()))) %></p>
                             <% } else { %>
 				<p></p>
                             <% } %>

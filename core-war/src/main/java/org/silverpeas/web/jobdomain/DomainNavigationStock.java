@@ -28,6 +28,7 @@
 
 package org.silverpeas.web.jobdomain;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.AdminController;
@@ -61,7 +62,7 @@ public class DomainNavigationStock extends NavigationStock {
     m_NavDomain = m_adc.getDomain(m_DomainId);
     m_SubUsers = m_adc.getUsersOfDomain(m_NavDomain.getId());
     if (m_SubUsers == null) {
-      m_SubUsers = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+      m_SubUsers = new UserDetail[0];
     }
     JobDomainSettings.sortUsers(m_SubUsers);
     m_SubGroups = m_adc.getRootGroupsOfDomain(m_NavDomain.getId());

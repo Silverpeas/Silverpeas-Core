@@ -20,17 +20,18 @@
  */
 package org.silverpeas.core.web.tools.agenda.view;
 
-import org.silverpeas.core.calendar.model.Category;
-import org.silverpeas.core.calendar.model.JournalHeader;
-import org.silverpeas.core.calendar.model.Schedulable;
-import org.silverpeas.core.calendar.model.SchedulableCount;
-import org.silverpeas.core.calendar.model.SchedulableGroup;
-import org.silverpeas.core.calendar.model.SchedulableList;
+import org.silverpeas.core.personalorganizer.model.Category;
+import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.model.Schedulable;
+import org.silverpeas.core.personalorganizer.model.SchedulableCount;
+import org.silverpeas.core.personalorganizer.model.SchedulableGroup;
+import org.silverpeas.core.personalorganizer.model.SchedulableList;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
@@ -398,7 +399,7 @@ public class AgendaHtmlView {
               .append(schedule.getId())
               .append("')\"");
           result.append(getInfoBulle(schedule));
-          result.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
+          result.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
         }
 
         result.append(" &nbsp;(" + agendaSessionController.getString("allDay"))
@@ -596,7 +597,7 @@ public class AgendaHtmlView {
                 } else {
                   result.append(schedule.getStartHour()).append("<br/>");
                 }
-                result.append(EncodeHelper.javaStringToHtmlString(schedule.getName()))
+                result.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName()))
                     .append("</a>");
               }
             } else {
@@ -612,7 +613,7 @@ public class AgendaHtmlView {
               } else {
                 result.append(schedule.getStartHour()).append("<br/>");
               }
-              result.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
+              result.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
             }
             result.append("</td>");
           }
@@ -788,7 +789,7 @@ public class AgendaHtmlView {
             result.append("      <a href=\"javascript:onClick=viewJournal('").append(
                 schedule.getId()).append("')\"");
             result.append(getInfoBulle(schedule));
-            result.append(EncodeHelper.javaStringToHtmlString(schedule.getName()));
+            result.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName()));
             result.append("      </a>");
           }
           result.append("  </td></tr>\n");
@@ -862,7 +863,7 @@ public class AgendaHtmlView {
                 if (starting.size() == 1) {
                   tmpResult.append(schedule.getStartHour()).append("<br/>");
                 }
-                tmpResult.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append(
+                tmpResult.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName())).append(
                     "</a>");
               }
 
@@ -885,7 +886,7 @@ public class AgendaHtmlView {
                   tmpResult.append("<a href=\"javascript:onClick=viewJournal('").append(
                       schedule.getId()).append("')\"");
                   tmpResult.append(getInfoBulle(schedule));
-                  tmpResult.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append(
+                  tmpResult.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName())).append(
                       "</a>\n");
                 }
 
@@ -1029,9 +1030,9 @@ public class AgendaHtmlView {
     }
 
     StringBuilder result = new StringBuilder("onmouseover=\"return overlib('");
-    result.append(EncodeHelper.javaStringToJsString(EncodeHelper
-        .javaStringToHtmlParagraphe(EncodeHelper.javaStringToHtmlString(schedule.getDescription()))));
-    result.append("',CAPTION,'").append(EncodeHelper.javaStringToJsString(cat.toString())).append(
+    result.append(WebEncodeHelper.javaStringToJsString(WebEncodeHelper
+        .javaStringToHtmlParagraphe(WebEncodeHelper.javaStringToHtmlString(schedule.getDescription()))));
+    result.append("',CAPTION,'").append(WebEncodeHelper.javaStringToJsString(cat.toString())).append(
         "');\" onmouseout=\"return nd();\">");
     return result.toString();
   }

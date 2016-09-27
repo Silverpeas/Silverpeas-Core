@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.io.upload;
 
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -42,8 +42,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.silverpeas.core.security.authorization.AccessControllerProvider.getAccessController;
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider
+    .getOrganisationController;
+import static org.silverpeas.core.security.authorization.AccessControllerProvider
+    .getAccessController;
 
 /**
  * Manage a session of file & folder upload. Each file is saved in a temporary folder the server.
@@ -274,7 +276,7 @@ public class UploadSession {
    * @return an upload session instance if any, null otherwise.
    */
   private static UploadSession getSessionFromCache(String uploadSessionId) {
-    return CacheServiceProvider.getSessionCacheService()
+    return CacheServiceProvider.getSessionCacheService().getCache()
         .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSessionId, UploadSession.class);
   }
 
@@ -285,14 +287,17 @@ public class UploadSession {
    */
   @SuppressWarnings("unchecked")
   private static void registerSessionInCache(UploadSession uploadSession) {
-    Set<String> sessionIds =
-        CacheServiceProvider.getSessionCacheService().get(SESSION_CACHE_KEY, Set.class);
+    Set<String> sessionIds = CacheServiceProvider.getSessionCacheService()
+        .getCache()
+        .get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds == null) {
-      sessionIds = new HashSet<String>();
-      CacheServiceProvider.getSessionCacheService().put(SESSION_CACHE_KEY, sessionIds);
+      sessionIds = new HashSet<>();
+      CacheServiceProvider.getSessionCacheService()
+          .getCache()
+          .put(SESSION_CACHE_KEY, sessionIds);
     }
     sessionIds.add(uploadSession.uploadSessionId);
-    CacheServiceProvider.getSessionCacheService()
+    CacheServiceProvider.getSessionCacheService().getCache()
         .put(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession.getId(), uploadSession);
   }
 
@@ -303,11 +308,12 @@ public class UploadSession {
    */
   @SuppressWarnings("unchecked")
   private static void removeSessionFromCache(UploadSession uploadSession) {
-    Set<String> sessionIds =
-        CacheServiceProvider.getSessionCacheService().get(SESSION_CACHE_KEY, Set.class);
+    Set<String> sessionIds = CacheServiceProvider.getSessionCacheService()
+        .getCache()
+        .get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds != null) {
       sessionIds.remove(uploadSession.getId());
-      CacheServiceProvider.getSessionCacheService()
+      CacheServiceProvider.getSessionCacheService().getCache()
           .remove(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession.getId());
     }
   }

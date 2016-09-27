@@ -25,7 +25,7 @@
 package org.silverpeas.core.contribution.attachment.permalinks.model;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import java.io.Serializable;
 
@@ -41,7 +41,7 @@ import javax.persistence.Table;
 @Table(name = "permalinks_document")
 @AttributeOverride(name = "id", column = @Column(name = "documentId"))
 public class DocumentPermalink
-    extends AbstractJpaCustomEntity<DocumentPermalink, UniqueIntegerIdentifier>
+    extends BasicJpaEntity<DocumentPermalink, UniqueIntegerIdentifier>
     implements Serializable {
   private static final long serialVersionUID = 1L;
 

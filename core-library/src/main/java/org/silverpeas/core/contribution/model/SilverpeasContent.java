@@ -24,7 +24,9 @@
 
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.security.Securable;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -36,7 +38,7 @@ import java.util.Date;
  * @deprecated please use instead {@code org.silverpeas.core.contribution.model.Contribution} interface.
  */
 @Deprecated
-public interface SilverpeasContent extends Serializable {
+public interface SilverpeasContent extends Serializable, Securable {
 
   /**
    * Gets the identifier of this content in the Silverpeas component providing it. This identifier
@@ -74,7 +76,7 @@ public interface SilverpeasContent extends Serializable {
    * Gets the author that has created this content.
    * @return the detail about the user that created this content.
    */
-  UserDetail getCreator();
+  User getCreator();
 
   /**
    * Gets the date at which this content was created.
@@ -101,16 +103,4 @@ public interface SilverpeasContent extends Serializable {
    * @return the resource type. This can be Post, Message, Publication, Survey...
    */
   String getContributionType();
-
-  /**
-   * Is the specified user can access this content?
-   *
-   * A user can access a content if it has enough rights to access the application instance in
-   * which is managed this content. In the case where the application instance distributes its
-   * contents among one or more nodes and these nodes have access rights, then the user must have
-   * also the rights to access the node to which belongs the content.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this content, false otherwise.
-   */
-  boolean canBeAccessedBy(UserDetail user);
 }

@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.io.upload;
 
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -72,7 +72,7 @@ public class TestUploadSession {
 
     // Test
     FileUtils.deleteQuietly(new File(getTemporaryPath()));
-    getSessionCacheService().remove(SESSION_CACHE_KEY);
+    getSessionCacheService().getCache().remove(SESSION_CACHE_KEY);
   }
 
   @Before
@@ -83,19 +83,18 @@ public class TestUploadSession {
     organisationControllerMock =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
 
-    si = new SessionInfo(null, null);
-    getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
+    si = new SessionInfo(null, new UserDetail());
   }
 
   @SuppressWarnings("unchecked")
   @Test
   public void verifySessionCache() throws Exception {
-    assertThat(getSessionCacheService().get(SESSION_CACHE_KEY), nullValue());
+    assertThat(getSessionCacheService().getCache().get(SESSION_CACHE_KEY), nullValue());
 
     UploadSession uploadSession1 = UploadSession.from("   ");
-    assertThat((Set<String>) getSessionCacheService().get(SESSION_CACHE_KEY, Set.class),
+    assertThat((Set<String>) getSessionCacheService().getCache().get(SESSION_CACHE_KEY, Set.class),
         containsInAnyOrder(uploadSession1.getId()));
-    assertThat(getSessionCacheService()
+    assertThat(getSessionCacheService().getCache()
             .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession1.getId(), UploadSession.class),
         sameInstance(uploadSession1));
 
@@ -103,30 +102,31 @@ public class TestUploadSession {
     uploadSession2.getUploadSessionFile("path/test/name");
     assertThat(new File(getTemporaryPath(), uploadSession2.getId()).exists(), is(true));
 
-    Set<String> uploadSessionIds = getSessionCacheService().get(SESSION_CACHE_KEY, Set.class);
+    Set<String> uploadSessionIds =
+        getSessionCacheService().getCache().get(SESSION_CACHE_KEY, Set.class);
     assertThat(uploadSessionIds, notNullValue());
     assertThat(uploadSessionIds, containsInAnyOrder(uploadSession1.getId(), "anId"));
-    assertThat(
-        getSessionCacheService().get(UPLOAD_SESSION_CACHE_KEY_PREFIX + "anId", UploadSession.class),
+    assertThat(getSessionCacheService().getCache()
+            .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + "anId", UploadSession.class),
         sameInstance(uploadSession2));
 
     uploadSession1.getUploadSessionFile("newPath/newTest/newName");
     assertThat(new File(getTemporaryPath(), uploadSession1.getId()).exists(), is(true));
 
-    uploadSessionIds = getSessionCacheService().get(SESSION_CACHE_KEY, Set.class);
+    uploadSessionIds = getSessionCacheService().getCache().get(SESSION_CACHE_KEY, Set.class);
     assertThat(uploadSessionIds, notNullValue());
     assertThat(uploadSessionIds, containsInAnyOrder("anId", uploadSession1.getId()));
 
     UploadSession.clearFrom(si);
 
-    assertThat(getSessionCacheService().get(SESSION_CACHE_KEY), nullValue());
+    assertThat(getSessionCacheService().getCache().get(SESSION_CACHE_KEY), nullValue());
     assertThat(new File(getTemporaryPath(), uploadSession1.getId()).exists(), is(false));
-    assertThat(getSessionCacheService()
+    assertThat(getSessionCacheService().getCache()
             .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + uploadSession1.getId(), UploadSession.class),
         nullValue());
     assertThat(new File(getTemporaryPath(), uploadSession2.getId()).exists(), is(false));
-    assertThat(
-        getSessionCacheService().get(UPLOAD_SESSION_CACHE_KEY_PREFIX + "anId", UploadSession.class),
+    assertThat(getSessionCacheService().getCache()
+            .get(UPLOAD_SESSION_CACHE_KEY_PREFIX + "anId", UploadSession.class),
         nullValue());
   }
 

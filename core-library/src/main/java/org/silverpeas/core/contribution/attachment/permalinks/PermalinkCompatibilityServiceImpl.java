@@ -29,8 +29,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.permalinks.model.DocumentPermalink;
 import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
-import org.silverpeas.core.contribution.attachment.permalinks.repository.DocumentPermalinkManager;
-import org.silverpeas.core.contribution.attachment.permalinks.repository.VersionPermalinkManager;
+import org.silverpeas.core.contribution.attachment.permalinks.repository.DocumentPermalinkRepository;
+import org.silverpeas.core.contribution.attachment.permalinks.repository.VersionPermalinkRepository;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -46,10 +46,10 @@ public class PermalinkCompatibilityServiceImpl implements PermalinkCompatibility
   private AttachmentService service;
 
   @Inject
-  private DocumentPermalinkManager docManager;
+  private DocumentPermalinkRepository docManager;
 
   @Inject
-  private VersionPermalinkManager versionManager;
+  private VersionPermalinkRepository versionManager;
 
   public SimpleDocument findDocumentVersionByOldId(int oldId) {
     VersionPermalink link = versionManager.getById(Integer.toString(oldId));

@@ -96,7 +96,7 @@ public class SpaceDeletionTest extends ResourceDeletionTest<AdminTestResources> 
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.ResourceUpdateTest#updateOfResourceByANonAuthorizedUser()
+   * @see ResourceUpdateTest#updateOfResourceByANonAuthorizedUser()
    */
   @Ignore
   @Override

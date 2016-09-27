@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -65,14 +65,14 @@ while ( workflows.hasNext() )
 {
 	strProcessFileName = (String) workflows.next();
     strProcessFileNameURLEncoded = URLEncoder.encode( strProcessFileName, UTF8);
-    strProcessFileNameJSEncoded = EncodeHelper.javaStringToJsString( strProcessFileName );
+    strProcessFileNameJSEncoded = WebEncodeHelper.javaStringToJsString( strProcessFileName );
 
     row       = arrayPane.addArrayLine();
 	iconPane = gef.getIconPane();
 	updateIcon = iconPane.addIcon();
 	delIcon = iconPane.addIcon();
 
-	row.addArrayCellLink( EncodeHelper.javaStringToHtmlString( strProcessFileName ),
+	row.addArrayCellLink( WebEncodeHelper.javaStringToHtmlString( strProcessFileName ),
 	                     "EditWorkflow?ProcessFileName=" + strProcessFileNameURLEncoded );
 
 	updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),

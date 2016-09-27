@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -69,7 +69,7 @@ Button okButton		= gef.getFormButton(resource.getString("GML.ok"), "javascript:o
      // closes current window and submits AdvancedSearch form on parent window
       function closeAndReplace() {
         window.opener.document.AdvancedSearch.mode.value = "SaveRequest";
-        window.opener.document.AdvancedSearch.requestName.value = "<%=EncodeHelper.javaStringToHtmlString(icName)%>";
+        window.opener.document.AdvancedSearch.requestName.value = "<%=WebEncodeHelper.javaStringToHtmlString(icName)%>";
         window.opener.document.AdvancedSearch.submit();
         window.close();
       }
@@ -94,7 +94,7 @@ Button okButton		= gef.getFormButton(resource.getString("GML.ok"), "javascript:o
 	<FORM NAME="icForm" action="<%=m_context%><%=URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS)%>newICenter.jsp">
 	 <tr>
 		<td nowrap align="left" class="txtlibform"><%=resource.getString("RequestName")%> :</td>
-    <td align="left"><input type="text" name="icName" size="60" value="<%=EncodeHelper.javaStringToHtmlString(icName)%>"><input type="hidden" name="action"></td>
+    <td align="left"><input type="text" name="icName" size="60" value="<%=WebEncodeHelper.javaStringToHtmlString(icName)%>"><input type="hidden" name="action"></td>
 	 </tr>
 	 </FORM>
 	 </TABLE>

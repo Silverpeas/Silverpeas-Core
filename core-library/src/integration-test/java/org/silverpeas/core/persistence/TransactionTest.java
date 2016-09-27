@@ -25,7 +25,6 @@ package org.silverpeas.core.persistence;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -35,9 +34,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaEntityServiceTest;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
+import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -47,6 +48,9 @@ import java.sql.Connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
@@ -102,12 +106,19 @@ public class TransactionTest {
   @Before
   public void setup() {
     jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
+    when(StubbedOrganizationController.getMock().getUserDetail(anyString()))
+        .thenAnswer(invocation -> {
+          UserDetail user = new UserDetail();
+          user.setId((String) invocation.getArguments()[0]);
+          return user;
+        });
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(TransactionTest.class)
         .addJpaPersistenceFeatures()
+        .addStubbedOrganizationController()
         .testFocusedOn((warBuilder) -> warBuilder
             .addPackages(true, "org.silverpeas.core.persistence.datasource.repository.jpa"))
         .build();
@@ -135,7 +146,8 @@ public class TransactionTest {
 
       Transaction transaction = Transaction.getTransaction();
       transaction.perform(() -> {
-        jpaEntityServiceTest.save(createOperationContext("26"), person);
+        person.setLastUpdatedBy("26");
+        jpaEntityServiceTest.save(person);
         return null;
       });
 
@@ -173,7 +185,8 @@ public class TransactionTest {
       try {
         Transaction transaction = Transaction.getTransaction();
         transaction.perform(() -> {
-          jpaEntityServiceTest.save(createOperationContext("26"), person);
+          person.setLastUpdatedBy("26");
+          jpaEntityServiceTest.save(person);
           jpaEntityServiceTest.flush();
           throw new IllegalArgumentException("ExpectedTransactionError");
         });
@@ -202,15 +215,6 @@ public class TransactionTest {
     UserDetail user = new UserDetail();
     user.setId(userId);
     return user;
-  }
-
-  /**
-   * Create an operation context.
-   * @param userId the identifier of the user behind the operation/
-   * @return the context of the operation.
-   */
-  private static OperationContext createOperationContext(String userId) {
-    return OperationContext.fromUser(createUser(userId));
   }
 
   private int getTableIndexForId(ITable table, Object id) throws Exception {

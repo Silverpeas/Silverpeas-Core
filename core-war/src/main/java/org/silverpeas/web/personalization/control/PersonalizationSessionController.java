@@ -29,7 +29,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -64,7 +64,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         "org.silverpeas.personalization.settings.personalizationPeasIcons",
         "org.silverpeas.personalization.settings.personalizationPeasSettings");
     setComponentRootName(URLUtil.CMP_PERSONALIZATION);
-    notificationManager = new NotificationManager(getLanguage());
+    notificationManager = NotificationManager.get().forLanguage(getLanguage());
   }
 
   /**
@@ -452,7 +452,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         selected = "";
       }
       valret.append("<option value=\"\" ").append(selected).append(">").append(
-          EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
+          WebEncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
       Properties[] theList = ar.toArray(new Properties[ar.size()]);
@@ -478,7 +478,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           selected = "";
         }
         valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").append(
-            selected).append(">").append(EncodeHelper.javaStringToHtmlString(
+            selected).append(">").append(WebEncodeHelper.javaStringToHtmlString(
             elmt.getProperty("name"))).append("</option>\n");
       }
     }

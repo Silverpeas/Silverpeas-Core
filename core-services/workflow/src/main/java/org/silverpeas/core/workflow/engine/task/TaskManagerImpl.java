@@ -37,9 +37,9 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.calendar.service.SilverpeasCalendar;
-import org.silverpeas.core.calendar.model.TodoDetail;
-import org.silverpeas.core.calendar.model.Attendee;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.personalorganizer.model.TodoDetail;
+import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 

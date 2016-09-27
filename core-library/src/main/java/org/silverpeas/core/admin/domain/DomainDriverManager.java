@@ -32,7 +32,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.UtilException;
@@ -119,12 +119,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    return new UserDetail[0];
   }
 
   @Override
-  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return new Group[0];
+  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return new GroupDetail[0];
   }
 
   @Override
@@ -354,16 +354,16 @@ public class DomainDriverManager extends AbstractDomainDriver {
   @Override
   public UserDetail[] getUsersBySpecificProperty(String propertyName, String value)
           throws Exception {
-    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    return new UserDetail[0];
   }
 
   @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
-    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    return new UserDetail[0];
   }
 
   @Override
-  public Group importGroup(String groupName) throws Exception {
+  public GroupDetail importGroup(String groupName) throws Exception {
     return null;
   }
 
@@ -372,7 +372,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public Group synchroGroup(String groupId) throws Exception {
+  public GroupDetail synchroGroup(String groupId) throws Exception {
     return null;
   }
 
@@ -428,8 +428,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
 * @throws Exception
 */
   @Override
-  public String createGroup(Group group) throws Exception {
-    Group specificGroup = new Group(group);
+  public String createGroup(GroupDetail group) throws Exception {
+    GroupDetail specificGroup = new GroupDetail(group);
     try {
       // Set supergroup specific Id
       if (StringUtil.isDefined(group.getSuperGroupId())) {
@@ -446,7 +446,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(idAsInt(group.getDomainId()));
 
-      // Update Group in specific domain
+      // Update GroupDetail in specific domain
       return domainDriver.createGroup(specificGroup);
     } catch (AdminException e) {
       throw new AdminException(failureOnAdding("group", group.getName()), e);
@@ -473,7 +473,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(gr.domainId);
 
-      // Get Group detail from specific domain
+      // Get GroupDetail detail from specific domain
       domainDriver.deleteGroup(gr.specificId);
 
       // Delete index to given group
@@ -492,8 +492,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
 * @param group
 */
   @Override
-  public void updateGroup(Group group) throws Exception {
-    Group specificGroup = new Group(group);
+  public void updateGroup(GroupDetail group) throws Exception {
+    GroupDetail specificGroup = new GroupDetail(group);
 
     try {
       // Set supergroup specific Id
@@ -517,7 +517,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(gr.domainId);
       specificGroup.setId(gr.specificId);
-      // Update Group in specific domain
+      // Update GroupDetail in specific domain
       domainDriver.updateGroup(specificGroup);
     } catch (AdminException e) {
       throw new AdminException(failureOnUpdate("group", group.getId()), e);
@@ -528,11 +528,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
 * return group with given id (contains list of user ids for this group)
 *
 * @param groupId
-* @return Group
+* @return GroupDetail
 */
   @Override
-  public Group getGroup(String groupId) throws Exception {
-    Group group = null;
+  public GroupDetail getGroup(String groupId) throws Exception {
+    GroupDetail group = null;
 
     try {
       // Set the OrganizationSchema (if not already done)
@@ -544,7 +544,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(gr.domainId);
-      // Get Group detail from specific domain
+      // Get GroupDetail detail from specific domain
       group = domainDriver.getGroup(gr.specificId);
 
       // Fill silverpeas info of group details
@@ -560,7 +560,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public Group getGroupByName(String groupName) throws Exception {
+  public GroupDetail getGroupByName(String groupName) throws Exception {
     return null;
   }
 
@@ -568,9 +568,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
 * return group with given group name in domain
 *
 * @param groupName
-* @return Group
+* @return GroupDetail
 */
-  public Group getGroupByNameInDomain(String groupName, String domainId)
+  public GroupDetail getGroupByNameInDomain(String groupName, String domainId)
           throws Exception {
     try {
       // Set the OrganizationSchema (if not already done)
@@ -591,11 +591,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
 * @param groupId
-* @return Group[]
+* @return GroupDetail[]
 */
   @Override
-  public Group[] getGroups(String groupId) throws Exception {
-    Group[] groups = null;
+  public GroupDetail[] getGroups(String groupId) throws Exception {
+    GroupDetail[] groups = null;
 
     try {
       // Set the OrganizationSchema (if not already done)
@@ -610,7 +610,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(gr.domainId);
 
-      // Get Groups of Group from specific domain
+      // Get Groups of GroupDetail from specific domain
       groups = domainDriver.getGroups(gr.specificId);
     } catch (AdminException e) {
       throw new AdminException(failureOnGetting("group", groupId), e);
@@ -621,28 +621,28 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-* @return Group[]
+* @return GroupDetail[]
 */
   @Override
-  public Group[] getAllGroups() throws Exception {
+  public GroupDetail[] getAllGroups() throws Exception {
     return null;
   }
 
   /**
 *
 * @param domainId
-* @return Group[]
+* @return GroupDetail[]
 * @throws Exception
 */
-  public Group[] getAllGroups(String domainId) throws Exception {
-    Group[] groups = null;
+  public GroupDetail[] getAllGroups(String domainId) throws Exception {
+    GroupDetail[] groups = null;
     try {
       // Set the OrganizationSchema (if not already done)
       getOrganizationSchema();
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
 
-      // Get Group from specific domain
+      // Get GroupDetail from specific domain
       groups = domainDriver.getAllGroups();
     } catch (AdminException e) {
       throw new AdminException(failureOnGetting("all groups in domain", domainId), e);
@@ -657,7 +657,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 * @return @throws Exception
 */
   @Override
-  public Group[] getAllRootGroups() throws Exception {
+  public GroupDetail[] getAllRootGroups() throws Exception {
     return null;
   }
 
@@ -683,7 +683,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
 
-      // Get Group from specific domain
+      // Get GroupDetail from specific domain
       groups = domainDriver.getGroupMemberGroupIds(groupId);
     } catch (AdminException e) {
       throw new AdminException(failureOnGetting("subgroups of group", groupId), e);
@@ -699,15 +699,15 @@ public class DomainDriverManager extends AbstractDomainDriver {
 * @return
 * @throws Exception
 */
-  public Group[] getAllRootGroups(String domainId) throws Exception {
-    Group[] groups = null;
+  public GroupDetail[] getAllRootGroups(String domainId) throws Exception {
+    GroupDetail[] groups = null;
 
     try {
       // Set the OrganizationSchema (if not already done)
       getOrganizationSchema();
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
-      // Get Group from specific domain
+      // Get GroupDetail from specific domain
       groups = domainDriver.getAllRootGroups();
     } catch (AdminException e) {
       throw new AdminException(failureOnGetting("root groups in domain", domainId), e);

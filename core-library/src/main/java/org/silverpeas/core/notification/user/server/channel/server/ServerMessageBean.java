@@ -25,7 +25,7 @@
 package org.silverpeas.core.notification.user.server.channel.server;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +43,7 @@ import javax.validation.constraints.NotNull;
         query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = " +
             ":sessionId")})
 public class ServerMessageBean
-    extends AbstractJpaCustomEntity<ServerMessageBean, UniqueLongIdentifier> {
+    extends BasicJpaEntity<ServerMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = 769537113068849221L;
 
   @Column(nullable = false)

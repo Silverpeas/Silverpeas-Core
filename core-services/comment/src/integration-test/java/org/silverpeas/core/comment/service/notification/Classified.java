@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.comment.service.notification;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
@@ -94,7 +95,7 @@ public class Classified implements SilverpeasContent {
   }
 
   @Override
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     return !unauthorizedUsers.contains(user.getId());
   }
 

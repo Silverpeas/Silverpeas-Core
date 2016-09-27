@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.web.mvc;
 
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.InMemoryCacheService;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -89,8 +89,8 @@ public class SilverListener
         SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(httpSession.getId());
         if (sessionInfo.isDefined()) {
-          CacheServiceProvider.getRequestCacheService()
-              .put("@SessionCache@", sessionInfo.getCache());
+          ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
+              .setCurrentSessionCache(sessionInfo.getCache());
         } else {
           // Anonymous management
           MainSessionController mainSessionController =
@@ -98,10 +98,8 @@ public class SilverListener
                   MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
           if (mainSessionController != null &&
               mainSessionController.getCurrentUserDetail() != null) {
-            InMemoryCacheService cache = new InMemoryCacheService();
-            cache.put(UserDetail.CURRENT_REQUESTER_KEY,
-                mainSessionController.getCurrentUserDetail());
-            CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
+            ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
+                .newSessionCache(mainSessionController.getCurrentUserDetail());
           }
         }
       }
@@ -110,17 +108,17 @@ public class SilverListener
 
   // Clear session informations
   private void remove(HttpSessionEvent event) {
+    final String sessionId = event.getSession().getId();
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-    sessionManagement.closeSession(event.getSession().getId());
-    SilverTrace
-        .info("peasCore", "SilverListener.sessionDestroyed", "peasCore.MSG_END_OF_HTTPSESSION",
-            "ID=" + event.getSession().getId());
+    sessionManagement.closeSession(sessionId);
+    SilverLogger.getLogger(this).info("Session with id {0} has just been closed", sessionId);
+    ServerEventDispatcherTask.unregisterBySessionId(sessionId);
   }
 
   /**
    * Clears the cache associated to the request.
    */
   private void clearRequestCache() {
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().getCache().clear();
   }
 }

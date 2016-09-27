@@ -24,10 +24,10 @@
 
 --%>
 
-<%@page import="org.silverpeas.core.calendar.model.ToDoHeader"%>
+<%@page import="org.silverpeas.core.personalorganizer.model.ToDoHeader"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.core.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 
 <%@ include file="../portletImport.jsp"%>
 
@@ -47,7 +47,7 @@ if (!todos.hasNext()) {
 	while (todos.hasNext()) {
 		ToDoHeader todo = todos.next();
 		if (todo.getPercentCompleted() != 100) {
-			out.println("<li><a href=\""+m_sContext+URLUtil.getURL(URLUtil.CMP_TODO)+"todo.jsp\">" + EncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
+			out.println("<li><a href=\""+m_sContext+URLUtil.getURL(URLUtil.CMP_TODO)+"todo.jsp\">" + WebEncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
 			if (todo.getPercentCompleted() != -1) {
 				out.println(" <i>("+todo.getPercentCompleted()+"%)</i>");
 			} else {

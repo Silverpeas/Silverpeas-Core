@@ -54,8 +54,8 @@ public class UserSubscriptionNotificationSendingHandlerTest {
 
   @Before
   public void setup() {
-    CacheServiceProvider.getThreadCacheService().clear();
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     request = mock(HttpServletRequest.class);
     resourceEvent = new UnitTestResourceEvent(ResourceEvent.Type.CREATION,
         new UnitTestResource("26", "Toto Chez-les-Papoos", new Date()));
@@ -83,9 +83,9 @@ public class UserSubscriptionNotificationSendingHandlerTest {
         .thenReturn("true");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getThreadCacheService().clear();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
@@ -108,9 +108,9 @@ public class UserSubscriptionNotificationSendingHandlerTest {
     when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("true");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getThreadCacheService().clear();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 

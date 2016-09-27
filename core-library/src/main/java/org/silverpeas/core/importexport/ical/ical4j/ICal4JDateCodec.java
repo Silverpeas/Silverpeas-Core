@@ -24,16 +24,19 @@
 
 package org.silverpeas.core.importexport.ical.ical4j;
 
-import org.silverpeas.core.importexport.EncodingException;
-import org.silverpeas.core.date.Datable;
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.date.DateTime;
-import java.text.ParseException;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import org.silverpeas.core.date.Temporal;
+import org.silverpeas.core.importexport.EncodingException;
 
 import javax.inject.Singleton;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * A decoder/encoder of iCal4J dates with Silverpeas dates.
@@ -41,14 +44,66 @@ import javax.inject.Singleton;
 @Singleton
 public class ICal4JDateCodec {
 
+  private static final String ICAL_UTC_PATTERN = "yyyyMMdd'T'HHmmss'Z'";
+  private static final String ICAL_LOCAL_PATTERN = "yyyyMMdd'T'HHmmss";
+  private static final String ICAL_DATE_PATTERN = "yyyyMMdd";
+
   /**
    * Encodes a Silverpeas date into an iCal4J date.
    * @param aDate the date to encode.
    * @return an iCal4J date.
    * @throws EncodingException if the encoding fails.
    */
-  public net.fortuna.ical4j.model.Date encode(final Datable<?> aDate) throws EncodingException {
+  public net.fortuna.ical4j.model.Date encode(final Temporal<?> aDate) throws EncodingException {
     return encode(aDate, false);
+  }
+
+  /**
+   * Encodes a date time into an iCal4J date set in UTC.
+   * @param dateTime the date time to encode.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encode(final OffsetDateTime dateTime)
+      throws EncodingException {
+    try {
+      return new net.fortuna.ical4j.model.DateTime(DateTimeFormatter.ofPattern(ICAL_UTC_PATTERN)
+          .format(dateTime.withOffsetSameInstant(ZoneOffset.UTC)));
+    } catch (ParseException e) {
+      throw new EncodingException(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Encodes a date time into an iCal4J date that takes into account the time zone of the specified
+   * date time.
+   * @param dateTime the date time with timezone to encode.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encode(final ZonedDateTime dateTime)
+      throws EncodingException {
+    try {
+      return new net.fortuna.ical4j.model.DateTime(
+          DateTimeFormatter.ofPattern(ICAL_LOCAL_PATTERN).format(dateTime), getTimeZone(dateTime));
+    } catch (ParseException e) {
+      throw new EncodingException(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Encodes a date into an iCal4J date.
+   * @param date a date.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encode(final LocalDate date) throws EncodingException {
+    try {
+      return new net.fortuna.ical4j.model.Date(
+          DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).format(date));
+    } catch (ParseException e) {
+      throw new EncodingException(e.getMessage(), e);
+    }
   }
 
   /**
@@ -57,7 +112,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws EncodingException if the encoding fails.
    */
-  public net.fortuna.ical4j.model.Date encodeInUTC(final Datable<?> aDate) throws EncodingException {
+  public net.fortuna.ical4j.model.Date encodeInUTC(final Temporal<?> aDate) throws EncodingException {
     return encode(aDate, true);
   }
 
@@ -71,18 +126,18 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws EncodingException if the encoding fails.
    */
-  public net.fortuna.ical4j.model.Date encode(final Datable<?> aDate, boolean inUTC) throws
+  public net.fortuna.ical4j.model.Date encode(final Temporal<?> aDate, boolean inUTC) throws
       EncodingException {
     net.fortuna.ical4j.model.Date iCal4JDate = null;
     try {
-      if (aDate instanceof DateTime) {
+      if (aDate.isTimeSupported()) {
         if (inUTC) {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICalInUTC());
         } else {
           iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICal());
           ((net.fortuna.ical4j.model.DateTime)iCal4JDate).setTimeZone(getTimeZone(aDate));
         }
-      } else if (aDate instanceof Date) {
+      } else if (!aDate.isTimeSupported()) {
         iCal4JDate = new net.fortuna.ical4j.model.Date(aDate.toICal());
       }
     } catch (ParseException ex) {
@@ -91,8 +146,13 @@ public class ICal4JDateCodec {
     return iCal4JDate;
   }
 
-  private TimeZone getTimeZone(final Datable<?> date) {
+  private TimeZone getTimeZone(final Temporal<?> date) {
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     return registry.getTimeZone(date.getTimeZone().getID());
+  }
+
+  private TimeZone getTimeZone(final ZonedDateTime date) {
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+    return registry.getTimeZone(date.getZone().getId());
   }
 }

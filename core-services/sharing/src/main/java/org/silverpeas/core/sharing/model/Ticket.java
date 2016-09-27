@@ -25,7 +25,7 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.*;
@@ -47,7 +47,7 @@ import java.util.List;
     query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
         ".sharedObjectType = :ticketType"), @NamedQuery(name = "Ticket.findAllReservationsForUser",
     query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")})
-public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentifier>
+public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = -612174156104966079L;

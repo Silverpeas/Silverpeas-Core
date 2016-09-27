@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa.repository;
 
-import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
+import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
  * Date: 20/11/13
  */
 @Singleton
-public class PersonRepository extends SilverpeasJpaEntityManager<Person, UuidIdentifier> {
+public class PersonRepository extends SilverpeasJpaEntityRepository<Person> {
 
   public Person getByFirstName(String firstName) {
     String jpqlQuery = "from Person p where p.firstName = :firstName";
@@ -52,52 +52,6 @@ public class PersonRepository extends SilverpeasJpaEntityManager<Person, UuidIde
     String jpqlQuery = "select a from Animal a where a.person.lastName like :lastName";
     return listFromJpqlString(jpqlQuery, newNamedParameters().add("lastName", lastName),
         Animal.class);
-  }
-
-  public long updatePersonFirstNameHavingAtLeastOneAnimal(Person person) {
-    String jpqlQuery = "update Person p set p.firstName = :name, " +
-        "p.lastUpdatedBy = :lastUpdatedBy, p.lastUpdateDate = :lastUpdateDate, " +
-        "p.version = :version where p.id = :id and p.animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery, newNamedParameters().add("lastUpdatedBy", "dummy")
-            .add("name", person.getFirstName())
-            .add("id", UuidIdentifier.from(person.getId()))
-            .add("version", person.getVersion() + 1));
-  }
-
-  /**
-   * Missing technical data
-   * @return
-   */
-  public long badUpdateMissingLastUpdatedBy() {
-    String jpqlQuery = "update Person p set p.firstName = concat(p.firstName, '_updated'), " +
-        "p.lastUpdateDate = :lastUpdateDate, " +
-        "p.version = (p.version + 1) where p.animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery,
-        newNamedParameters().add("lastUpdatedBy", "dummy"));
-  }
-
-  /**
-   * Missing technical data
-   * @return
-   */
-  public long badUpdateMissingLastUpdateDate() {
-    String jpqlQuery = "update Person p set p.firstName = concat(p.firstName, '_updated'), " +
-        "p.lastUpdatedBy = :lastUpdatedBy, " +
-        "p.version = (p.version + 1) where p.animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery,
-        newNamedParameters().add("lastUpdatedBy", "dummy"));
-  }
-
-  /**
-   * Missing technical data
-   * @return
-   */
-  public long badUpdateMissingVersionManagement() {
-    String jpqlQuery = "update Person p set p.firstName = concat(p.firstName, '_updated'), " +
-        "p.lastUpdatedBy = :lastUpdatedBy, p.lastUpdateDate = :lastUpdateDate, " +
-        "p.version = (p.version + 2) where p.animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery,
-        newNamedParameters().add("lastUpdatedBy", "dummy"));
   }
 
   public long deletePersonFirstNamesHavingAtLeastOneAnimal() {

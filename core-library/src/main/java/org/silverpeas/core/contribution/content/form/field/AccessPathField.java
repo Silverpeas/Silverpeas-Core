@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
@@ -127,7 +127,7 @@ public class AccessPathField extends TextField {
                 } else {
                   nodeName = nodeInPath.getName();
                 }
-                pathString.append(EncodeHelper.javaStringToHtmlString(nodeName)).append(" > ");
+                pathString.append(WebEncodeHelper.javaStringToHtmlString(nodeName)).append(" > ");
               }
             }
 

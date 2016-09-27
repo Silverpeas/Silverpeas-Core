@@ -41,7 +41,7 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
-<%@ page import="org.silverpeas.core.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -232,7 +232,7 @@ $(document).ready(function(){
     };
     $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
 
-    $("#newStatus").html("<%=EncodeHelper.javaStringToJsString(userFull.getStatus())%>");
+    $("#newStatus").html("<%=WebEncodeHelper.javaStringToJsString(userFull.getStatus())%>");
 });
 
 function hideImageFile() {

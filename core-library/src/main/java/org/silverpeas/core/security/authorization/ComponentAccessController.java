@@ -27,6 +27,7 @@ package org.silverpeas.core.security.authorization;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 
@@ -100,7 +101,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
     // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
     // retrieved.
-    if (!UserDetail.isActivatedStateFor(userId)) {
+    if (!User.isActivatedStateFor(userId)) {
       return;
     }
 

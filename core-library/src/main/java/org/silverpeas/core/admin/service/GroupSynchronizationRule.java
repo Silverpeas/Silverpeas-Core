@@ -384,7 +384,7 @@ class GroupSynchronizationRule {
   private List<String> getUserIdsBySpecificProperty(String domainId, String propertyName,
       String propertyValue) throws AdminException {
     final int domainIdAsInteger = Integer.parseInt(domainId);
-    UserDetail[] users = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+    UserDetail[] users = new UserDetail[0];
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     DomainDriver domainDriver = null;

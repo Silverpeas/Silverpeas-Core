@@ -39,7 +39,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.GroupField;
-import org.silverpeas.core.util.EncodeHelper;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -85,7 +85,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '"
-          + EncodeHelper.javaStringToJsString(template.getLabel(language))
+          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
           + "' " + Util.getString("GML.MustBeFilled", language)
           + "\\n\";");
       out.println("      errorNb++;");
@@ -127,13 +127,13 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     }
     html.append("<input type=\"hidden\"" + " id=\"").append(fieldName).append("\" name=\"").
         append(fieldName).append("\" value=\"").
-        append(EncodeHelper.javaStringToHtmlString(groupId)).append("\" />");
+        append(WebEncodeHelper.javaStringToHtmlString(groupId)).append("\" />");
 
     if (!template.isHidden()) {
       html.append("<input type=\"text\" disabled=\"disabled\" size=\"50\" " + " id=\"").
           append(fieldName).append("_name\" name=\"").append(fieldName).
           append("$$name\" value=\"").
-          append(EncodeHelper.javaStringToHtmlString(groupName)).append("\" />");
+          append(WebEncodeHelper.javaStringToHtmlString(groupName)).append("\" />");
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {

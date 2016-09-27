@@ -22,7 +22,7 @@
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author mmoquillon
  */
 public class SILVERMAILMessageBeanRepository
-    extends JpaBasicEntityManager<SILVERMAILMessageBean, UniqueLongIdentifier> {
+    extends BasicJpaEntityRepository<SILVERMAILMessageBean> {
 
   public List<SILVERMAILMessageBean> findMessageByUserIdAndFolderId(String userId, String folderId,
       int readState) {

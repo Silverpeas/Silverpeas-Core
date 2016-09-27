@@ -41,7 +41,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
-import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -426,7 +426,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Group getGroup(final String groupId) throws AdminException {
+  public GroupDetail getGroup(final String groupId) throws AdminException {
     return null;
   }
 
@@ -436,23 +436,23 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Group getGroupByNameInDomain(final String groupName, final String domainFatherId)
+  public GroupDetail getGroupByNameInDomain(final String groupName, final String domainFatherId)
       throws AdminException {
     return null;
   }
 
   @Override
-  public Group[] getGroups(final String[] asGroupId) throws AdminException {
-    return new Group[0];
+  public GroupDetail[] getGroups(final String[] asGroupId) throws AdminException {
+    return new GroupDetail[0];
   }
 
   @Override
-  public String addGroup(final Group group) throws AdminException {
+  public String addGroup(final GroupDetail group) throws AdminException {
     return null;
   }
 
   @Override
-  public String addGroup(final Group group, final boolean onlyInSilverpeas) throws AdminException {
+  public String addGroup(final GroupDetail group, final boolean onlyInSilverpeas) throws AdminException {
     return null;
   }
 
@@ -468,12 +468,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String updateGroup(final Group group) throws AdminException {
+  public String updateGroup(final GroupDetail group) throws AdminException {
     return null;
   }
 
   @Override
-  public String updateGroup(final Group group, final boolean onlyInSilverpeas)
+  public String updateGroup(final GroupDetail group, final boolean onlyInSilverpeas)
       throws AdminException {
     return null;
   }
@@ -510,8 +510,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Group[] getAllRootGroups() throws AdminException {
-    return new Group[0];
+  public GroupDetail[] getAllRootGroups() throws AdminException {
+    return new GroupDetail[0];
   }
 
   @Override
@@ -722,13 +722,13 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Group[] getRootGroupsOfDomain(final String domainId) throws AdminException {
-    return new Group[0];
+  public GroupDetail[] getRootGroupsOfDomain(final String domainId) throws AdminException {
+    return new GroupDetail[0];
   }
 
   @Override
-  public Group[] getSynchronizedGroups() throws AdminException {
-    return new Group[0];
+  public GroupDetail[] getSynchronizedGroups() throws AdminException {
+    return new GroupDetail[0];
   }
 
   @Override
@@ -786,8 +786,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Group[] searchGroups(final Group modelGroup, final boolean isAnd) throws AdminException {
-    return new Group[0];
+  public GroupDetail[] searchGroups(final GroupDetail modelGroup, final boolean isAnd) throws AdminException {
+    return new GroupDetail[0];
   }
 
   @Override
@@ -990,8 +990,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Group[] getAllSubGroups(final String parentGroupId) throws AdminException {
-    return new Group[0];
+  public GroupDetail[] getAllSubGroups(final String parentGroupId) throws AdminException {
+    return new GroupDetail[0];
   }
 
   @Override
@@ -1137,14 +1137,14 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public ListSlice<Group> searchGroups(final GroupsSearchCriteria searchCriteria)
+  public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
       throws AdminException {
     return null;
   }
 
   @Override
   public String[] searchGroupsIds(final boolean isRootGroup, final String componentId,
-      final String[] profileId, final Group modelGroup) throws AdminException {
+      final String[] profileId, final GroupDetail modelGroup) throws AdminException {
     return new String[0];
   }
 

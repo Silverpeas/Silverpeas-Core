@@ -44,3 +44,15 @@ function openConnectedUsers() {
   chemin = getContext() + "/RcommunicationUser/jsp/Main";
   SP_openWindow(chemin, "users_pop", 400, 400, "scrollbars=yes,resizable=yes");
 }
+
+(function() {
+  whenSilverpeasReady(function() {
+    spServerEventSource.addEventListener('USER_SESSION', refreshData, 'connectedUserListener');
+    function refreshData(serverEvent) {
+      var data = extendsObject({
+        nbConnectedUsers : 0, isOpening : false, isClosing : false
+      }, JSON.parse(serverEvent.data));
+      setConnectedUsers(data.nbConnectedUsers);
+    }
+  });
+})();

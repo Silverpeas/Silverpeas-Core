@@ -26,7 +26,7 @@ package org.silverpeas.core.personalization.service;
 
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.dao.PersonalizationManager;
+import org.silverpeas.core.personalization.dao.PersonalizationRepository;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -45,7 +45,7 @@ import java.util.List;
 public class DefaultPersonalizationService implements PersonalizationService {
 
   @Inject
-  private PersonalizationManager personalizationManager;
+  private PersonalizationRepository personalizationRepository;
 
   private final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.personalization.settings.personalizationPeasSettings");
@@ -69,22 +69,22 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
-    personalizationManager.saveAndFlush(userPreferences);
+    personalizationRepository.saveAndFlush(userPreferences);
   }
 
   @Override
   public void resetDefaultSpace(String spaceId) {
-    List<UserPreferences> prefs = personalizationManager.findByDefaultSpace(spaceId);
+    List<UserPreferences> prefs = personalizationRepository.findByDefaultSpace(spaceId);
     for (UserPreferences pref : prefs) {
       pref.setPersonalWorkSpaceId(null);
     }
-    personalizationManager.save(prefs);
-    personalizationManager.flush();
+    personalizationRepository.save(prefs);
+    personalizationRepository.flush();
   }
 
   @Override
   public UserPreferences getUserSettings(String userId) {
-    UserPreferences preferences = personalizationManager.getById(userId);
+    UserPreferences preferences = personalizationRepository.getById(userId);
     if (preferences == null) {
       preferences = getDefaultUserSettings(userId);
     }
