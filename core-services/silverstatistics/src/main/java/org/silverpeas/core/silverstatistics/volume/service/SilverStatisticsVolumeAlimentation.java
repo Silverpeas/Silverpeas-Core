@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,10 +127,7 @@ public class SilverStatisticsVolumeAlimentation {
         c = agregateUser(v);
       }
     } catch (Exception e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
-          "component = " + ci.getName(), e);
+      SilverLogger.getLogger(SilverStatisticsVolumeAlimentation.class).warn(e.getMessage(), e);
     }
     return c;
   }
