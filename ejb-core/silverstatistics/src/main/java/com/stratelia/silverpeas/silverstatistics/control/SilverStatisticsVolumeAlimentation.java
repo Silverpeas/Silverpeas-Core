@@ -152,7 +152,7 @@ public class SilverStatisticsVolumeAlimentation {
         c = agregateUser(v);
       }
     } catch (ClassNotFoundException ce) {
-      SilverTrace.info("silverstatistics",
+      SilverTrace.warn("silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
           "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",
           "component = " + ci.getName(), ce);
@@ -172,7 +172,7 @@ public class SilverStatisticsVolumeAlimentation {
       componentStatisticsClassName = resources.getString(componentName);
     } catch (MissingResourceException e) {
       componentStatisticsClassName = null;
-      SilverTrace.error("silverstatistics",
+      SilverTrace.warn("silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
           "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
           "No statistic implementation class for component '" + componentName + "'");
