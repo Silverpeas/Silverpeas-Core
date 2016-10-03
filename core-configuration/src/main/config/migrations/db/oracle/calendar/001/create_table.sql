@@ -35,11 +35,11 @@ CREATE TABLE SB_Cal_Recurrence_Exception (
 CREATE TABLE SB_Cal_Event (
   id             VARCHAR(40)   NOT NULL,
   calendarId     VARCHAR(40)   NOT NULL,
-  inDays         BOOLEAN       NOT NULL,
+  inDays         NUMBER(1,0)   NOT NULL,
   startDate      TIMESTAMP     NOT NULL,
   endDate        TIMESTAMP     NOT NULL,
   title          VARCHAR(2000) NOT NULL,
-  description    VARCHAR(6000) NOT NULL,
+  description    VARCHAR(4000) NOT NULL,
   attributes     VARCHAR(40)   NULL,
   visibility     VARCHAR(50)   NOT NULL,
   priority       INTEGER       NOT NULL,
