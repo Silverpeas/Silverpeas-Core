@@ -117,7 +117,7 @@ public class IndexerThread extends Thread {
           try {
             request.process(indexManager);
           } catch (Exception e) {
-            SilverTrace.error("indexEngine", "IndexerThread", "indexEngine.INFO_PROCESS_ERROR", e);
+            SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
           }
         }
 
