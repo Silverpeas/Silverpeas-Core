@@ -20,27 +20,22 @@
  */
 package org.silverpeas.core.web.index.components;
 
-import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.web.index.AbstractIndexer;
-import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
+import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-
-import javax.inject.Inject;
+import org.silverpeas.core.web.index.AbstractIndexer;
+import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 
 public class ApplicationIndexer extends AbstractIndexer {
 
-  public static ApplicationIndexer getInstance() {
-    return ServiceProvider.getService(ApplicationIndexer.class);
+  protected ApplicationIndexer() {
   }
 
-  @Inject
-  private OrganizationController organizationController;
-
-  protected ApplicationIndexer() {
+  public static ApplicationIndexer getInstance() {
+    return ServiceProvider.getService(ApplicationIndexer.class);
   }
 
   public void indexAll() throws Exception {
@@ -57,7 +52,12 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
   }
 
-  public void indexComponent(String spaceId, ComponentInst compoInst) {
+  private void indexComponent(String spaceId, ComponentInst compoInst) {
+
+    SilverLogger.getLogger(this)
+        .info("starting indexation of component ''{0}'' with id ''{1}''", compoInst.getLabel(),
+            compoInst.getId());
+
     // index component info
     admin.indexComponent(compoInst.getId());
 
@@ -70,14 +70,21 @@ public class ApplicationIndexer extends AbstractIndexer {
         }
         componentIndexer.index(compoInst);
       } catch (Exception e) {
-        SilverLogger.getLogger(this).error("Failure while indexing component {0}",
-            new String[] {compoInst.getId()}, e);
+        SilverLogger.getLogger(this)
+            .error("failure while indexing component ''{0}'' with id ''{1}''",
+                new String[]{compoInst.getLabel(), compoInst.getId()}, e);
       }
     }
+
+    SilverLogger.getLogger(this)
+        .info("ending indexation of component ''{0}'' with id ''{1}''", compoInst.getLabel(),
+            compoInst.getId());
   }
 
   @Override
   public void indexPersonalComponent(String personalComponent) {
+    SilverLogger.getLogger(this)
+        .info("starting indexation of personal component of type  ''{0}''", personalComponent);
     String compoName = firstLetterToLowerCase(personalComponent);
     try {
       PersonalToolIndexation personalToolIndexer =
@@ -85,50 +92,62 @@ public class ApplicationIndexer extends AbstractIndexer {
       personalToolIndexer.index();
     } catch (IllegalStateException ce) {
       SilverLogger.getLogger(this)
-          .warn("Cannot get personal component {0} ({1})", personalComponent, ce.getMessage());
+          .warn("cannot get personal component of type ''{0}'' ({1})", personalComponent,
+              ce.getMessage());
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error("Failure while indexing personal component {0}",
-          new String[] {personalComponent}, e);
+      SilverLogger.getLogger(this)
+          .error("failure while indexing personal component of type ''{0}''",
+              new String[]{personalComponent}, e);
     }
+    SilverLogger.getLogger(this)
+        .info("ending indexation of personal component of type  ''{0}''", personalComponent);
   }
 
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    ComponentInst compoInst = organizationController.getComponentInst(componentId);
-    indexComponent(spaceId, compoInst);
+    try {
+      ComponentInst compoInst = OrganizationController.get().getComponentInst(componentId);
+      indexComponent(spaceId, compoInst);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this)
+          .error("failure while indexing component with id ''{0}''", new String[]{componentId}, e);
+    }
   }
 
   public void indexPdc() throws Exception {
+    SilverLogger.getLogger(this).info("starting indexation of PDC");
     PdcIndexer indexer = PdcIndexer.getInstance();
     indexer.index();
+    SilverLogger.getLogger(this).info("ending indexation of PDC");
   }
 
-  String firstLetterToUpperCase(String str) {
-    return StringUtil.capitalize(str);
-  }
-
-  String firstLetterToLowerCase(String str) {
+  private String firstLetterToLowerCase(String str) {
     return StringUtil.uncapitalize(str);
   }
 
-  ComponentIndexation getIndexer(ComponentInst compoInst) {
+  private ComponentIndexation getIndexer(ComponentInst compoInst) {
     ComponentIndexation componentIndexer;
     try {
       String qualifier = compoInst.getName() + ComponentIndexation.QUALIFIER_SUFFIX;
       componentIndexer = ServiceProvider.getService(qualifier);
     } catch (IllegalStateException ex) {
       SilverLogger.getLogger(this)
-          .warn("No indexer for component {0} ({1})", compoInst.getId(), ex.getMessage());
+          .warn("no indexer for component ''{0}'' with id ''{1}'' ({2})", compoInst.getLabel(),
+              compoInst.getId(), ex.getMessage());
       componentIndexer = ServiceProvider.getService(ComponentIndexerAdapter.class);
     }
     return componentIndexer;
   }
 
   public void indexUsers() {
+    SilverLogger.getLogger(this).info("starting indexation of users");
     admin.indexAllUsers();
+    SilverLogger.getLogger(this).info("ending indexation of users");
   }
 
   public void indexGroups() {
+    SilverLogger.getLogger(this).info("starting indexation of groups");
     admin.indexAllGroups();
+    SilverLogger.getLogger(this).info("ending indexation of groups");
   }
 }

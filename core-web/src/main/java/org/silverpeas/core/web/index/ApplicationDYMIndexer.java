@@ -24,28 +24,26 @@
 
 package org.silverpeas.core.web.index;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.DidYouMeanIndexer;
-
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.index.tools.FileFilterAgenda;
 import org.silverpeas.core.web.index.tools.FileFilterTodo;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.ServiceProvider;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  * Executes a partial or full reindexing of spelling indexes
  */
 public class ApplicationDYMIndexer extends AbstractIndexer {
 
-  public static ApplicationDYMIndexer getInstance() {
-    return ServiceProvider.getService(ApplicationDYMIndexer.class);
+  protected ApplicationDYMIndexer() {
   }
 
-  protected ApplicationDYMIndexer() {
-
+  public static ApplicationDYMIndexer getInstance() {
+    return ServiceProvider.getService(ApplicationDYMIndexer.class);
   }
 
   /**
@@ -72,9 +70,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
           .getAbsoluteIndexPath(null, componentId);
       DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);
     } catch (Exception e) {
-      SilverTrace.error(ApplicationDYMIndexer.class.toString(),
-          "ApplicationDYMIndexer.indexComponent()",
-          "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = " + componentId, e);
+      SilverLogger.getLogger(this)
+          .error("failure while indexing component with id ''{0}''", new String[]{componentId}, e);
     }
   }
 
@@ -88,31 +85,27 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
     try {
       File file = new File(
           IndexFileManager.getIndexUpLoadPath());
-      FilenameFilter filter = null;
+      FilenameFilter filter;
       if ("agenda".equalsIgnoreCase(personalComponent)) {
         filter = new FileFilterAgenda();
       } else if ("todo".equalsIgnoreCase(personalComponent)) {
         filter = new FileFilterTodo();
       } else {
-        SilverTrace.error(ApplicationDYMIndexer.class.toString(),
-            "ApplicationDYMIndexer.indexPersonalComponent()",
-            "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
-            "personalComponent = " + personalComponent);
+        SilverLogger.getLogger(this)
+            .error("failure while indexing personal component of type ''{0}''", personalComponent);
         return;
       }
       String[] paths = file.list(filter);
-      for (String personalComponentName : paths) {
-        String personalComponentIndexPath = IndexFileManager
-            .getAbsoluteIndexPath(null,
-                personalComponentName);
+      for (String personalComponentName : paths != null ? paths : new String[0]) {
+        String personalComponentIndexPath =
+            IndexFileManager.getAbsoluteIndexPath(null, personalComponentName);
         DidYouMeanIndexer.createSpellIndex("content", personalComponentIndexPath);
       }
 
     } catch (Exception e) {
-      SilverTrace.error(ApplicationDYMIndexer.class.toString(),
-          "ApplicationDYMIndexer.indexPersonalComponent()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
-          "personalComponent = " + personalComponent, e);
+      SilverLogger.getLogger(this)
+          .error("failure while indexing personal component of type ''{0}''",
+              new String[]{personalComponent}, e);
     }
   }
 
@@ -120,8 +113,10 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * creates a spellchecker index for the PDC
    */
   public void indexPdc() {
+    SilverLogger.getLogger(this).info("starting indexation of PDC");
     String pdcIndexPath = IndexFileManager
         .getAbsoluteIndexPath(null, "pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
+    SilverLogger.getLogger(this).info("ending indexation of PDC");
   }
 }

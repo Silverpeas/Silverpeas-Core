@@ -139,7 +139,22 @@ public class ManagedThreadPool {
    * @throws InterruptedException
    */
   public static <V> Future<V> invoke(Callable<V> callable) throws InterruptedException {
-    return invoke(Collections.singletonList(callable)).get(0);
+    return invoke(callable, defaultConfig());
+  }
+
+  /**
+   * Invokes the given {@link java.util.concurrent.Callable} instance into a managed thread.<br/>
+   * If the application server has no more thread to supply, then the execution will wait until it
+   * exists one again available.
+   * @param callable the callable to invoke.
+   * @param config the {@link java.util.concurrent.Callable} instances execution configuration.
+   * @param <V> the type of the returned value of a {@link java.util.concurrent.Callable} instance.
+   * @return the {@link java.util.concurrent.Future} returned by the invocation of the given
+   * {@link java.util.concurrent.Callable} instance.
+   * @throws InterruptedException
+   */
+  public static <V> Future<V> invoke(Callable<V> callable, ExecutionConfig config) throws InterruptedException {
+    return invoke(Collections.singletonList(callable), config).get(0);
   }
 
   /**
@@ -208,7 +223,11 @@ public class ManagedThreadPool {
     final ExecutorService executorService;
     if (config.getMaxThreadPoolSize() > 0) {
       int maxThreadPoolSize = config.getMaxThreadPoolSize();
-      executorService = Executors.newFixedThreadPool(maxThreadPoolSize, me.managedThreadFactory);
+      if (maxThreadPoolSize == 1) {
+        executorService = Executors.newSingleThreadExecutor(me.managedThreadFactory);
+      } else {
+        executorService = Executors.newFixedThreadPool(maxThreadPoolSize, me.managedThreadFactory);
+      }
     } else {
       executorService = Executors.newCachedThreadPool(me.managedThreadFactory);
     }
