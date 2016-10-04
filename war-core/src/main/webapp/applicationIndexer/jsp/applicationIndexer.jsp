@@ -50,6 +50,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 <%@ page import="org.silverpeas.core.admin.OrganisationControllerFactory" %>
+<%@ page import="com.stratelia.webactiv.applicationIndexer.control.IndexationProcessExecutor" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -106,7 +107,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganisationCon
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+final MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
 if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception
@@ -129,30 +130,39 @@ String m_sContext = sURI.substring(0,sURI.lastIndexOf(sServletPath));
 
 String[] rootSpaceIds =  m_OrganizationController.getAllRootSpaceIds();
 
-String spaceId 			= request.getParameter("SpaceId");
-String componentId 		= request.getParameter("ComponentId");
-String action 			= request.getParameter("Action");
-String personalCompo 	= request.getParameter("PersonalCompo");
-String indexMessage		= "";
+final String spaceId 			= request.getParameter("SpaceId");
+final String componentId 		= request.getParameter("ComponentId");
+final String action 			= request.getParameter("Action");
+final String personalCompo 	= request.getParameter("PersonalCompo");
+String indexMessage		= message.getString("admin.reindex.inprogress");
+boolean isIndexationProcessRunning = IndexationProcessExecutor.isCurrentExecution();
 
 if (action != null) {
-    ApplicationIndexer ai = new ApplicationIndexer(m_MainSessionCtrl);
-    if (action.equals("Index")) {
-    	ai.index(spaceId, componentId);
-    } else if (action.equals("IndexPerso")) {
-        ai.index(personalCompo);
-    } else if (action.equals("IndexAllSpaces")) {
-    	ai.indexAllSpaces();
-    } else if (action.equals("IndexAll")) {
-    	ai.indexAll();
-    } else if (action.equals("IndexPdc")) {
-    	ai.indexPdc();
-    } else if (action.equals("IndexGroups")) {
-    	ai.indexGroups();
-    } else if (action.equals("IndexUsers")) {
-    	ai.indexUsers();
-    }
-    indexMessage = message.getString("admin.reindex.inprogress");
+  if (!isIndexationProcessRunning) {
+    IndexationProcessExecutor.execute(new IndexationProcessExecutor.IndexationProcess() {
+      @Override
+      public void perform() throws Exception {
+        ApplicationIndexer ai = new ApplicationIndexer(m_MainSessionCtrl);
+        if (action.equals("Index")) {
+          ai.index(spaceId, componentId);
+        } else if (action.equals("IndexPerso")) {
+          ai.index(personalCompo);
+        } else if (action.equals("IndexAllSpaces")) {
+          ai.indexAllSpaces();
+        } else if (action.equals("IndexAll")) {
+          ai.indexAll();
+        } else if (action.equals("IndexPdc")) {
+          ai.indexPdc();
+        } else if (action.equals("IndexGroups")) {
+          ai.indexGroups();
+        } else if (action.equals("IndexUsers")) {
+          ai.indexUsers();
+        }
+      }
+    });
+  }
+} else if (!isIndexationProcessRunning) {
+  indexMessage = "";
 }
 
 Window window = gef.getWindow();
@@ -176,6 +186,11 @@ operations.addOperation("useless", message.getString("admin.reindex.op.agendas")
 <title>Navigation</title>
 <view:looknfeel/>
 <script type="text/javascript">
+<% if (action != null && isIndexationProcessRunning) { %>
+$(document).ready(function() {
+  notyError("<%=indexMessage%>");
+});
+<% } %>
 function index(action, compo, space) {
 	var message = "<%=message.getString("admin.reindex.js.warn")%> ";
 	if (action == "Index") {
