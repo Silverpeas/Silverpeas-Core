@@ -124,10 +124,6 @@ public class TextFieldImpl extends TextField {
       String fieldName, PrintWriter out) {
     int zindex = 100;
     out.println("<style type=\"text/css\">\n");
-    out.println("	#listAutocomplete" + fieldName + " {\n");
-    out.println("		width:15em;\n");
-    out.println("		padding-bottom:2em;\n");
-    out.println("	}\n");
     out.println("	#container" + fieldName + " {\n");
     out
         .println("		z-index:"
