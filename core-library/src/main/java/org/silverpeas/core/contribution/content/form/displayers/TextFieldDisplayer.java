@@ -150,7 +150,6 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
       out.println("</div>\n");
 
       if (image != null) {
-        image.setStyle("position:absolute;left:16em;top:5px");
         out.println(image.toString());
       }
 
