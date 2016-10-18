@@ -47,16 +47,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <link href="<c:url value='/util/styleSheets/silverpeas_light_style.css'/>" type="text/css" rel="stylesheet" />
+    <link href="<c:url value='/util/styleSheets/globalSP_SilverpeasV5.css'/>" type="text/css" rel="stylesheet" />
     <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet" />
 
-    <style type="text/css">
-      <!--
-      body {
-        background-image: url('<c:out value="${wallpaper}" escapeXml="false"/>');;
-      }
-      -->
-    </style>
   </head>
 
 
@@ -74,10 +67,8 @@
         <i><fmt:message key="sharing.downloadFileHelp"/></i>
       </div>
 
-      <div class="center">
-        <span class="milieuBoutonV5">
-          <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />" ><fmt:message key="sharing.downloadLink"/></a>
-        </span>
+      <div  class="sp_buttonPane">
+          <a  class="sp_button" target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />" ><fmt:message key="sharing.downloadLink"/></a>
       </div>
   </body>
 </html>

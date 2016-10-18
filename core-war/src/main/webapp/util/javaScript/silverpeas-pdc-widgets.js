@@ -1184,7 +1184,7 @@ function removePosition(position, positions) {
         $thisPdcAxisValuesSelector.append($('<a>', {
           href: 'javascript:return false;'
         }).addClass('valid_position').
-           addClass('milieuBoutonV5').
+           addClass('sp_button').
            html(settings.labelOk).click(function() {
             informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
         }));

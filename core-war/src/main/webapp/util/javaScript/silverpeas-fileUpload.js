@@ -302,7 +302,7 @@
       $fileInput.css('right', '0');
       $img.addClass('dng');
       $uploadBloc.addClass('dng');
-      var $buttonInput = $('<div>').addClass('milieuBoutonV5').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
+      var $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
         $fileInput.click();
         return false;
       }));
