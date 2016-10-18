@@ -138,8 +138,6 @@ QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="javascript/formUtil.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc-widgets.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 <script type="text/javascript">
 var icWindow = window;
 

@@ -32,6 +32,9 @@ import org.silverpeas.core.util.time.TimeUnit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,6 +114,11 @@ public class DateUtil {
     }
     FastDateFormat formatter = getOutputFormatter(language);
     return formatter.format(date);
+  }
+
+  public static String getOutputDate(LocalDate date, String language) {
+    Date aDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    return DateUtil.getOutputDate(aDate, language);
   }
 
   public static String getOutputDate(String dateDB, String language) throws ParseException {

@@ -24,6 +24,8 @@
 package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

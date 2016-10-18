@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.webapi.pdc;
+package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
+
 import java.util.ArrayList;
 import java.util.List;
 

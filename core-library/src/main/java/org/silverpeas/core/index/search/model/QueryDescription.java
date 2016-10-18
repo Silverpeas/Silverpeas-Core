@@ -71,6 +71,7 @@ public final class QueryDescription implements Serializable {
   private boolean searchBySpace = false;
   private boolean searchByComponentType = false;
   private String requestedFolder = null;
+  private String taxonomyPosition = null;
 
   /**
    * The external searched components are build empty. This is a set of ExternalComponent
@@ -264,7 +265,8 @@ public final class QueryDescription implements Serializable {
 
   public boolean isEmpty() {
     return !StringUtil.isDefined(query) && getMultiFieldQuery() == null && getXmlQuery() == null &&
-        !StringUtil.isDefined(xmlTitle);
+        !StringUtil.isDefined(xmlTitle) && !isSearchBySpace() && !isSearchByComponentType() &&
+        !isPeriodDefined() && !StringUtil.isDefined(getRequestedAuthor());
   }
 
   /**
@@ -355,5 +357,17 @@ public final class QueryDescription implements Serializable {
 
   public String getRequestedFolder() {
     return requestedFolder;
+  }
+
+  public String getTaxonomyPosition() {
+    return taxonomyPosition;
+  }
+
+  public void setTaxonomyPosition(final String taxonomyPosition) {
+    this.taxonomyPosition = taxonomyPosition;
+  }
+
+  public boolean isTaxonomyUsed() {
+    return StringUtil.isDefined(taxonomyPosition);
   }
 }

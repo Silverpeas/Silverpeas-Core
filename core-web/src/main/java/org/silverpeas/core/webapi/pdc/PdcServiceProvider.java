@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;

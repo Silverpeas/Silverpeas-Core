@@ -1,10 +1,10 @@
 package org.silverpeas.core.webapi.search;
 
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.time.LocalDate;
 
 /**
  * @author Nicolas Eysseric
@@ -18,7 +18,10 @@ public class ResultEntity {
   private String description;
 
   @XmlElement
-  private String updateDate;
+  private LocalDate creationDate;
+
+  @XmlElement
+  private LocalDate updateDate;
 
   @XmlElement
   private String type;
@@ -32,18 +35,15 @@ public class ResultEntity {
   @XmlElement
   private String thumbnailURL;
 
-  public static ResultEntity fromGlobalSilverResult(GlobalSilverResult gsr) {
+  public static ResultEntity fromSearchResult(SearchResult gsr) {
     return new ResultEntity(gsr);
   }
 
-  public static ResultEntity fromMatchingindexEntry(MatchingIndexEntry mie) {
-    return fromGlobalSilverResult(new GlobalSilverResult(mie));
-  }
-
-  private ResultEntity(GlobalSilverResult gsr) {
+  private ResultEntity(SearchResult gsr) {
     this.name = gsr.getName();
     this.description = gsr.getDescription();
-    this.updateDate = gsr.getDate();
+    this.creationDate = gsr.getCreationDate();
+    this.updateDate = gsr.getLastUpdateDate();
     this.id = gsr.getId();
     this.type = gsr.getType();
     this.componentId = gsr.getInstanceId();
@@ -69,12 +69,12 @@ public class ResultEntity {
     this.description = description;
   }
 
-  public String getUpdateDate() {
+  public LocalDate getUpdateDate() {
     return updateDate;
   }
 
-  public void setUpdateDate(final String updateDate) {
-    this.updateDate = updateDate;
+  public LocalDate getCreationDate() {
+    return creationDate;
   }
 
   public String getType() {

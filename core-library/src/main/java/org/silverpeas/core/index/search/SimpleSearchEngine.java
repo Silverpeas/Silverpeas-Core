@@ -20,14 +20,21 @@
  */
 package org.silverpeas.core.index.search;
 
+import org.silverpeas.core.admin.domain.model.DomainProperties;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.UserIndexation;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.index.search.model.DidYouMeanSearcher;
 import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchCompletion;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,7 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A SimpleSearchEngine search silverpeas indexes index and give access to the retrieved index
+ * A SimpleSearchEngine search Silverpeas indexes index and give access to the retrieved index
  * entries.
  */
 @Singleton
@@ -55,6 +62,9 @@ public class SimpleSearchEngine implements SearchEngine {
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
   private final boolean enableWordSpelling = pdcSettings.getBoolean("enableWordSpelling", false);
+  private final boolean enableExternalSearch =
+      pdcSettings.getBoolean("external.search.enable", false);
+  private final String localServerName = pdcSettings.getString("server.name");
 
   /**
    * Search the index for the required documents.
@@ -65,6 +75,8 @@ public class SimpleSearchEngine implements SearchEngine {
   public PlainSearchResult search(QueryDescription query) throws ParseException {
     try {
       List<MatchingIndexEntry> results = Arrays.asList(indexSearcher.search(query));
+      // filter results to checkout specific rights
+      results = filterMatchingIndexEntries(results, query.getSearchingUser());
       @SuppressWarnings("unchecked") Set<String> spellingWords = Collections.EMPTY_SET;
       if (enableWordSpelling && isSpellingNeeded(results)) {
         String[] suggestions = didYouMeanSearcher.suggest(query);
@@ -107,5 +119,101 @@ public class SimpleSearchEngine implements SearchEngine {
   public Set<String> suggestKeywords(String keywordFragment) {
     SearchCompletion completion = new SearchCompletion();
     return completion.getSuggestions(keywordFragment);
+  }
+
+  private List<MatchingIndexEntry> filterMatchingIndexEntries(
+      List<MatchingIndexEntry> matchingIndexEntries, String userId) {
+    if (matchingIndexEntries == null || matchingIndexEntries.isEmpty()) {
+      return new ArrayList<>();
+    }
+    List<MatchingIndexEntry> results = new ArrayList<>(matchingIndexEntries.size());
+    ComponentAuthorization authorization = null;
+    try {
+      authorization = getSecurityIntf();
+      authorization.enableCache();
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+
+    for (MatchingIndexEntry result : matchingIndexEntries) {
+      if (!isMatchingIndexEntryAvailable(result, userId, authorization)) {
+        continue;
+      }
+      results.add(result);
+    }
+
+    authorization.disableCache();
+
+    return results;
+  }
+
+  private boolean isMatchingIndexEntryAvailable(MatchingIndexEntry mie, String userId,
+      ComponentAuthorization authorization) {
+    // Do not filter and check external components
+    if (enableExternalSearch && isExternalComponent(mie.getServerName())) {
+      mie.setExternalResult(true);
+      // Filter only Publication and Node data
+      String objectType = mie.getObjectType();
+      if ("Versioning".equals(objectType) || "Publication".equals(objectType)
+          || "Node".equals(objectType)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    String componentId = mie.getComponent();
+    if (componentId.startsWith("kmelia")) {
+      return authorization
+          .isObjectAvailable(componentId, userId, mie.getObjectId(), mie.getObjectType());
+    }
+    // contrôle des droits sur les espaces et les composants
+    String objectType = mie.getObjectType();
+    if ("Space".equals(objectType)) {
+      // check if space is allowed to current user
+      try {
+        return Administration.get().isSpaceAvailable(mie.getObjectId(), userId);
+      } catch (Exception ignored) {
+        return false;
+      }
+    } else if ("Component".equals(objectType)) {
+      // check if component is allowed to current user
+      try {
+        return Administration.get().isComponentAvailable(mie.getObjectId(), userId);
+      } catch (Exception ignored) {
+        return false;
+      }
+    } else if (UserIndexation.OBJECT_TYPE.equals(objectType) &&
+        !DomainProperties.areDomainsVisibleToAll()) {
+      // visibility between domains is limited, check found user domain against current user domain
+      User userFound = User.getById(mie.getObjectId());
+      if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+        String currentUserDomainId = User.getById(userId).getDomainId();
+        if ("0".equals(currentUserDomainId)) {
+          // current user of default domain can see all users
+          return true;
+        } else {
+          // current user of other domains can see only users of his domain
+          return userFound.getDomainId().equals(currentUserDomainId);
+        }
+      } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+        // user found must be in same domain of current user
+        String currentUserDomainId = User.getById(userId).getDomainId();
+        return userFound.getDomainId().equals(currentUserDomainId);
+      }
+    }
+    return true;
+  }
+
+  private boolean isExternalComponent(String serverName) {
+    if (StringUtil.isDefined(localServerName) && !localServerName.equalsIgnoreCase(serverName)) {
+      return true;
+    }
+    return false;
+  }
+
+  private ComponentAuthorization getSecurityIntf() throws Exception {
+    return (ComponentAuthorization) Class.forName(
+          "org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
   }
 }

@@ -30,7 +30,7 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.web.pdc.control.Keys;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.core.pdc.pdc.model.QueryParameters;
+import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;

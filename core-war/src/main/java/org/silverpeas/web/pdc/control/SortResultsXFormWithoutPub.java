@@ -20,16 +20,12 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import org.silverpeas.core.contribution.contentcontainer.content.XMLFormFieldComparator;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.apache.commons.lang3.NotImplementedException;
 import org.silverpeas.core.index.search.model.IndexSearcher;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,7 +37,6 @@ import java.util.List;
 @Named
 public class SortResultsXFormWithoutPub implements SortResults {
 
-  private PdcSearchSessionController pdcSearchSessionController;
   @Inject
   private IndexSearcher indexSearcher;
 
@@ -57,53 +52,11 @@ public class SortResultsXFormWithoutPub implements SortResults {
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> originalResults, String sortOrder,
       String sortValue, String language) {
 
-    List<GlobalSilverResult> modifiedResults = new ArrayList<GlobalSilverResult>(originalResults
-        .size());
-    for (GlobalSilverResult originalResult : originalResults) {
-      // Retrieve a matching index entry for the publication if
-      // the original matching index entry was wrapping an attachment
-      if (originalResult.getType() != null && originalResult.getType().startsWith("Attachment")) {
-        MatchingIndexEntry mie = indexSearcher.search(originalResult.getInstanceId(), originalResult
-            .getId(), "Publication");
-        if (mie == null) {
-          continue;
-        }
-        GlobalSilverResult newResult = pdcSearchSessionController.
-            matchingIndexEntry2GlobalSilverResult(mie);
-        modifiedResults.add(newResult);
-      } // If not an attachment or a publication, skip
-      else if ("Publication".equals(originalResult.getType())) {
-        modifiedResults.add(originalResult);
-      }
-    }
-
-    List<GlobalSilverResult> filteredResults = new ArrayList<GlobalSilverResult>(originalResults
-        .size());
-    for (GlobalSilverResult modifiedResult : modifiedResults) {
-      IndexEntryKey entryToTest = modifiedResult.getIndexEntry().getPK();
-      // Check to see if the corresponding publication is already in the list
-      // as we don't want duplicates
-      boolean toAdd = true;
-      for (GlobalSilverResult filteredResult : filteredResults) {
-        IndexEntryKey filteredPK = filteredResult.getIndexEntry().getPK();
-        if (filteredPK.equals(entryToTest)) {
-          toAdd = false;
-          break;
-        }
-      }
-      if (toAdd) {
-        filteredResults.add(modifiedResult);
-      }
-    }
-
-    // sorts the result on a XML form field
-    XMLFormFieldComparator comparator = new XMLFormFieldComparator(sortValue, sortOrder);
-    Collections.sort(filteredResults, comparator);
-    return filteredResults;
+    throw new NotImplementedException("No more implemented !");
   }
 
   @Override
   public void setPdcSearchSessionController(PdcSearchSessionController controller) {
-    this.pdcSearchSessionController = controller;
+    // do nothing
   }
 }

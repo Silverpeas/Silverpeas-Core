@@ -99,7 +99,7 @@ void displayFacet(Facet facet, MultiSilverpeasBundle resource, JspWriter out) th
 		out.println("<input type=\"hidden\" name=\""+facet.getId()+"Filter\" id=\""+facetId+"FilterId\" value=\""+selectedEntryId+"\"/>");
 		out.println("</ul>");
 		if (displayToggle) {
-			out.println("<a href=\"#\" onclick=\"javascript:toggleFacet('facet-"+facetId+"')\" class=\"toggle more\"><span>"+resource.getString("pdcPeas.facet.toggle.show")+"</span></a>");
+			out.println("<a href=\"#\" onclick=\"javascript:toggleFacet('facet-"+facetId+"');return false;\" class=\"toggle more\"><span>"+resource.getString("pdcPeas.facet.toggle.show")+"</span></a>");
 		}
 		out.println("</div>");
 		out.println("</div>");

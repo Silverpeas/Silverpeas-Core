@@ -18,14 +18,13 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.pdc.pdc.model;
+package org.silverpeas.web.pdc;
 
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.index.search.model.QueryDescription;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,26 +50,6 @@ public class QueryParameters implements java.io.Serializable {
   private UserDetail creatorDetail = null;
 
   public QueryParameters() {
-  }
-
-  public QueryParameters(String keywords, String spaceId, String instanceId,
-      String creatorId, Date afterDate, Date beforeDate) {
-    this.keywords = keywords;
-    if (spaceId != null && spaceId.length() > 0) {
-      this.spaceId = spaceId;
-    }
-    if (instanceId != null && instanceId.length() > 0) {
-      this.instanceId = instanceId;
-    }
-    if (creatorId != null && creatorId.length() > 0) {
-      this.creatorId = creatorId;
-    }
-    if (afterDate != null) {
-      this.afterdate = afterDate;
-    }
-    if (beforeDate != null) {
-      this.beforedate = beforeDate;
-    }
   }
 
   public void clear() {
@@ -190,8 +169,7 @@ public class QueryParameters implements java.io.Serializable {
     xmlQuery = null;
   }
 
-  public QueryDescription getQueryDescription(String searchingUser, String searchingLanguage) throws
-      ParseException {
+  public QueryDescription getQueryDescription(String searchingUser, String searchingLanguage) {
     QueryDescription query = new QueryDescription(getKeywords());
     query.setSearchingUser(searchingUser);
     query.setRequestedLanguage(searchingLanguage);

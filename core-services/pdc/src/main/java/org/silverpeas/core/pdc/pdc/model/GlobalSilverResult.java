@@ -24,85 +24,69 @@
 
 package org.silverpeas.core.pdc.pdc.model;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.index.search.model.SearchResult;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Map;
 
 /**
  * This class allows the result jsp page of the global search to show all features (name,
  * description, location)
  */
-public class GlobalSilverResult extends GlobalSilverContent implements java.io.Serializable {
+public class GlobalSilverResult implements java.io.Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private SearchResult result;
   private String titleLink = null;
   private String downloadLink = null;
-  private String creatorName = null;
+  private String location;
   private boolean exportable = false;
   private boolean viewable = false;
   private boolean previewable = false;
-  private String attachmentFilename = null;
   private boolean versioned = false;
   private boolean selected = false;
-  private MatchingIndexEntry indexEntry = null;
-  private boolean hasRead = false; // marks a result as redden
+  private boolean hasRead = false; // marks a result as read
   private int resultId = 0;
   private int hits = -1;
   private String externalUrl = null;
   private boolean isDownloadAllowedForReaders = true;
   private boolean userAllowedToDownloadFile = true;
 
-  /**
-   * List of all linked attachment in wysiwyg content
-   */
-  private List<String> embeddedFileIds;
-
-  private Map<String, String> formFieldsForFacets;
-
-  public GlobalSilverResult(GlobalSilverContent gsc) {
-    super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
-        gsc.getInstanceId(), gsc.getDate(), gsc.getUserId());
-    super.setLocation(gsc.getLocation());
-    super.setURL(gsc.getURL());
-    super.setScore(1);
-    super.setType(gsc.getType());
-    super.setThumbnailURL(gsc.getThumbnailURL());
+  public GlobalSilverResult(SearchResult result) {
+    this.result = result;
   }
 
-  public GlobalSilverResult(MatchingIndexEntry mie) {
-    super(mie);
-    indexEntry = mie;
-    super.setType(mie.getObjectType());
-    super.setScore(mie.getScore());
-    this.embeddedFileIds = mie.getEmbeddedFileIds();
-    this.formFieldsForFacets = mie.getXMLFormFieldsForFacets();
-    this.attachmentFilename = mie.getFilename();
-
-    if (mie.getThumbnail() != null) {
-      if (mie.getThumbnail().startsWith("/")) {
-        // case of a thumbnail picked up in a gallery
-        super.setThumbnailURL(mie.getThumbnail());
-      } else {
-        // case of an uploaded image
-        super.setThumbnailURL(FileServerUtils.getUrl(mie.getComponent(),
-            mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
-      }
-    }
+  public String getId() {
+    return result.getId();
   }
 
-  /**
-   * @return the embeddedFileIds
-   */
-  public List<String> getEmbeddedFileIds() {
-    return embeddedFileIds;
+  public String getInstanceId() {
+    return result.getInstanceId();
   }
 
-  public MatchingIndexEntry getIndexEntry() {
-    return indexEntry;
+  public String getType() {
+    return result.getType();
+  }
+
+  public String getCreatorId() {
+    return result.getCreatorId();
+  }
+
+  public boolean isExternalResult() {
+    return result.isExternalResult();
+  }
+
+  public String getAttachmentFilename() {
+    return result.getAttachmentFilename();
+  }
+
+  public Map<String, String> getFormFieldsForFacets() {
+    return result.getFormFieldsForFacets();
+  }
+
+  public String getServerName() {
+    return result.getServerName();
   }
 
   public String getTitleLink() {
@@ -121,12 +105,20 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     this.downloadLink = link;
   }
 
-  public void setCreatorName(String creatorName) {
-    this.creatorName = creatorName;
+  public String getCreatorName() {
+    User user = User.getById(getCreatorId());
+    if (user == null) {
+      return "";
+    }
+    return user.getDisplayedName();
   }
 
-  public String getCreatorName() {
-    return this.creatorName;
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(final String location) {
+    this.location = location;
   }
 
   public boolean isExportable() {
@@ -190,14 +182,6 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     this.externalUrl = externalUrl;
   }
 
-  public void setFormFieldsForFacets(Map<String, String> formFieldsForFacets) {
-    this.formFieldsForFacets = formFieldsForFacets;
-  }
-
-  public Map<String, String> getFormFieldsForFacets() {
-    return formFieldsForFacets;
-  }
-
   public void setViewable(boolean viewable) {
     this.viewable = viewable;
   }
@@ -215,7 +199,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   }
 
   public String getAttachmentId() {
-    String id = getIndexEntry().getObjectType().substring(10); // object type is Attachment1245 or
+    String id = getType().substring(10); // object type is Attachment1245 or
     // Attachment1245_en
     if (id != null && id.indexOf('_') != -1) {
       id = id.substring(0, id.indexOf('_'));
@@ -224,17 +208,13 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   }
 
   public String getAttachmentLanguage() {
-    String id = getIndexEntry().getObjectType().substring(10); // object type is Attachment1245 or
+    String id = getType().substring(10); // object type is Attachment1245 or
     // Attachment1245_en
     String language = I18NHelper.defaultLanguage;
     if (id != null && id.indexOf('_') != -1) {
       language = id.substring(id.indexOf('_') + 1, id.length());
     }
     return language;
-  }
-
-  public String getAttachmentFilename() {
-    return attachmentFilename;
   }
 
   public void setVersioned(boolean versioned) {
@@ -246,8 +226,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   }
 
   public boolean isAttachment() {
-    return getIndexEntry().getObjectType().startsWith("Attachment") ||
-        getIndexEntry().getObjectType().startsWith("Versioning");
+    return getType().startsWith("Attachment") || getType().startsWith("Versioning");
   }
 
   public boolean isUserAllowedToDownloadFile() {
@@ -264,6 +243,54 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   public void setDownloadAllowedForReaders(final boolean isDownloadAllowedForReaders) {
     this.isDownloadAllowedForReaders = isDownloadAllowedForReaders;
+  }
+
+  public void setName(String name) {
+    result.setName(name);
+  }
+
+  public String getName() {
+    return result.getName();
+  }
+
+  public String getDescription() {
+    return result.getDescription();
+  }
+
+  public String getName(String lang) {
+    return result.getName(lang);
+  }
+
+  public String getDescription(String lang) {
+    return result.getDescription(lang);
+  }
+
+  public String getThumbnailURL() {
+    return result.getThumbnailURL();
+  }
+
+  public void setThumbnailURL(String url) {
+    result.setThumbnailURL(url);
+  }
+
+  public float getScore() {
+    return result.getScore();
+  }
+
+  public LocalDate getCreationDate() {
+    return result.getCreationDate();
+  }
+
+  public LocalDate getLastUpdateDate() {
+    return result.getLastUpdateDate();
+  }
+
+  public String getSpaceId() {
+    return "";
+  }
+
+  public boolean isAlias() {
+    return result.isAlias();
   }
 
   @Override

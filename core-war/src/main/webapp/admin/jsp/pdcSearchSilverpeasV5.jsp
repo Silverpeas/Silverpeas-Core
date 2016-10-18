@@ -33,7 +33,7 @@
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchAxis"%>
-<%@page import="org.silverpeas.core.pdc.pdc.model.QueryParameters"%>
+<%@page import="org.silverpeas.web.pdc.QueryParameters"%>
 <%@page import="org.silverpeas.core.pdc.pdc.model.SearchContext"%>
 <%@page import="java.util.List"%>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
@@ -41,7 +41,6 @@
 
 <%@page import="org.silverpeas.web.pdc.control.PdcSearchSessionController"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
