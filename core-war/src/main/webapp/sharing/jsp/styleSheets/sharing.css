@@ -23,9 +23,8 @@
  */
 
 /* style for ticket */
-body#fileSharingTicket {
-  background-position: left top;
-  background-repeat: no-repeat;
+body{
+  background:#FFF url(../../../admin/jsp/icons/bandeauTopVert.png) top left no-repeat;
   text-align:center;
 }
 
@@ -63,7 +62,7 @@ body#fileSharingTicket {
   margin-top:30px;
 }
 
-#fileSharingTicket .milieuBoutonV5{
+#fileSharingTicket .sp_button{
   display:block;
   width:180px;
   line-height:20px;

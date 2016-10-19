@@ -207,12 +207,12 @@
             <input id="group-selection" type="hidden" name="GroupSelection" value=""/>
             <input id="user-selection" type="hidden" name="UserSelection" value=""/>
             <br clear="all"/>
-            <div id="validate" class="buttonPane milieuBoutonV5">
+            <div id="validate" class="sp_buttonPane">
               <fmt:message var="selectLabel" key="GML.validate"/>
               <fmt:message var="cancelLabel" key="GML.cancel"/>
-              <a class="button" href="#"  ng-click="validate()">${selectLabel}</a>
+              <a class="sp_button validate" href="#"  ng-click="validate()">${selectLabel}</a>
               <c:if test='${not fn:endsWith(cancelationURL, "userpanel.jsp")}'>
-                <a class="button" href="#" ng-click="cancel()">${cancelLabel}</a>
+                <a class="sp_button cancel" href="#" ng-click="cancel()">${cancelLabel}</a>
               </c:if>
             </div>
           </form>

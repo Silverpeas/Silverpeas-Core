@@ -3330,9 +3330,8 @@ table.pdcPositionsField {
 }
 
 .pdc-edition-box .valid_position {
-  margin:10px 10px 10px  180px;
+  margin:10px 10px 10px  195px;
   line-height: 20px;
-  float:left;
 }
 
 .classification .legende {
@@ -4644,7 +4643,7 @@ div.fileUpload {
   margin:0 110px 0 28px;
 }
 
-.fileUpload-container .actions.dng .milieuBoutonV5.button {
+.fileUpload-container .actions.dng .sp_button.button {
   position:absolute;
   top:0;
   right:-110px;
@@ -4662,7 +4661,7 @@ div.fileUpload {
   text-align:center;
 }
 
-.fileUpload-container .actions.dng .milieuBoutonV5.button a {
+.fileUpload-container .actions.dng .sp_button.button a {
   background:transparent url() no-repeat;
   padding:0px 8px 0 8px;
   line-height:18px;
