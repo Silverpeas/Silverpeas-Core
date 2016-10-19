@@ -22,27 +22,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.socialnetwork.relationShip;
+package org.silverpeas.core.socialnetwork.relationship;
 
-import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
-import org.silverpeas.core.socialnetwork.model.SocialInformationType;
+public class TypeRelationShip {
 
-/**
- * @author Bensalem Nabil
- */
-public class SocialInformationRelationShip extends AbstractSocialInformation {
+  private int idTypeRelationShip;
+  private String designation;
 
   /**
-   * @param relationShip
+   * @param designation
    */
-  public SocialInformationRelationShip(RelationShip relationShip) {
-    setAuthor(Integer.toString(relationShip.getUser1Id()));// myFriend
-    setTitle(Integer.toString(relationShip.getUser2Id()));// Friend of my Friend
-    setDate(relationShip.getAcceptanceDate());
-    setUrl("/Rprofil/jsp/Main?userId=" + relationShip.getUser2Id());
-    setDescription("");
-    setType(SocialInformationType.RELATIONSHIP.toString());
-    setIcon("Photo_profil.jpg");
-    setUpdated(false);
+  public TypeRelationShip(String designation) {
+    this.designation = designation;
+  }
+
+  public TypeRelationShip() {
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * @return int
+   */
+  public int getId() {
+    return idTypeRelationShip;
+  }
+
+  /**
+   * @returnString
+   */
+  public String getDesignation() {
+    return designation;
+  }
+
+  /**
+   * @param idTypeRelationShip
+   */
+  public void setId(int idTypeRelationShip) {
+    this.idTypeRelationShip = idTypeRelationShip;
+  }
+
+  /**
+   * @param designation
+   */
+  public void setInvitationDate(String designation) {
+    this.designation = designation;
   }
 }

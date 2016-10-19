@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.silverpeas.core.socialnetwork.SocialNetworkException;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.exception.SilverpeasException;
 

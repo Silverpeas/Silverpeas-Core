@@ -34,7 +34,7 @@ import java.util.Map;
 
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.Status;
 import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.util.ServiceProvider;

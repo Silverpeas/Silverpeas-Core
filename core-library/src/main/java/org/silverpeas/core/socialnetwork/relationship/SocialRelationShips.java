@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.socialnetwork.relationShip;
+package org.silverpeas.core.socialnetwork.relationship;
 
 import java.sql.SQLException;
 import java.util.List;

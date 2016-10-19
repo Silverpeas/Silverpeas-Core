@@ -22,8 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.socialnetwork.relationShip;
+package org.silverpeas.core.socialnetwork.relationship;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,12 +36,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class RelationShipDao {
@@ -54,11 +52,11 @@ public class RelationShipDao {
       "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE id = ?";
 
   /**
-   * rturn int (the id of this new relationShip)
-   * @param connection
-   * @param relationShip
-   * @return int
-   * @throws SQLException
+   * Creates the specified relationship in the data source.
+   * @param connection a connection to the data source.
+   * @param relationShip the relationship to create.
+   * @return the unique identifier of the created relationship.
+   * @throws SQLException if an error occurs while creating the relationship in the data source.
    */
   public int createRelationShip(Connection connection, RelationShip relationShip) throws
       SQLException {
@@ -81,12 +79,12 @@ public class RelationShipDao {
   }
 
   /**
-   * delete this relationShip rturn boolean (if this relationShips is deleted return true)
-   * @param connection
-   * @param user1Id
-   * @param user2Id
-   * @return boolean
-   * @throws SQLException
+   * Deletes the relationship between the two specified users in the data source.
+   * @param connection a connection to the data source.
+   * @param user1Id the unique identifier of a user in Silverpeas.
+   * @param user2Id the unique identifier of another user in Silverpeas
+   * @return true if the deletion succeeds, false otherwise.
+   * @throws SQLException if an error occurs while deleting the relationship between the two users.
    */
   public boolean deleteRelationShip(Connection connection, int user1Id, int user2Id) throws
       SQLException {
@@ -105,25 +103,13 @@ public class RelationShipDao {
   }
 
   /**
-   * delete this relationShip rturn boolean (if this relationShips is deleted return true)
-   * @param connection
-   * @param relationShip
-   * @return boolean
-   * @throws SQLException
-   */
-  public boolean deleteRelationShip(Connection connection, RelationShip relationShip) throws
-      SQLException {
-
-    return deleteRelationShip(connection, relationShip.getUser1Id(), relationShip.getUser2Id());
-  }
-
-  /**
-   * return the relationShip witch between user1 and user2
-   * @param connection
-   * @param user1Id
-   * @param user2Id
-   * @return RelationShip
-   * @throws SQLException
+   * Gets the relationship between the two specified users from the data source.
+   * @param connection a connection to the data source.
+   * @param user1Id the unique identifier of a user in Silverpeas.
+   * @param user2Id the unique identifier of another user in Silverpeas.
+   * @return the relationship between the two specified users or null if there is no relationship
+   * between the two users in the data source.
+   * @throws SQLException if an error occurs while getting the relationship between the two users.
    */
   public RelationShip getRelationShip(Connection connection, int user1Id, int user2Id) throws
       SQLException {
@@ -147,25 +133,25 @@ public class RelationShipDao {
   }
 
   /**
-   * rturn if this relationShip exist or not
-   * @param connection
-   * @param user1Id
-   * @param user2Id
-   * @return boolean
-   * @throws SQLException
+   * Does exist a relationship between the two specified users in the data source.
+   * @param connection a connection to the data source.
+   * @param user1Id the unique identifier of a user in Silverpeas.
+   * @param user2Id the unique identifier of another user in Silverpeas.
+   * @return true if a relationship between the two users exist in the data source. False otherwise.
+   * @throws SQLException if an error occurs while checking the existence of a relationship
+   * between the two users.
    */
-
   public boolean isInRelationShip(Connection connection, int user1Id, int user2Id) throws
       SQLException {
     return getRelationShip(connection, user1Id, user2Id) != null;
   }
 
   /**
-   * return the list of all my RelationShips
-   * @param connection
-   * @param myId
-   * @return List<RelationShip>
-   * @throws SQLException
+   * Gets all the relationships of the specified user in the data source.
+   * @param connection a connection to the data source.
+   * @param myId the unique identifier of a user in Silverpeas.
+   * @return a list of all the relationships of the given user.
+   * @throws SQLException if an error occurs while getting the relationships of the given user.
    */
   public List<RelationShip> getAllMyRelationShips(Connection connection, int myId) throws
       SQLException {
@@ -188,13 +174,15 @@ public class RelationShipDao {
   }
 
   /**
-   * get list of my socialInformation (relationShip) according to number of Item and the first Index
-   * @param con
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List<SocialInformationRelationShip>
-   * @throws SQLException
+   * Gets from the data source all the social information that were emitted between the two
+   * specified dates and that are about the relationships of the relationships of the specified
+   * user.
+   * @param con the connection to the data source.
+   * @param userId the unique identifier of a user in Silverpeas.
+   * @param begin the begin date of the search interval.
+   * @param end the end date of the search interval.
+   * @return a list of {@link SocialInformationRelationShip} instances.
+   * @throws SQLException if an error occurs while gettings the social information.
    */
   public List<SocialInformation> getAllMyRelationShips(Connection con,
       String userId, Date begin, Date end) throws SQLException {
@@ -223,15 +211,16 @@ public class RelationShipDao {
   }
 
   /**
-   * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
-   * Item and the first Index
-   * @param con
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformationRelationShip>
-   * @throws SQLException
+   * Gets from the data source all the social information that were emitted between the two
+   * specified dates and that are about the relationships of the contacts of the specified
+   * user.
+   * @param con the connection to the data source.
+   * @param myId the unique identifier of a user in Silverpeas.
+   * @param myContactsIds a list of unique identifiers of the contacts of the user.
+   * @param begin the begin date of the search interval.
+   * @param end the end date of the search interval.
+   * @return a list of {@link SocialInformationRelationShip} instances.
+   * @throws SQLException if an error occurs while gettings the social information.
    */
   List<SocialInformation> getAllRelationShipsOfMyContact(Connection con,
       String myId, List<String> myContactsIds, Date begin, Date end) throws
@@ -272,11 +261,6 @@ public class RelationShipDao {
     return relationShip;
   }
 
-  /**
-   * convert list of contact ids to string for using in the query SQL
-   * @param list
-   * @return String
-   */
   private static String toSqlString(List<String> list) {
     StringBuilder result = new StringBuilder(100);
     if (list == null || list.isEmpty()) {
@@ -293,13 +277,6 @@ public class RelationShipDao {
     return result.toString();
   }
 
-  /**
-   * get all my RelationShips ids
-   * @param connection
-   * @param myId
-   * @return List<String>
-   * @throws SQLException
-   */
   List<String> getMyContactsIds(Connection connection, int myId) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
@@ -323,14 +300,6 @@ public class RelationShipDao {
 
   }
 
-  /**
-   * get all common contacts Ids of user1 and user2
-   * @param connection
-   * @param user1Id
-   * @param user2Id
-   * @return List<String>
-   * @throws SQLException
-   */
   List<String> getAllCommonContactsIds(Connection connection, int user1Id, int user2Id) throws
       SQLException {
     ResultSet rs = null;
@@ -359,9 +328,10 @@ public class RelationShipDao {
   }
 
   /**
-   * @param connection
+   * Gets the relationship in the data source that have the specified unique identifier.
+   * @param connection a connection to the data source.
    * @param relationShipId the relationship identifier
-   * @return RelationShip loaded from relation ship identifier
+   * @return the RelationShip instance loaded from the relationship identifier
    */
   public RelationShip getRelationShip(Connection connection, int relationShipId)
       throws SQLException {

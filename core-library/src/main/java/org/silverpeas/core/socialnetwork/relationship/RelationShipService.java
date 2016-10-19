@@ -22,22 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.socialnetwork.relationShip;
+package org.silverpeas.core.socialnetwork.relationship;
 
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.UtilException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class RelationShipService {
@@ -48,6 +48,8 @@ public class RelationShipService {
 
   @Inject
   private RelationShipDao relationShipDao;
+  @Inject
+  private RelationShipEventNotifier relationShipEventNotifier;
 
   protected RelationShipService() {
   }
@@ -74,10 +76,9 @@ public class RelationShipService {
       relationShipDao.deleteRelationShip(connection, idUser2, idUser1);
       connection.commit();
       endAction = true;
+      relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.DELETION, idUser1, idUser2);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.removeRelationShip", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
@@ -99,9 +100,7 @@ public class RelationShipService {
       connection = getConnection(true);
       isInRelationShip = relationShipDao.isInRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.isInRelationShip", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -121,9 +120,7 @@ public class RelationShipService {
       connection = getConnection(true);
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, myId);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.getAllMyRelationShips", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -143,9 +140,7 @@ public class RelationShipService {
       connection = getConnection(true);
       myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.getMyContactsIds", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -166,9 +161,7 @@ public class RelationShipService {
       connection = getConnection(true);
       myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.getAllCommonContactsIds", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -191,9 +184,7 @@ public class RelationShipService {
       connection = getConnection(true);
       return relationShipDao.getAllMyRelationShips(connection, userId, begin, end);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.getAllMyRelationShips", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -218,9 +209,7 @@ public class RelationShipService {
       return relationShipDao.getAllRelationShipsOfMyContact(connection, myId, myContactsIds, begin,
           end);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.getAllRelationShipsOfMyContact", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -241,9 +230,7 @@ public class RelationShipService {
       connection = getConnection(true);
       relation = relationShipDao.getRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
-      SilverTrace.error("org.silverpeas.core.socialnetwork.relationShip",
-          "RelationShipService.getRelationShip", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }

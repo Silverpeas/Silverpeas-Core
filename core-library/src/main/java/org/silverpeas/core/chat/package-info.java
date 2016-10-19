@@ -21,50 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.silverpeas.core.socialnetwork.relationShip;
-
-public class TypeRelationShip {
-
-  private int idTypeRelationShip;
-  private String designation;
-
-  /**
-   * @param designation
-   */
-  public TypeRelationShip(String designation) {
-    this.designation = designation;
-  }
-
-  public TypeRelationShip() {
-    // TODO Auto-generated constructor stub
-  }
-
-  /**
-   * @return int
-   */
-  public int getId() {
-    return idTypeRelationShip;
-  }
-
-  /**
-   * @returnString
-   */
-  public String getDesignation() {
-    return designation;
-  }
-
-  /**
-   * @param idTypeRelationShip
-   */
-  public void setId(int idTypeRelationShip) {
-    this.idTypeRelationShip = idTypeRelationShip;
-  }
-
-  /**
-   * @param designation
-   */
-  public void setInvitationDate(String designation) {
-    this.designation = designation;
-  }
-}
+/**
+ * Provides the Silverpeas Chat Engine. It defines a communication channel between Silverpeas and
+ * a chat server in order to perform administrative tasks and to set a bridge between the social
+ * networking system of Silverpeas and the social networking of the used chat system.
+ * @author mmoquillon
+ */
+package org.silverpeas.core.chat;

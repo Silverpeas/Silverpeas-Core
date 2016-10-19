@@ -26,7 +26,7 @@ package org.silverpeas.web.portlets;
 
 import org.silverpeas.core.web.directory.model.Member;
 import org.silverpeas.core.web.portlets.FormNames;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;

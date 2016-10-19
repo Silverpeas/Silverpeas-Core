@@ -76,7 +76,10 @@ if (!window.XMLHttpRequest.prototype) {
   enrichXMLHttpRequest();
   if ('$SESSION_TOKEN_NAME$') {
     XMLHttpRequest.prototype.onsend = function(data) {
-      this.setRequestHeader("$SESSION_TOKEN_NAME$", "$SESSION_TOKEN_VALUE$");
+      // set the security token only if the request is against Silverpeas
+      if (this.url.startsWith(window.silverpeasUrl) || this.url.startsWith(window.webContext)) {
+        this.setRequestHeader("$SESSION_TOKEN_NAME$", "$SESSION_TOKEN_VALUE$");
+      }
     };
   }
 }

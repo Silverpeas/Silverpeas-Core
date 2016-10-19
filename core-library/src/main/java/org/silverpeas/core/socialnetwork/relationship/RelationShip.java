@@ -22,11 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.socialnetwork.relationShip;
+package org.silverpeas.core.socialnetwork.relationship;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class RelationShip {
+public class RelationShip implements Serializable {
 
   private int idRelationShip;
   private int user1Id;
@@ -35,8 +36,7 @@ public class RelationShip {
   private Date acceptanceDate;
   private int inviterId;
 
-  public RelationShip(int user1Id, int user2Id, int typeRelationShipId, Date acceptanceDate,
-      int inviterId) {
+  public RelationShip(int user1Id, int user2Id, int typeRelationShipId, Date acceptanceDate) {
     this.user1Id = user1Id;
     this.user2Id = user2Id;
     this.typeRelationShipId = typeRelationShipId;
@@ -47,7 +47,7 @@ public class RelationShip {
   }
 
   /**
-   * get id of relationShip
+   * get id of relationship
    * @return int
    */
   public int getId() {
@@ -55,7 +55,7 @@ public class RelationShip {
   }
 
   /**
-   * get date of relationShip
+   * get date of relationship
    * @return date
    */
   public Date getAcceptanceDate() {
@@ -87,7 +87,7 @@ public class RelationShip {
   }
 
   /**
-   * set the id of relationShip
+   * set the id of relationship
    * @param id
    */
   public void setId(int id) {
@@ -95,7 +95,7 @@ public class RelationShip {
   }
 
   /**
-   * set the date of relationShip
+   * set the date of relationship
    * @param acceptanceDate Date
    */
   public void setAcceptanceDate(Date acceptanceDate) {
@@ -103,7 +103,7 @@ public class RelationShip {
   }
 
   /**
-   * set the date of relationShip
+   * set the date of relationship
    * @param typeRelationShipId int
    */
   public void setTypeRelationShipId(int typeRelationShipId) {
@@ -111,7 +111,7 @@ public class RelationShip {
   }
 
   /**
-   * set the first user of relationShip
+   * set the first user of relationship
    * @param user1Id int
    */
   public void setUser1Id(int user1Id) {
@@ -119,7 +119,7 @@ public class RelationShip {
   }
 
   /**
-   * set the second user of relationShip
+   * set the second user of relationship
    * @param user2Id int
    */
   public void setUser2Id(int user2Id) {

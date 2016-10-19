@@ -20,24 +20,28 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswordVerifier;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
@@ -63,6 +67,8 @@ import java.util.Map;
 public class AuthenticationServlet extends HttpServlet {
 
   @Inject
+  private ChatServer chatServer;
+  @Inject
   private AuthenticationService authService;
   @Inject
   private SilverpeasSessionOpener silverpeasSessionOpener;
@@ -82,7 +88,7 @@ public class AuthenticationServlet extends HttpServlet {
    * @param servletRequest the HTTP request.
    * @param servletResponse the HTTP response.
    * @throws IOException when an error occurs while processing the request or sending the response.
-   * @throws javax.servlet.ServletException
+   * @throws ServletException if the request for the POST couldn't be handled.
    */
   @Override
   public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
@@ -155,6 +161,12 @@ public class AuthenticationServlet extends HttpServlet {
       session.
           setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
       writeSessionCookie(servletResponse, session, securedAccess);
+
+      User currentUser = User.getCurrentRequester();
+      if (!chatServer.isUserExisting(currentUser)) {
+        chatServer.createUser(currentUser);
+      }
+
       servletResponse.sendRedirect(servletResponse.encodeRedirectURL(absoluteUrl));
       return;
     }
@@ -248,13 +260,6 @@ public class AuthenticationServlet extends HttpServlet {
         servletResponse.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));
   }
 
-  /**
-   * Centralization.
-   *
-   * @param request
-   * @param response
-   * @param destination
-   */
   private void forward(HttpServletRequest request, HttpServletResponse response,
       String destination) throws ServletException, IOException {
     RequestDispatcher dispatcher = request.getRequestDispatcher(destination);
@@ -353,30 +358,15 @@ public class AuthenticationServlet extends HttpServlet {
     doPost(request, response);
   }
 
-  /**
-   * Write session cookie.
-   *
-   * @return
-   */
   private void writeSessionCookie(HttpServletResponse response, HttpSession session, boolean secured) {
     Cookie cookie = new Cookie("JSESSIONID", session.getId());
     cookie.setMaxAge(-1);
     cookie.setPath(session.getServletContext().getContextPath());
     cookie.setHttpOnly(true);
-    if (secured) {
-      cookie.setSecure(secured);
-    }
+    cookie.setSecure(secured);
     response.addCookie(cookie);
   }
 
-  /**
-   * Write connections cookie.
-   *
-   * @param name
-   * @param value
-   * @param duration
-   * @return
-   */
   private void writeCookie(HttpServletResponse response, String name, String value, int duration,
       boolean secure) {
     String cookieValue;
