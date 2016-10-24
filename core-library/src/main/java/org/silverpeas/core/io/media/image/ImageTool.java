@@ -23,21 +23,77 @@
  */
 package org.silverpeas.core.io.media.image;
 
+import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
+import org.silverpeas.core.util.ServiceProvider;
+
 import java.io.File;
 import java.util.Set;
-
-import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface ImageTool {
 
+  static ImageTool get() {
+    return ServiceProvider.getService(ImageTool.class);
+  }
+
   /**
    * Indicates if image tools are available
    * @return
    */
   boolean isActivated();
+
+  /**
+   * Gets aimed information from the given image file.
+   * @param source the image file.
+   * @param options the following options:
+   * <ul>
+   * <li>%b - file size of image read in</li>
+   * <li>%c - comment meta-data property</li>
+   * <li>%d - directory component of path</li>
+   * <li>%e - filename extension or suffix</li>
+   * <li>%f - filename (including suffix)</li>
+   * <li>%g - layer canvas page geometry (equivalent to "%Wx%H%X%Y")</li>
+   * <li>%h - current image height in pixels</li>
+   * <li>%i - image filename (note: becomes output filename for "info:")</li>
+   * <li>%k - CALCULATED: number of unique colors</li>
+   * <li>%l - label meta-data property</li>
+   * <li>%m - image file format (file magic)</li>
+   * <li>%n - number of images in current image sequence</li>
+   * <li>%o - output filename (used for delegates)</li>
+   * <li>%p - index of image in current image list</li>
+   * <li>%q - quantum depth (compile-time constant)</li>
+   * <li>%r - image class and colorspace</li>
+   * <li>%s - scene number (from input unless re-assigned)</li>
+   * <li>%t - filename without directory or extension (suffix)</li>
+   * <li>%u - unique temporary filename (used for delegates)</li>
+   * <li>%w - current width in pixels</li>
+   * <li>%x - x resolution (density)</li>
+   * <li>%y - y resolution (density)</li>
+   * <li>%z - image depth (as read in unless modified, image save depth)</li>
+   * <li>%A - image transparency channel enabled (true/false)</li>
+   * <li>%C - image compression type</li>
+   * <li>%D - image GIF dispose method</li>
+   * <li>%G - original image size (%wx%h; before any resizes)</li>
+   * <li>%H - page (canvas) height</li>
+   * <li>%M - Magick filename (original file exactly as given, including read mods)</li>
+   * <li>%O - page (canvas) offset ( = %X%Y )</li>
+   * <li>%P - page (canvas) size ( = %Wx%H )</li>
+   * <li>%Q - image compression quality ( 0 = default )</li>
+   * <li>%S - ?? scenes ??</li>
+   * <li>%T - image time delay (in centi-seconds)</li>
+   * <li>%U - image resolution units</li>
+   * <li>%W - page (canvas) width</li>
+   * <li>%X - page (canvas) x offset (including sign)</li>
+   * <li>%Y - page (canvas) y offset (including sign)</li>
+   * <li>%Z - unique filename (used for delegates)</li>
+   * <li>%@ - CALCULATED: trim bounding box (without actually trimming)</li>
+   * <li>%# - CALCULATED: 'signature' hash of image values</li>
+   * </ul>
+   * @return
+   */
+  String[] getImageInfo(File source, String... options) throws Exception;
 
   /**
    * Converts an image with some directives
