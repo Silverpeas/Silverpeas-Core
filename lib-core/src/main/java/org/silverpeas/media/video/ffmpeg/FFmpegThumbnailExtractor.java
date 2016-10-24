@@ -61,18 +61,23 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
   public void generateThumbnailsFrom(File video) {
     if (video.exists() && video.isFile()) {
       MetaData metadata = MetadataExtractor.getInstance().extractMetadata(video);
-      TimeData timeData = metadata.getDuration();
-      if (timeData != null) {
-        File thumbnailDir = video.getParentFile();
-        for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
-          double timePeriod = thumbPeriod.getPercent() * timeData.getTimeAsLong() / 1000;
-          FFmpegUtil.extractVideoThumbnail(video,
-              new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
-        }
-      } else {
-        SilverTrace.warn("VideoTool", getClass().getSimpleName(),
-            "Problem to retrieve video duration, process video thumbnails has failed");
+      generateThumbnailsFrom(metadata, video);
+    }
+  }
+
+  @Override
+  public void generateThumbnailsFrom(final MetaData metaData, final File video) {
+    TimeData timeData = metaData.getDuration();
+    if (timeData != null) {
+      File thumbnailDir = video.getParentFile();
+      for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
+        double timePeriod = thumbPeriod.getPercent() * timeData.getTimeAsLong() / 1000;
+        FFmpegUtil.extractVideoThumbnail(video,
+            new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
       }
+    } else {
+      SilverTrace.warn("VideoTool", getClass().getSimpleName(),
+          "Problem to retrieve video duration, process video thumbnails has failed");
     }
   }
 

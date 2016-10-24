@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,31 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.media.video;
+package org.silverpeas.image.option;
 
-import com.silverpeas.util.MetaData;
 
-import java.io.File;
+/**
+ * @author Yohann Chastagnier
+ */
+public class TransparencyColorOption extends AbstractImageToolOption {
 
-public interface VideoThumbnailExtractor {
+  private final String color;
 
-  /**
-   * @return true if this feature is activated, false else if
-   */
-  boolean isActivated();
-
-  /**
-   * This method must generate 5 thumbnails of the video given in parameter
-   * @param video the video from which we extract thumbnails
-   */
-  void generateThumbnailsFrom(File video);
-
+  public static TransparencyColorOption color(final String color) {
+    return new TransparencyColorOption(color);
+  }
 
   /**
-   * This method must generate 5 thumbnails of the video given in parameter
-   * @param metaData already read meta data.
-   * @param video the video from which we extract thumbnails.
+   * Default constructor
+   * @param color
    */
-  void generateThumbnailsFrom(MetaData metaData, File video);
+  private TransparencyColorOption(final String color) {
+    this.color = color;
+  }
 
+  /**
+   * @return the value
+   */
+  public String getColor() {
+    return color;
+  }
 }
