@@ -23,19 +23,24 @@
  */
 package org.silverpeas.image.imagemagick;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Named;
-
+import org.apache.commons.lang3.StringUtils;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
+import org.im4java.core.IdentifyCmd;
+import org.im4java.process.ArrayListOutputConsumer;
 import org.silverpeas.image.AbstractImageTool;
 import org.silverpeas.image.ImageToolDirective;
 import org.silverpeas.image.option.AbstractImageToolOption;
+import org.silverpeas.image.option.AnchoringPosition;
 import org.silverpeas.image.option.BackgroundOption;
 import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.image.option.TransparencyColorOption;
+import org.silverpeas.image.option.WatermarkTextOption;
+
+import javax.inject.Named;
+import java.io.File;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
@@ -55,11 +60,24 @@ public class Im4javaImageTool extends AbstractImageTool {
     return Im4javaManager.isActivated();
   }
 
+  @Override
+  public String[] getImageInfo(final File source, final String... options) throws Exception {
+    IMOperation op = new IMOperation();
+    op.format(StringUtils.join(options, "|"));
+    op.addImage(source.getPath());
+    IdentifyCmd identifyCmd = new IdentifyCmd();
+    ArrayListOutputConsumer result = new ArrayListOutputConsumer();
+    identifyCmd.setOutputConsumer(result);
+    identifyCmd.run(op);
+    return result.getOutput().get(0).split("[|]");
+  }
+
   /*
-   * (non-Javadoc)
-   * @see org.silverpeas.image.AbstractImageTool#convert(java.io.File, java.io.File, java.util.Map,
-   * java.util.Set)
-   */
+     * (non-Javadoc)
+     * @see org.silverpeas.image.AbstractImageTool#convert(java.io.File, java.io.File, java.util
+     * .Map,
+     * java.util.Set)
+     */
   @Override
   protected void convert(final File source, final File destination,
       final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
@@ -72,8 +90,10 @@ public class Im4javaImageTool extends AbstractImageTool {
     setSource(op, source, directives);
 
     // Additional options
+    transparencyColor(op, options);
     background(op, options);
     resize(op, options, directives);
+    watermarkText(op, source, options);
 
     // Destination file
     setDestination(op, destination, directives);
@@ -122,6 +142,22 @@ public class Im4javaImageTool extends AbstractImageTool {
   }
 
   /**
+   * Centralizes background handling
+   * @param op
+   * @param options
+   */
+  private void transparencyColor(final IMOperation op,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options) {
+
+    // Getting transparencyColor option
+    final TransparencyColorOption transparencyColor =
+        getOption(options, TransparencyColorOption.class);
+    if (transparencyColor != null) {
+      op.transparentColor(transparencyColor.getColor());
+    }
+  }
+
+  /**
    * Centralizes resizing operation
    * @param op
    * @param options
@@ -149,5 +185,59 @@ public class Im4javaImageTool extends AbstractImageTool {
         op.resize(dimension.getWidth(), dimension.getHeight(), specialDirective.toString());
       }
     }
+  }
+
+  /**
+   * Centralizes text watermarking operation
+   * @param op
+   * @param source
+   * @param options
+   * @throws Exception
+   */
+  private void watermarkText(final IMOperation op, final File source,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options) throws Exception {
+    WatermarkTextOption watermarkText = getOption(options, WatermarkTextOption.class);
+    if (watermarkText != null) {
+      final String[] imageInfo;
+      DimensionOption dimension = getOption(options, DimensionOption.class);
+      if (dimension != null) {
+        imageInfo = new String[2];
+        imageInfo[0] = dimension.getWidth() != null ? String.valueOf(dimension.getWidth()) :
+            getImageInfo(source, "%w")[0];
+        imageInfo[1] = dimension.getHeight() != null ? String.valueOf(dimension.getHeight()) :
+            getImageInfo(source, "%h")[0];
+      } else {
+        imageInfo = getImageInfo(source, "%w", "%h");
+      }
+      int width = Integer.valueOf(imageInfo[0]);
+      int height = Integer.valueOf(imageInfo[1]);
+
+      int pointSize = (int) Math.rint((width * 0.02) + Math.log(width));
+      pointSize = Math.min((int) (height * 0.2), pointSize);
+
+      int minX = (int) Math.max(1, (height * 0.015));
+      int minY = (int) Math.max(1, (height * 0.025));
+      int x = (int) (minX + Math.max(1, (pointSize / 2.5)));
+      int y = (int) (minY + Math.max(1, (pointSize / 1.75)));
+
+      final String text = watermarkText.getText();
+      final AnchoringPosition anchoringPosition = watermarkText.getAnchoringPosition();
+
+      op.font(watermarkText.getFont());
+      op.pointsize(pointSize);
+
+      String black = "rgba(0, 0, 0, 0.5)";
+      String white = "rgba(255, 255, 255, 0.5)";
+      drawText(op, black, text, anchoringPosition, x, y);
+      drawText(op, white, text, anchoringPosition, minX, minY);
+    }
+  }
+
+  private void drawText(final IMOperation op, final String color, final String text,
+      final AnchoringPosition anchoringPosition, final int x, final int y) {
+    final String drawSb =
+        "\"" + "gravity " + anchoringPosition.name() + " fill " + color + " text " + x + "," + y +
+            " ' " + text + "'" + "\"";
+    op.draw(drawSb);
   }
 }

@@ -213,6 +213,10 @@
         factory-method="getInstance"/>
 
   <!-- the provider of the video thumbnails service in Silverpeas -->
+  <bean id="imageToolFactory" class="org.silverpeas.image.ImageToolFactory"
+        factory-method="getInstance"/>
+
+  <!-- the provider of the video thumbnails service in Silverpeas -->
   <bean id="videoThumbnailExtractorFactory" class="org.silverpeas.media.video.VideoThumbnailExtractorFactory"
         factory-method="getInstance"/>
 
