@@ -39,13 +39,19 @@ public interface UserPrivilegeValidation {
   }
 
   /**
-   * The HTTP header paremeter in an incoming request that carries the user session key. By the user
+   * The HTTP header parameter in an incoming request that carries the user session key. By the user
    * session key could be passed a user token to perform a HTTP request without opening a session.
    * This parameter isn't mandatory as the session key can be found from an active HTTP session. If
    * neither HTTP session nor session key is available for the incoming request, user credentials
    * must be passed in the standard HTTP header parameter Authorization.
    */
   String HTTP_SESSIONKEY = "X-Silverpeas-Session";
+
+  /**
+   * The HTTP request parameter in an incoming request that carries the user session key.
+   */
+  String HTTP_PARAMKEY = "sptkn";
+
   /**
    * The standard HTTP header parameter in an incoming request that carries user credentials
    * information in order to open an authorized connexion with the web service that backs the
