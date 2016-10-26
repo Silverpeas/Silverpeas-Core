@@ -4,7 +4,6 @@ import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.time.LocalDate;
 
 /**
  * @author Nicolas Eysseric
@@ -18,10 +17,10 @@ public class ResultEntity {
   private String description;
 
   @XmlElement
-  private LocalDate creationDate;
+  private String creationDate;
 
   @XmlElement
-  private LocalDate updateDate;
+  private String updateDate;
 
   @XmlElement
   private String type;
@@ -42,8 +41,12 @@ public class ResultEntity {
   private ResultEntity(SearchResult gsr) {
     this.name = gsr.getName();
     this.description = gsr.getDescription();
-    this.creationDate = gsr.getCreationDate();
-    this.updateDate = gsr.getLastUpdateDate();
+    if (gsr.getCreationDate() != null) {
+      this.creationDate = gsr.getCreationDate().toString();
+    }
+    if (gsr.getLastUpdateDate() != null) {
+      this.updateDate = gsr.getLastUpdateDate().toString();
+    }
     this.id = gsr.getId();
     this.type = gsr.getType();
     this.componentId = gsr.getInstanceId();
@@ -69,11 +72,11 @@ public class ResultEntity {
     this.description = description;
   }
 
-  public LocalDate getUpdateDate() {
+  public String getUpdateDate() {
     return updateDate;
   }
 
-  public LocalDate getCreationDate() {
+  public String getCreationDate() {
     return creationDate;
   }
 
