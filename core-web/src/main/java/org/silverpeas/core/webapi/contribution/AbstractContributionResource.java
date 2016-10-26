@@ -83,6 +83,20 @@ public abstract class AbstractContributionResource extends RESTWebService {
     return getComponentId() + ":" + FilenameUtils.getBaseName(formId);
   }
 
+  protected List<FormFieldValueEntity> getFormFieldValues(FieldTemplate fieldTemplate,
+      DataRecord data, String lang) throws Exception {
+    int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+    List<FormFieldValueEntity> values = new ArrayList<>();
+    for (int occ = 0; occ < maxOccurrences; occ++) {
+      Field field = data.getField(fieldTemplate.getFieldName(), occ);
+      if (field != null && !field.isNull()) {
+        FormFieldValueEntity value = getFormFieldValue(fieldTemplate, field, lang);
+        values.add(value);
+      }
+    }
+    return values;
+  }
+
   /**
    * Gets the value of a field.
    * @param fieldTemplate
@@ -93,9 +107,13 @@ public abstract class AbstractContributionResource extends RESTWebService {
    */
   protected FormFieldValueEntity getFormFieldValue(FieldTemplate fieldTemplate, DataRecord data,
       String lang) throws Exception {
-
     // Field data
     Field field = data.getField(fieldTemplate.getFieldName());
+    return getFormFieldValue(fieldTemplate, field, lang);
+  }
+
+  private FormFieldValueEntity getFormFieldValue(FieldTemplate fieldTemplate, Field field,
+      String lang) throws Exception {
 
     final FormFieldValueEntity entity;
     if (Field.TYPE_FILE.equals(field.getTypeName())) {
@@ -158,19 +176,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
           // Field value entity
           if (keyValuePairs.isEmpty()) {
             // Simple value
-            if (fieldTemplate.isRepeatable()) {
-              int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
-              List<String> values = new ArrayList<>();
-              for (int occ = 0; occ < maxOccurrences; occ++) {
-                field = data.getField(fieldTemplate.getFieldName(), occ);
-                if (field != null) {
-                  values.add(field.getValue(lang));
-                }
-              }
-              entity = FormFieldValueEntity.createFrom(null, values);
-            } else {
-              entity = FormFieldValueEntity.createFrom(null, fieldValue);
-            }
+            entity = FormFieldValueEntity.createFrom(null, fieldValue);
           } else {
             // Value like checkbox for example.
             // Value is empty if "##" string is detected.

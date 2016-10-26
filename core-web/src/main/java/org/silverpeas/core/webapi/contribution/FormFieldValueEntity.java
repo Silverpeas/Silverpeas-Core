@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.util.List;
 
 /**
  * @author Yohann Chastagnier
@@ -42,12 +41,6 @@ public class FormFieldValueEntity {
 
   @XmlElement(defaultValue = "")
   private String displayedValue;
-
-  @XmlElement
-  private List<String> values;
-
-  @XmlElement
-  private boolean multiValues = false;
 
   @XmlElement(defaultValue = "")
   private String link;
@@ -86,31 +79,11 @@ public class FormFieldValueEntity {
   }
 
   /**
-   * Creates a new form field values entity from the specified form field value data
-   * @param id
-   * @param values
-   * @return the entity representing the specified form field value data.
-   */
-  public static FormFieldValueEntity createFrom(String id, List<String> values) {
-    if (values.size() >= 2) {
-      FormFieldValueEntity entity = new FormFieldValueEntity(id, values);
-      entity.multiValues = true;
-      return entity;
-    }
-    return new FormFieldValueEntity(id, values.get(0));
-  }
-
-  /**
    * Default hidden constructor.
    */
   private FormFieldValueEntity(String id, String displayedValue) {
     this.id = id;
     this.displayedValue = displayedValue;
-  }
-
-  private FormFieldValueEntity(String id, List<String> values) {
-    this.id = id;
-    this.values = values;
   }
 
   protected FormFieldValueEntity() {
@@ -125,7 +98,4 @@ public class FormFieldValueEntity {
     return displayedValue;
   }
 
-  protected boolean isMultiValues() {
-    return multiValues;
-  }
 }
