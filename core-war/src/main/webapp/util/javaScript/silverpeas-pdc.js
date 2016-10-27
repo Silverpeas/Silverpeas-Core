@@ -97,6 +97,9 @@
             return updatedAxis;
           };
           $this.pdcAxisValuesSelector(settings.selectorParameters);
+          if (typeof settings.onLoaded === 'function') {
+            settings.onLoaded.call(this, loadedPdC);
+          }
         }, function(pdc, error) {
           notyError(error.message);
         });

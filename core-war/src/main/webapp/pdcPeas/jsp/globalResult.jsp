@@ -108,7 +108,6 @@ void displayFacet(Facet facet, MultiSilverpeasBundle resource, JspWriter out) th
 %>
 
 <c:set var="results" value="${requestScope['Results']}" />
-<c:set var="exportEnabled" value="${requestScope['ExportEnabled']}" />
 <c:set var="sortValue" value="${requestScope['SortValue']}" />
 <c:set var="userId" value="${requestScope['UserId']}" />
 <%
@@ -143,18 +142,12 @@ if (keywords == null) {
 	keywords = WebEncodeHelper.javaStringToHtmlString(keywords);
 }
 
-// Contenu
-String componentId	= "";
-
-//pour le thesaurus
-Map synonyms = (Map) request.getAttribute("synonyms");
 String urlToRedirect = (String) request.getAttribute("urlToRedirect");
 String backButtonClick;
 if (urlToRedirect != null) {
     backButtonClick = "location.href='" + URLDecoder.decode(urlToRedirect, "UTF-8") + "';";
 }
 
-Board board = gef.getBoard();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 // keyword autocompletion
@@ -456,14 +449,12 @@ function viewFile(target, attachmentId, versioned, componentId) {
 <fmt:message var="resultLabel" key="pdcPeas.ResultPage" />
 <view:browseBar extraInformations="${resultLabel}" />
 <view:operationPane>
-  <c:if test="${exportEnabled}">
     <fmt:message var="iconExport" key="pdcPeas.ToExport" bundle="${icons}"/>
     <fmt:message var="messageExport" key="pdcPeas.ToExport" />
     <fmt:message var="iconPDF" key="pdcPeas.exportPDF" bundle="${icons}"/>
     <fmt:message var="messagePDF" key="pdcPeas.exportPDF" />
     <view:operation altText="${messageExport}" icon="${iconExport}" action="javascript:openExportPopup();"></view:operation>
     <view:operation altText="${messagePDF}" icon="${iconPDF}" action="javascript:openExportPDFPopup();"></view:operation>
-  </c:if>
 </view:operationPane>
 <view:window>
 <%
@@ -546,11 +537,9 @@ function viewFile(target, attachmentId, versioned, componentId) {
 		  <a href="javascript:setSortOrder('DESC')" class="<%=classCSS%>">DESC</a>
 		  </td>
         </tr>
-        <c:if test="${exportEnabled}">
 			<tr id="globalResultSelectAllResult">
 				<td class="txtlibform"><fmt:message key="pdcPeas.selectAll" /></td><td><input type="checkbox" name="selectAll" onclick="selectEveryResult(this);"/></td>
 			</tr>
-        </c:if>
 		</table>
 <% } %>
   </view:board>
@@ -591,7 +580,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
   <c:if test="${not empty results}">
     <ul id="globalResultListDetails">
       <c:forEach var="result" items="${results}">
-        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" exportEnabled="${exportEnabled}" resources="<%=resource %>"></view:displayResult>
+        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" exportEnabled="true" resources="<%=resource %>"></view:displayResult>
       </c:forEach>
     </ul>
   </c:if>

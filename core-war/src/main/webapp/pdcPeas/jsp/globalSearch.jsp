@@ -105,21 +105,12 @@ if (updateBeforeDate == null) {
 
 String itemType = (String) request.getAttribute("ItemType");
 
-boolean			isEmptySearchContext = true;
-SearchCriteria	searchCriteria		= null;
-
 if (showSndSearchAxis == null) {
     showSndSearchAxis = "NO";
 }
 
-// l'objet SearchContext n'est pas vide
-if (searchContext != null && searchContext.getCriterias().size() > 0){
-	isEmptySearchContext = false;
-}
-
 String selected = "";
 
-String icoHelp	= m_context + "/util/icons/info.gif";
 String icoUser	= m_context + "/util/icons/user.gif";
 
 Board board = gef.getBoard();
@@ -136,6 +127,7 @@ QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="datepicker"/>
+<view:includePlugin name="pdc" />
 <script type="text/javascript" src="javascript/formUtil.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 <script type="text/javascript">
@@ -177,21 +169,6 @@ function loadICenter(){
 	document.AdvancedSearch.submit();
 }
 
-function positionOfInput(inputName){
-	var myForm = document.AdvancedSearch;
-	var nbElementInForm = myForm.length;
-	// pour chaque element, je recupere son nom et je le compare avec l'inputName
-	// qd c'est egal (tjrs egal) je retourne la position du champ inputName
-	var ret;
-	for (var i=0;i<nbElementInForm ;i++ ){
-		if (myForm.elements[i].name == inputName){
-			ret = i;
-			break;
-		}
-	}
-	return ret;
-}
-
 function viewAdvancedSearch(){
 	$.progressMessage();
 	document.AdvancedSearch.submit();
@@ -203,24 +180,6 @@ function viewSecondaryAxis(show){
 		document.AdvancedSearch.ShowSndSearchAxis.value = "YES";
 	} else {
 		document.AdvancedSearch.ShowSndSearchAxis.value = "NO";
-	}
-	$.progressMessage();
-	document.AdvancedSearch.submit();
-}
-
-function addValue(selectItem, axisId)
-{
-	var valuePath = selectItem.value;
-	if (valuePath.length > 0)
-	{
-		document.AdvancedSearch.AxisId.value = axisId;
-		document.AdvancedSearch.ValueId.value = valuePath;
-		document.AdvancedSearch.action = "GlobalAddCriteria";
-	}
-	else
-	{
-		document.AdvancedSearch.Ids.value = axisId;
-		document.AdvancedSearch.action = "GlobalDeleteCriteria";
 	}
 	$.progressMessage();
 	document.AdvancedSearch.submit();
@@ -636,10 +595,8 @@ if (searchType == 2) {
 }
 
 if (searchType == 2) {%>
-  <div class="tableFrame">
-    <div class="tableBoard">
-      <fieldset id="used_pdc" class="skinFieldset"></fieldset>
-    </div>
+  <div class="tableBoard" id="tablePDC">
+    <fieldset id="used_pdc" class="skinFieldset"></fieldset>
   </div>
 <% }
 %>
@@ -705,7 +662,14 @@ out.println(frame.printAfter());
         component: componentId,
         workspace: workspaceId,
         withSecondaryAxis: showSecondaryAxis,
-        values: <%= valuesInJs %>
+        values: <%= valuesInJs %>,
+        onLoaded : function(loadedPdC) {
+          if (loadedPdC && loadedPdC.axis.length) {
+            $("#tablePDC").show();
+          } else {
+            $("#tablePDC").hide();
+          }
+        }
       });
 </script>
 <%

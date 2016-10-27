@@ -54,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
@@ -96,31 +95,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String destination = "";
     // controller to inform the request
     try {
-      if (function.startsWith("GlobalAddCriteria")) {
-        // USED ONLY IN GLOBAL MODE -- the user add a criteria into the SearchContext.
-
-        addCriteria(pdcSC, request);
-
-        InterestCentersHelper.putSelectedInterestCenterId(request);
-
-        PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, true);
-
-        ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-
-        destination = getDestinationDuringSearch(pdcSC, request);
-      } else if (function.startsWith("GlobalDeleteCriteria")) {
-        // USED ONLY IN GLOBAL MODE -- the user deletes a criteria from the SearchContext.
-
-        InterestCentersHelper.putSelectedInterestCenterId(request);
-
-        deleteCriteria(pdcSC, request);
-
-        PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, true);
-
-        ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-
-        destination = getDestinationDuringSearch(pdcSC, request);
-      } else if (function.startsWith("GlobalView")) {
+      if (function.startsWith("GlobalView")) {
         // the user comes from the link "Advanced Search" of the TopBar.jsp
 
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
@@ -129,22 +104,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       } else if (function.startsWith("ChangeSearchType")) {
         boolean setAdvancedSearchItems = processChangeSearchType(function, pdcSC, request);
 
-        if (StringUtil.getBooleanValue(request.getParameter("ResetPDCContext"))) {
-          // remove PDC search context
-          pdcSC.removeAllCriterias();
-        }
-
-        destination = doGlobalView(pdcSC, request, false, setAdvancedSearchItems);
-      } else if (function.equals("ResetPDCContext")) {
-        // remove PDC search context
-        pdcSC.removeAllCriterias();
-
-        boolean setAdvancedSearchItems = true;
-        if (StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
-          // Exclusive case to display pertinent classification axis in PDC frame
-          // Advanced search items are useless in this case
-          setAdvancedSearchItems = false;
-        }
         destination = doGlobalView(pdcSC, request, false, setAdvancedSearchItems);
       } else if (function.startsWith("LoadAdvancedSearch")) {
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
@@ -221,17 +180,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         pdcSC.setSelectedSilverContents(new ArrayList<>());
         // This is the main function of global search
-        boolean pdcUsedDuringSearch = false;
         // recupere les parametres (Only for a global search in advanced mode)
         String icId = request.getParameter("icId");
-        QueryParameters searchParameters;
         if (icId != null) {
-          searchParameters =
-              PdcSearchRequestRouterHelper.
-              saveFavoriteRequestAndSetPdcInfo(pdcSC, request, icId);
+          PdcSearchRequestRouterHelper.saveFavoriteRequestAndSetPdcInfo(pdcSC, request, icId);
         } else {
-          searchParameters =
-              PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, false);
+          PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, false);
         }
 
         // Filters by the axis' values on the PdC the content to seek should be positioned.
@@ -249,7 +203,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")) {
-          PdcSearchRequestRouterHelper.processItemsPagination(function, pdcSC, request);
+          PdcSearchRequestRouterHelper.processItemsPagination(pdcSC, request);
         } else {
           setDefaultDataToNavigation(request, pdcSC);
         }
@@ -314,12 +268,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         setDefaultDataToNavigation(request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
-      } else if (function.startsWith("ActivateThesaurus")
-          || function.startsWith("DesactivateThesaurus")
-          || function.startsWith("GlobalActivateThesaurus")
-          || function.startsWith("GlobalDesactivateThesaurus")) {
-
-        destination = processThesaurusActions(function, pdcSC, request);
       } else if (function.startsWith("ToUserPanel")) {// utilisation de userPanel et userPanelPeas
         try {
           destination = pdcSC.initUserPanel();
@@ -335,11 +283,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         if (userIds.length != 0) {
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
           if (userDetails != null) {
-            request.setAttribute("UserDetail", pdcSC.getUserDetail(userDetails[0].getId()));
+            request.setAttribute("UserDetail", userDetails[0]);
           }
         }
         destination = "/pdcPeas/jsp/refreshFromUserSelect.jsp";
-        // destination = doGlobalView(pdcSC, request);
       } else if (function.startsWith("ExportPublications")) {
         processSelection(pdcSC, request);
 
@@ -418,7 +365,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")) {
-          PdcSearchRequestRouterHelper.processItemsPagination(function, pdcSC, request);
+          PdcSearchRequestRouterHelper.processItemsPagination(pdcSC, request);
         } else {
           setDefaultDataToNavigation(request, pdcSC);
         }
@@ -540,7 +487,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // Context is different of PDC frame, always process PDC axis
         initializePdcAxis(pdcSC, request);
       } else {
-
         if (helper.isDisplayPDCInHomePage() || (!helper.isDisplayPDCInHomePage() && StringUtil.
             isDefined(pdcSC.getQueryParameters().getSpaceId()))) {
           initializePdcAxis(pdcSC, request);
@@ -580,32 +526,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
     ThesaurusHelper.initializeJargon(pdcSC);
     ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
-  }
-
-  private void addCriteria(PdcSearchSessionController pdcSC, HttpServletRequest request)
-      throws Exception {
-    String axisId = request.getParameter("AxisId");
-    String valueId = request.getParameter("ValueId");
-
-    // construction de l'objet SearchCriteria
-    SearchCriteria searchCriteria = new SearchCriteria(Integer.parseInt(axisId), valueId);
-    pdcSC.addCriteriaToSearchContext(searchCriteria); // travail sur le contexte courant
-  }
-
-  /*
-   * Remove axis from the user search context
-   */
-  private void deleteCriteria(PdcSearchSessionController pdcSC, HttpServletRequest request)
-      throws Exception {
-    String axesId = request.getParameter("Ids"); // get ids of selected criteria
-
-    String oneAxisId = "";
-    // get all ids and remove corresponding criteria into the SearchCriteria
-    StringTokenizer st = new StringTokenizer(axesId, ",");
-    while (st.hasMoreTokens()) {
-      oneAxisId = st.nextToken();
-      pdcSC.removeCriteriaFromSearchContext(oneAxisId);
-    }
   }
 
   /**
@@ -696,20 +616,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         }
       }
     }
-  }
-
-  private String processThesaurusActions(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    String destination = "";
-    if (function.startsWith("GlobalActivateThesaurus")
-        || function.startsWith("GlobalDesactivateThesaurus")) {
-      ThesaurusHelper
-          .setJargonInfoInRequest(pdcSC, request, function.startsWith("GlobalActivateThesaurus"));
-      InterestCentersHelper.putSelectedInterestCenterId(request);
-      PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, true);
-      destination = getDestinationDuringSearch(pdcSC, request);
-    }
-    return destination;
   }
 
   private boolean processChangeSearchType(String function, PdcSearchSessionController pdcSC,

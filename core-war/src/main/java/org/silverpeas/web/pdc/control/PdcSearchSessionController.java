@@ -21,7 +21,14 @@
 package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -30,33 +37,33 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
-import org.silverpeas.core.index.search.model.SearchEngineException;
-import org.silverpeas.core.index.search.model.SearchResult;
-import org.silverpeas.core.pdc.interests.model.Interests;
-import org.silverpeas.core.pdc.interests.service.InterestsManager;
-import org.silverpeas.core.pdc.PdcServiceProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
-import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.index.search.model.SearchEngineException;
+import org.silverpeas.core.index.search.model.SearchResult;
+import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.classification.Criteria;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.model.Axis;
-import org.silverpeas.core.pdc.pdc.model.AxisHeader;
+import org.silverpeas.core.pdc.interests.model.Interests;
+import org.silverpeas.core.pdc.interests.service.InterestsManager;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.web.pdc.QueryParameters;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.search.SearchService;
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
@@ -64,34 +71,24 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.viewer.service.ViewerProvider;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.vo.ExternalSPConfigVO;
 import org.silverpeas.web.pdc.vo.Facet;
 import org.silverpeas.web.pdc.vo.FacetEntryVO;
 import org.silverpeas.web.pdc.vo.ResultFilterVO;
 import org.silverpeas.web.pdc.vo.ResultGroupFilter;
 import org.silverpeas.web.pdc.vo.SearchTypeConfigurationVO;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.UserIndexation;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.viewer.service.ViewerProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -1225,93 +1222,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return this.isSecondaryShowed;
   }
 
-  public List<SearchAxis> getAxis(String viewType) throws PdcException {
-    if (componentList == null || componentList.isEmpty()) {
-      if (StringUtil.isDefined(getCurrentComponentId())) {
-        return getPdcManager().getPertinentAxisByInstanceId(searchContext, viewType,
-            getCurrentComponentId());
-      }
-      return new ArrayList<>();
-    } else {
-      // we get all axis (pertinent or not) from a type P or S
-      List<AxisHeader> axis = getPdcManager().getAxisByType(viewType);
-      // we have to transform all axis (AxisHeader) into SearchAxis to make
-      // the display into jsp transparent
-      return transformAxisHeadersIntoSearchAxis(axis);
-    }
-  }
-
-  private List<SearchAxis> transformAxisHeadersIntoSearchAxis(List<AxisHeader> axis) {
-    ArrayList<SearchAxis> transformedAxis = new ArrayList<>();
-    try {
-      for (int i = 0; i < axis.size(); i++) {
-        AxisHeader ah = axis.get(i);
-        SearchAxis sa = new SearchAxis(Integer.parseInt(ah.getPK().getId()), 0);
-        // sa.setAxisName(ah.getName());
-        sa.setAxis(ah);
-        sa.setAxisRootId(Integer.parseInt(
-            getPdcManager().getRoot(ah.getPK().getId()).getValuePK().getId()));
-        sa.setNbObjects(1);
-        transformedAxis.add(sa);
-      }
-    } catch (Exception ignored) {
-    }
-    return transformedAxis;
-  }
-
-  public List<Value> getDaughterValues(String axisId, String valueId) throws PdcException {
-    List<Value> values;
-    if (componentList == null || componentList.isEmpty()) {
-      values = getPdcManager().getPertinentDaughterValuesByInstanceId(searchContext,
-          axisId, valueId, getCurrentComponentId());
-    } else {
-      if (isShowOnlyPertinentAxisAndValues()) {
-        values = getPdcManager().getPertinentDaughterValuesByInstanceIds(
-            searchContext, axisId, valueId, getCopyOfInstanceIds());
-      } else {
-        values = setNBNumbersToOne(getPdcManager().getDaughters(axisId, valueId));
-      }
-    }
-
-    return values;
-  }
-
-  private List<Value> setNBNumbersToOne(List<Value> values) {
-    for (int i = 0; i < values.size(); i++) {
-      Value value = values.get(i);
-      value.setNbObjects(1);
-    }
-    return values;
-  }
-
-  public SearchContext addCriteriaToSearchContext(SearchCriteria criteria) {
-    this.searchContext.addCriteria(criteria);
-    return getSearchContext();
-  }
-
-  public SearchContext removeCriteriaFromSearchContext(String axisId) {
-    this.searchContext.removeCriteria(Integer.parseInt(axisId));
-    return getSearchContext();
-  }
-
   public void removeAllCriterias() {
     this.searchContext.clearCriterias();
-  }
-
-  public Axis getAxisDetail(String axisId) throws PdcException {
-    return getPdcManager().getAxisDetail(axisId);
-  }
-
-  public AxisHeader getAxisHeader(String axisId) throws PdcException {
-    return getPdcManager().getAxisHeader(axisId);
-  }
-
-  public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
-    return getPdcManager().getFullPath(valueId, treeId);
-  }
-
-  public Value getValue(String axisId, String valueId) throws PdcException {
-    return getPdcManager().getValue(axisId, valueId);
   }
 
   /**
@@ -1339,7 +1251,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ****************************************************************************************************************
    */
   private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
-  private boolean activeThesaurus = false; // thesaurus actif
   private Jargon jargon = null;// jargon utilisé par l'utilisateur
   private Map<String, Collection<String>> synonyms = new HashMap<>();
   private static final int QUOTE_CHAR = new Integer('"');
@@ -1440,13 +1351,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             "pdcPeas.EX_GET_SYNONYMS", e);
       }
     }
-  }
-
-  public Map<String, Collection<String>> getSynonyms() {
-    if (activeThesaurus) {
-      return synonyms;
-    }
-    return new HashMap<>();
   }
 
   private boolean isKeyword(String mot) {
