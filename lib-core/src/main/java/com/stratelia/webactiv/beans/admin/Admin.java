@@ -4820,11 +4820,12 @@ public class Admin {
       List<SpaceInstLight> path = getPathToComponent(componentId);
       for (SpaceInstLight space : path) {
         if (toCheck.contains(space.getShortId())) {
-          return true;
+          manageable = true;
+          break;
         }
       }
     }
-    return false;
+    return manageable;
   }
 
   /**
