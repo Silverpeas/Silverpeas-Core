@@ -4041,11 +4041,12 @@ class Admin implements Administration {
       List<SpaceInstLight> path = getPathToComponent(componentId);
       for (SpaceInstLight space : path) {
         if (toCheck.contains(space.getLocalId())) {
-          return true;
+          manageable = true;
+          break;
         }
       }
     }
-    return false;
+    return manageable;
   }
 
   @Override
