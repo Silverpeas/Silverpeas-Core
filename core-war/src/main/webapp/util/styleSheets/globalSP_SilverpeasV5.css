@@ -5186,8 +5186,7 @@ blockquote {
 
 .forms .fields label {
   display: inline-block;
-  padding-left: 15px;
-  padding-bottom: 7px;
+  padding: 0px 15px 7px 15px;
   width:180px;
   white-space: normal;
 }
@@ -5246,6 +5245,11 @@ form .forms .fields > li:nth-child(even) {
 .forms .field ul.repeatable-field-list {
   list-style-type: none;
   padding-left: 0px;
+  margin: 0 0 5px 0;
+}
+
+.forms .field ul.repeatable-field-list li.field-occurrence-shown {
+  margin: 0 0 2px 0;
 }
 
 .forms .actions img{
