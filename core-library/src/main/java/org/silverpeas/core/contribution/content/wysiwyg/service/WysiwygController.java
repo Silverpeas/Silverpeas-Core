@@ -220,14 +220,13 @@ public class WysiwygController {
   /**
    * La méthode deleteWysiwygAttachments efface tous les attachments de la publication donc pour
    * éviter une éventuelle régression, je crée une nouvelle méthode
-   * @param spaceId
    * @param componentId
    * @param objectId
    * @throws WysiwygException
    */
-  public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
-      String objectId) throws WysiwygException {
-    getManager().deleteWysiwygAttachmentsOnly(spaceId, componentId, objectId);
+  public static void deleteWysiwygAttachmentsOnly(String componentId, String objectId)
+      throws WysiwygException {
+    getManager().deleteWysiwygAttachmentsOnly(componentId, objectId);
   }
 
   /**

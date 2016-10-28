@@ -439,8 +439,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
     if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), String.valueOf(pubId), lang)) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
-        WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(),
-            String.valueOf(pubId));
+        WysiwygController
+            .deleteWysiwygAttachmentsOnly(getCurrentComponentId(), String.valueOf(pubId));
       } catch (WysiwygException ignored) {
       }
     }

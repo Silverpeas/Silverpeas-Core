@@ -517,24 +517,23 @@ public class WysiwygManager {
   /**
    * La méthode deleteWysiwygAttachments efface tous les attachments de la publication donc pour
    * éviter une éventuelle régression, je crée une nouvelle méthode
-   * @param spaceId
    * @param componentId
    * @param objectId
    * @throws WysiwygException
    */
-  public void deleteWysiwygAttachmentsOnly(String spaceId, String componentId, String objectId)
+  public void deleteWysiwygAttachmentsOnly(String componentId, String objectId)
       throws WysiwygException {
     try {
       ForeignPK foreignKey = new ForeignPK(objectId, componentId);
       List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
       for (SimpleDocument wysiwygAttachment : docs) {
-        AttachmentServiceProvider.getAttachmentService().deleteAttachment(wysiwygAttachment);
+        AttachmentServiceProvider.getAttachmentService().deleteAttachment(wysiwygAttachment, false);
       }
       docs = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
       for (SimpleDocument document : docs) {
-        AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
+        AttachmentServiceProvider.getAttachmentService().deleteAttachment(document, false);
       }
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
