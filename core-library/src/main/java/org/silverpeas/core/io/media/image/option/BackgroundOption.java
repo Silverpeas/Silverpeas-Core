@@ -31,16 +31,16 @@ public class BackgroundOption extends AbstractImageToolOption {
 
   private final String value;
 
-  public static BackgroundOption color(final String color) {
-    return new BackgroundOption(color);
-  }
-
   /**
    * Default constructor
    * @param color
    */
   private BackgroundOption(final String color) {
     value = color;
+  }
+
+  public static BackgroundOption color(final String color) {
+    return new BackgroundOption(color);
   }
 
   /**

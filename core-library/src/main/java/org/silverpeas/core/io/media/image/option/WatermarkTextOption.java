@@ -33,16 +33,16 @@ public class WatermarkTextOption extends AbstractImageToolOption {
   private String font = "Arial";
   private AnchoringPosition anchoringPosition = AnchoringPosition.SouthEast;
 
-  public static WatermarkTextOption text(final String text) {
-    return new WatermarkTextOption(text);
-  }
-
   /**
    * Default constructor
    * @param text
    */
   private WatermarkTextOption(final String text) {
     this.text = text;
+  }
+
+  public static WatermarkTextOption text(final String text) {
+    return new WatermarkTextOption(text);
   }
 
   /**

@@ -31,16 +31,16 @@ public class TransparencyColorOption extends AbstractImageToolOption {
 
   private final String color;
 
-  public static TransparencyColorOption color(final String color) {
-    return new TransparencyColorOption(color);
-  }
-
   /**
    * Default constructor
    * @param color
    */
   private TransparencyColorOption(final String color) {
     this.color = color;
+  }
+
+  public static TransparencyColorOption color(final String color) {
+    return new TransparencyColorOption(color);
   }
 
   /**

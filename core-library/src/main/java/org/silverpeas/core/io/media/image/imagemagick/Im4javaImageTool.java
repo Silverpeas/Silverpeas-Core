@@ -27,7 +27,9 @@ import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.core.IdentifyCmd;
 import org.im4java.process.ArrayListOutputConsumer;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.io.media.image.AbstractImageTool;
+import org.silverpeas.core.io.media.image.ImageInfoType;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 import org.silverpeas.core.io.media.image.option.AnchoringPosition;
@@ -38,8 +40,12 @@ import org.silverpeas.core.io.media.image.option.WatermarkTextOption;
 
 import javax.inject.Singleton;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+
+import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
+import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
 
 /**
  * @author Yohann Chastagnier
@@ -60,26 +66,36 @@ public class Im4javaImageTool extends AbstractImageTool {
   }
 
   @Override
-  public String[] getImageInfo(final File source, final String... options) throws Exception {
-    IMOperation op = new IMOperation();
-    op.format(String.join("|", (CharSequence[]) options));
-    op.addImage(source.getPath());
-    IdentifyCmd identifyCmd = new IdentifyCmd();
-    ArrayListOutputConsumer result = new ArrayListOutputConsumer();
-    identifyCmd.setOutputConsumer(result);
-    identifyCmd.run(op);
-    return result.getOutput().get(0).split("[|]");
+  public String[] getImageInfo(final File source, final ImageInfoType... infoTypes)
+      throws SilverpeasException {
+    return identify(source,
+        Arrays.stream(infoTypes).map(ImageInfoType::getImOption).toArray(String[]::new));
+  }
+
+  private String[] identify(final File source, final String... infoTypes)
+      throws SilverpeasException {
+    try {
+      IMOperation op = new IMOperation();
+      op.format(String.join("|", (CharSequence[]) infoTypes));
+      op.addImage(source.getPath());
+      IdentifyCmd identifyCmd = new IdentifyCmd();
+      ArrayListOutputConsumer result = new ArrayListOutputConsumer();
+      identifyCmd.setOutputConsumer(result);
+      identifyCmd.run(op);
+      return result.getOutput().get(0).split("[|]");
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /*
    * (non-Javadoc)
-   * @see AbstractImageTool#convert(java.io.File, java.io.File, java.util.Map,
-   * java.util.Set)
+   * @see AbstractImageTool#convert(java.io.File, java.io.File, java.util.Map, java.util.Set)
    */
   @Override
   protected void convert(final File source, final File destination,
       final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
-      final Set<ImageToolDirective> directives) throws Exception {
+      final Set<ImageToolDirective> directives) throws SilverpeasException {
 
     // Create the operation, add images and operators/options
     final IMOperation op = new IMOperation();
@@ -97,7 +113,11 @@ public class Im4javaImageTool extends AbstractImageTool {
     setDestination(op, destination, directives);
 
     // Executing command
-    new ConvertCmd().run(op);
+    try {
+      new ConvertCmd().run(op);
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /**
@@ -190,10 +210,11 @@ public class Im4javaImageTool extends AbstractImageTool {
    * @param op
    * @param source
    * @param options
-   * @throws Exception
+   * @throws SilverpeasException
    */
   private void watermarkText(final IMOperation op, final File source,
-      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options) throws Exception {
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options)
+      throws SilverpeasException {
     WatermarkTextOption watermarkText = getOption(options, WatermarkTextOption.class);
     if (watermarkText != null) {
       final String[] imageInfo;
@@ -201,11 +222,11 @@ public class Im4javaImageTool extends AbstractImageTool {
       if (dimension != null) {
         imageInfo = new String[2];
         imageInfo[0] = dimension.getWidth() != null ? String.valueOf(dimension.getWidth()) :
-            getImageInfo(source, "%w")[0];
+            getImageInfo(source, WIDTH_IN_PIXEL)[0];
         imageInfo[1] = dimension.getHeight() != null ? String.valueOf(dimension.getHeight()) :
-            getImageInfo(source, "%h")[0];
+            getImageInfo(source, HEIGHT_IN_PIXEL)[0];
       } else {
-        imageInfo = getImageInfo(source, "%w", "%h");
+        imageInfo = getImageInfo(source, WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
       }
       int width = Integer.valueOf(imageInfo[0]);
       int height = Integer.valueOf(imageInfo[1]);
@@ -234,8 +255,8 @@ public class Im4javaImageTool extends AbstractImageTool {
   private void drawText(final IMOperation op, final String color, final String text,
       final AnchoringPosition anchoringPosition, final int x, final int y) {
     final String drawSb =
-        "\"" + "gravity " + anchoringPosition.name() + " fill " + color + " text " + x + "," + y +
-            " ' " + text + "'" + "\"";
+        "gravity " + anchoringPosition.name() + " fill " + color + " text " + x + "," + y + " '" +
+            text.replace("'", "\\\'") + "'";
     op.draw(drawSb);
   }
 }
