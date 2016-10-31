@@ -24,8 +24,6 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-
 import javax.inject.Named;
 
 import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor
@@ -35,12 +33,7 @@ import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalS
 public class DefaultGlobalSilverContentProcessor implements IGlobalSilverContentProcessor {
 
   @Override
-  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
-      UserDetail creatorDetail, String location) {
-    if (creatorDetail != null) {
-      return new GlobalSilverContent(sci, location, creatorDetail.getFirstName(), creatorDetail.
-          getLastName());
-    }
-    return new GlobalSilverContent(sci, location, null, null);
+  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
+    return new GlobalSilverContent(sci);
   }
 }

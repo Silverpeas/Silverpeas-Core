@@ -2383,10 +2383,8 @@ public class GlobalPdcManager implements PdcManager {
   private List<GlobalSilverContent> transformSilverContentsToGlobalSilverContents(
       List<SilverContentInterface> silverContentTempo) {
     ArrayList<GlobalSilverContent> silverContents = new ArrayList<>();
-    GlobalSilverContent gsc;
     for (SilverContentInterface sci : silverContentTempo) {
-      gsc = new GlobalSilverContent(sci, "useless", null, null);
-      silverContents.add(gsc);
+      silverContents.add(new GlobalSilverContent(sci));
     }
     return silverContents;
   }

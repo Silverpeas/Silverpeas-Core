@@ -55,24 +55,6 @@ public class FormFieldEntity {
   private boolean multiValues = false;
 
   /**
-   * Creates a new form field entity from the specified field data.
-   * @param type the type
-   * @param name the name
-   * @param label the label
-   * @param value the value
-   * @return the entity representing the specified field data.
-   */
-  public static FormFieldEntity createFrom(String type, String name, String label,
-      FormFieldValueEntity value) {
-    return new FormFieldEntity(type, name, label, value);
-  }
-
-  public static FormFieldEntity createFrom(String type, String name, String label,
-      List<FormFieldValueEntity> values) {
-    return new FormFieldEntity(type, name, label, values);
-  }
-
-  /**
    * Default hidden constructor.
    */
   private FormFieldEntity(String type, String name, String label, FormFieldValueEntity value) {
@@ -96,7 +78,22 @@ public class FormFieldEntity {
     }
   }
 
-  protected FormFieldEntity() {
+  /**
+   * Creates a new form field entity from the specified field data.
+   * @param type the type
+   * @param name the name
+   * @param label the label
+   * @param value the value
+   * @return the entity representing the specified field data.
+   */
+  public static FormFieldEntity createFrom(String type, String name, String label,
+      FormFieldValueEntity value) {
+    return new FormFieldEntity(type, name, label, value);
+  }
+
+  public static FormFieldEntity createFrom(String type, String name, String label,
+      List<FormFieldValueEntity> values) {
+    return new FormFieldEntity(type, name, label, values);
   }
 
   protected String getType() {

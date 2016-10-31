@@ -264,9 +264,12 @@ public final class QueryDescription implements Serializable {
   }
 
   public boolean isEmpty() {
-    return !StringUtil.isDefined(query) && getMultiFieldQuery() == null && getXmlQuery() == null &&
-        !StringUtil.isDefined(xmlTitle) && !isSearchBySpace() && !isSearchByComponentType() &&
-        !isPeriodDefined() && !StringUtil.isDefined(getRequestedAuthor());
+    boolean queryDefined = StringUtil.isDefined(query) || getMultiFieldQuery() != null;
+    boolean xmlQueryDefined = getXmlQuery() != null || StringUtil.isDefined(xmlTitle);
+    boolean filtersDefined = isSearchBySpace() || isSearchByComponentType() ||
+        StringUtil.isDefined(getRequestedAuthor());
+    filtersDefined = filtersDefined && isPeriodDefined();
+    return !queryDefined && !xmlQueryDefined && !filtersDefined;
   }
 
   /**

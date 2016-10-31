@@ -70,8 +70,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   }
 
   // constructor
-  public GlobalSilverContent(SilverContentInterface sci, String location, String creatorFirstName,
-      String creatorLastName) {
+  public GlobalSilverContent(SilverContentInterface sci) {
     init(sci.getName(), sci.getDescription(), sci.getId(),
         sci.getInstanceId(), sci.getDate(), sci.getCreatorId());
     this.creationDate = sci.getSilverCreationDate();

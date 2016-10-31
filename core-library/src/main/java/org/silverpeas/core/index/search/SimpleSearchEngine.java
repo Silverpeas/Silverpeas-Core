@@ -154,53 +154,76 @@ public class SimpleSearchEngine implements SearchEngine {
       mie.setExternalResult(true);
       // Filter only Publication and Node data
       String objectType = mie.getObjectType();
-      if ("Versioning".equals(objectType) || "Publication".equals(objectType)
-          || "Node".equals(objectType)) {
-        return true;
-      } else {
-        return false;
-      }
+      return "Versioning".equals(objectType) || "Publication".equals(objectType)
+          || "Node".equals(objectType);
     }
 
+    // verify rights according to 'kmelia' rights
     String componentId = mie.getComponent();
     if (componentId.startsWith("kmelia")) {
       return authorization
           .isObjectAvailable(componentId, userId, mie.getObjectId(), mie.getObjectType());
     }
-    // contrôle des droits sur les espaces et les composants
+
+    // verify rights onto others items type
+    return isOtherItemAvailable(mie, userId);
+  }
+
+  private boolean isOtherItemAvailable(MatchingIndexEntry mie, String userId) {
     String objectType = mie.getObjectType();
     if ("Space".equals(objectType)) {
       // check if space is allowed to current user
-      try {
-        return Administration.get().isSpaceAvailable(mie.getObjectId(), userId);
-      } catch (Exception ignored) {
-        return false;
-      }
-    } else if ("Component".equals(objectType)) {
+      return isSpaceVisible(mie.getObjectId(), userId);
+    }
+    if ("Component".equals(objectType)) {
       // check if component is allowed to current user
-      try {
-        return Administration.get().isComponentAvailable(mie.getObjectId(), userId);
-      } catch (Exception ignored) {
-        return false;
-      }
-    } else if (UserIndexation.OBJECT_TYPE.equals(objectType) &&
-        !DomainProperties.areDomainsVisibleToAll()) {
-      // visibility between domains is limited, check found user domain against current user domain
-      User userFound = User.getById(mie.getObjectId());
-      if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
-        String currentUserDomainId = User.getById(userId).getDomainId();
-        if ("0".equals(currentUserDomainId)) {
-          // current user of default domain can see all users
-          return true;
-        } else {
-          // current user of other domains can see only users of his domain
-          return userFound.getDomainId().equals(currentUserDomainId);
-        }
-      } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
-        // user found must be in same domain of current user
-        String currentUserDomainId = User.getById(userId).getDomainId();
+      return isComponentVisible(mie.getObjectId(), userId);
+    }
+    if (UserIndexation.OBJECT_TYPE.equals(objectType)) {
+      return isUserVisible(mie.getObjectId());
+    }
+    return true;
+  }
+
+  private boolean isSpaceVisible(String spaceId, String userId) {
+    // check if space is allowed to current user
+    try {
+      return Administration.get().isSpaceAvailable(spaceId, userId);
+    } catch (Exception ignored) {
+      SilverLogger.getLogger(this).warn("Can't test if space {0} is available for user {1}",
+          new String[] {spaceId, userId}, ignored);
+      return false;
+    }
+  }
+
+  private boolean isComponentVisible(String appId, String userId) {
+    try {
+      return Administration.get().isComponentAvailable(appId, userId);
+    } catch (Exception ignored) {
+      SilverLogger.getLogger(this).warn("Can't test if component {0} is available for user {1}",
+          new String[] {appId, userId}, ignored);
+      return false;
+    }
+  }
+
+  /**
+   * Visibility between domains is limited, check found user domain against current user domain
+   */
+  private boolean isUserVisible(String userId) {
+    User userFound = User.getById(userId);
+    if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+      String currentUserDomainId = User.getById(userId).getDomainId();
+      if ("0".equals(currentUserDomainId)) {
+        // current user of default domain can see all users
+        return true;
+      } else {
+        // current user of other domains can see only users of his domain
         return userFound.getDomainId().equals(currentUserDomainId);
       }
+    } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+      // user found must be in same domain of current user
+      String currentUserDomainId = User.getById(userId).getDomainId();
+      return userFound.getDomainId().equals(currentUserDomainId);
     }
     return true;
   }
@@ -212,7 +235,8 @@ public class SimpleSearchEngine implements SearchEngine {
     return false;
   }
 
-  private ComponentAuthorization getSecurityIntf() throws Exception {
+  private ComponentAuthorization getSecurityIntf()
+      throws ClassNotFoundException, IllegalAccessException, InstantiationException {
     return (ComponentAuthorization) Class.forName(
           "org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
   }

@@ -24,15 +24,7 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.SilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
-
 import java.text.ParseException;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;

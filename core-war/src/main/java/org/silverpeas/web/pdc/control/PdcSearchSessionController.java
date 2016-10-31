@@ -872,7 +872,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             if (componentInst != null) {
               String title = componentInst.getLabel(getLanguage());
               result.setName(title);
-              //result.setType("Wysiwyg");
               underLink = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId);
               titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
                   + "');document.location.href='" + underLink + "';";
@@ -913,10 +912,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           underLink = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, result.getId());
           titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
               + "');document.location.href='" + underLink + "';";
-        } /*else if (componentId.startsWith("user@")) {
-          titleLink = URLUtil.getApplicationURL() + URLUtil.getURL(resultType) + indexEntry
-              .getPageAndParams();
-        } */else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
+        } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           User user = User.getById(result.getId());
           if (user != null) {
             result.setThumbnailURL(user.getSmallAvatar());
@@ -1922,10 +1918,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public boolean isEnableExternalSearch() {
     return isEnableExternalSearch;
-  }
-
-  private List<String> getCopyOfInstanceIds() {
-    return new ArrayList<>(componentList);
   }
 
   /**

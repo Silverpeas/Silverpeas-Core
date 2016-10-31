@@ -37,14 +37,6 @@ public class SearchResult extends AbstractI18NBean {
   private Map<String, String> sortableXMLFormFields = null;
   private Map<String, String> formFieldsForFacets;
 
-  public static SearchResult fromIndexEntry(MatchingIndexEntry mie) {
-    return new SearchResult(mie);
-  }
-
-  public static SearchResult fromGlobalSilverContent(GlobalSilverContent gsc) {
-    return new SearchResult(gsc);
-  }
-
   private SearchResult(MatchingIndexEntry mie) {
     setName(mie.getTitle());
     setDescription(mie.getPreView());
@@ -108,6 +100,14 @@ public class SearchResult extends AbstractI18NBean {
     }
 
     thumbnailURL = gsc.getThumbnailURL();
+  }
+
+  public static SearchResult fromIndexEntry(MatchingIndexEntry mie) {
+    return new SearchResult(mie);
+  }
+
+  public static SearchResult fromGlobalSilverContent(GlobalSilverContent gsc) {
+    return new SearchResult(gsc);
   }
 
   private LocalDate getLocalDate(String date) {

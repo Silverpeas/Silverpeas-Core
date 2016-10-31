@@ -49,9 +49,6 @@ public class QueryParameters implements java.io.Serializable {
   // attributes below are used only to display info in the search page
   private UserDetail creatorDetail = null;
 
-  public QueryParameters() {
-  }
-
   public void clear() {
     this.keywords = null;
     this.spaceId = null;
@@ -100,9 +97,9 @@ public class QueryParameters implements java.io.Serializable {
   public void setSpaceIdAndInstanceId(String spaceId, String instanceId) {
     this.spaceId = null;
     this.instanceId = null;
-    if (StringUtil.isDefined(spaceId) && !spaceId.equals("*")) {
+    if (StringUtil.isDefined(spaceId) && !"*".equals(spaceId)) {
       this.spaceId = spaceId;
-      if (StringUtil.isDefined(instanceId) && !instanceId.equals("*")) {
+      if (StringUtil.isDefined(instanceId) && !"*".equals(instanceId)) {
         this.instanceId = instanceId;
       }
     }
@@ -113,7 +110,7 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public void setCreatorId(String creatorId) {
-    if (creatorId == null || creatorId.length() == 0 || creatorId.equals("*")) {
+    if (!StringUtil.isDefined(spaceId) || "*".equals(creatorId)) {
       this.creatorId = null;
       this.creatorDetail = null;
     } else {

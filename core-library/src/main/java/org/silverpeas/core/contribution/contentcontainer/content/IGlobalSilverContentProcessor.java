@@ -24,12 +24,9 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-
 public interface IGlobalSilverContentProcessor {
 
   String PROCESSOR_NAME_SUFFIX = "GlobalSilverContentProcessor";
 
-  GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
-      UserDetail creatorDetail, String location);
+  GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci);
 }

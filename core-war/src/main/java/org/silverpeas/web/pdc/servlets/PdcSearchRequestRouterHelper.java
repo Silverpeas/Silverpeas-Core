@@ -40,6 +40,9 @@ import java.util.List;
 
 public class PdcSearchRequestRouterHelper {
 
+  private PdcSearchRequestRouterHelper() {
+  }
+
   /**
    * Retrieve query data from current request and prepare result view.
    *

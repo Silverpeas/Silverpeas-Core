@@ -6,6 +6,7 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
@@ -44,20 +45,24 @@ public class SearchResource extends RESTWebService {
 
     if (StringUtil.isDefined(startDate)) {
       try {
-        startDate = Instant.ofEpochMilli(Long.valueOf(startDate)).atZone(ZoneId.systemDefault()).toLocalDate().format(formatter);
-        queryDescription.setRequestedCreatedAfter(startDate);
+        String date = Instant.ofEpochMilli(Long.valueOf(startDate)).atZone(ZoneId.systemDefault())
+            .toLocalDate().format(formatter);
+        queryDescription.setRequestedCreatedAfter(date);
       } catch (Exception e) {
-        // ignore date
+        SilverLogger.getLogger(this).info("Can't parse start date as Long : {0}",
+            new String[] {startDate}, e);
       }
     }
 
     if (StringUtil.isDefined(endDate)) {
       try {
-        endDate =
-            Instant.ofEpochMilli(Long.valueOf(endDate)).atZone(ZoneId.systemDefault()).toLocalDate().format(formatter);
-        queryDescription.setRequestedCreatedBefore(endDate);
+        String date =
+            Instant.ofEpochMilli(Long.valueOf(endDate)).atZone(ZoneId.systemDefault()).toLocalDate()
+                .format(formatter);
+        queryDescription.setRequestedCreatedBefore(date);
       } catch (Exception e) {
-        // ignore date
+        SilverLogger.getLogger(this).info("Can't parse end date as Long : {0}",
+            new String[] {endDate}, e);
       }
     }
 
@@ -72,6 +77,7 @@ public class SearchResource extends RESTWebService {
         entities.add(ResultEntity.fromSearchResult(result));
       }
     } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Error during search...", e);
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
 

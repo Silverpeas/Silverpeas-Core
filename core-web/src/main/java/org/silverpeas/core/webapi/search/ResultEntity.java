@@ -34,10 +34,6 @@ public class ResultEntity {
   @XmlElement
   private String thumbnailURL;
 
-  public static ResultEntity fromSearchResult(SearchResult gsr) {
-    return new ResultEntity(gsr);
-  }
-
   private ResultEntity(SearchResult gsr) {
     this.name = gsr.getName();
     this.description = gsr.getDescription();
@@ -50,10 +46,13 @@ public class ResultEntity {
     this.id = gsr.getId();
     this.type = gsr.getType();
     this.componentId = gsr.getInstanceId();
-    String thumbnailURL = gsr.getThumbnailURL();
-    if (StringUtil.isDefined(thumbnailURL)) {
-      this.thumbnailURL = thumbnailURL.replaceFirst("/FileServer/", "/OnlineFileServer/");
+    if (StringUtil.isDefined(gsr.getThumbnailURL())) {
+      this.thumbnailURL = gsr.getThumbnailURL().replaceFirst("/FileServer/", "/OnlineFileServer/");
     }
+  }
+
+  public static ResultEntity fromSearchResult(SearchResult gsr) {
+    return new ResultEntity(gsr);
   }
 
   public String getName() {

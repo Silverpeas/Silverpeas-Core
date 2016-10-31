@@ -26,11 +26,10 @@ package org.silverpeas.core.search;
 
 public class SearchServiceProvider {
 
-  public static SearchService getSearchService() {
-    return new SearchService();
+  private SearchServiceProvider() {
   }
 
-  private SearchServiceProvider() {
-
+  public static SearchService getSearchService() {
+    return new SearchService();
   }
 }

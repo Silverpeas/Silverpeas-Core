@@ -34,10 +34,6 @@ import javax.ws.rs.WebApplicationException;
  */
 public interface UserPrivilegeValidation {
 
-  static UserPrivilegeValidation get() {
-    return ServiceProvider.getService(UserPrivilegeValidation.class);
-  }
-
   /**
    * The HTTP header parameter in an incoming request that carries the user session key. By the user
    * session key could be passed a user token to perform a HTTP request without opening a session.
@@ -60,6 +56,10 @@ public interface UserPrivilegeValidation {
    * it offers better scalability.
    */
   String HTTP_AUTHORIZATION = "Authorization";
+
+  static UserPrivilegeValidation get() {
+    return ServiceProvider.getService(UserPrivilegeValidation.class);
+  }
 
   /**
    * Validates the authentication of the user at the origin of a web request.

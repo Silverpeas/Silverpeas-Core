@@ -46,12 +46,12 @@ public class SimpleDocumentListResource extends RESTWebService {
   @PathParam("id")
   private String resourceId;
 
+  @PathParam("componentId")
+  private String componentId;
+
   public String getResourceId() {
     return resourceId;
   }
-
-  @PathParam("componentId")
-  private String componentId;
 
   @Override
   public String getComponentId() {
@@ -67,7 +67,7 @@ public class SimpleDocumentListResource extends RESTWebService {
   @GET
   @Path("{lang}")
   @Produces(MediaType.APPLICATION_JSON)
-  public List<SimpleDocumentEntity> getDocuments(final @PathParam("lang") String lang) {
+  public List<SimpleDocumentEntity> getDocuments(@PathParam("lang") final String lang) {
     List<SimpleDocument> docs =
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
             new ForeignPK(getResourceId(), getComponentId()), DocumentType.attachment, lang);

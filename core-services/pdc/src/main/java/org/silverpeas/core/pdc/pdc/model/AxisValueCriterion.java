@@ -37,6 +37,16 @@ public class AxisValueCriterion extends SearchCriteria {
   private static final long serialVersionUID = 6685902813764382082L;
 
   /**
+   * Constructs a new criterion on the specified axis' value
+   *
+   * @param axisId the unique identifier of the axis.
+   * @param valuePath the path of the value of the axis above from the root axis value.
+   */
+  public AxisValueCriterion(String axisId, String valuePath) {
+    super(Integer.valueOf(axisId), valuePath);
+  }
+
+  /**
    * Converts the axis' values encoded into the specified string into a list of criterion on an
    * axis' value.
    *
@@ -56,16 +66,6 @@ public class AxisValueCriterion extends SearchCriteria {
       }
     }
     return criteria;
-  }
-
-  /**
-   * Constructs a new criterion on the specified axis' value
-   *
-   * @param axisId the unique identifier of the axis.
-   * @param valuePath the path of the value of the axis above from the root axis value.
-   */
-  public AxisValueCriterion(String axisId, String valuePath) {
-    super(Integer.valueOf(axisId), valuePath);
   }
 
   /**
