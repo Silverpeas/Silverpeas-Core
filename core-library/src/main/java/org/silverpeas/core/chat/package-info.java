@@ -24,7 +24,7 @@
 /**
  * Provides the Silverpeas Chat Engine. It defines a communication channel between Silverpeas and
  * a chat server in order to perform administrative tasks and to set a bridge between the social
- * networking system of Silverpeas and the social networking of the used chat system.
+ * networking system of Silverpeas and the social networking of the underlying chat system.
  * @author mmoquillon
  */
 package org.silverpeas.core.chat;

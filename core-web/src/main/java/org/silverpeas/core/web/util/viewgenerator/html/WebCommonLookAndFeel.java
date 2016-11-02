@@ -201,13 +201,14 @@ class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERY_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERYJSON_JS));
+        GraphicElementFactory.JQUERY_MIGRATION));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERYJSON_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERYUI_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERY_i18N_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
+        GraphicElementFactory.I18N_JS));
+
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
 
@@ -279,7 +280,7 @@ class WebCommonLookAndFeel {
         .append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
         .append(" }").append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("function getString(key) { return jQuery.i18n.prop(key); }")
+    globalJSVariableBuilder.append("function getString(key) { return window.i18n.prop(key); }")
         .append(STR_NEW_LINE);
     return globalJSVariableBuilder.toString();
   }

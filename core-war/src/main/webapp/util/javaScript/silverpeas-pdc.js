@@ -145,7 +145,7 @@
     if (parameters) {
       $.extend(true, settings, parameters);
     }
-    $.i18n.properties({
+    window.i18n.properties({
       name: 'pdcBundle',
       path: webContext + '/services/bundles/org/silverpeas/pdcPeas/multilang/',
       language: '$$', /* take the user langage from its session */
@@ -159,8 +159,8 @@
       mandatoryAxisLegend: "",
       invariantAxisLegend: "",
       anotherValueLegend: "",
-      labelOk: $.i18n.prop("GML.ok"),
-      labelCancel: $.i18n.prop("GML.cancel"),
+      labelOk: window.i18n.prop("GML.ok"),
+      labelCancel: window.i18n.prop("GML.cancel"),
       multiValuation: false,
       dialogBox: false,
       classifiedContentCount: true,

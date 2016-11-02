@@ -439,7 +439,7 @@
   function __getFromBundleKey(key, params) {
     if (webContext) {
       if (!__i18nInitialized) {
-        $.i18n.properties({
+        window.i18n.properties({
           name: 'passwordBundle',
           path: webContext + '/services/bundles/org/silverpeas/password/multilang/',
           language: '$$', /* by default the language of the user in the current session */
@@ -447,7 +447,7 @@
         });
         __i18nInitialized = true;
       }
-      return $.i18n.prop(key, params);
+      return window.i18n.prop(key, params);
     }
     return key;
   }

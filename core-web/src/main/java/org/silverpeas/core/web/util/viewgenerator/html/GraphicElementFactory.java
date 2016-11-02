@@ -106,7 +106,8 @@ public class GraphicElementFactory {
   protected static final String JQUERYUI_JS = "jquery-ui.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui.min.css";
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
-  protected static final String JQUERY_i18N_JS = "jquery.i18n.properties.min.js";
+  protected static final String I18N_JS = "i18n.properties.js";
+  protected static final String JQUERY_MIGRATION = "jquery-migrate-1.4.1.min.js";
   public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
 
   static {
@@ -242,10 +243,8 @@ public class GraphicElementFactory {
    * @return HTML header fragment
    */
   @Deprecated
-  public String getLookStyleSheet() {
-    return WebCommonLookAndFeel.getInstance()
-        .getCommonHeader(mainSessionController, getSpaceIdOfCurrentRequest(),
-            getComponentIdOfCurrentRequest());
+  public String getLookStyleSheet(final HttpRequest request) {
+    return WebCommonLookAndFeel.getInstance().getCommonHeader(request);
   }
 
   /**

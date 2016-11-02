@@ -8,10 +8,11 @@ import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.net.URL;
 import java.util.Date;
 
 /**
- * A Silverpeas user with an account in a Chat service. A Silverpeas Chat Engine uses the services
+ * A Silverpeas user with an account in a Chat service. The Silverpeas Chat Engine uses the services
  * of an external chat server; so each user in Silverpeas has also an account in the chat server and
  * hence has a unique identifier in that chat service.
  * @author remipassmoilesel
@@ -68,7 +69,7 @@ public class ChatUser extends UserDetail {
    * @return the login of the user in the chat service.
    */
   public String getChatLogin() {
-    return getLogin().replaceAll("@\\w+\\.\\w+$", "");
+    return getLogin().replaceAll("@\\w+\\.\\w+$", "").toLowerCase();
   }
 
   /**
@@ -241,7 +242,7 @@ public class ChatUser extends UserDetail {
 
   @Override
   public String getAvatar() {
-    return user.getAvatar();
+    return  user.getAvatar();
   }
 
   @Override

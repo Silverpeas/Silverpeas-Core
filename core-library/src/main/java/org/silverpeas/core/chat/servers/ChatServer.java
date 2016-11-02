@@ -25,8 +25,9 @@ public interface ChatServer {
   }
 
   /**
-   * Creates an account in the chat server for the specified user. The user login (without any
-   * domain part if any) is used as the chat login and the API token is used as password.
+   * Creates an account in the chat server for the specified user. The user login in lower case
+   * (without any domain part if any) is used as the chat login and the API token is used as
+   * password.
    *
    * Be caution with email addresses used as login because they contain a domain part and domain
    * parts are not supported in login by chat servers. Before creating the account, all domain part
@@ -66,7 +67,8 @@ public interface ChatServer {
    * Is the specified user has already an account in the chat server.
    * @param user a Silverpeas user.
    * @return true if the user has an account in the chat server, false otherwise.
+   * @throws ChatServerException if an error occurs while communicating with the chat server.
    */
-  boolean isUserExisting(User user);
+  boolean isUserExisting(User user) throws ChatServerException;
 
 }

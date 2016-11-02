@@ -146,6 +146,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case chart:
           includeChart(xhtml, getLanguage());
           break;
+        case chat:
+          includeChat(xhtml);
+          break;
         case listOfUsersAndGroups:
           includeListOfUsersAndGroups(xhtml, getLanguage());
           break;

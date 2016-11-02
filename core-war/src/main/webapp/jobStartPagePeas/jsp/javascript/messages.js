@@ -31,7 +31,7 @@ messageTriggers = {
   doInitialize : function() {
     if (!messageTriggers.initialized) {
       messageTriggers.initialized = true;
-      $.i18n.properties({
+      window.i18n.properties({
         name : 'jobStartPagePeasBundle',
         path : webContext  + '/services/bundles/org/silverpeas/jobStartPagePeas/multilang/',
         language : '$$', // by default the language of the user in the current session
@@ -49,7 +49,7 @@ messageTriggers = {
               var $this = $(this);
               var html = $this.html()
                   + '<br/><br/>'
-                  + $.i18n.prop('Warning.dialog.confirmation.message.end');
+                  + window.i18n.prop('Warning.dialog.confirmation.message.end');
               $this.html(html);
             }).prev().change(function(event) {
               if (event.target.type == "checkbox") {

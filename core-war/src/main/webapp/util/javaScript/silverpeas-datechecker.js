@@ -467,7 +467,7 @@
   function __getFromBundleKey(key) {
     if (webContext) {
       if (!__i18nInitialized) {
-        $.i18n.properties({
+        window.i18n.properties({
           name: 'generalMultilang',
           path: webContext + '/services/bundles/org/silverpeas/multilang/',
           language: '$$', /* by default the language of the user in the current session */
@@ -475,7 +475,7 @@
         });
         __i18nInitialized = true;
       }
-      return $.i18n.prop(key);
+      return window.i18n.prop(key);
     }
     return key;
   }

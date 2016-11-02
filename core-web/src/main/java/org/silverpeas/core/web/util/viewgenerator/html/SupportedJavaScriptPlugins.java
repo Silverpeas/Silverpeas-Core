@@ -171,6 +171,10 @@ public enum SupportedJavaScriptPlugins {
    */
   chart,
   /**
+   * The chat client of Silverpeas based upon an external tool.
+   */
+  chat,
+  /**
    * External plugin to centralize the management of lists of users and groups on client-side<br/>
    * Please take a look on displayListOfUsersAndGroups.tag
    */

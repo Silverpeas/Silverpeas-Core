@@ -82,7 +82,7 @@
    */
   function __getFromBundleKey(key) {
     if (webContext) {
-      $.i18n.properties({
+      window.i18n.properties({
         name: 'generalMultilang',
         path: webContext + '/services/bundles/org/silverpeas/multilang/',
         language: getUserLanguage(),

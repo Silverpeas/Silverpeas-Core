@@ -24,7 +24,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -41,6 +41,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.inject.Inject;
@@ -67,7 +68,7 @@ import java.util.Map;
 public class AuthenticationServlet extends HttpServlet {
 
   @Inject
-  private ChatServer chatServer;
+  private ChatUsersRegistration chatUsersRegistration;
   @Inject
   private AuthenticationService authService;
   @Inject
@@ -163,8 +164,12 @@ public class AuthenticationServlet extends HttpServlet {
       writeSessionCookie(servletResponse, session, securedAccess);
 
       User currentUser = User.getCurrentRequester();
-      if (!chatServer.isUserExisting(currentUser)) {
-        chatServer.createUser(currentUser);
+      try {
+        chatUsersRegistration.registerUser(currentUser);
+        session.setAttribute("Silverpeas.Chat", true);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage());
+        session.setAttribute("Silverpeas.Chat", false);
       }
 
       servletResponse.sendRedirect(servletResponse.encodeRedirectURL(absoluteUrl));

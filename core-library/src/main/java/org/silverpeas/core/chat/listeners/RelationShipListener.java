@@ -2,6 +2,7 @@ package org.silverpeas.core.chat.listeners;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipEvent;
@@ -18,6 +19,7 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
   private SilverLogger logger = SilverLogger.getLogger(this);
 
   @Inject
+  @DefaultChatServer
   private ChatServer server;
 
   @Override
