@@ -236,8 +236,8 @@ public class Im4javaImageTool extends AbstractImageTool {
   private void drawText(final IMOperation op, final String color, final String text,
       final AnchoringPosition anchoringPosition, final int x, final int y) {
     final String drawSb =
-        "\"" + "gravity " + anchoringPosition.name() + " fill " + color + " text " + x + "," + y +
-            " ' " + text + "'" + "\"";
+        "gravity " + anchoringPosition.name() + " fill " + color + " text " + x + "," + y + " '" +
+            text.replace("'", "\\\'") + "'";
     op.draw(drawSb);
   }
 }
