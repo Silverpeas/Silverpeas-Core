@@ -33,6 +33,16 @@ public class DimensionOption extends AbstractImageToolOption {
   private final Integer height;
 
   /**
+   * Default constructor
+   * @param width
+   * @param height
+   */
+  private DimensionOption(final Integer width, final Integer height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  /**
    * Creates a new option on the dimension from the specified width and height in pixels.
    * @param width the width in pixels. If null, the height will only be taken into account
    * by ImageTool when resizing an image.
@@ -62,16 +72,6 @@ public class DimensionOption extends AbstractImageToolOption {
    */
   public static DimensionOption height(final Integer height) {
     return new DimensionOption(null, height);
-  }
-
-  /**
-   * Default constructor
-   * @param width
-   * @param height
-   */
-  private DimensionOption(final Integer width, final Integer height) {
-    this.width = width;
-    this.height = height;
   }
 
   /**

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.io.media.video.ffmpeg;
 
-import org.silverpeas.core.io.media.video.ThumbnailPeriod;
-import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.io.media.video.ThumbnailPeriod;
+import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.time.TimeData;
 
@@ -47,18 +47,23 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
   public void generateThumbnailsFrom(File video) {
     if (video.exists() && video.isFile()) {
       MetaData metadata = MetadataExtractor.get().extractMetadata(video);
-      TimeData timeData = metadata.getDuration();
-      if (timeData != null) {
-        File thumbnailDir = video.getParentFile();
-        for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
-          double timePeriod = thumbPeriod.getPercent() * timeData.getTimeAsLong() / 1000;
-          FFmpegUtil.extractVideoThumbnail(video,
-              new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
-        }
-      } else {
-        SilverLogger.getLogger(this)
-            .warn("Problem to retrieve video duration, process video thumbnails has failed");
+      generateThumbnailsFrom(metadata, video);
+    }
+  }
+
+  @Override
+  public void generateThumbnailsFrom(final MetaData metadata, final File video) {
+    TimeData timeData = metadata.getDuration();
+    if (timeData != null) {
+      File thumbnailDir = video.getParentFile();
+      for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
+        double timePeriod = thumbPeriod.getPercent() * timeData.getTimeAsLong() / 1000;
+        FFmpegUtil.extractVideoThumbnail(video,
+            new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
       }
+    } else {
+      SilverLogger.getLogger(this)
+          .warn("Problem to retrieve video duration, process video thumbnails has failed");
     }
   }
 

@@ -23,21 +23,35 @@
  */
 package org.silverpeas.core.io.media.image;
 
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
+import org.silverpeas.core.util.ServiceProvider;
+
 import java.io.File;
 import java.util.Set;
-
-import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface ImageTool {
 
+  static ImageTool get() {
+    return ServiceProvider.getService(ImageTool.class);
+  }
+
   /**
    * Indicates if image tools are available
    * @return
    */
   boolean isActivated();
+
+  /**
+   * Gets aimed information from the given image file.
+   * @param source the image file.
+   * @param infoTypes the aimed types of info.
+   * @return
+   */
+  String[] getImageInfo(File source, ImageInfoType... infoTypes) throws SilverpeasException;
 
   /**
    * Converts an image with some directives

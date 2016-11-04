@@ -31,6 +31,7 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -64,6 +65,7 @@ public class DefaultProcessManagement implements ProcessManagement {
    * , ProcessExecutionContext)
    */
   @Override
+  @Transactional(Transactional.TxType.SUPPORTS)
   public <C extends ProcessExecutionContext> void execute(final ProcessList<C> processes,
       final C processExecutionContext) throws Exception {
     if (processes.isNotEmpty()) {

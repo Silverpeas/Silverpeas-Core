@@ -8,16 +8,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.io.media.MetaData;
+import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.exec.CollectingLogOutputStream;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecutionException;
-import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
-import org.silverpeas.core.io.media.video.VideoThumbnailExtractorProvider;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.io.media.MetaData;
-import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.TimeConversionBoardKey;
 import org.silverpeas.core.util.time.TimeData;
 import org.silverpeas.core.util.time.TimeUnit;
@@ -80,7 +79,7 @@ public class FFmpegThumbnailExtractorTest {
     flvFile = getDocumentNamed(BASE_PATH + "/video.flv");
     movFile = getDocumentNamed(BASE_PATH + "/video.mov");
 
-    videoThumbnailExtractor = VideoThumbnailExtractorProvider.getVideoThumbnailExtractor();
+    videoThumbnailExtractor = VideoThumbnailExtractor.get();
     cleanThumbnails();
   }
 

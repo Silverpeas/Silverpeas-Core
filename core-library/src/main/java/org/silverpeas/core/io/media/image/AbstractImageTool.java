@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.io.media.image;
 
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
+import org.silverpeas.core.util.CollectionUtil;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
-
-import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
-
-import org.silverpeas.core.util.CollectionUtil;
 
 import static java.util.Collections.singleton;
 
@@ -45,7 +45,6 @@ public abstract class AbstractImageTool implements ImageTool {
 
   /**
    * Convert an image with dimensions and options directives
-   *
    * @param source mandatory (if it not exists, no exception is generated and the process stops)
    * @param destination if destination is not specified, the destination file is the same as the
    * source
@@ -53,11 +52,10 @@ public abstract class AbstractImageTool implements ImageTool {
    * the image - BACKGROUND : setting a background color
    * @param directives it is possible to specify some additional directives : - PREVIEW_WORK : the
    * conversion concerns an preview result - GEOMETRY_SHRINK : shrinks images with dimension(s)
-   * larger than the corresponding width and/or height dimension(s).
    */
   protected abstract void convert(File source, File destination,
       Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
-      Set<ImageToolDirective> directives) throws Exception;
+      Set<ImageToolDirective> directives) throws SilverpeasException;
 
   /*
    * (non-Javadoc)

@@ -28,7 +28,11 @@ import java.util.Set;
 
 
 public enum ThumbnailPeriod {
-  Thumbnail0(0, 0.1), Thumbnail1(1, 0.3), Thumbnail2(2, 0.5), Thumbnail3(3, 0.7), Thumbnail4(4, 0.9),
+  Thumbnail0(0, 0.1),
+  Thumbnail1(1, 0.3),
+  Thumbnail2(2, 0.5),
+  Thumbnail3(3, 0.7),
+  Thumbnail4(4, 0.9),
   ERROR(-1, 0);
 
   public static final Set<ThumbnailPeriod> ALL_VALIDS = EnumSet.allOf(ThumbnailPeriod.class);
