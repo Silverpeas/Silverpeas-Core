@@ -20,29 +20,28 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.pdc.interests.model.Interests;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.pdc.pdc.model.Axis;
-import org.silverpeas.core.pdc.pdc.model.SearchAxis;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.control.Keys;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.core.pdc.pdc.model.QueryParameters;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.DateUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class PdcSearchRequestRouterHelper {
+
+  private PdcSearchRequestRouterHelper() {
+  }
 
   /**
    * Retrieve query data from current request and prepare result view.
@@ -232,7 +231,6 @@ public class PdcSearchRequestRouterHelper {
     } else {
       pdcSC.setShowOnlyPertinentAxisAndValues(true);
     }
-    request.setAttribute("synonyms", pdcSC.getSynonyms());
     // put search type
     request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
   }
@@ -285,42 +283,12 @@ public class PdcSearchRequestRouterHelper {
     String showSecondarySearchAxis = request.getParameter("ShowSndSearchAxis");
 
     // does the user want to see secondary axis ?
-    if (showSecondarySearchAxis == null) {
-      showSecondarySearchAxis = pdcSC.getSecondaryAxis();
-    } else {
+    if (showSecondarySearchAxis != null) {
       pdcSC.setSecondaryAxis(showSecondarySearchAxis);
     }
 
-    // we get primary and eventually secondary axis
-    List<SearchAxis> primarySearchAxis = pdcSC.getAxis("P");
-    List<SearchAxis> pertinentPrimaryAxis = new ArrayList<SearchAxis>();
-    for (SearchAxis axis : primarySearchAxis) {
-      List<Value> values = pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0");
-      if (values != null && !values.isEmpty()) {
-        axis.setValues(values);
-        pertinentPrimaryAxis.add(axis);
-      }
-    }
-
-    List<SearchAxis> secondarySearchAxis = null;
-    List<SearchAxis> pertinentSecondaryAxis = new ArrayList<SearchAxis>();
-    if ("YES".equals(showSecondarySearchAxis)) {
-      // user wants to see secondary axis
-      secondarySearchAxis = pdcSC.getAxis("S");
-      for (SearchAxis axis : secondarySearchAxis) {
-        List<Value> values = pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0");
-        if (values != null && !values.isEmpty()) {
-          axis.setValues(values);
-          pertinentSecondaryAxis.add(axis);
-        }
-      }
-    }
-
     // We set axis into the request
-    request.setAttribute("ShowPrimaryAxis", pertinentPrimaryAxis);
-    request.setAttribute("ShowSecondaryAxis", pertinentSecondaryAxis);
     request.setAttribute("ShowSndSearchAxis", pdcSC.getSecondaryAxis());
-
   }
 
   /**
@@ -334,94 +302,22 @@ public class PdcSearchRequestRouterHelper {
   public static void setContext(PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
 
-
     // on retire du searchcontext tous les criteres qui ne sont pas dans
     // l'espace choisi par l'utilisateur.
     // Dans ce cas, on retire de la list de searchContext, le critere de
     // recherche.
     SearchContext searchContext = pdcSC.getSearchContext();
-    @SuppressWarnings("unchecked")
-    List<SearchAxis> primaryAxis = (List<SearchAxis>) request.getAttribute("ShowPrimaryAxis");
-    @SuppressWarnings("unchecked")
-    List<SearchAxis> secondaryAxis = (List<SearchAxis>) request.getAttribute("ShowSecondaryAxis");
-    boolean isExistInPrimaryAxis = false;
-    boolean isExistInSecondaryAxis = false;
-    SearchAxis sa = null;
 
-    List<SearchCriteria> c = searchContext.getCriterias();
-    Axis axis = null;
-    int searchAxisId;
-    String searchValue = "";
-    String treeId = "";
-    List<List<Value>> pathCriteria = new ArrayList<List<Value>>(c.size());
-    if (!c.isEmpty()) {
-      for (SearchCriteria sc : c) {
-        searchAxisId = sc.getAxisId();
-        if (primaryAxis != null) {
-          // on parcourt la liste des axes primaires
-          // si l'on trouve un axisId de searchCriteria = axisId de l'axe
-          // primaire alors on le laisse
-          // dans le searchCriteria sinon on le supprime
-          for (int j = 0; j < primaryAxis.size(); j++) {
-            sa = primaryAxis.get(j);
-            if (searchAxisId == sa.getAxisId()) {
-              isExistInPrimaryAxis = true;
-              break;
-            }
-          }
-
-        }
-        if ((!isExistInPrimaryAxis) && (secondaryAxis != null)) {
-          // on parcourt la liste des axes secondaires
-          // si l'on trouve un axisId de searchCriteria = axisId de l'axe
-          // secondaire alors on l'enleve
-          for (int j = 0; j < secondaryAxis.size(); j++) {
-            sa = secondaryAxis.get(j);
-            if (searchAxisId == sa.getAxisId()) {
-              isExistInSecondaryAxis = true;
-              break;
-            }
-          }
-        }
-
-        if (isExistInSecondaryAxis || isExistInPrimaryAxis) {
-          searchValue = getLastValueOf(sc.getValue());
-          // on creait un axis
-          axis = pdcSC.getAxisDetail(String.valueOf(searchAxisId));
-          treeId = String.valueOf(axis.getAxisHeader().getRootId());
-          List<Value> fullPath = pdcSC.getFullPath(searchValue, treeId);
-          pathCriteria.add(fullPath);
-        }
-      }
-    }
-    request.setAttribute("PathCriteria", pathCriteria);
     // on ajoute le contexte de recherche
     request.setAttribute("SearchContext", searchContext);
-
-  }
-
-  public static String getLastValueOf(String path) {
-    // cherche l'id de la valeur
-    // valeur de la forme /0/1/2/
-    String newValueId = path;
-    int len = path.length();
-    path = path.substring(0, len - 1); // on retire le dernier slash
-
-    if ("/".equals(path)) {
-      newValueId = newValueId.substring(1);// on retire le slash
-    } else {
-      int lastIdx = path.lastIndexOf('/');
-      newValueId = path.substring(lastIdx + 1);
-    }
-    return newValueId;
   }
 
   private static List<Interests> buildICentersList(PdcSearchSessionController pdcSC) {
     return pdcSC.getICenters();
   }
 
-  public static void processItemsPagination(String function,
-      PdcSearchSessionController pdcSC, HttpServletRequest request) {
+  public static void processItemsPagination(PdcSearchSessionController pdcSC,
+      HttpServletRequest request) {
     String index = request.getParameter("Index");
     if (StringUtil.isDefined(index)) {
       pdcSC.setIndexOfFirstItemToDisplay(index);
@@ -456,9 +352,5 @@ public class PdcSearchRequestRouterHelper {
             .error("Error when marking result {0} as read", new String[] {sId}, e);
       }
     }
-
-  }
-
-  private PdcSearchRequestRouterHelper() {
   }
 }

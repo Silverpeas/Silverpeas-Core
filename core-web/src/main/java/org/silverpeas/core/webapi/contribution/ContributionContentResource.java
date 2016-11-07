@@ -41,6 +41,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -132,16 +133,30 @@ public class ContributionContentResource extends AbstractContributionResource {
       // Adding form content
       for (FieldTemplate fieldTemplate : recordTemplate.getFieldTemplates()) {
 
-        // Field value
-        FormFieldValueEntity fieldValueEntity = getFormFieldValue(fieldTemplate, data, language);
+        if (fieldTemplate.isRepeatable()) {
+          List<FormFieldValueEntity>
+              fieldValueEntities = getFormFieldValues(fieldTemplate, data, language);
 
-        // Field entity
-        FormFieldEntity fieldEntity = FormFieldEntity
-            .createFrom(fieldTemplate.getTypeName(), fieldTemplate.getFieldName(),
-                fieldTemplate.getLabel(language), fieldValueEntity);
+          // Field entity
+          FormFieldEntity fieldEntity = FormFieldEntity
+              .createFrom(fieldTemplate.getTypeName(), fieldTemplate.getFieldName(),
+                  fieldTemplate.getLabel(language), fieldValueEntities);
 
-        // Adding field to the form entity
-        form.addFormField(fieldEntity);
+          // Adding field to the form entity
+          form.addFormField(fieldEntity);
+
+        } else {
+          // Field value
+          FormFieldValueEntity fieldValueEntity = getFormFieldValue(fieldTemplate, data, language);
+
+          // Field entity
+          FormFieldEntity fieldEntity = FormFieldEntity
+              .createFrom(fieldTemplate.getTypeName(), fieldTemplate.getFieldName(),
+                  fieldTemplate.getLabel(language), fieldValueEntity);
+
+          // Adding field to the form entity
+          form.addFormField(fieldEntity);
+        }
       }
 
       if (formView != null) {

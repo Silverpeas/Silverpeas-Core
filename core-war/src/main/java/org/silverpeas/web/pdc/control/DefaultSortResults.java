@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -66,8 +67,8 @@ public class DefaultSortResults implements SortResults {
 
       @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        Float float1 = new Float(o1.getRawScore());
-        Float float2 = new Float(o2.getRawScore());
+        Float float1 = new Float(o1.getScore());
+        Float float2 = new Float(o2.getScore());
 
         if (float1 != null && float2 != null) {
           int result = float1.compareTo(float2);
@@ -98,11 +99,11 @@ public class DefaultSortResults implements SortResults {
 
       @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getCreationDate();
-        String string2 = o2.getCreationDate();
+        LocalDate date1 = o1.getCreationDate();
+        LocalDate date2 = o2.getCreationDate();
 
-        if (string1 != null && string2 != null) {
-          int result = string1.compareTo(string2);
+        if (date1 != null && date2 != null) {
+          int result = date1.compareTo(date2);
           // Add comparison on title if we have the same creation date
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         }
@@ -114,11 +115,11 @@ public class DefaultSortResults implements SortResults {
 
       @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getDate();
-        String string2 = o2.getDate();
+        LocalDate date1 = o1.getLastUpdateDate();
+        LocalDate date2 = o2.getLastUpdateDate();
 
-        if (string1 != null && string2 != null) {
-          int result = string1.compareTo(string2);
+        if (date1 != null && date2 != null) {
+          int result = date1.compareTo(date2);
           // Add comparison on title if we have the same update date
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         }

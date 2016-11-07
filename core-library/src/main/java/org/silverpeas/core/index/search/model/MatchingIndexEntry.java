@@ -20,10 +20,7 @@
  */
 package org.silverpeas.core.index.search.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,18 +44,8 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
   private Map<String, String> sortableXMLFormFields = null;
   private Map<String, String> xmlFormFieldsForFacet = null;
   private static final long serialVersionUID = 5931254295396221458L;
-  /**
-   * UTF-8 encode definition
-   */
-  private static final String CHARACTER_ENCODING = "UTF-8";
 
-  /**
-   * The constructor set only the key part of the entry.
-   */
-  public MatchingIndexEntry(String space, String component, String objectType,
-      String objectId) {
-    super(component, objectType, objectId);
-  }
+  private boolean externalResult = false;
 
   /**
    * The constructor set only the key part of the entry.
@@ -79,34 +66,6 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    */
   public void setScore(float score) {
     this.score = score;
-  }
-
-  /**
-   * Returns web'activ logic parameters for the URL used to displayed this entry.
-   */
-  public String getPageAndParams() {
-    String type = "";
-    String id = "";
-    try {
-      type = URLEncoder.encode(getObjectType(), CHARACTER_ENCODING);
-      id = URLEncoder.encode(getObjectId(), CHARACTER_ENCODING);
-    } catch (UnsupportedEncodingException e) {
-      SilverTrace.error("SearchEngine", "MatchingIndexEntry.getPageAndParams()",
-          "Unsupported encoding", e);
-    }
-
-    return "searchResult?Type=" + type + "&Id=" + id;
-  }
-
-  public String getParams() {
-    String id = "";
-    try {
-      id = URLEncoder.encode(getObjectId(), CHARACTER_ENCODING);
-    } catch (UnsupportedEncodingException e) {
-      SilverTrace.error("SearchEngine", "MatchingIndexEntry.getParams()",
-          "Unsupported encoding", e);
-    }
-    return "documentId%3d" + id;
   }
 
   /**
@@ -157,5 +116,13 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
 
   public Map<String, String> getXMLFormFieldsForFacets() {
     return xmlFormFieldsForFacet;
+  }
+
+  public boolean isExternalResult() {
+    return externalResult;
+  }
+
+  public void setExternalResult(final boolean externalResult) {
+    this.externalResult = externalResult;
   }
 }

@@ -180,6 +180,7 @@ function createLinkPopup() {
       ifCorrectFormExecute(function() {
         submitLink();
       });
+      return false;
     }
   });
 }
@@ -196,6 +197,7 @@ function updateLinkPopup() {
       ifCorrectFormExecute(function() {
         submitLink();
       });
+      return false;
     }
   });
 }

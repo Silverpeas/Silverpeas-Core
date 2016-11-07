@@ -47,6 +47,7 @@
     <module>viewer</module>
     <module>workflow</module>
     <module>sharing</module>
+    <module>search</module>
   </modules>
 
 </project>

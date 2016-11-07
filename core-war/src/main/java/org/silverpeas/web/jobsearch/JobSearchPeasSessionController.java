@@ -21,7 +21,7 @@
 package org.silverpeas.web.jobsearch;
 
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.QueryParameters;
+import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -225,7 +225,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "Spaces");
+      query.addComponent("Spaces");
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
       for (MatchingIndexEntry result : plainSearchResults) {
@@ -361,7 +361,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "Components");
+      query.addComponent("Components");
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
 
@@ -542,7 +542,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "groups");
+      query.addComponent("groups");
 
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
@@ -565,7 +565,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (ParseException | org.silverpeas.core.index.search.model.ParseException e) {
+    } catch (org.silverpeas.core.index.search.model.ParseException e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
@@ -687,7 +687,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
-      query.addSpaceComponentPair(null, "users");
+      query.addComponent("users");
 
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
@@ -707,7 +707,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (ParseException | org.silverpeas.core.index.search.model.ParseException e) {
+    } catch (org.silverpeas.core.index.search.model.ParseException e) {
       throw new PdcException("JobSearchPeasSessionController.searchEngineResultUser",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
     }

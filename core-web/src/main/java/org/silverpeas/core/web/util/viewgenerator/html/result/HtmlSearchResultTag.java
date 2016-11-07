@@ -40,7 +40,6 @@ import org.silverpeas.core.web.search.ResultDisplayerProvider;
 import org.silverpeas.core.web.search.ResultSearchRendererUtil;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
@@ -234,17 +233,13 @@ public class HtmlSearchResultTag extends TagSupport {
       if (sortValue == 4) {
         sCreationDate = resources.getOutputDate(gsr.getCreationDate());
       } else {
-        sCreationDate = resources.getOutputDate(gsr.getDate());
+        sCreationDate = resources.getOutputDate(gsr.getLastUpdateDate());
       }
     } catch (Exception e) {
       sCreationDate = null;
     }
 
-    String serverName = "";
-    if (resources.getSetting("external.search.enable", false) && gsr.getIndexEntry() != null) {
-      serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ?
-          gsr.getIndexEntry().getServerName() : "unknown");
-    }
+    String serverName = gsr.getServerName();
 
     result.append("<li class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
     result.append(componentName).append(" ");
@@ -265,7 +260,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (resources.getSetting("PertinenceVisible", false)) {
       result.append("<div class=\"pertinence\">")
-          .append(ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("</div>");
+          .append(ResultSearchRendererUtil.displayPertinence(gsr.getScore())).append("</div>");
     }
 
     result.append("<div class=\"content\">");
@@ -315,7 +310,7 @@ public class HtmlSearchResultTag extends TagSupport {
     if (gsr.isUserAllowedToDownloadFile()) {
       result.append("</a>");
     }
-    if (gsr.getIndexEntry() != null && gsr.getIndexEntry().isAlias()) {
+    if (gsr.isAlias()) {
       result.append(" (").append(resources.getString("GML.alias")).append(")");
     }
 

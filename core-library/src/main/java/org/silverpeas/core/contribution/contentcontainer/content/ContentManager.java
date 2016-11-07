@@ -61,40 +61,22 @@ public class ContentManager implements Serializable {
     // We hard coded for this time !!!!
     // -------------------------------------------------
 
-    ContentPeas contentWP = new ContentPeas("whitePages");
-    ContentPeas contentQR = new ContentPeas("questionReply");
-    ContentPeas contentKMelia = new ContentPeas("kmelia");
-    ContentPeas contentSurvey = new ContentPeas("survey");
-    ContentPeas contentToolbox = new ContentPeas("toolbox");
-    ContentPeas contentQuickInfo = new ContentPeas("quickinfo");
-    ContentPeas contentAlmanach = new ContentPeas("almanach");
-    ContentPeas contentQuizz = new ContentPeas("quizz");
-    ContentPeas contentForums = new ContentPeas("forums");
-    ContentPeas contentPollingStation = new ContentPeas("pollingStation");
-    ContentPeas contentBookmark = new ContentPeas("bookmark");
-    ContentPeas contentChat = new ContentPeas("chat");
-    ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
-    ContentPeas contentWebSites = new ContentPeas("webSites");
-    ContentPeas contentGallery = new ContentPeas("gallery");
-    ContentPeas contentBlog = new ContentPeas("blog");
-
     // Put all the existing contents in the array of contents
-    s_acContentPeas.add(contentWP);
-    s_acContentPeas.add(contentQR);
-    s_acContentPeas.add(contentKMelia);
-    s_acContentPeas.add(contentSurvey);
-    s_acContentPeas.add(contentToolbox);
-    s_acContentPeas.add(contentQuickInfo);
-    s_acContentPeas.add(contentAlmanach);
-    s_acContentPeas.add(contentQuizz);
-    s_acContentPeas.add(contentForums);
-    s_acContentPeas.add(contentPollingStation);
-    s_acContentPeas.add(contentBookmark);
-    s_acContentPeas.add(contentChat);
-    s_acContentPeas.add(contentInfoLetter);
-    s_acContentPeas.add(contentWebSites);
-    s_acContentPeas.add(contentGallery);
-    s_acContentPeas.add(contentBlog);
+    s_acContentPeas.add(new ContentPeas("whitePages"));
+    s_acContentPeas.add(new ContentPeas("questionReply"));
+    s_acContentPeas.add(new ContentPeas("kmelia"));
+    s_acContentPeas.add(new ContentPeas("survey"));
+    s_acContentPeas.add(new ContentPeas("toolbox"));
+    s_acContentPeas.add(new ContentPeas("quickinfo"));
+    s_acContentPeas.add(new ContentPeas("almanach"));
+    s_acContentPeas.add(new ContentPeas("quizz"));
+    s_acContentPeas.add(new ContentPeas("forums"));
+    s_acContentPeas.add(new ContentPeas("pollingStation"));
+    s_acContentPeas.add(new ContentPeas("bookmark"));
+    s_acContentPeas.add(new ContentPeas("infoLetter"));
+    s_acContentPeas.add(new ContentPeas("webSites"));
+    s_acContentPeas.add(new ContentPeas("gallery"));
+    s_acContentPeas.add(new ContentPeas("blog"));
   }
 
   // Container peas

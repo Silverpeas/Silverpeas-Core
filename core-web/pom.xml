@@ -82,6 +82,12 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-search</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-personalorganizer</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

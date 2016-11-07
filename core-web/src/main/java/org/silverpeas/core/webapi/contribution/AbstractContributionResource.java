@@ -43,6 +43,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,6 +83,20 @@ public abstract class AbstractContributionResource extends RESTWebService {
     return getComponentId() + ":" + FilenameUtils.getBaseName(formId);
   }
 
+  protected List<FormFieldValueEntity> getFormFieldValues(FieldTemplate fieldTemplate,
+      DataRecord data, String lang) throws Exception {
+    int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+    List<FormFieldValueEntity> values = new ArrayList<>();
+    for (int occ = 0; occ < maxOccurrences; occ++) {
+      Field field = data.getField(fieldTemplate.getFieldName(), occ);
+      if (field != null && !field.isNull()) {
+        FormFieldValueEntity value = getFormFieldValue(fieldTemplate, field, lang);
+        values.add(value);
+      }
+    }
+    return values;
+  }
+
   /**
    * Gets the value of a field.
    * @param fieldTemplate
@@ -91,9 +107,13 @@ public abstract class AbstractContributionResource extends RESTWebService {
    */
   protected FormFieldValueEntity getFormFieldValue(FieldTemplate fieldTemplate, DataRecord data,
       String lang) throws Exception {
-
     // Field data
     Field field = data.getField(fieldTemplate.getFieldName());
+    return getFormFieldValue(fieldTemplate, field, lang);
+  }
+
+  private FormFieldValueEntity getFormFieldValue(FieldTemplate fieldTemplate, Field field,
+      String lang) throws Exception {
 
     final FormFieldValueEntity entity;
     if (Field.TYPE_FILE.equals(field.getTypeName())) {

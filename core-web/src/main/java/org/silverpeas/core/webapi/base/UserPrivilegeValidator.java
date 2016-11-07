@@ -45,6 +45,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -210,16 +211,19 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header X-Silverpeas-Session. If no such parameter is set, the session
-   * is then retrieved from the specified HTTP request. In the case the incoming request isn't sent
-   * within an opened HTTP session, then an empty string is returned as no HTTP session was defined
-   * for the current request.
+   * retrieved from the HTTP header X-Silverpeas-Session then from the HTTP request parameter.
+   * If no such parameter is set, the session is then retrieved from the specified HTTP request.
+   * In the case the incoming request isn't sent within an opened HTTP session, then an empty
+   * string is returned as no HTTP session was defined for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
    */
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
+    if (StringUtil.isNotDefined(sessionKey)) {
+      sessionKey = request.getParameter(HTTP_PARAMKEY);
+    }
 
     // if no session key is passed among the HTTP headers, check the request is within a session
     if (!isDefined(sessionKey)) {

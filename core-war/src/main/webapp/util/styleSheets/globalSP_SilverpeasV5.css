@@ -5866,3 +5866,53 @@ ul.sm-map {
   content: '\2022';
   color: #EC8601;
 }
+
+/** Taxonomy part **/
+#pdcFrame {
+  text-align: center;
+}
+
+#pdcFrame .pdcFrameGroup {
+  margin: 0 auto;
+  display: inline-block;
+}
+
+#pdcFrame #used_pdc {
+  display: inline-block;
+}
+
+#pdcFrame #used_pdc .field{
+  clear:none;
+  display: inline;
+}
+
+#pdcFrame #used_pdc .field label{
+  width:auto;
+  padding: 0 5px;
+}
+
+#pdcFrame #used_pdc .field .champs select {
+  width: 150px;
+}
+
+
+#pdcFrame #used_pdc .field .champs {
+  padding: 0 5px;
+  padding-right: 1em;
+}
+
+#pdcFrame #used_pdc .field .champs.pdcAxis img{
+  display:none;
+}
+
+#pdcFrame .pdcFrameGroup .sp_button {
+  font-size: 80% !important;
+  padding: 3px 5px;
+  margin: 2px 0;
+}
+
+#pdcFrame .pdcFrameGroup #razButton {
+  margin: 2px 0;
+  margin-left: 5px;
+  display: inline-block;
+}

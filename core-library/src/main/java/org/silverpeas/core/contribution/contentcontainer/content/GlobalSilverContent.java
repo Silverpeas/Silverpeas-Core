@@ -26,14 +26,12 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 
 import java.util.Iterator;
 import java.util.Map;
 
 /**
- * This class allows the result jsp page of the global search to show all features (name,
- * description, location)
+ * This class represents contribution classified on taxonomy
  */
 public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18N>
     implements java.io.Serializable {
@@ -45,13 +43,10 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   private String instanceId = "";
   private String date = ""; // this is the updateDate
   private String creationDate = "";
-  private String icon_url = "";
-
   private String thumbnailURL = "";
-
   private String userId = "";
-  private String creatorFirstName = "";
-  private String creatorLastName = "";
+  private String type = "";
+
   /**
    * list of XML form fields used to sort results
    */
@@ -59,19 +54,14 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
 
   /* following attributes are exclusively used by taglibs */
   private String spaceId = "";
-  private float score = 0;
-  private String type = "";
 
-  public void init(String name, String desc, String url, String location, String id,
-      String instanceId, String date, String icon, String userId) {
+  private void init(String name, String desc, String id,
+      String instanceId, String date, String userId) {
     setName(name);
     setDescription(desc);
-    this.url = url;
-    this.location = location;
     this.id = id;
     this.instanceId = instanceId;
     this.date = date;
-    this.icon_url = icon;
     this.userId = userId;
 
     GlobalSilverContentI18N gscI18N =
@@ -80,46 +70,10 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   }
 
   // constructor
-  public GlobalSilverContent(String name, String desc, String id, String spaceId, String instanceId,
-      String date, String userId) {
-    init(name, desc, null, null, id, instanceId, date, null, userId);
-    this.spaceId = spaceId;
-  }
-
-  public GlobalSilverContent(MatchingIndexEntry mie) {
-    init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie.getComponent(),
-        mie.getLastModificationDate(), null, mie.getCreationUser());
-    setCreationDate(mie.getCreationDate());
-
-    // add the sortable feld from XML form
-    sortableXMLFormFields = mie.getSortableXMLFormFields();
-
-    Iterator<String> languages = mie.getLanguages();
-    while (languages.hasNext()) {
-      String language = languages.next();
-      GlobalSilverContentI18N gscI18N =
-          new GlobalSilverContentI18N(language, mie.getTitle(language), mie.getPreview(language));
-      addTranslation(gscI18N);
-    }
-  }
-
-  // constructor
-  public GlobalSilverContent(SilverContentInterface sci, String location) {
-    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci.getId(),
-        sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci.getCreatorId());
+  public GlobalSilverContent(SilverContentInterface sci) {
+    init(sci.getName(), sci.getDescription(), sci.getId(),
+        sci.getInstanceId(), sci.getDate(), sci.getCreatorId());
     this.creationDate = sci.getSilverCreationDate();
-
-    processLanguages(sci);
-  }
-
-  // constructor
-  public GlobalSilverContent(SilverContentInterface sci, String location, String creatorFirstName,
-      String creatorLastName) {
-    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci.getId(),
-        sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci.getCreatorId());
-    this.creationDate = sci.getSilverCreationDate();
-    this.creatorFirstName = creatorFirstName;
-    this.creatorLastName = creatorLastName;
 
     processLanguages(sci);
   }
@@ -133,10 +87,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
       addTranslation(gscI18N);
     }
   }
-
-  //
-  // public methods
-  //
 
   public String getURL() {
     return url;
@@ -170,36 +120,8 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     return this.date;
   }
 
-  public String getIconUrl() {
-    return this.icon_url;
-  }
-
-  public void setIconUrl(String iconURL) {
-    this.icon_url = iconURL;
-  }
-
   public String getUserId() {
     return this.userId;
-  }
-
-  public String getCreatorFirstName() {
-    return this.creatorFirstName;
-  }
-
-  public String getCreatorLastName() {
-    return this.creatorLastName;
-  }
-
-  public void setScore(float score) {
-    this.score = score;
-  }
-
-  public float getRawScore() {
-    return this.score;
-  }
-
-  public String getScore() {
-    return Float.toString(this.score * 100);
   }
 
   public void setType(String type) {
@@ -222,14 +144,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     return creationDate;
   }
 
-  public void setCreationDate(String creationDate) {
-    this.creationDate = creationDate;
-  }
-
-  public void setTitle(String title) {
-    setName(title);
-  }
-
   public String getThumbnailURL() {
     return thumbnailURL;
   }
@@ -244,14 +158,6 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
    */
   public Map<String, String> getSortableXMLFormFields() {
     return sortableXMLFormFields;
-  }
-
-  /**
-   * Sets the Sortable fields if the content is a form XML
-   * @param sortableXMLFormFields the sortableXMLFormFields to set
-   */
-  public void setSortableXMLFormFields(Map<String, String> sortableXMLFormFields) {
-    this.sortableXMLFormFields = sortableXMLFormFields;
   }
 
 }

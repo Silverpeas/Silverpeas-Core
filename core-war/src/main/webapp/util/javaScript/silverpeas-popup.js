@@ -507,7 +507,7 @@
               if (options.callback) {
                 isok = options.callback.call($_this);
               }
-              if (isok) {
+              if (isok || isok === undefined) {
                 $_this.dialog("close");
               }
             }

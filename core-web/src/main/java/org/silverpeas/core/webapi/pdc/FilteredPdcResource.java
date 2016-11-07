@@ -20,6 +20,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;

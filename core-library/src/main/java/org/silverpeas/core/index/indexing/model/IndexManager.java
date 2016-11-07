@@ -198,19 +198,18 @@ public class IndexManager {
    * @return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(IndexEntryKey indexEntry) {
-    return getIndexDirectoryPath(null, indexEntry.getComponent());
+    return getIndexDirectoryPath(indexEntry.getComponent());
   }
 
   /**
    *
    * Return the path to the directory where are stored the index for the given index entry .
    *
-   * @param space
    * @param component
    * @return the path to the directory where are stored the index for the given index entry .
    */
-  public String getIndexDirectoryPath(String space, String component) {
-    return IndexFileManager.getAbsoluteIndexPath(space, component);
+  public String getIndexDirectoryPath(String component) {
+    return IndexFileManager.getAbsoluteIndexPath(component);
   }
 
   /**

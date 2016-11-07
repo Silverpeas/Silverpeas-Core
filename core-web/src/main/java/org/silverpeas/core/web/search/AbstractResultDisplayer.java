@@ -74,7 +74,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
       componentTemplate.setAttribute("creatorName", WebEncodeHelper
           .javaStringToHtmlString(sCreatorName));
     }
-    componentTemplate.setAttribute("spaceId", silverResult.getSpaceId());
+
     componentTemplate.setAttribute("instanceId", silverResult.getInstanceId());
 
     String sCreationDate;
@@ -85,7 +85,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
             searchResult.getUserId()).getLanguage());
       } else {
         sCreationDate =
-            DateUtil.getOutputDate(silverResult.getDate(), getUserPreferences(
+            DateUtil.getOutputDate(silverResult.getLastUpdateDate(), getUserPreferences(
             searchResult.getUserId()).getLanguage());
       }
     } catch (Exception e) {
@@ -95,13 +95,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
       componentTemplate.setAttribute("creationDate", sCreationDate);
     }
 
-    String serverName = "";
-    if (settings.getSetting("external.search.enable", false) &&
-        silverResult.getIndexEntry() != null) {
-      serverName =
-          "external_server_" + (StringUtil.isDefined(silverResult.getIndexEntry().getServerName()) ?
-          silverResult.getIndexEntry().getServerName() : "unknown");
-    }
+    String serverName = silverResult.getServerName();
     if (StringUtil.isDefined(serverName)) {
       componentTemplate.setAttribute("serverName", serverName);
     }
@@ -110,8 +104,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
 
     if (settings.getSetting("PertinenceVisible", false)) {
       componentTemplate.setAttribute("pertinence", ResultSearchRendererUtil
-          .displayPertinence(silverResult
-          .getRawScore()));
+          .displayPertinence(silverResult.getScore()));
     }
 
     componentTemplate.setAttribute("exportEnabled", searchResult.getExportEnabled());

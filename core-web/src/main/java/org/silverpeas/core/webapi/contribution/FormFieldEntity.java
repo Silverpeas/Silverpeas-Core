@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * @author Yohann Chastagnier
@@ -47,6 +48,36 @@ public class FormFieldEntity {
   @XmlElement(defaultValue = "")
   private FormFieldValueEntity value;
 
+  @XmlElement(defaultValue = "")
+  private List<FormFieldValueEntity> values;
+
+  @XmlElement
+  private boolean multiValues = false;
+
+  /**
+   * Default hidden constructor.
+   */
+  private FormFieldEntity(String type, String name, String label, FormFieldValueEntity value) {
+    this.type = type;
+    this.name = name;
+    this.label = label;
+    this.value = value;
+  }
+
+  private FormFieldEntity(String type, String name, String label, List<FormFieldValueEntity> values) {
+    this.type = type;
+    this.name = name;
+    this.label = label;
+    if (values != null && !values.isEmpty()) {
+      if (values.size() == 1) {
+        this.value = values.get(0);
+      } else {
+        this.values = values;
+        multiValues = true;
+      }
+    }
+  }
+
   /**
    * Creates a new form field entity from the specified field data.
    * @param type the type
@@ -60,17 +91,9 @@ public class FormFieldEntity {
     return new FormFieldEntity(type, name, label, value);
   }
 
-  /**
-   * Default hidden constructor.
-   */
-  private FormFieldEntity(String type, String name, String label, FormFieldValueEntity value) {
-    this.type = type;
-    this.name = name;
-    this.label = label;
-    this.value = value;
-  }
-
-  protected FormFieldEntity() {
+  public static FormFieldEntity createFrom(String type, String name, String label,
+      List<FormFieldValueEntity> values) {
+    return new FormFieldEntity(type, name, label, values);
   }
 
   protected String getType() {
@@ -87,5 +110,13 @@ public class FormFieldEntity {
 
   protected FormFieldValueEntity getValue() {
     return value;
+  }
+
+  protected List<FormFieldValueEntity> getValues() {
+    return values;
+  }
+
+  protected boolean isMultiValues() {
+    return multiValues;
   }
 }

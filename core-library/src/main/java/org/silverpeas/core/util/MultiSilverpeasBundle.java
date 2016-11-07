@@ -24,14 +24,9 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.SilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
-
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -170,6 +165,10 @@ public class MultiSilverpeasBundle {
 
   public String getOutputDate(Date date) {
     return DateUtil.getOutputDate(date, language);
+  }
+
+  public String getOutputDate(LocalDate date) {
+    return getOutputDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
   }
 
   public String getOutputDate(String dateDB) throws ParseException {

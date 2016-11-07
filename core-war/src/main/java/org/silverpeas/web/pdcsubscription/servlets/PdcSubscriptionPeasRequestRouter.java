@@ -20,7 +20,7 @@
  */
 package org.silverpeas.web.pdcsubscription.servlets;
 
-import org.silverpeas.core.webapi.pdc.AxisValueCriterion;
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
 import org.silverpeas.core.util.StringUtil;

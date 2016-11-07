@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.node.service.NodeService;
@@ -32,6 +32,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -106,9 +107,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     NodeDetail node;
     try {
       node = getNodeService().getHeader(nodePK, false);
-    } catch (Exception ex) {
-      SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
-          "root.NO_EX_MESSAGE", ex);
+    } catch (NodeRuntimeException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       return;
     }
     if (node != null) {
