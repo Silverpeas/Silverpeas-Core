@@ -80,7 +80,9 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
       <% if (StringUtil.isDefined(parameters.getInstanceId())) { %>
       component : '<%=parameters.getInstanceId()%>',
       <% } %>
+      <% if (StringUtil.isDefined(parameters.getSpaceId())) { %>
       workspace : '<%=parameters.getSpaceId()%>',
+      <% } %>
       withSecondaryAxis : false,
       onLoaded : function(loadedPdC) {
         if (loadedPdC && loadedPdC.axis.length) {
