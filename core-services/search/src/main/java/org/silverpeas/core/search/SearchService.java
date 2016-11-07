@@ -37,6 +37,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,11 +59,16 @@ public class SearchService {
     boolean taxonomySearch = queryDescription.isTaxonomyUsed();
     boolean fullTextSearch = !queryDescription.isEmpty();
 
-    List<SearchResult> taxonomyResults = taxonomySearchProcessor.process(queryDescription, null);
-    List<SearchResult> fullTextResults = new ArrayList<>();
+    List<SearchResult> fullTextResults = Collections.emptyList();
+    List<SearchResult> taxonomyResults;
+    if (taxonomySearch) {
+      taxonomyResults = taxonomySearchProcessor.process(queryDescription, null);
+    } else {
+      taxonomyResults = Collections.emptyList();
+    }
 
     if (fullTextSearch) {
-      if (taxonomySearch && !taxonomyResults.isEmpty()) {
+      if (!taxonomyResults.isEmpty()) {
         // restrains full-text search to components of taxonomy search
         Set<String> componentIds = extractComponentIds(taxonomyResults);
         queryDescription.getWhereToSearch().clear();
