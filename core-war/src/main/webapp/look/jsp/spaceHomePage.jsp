@@ -221,6 +221,7 @@ gef.setSpaceIdForCurrentRequest(homepage.getSpace().getId());
 <script type="text/javascript">
 <!--
 function goToSpaceItem(url) {
+  spLayout.getBody().getNavigation().dispatchEvent("start-load");
 	location.href=url;
 }
 $(document).ready(function() {

@@ -83,6 +83,7 @@
     },
     addEventListener : function(eventName, listener) {
       switch (eventName) {
+        case 'start-load':
         case 'load':
         case 'show':
         case 'hide':
@@ -112,6 +113,7 @@
     load : function(urlParameters) {
       __logDebug("loading header part");
       var headerPartURL = $window.LayoutSettings.get("layout.header.url");
+      this.dispatchEvent("start-load");
       return sp.load(this.getContainer(),
           sp.ajaxConfig(headerPartURL).withParams(urlParameters)).then(function() {
         this.dispatchEvent("load");
@@ -141,6 +143,7 @@
       __logDebug("loading body part");
       applyReadyBehaviorOn(this);
       var bodyPartURL = $window.LayoutSettings.get("layout.body.url");
+      this.dispatchEvent("start-load");
       return sp.load(this.getContainer(),
           sp.ajaxConfig(bodyPartURL).withParams(urlParameters)).then(function() {
           __logDebug("... initializing the context of body part instance");
@@ -153,7 +156,7 @@
         this.contentFrame.setAttribute('webkitallowfullscreen', 'true');
         this.contentFrame.setAttribute('mozallowfullscreen', 'true');
         this.contentFrame.setAttribute('allowfullscreen', 'true');
-        this.contentFrame.addEventListener('load', function() {
+        this.contentFrame.addEventListener("load", function() {
           __logDebug("body content part loaded");
           if (typeof this.getContent().notifyReady === 'function') {
             __logDebug("resolving promise of body content load");
@@ -218,6 +221,15 @@
 
   // Navigation Part
   var BodyNavigationPart = Part.extend({
+    initialize : function(mainLayout, partSelector) {
+      this._super(mainLayout, partSelector);
+      this.addEventListener("start-load", function() {
+        __showProgressPopup();
+      });
+      this.addEventListener("load", function() {
+        setTimeout(__hideProgressPopup, 0);
+      });
+    },
     load : function(urlParameters) {
       __logDebug("loading body navigation part");
       __showProgressPopup();
@@ -227,9 +239,9 @@
       }, urlParameters);
       var bodyNavigationPartURL = $window.LayoutSettings.get("layout.body.navigation.url");
       var ajaxConfig = sp.ajaxConfig(bodyNavigationPartURL).withParams(parameters);
+      this.dispatchEvent("start-load");
       return sp.load(this.getContainer(), ajaxConfig).then(function() {
         this.getMainLayout().getBody().getToggles().show();
-        this.dispatchEvent("load");
       }.bind(this));
     }
   });
@@ -238,8 +250,8 @@
   var BodyContentPart = Part.extend({
     load : function(url) {
       __logDebug("loading body content part");
-      __showProgressPopup();
       var promise = applyReadyBehaviorOn(this);
+      this.dispatchEvent("start-load");
       $window.MyMain.location.href = url;
       return promise;
     },

@@ -1343,6 +1343,7 @@ var AjaxEngine = function() {
 
   var _processAjaxObjectUpdate = function( ajaxObject, responseElement ) {
     ajaxObject.ajaxUpdate( responseElement );
+    spLayout.getBody().getNavigation().dispatchEvent("load");
   };
   this.sendRequest = function(requestName, options) {
     var requestURL = requestURLS[requestName];
@@ -1356,6 +1357,9 @@ var AjaxEngine = function() {
     }
 
     var ajaxConfig = sp.ajaxConfig(requestURL).withParams(options.parameters);
+    if (options.parameters["Init"] === '1' || options.parameters["SpaceId"]) {
+      spLayout.getBody().getNavigation().dispatchEvent("start-load");
+    }
     return silverpeasAjax(ajaxConfig).then(function(request) {
       var response = request.responseXML.getElementsByTagName("ajax-response");
       if (response && response.length === 1) {
