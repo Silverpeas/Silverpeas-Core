@@ -931,6 +931,9 @@ Style Utilise par le ViewGenerator
   margin-top:0.5em;
 }
 
+#sp-layout-body-part-layout-content-part {
+  padding-left:1em;
+}
 /* Objet Button */
 
 .sp_buttonPane {
@@ -943,6 +946,17 @@ Style Utilise par le ViewGenerator
   padding:0.5em 1em;
   margin-right:1em;
 }
+
+#advanced-search form .sp_button,
+#globalResult form .sp_button,
+#directory form .sp_button,
+#directory #indexAndSearch .sp_button,
+#searchLine  .sp_button{
+	 padding: 1px 10px;
+	 font-size:9pt !important;
+	 height:17px;
+	 line-height:17px;
+} 
 
 .sp_button:hover , button.button:hover {
   background-color:#75af30;
@@ -2127,6 +2141,9 @@ caption {
   background:transparent url(images_annuaire/sep-2-tiraits.gif)  15% bottom no-repeat;
   height:25px;
 }
+#directory #indexAndSearch #search > form {
+  display:inline;
+}
 #directory #indexAndSearch #search input, #indexAndSearch #search table {
   display:inline;
   float:left;
@@ -2141,11 +2158,6 @@ caption {
 #directory #indexAndSearch #search #help {
   line-height: 20px;
   margin-left: 5px;
-}
-
-#directory #indexAndSearch .sp_button {
-  padding:0 5px;
-  border-right:1px solid #588ABB;
 }
 
 #directory #indexAndSearch{
@@ -3748,7 +3760,7 @@ li.application  .applicationName {
 /*************************************/
 /** BackEnd & FrontEnd User Panel   */
 /***********************************/
-.userPanel, .userPanel * {
+.userPanel, .userPanel ul, .userPanel li, .userPanel h4{
   padding:0;
   margin:0;
   list-style-type:none;
@@ -4114,7 +4126,7 @@ input.search:focus {
 
 .compulsory-subscription-management .sp_buttonPane{
   float:right;
-  margin:8px -92px 0 0;
+  margin:8px 8px 0 0;
 }
 
 /* userzoom-tooltip-profilPhoto */
