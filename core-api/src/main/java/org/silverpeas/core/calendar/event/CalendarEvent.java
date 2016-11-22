@@ -58,14 +58,44 @@ import java.util.Set;
 @NamedQueries({
     @NamedQuery(name = "calendarEventCount", query =
         "select count(e) from CalendarEvent e where e.calendar = :calendar"),
+    @NamedQuery(name = "calendarEventsByCalendarByPeriod", query =
+        "select e from CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r " +
+            "where e.calendar in :calendars and (" +
+            "(e.period.startDateTime <= :startDateTime and e.period.endDateTime >= " +
+            ":startDateTime) " +
+            "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= " +
+            ":endDateTime)" +
+            " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
+            "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
+            ") order by e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByPeriod", query =
         "select e from CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r " +
-        "where e.calendar = :calendar and (" +
-        "(e.period.startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) " +
-        "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime)" +
-        " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
-        "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
-        ") order by e.period.startDateTime"),
+            "where (e.period.startDateTime <= :startDateTime and e.period.endDateTime >= " +
+            ":startDateTime) " +
+            "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= " +
+            ":endDateTime)" +
+            " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
+            "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
+            "order by e.period.startDateTime"),
+    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query = "select distinct e from " +
+        "CalendarEvent e LEFT OUTER JOIN FETCH e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
+        " where (e" +
+        ".createdBy in :participantIds or a.attendeeId in :participantIds) and ((e.period" +
+        ".startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) or (e" +
+        ".period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime) or " +
+        "(e.period.endDateTime < :startDateTime and e.recurrence is not null and (e.recurrence" +
+        ".endDateTime >= :startDateTime or e.recurrence.endDateTime is null))) order by e" +
+        ".createdBy, e.period.startDateTime"),
+    @NamedQuery(name = "calendarEventsByCalendarByParticipantsByPeriod", query =
+        "select distinct e from " +
+        "CalendarEvent e LEFT OUTER JOIN FETCH e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
+        " where e.calendar in :calendars and (e" +
+        ".createdBy in :participantIds or a.attendeeId in :participantIds) and ((e.period" +
+        ".startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) or (e" +
+        ".period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime) or " +
+        "(e.period.endDateTime < :startDateTime and e.recurrence is not null and (e.recurrence" +
+        ".endDateTime >= :startDateTime or e.recurrence.endDateTime is null))) order by e" +
+        ".createdBy, e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsDeleteAll", query =
         "delete from CalendarEvent e where e.calendar = " + ":calendar")})
 public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdentifier>
@@ -487,7 +517,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     return clone;
   }
 
-  private void setCalendar(final Calendar calendar) {
+  protected void setCalendar(final Calendar calendar) {
     this.calendar = calendar;
   }
 

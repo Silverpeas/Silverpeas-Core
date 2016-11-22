@@ -24,7 +24,9 @@
 
 package org.silverpeas.core.calendar.repository;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
@@ -32,6 +34,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Yohann Chastagnier
@@ -48,14 +51,23 @@ public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepositor
   }
 
   @Override
-  public List<CalendarEvent> getAllBetween(final Calendar calendar,
-      final OffsetDateTime startDateTime,
-      final OffsetDateTime endDateTime) {
-    NamedParameters params = newNamedParameters()
-        .add("startDateTime", startDateTime)
-        .add("endDateTime", endDateTime)
-        .add("calendar", calendar);
-    return findByNamedQuery("calendarEventsByPeriod", params);
+  public List<CalendarEvent> getAllBetween(final CalendarEventFilter filter,
+      final OffsetDateTime startDateTime, final OffsetDateTime endDateTime) {
+    String namedQuery = "calendarEvents";
+    NamedParameters parameters = newNamedParameters();
+    if (!filter.getCalendars().isEmpty()) {
+      parameters.add("calendars", filter.getCalendars());
+      namedQuery += "ByCalendar";
+    }
+    if (!filter.getParticipants().isEmpty()) {
+      parameters.add("participantIds",
+          filter.getParticipants().stream().map(User::getId).collect(Collectors.toList()));
+      namedQuery += "ByParticipants";
+    }
+
+    namedQuery += "ByPeriod";
+    parameters.add("startDateTime", startDateTime).add("endDateTime", endDateTime);
+    return findByNamedQuery(namedQuery, parameters);
   }
 
   @Override
