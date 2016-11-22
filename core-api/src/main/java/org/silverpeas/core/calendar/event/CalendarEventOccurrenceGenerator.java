@@ -47,7 +47,7 @@ public interface CalendarEventOccurrenceGenerator {
   }
 
   /**
-   * Generates the occurrences of the specified events and that occur at the specified day.
+   * Generates the occurrences of the calendar events that occur in the specified window of time.
    * @param timeWindow the time window in which the events occur.
    * @return a set of event occurrences that occur in the specified window of time sorted by the
    * date and time at which they start.
