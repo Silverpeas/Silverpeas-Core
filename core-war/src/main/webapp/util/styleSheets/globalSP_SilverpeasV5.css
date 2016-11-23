@@ -32,6 +32,10 @@ body {
   color:#212121;
 }
 
+body.portlet {
+  background-color:transparent;
+}
+
 td,div {
   font-size: 1em
 }
@@ -606,6 +610,14 @@ Style Utilise par le ViewGenerator
   background-color:#FFF;
 }
 
+.tableArrayPane > tbody > tr:nth-child(n) > td{
+  background-color:#f5f5f5
+}
+
+.tableArrayPane > tbody > tr:nth-child(2n+1) > td{
+  background-color:#fff
+}
+
 .arrayPane {
   margin-left: auto;
   margin-right: auto;
@@ -770,16 +782,6 @@ Style Utilise par le ViewGenerator
   padding:0;
 }
 
-#domainsBar #spaces {
-
-}
-
-#favdiv{
-  position:relative;
-  float:right;
-  padding-right:1px;
-}
-
 #domainsBar #spaces #favdiv img,
 #spacePerso  a img  {
   border: 0px;
@@ -914,21 +916,24 @@ Style Utilise par le ViewGenerator
 /******  ViewGenerator *********/
 /****************************************/
 /* objet window */
-.cellBrowseBar  {
-  border-bottom: 1px solid #CCC;
-  padding-right:230px;
+.cellBrowseBar  {    
+  border-bottom: 1px solid #ddd;
+  padding-right: 230px;
+  padding-bottom: 0.5em;
 }
 
 .cellOperation {
   display: inline-block;
   width:210px;
   position:absolute;
-  right:1em;
+  right:2em;
   top:0;
 }
 
 .cellBodyWindows {
   margin-top:0.5em;
+  display:table;
+  width:100%;
 }
 
 #sp-layout-body-part-layout-content-part {
@@ -945,6 +950,7 @@ Style Utilise par le ViewGenerator
   display:inline-block;
   padding:0.5em 1em;
   margin-right:1em;
+  border:none;
 }
 
 #advanced-search form .sp_button,
@@ -964,17 +970,27 @@ Style Utilise par le ViewGenerator
 }
 
 /* Objet Tabs */
+
 #gef-tabs {
   margin-top:1em;
 }
+
+#spaceMenuDivId #gef-tabs {
+  border-bottom:2px solid #7eb73b
+}
+
+#favdiv{
+  position:relative;
+  float:right;
+  padding-right:1px;
+}
+
 .tabbedPane {
   display:flex;
   flex-flow:row wrap;
   justify-content:flex-end;
 }
 
-.sp_tabOn , .sp_tabOff   {
-}
 .sp_tabOn a, .sp_tabOff a, .sp_tabOn span, .sp_tabOff span {
   display: block;
   margin-right: 4px;
@@ -1014,7 +1030,9 @@ Style Utilise par le ViewGenerator
   border: 1px solid #CCC;
   background: #FFF url(../icons/design/fondBoard.jpg) no-repeat right top;
   margin:0 auto 10px auto ;
-  width: 100%;
+  width: 98%;
+  padding: 1%;
+  display:table;
 }
 
 .tableBoard > td {
@@ -5927,4 +5945,8 @@ ul.sm-map {
   margin: 2px 0;
   margin-left: 5px;
   display: inline-block;
+}
+
+#pdcFrame .pdcFrameGroup #razButton img {
+  vertical-align: middle;
 }

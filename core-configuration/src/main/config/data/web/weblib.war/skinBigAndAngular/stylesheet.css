@@ -516,7 +516,6 @@ margin:0;
      border: 0px none;
      margin: 0px;
      padding: 0px;
-	 behavior: none;
 }
 
 .spaceHome #publication.bgDegradeGris {
@@ -524,7 +523,6 @@ margin:0;
      border-top: 2px dotted #E4E4E4;
      margin-top: 2em;
      padding-top: 1em;
-	 behavior: none;
 }
 
 .spaceHome #publication .header h4 {
