@@ -128,8 +128,7 @@
 	}
       }
   } else if(isDomainSql) {
-	SettingBundle propDomain = ResourceLocator.getSettingBundle(domObject.getPropFileName());
-	boolean synchroUser = propDomain.getBoolean("ExternalSynchro", false);
+	boolean synchroUser = domObject.getProperty("ExternalSynchro", false);
 	if(synchroUser) {
 	    operationPane.addLine();
 	    operationPane.addOperation(resource.getIcon("JDP.domainSqlSynchro"),resource.getString("JDP.domainSynchro"),"javascript:DomainSQLSynchro()");

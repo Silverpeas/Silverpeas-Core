@@ -369,8 +369,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         && getTargetDomain().getDriverClassName().equals(
             "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver")) {
 
-      SettingBundle specificRs =
-          ResourceLocator.getSettingBundle(getTargetDomain().getPropFileName());
+      SettingBundle specificRs = getTargetDomain().getSettings();
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomRegroup = null;
       String theUserIdToRegroup = m_TargetUserId;
@@ -804,8 +803,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
             "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver")) {
-      SettingBundle specificRs =
-          ResourceLocator.getSettingBundle(getTargetDomain().getPropFileName());
+      SettingBundle specificRs = getTargetDomain().getSettings();
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomLastGroup = null;
       if (numPropertyRegroup > -1) {
@@ -1949,9 +1947,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // 2- Traitement Domaine, appel aux webServices
-      String propDomainFileName = theDomain.getPropFileName();
-
-      SettingBundle propDomainSql = ResourceLocator.getSettingBundle(propDomainFileName);
+      SettingBundle propDomainSql = theDomain.getSettings();
       String nomClasseWebService = propDomainSql.getString("ExternalSynchroClass");
       try {
         synchroUserWebService = (SynchroUserWebServiceItf) Class.forName(nomClasseWebService).

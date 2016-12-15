@@ -38,7 +38,7 @@
 <c:set var="preferences" value="${requestScope['preferences']}"/>
 <!--
 <%
-  pageContext.setAttribute("availableLooks", gef.getAvailableLooks());
+  pageContext.setAttribute("availableLooks", gef.getAvailableLooksForUser());
 %>-->
 <div id="settings">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">

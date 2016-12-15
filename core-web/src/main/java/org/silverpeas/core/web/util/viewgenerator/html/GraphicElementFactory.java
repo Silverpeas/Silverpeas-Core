@@ -20,6 +20,9 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -65,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Set;
 
 import static org.silverpeas.core.web.mvc.controller.MainSessionController
     .MAIN_SESSION_CONTROLLER_ATT;
@@ -94,7 +98,6 @@ public class GraphicElementFactory {
       GraphicElementFactory.class + "_REQUEST_IS_COMPONENT_MAIN_PAGE";
   private final static String REQUEST_EXTERNAL_STYLESHEET =
       GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
-  private final static String defaultLook = "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static String iconsPath =
       (URLUtil.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
   private LocalizationBundle multilang = null;
@@ -130,6 +133,15 @@ public class GraphicElementFactory {
    */
   public GraphicElementFactory(String look) {
     setLook(look);
+  }
+
+  public GraphicElementFactory(MainSessionController mainSessionController) {
+    this.mainSessionController = mainSessionController;
+    String userLook = mainSessionController.getFavoriteLook();
+    String effectiveLook = setLook(userLook);
+    if (!userLook.equals(effectiveLook)) {
+      mainSessionController.getPersonalization().setLook(effectiveLook);
+    }
   }
 
   public static String getIconsPath() {
@@ -185,17 +197,44 @@ public class GraphicElementFactory {
    * @param lookName
    * @see
    */
-  public final void setLook(String lookName) {
+  public final String setLook(String lookName) {
     // get the customer lookSettings
-    String selectedLook = lookSettings.getString(lookName, null);
-    if (selectedLook == null) {
-      // ce look n'existe plus, look par defaut
-      selectedLook = defaultLook;
+    String aLookName = lookName;
+    String look = lookSettings.getString(aLookName, null);
+    if (!isLookAllowed(aLookName)) {
+      // this look no more exists or is not allowed, set an existing look
+      aLookName = getAvailableLooksForUser().get(0);
+      look = lookSettings.getString(aLookName, null);
     }
+    this.favoriteLookSettings = ResourceLocator.getSettingBundle(look);
+    this.currentLookName = aLookName;
+    return this.currentLookName;
+  }
 
-    this.favoriteLookSettings = ResourceLocator.getSettingBundle(selectedLook);
+  private static String getExistingLook() {
+    Set<String> lookNames = lookSettings.keySet();
+    for (String aLookName : lookNames) {
+      if (isLookExist(aLookName)) {
+        return aLookName;
+      }
+    }
+    return defaultLookName;
+  }
 
-    currentLookName = lookName;
+  private static boolean isLookExist(String lookName) {
+    try {
+      String selectedLook = lookSettings.getString(lookName);
+      SettingBundle look = ResourceLocator.getSettingBundle(selectedLook);
+      return look.exists();
+    } catch (MissingResourceException e) {
+      SilverLogger.getLogger(GraphicElementFactory.class)
+          .warn("Look named '"+lookName+" not found", e);
+      return false;
+    }
+  }
+
+  private boolean isLookAllowed(String lookName) {
+    return getAvailableLooksForUser().contains(lookName) && isLookExist(lookName);
   }
 
   public String getCurrentLookName() {
@@ -207,12 +246,12 @@ public class GraphicElementFactory {
   }
 
   public static SettingBundle getLookSettings(String lookName) {
-    String selectedLook = lookSettings.getString(lookName, null);
-    if (selectedLook == null) {
-      // ce look n'existe plus, look par defaut
-      selectedLook = defaultLook;
+    String look = lookSettings.getString(lookName, null);
+    if (!isLookExist(lookName)) {
+      String existingLookName = getExistingLook();
+      look = lookSettings.getString(existingLookName, null);
     }
-    return ResourceLocator.getSettingBundle(selectedLook);
+    return ResourceLocator.getSettingBundle(look);
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
@@ -265,6 +304,17 @@ public class GraphicElementFactory {
     SettingBundle theLookSettings = getLookSettings();
     List<String> availableLooks = new ArrayList<>(theLookSettings.keySet());
     return availableLooks;
+  }
+
+  public List<String> getAvailableLooksForUser() {
+    String domainId = User.getById(getMainSessionController().getUserId()).getDomainId();
+    OrganizationController controller = OrganizationController.get();
+    Domain domain = controller.getDomain(domainId);
+    List<String> domainLooks = domain.getLooks();
+    if (!domainLooks.isEmpty()) {
+      return domainLooks;
+    }
+    return getAvailableLooks();
   }
 
   /**

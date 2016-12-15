@@ -5297,8 +5297,7 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     Domain theDomain = domainDriverManager.getDomain(domainId);
-    String propDomainFileName = theDomain.getPropFileName();
-    SettingBundle propDomainLdap = ResourceLocator.getSettingBundle(propDomainFileName);
+    SettingBundle propDomainLdap = theDomain.getSettings();
     String nomClasseSynchro = propDomainLdap.getString("synchro.Class", null);
     if (StringUtil.isDefined(nomClasseSynchro)) {
       Collection<UserDetail> added = usersAdded;
