@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,22 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.importexport.ical.ical4j;
+package org.silverpeas.core.calendar.ical4j;
 
-import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.calendar.DayOfWeekOccurrence;
-import org.silverpeas.core.calendar.RecurrencePeriod;
-import org.silverpeas.core.importexport.EncodingException;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.calendar.DayOfWeekOccurrence;
+import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.calendar.RecurrencePeriod;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.text.ParseException;
+import java.util.Comparator;
 
-import static org.silverpeas.core.calendar.Recurrence.*;
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
+import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE;
+import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE_COUNT;
 
 /**
  * A codec to encode/decode iCal4J recurrence with Silverpeas event recurrence.
@@ -44,16 +46,20 @@ import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
 @Singleton
 public class ICal4JRecurrenceCodec {
 
+  private final ICal4JDateCodec iCal4JDateCodec;
+
   @Inject
-  private ICal4JDateCodec iCal4JDateCodec;
+  public ICal4JRecurrenceCodec(final ICal4JDateCodec iCal4JDateCodec) {
+    this.iCal4JDateCodec = iCal4JDateCodec;
+  }
 
   /**
    * Encodes the specified Silverpeas event recurrence into an iCal4J recurrence.
    * @param eventRecurrence the specified event recurrence to encode.
    * @return the encoded iCal4J recurrence.
-   * @throws EncodingException if the encoding fails.
+   * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Recur encode(final Recurrence eventRecurrence) throws EncodingException {
+  public Recur encode(final Recurrence eventRecurrence) throws SilverpeasRuntimeException {
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
     }
@@ -68,12 +74,13 @@ public class ICal4JRecurrenceCodec {
         Date endDate = iCal4JDateCodec.encode(eventRecurrence.getEndDate().get().minusMinutes(1));
         recur.setUntil(endDate);
       }
-      for (DayOfWeekOccurrence dayOfWeekOccurrence : eventRecurrence.getDaysOfWeek()) {
-        recur.getDayList().add(asICal4JWeekOfDay(dayOfWeekOccurrence));
-      }
+      eventRecurrence.getDaysOfWeek().stream()
+          .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))
+          .forEach(dayOfWeekOccurrence ->
+              recur.getDayList().add(asICal4JWeekOfDay(dayOfWeekOccurrence)));
       return recur;
     } catch (ParseException ex) {
-      throw new EncodingException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 

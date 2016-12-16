@@ -29,6 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.date.Period;
@@ -44,6 +45,8 @@ import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -81,6 +84,62 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarEventTableLines(), hasSize(5));
+  }
+
+  @Test
+  public void getAllEvents() {
+    try(Stream<CalendarEvent> events = Calendar.getEvents().stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(5));
+    }
+  }
+
+  @Test
+  public void getAllEventsLinkedToUser1() {
+    try (Stream<CalendarEvent> events = Calendar.getEvents()
+        .filter(f -> f.onParticipants(User.getById(USER_ID))).stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(3));
+    }
+  }
+
+  @Test
+  public void getAllEventsLinkedToUser0AndUser1() {
+    try (Stream<CalendarEvent> events = Calendar.getEvents()
+        .filter(f -> f.onParticipants(User.getById("0"), User.getById(USER_ID))).stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(5));
+    }
+  }
+
+  @Test
+  public void getAllEventsLinkedToCalendar1() {
+    try (Stream<CalendarEvent> events = Calendar.getEvents()
+        .filter(f -> f.onCalendar(Calendar.getById(CALENDAR_ID))).stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(2));
+    }
+  }
+
+  @Test
+  public void getAllEventsLinkedToCalendar1AndCalendar2() {
+    try (Stream<CalendarEvent> events = Calendar.getEvents()
+        .filter(f -> f.onCalendar(Calendar.getById(CALENDAR_ID), Calendar.getById("ID_2")))
+        .stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(3));
+    }
+  }
+
+  @Test
+  public void getAllEventsLinkedToCalendar1AndCalendar2AndUser1() {
+    try (Stream<CalendarEvent> events = Calendar.getEvents()
+        .filter(f -> f.onCalendar(Calendar.getById(CALENDAR_ID), Calendar.getById("ID_2")))
+        .filter(f -> f.onParticipants(User.getById(USER_ID)))
+        .stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(1));
+    }
   }
 
   @Test

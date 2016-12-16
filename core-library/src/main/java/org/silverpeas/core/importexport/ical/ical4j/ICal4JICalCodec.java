@@ -33,14 +33,15 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.*;
-import net.fortuna.ical4j.model.property.Attendee;
-import net.fortuna.ical4j.model.property.Categories;
-import net.fortuna.ical4j.model.property.Priority;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
-import org.silverpeas.core.calendar.*;
+import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.ical4j.Html;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.importexport.EncodingException;
 import org.silverpeas.core.importexport.ical.ICalCodec;
 import org.silverpeas.core.util.StringUtil;
@@ -66,11 +67,15 @@ public class ICal4JICalCodec implements ICalCodec {
 
   private OffLineInetAddressHostInfo hostInfo = new OffLineInetAddressHostInfo();
 
-  @Inject
-  private ICal4JDateCodec iCal4JDateCodec;
+  private final ICal4JDateCodec iCal4JDateCodec;
+  private final ICal4JRecurrenceCodec iCal4JRecurrenceCodec;
 
   @Inject
-  private ICal4JRecurrenceCodec iCal4JRecurrenceCodec;
+  public ICal4JICalCodec(final ICal4JDateCodec iCal4JDateCodec,
+      final ICal4JRecurrenceCodec iCal4JRecurrenceCodec) {
+    this.iCal4JDateCodec = iCal4JDateCodec;
+    this.iCal4JRecurrenceCodec = iCal4JRecurrenceCodec;
+  }
 
   @Override
   @SuppressWarnings("unchecked")
@@ -133,9 +138,7 @@ public class ICal4JICalCodec implements ICalCodec {
 
       // Add location if any
       Optional<String> location = event.getAttributes().get("location");
-      if (location.isPresent()) {
-        iCalEvent.getProperties().add(new Location(location.get()));
-      }
+      location.ifPresent(s -> iCalEvent.getProperties().add(new Location(s)));
 
       // Add event URL if any
       Optional<String> url = event.getAttributes().get("url");
@@ -179,12 +182,16 @@ public class ICal4JICalCodec implements ICalCodec {
   private ExDate exceptionDatesFrom(final Recurrence recurrence) {
     Set<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
-        .collect(Collectors.toCollection(DateList::new));
+        .collect(Collectors.toCollection(() -> {
+          final DateList list = new DateList(Value.DATE_TIME);
+          list.setUtc(true);
+          return list;
+        }));
     return new ExDate(exDatesList);
   }
 
   private Uid generateUid(CalendarEvent event) {
-    StringBuffer b = new StringBuffer();
+    StringBuilder b = new StringBuilder();
     b.append(event.getId());
     if(this.hostInfo != null) {
       b.append('@');

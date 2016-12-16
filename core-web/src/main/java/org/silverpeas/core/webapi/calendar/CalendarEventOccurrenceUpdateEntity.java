@@ -78,7 +78,7 @@ public class CalendarEventOccurrenceUpdateEntity extends CalendarEventOccurrence
   public CalendarEvent getMergedPersistentEventModel() {
     final CalendarEvent event = super.getMergedPersistentEventModel();
     event.setPeriod(getPeriod());
-    if (!getCalendar().getId().equals(event.getCalendar().getId())) {
+    if (getCalendar() != null && !getCalendar().getId().equals(event.getCalendar().getId())) {
       try {
         Method method = CalendarEvent.class.getDeclaredMethod("setCalendar", Calendar.class);
         method.setAccessible(true);

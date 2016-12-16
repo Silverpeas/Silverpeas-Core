@@ -53,11 +53,11 @@ public class Attributes implements Cloneable {
   private Map<String, String> attributes = new HashMap<>();
 
   /**
-   * Adds the specified attributes.
+   * Sets the specified attributes.
    * @param name the attribute name.
    * @param value the attribute value.
    */
-  public void add(String name, String value) {
+  public void set(String name, String value) {
     attributes.put(name, value);
   }
 

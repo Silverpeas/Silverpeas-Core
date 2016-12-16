@@ -31,6 +31,7 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A persistence repository of calendar events. A calendar event is always persisted for a given
@@ -42,6 +43,20 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   static CalendarEventRepository get() {
     return ServiceProvider.getService(CalendarEventRepository.class);
   }
+
+  /**
+   * Gets all the events that belongs to the specified calendar.<br/>
+   * Please be careful to always close the streams in order to avoid memory leaks!!!
+   * <pre>
+   *   try(Stream<CalendarEvent> event : streamAllFrom(calendar)) {
+   *     // Performing the treatment
+   *   }
+   * </pre>
+   * @param filter a filter to apply on the calendar events to return. The filter can be empty and
+   * then no filtering will be applied on the requested calendar events.
+   * @return the events as a stream.
+   */
+  Stream<CalendarEvent> streamAll(final CalendarEventFilter filter);
 
   /**
    * Deletes all the events that belongs to the specified calendar.

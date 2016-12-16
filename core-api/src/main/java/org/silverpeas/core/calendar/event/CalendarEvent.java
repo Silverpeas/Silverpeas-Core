@@ -70,6 +70,18 @@ import java.util.stream.Collectors;
 @NamedQueries({
     @NamedQuery(name = "calendarEventCount", query =
         "select count(e) from CalendarEvent e where e.calendar = :calendar"),
+    @NamedQuery(name = "calendarEvents", query = "select e from CalendarEvent e"),
+    @NamedQuery(name = "calendarEventsByCalendar", query =
+        "select e from CalendarEvent e where e.calendar in :calendars"),
+    @NamedQuery(name = "calendarEventsByParticipants", query = "select distinct e from " +
+        "CalendarEvent e LEFT OUTER JOIN e.attendees a " +
+        " where (e.createdBy in :participantIds or a.attendeeId in :participantIds)" +
+        " order by e.createdBy, e.period.startDateTime"),
+    @NamedQuery(name = "calendarEventsByCalendarByParticipants", query = "select distinct e from " +
+        "CalendarEvent e LEFT OUTER JOIN e.attendees a " +
+        " where e.calendar in :calendars" +
+        " and (e.createdBy in :participantIds or a.attendeeId in :participantIds)" +
+        " order by e.createdBy, e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByCalendarByPeriod", query =
         "select e from CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r " +
             "where e.calendar in :calendars and (" +
@@ -321,7 +333,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return the event's location.
    */
   public String getLocation() {
-    return (this.location == null ? "":this.location);
+    return (this.location == null ? "" : this.location);
   }
 
   /**
@@ -371,7 +383,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return itself.
    */
   public CalendarEvent withAttribute(String attrName, String attrValue) {
-    getAttributes().add(attrName, attrValue);
+    getAttributes().set(attrName, attrValue);
     return this;
   }
 

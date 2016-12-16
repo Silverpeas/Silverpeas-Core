@@ -45,6 +45,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.persistence.datasource.repository.PaginationCriterion
     .NO_PAGINATION;
@@ -239,7 +240,13 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
    * Lists entities from a the specified JPQL query and with the specified parameters.
    * This method is for fetching any information about the entities stored into this repository; it
    * can be the entities themselves or some of their properties or relationships, and so on.
-   * @param <U> the type of the returned entities.
+   * @param <U> the type of the returned entitie.<br/>
+   * Please be careful to always close the streams in order to avoid memory leaks!!!
+   * <pre>
+   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *     // Performing the treatment
+   *   }
+   * </pre>
    * @param query the JPQL query.
    * @param parameters the parameters to apply to the query.
    * @param returnEntityType the class of the returned entities.
@@ -269,6 +276,41 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
     long count = applyPaginationOnQuery(jpqlQuery, query, parameters, pagination);
     SilverpeasList<U> listOfEntities = getAllFromQuery(query, parameters);
     return count >= 1 ? PaginationList.from(listOfEntities, count) : listOfEntities;
+  }
+
+  /**
+   * Streams entities from the specified JPQL query and with the specified parameters.<br/>
+   * Useful for treatment over a large number of data.
+   * @param query the JPQL query.
+   * @param parameters the parameters to apply to the query.
+   * @return a list of entities matching the query and the parameters. If no entities match the
+   * query then an empty list is returned.
+   */
+  protected Stream<T> streamFromJpqlString(String query, NamedParameters parameters) {
+    return streamFromJpqlString(query, parameters, getEntityClass());
+  }
+
+  /**
+   * Stream entities from a the specified JPQL query and with the specified parameters.
+   * This method is for fetching any information about the entities stored into this repository; it
+   * can be the entities themselves or some of their properties or relationships, and so on.<br/>
+   * Useful for treatment over a large number of data.<br/>
+   * Please be careful to always close the streams in order to avoid memory leaks!!!
+   * <pre>
+   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *     // Performing the treatment
+   *   }
+   * </pre>
+   * @param <U> the type of the returned entities.
+   * @param query the JPQL query.
+   * @param parameters the parameters to apply to the query.
+   * @param returnEntityType the class of the returned entities.
+   * @return a list of entities matching the query and the parameters. If no entities match the
+   * query then an empty list is returned.
+   */
+  protected <U> Stream<U> streamFromJpqlString(String query, NamedParameters parameters,
+      Class<U> returnEntityType) {
+    return streamAllFromQuery(getEntityManager().createQuery(query, returnEntityType), parameters);
   }
 
   /**
@@ -341,6 +383,45 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
   protected <U> SilverpeasList<U> listFromNamedQuery(String namedQuery, NamedParameters parameters,
       Class<U> returnEntityType) {
     return getAllFromQuery(getEntityManager().createNamedQuery(namedQuery, returnEntityType),
+        parameters);
+  }
+
+  /**
+   * Streams entities from a named query and with the specified parameters.<br/>
+   * Useful for treatment over a large number of data.<br/>
+   * Please be careful to always close the stream in order to avoid memory leaks!!!
+   * <pre>
+   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *     // Performing the treatment
+   *   }
+   * </pre>
+   * @param namedQuery the n ame of the query.
+   * @param parameters the parameters to apply to the query.
+   * @return the list of entities matching the query and the parameters.
+   */
+  protected Stream<T> streamByNamedQuery(String namedQuery, NamedParameters parameters) {
+    return streamByNamedQuery(namedQuery, parameters, getEntityClass());
+  }
+
+  /**
+   * Streams entities from a named query and with the specified parameters.<br/>
+   * Useful for treatment over a large number of data.<br/>
+   * Please be careful to always close the stream in order to avoid memory leaks!!!
+   * <pre>
+   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *     // Performing the treatment
+   *   }
+   * </pre>
+   * @param <U> the type of the returned entities.
+   * @param namedQuery the name of the query.
+   * @param parameters the parameters to apply to the query.
+   * @param returnEntityType the class of the returned entities.
+   * @return a list of entities of the given type or an empty list if no entities match the
+   * specified named query with the given parameters.
+   */
+  protected <U> Stream<U> streamByNamedQuery(String namedQuery, NamedParameters parameters,
+      Class<U> returnEntityType) {
+    return streamAllFromQuery(getEntityManager().createNamedQuery(namedQuery, returnEntityType),
         parameters);
   }
 
@@ -442,6 +523,24 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
 
   private <U> SilverpeasList<U> getAllFromQuery(TypedQuery<U> query, NamedParameters parameters) {
     return SilverpeasList.wrap(parameters.applyTo(query).getResultList());
+  }
+
+  /**
+   * Gets a stream on the query result.<br/>
+   * Please be careful to always close the stream in order to avoid memory leaks!!!
+   * <pre>
+   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *     // Performing the treatment
+   *   }
+   * </pre>
+   * TODO use an implementation which performs a real stream operation.<br/>
+   * TODO so, getResultList() method call must disappear.<br/>
+   * A real stream operation is able to provide the reading of a large set of result bu using
+   * small memory space.<br/>
+   * Using the Hibernate implementation (since version 5.2) is surely a good solution for now.
+   */
+  private <U> Stream<U> streamAllFromQuery(TypedQuery<U> query, NamedParameters parameters) {
+    return parameters.applyTo(query).getResultList().stream();
   }
 
   private <U> U getFromQuery(TypedQuery<U> query,

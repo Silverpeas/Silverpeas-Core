@@ -35,6 +35,7 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Yohann Chastagnier
@@ -44,9 +45,24 @@ public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepositor
     implements CalendarEventRepository {
 
   @Override
+  public Stream<CalendarEvent> streamAll(final CalendarEventFilter filter) {
+    String namedQuery = "calendarEvents";
+    NamedParameters parameters = newNamedParameters();
+    if (!filter.getCalendars().isEmpty()) {
+      parameters.add("calendars", filter.getCalendars());
+      namedQuery += "ByCalendar";
+    }
+    if (!filter.getParticipants().isEmpty()) {
+      parameters.add("participantIds",
+          filter.getParticipants().stream().map(User::getId).collect(Collectors.toList()));
+      namedQuery += "ByParticipants";
+    }
+    return streamByNamedQuery(namedQuery, parameters);
+  }
+
+  @Override
   public long size(final Calendar calendar) {
-    NamedParameters params = newNamedParameters()
-        .add("calendar", calendar);
+    NamedParameters params = newNamedParameters().add("calendar", calendar);
     return getFromNamedQuery("calendarEventCount", params, Long.class);
   }
 

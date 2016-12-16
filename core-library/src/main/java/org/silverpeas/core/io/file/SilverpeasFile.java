@@ -54,7 +54,7 @@ public class SilverpeasFile extends File {
   private String mimeType;
 
   /**
-   * Creates a new Silverpeas file beloging to the specified component instance and located at the
+   * Creates a new Silverpeas file belonging to the specified component instance and located at the
    * specified path in the Silverpeas filesystem. The MIME type of the file is detected.
    * @param componentId the unique identifier of the component instance.
    * @param path the absolute path of the file.

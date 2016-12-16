@@ -34,6 +34,8 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.Attendee;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.icalendar.ICalendarException;
+import org.silverpeas.core.calendar.icalendar.ICalendarExport;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
@@ -48,6 +50,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -59,6 +63,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
@@ -106,6 +111,7 @@ public class CalendarResource extends AbstractCalendarResource {
   @Produces(MediaType.APPLICATION_JSON)
   public CalendarEntity getCalendar(@PathParam("calendarId") String calendarId) {
     final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
+    assertDataConsistency(getComponentId(), calendar);
     return asWebEntity(calendar);
   }
 
@@ -169,6 +175,40 @@ public class CalendarResource extends AbstractCalendarResource {
       calendarWebServiceProvider.deleteCalendar(calendar);
       return null;
     }).execute();
+  }
+
+  /**
+   * Gets the JSON representation of a calendar represented by the given identifier.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @param calendarId the identifier of the aimed calendar
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * calendar.
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path("{calendarId}/export/ical")
+  @Produces("text/calendar")
+  public Response exportCalendarAsICalendarFormat(@PathParam("calendarId") String calendarId) {
+    final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
+    assertDataConsistency(getComponentId(), calendar);
+    return Response.ok((StreamingOutput) output -> {
+      try {
+        if (calendar.isMainPersonalOf(getUserDetail())) {
+          ICalendarExport
+              .from(() -> Calendar.getEvents().filter(f -> f.onParticipants(getUserDetail())).stream())
+              .to(() -> output);
+        } else {
+          ICalendarExport
+              .from(() -> Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream())
+              .to(() -> output);
+        }
+      } catch (ICalendarException e) {
+        throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+      }
+    })
+    .header("Content-Disposition",
+        String.format("inline;filename=\"%s\"", calendar.getTitle() + ".ics"))
+    .build();
   }
 
   /**

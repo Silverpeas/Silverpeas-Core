@@ -39,8 +39,12 @@ import java.io.Writer;
 @Singleton
 public class ICalExporter implements Exporter<ExportableCalendar> {
 
+  private final ICalCodec iCalCodec;
+
   @Inject
-  private ICalCodec iCalCodec;
+  private ICalExporter(final ICalCodec iCalCodec) {
+    this.iCalCodec = iCalCodec;
+  }
 
   /**
    * Exports the specified events with a writer in the iCal format. If no events are specified, then
@@ -85,8 +89,5 @@ public class ICalExporter implements Exporter<ExportableCalendar> {
    */
   protected ICalCodec getICalCodec() {
     return iCalCodec;
-  }
-
-  private ICalExporter() {
   }
 }

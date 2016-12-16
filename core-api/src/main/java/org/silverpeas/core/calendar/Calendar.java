@@ -134,6 +134,14 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets a calendar events instance which permits to get (as stream) events.<br/>
+   * @return a calendar events instance.
+   */
+  public static CalendarEvents getEvents() {
+    return new CalendarEvents();
+  }
+
+  /**
    * Gets the identifier of the component instance which the calendar is attached.
    * @return the identifier of the component instance which the calendar is attached.
    */
@@ -261,6 +269,18 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
     verifyCalendarIsPersisted();
     CalendarEventRepository repository = CalendarEventRepository.get();
     return repository.size(this) == 0;
+  }
+
+  /**
+   * Is this calendar the personal one of the given user which is not modifiable?
+   * @param user the user to verify.
+   * @return true if it is, false otherwise.
+   */
+  public boolean isMainPersonalOf(final User user) {
+    SilverpeasComponentInstance instance =
+        SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
+    return instance.isPersonal() && getCreator().getId().equals(user.getId()) &&
+        getTitle().equals(user.getDisplayedName());
   }
 
   @Override

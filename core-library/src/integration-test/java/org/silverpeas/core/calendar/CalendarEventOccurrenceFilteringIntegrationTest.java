@@ -103,11 +103,10 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
             .filter(f -> f.onParticipants(User.getById("0")))
             .getEventOccurrences();
 
-    assertThat(occurrences.size(), is(4));
-    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_4"));
-    assertThat(occurrences.get(1).getCalendarEvent().getId(), is("ID_E_2"));
-    assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_1"));
-    assertThat(occurrences.get(3).getCalendarEvent().getId(), is("ID_E_3"));
+    assertThat(occurrences.size(), is(3));
+    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_2"));
+    assertThat(occurrences.get(1).getCalendarEvent().getId(), is("ID_E_1"));
+    assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_3"));
   }
 
   /**
@@ -124,8 +123,8 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
             .filter(f -> f.onParticipants(User.getById("1")))
             .getEventOccurrences();
 
-    assertThat(occurrences.size(), is(1));
-    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_1"));
+    assertThat(occurrences.size(), is(2));
+    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_4"));
   }
 
   /**
@@ -143,15 +142,14 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
             .filter(f -> f.onParticipants(User.getById("0")))
             .getEventOccurrences();
 
-    assertThat(occurrences.size(), is(6));
-    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_4"));
-    assertThat(occurrences.get(1).getCalendarEvent().getId(), is("ID_E_2"));
-    assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_1"));
-    assertThat(occurrences.get(3).getCalendarEvent().getId(), is("ID_E_3"));
+    assertThat(occurrences.size(), is(5));
+    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_2"));
+    assertThat(occurrences.get(1).getCalendarEvent().getId(), is("ID_E_1"));
+    assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_3"));
+    assertThat(occurrences.get(3).getCalendarEvent().getId(), is("ID_E_5"));
     assertThat(occurrences.get(4).getCalendarEvent().getId(), is("ID_E_5"));
-    assertThat(occurrences.get(5).getCalendarEvent().getId(), is("ID_E_5"));
-    assertThat(occurrences.get(4).getStartDateTime().toLocalDate(), is(LocalDate.of(2016, 1, 9)));
-    assertThat(occurrences.get(5).getStartDateTime().toLocalDate(), is(LocalDate.of(2016, 1, 23)));
+    assertThat(occurrences.get(3).getStartDateTime().toLocalDate(), is(LocalDate.of(2016, 1, 9)));
+    assertThat(occurrences.get(4).getStartDateTime().toLocalDate(), is(LocalDate.of(2016, 1, 23)));
   }
 
   /**
