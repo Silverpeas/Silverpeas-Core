@@ -29,7 +29,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.event.Attendee;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.base.WebEntity;
@@ -40,13 +39,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
+import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -67,8 +66,8 @@ public class CalendarEventEntity implements WebEntity {
   private String description;
   private String location;
   private boolean onAllDay;
-  private OffsetDateTime startDateTime;
-  private OffsetDateTime endDateTime;
+  private String startDate;
+  private String endDate;
   private VisibilityLevel visibility;
   private Priority priority;
   private CalendarEventRecurrenceEntity recurrence;
@@ -179,20 +178,20 @@ public class CalendarEventEntity implements WebEntity {
     this.onAllDay = onAllDay;
   }
 
-  public String getStartDateTime() {
-    return startDateTime.toString();
+  public String getStartDate() {
+    return startDate;
   }
 
-  protected void setStartDateTime(final String startDateTime) {
-    this.startDateTime = isDefined(startDateTime) ? OffsetDateTime.parse(startDateTime) : null;
+  protected void setStartDate(final String startDate) {
+    this.startDate = startDate;
   }
 
-  public String getEndDateTime() {
-    return endDateTime.toString();
+  public String getEndDate() {
+    return endDate;
   }
 
-  protected void setEndDateTime(final String endDateTime) {
-    this.endDateTime = isDefined(endDateTime) ? OffsetDateTime.parse(endDateTime) : null;
+  protected void setEndDate(final String endDate) {
+    this.endDate = endDate;
   }
 
   public VisibilityLevel getVisibility() {
@@ -242,7 +241,8 @@ public class CalendarEventEntity implements WebEntity {
     return lastUpdateDate;
   }
 
-  public boolean isCanBeAccessed() {
+  @XmlElement
+  public boolean canBeAccessed() {
     return canBeAccessed;
   }
 
@@ -257,23 +257,33 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   /**
+   * Gets the period of the event.
+   * @return a period instance.
+   */
+  @XmlTransient
+  Period getPeriod() {
+    final Period eventPeriod;
+    if (isOnAllDay()) {
+      eventPeriod = Period.between(LocalDate.parse(startDate), LocalDate.parse(endDate));
+    } else {
+      eventPeriod = Period.between(OffsetDateTime.parse(startDate), OffsetDateTime.parse(endDate));
+    }
+    return eventPeriod;
+  }
+
+  /**
    * Get the persistent data representation of an event merged with the entity data.
    * The data of the entity are applied to the returned instance.
+   * @param occurrencePeriod the occurrence period if the entity is get from an occurrence entity.
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  public CalendarEvent getMergedPersistentModel() {
+  CalendarEvent getMergedPersistentModel(final Period occurrencePeriod) {
     final CalendarEvent event;
     if (isDefined(getId())) {
       event = CalendarEvent.getById(getId());
     } else {
-      final Period eventPeriod;
-      if (isOnAllDay()) {
-        eventPeriod = Period.allDaysBetween(startDateTime, endDateTime);
-      } else {
-        eventPeriod = Period.between(startDateTime, endDateTime);
-      }
-      event = CalendarEvent.on(eventPeriod);
+      event = CalendarEvent.on(getPeriod());
     }
     event.withTitle(getTitle());
     event.withDescription(getDescription());
@@ -281,7 +291,7 @@ public class CalendarEventEntity implements WebEntity {
     event.withVisibilityLevel(getVisibility());
     event.withPriority(getPriority());
     if (getRecurrence() != null) {
-      getRecurrence().applyOn(event);
+      getRecurrence().applyOn(event, occurrencePeriod);
     } else {
       event.unsetRecurrence();
     }
@@ -290,37 +300,28 @@ public class CalendarEventEntity implements WebEntity {
       attendeeEntity.addTo(event);
       newAttendeeIds.add(attendeeEntity.getId());
     }
-    Iterator<Attendee> existingAttendees = event.getAttendees().iterator();
-    while(existingAttendees.hasNext()) {
-      Attendee attendee = existingAttendees.next();
-      if (!newAttendeeIds.contains(attendee.getId())) {
-        existingAttendees.remove();
-      }
-    }
+    event.getAttendees().removeIf(attendee -> !newAttendeeIds.contains(attendee.getId()));
     return event;
   }
 
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
       final String componentInstanceId) {
-    boolean hasPrivateBehaviorToBeApplied =
-        !componentInstanceId.equals(calendarEvent.getCalendar().getComponentInstanceId()) &&
-            PUBLIC != calendarEvent.getVisibilityLevel();
     User currentUser = User.getCurrentRequester();
     id = calendarEvent.getId();
     onAllDay = calendarEvent.isOnAllDay();
-    startDateTime = calendarEvent.getStartDateTime();
-    endDateTime = calendarEvent.getEndDateTime();
+    startDate = calendarEvent.getStartDate().toString();
+    endDate = calendarEvent.getEndDate().toString();
     createDate = calendarEvent.getCreateDate();
     lastUpdateDate = calendarEvent.getLastUpdateDate();
     ownerName = calendarEvent.getCreator().getDisplayedName();
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);
-    if (canBeAccessed || !hasPrivateBehaviorToBeApplied) {
-      title = calendarEvent.getTitle();
+    title = formatTitle(calendarEvent, componentInstanceId, canBeAccessed);
+    if (canBeAccessed) {
       description = calendarEvent.getDescription();
       location = calendarEvent.getLocation();
       visibility = calendarEvent.getVisibilityLevel();
       priority = calendarEvent.getPriority();
-      recurrence = CalendarEventRecurrenceEntity.from(calendarEvent.getRecurrence());
+      recurrence = CalendarEventRecurrenceEntity.from(calendarEvent);
       canBeModified = calendarEvent.canBeModifiedBy(currentUser);
       canBeDeleted = calendarEvent.canBeDeletedBy(currentUser);
     } else {
@@ -337,8 +338,8 @@ public class CalendarEventEntity implements WebEntity {
     builder.append("id", getId());
     builder.append("title", getTitle());
     builder.append("description", getDescription());
-    builder.append("startDateTime", getStartDateTime());
-    builder.append("endDateTime", getEndDateTime());
+    builder.append("startDate", getStartDate());
+    builder.append("endDate", getEndDate());
     builder.append("onAllDay", isOnAllDay());
     builder.append("visibility", getVisibility());
     builder.append("priority", getPriority());

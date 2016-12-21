@@ -30,7 +30,7 @@
   <div>
     <span>{{$ctrl.calendar.title}}</span>
     <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})">V</a>
-    <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" ng-if="!$ctrl.calendar.canBeRemoved">E</a>
+    <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" ng-if="!$ctrl.calendar.userPersonal && !$ctrl.calendar.canBeRemoved">E</a>
     <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeModified">U</a>
     <a href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved">R</a>
     <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeDeleted">X</a>

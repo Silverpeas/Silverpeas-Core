@@ -34,7 +34,7 @@
     setCalendarEventOccurrence : function(ceo) {
       var cachedCeo = ceo;
       if (cachedCeo) {
-        cachedCeo = SilverpeasCalendarTool.extractEventOccurrenceEntityData(ceo);
+        cachedCeo = SilverpeasCalendarTools.extractEventOccurrenceEntityData(ceo);
       }
       this.put('calendarEventOccurrence', cachedCeo);
     },
@@ -63,19 +63,19 @@
         $scope.goToPage = function(uri, context) {
           context = extendsObject(false, {}, context);
           context.eventOccurrence = extendsObject({
-            startDateTime : '',
-            endDateTime : '',
+            startDate : '',
+            endDate : '',
             event : {
               onAllDay : false,
               title : '',
               description : '',
-              startDateTime : '',
-              endDateTime : '',
+              startDate : '',
+              endDate : '',
               location : ''
             }
-          }, SilverpeasCalendarTool.extractEventOccurrenceEntityData(context.eventOccurrence));
+          }, SilverpeasCalendarTools.extractEventOccurrenceEntityData(context.eventOccurrence));
           if (context.startMoment) {
-            context.eventOccurrence.startDateTime = context.startMoment.toISOString();
+            context.eventOccurrence.startDate = context.startMoment.toISOString();
             if (!context.startMoment.hasTime()) {
               context.eventOccurrence.event.onAllDay = true;
             }
@@ -87,11 +87,11 @@
 
         $scope.reloadEventOccurrence = function(occurrenceToReload) {
           if (occurrenceToReload && occurrenceToReload.event && occurrenceToReload.event.id &&
-              occurrenceToReload.startDateTime) {
+              occurrenceToReload.startDate) {
             var eventUri = occurrenceToReload.event.uri;
             var calendarUri = occurrenceToReload.event.calendarUri;
             return CalendarService.getEventOccurrenceAt(eventUri,
-                occurrenceToReload.startDateTime).then(function(reloadedOccurrence) {
+                occurrenceToReload.startDate).then(function(reloadedOccurrence) {
               return CalendarService.getByUri(calendarUri).then(function(calendar) {
                 reloadedOccurrence.event.calendar = calendar;
                 return reloadedOccurrence;

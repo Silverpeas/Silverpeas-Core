@@ -75,7 +75,7 @@ public class CalendarEventOccurrenceUpdateEntity extends CalendarEventOccurrence
    * @return a {@link CalendarEventOccurrence} instance.
    */
   @XmlTransient
-  public CalendarEvent getMergedPersistentEventModel() {
+  CalendarEvent getMergedPersistentEventModel() {
     final CalendarEvent event = super.getMergedPersistentEventModel();
     event.setPeriod(getPeriod());
     if (getCalendar() != null && !getCalendar().getId().equals(event.getCalendar().getId())) {
@@ -97,8 +97,8 @@ public class CalendarEventOccurrenceUpdateEntity extends CalendarEventOccurrence
     builder.append("updateMethodType", getUpdateMethodType());
     builder.append("occurrenceId", getId());
     builder.append("event", getEvent().toString());
-    builder.append("startDateTime", getStartDateTime());
-    builder.append("endDateTime", getEndDateTime());
+    builder.append("startDate", getStartDate());
+    builder.append("endDate", getEndDate());
     return builder.toString();
   }
 }

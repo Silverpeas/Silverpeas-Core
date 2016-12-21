@@ -42,7 +42,7 @@ import java.util.Set;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
-    implements Cloneable, SilverpeasComponentInstance {
+    implements Cloneable, SilverpeasSharedComponentInstance {
 
   private static final long serialVersionUID = 1L;
   public static final String STATUS_REMOVED = "R";

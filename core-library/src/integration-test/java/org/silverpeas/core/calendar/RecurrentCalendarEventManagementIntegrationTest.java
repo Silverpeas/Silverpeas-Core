@@ -37,12 +37,13 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static java.time.DayOfWeek.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,6 +72,12 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   private LocalDate today = LocalDate.now();
   private OffsetDateTime now = OffsetDateTime.now();
 
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
+
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(
@@ -94,10 +101,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     CalendarEvent calendarEvent = mayBeEvent.get();
     assertThat(calendarEvent.getCalendar().getId(), is("ID_1"));
     assertThat(calendarEvent.isOnAllDay(), is(true));
-    assertThat(calendarEvent.getStartDateTime(),
-        is(Instant.parse("2016-01-09T00:00:00Z").atOffset(ZoneOffset.UTC)));
-    assertThat(calendarEvent.getEndDateTime(),
-        is(Instant.parse("2016-01-09T23:59:00Z").atOffset(ZoneOffset.UTC)));
+    assertThat(calendarEvent.getStartDate(), is(LocalDate.parse("2016-01-09")));
+    assertThat(calendarEvent.getEndDate(), is(LocalDate.parse("2016-01-09")));
     assertThat(calendarEvent.getTitle(), is("title E"));
     assertThat(calendarEvent.getDescription(), is("description E"));
     assertThat(calendarEvent.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
@@ -124,18 +129,16 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     int step = 0;
     for (int i = 0; i < occurrences.size(); i++) {
       CalendarEventOccurrence occurrence = occurrences.get(i);
-      OffsetDateTime startDateTime =
-          LocalDate.of(2016, 1, 23).atStartOfDay().atOffset(ZoneOffset.UTC).plusWeeks(i + step);
-      if (startDateTime.isEqual(exceptionDate)) {
-        startDateTime = exceptionDate.plusWeeks(1);
+      LocalDate startDate = LocalDate.of(2016, 1, 23).plusWeeks(i + step);
+      if (startDate.isEqual(exceptionDate.toLocalDate())) {
+        startDate = exceptionDate.toLocalDate().plusWeeks(1);
         step++;
       }
-      OffsetDateTime endDateTime =
-          LocalDate.of(2016, 1, 23).atTime(23, 59).atOffset(ZoneOffset.UTC).plusWeeks(i + step);
+      LocalDate endDate = LocalDate.of(2016, 1, 23).plusWeeks(i + step);
 
       assertThat(occurrence.getCalendarEvent().getId(), is("ID_E_5"));
-      assertThat(occurrence.getStartDateTime(), is(startDateTime));
-      assertThat(occurrence.getEndDateTime(), is(endDateTime));
+      assertThat(occurrence.getStartDate(), is(startDate));
+      assertThat(occurrence.getEndDate(), is(endDate));
     }
   }
 
@@ -291,14 +294,14 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     Optional<CalendarEvent> mayBeEvent = calendar.event(occurrence.getCalendarEvent().getId());
     assertThat(mayBeEvent.isPresent(), is(true));
     CalendarEvent event = mayBeEvent.get();
-    assertThat(event.getRecurrence().getExceptionDates().contains(occurrence.getStartDateTime()),
-        is(true));
+    assertThat(event.getRecurrence().getExceptionDates()
+        .contains(Period.asOffsetDateTime(occurrence.getStartDate())), is(true));
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
         .getEventOccurrences();
     assertThat(occurrences.size(), is(4));
-    assertThat(occurrences.get(0).getStartDateTime(),
-        is(occurrence.getStartDateTime().plusWeeks(2)));
+    assertThat(occurrences.get(0).getStartDate(),
+        is(occurrence.getStartDate().plus(2, ChronoUnit.WEEKS)));
   }
 
   @Test
@@ -394,32 +397,37 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
             .getEventOccurrences();
     CalendarEventOccurrence occurrence = occurrences.get(0);
     assertThat(occurrences.size(), is(5));
-    assertThat(occurrence.getStartDateTime(), is(OffsetDateTime.parse("2016-01-23T00:00Z")));
-    assertThat(occurrence.getEndDateTime(), is(OffsetDateTime.parse("2016-01-23T23:59Z")));
-    assertThat(occurrence.getCalendarEvent().getRecurrence().getExceptionDates(), empty());
+    assertThat(occurrence.getCalendarEvent().getId(), is("ID_E_5"));
+    assertThat(occurrence.getCalendarEvent().isOnAllDay(), is(true));
+    assertThat(occurrence.getStartDate(), is(LocalDate.parse("2016-01-23")));
+    assertThat(occurrence.getEndDate(), is(LocalDate.parse("2016-01-23")));
+    assertThat(occurrence.getCalendarEvent().getRecurrence().getExceptionDates(),
+        containsInAnyOrder(OffsetDateTime.parse("2016-01-30T00:00Z"),
+            OffsetDateTime.parse("2016-01-16T00:00Z")));
 
     CalendarEvent previousEvent = occurrence.getCalendarEvent();
     occurrence.setDay(LocalDate.of(2016, 1, 24));
     previousEvent.setLastUpdatedBy("1");
     CalendarEventModificationResult result = previousEvent.update(
-        fromOccurrenceId(occurrence.getId()).withPeriod(occurrence.getPeriod(), ZoneOffset.UTC));
+        fromOccurrenceId(occurrence.getId()).withPeriod(occurrence.getPeriod()));
     assertThat(result, notNullValue());
     assertThat(result.isUpdatedEvent(), is(true));
     assertThat(result.isCreatedEvent(), is(true));
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
         .getEventOccurrences();
-    CalendarEventOccurrence updatedOccurrence = occurrences.get(0);
+    CalendarEventOccurrence createdOccurrence = occurrences.get(0);
     assertThat(occurrences.size(), is(5));
     assertThat(result.getUpdatedEvent(), is(occurrence.getCalendarEvent()));
-    assertThat(result.getUpdatedEvent().getRecurrence().getExceptionDates(), hasSize(1));
-    assertThat(result.getCreatedEvent(), is(updatedOccurrence.getCalendarEvent()));
-    assertThat(result.getUpdatedEvent(), not(result.getCreatedEvent()));
-    assertThat(updatedOccurrence.getStartDateTime(), is(OffsetDateTime.parse("2016-01-24T00:00Z")));
-    assertThat(updatedOccurrence.getEndDateTime(), is(OffsetDateTime.parse("2016-01-24T23:59Z")));
-    assertThat(updatedOccurrence.getCalendarEvent(), is(occurrence.getCalendarEvent()));
-    assertThat(updatedOccurrence.getCalendarEvent(), not(previousEvent));
-    assertThat(updatedOccurrence.getCalendarEvent().isRecurrent(), is(false));
+    assertThat(result.getUpdatedEvent().getRecurrence().getExceptionDates(), hasSize(3));
+    assertThat(result.getCreatedEvent(), is(createdOccurrence.getCalendarEvent()));
+    assertThat(result.getCreatedEvent().isRecurrent(), is(false));
+    assertThat(result.getUpdatedEvent(), not(is(result.getCreatedEvent())));
+    assertThat(createdOccurrence.getStartDate(), is(LocalDate.parse("2016-01-24")));
+    assertThat(createdOccurrence.getEndDate(), is(LocalDate.parse("2016-01-24")));
+    assertThat(createdOccurrence.getCalendarEvent(), not(is(occurrence.getCalendarEvent())));
+    assertThat(createdOccurrence.getCalendarEvent(), not(is(previousEvent)));
+    assertThat(createdOccurrence.getCalendarEvent().isRecurrent(), is(false));
   }
 
   @Test
@@ -436,7 +444,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(event.getTitle(), is("title E"));
     event.setTitle("UPDATED TITLE");
     ModificationResult result = event.updateFrom(
-        fromOccurrenceId(occurrence.getId()).withPeriod(occurrence.getPeriod(), ZoneOffset.UTC));
+        fromOccurrenceId(occurrence.getId()).withPeriod(occurrence.getPeriod()));
     assertThat(result, notNullValue());
     assertThat(result.isUpdatedEvent(), is(true));
     assertThat(result.isCreatedEvent(), is(true));
@@ -473,8 +481,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   }
 
   private void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
-    assertThat(actual.getStartDateTime(), is(expected.getStartDateTime()));
-    assertThat(actual.getEndDateTime(), is(expected.getEndDateTime()));
+    assertThat(actual.getStartDate(), is(expected.getStartDate()));
+    assertThat(actual.getEndDate(), is(expected.getEndDate()));
     assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
     assertThat(actual.getTitle(), is(expected.getTitle()));
     assertThat(actual.getDescription(), is(expected.getDescription()));

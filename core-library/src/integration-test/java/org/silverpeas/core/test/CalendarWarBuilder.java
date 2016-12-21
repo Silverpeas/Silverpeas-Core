@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.test;
 
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -41,6 +44,7 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addJpaPersistenceFeatures();
     addNotificationFeatures();
     addPackages(true, "org.silverpeas.core.notification.user.delayed.model");
+    addClasses(ICal4JDateCodec.class, ICal4JRecurrenceCodec.class);
   }
 
   /**

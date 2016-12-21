@@ -29,7 +29,6 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.parameter.Value;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Temporal;
 
@@ -40,7 +39,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -64,6 +63,39 @@ public class ICal4JDateCodec {
   }
 
   /**
+   * Encodes a temporal data into an iCal4J date.
+   * @param aTemporal the temporal data to encode.
+   * @return an iCal4J date.
+   * @throws SilverpeasRuntimeException if the encoding fails.
+   */
+  public Date encode(final java.time.temporal.Temporal aTemporal)
+      throws SilverpeasRuntimeException {
+    if (aTemporal instanceof LocalDate) {
+      return encode((LocalDate) aTemporal);
+    } else if (aTemporal instanceof OffsetDateTime) {
+      return encode((OffsetDateTime) aTemporal);
+    } else if (aTemporal instanceof ZonedDateTime) {
+      return encode((ZonedDateTime) aTemporal);
+    }
+    throw new IllegalArgumentException("the type of given temporal is not yet handled");
+  }
+
+  /**
+   * Encodes a temporal data set into an iCal4J date.
+   * @param temporals the temporal data set to encode.
+   * @return an iCal4J date.
+   * @throws SilverpeasRuntimeException if the encoding fails.
+   */
+  public DateList encode(final Collection<? extends java.time.temporal.Temporal> temporals)
+      throws SilverpeasRuntimeException {
+    return temporals.stream().map(this::encode).sorted().collect(Collectors.toCollection(() -> {
+      final DateList list = new DateList();
+      list.setUtc(true);
+      return list;
+    }));
+  }
+
+  /**
    * Encodes a date time into an iCal4J date set in UTC.
    * @param dateTime the date time to encode.
    * @return an iCal4J date.
@@ -76,20 +108,6 @@ public class ICal4JDateCodec {
     } catch (ParseException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
-  }
-
-  /**
-   * Encodes a set of date time into an iCal4J date list set in UTC.
-   * @param dateTimes the date times to encode.
-   * @return an list od iCal4J date.
-   * @throws SilverpeasRuntimeException if the encoding fails.
-   */
-  public DateList encode(final Set<OffsetDateTime> dateTimes) throws SilverpeasRuntimeException {
-    return dateTimes.stream().map(this::encode).sorted().collect(Collectors.toCollection(() -> {
-      final DateList list = new DateList(Value.DATE_TIME);
-      list.setUtc(true);
-      return list;
-    }));
   }
 
   /**

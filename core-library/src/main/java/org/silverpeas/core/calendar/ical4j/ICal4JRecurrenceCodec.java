@@ -24,17 +24,25 @@
 package org.silverpeas.core.calendar.ical4j;
 
 import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.parameter.Value;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.text.ParseException;
+import java.time.DayOfWeek;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
 import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE;
@@ -54,12 +62,42 @@ public class ICal4JRecurrenceCodec {
   }
 
   /**
-   * Encodes the specified Silverpeas event recurrence into an iCal4J recurrence.
-   * @param eventRecurrence the specified event recurrence to encode.
+   * Converts the exception dates from a calendar event containing recurrence data.<br/>
+   * The presence of an exception date must be verified before calling this method.
+   * @param event the event source which contains recurrence data.
+   * @return the converted exception dates.
+   */
+  public DateList convertExceptionDates(final CalendarEvent event) {
+    Recurrence recurrence = event.getRecurrence();
+    if (recurrence == NO_RECURRENCE) {
+      throw new IllegalArgumentException("Event recurrence missing!");
+    }
+    return recurrence.getExceptionDates().stream()
+      .map(offsetDateTime -> {
+        if (event.isOnAllDay()) {
+          return iCal4JDateCodec.encode(offsetDateTime.toLocalDate());
+        } else {
+          return iCal4JDateCodec.encode(offsetDateTime);
+        }
+      })
+      .sorted()
+      .collect(Collectors.toCollection(() -> {
+        Value type = event.isOnAllDay() ? Value.DATE : Value.DATE_TIME;
+        final DateList list = new DateList(type);
+        list.setUtc(!event.isOnAllDay());
+        return list;
+      }));
+  }
+
+  /**
+   * Encodes the recurrence of the specified Silverpeas event into an iCal4J recurrence.<br/>
+   * The presence of recurrence data must be verified before calling this method.
+   * @param event the event source which contains recurrence data.
    * @return the encoded iCal4J recurrence.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Recur encode(final Recurrence eventRecurrence) throws SilverpeasRuntimeException {
+  public Recur encode(final CalendarEvent event) throws SilverpeasRuntimeException {
+    Recurrence eventRecurrence = event.getRecurrence();
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
     }
@@ -71,13 +109,17 @@ public class ICal4JRecurrenceCodec {
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
       } else if (eventRecurrence.getEndDate().isPresent()) {
-        Date endDate = iCal4JDateCodec.encode(eventRecurrence.getEndDate().get().minusMinutes(1));
-        recur.setUntil(endDate);
+        final OffsetDateTime endDate = eventRecurrence.getEndDate().get();
+        if (event.isOnAllDay()) {
+          recur.setUntil(iCal4JDateCodec.encode(endDate.toLocalDate()));
+        } else {
+          recur.setUntil(iCal4JDateCodec.encode(endDate.plusDays(1)));
+        }
       }
       eventRecurrence.getDaysOfWeek().stream()
           .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))
           .forEach(dayOfWeekOccurrence ->
-              recur.getDayList().add(asICal4JWeekOfDay(dayOfWeekOccurrence)));
+              recur.getDayList().add(encode(dayOfWeekOccurrence)));
       return recur;
     } catch (ParseException ex) {
       throw new SilverpeasRuntimeException(ex.getMessage(), ex);
@@ -112,34 +154,39 @@ public class ICal4JRecurrenceCodec {
     return freq;
   }
 
-  private WeekDay asICal4JWeekOfDay(final DayOfWeekOccurrence dayOfWeekOccurrence) {
-    WeekDay weekday = null;
-    switch (dayOfWeekOccurrence.dayOfWeek()) {
-      case MONDAY:
-        weekday = WeekDay.MO;
-        break;
-      case TUESDAY:
-        weekday = WeekDay.TU;
-        break;
-      case WEDNESDAY:
-        weekday = WeekDay.WE;
-        break;
-      case THURSDAY:
-        weekday = WeekDay.TH;
-        break;
-      case FRIDAY:
-        weekday = WeekDay.FR;
-        break;
-      case SATURDAY:
-        weekday = WeekDay.SA;
-        break;
-      case SUNDAY:
-        weekday = WeekDay.SU;
-        break;
-    }
+  private WeekDay encode(final DayOfWeekOccurrence dayOfWeekOccurrence) {
+    WeekDay weekday = encode(dayOfWeekOccurrence.dayOfWeek());
     if (dayOfWeekOccurrence.nth() != ALL_OCCURRENCES) {
       weekday = new WeekDay(weekday, dayOfWeekOccurrence.nth());
     }
     return weekday;
+  }
+
+  public WeekDay encode(final DayOfWeek dayOfWeek) {
+    WeekDay weekDay = null;
+    switch (dayOfWeek) {
+      case MONDAY:
+        weekDay = WeekDay.MO;
+        break;
+      case TUESDAY:
+        weekDay = WeekDay.TU;
+        break;
+      case WEDNESDAY:
+        weekDay = WeekDay.WE;
+        break;
+      case THURSDAY:
+        weekDay = WeekDay.TH;
+        break;
+      case FRIDAY:
+        weekDay = WeekDay.FR;
+        break;
+      case SATURDAY:
+        weekDay = WeekDay.SA;
+        break;
+      case SUNDAY:
+        weekDay = WeekDay.SU;
+        break;
+    }
+    return weekDay;
   }
 }

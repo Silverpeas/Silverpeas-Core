@@ -30,6 +30,7 @@ import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -38,6 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,17 +60,17 @@ public class CalendarEventRecurrenceEntity implements Serializable {
 
   private FrequencyEntity frequency;
   private int count = Recurrence.NO_RECURRENCE_COUNT;
-  private OffsetDateTime endDateTime = Recurrence.NO_RECURRENCE_END_DATE;
+  private String endDate = null;
   private List<DayOfWeekOccurrenceEntity> daysOfWeek = new ArrayList<>(7);
 
   protected CalendarEventRecurrenceEntity() {
   }
 
-  public static CalendarEventRecurrenceEntity from(final Recurrence recurrence) {
-    if (recurrence == Recurrence.NO_RECURRENCE) {
+  public static CalendarEventRecurrenceEntity from(final CalendarEvent event) {
+    if (event.getRecurrence() == Recurrence.NO_RECURRENCE) {
       return null;
     }
-    return new CalendarEventRecurrenceEntity().decorate(recurrence);
+    return new CalendarEventRecurrenceEntity().decorate(event);
   }
 
   public FrequencyEntity getFrequency() {
@@ -87,13 +89,12 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     this.count = count;
   }
 
-  public String getEndDateTime() {
-    return endDateTime != null ? endDateTime.toString() : null;
+  public String getEndDate() {
+    return endDate;
   }
 
-  public void setEndDateTime(final String endDateTime) {
-    this.endDateTime = isDefined(endDateTime) ? OffsetDateTime.parse(endDateTime) :
-        Recurrence.NO_RECURRENCE_END_DATE;
+  public void setEndDate(final String endDate) {
+    this.endDate = endDate;
   }
 
   public List<DayOfWeekOccurrenceEntity> getDaysOfWeek() {
@@ -106,10 +107,12 @@ public class CalendarEventRecurrenceEntity implements Serializable {
 
   /**
    * Get the model representation of a recurrence with the entity data.
+   * @param event the event on which the recurrence must be set.
+   * @param occurrencePeriod the occurrence period in the case of an occurrence entity get.
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  public Recurrence applyOn(CalendarEvent event) {
+  Recurrence applyOn(CalendarEvent event, Period occurrencePeriod) {
     Recurrence recurrence = event.getRecurrence();
     if (event.getRecurrence() != null) {
       recurrence.withFrequency(getFrequency().getModel());
@@ -118,8 +121,14 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     }
     if (count > 0) {
       recurrence.upTo(count);
-    } else if (endDateTime != null) {
-      recurrence.upTo(endDateTime);
+    } else if (isDefined(endDate)) {
+      final boolean onAllDay =
+          occurrencePeriod == null ? event.isOnAllDay() : occurrencePeriod.isInDays();
+      if (onAllDay) {
+        recurrence.upTo(LocalDate.parse(endDate));
+      } else {
+        recurrence.upTo(OffsetDateTime.parse(endDate));
+      }
     } else {
       recurrence.endless();
     }
@@ -132,12 +141,16 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     return recurrence;
   }
 
-  protected CalendarEventRecurrenceEntity decorate(final Recurrence recurrence) {
+  protected CalendarEventRecurrenceEntity decorate(final CalendarEvent event) {
+    final Recurrence recurrence = event.getRecurrence();
     frequency = FrequencyEntity.from(recurrence.getFrequency());
     count = recurrence.getRecurrenceCount();
     Optional<OffsetDateTime> offsetDateTimeOptional = recurrence.getEndDate();
-    endDateTime = offsetDateTimeOptional.isPresent() ? offsetDateTimeOptional.get() :
-        Recurrence.NO_RECURRENCE_END_DATE;
+    endDate = offsetDateTimeOptional.isPresent() ?
+        (event.isOnAllDay() ?
+            offsetDateTimeOptional.get().toLocalDate().toString() :
+            offsetDateTimeOptional.get().toString()) :
+        null;
     daysOfWeek = recurrence.getDaysOfWeek().stream().map(DayOfWeekOccurrenceEntity::from)
         .collect(Collectors.toList());
     return this;
@@ -149,7 +162,7 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     builder.append("frequency", getFrequency());
     builder.append("count", getCount());
     builder.append("daysOfWeek", getDaysOfWeek());
-    builder.append("endDateTime", getEndDateTime());
+    builder.append("endDate", getEndDate());
     return builder.toString();
   }
 

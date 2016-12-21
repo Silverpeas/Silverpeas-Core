@@ -57,9 +57,9 @@
         onCalendarColorSelect : '&?',
         onCalendarVisibilityToggle : '&?',
         calendar : '=',
-        modify : '&?',
-        remove : '&?',
-        delete : '&?'
+        "modify" : '&?',
+        "remove" : '&?',
+        "delete" : '&?'
       },
       controllerAs : '$ctrl',
       bindToController : true,

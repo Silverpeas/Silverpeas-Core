@@ -28,6 +28,8 @@ import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.event.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
@@ -36,6 +38,7 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -60,7 +63,9 @@ public class CalendarEventOccurrenceGenerationTest {
   private static final String ATTR_TEST_ID = "TEST_EVENT_ID";
   private static final List<CalendarEvent> eventsForTest = getCalendarEventsForTest();
 
-  private CalendarEventOccurrenceGenerator generator = new ICal4JCalendarEventOccurrenceGenerator();
+  private CalendarEventOccurrenceGenerator generator =
+      new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
+          new ICal4JRecurrenceCodec(new ICal4JDateCodec()));
 
   @Test
   public void nothingDoneWithAnEmptyListOfEvents() {
@@ -81,13 +86,13 @@ public class CalendarEventOccurrenceGenerationTest {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(eventsForTest, in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
-    assertThat(occurrences.size(), is(102));
+    assertThat(occurrences.size(), is(104));
 
     // compute the occurrence count both per month and per event
     int[] occurrenceCountPerMonth = new int[12];
     int[] occurrenceCountPerEvent = new int[6];
-    occurrences.stream().forEach(o -> {
-      occurrenceCountPerMonth[o.getStartDateTime().getMonth().ordinal()] += 1;
+    occurrences.forEach(o -> {
+      occurrenceCountPerMonth[o.getStartDate().get(ChronoField.MONTH_OF_YEAR) - 1] += 1;
       occurrenceCountPerEvent[
           Integer.parseInt(o.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get()) - 1] += 1;
     });
@@ -103,14 +108,14 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrenceCountPerMonth[SEPTEMBER.ordinal()], is(18));
     assertThat(occurrenceCountPerMonth[OCTOBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[NOVEMBER.ordinal()], is(17));
-    assertThat(occurrenceCountPerMonth[DECEMBER.ordinal()], is(11));
+    assertThat(occurrenceCountPerMonth[DECEMBER.ordinal()], is(13));
 
     // check now the count of occurrences per event is ok
     assertThat(occurrenceCountPerEvent[Integer.parseInt("1") - 1], is(1));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("2") - 1], is(1));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("3") - 1], is(42));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("4") - 1], is(1));
-    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(45));
+    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(47));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("6") - 1], is(12));
   }
 
@@ -171,23 +176,23 @@ public class CalendarEventOccurrenceGenerationTest {
     Iterator<CalendarEventOccurrence> iterator = occurrences.iterator();
     CalendarEventOccurrence occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("3"));
-    assertThat(occurrence.getStartDateTime(), is(dateTime(2016, 7, 1, 9, 0)));
-    assertThat(occurrence.getEndDateTime(), is(dateTime(2016, 7, 1, 9, 15)));
+    assertThat(occurrence.getStartDate(), is(dateTime(2016, 7, 1, 9, 0)));
+    assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 1, 9, 15)));
     // second occurrence
     occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("3"));
-    assertThat(occurrence.getStartDateTime(), is(dateTime(2016, 7, 8, 9, 0)));
-    assertThat(occurrence.getEndDateTime(), is(dateTime(2016, 7, 8, 9, 15)));
+    assertThat(occurrence.getStartDate(), is(dateTime(2016, 7, 8, 9, 0)));
+    assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 8, 9, 15)));
     // third occurrence
     occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("4"));
-    assertThat(occurrence.getStartDateTime(), is(dateTime(2016, 7, 11, 0, 0)));
-    assertThat(occurrence.getEndDateTime(), is(dateTime(2016, 7, 22, 23, 59)));
+    assertThat(occurrence.getStartDate(), is(date(2016, 7, 11)));
+    assertThat(occurrence.getEndDate(), is(date(2016, 7, 22)));
     // fourth occurrence
     occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("3"));
-    assertThat(occurrence.getStartDateTime(), is(dateTime(2016, 7, 29, 9, 0)));
-    assertThat(occurrence.getEndDateTime(), is(dateTime(2016, 7, 29, 9, 15)));
+    assertThat(occurrence.getStartDate(), is(dateTime(2016, 7, 29, 9, 0)));
+    assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 29, 9, 15)));
   }
 
   private static List<CalendarEvent> getCalendarEventsForTest() {

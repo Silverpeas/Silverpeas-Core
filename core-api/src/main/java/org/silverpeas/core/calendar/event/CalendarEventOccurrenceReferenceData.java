@@ -26,12 +26,9 @@ package org.silverpeas.core.calendar.event;
 
 import org.silverpeas.core.date.Period;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.TimeZone;
+import java.time.temporal.Temporal;
 
-import static org.silverpeas.core.calendar.event.CalendarEventOccurrence.getLastStartDateTimeFrom;
+import static org.silverpeas.core.calendar.event.CalendarEventOccurrence.getLastStartDateFrom;
 
 /**
  * This class represents the reference data of an occurrence of an event.
@@ -43,8 +40,6 @@ public class CalendarEventOccurrenceReferenceData {
 
   private String occurrenceId;
   private Period period;
-  private ZoneOffset zoneOffset =
-      ZoneOffset.ofTotalSeconds(TimeZone.getDefault().getRawOffset() / 1000);
 
   /**
    * Hidden constructor.
@@ -66,12 +61,10 @@ public class CalendarEventOccurrenceReferenceData {
   /**
    * Sets the period of the time window of the occurrence.
    * @param period a period.
-   * @param zoneOffset the zone offset of the location of the user or system behind the action.
    * @return itself.
    */
-  public CalendarEventOccurrenceReferenceData withPeriod(Period period, ZoneOffset zoneOffset) {
+  public CalendarEventOccurrenceReferenceData withPeriod(Period period) {
     this.period = period;
-    this.zoneOffset = zoneOffset;
     return this;
   }
 
@@ -84,20 +77,12 @@ public class CalendarEventOccurrenceReferenceData {
   }
 
   /**
-   * Gets the start date time the occurrence has before changing eventually its period.
-   * @return an offset date time.
+   * Gets the start date (and time if not on all day) the occurrence has before changing
+   * eventually its period.
+   * @return a temporal of type LocalDate or OffsetDateTime.
    */
-  public OffsetDateTime getOriginalStartDateTime() {
-    return getLastStartDateTimeFrom(occurrenceId);
-  }
-
-  /**
-   * Gets the start day time of the occurrence according to {@link #getOriginalStartDateTime()}.
-   * @return an offset date time.
-   */
-  public OffsetDateTime getOriginalStartDayTime() {
-    return getOriginalStartDateTime().withOffsetSameInstant(zoneOffset).withHour(0).withMinute(0)
-        .withOffsetSameInstant(ZoneOffset.UTC);
+  public Temporal getOriginalStartDate() {
+    return getLastStartDateFrom(occurrenceId);
   }
 
   /**

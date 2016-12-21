@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar.event;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.*;
 import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEventNotifier;
@@ -46,6 +47,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +57,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 
 /**
  * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
@@ -435,13 +440,13 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   @Override
-  public OffsetDateTime getStartDateTime() {
-    return getPeriod().getStartDateTime();
+  public Temporal getStartDate() {
+    return getPeriod().getStartDate();
   }
 
   @Override
-  public OffsetDateTime getEndDateTime() {
-    return getPeriod().getEndDateTime();
+  public Temporal getEndDate() {
+    return getPeriod().getEndDate();
   }
 
   /**
@@ -606,9 +611,9 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   public CalendarEventModificationResult delete(CalendarEventOccurrenceReferenceData data) {
     return doEitherOr(data, simpleDeletion, (previousEvent) -> {
       previousEvent.getRecurrence()
-          .excludeEventOccurrencesStartingAt(data.getOriginalStartDateTime());
+          .excludeEventOccurrencesStartingAt(data.getOriginalStartDate());
       previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDateTime()));
+          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDate()));
       previousEvent.updateIntoPersistence();
       return new CalendarEventModificationResult(previousEvent);
     });
@@ -627,24 +632,14 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   public CalendarEventModificationResult deleteFrom(CalendarEventOccurrenceReferenceData data) {
     return doEitherOr(data, simpleDeletion, (previousEvent) -> {
-      previousEvent.getRecurrence().upTo(data.getOriginalStartDayTime());
+      final Temporal endDate = data.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
+      previousEvent.getRecurrence().upTo(endDate);
       previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationFrom(data.getOriginalStartDateTime()));
+          .forEach(attendee -> attendee.resetParticipationFrom(endDate));
       previousEvent.updateIntoPersistence();
       return new CalendarEventModificationResult(previousEvent);
     });
   }
-
-  /**
-   * Verifies if the recurrence has changed or not.
-   */
-  @Transient
-  private final Predicate<Recurrence> hasRecurrenceChanged = (otherRecurrence) -> {
-    final CalendarEvent me = this;
-    return (me.getRecurrence() != null && otherRecurrence == null) ||
-        (me.getRecurrence() == null && otherRecurrence != null) ||
-        (me.getRecurrence() != null && me.getRecurrence().equals(otherRecurrence));
-  };
 
   /**
    * Handles the simple update of an event.
@@ -659,8 +654,8 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
         // Verify date changes
         final boolean dateChanged =
-            !previousEvent.getStartDateTime().isEqual(me.getStartDateTime()) ||
-                !previousEvent.getEndDateTime().isEqual(me.getEndDateTime());
+            !previousEvent.getStartDate().equals(me.getStartDate()) ||
+            !previousEvent.getEndDate().equals(me.getEndDate());
 
         final boolean recurrenceChanged;
         final Recurrence currentRecurrence = me.getRecurrence();
@@ -690,6 +685,11 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
           }
         } else {
           recurrenceChanged = false;
+        }
+
+        // Clears exception dates when switching on all day data
+        if (getRecurrence() != null && previousEvent.isOnAllDay() != isOnAllDay()) {
+          getRecurrence().clearsAllExceptionDates();
         }
 
         // If it exists date or recurrence changes, participation of attendees are reset.
@@ -737,9 +737,9 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     return doEitherOr(data, simpleUpdate, (previousEvent) -> {
       final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), true);
       previousEvent.getRecurrence()
-          .excludeEventOccurrencesStartingAt(data.getOriginalStartDateTime());
+          .excludeEventOccurrencesStartingAt(data.getOriginalStartDate());
       previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDateTime()));
+          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDate()));
       previousEvent.updateIntoPersistence();
       return new CalendarEventModificationResult(previousEvent, createdEvent);
     });
@@ -761,9 +761,10 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   public CalendarEventModificationResult updateFrom(CalendarEventOccurrenceReferenceData data) {
     return doEitherOr(data, simpleUpdate, (previousEvent) -> {
       final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), false);
-      previousEvent.getRecurrence().upTo(data.getOriginalStartDayTime());
+      final Temporal endDate = data.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
+      previousEvent.getRecurrence().upTo(endDate);
       previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationFrom(data.getOriginalStartDateTime()));
+          .forEach(attendee -> attendee.resetParticipationFrom(endDate));
       previousEvent.updateIntoPersistence();
       return new CalendarEventModificationResult(previousEvent, createdEvent);
     });
@@ -846,17 +847,19 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
       if (previousEvent.isRecurrent() && previousEvent.getRecurrence().isEndless()) {
         result = ifManyOccurrences.apply(previousEvent);
       } else if (previousEvent.isRecurrent()) {
-        OffsetDateTime recurrenceStart = previousEvent.getStartDateTime();
+        OffsetDateTime recurrenceStart = Period.asOffsetDateTime(previousEvent.getStartDate());
         OffsetDateTime recurrenceEnd = endDateTimeOf(previousEvent.getRecurrence(), recurrenceStart);
         List<CalendarEventOccurrence> occurrences = generator()
             .generateOccurrencesOf(Collections.singletonList(previousEvent),
                 Period.between(recurrenceStart, recurrenceEnd));
         if (occurrences.size() == 1 && data.concerns(occurrences.get(0))) {
+          setPeriod(data.getPeriod());
           result = ifSingleOccurrence.apply(previousEvent);
         } else {
           result = ifManyOccurrences.apply(previousEvent);
         }
       } else {
+        setPeriod(data.getPeriod());
         result = ifSingleOccurrence.apply(previousEvent);
       }
       return result;
@@ -886,7 +889,15 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    return getCalendar().canBeAccessedBy(user) || isUserParticipant.test(user);
+    boolean canBeAccessed = getCalendar().canBeAccessedBy(user) || isUserParticipant.test(user);
+    if (!canBeAccessed && PUBLIC == getVisibilityLevel()) {
+      SilverpeasComponentInstance componentInstance =
+          SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).orElse(null);
+      if (componentInstance != null) {
+        canBeAccessed = componentInstance.isPublic() || componentInstance.isPersonal();
+      }
+    }
+    return canBeAccessed;
   }
 
   @Override

@@ -24,7 +24,9 @@
 package org.silverpeas.core.calendar;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 
 /**
  * A plannable object is a object that can be planned in a calendar and that can be serialized
@@ -45,29 +47,32 @@ public interface Plannable extends Serializable {
   String getId();
 
   /**
-   * Gets the date and the time in UTC/Greenwich at which this plannable object starts on the
-   * timeline. In the case of an event on all the day(s), the time is set at midnight. Nevertheless,
-   * in a such event, the time is meaningless and it is then recommended to get the local date from
-   * the returned date time.
-   * @return a date and time in UTC/Greenwich.
+   * If this plannable object is on all days, then gets the start date.<br/>
+   * Otherwise gets the date and the time in UTC/Greenwich at which this plannable object starts
+   * on the timeline.
+   * @return a temporal instance ({@link LocalDate} if an all day plannable or
+   * {@link OffsetDateTime}) otherwise.
    */
-  OffsetDateTime getStartDateTime();
+  Temporal getStartDate();
 
   /**
+   * If this plannable object is on all days, then gets the end date.<br/>
+   * Otherwise gets the date and the time in UTC/Greenwich at which this plannable object ends
+   * on the timeline.
    * Gets the date and the time in UTC/Greenwich at which this plannable object ends on the
-   * timeline. In the case of an event on all the day(s), the time is set at 23 hours and 59
-   * minutes. Nevertheless, in a such event, the time is meaningless and it is then recommended to
-   * get the local date from the returned date time. According to the type of the plannable object,
+   * timeline.<br/>
+   * According to the type of the plannable object,
    * the end date time can be undefined; in this case, it must be indicated as such in the
    * implemented method's documentation.
-   * @return a date and time in UTC/Greenwich.
+   * @return a temporal instance ({@link LocalDate} if an all day plannable or
+   * {@link OffsetDateTime}) otherwise.
    */
-  OffsetDateTime getEndDateTime();
+  Temporal getEndDate();
 
   /**
    * Does this plannable object extend over all the day(s)? In the case it is on all the day(s)
    * from the start date to the end date, the time in the date time returned by the methods
-   * {@link Plannable#getStartDateTime()} and {@link Plannable#getEndDateTime()} is meaningless and
+   * {@link Plannable#getStartDate()} and {@link Plannable#getEndDate()} is meaningless and
    * shouldn't be taken into account.
    * @return true if this plannable object extend over all the day(s) between its start date and
    * its end date.

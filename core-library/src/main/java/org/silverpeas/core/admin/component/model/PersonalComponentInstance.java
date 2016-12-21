@@ -24,12 +24,9 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,9 +37,9 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
 /**
  * @author Yohann Chastagnier
  */
-public class PersonalComponentInstance implements SilverpeasComponentInstance {
+public class PersonalComponentInstance implements SilverpeasPersonalComponentInstance {
 
-  private static final String INSTANCE_SUFFIX = "_PCI";
+  private final static String INSTANCE_SUFFIX = "_PCI";
   private final static Pattern INSTANCE_IDENTIFIER_PATTERN =
       Pattern.compile("^([a-zA-Z]+)([0-9]+)" + INSTANCE_SUFFIX + "$");
 
@@ -99,6 +96,7 @@ public class PersonalComponentInstance implements SilverpeasComponentInstance {
     return new PersonalComponentInstance(user, personalComponent);
   }
 
+  @Override
   public User getUser() {
     return user;
   }
@@ -133,21 +131,4 @@ public class PersonalComponentInstance implements SilverpeasComponentInstance {
     return personalComponent.getDescription(language);
   }
 
-  @Override
-  public boolean isPersonal() {
-    return true;
-  }
-
-  @Override
-  public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
-    final Collection<SilverpeasRole> roles;
-    if (getUser().getId().equals(user.getId())) {
-      roles = EnumSet.of(SilverpeasRole.admin);
-    } else if (isPublic()) {
-      roles = EnumSet.of(SilverpeasRole.user);
-    } else {
-      roles = EnumSet.noneOf(SilverpeasRole.class);
-    }
-    return roles;
-  }
 }

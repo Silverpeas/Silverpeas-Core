@@ -42,12 +42,15 @@
 <c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
+<c:set var="userMainCalendar"  value="${requestScope.userMainCalendar}"/>
+<jsp:useBean id="userMainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <fmt:message key="usercalendar.name" var="userCalendarLabel"/>
 <fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
+<fmt:message key="usercalendar.menu.item.exportyourevents" var="exportYourEventLabel"/>
 <fmt:message key="usercalendar.menu.item.viewuserparticipation" var="viewUserParticipationEventLabel"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -69,6 +72,8 @@
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationOfCreation action="angularjs:newEvent(userCalendar.getCalendars())"
                               altText="${addEventLabel}" icon="${opIcon}"/>
+    <view:operation action="${userMainCalendar.getURI()}/export/ical"
+                              altText="${exportYourEventLabel}"/>
     <view:operation action="angularjs:selectUsersForViewingTheirEvents()"
                               altText="${viewUserParticipationEventLabel}"/>
   </c:if>

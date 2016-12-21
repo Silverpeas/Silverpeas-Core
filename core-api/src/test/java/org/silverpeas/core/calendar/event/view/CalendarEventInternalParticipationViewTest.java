@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.event.TestCalendarEventOccurrenceBuilder;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.TestUserProvider;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
@@ -77,9 +78,8 @@ public class CalendarEventInternalParticipationViewTest {
           .getId()
           .compareTo(occurrences.get(i + 1).getCalendarEvent().getCalendar().getId());
       if (result == 0) {
-        if (occurrences.get(i)
-            .getStartDateTime()
-            .isAfter(occurrences.get(i + 1).getStartDateTime())) {
+         if (Period.asOffsetDateTime(occurrences.get(i).getStartDate())
+            .isAfter(Period.asOffsetDateTime(occurrences.get(i + 1).getStartDate()))) {
           return false;
         }
       } else if (result > 0) {

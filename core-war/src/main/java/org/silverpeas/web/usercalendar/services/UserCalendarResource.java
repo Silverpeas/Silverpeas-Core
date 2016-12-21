@@ -37,6 +37,7 @@ import org.silverpeas.core.webapi.calendar.CalendarEventAttendeeEntity;
 import org.silverpeas.core.webapi.calendar.CalendarEventEntity;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
+import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;

@@ -76,6 +76,7 @@ userCalendar.controller('calendarController', ['$controller', 'context', 'Calend
     };
     $scope.$watchCollection('participationIds', function(participationIds) {
       participationIds.removeElement(context.currentUserId);
+      $scope.participationIds = angular.copy(participationIds);
       $scope.participation.setParticipants(participationIds);
     });
   }]);

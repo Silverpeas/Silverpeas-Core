@@ -23,15 +23,14 @@
  */
 package org.silverpeas.web.usercalendar;
 
-import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -60,6 +59,19 @@ public class UserCalendarWebRequestContext
   }
 
   /**
+   * Gets the user main calendar.
+   * @return the main calendar of the user.
+   */
+  public Calendar getMainUserCalendar() {
+    for (Calendar calendar : getUserCalendars()) {
+      if (calendar.isMainPersonalOf(getUser())) {
+        return calendar;
+      }
+    }
+    throw new WebApplicationException(NOT_FOUND);
+  }
+
+  /**
    * Gets the user calendar corresponding to the identifier contained into request as {@code
    * calendarId} parameter name.
    * @return a calendar.
@@ -76,8 +88,7 @@ public class UserCalendarWebRequestContext
         }
       }
       if (calendar == null) {
-        throw new WebApplicationException(unknown("user calendar", calendarId),
-            Response.Status.NOT_FOUND);
+        throw new WebApplicationException(unknown("user calendar", calendarId), NOT_FOUND);
       }
     }
     return calendar;
@@ -95,8 +106,7 @@ public class UserCalendarWebRequestContext
     if (isDefined(eventId)) {
       event = CalendarEvent.getById(eventId);
       if (event == null) {
-        throw new WebApplicationException(unknown("user calendar", eventId),
-            Response.Status.NOT_FOUND);
+        throw new WebApplicationException(unknown("user calendar", eventId), NOT_FOUND);
       }
     }
     return event;

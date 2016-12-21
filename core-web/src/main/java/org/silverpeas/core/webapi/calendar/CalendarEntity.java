@@ -50,6 +50,8 @@ public class CalendarEntity implements WebEntity {
   private URI uri;
   private String id;
   private String title;
+  private boolean userMainPersonal;
+  private boolean userPersonal;
   private String ownerName;
   private Date createDate;
   private Date lastUpdateDate;
@@ -97,6 +99,16 @@ public class CalendarEntity implements WebEntity {
   }
 
   @XmlElement
+  public boolean isUserMainPersonal() {
+    return userMainPersonal;
+  }
+
+  @XmlElement
+  public boolean isUserPersonal() {
+    return userPersonal;
+  }
+
+  @XmlElement
   public String getOwnerName() {
     return ownerName;
   }
@@ -129,6 +141,8 @@ public class CalendarEntity implements WebEntity {
     User currentUser = User.getCurrentRequester();
     this.id = calendar.getId();
     this.title = calendar.getTitle();
+    this.userMainPersonal = calendar.isMainPersonalOf(currentUser);
+    this.userPersonal = calendar.isPersonalOf(currentUser);
     this.ownerName = calendar.getCreator().getDisplayedName();
     this.createDate = calendar.getCreateDate();
     this.lastUpdateDate = calendar.getLastUpdateDate();

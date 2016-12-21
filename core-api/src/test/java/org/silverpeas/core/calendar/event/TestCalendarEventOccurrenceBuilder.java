@@ -83,8 +83,7 @@ public class TestCalendarEventOccurrenceBuilder {
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION);
     event.setCalendar(calendar);
-    occurrences.add(
-        new CalendarEventOccurrence(event, event.getStartDateTime(), event.getEndDateTime()));
+    occurrences.add(new CalendarEventOccurrence(event, event.getStartDate(), event.getEndDate()));
 
     calendar = mock(Calendar.class);
     when(calendar.getId()).thenReturn("ID_3");
@@ -95,8 +94,7 @@ public class TestCalendarEventOccurrenceBuilder {
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION);
     event.setCalendar(calendar);
-    occurrences.add(
-        new CalendarEventOccurrence(event, event.getStartDateTime(), event.getEndDateTime()));
+    occurrences.add(new CalendarEventOccurrence(event, event.getStartDate(), event.getEndDate()));
 
     return occurrences;
   }

@@ -130,8 +130,8 @@
         <label>
           <input type="radio" name="end" ng-model="$ctrl.endType" ng-value="'THE'">
           <span>{{$ctrl.labels.the}}&#160;
-            <silverpeas-date-picker name="endDateTime"
-                                    date="$ctrl.data.event.recurrence.endDateTime"
+            <silverpeas-date-picker name="endDate"
+                                    date="$ctrl.data.event.recurrence.endDate"
                                     status="$ctrl.data.event.recurrence.endDateStatus"
                                     disabled="$ctrl.endType != 'THE'"
                                     mandatory="$ctrl.endType == 'THE'">

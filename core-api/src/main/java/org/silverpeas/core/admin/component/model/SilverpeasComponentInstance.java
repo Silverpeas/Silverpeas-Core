@@ -39,8 +39,8 @@ import java.util.Optional;
 public interface SilverpeasComponentInstance extends Serializable {
 
   /**
-   * Gets the highest reference of a component instance from the specified identifier.
-   * @param componentInstanceId the unique identifier of a component instance to get.
+   * Gets a silverpeas component instance from the specified identifier.
+   * @param componentInstanceId a component instance identifier as string.
    * @return an optional silverpeas component instance of {@link SilverpeasComponentInstance}.
    */
   static Optional<SilverpeasComponentInstance> getById(String componentInstanceId) {

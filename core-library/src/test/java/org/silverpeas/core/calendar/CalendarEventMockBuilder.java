@@ -72,8 +72,8 @@ public class CalendarEventMockBuilder {
   }
 
   private CalendarEventMockBuilder withPeriod(final Period period) {
-    when(event.getStartDateTime()).thenReturn(period.getStartDateTime());
-    when(event.getEndDateTime()).thenReturn(period.getEndDateTime());
+    when(event.getStartDate()).thenReturn(period.getStartDate());
+    when(event.getEndDate()).thenReturn(period.getEndDate());
     when(event.isOnAllDay()).thenReturn(period.isInDays());
     return this;
   }

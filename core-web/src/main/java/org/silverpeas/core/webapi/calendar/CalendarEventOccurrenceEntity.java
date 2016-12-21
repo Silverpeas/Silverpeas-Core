@@ -38,13 +38,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * It represents the state of a calendar event in a calendar as transmitted within the
@@ -57,12 +55,11 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class CalendarEventOccurrenceEntity implements WebEntity {
 
   private String occurrenceId;
-  private OffsetDateTime lastStartDateTime;
+  private String lastStartDate;
   private CalendarEventEntity event;
-  private OffsetDateTime startDateTime;
-  private OffsetDateTime endDateTime;
+  private String startDate;
+  private String endDate;
   private List<CalendarEventAttendeeEntity> attendees = new ArrayList<>();
-  private Integer utcHourOffset;
 
   protected CalendarEventOccurrenceEntity() {
   }
@@ -103,13 +100,12 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
     this.occurrenceId = occurrenceId;
   }
 
-  public String getLastStartDateTime() {
-    return lastStartDateTime.toString();
+  public String getLastStartDate() {
+    return lastStartDate;
   }
 
-  public void setLastStartDateTime(final String lastStartDateTime) {
-    this.lastStartDateTime =
-        isDefined(lastStartDateTime) ? OffsetDateTime.parse(lastStartDateTime) : null;
+  public void setLastStartDate(final String lastStartDate) {
+    this.lastStartDate = lastStartDate;
   }
 
   public CalendarEventEntity getEvent() {
@@ -120,20 +116,20 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
     this.event = event;
   }
 
-  public String getStartDateTime() {
-    return startDateTime.toString();
+  public String getStartDate() {
+    return startDate;
   }
 
-  protected void setStartDateTime(final String startDateTime) {
-    this.startDateTime = OffsetDateTime.parse(startDateTime);
+  protected void setStartDate(final String startDate) {
+    this.startDate = startDate;
   }
 
-  public String getEndDateTime() {
-    return endDateTime.toString();
+  public String getEndDate() {
+    return endDate;
   }
 
-  protected void setEndDateTime(final String endDateTime) {
-    this.endDateTime = OffsetDateTime.parse(endDateTime);
+  protected void setEndDate(final String endDate) {
+    this.endDate = endDate;
   }
 
   public List<CalendarEventAttendeeEntity> getAttendees() {
@@ -142,14 +138,6 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
 
   public void setAttendees(final List<CalendarEventAttendeeEntity> attendees) {
     withAttendees(attendees);
-  }
-
-  public Integer getUtcHourOffset() {
-    return utcHourOffset;
-  }
-
-  public void setUtcHourOffset(final int utcHourOffset) {
-    this.utcHourOffset = utcHourOffset;
   }
 
   @XmlElement
@@ -168,30 +156,28 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
   }
 
   /**
-   * Gets the representation of an event with contains all the occurrence data.
-   * The data of the entity are applied to the returned instance.
-   * @return a {@link CalendarEvent} instance.
+   * Gets the period of the occurrence.
+   * @return a period instance.
    */
   @XmlTransient
-  public Period getPeriod() {
+  Period getPeriod() {
     final Period occurrencePeriod;
     if (getEvent().isOnAllDay()) {
-      occurrencePeriod = Period.allDaysBetween(startDateTime, endDateTime);
+      occurrencePeriod = Period.between(LocalDate.parse(startDate), LocalDate.parse(endDate));
     } else {
-      occurrencePeriod = Period.between(startDateTime, endDateTime);
+      occurrencePeriod =
+          Period.between(OffsetDateTime.parse(startDate), OffsetDateTime.parse(endDate));
     }
     return occurrencePeriod;
   }
 
   /**
-   * Gets the reference data of the occurrence, previous start date time, new period and the user
-   * time zone offset.
+   * Gets the reference data of the occurrence, previous start date time and new period.
    * @return an instance of {@link CalendarEventOccurrenceReferenceData}.
    */
   @XmlTransient
-  public CalendarEventOccurrenceReferenceData getReferenceData() {
-    return CalendarEventOccurrenceReferenceData.fromOccurrenceId(getId())
-        .withPeriod(getPeriod(), ZoneOffset.ofHours(utcHourOffset));
+  CalendarEventOccurrenceReferenceData getReferenceData() {
+    return CalendarEventOccurrenceReferenceData.fromOccurrenceId(getId()).withPeriod(getPeriod());
   }
 
   /**
@@ -200,16 +186,16 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  public CalendarEvent getMergedPersistentEventModel() {
-    return getEvent().getMergedPersistentModel();
+  CalendarEvent getMergedPersistentEventModel() {
+    return getEvent().getMergedPersistentModel(getPeriod());
   }
 
   protected CalendarEventOccurrenceEntity decorate(
       final CalendarEventOccurrence calendarEventOccurrence) {
     this.occurrenceId = calendarEventOccurrence.getId();
-    this.lastStartDateTime = calendarEventOccurrence.getLastStartDateTime();
-    this.startDateTime = calendarEventOccurrence.getStartDateTime();
-    this.endDateTime = calendarEventOccurrence.getEndDateTime();
+    this.lastStartDate = calendarEventOccurrence.getLastStartDate().toString();
+    this.startDate = calendarEventOccurrence.getStartDate().toString();
+    this.endDate = calendarEventOccurrence.getEndDate().toString();
     return this;
   }
 
@@ -218,8 +204,9 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("occurrenceId", getId());
     builder.append("event", getEvent().toString());
-    builder.append("startDateTime", getStartDateTime());
-    builder.append("endDateTime", getEndDateTime());
+    builder.append("lastStartDate", getLastStartDate());
+    builder.append("startDate", getStartDate());
+    builder.append("endDate", getEndDate());
     return builder.toString();
   }
 }

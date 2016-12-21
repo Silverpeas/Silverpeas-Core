@@ -178,7 +178,7 @@
      * @param {object} - the object to push
      * @returns {promise|a.fn.promise} - the new created resource.
      */
-    RESTAdapter.prototype.delete = function() {
+    RESTAdapter.prototype["delete"] = function() {
       var requestedUrl = this.url;
       var value = arguments[0];
       if (arguments.length > 1) {

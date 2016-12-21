@@ -44,8 +44,10 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -74,6 +76,12 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
   private static final String EVENT_TITLE = "an event";
   private static final String EVENT_DESCRIPTION = "a description";
   private static final String USER_ID = "1";
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Inject
   private CalendarEventNotificationListener eventListener;

@@ -98,8 +98,8 @@ public class ICal4JICalCodec implements ICalCodec {
     List<VEvent> iCalEvents = new ArrayList<>();
     ByteArrayOutputStream output = new ByteArrayOutputStream(10240);
     for (CalendarEvent event : events) {
-      Date startDate = iCal4JDateCodec.encode(event.getStartDateTime());
-      Date endDate = iCal4JDateCodec.encode(event.getEndDateTime());
+      Date startDate = iCal4JDateCodec.encode(event.getStartDate());
+      Date endDate = iCal4JDateCodec.encode(event.getEndDate());
       VEvent iCalEvent;
       if (event.isOnAllDay() && startDate.equals(endDate)) {
         iCalEvent = new VEvent(startDate, event.getTitle());
@@ -112,10 +112,10 @@ public class ICal4JICalCodec implements ICalCodec {
 
       // Add recurring data if any
       if (event.isRecurrent()) {
-        Recurrence eventRecurrence = event.getRecurrence();
-        Recur recur = iCal4JRecurrenceCodec.encode(eventRecurrence);
+        Recur recur = iCal4JRecurrenceCodec.encode(event);
         iCalEvent.getProperties().add(new RRule(recur));
-        iCalEvent.getProperties().add(exceptionDatesFrom(eventRecurrence));
+        iCalEvent.getProperties()
+            .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
       }
 
       // Add Description if any
@@ -177,17 +177,6 @@ public class ICal4JICalCodec implements ICalCodec {
     } finally {
       IOUtils.closeQuietly(output);
     }
-  }
-
-  private ExDate exceptionDatesFrom(final Recurrence recurrence) {
-    Set<OffsetDateTime> exceptionDates = recurrence.getExceptionDates();
-    DateList exDatesList = exceptionDates.stream().map(iCal4JDateCodec::encode)
-        .collect(Collectors.toCollection(() -> {
-          final DateList list = new DateList(Value.DATE_TIME);
-          list.setUtc(true);
-          return list;
-        }));
-    return new ExDate(exDatesList);
   }
 
   private Uid generateUid(CalendarEvent event) {

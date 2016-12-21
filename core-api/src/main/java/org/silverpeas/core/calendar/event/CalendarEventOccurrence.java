@@ -28,6 +28,7 @@ import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 import java.util.List;
 
 
@@ -52,14 +53,14 @@ public class CalendarEventOccurrence {
    * Constructs a new occurrence from the specified calendar event, starting and ending at the
    * specified dates.
    * @param event the event from which the occurrence is instantiated.
-   * @param startDateTime the start date and time of the occurrence.
-   * @param endDateTime the end date and time of the occurrence.
+   * @param startDate the start date (and time if offset) of the occurrence.
+   * @param endDate the end date (and time if offset) of the occurrence.
    */
-  CalendarEventOccurrence(final CalendarEvent event, final OffsetDateTime startDateTime,
-      final OffsetDateTime endDateTime) {
-    this.id = event.getId() + "@" + startDateTime;
+  CalendarEventOccurrence(final CalendarEvent event, final Temporal startDate,
+      final Temporal endDate) {
+    this.id = event.getId() + "@" + startDate;
     this.event = event;
-    this.period = Period.between(startDateTime, endDateTime);
+    this.period = Period.between(startDate, endDate);
   }
 
   private static CalendarEventOccurrenceGenerator generator() {
@@ -78,12 +79,18 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Gets the date and time from an occurrence identifier.
+   * Gets the date (and time if not on all day) from an occurrence identifier.
    * @param occurrenceId an occurrence identifier.
-   * @return the start date of the event occurrence before any recent change.
+   * @return the start date (and time if not on all day) of the event occurrence before any
+   * recent change.
    */
-  static OffsetDateTime getLastStartDateTimeFrom(String occurrenceId) {
-    return OffsetDateTime.parse(occurrenceId.split("@")[1]);
+  static Temporal getLastStartDateFrom(String occurrenceId) {
+    String lastOccurrenceDate = occurrenceId.split("@")[1];
+    try {
+      return LocalDate.parse(lastOccurrenceDate);
+    } catch (Exception e) {
+      return OffsetDateTime.parse(lastOccurrenceDate);
+    }
   }
 
   /**
@@ -102,19 +109,19 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Gets the date and time at which this occurrence should starts
-   * @return the start date of the event occurrence.
+   * Gets the date or date time at which this occurrence should starts
+   * @return the start date or date time of the event occurrence.
    */
-  public OffsetDateTime getStartDateTime() {
-    return period.getStartDateTime();
+  public Temporal getStartDate() {
+    return period.getStartDate();
   }
 
   /**
-   * Gets the date at which this event should ends
-   * @return the end date of the event occurrence.
+   * Gets the date or date time at which this event should ends
+   * @return the end date or date time of the event occurrence.
    */
-  public OffsetDateTime getEndDateTime() {
-    return period.getEndDateTime();
+  public Temporal getEndDate() {
+    return period.getEndDate();
   }
 
   /**
@@ -126,11 +133,12 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Gets the date and time at which this occurrence originally starts before any changes.
+   * Gets the date or the date and time at which this occurrence originally starts before any
+   * changes.
    * @return the start date of the event occurrence before any recent change.
    */
-  public OffsetDateTime getLastStartDateTime() {
-    return getLastStartDateTimeFrom(getId());
+  public Temporal getLastStartDate() {
+    return getLastStartDateFrom(getId());
   }
 
   @Override

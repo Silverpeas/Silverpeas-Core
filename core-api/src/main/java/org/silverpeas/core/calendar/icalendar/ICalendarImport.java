@@ -27,66 +27,56 @@ package org.silverpeas.core.calendar.icalendar;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /**
- * In charge of exporting {@link CalendarEvent} instances to {@link OutputStream} instance.<br/>
- * The {@link CalendarEvent} instances are encoded into ICALENDAR format (and so, as string).
+ * In charge of importing ICALENDAR events from {@link InputStream} instance.<br/>
+ * The {@link CalendarEvent} instances are encoded into Silverpeas calendar events.
  * @author Yohann Chastagnier
  */
-public class ICalendarExport {
+public class ICalendarImport {
 
   private final Calendar calendar;
-  private final Supplier<Stream<CalendarEvent>> calendarEventSupplier;
-  private Supplier<OutputStream> outputSupplier;
+  private final Supplier<InputStream> inputSupplier;
+  private Consumer<CalendarEvent> calendarEventConsumer;
 
   /**
    * Hidden constructor.
    * @param calendar the calendar which supplier belong to.
-   * @param calendarEventSupplier the supplier of {@link CalendarEvent} instances.
+   * @param inputSupplier the supplier of {@link InputStream} instance.
    */
-  private ICalendarExport(final Calendar calendar,
-      Supplier<Stream<CalendarEvent>> calendarEventSupplier) {
+  private ICalendarImport(final Calendar calendar, Supplier<InputStream> inputSupplier) {
     this.calendar = calendar;
-    this.calendarEventSupplier = calendarEventSupplier;
+    this.inputSupplier = inputSupplier;
   }
 
   /**
-   * Initialize a new instance or the exporter.
+   * Initialize a new instance or the importer.
    * @param calendar the calendar which supplier belong to.
-   * @param calendarEventSupplier the supplier of {@link CalendarEvent} instances.
+   * @param inputSupplier the supplier of {@link InputStream} instance.
    * @return a new initialized instance.
    */
-  public static ICalendarExport from(Calendar calendar,
-      Supplier<Stream<CalendarEvent>> calendarEventSupplier) {
-    return new ICalendarExport(calendar, calendarEventSupplier);
+  public static ICalendarImport from(Calendar calendar, Supplier<InputStream> inputSupplier) {
+    return new ICalendarImport(calendar, inputSupplier);
   }
 
   /**
-   * Executes the treatment of exportation.
+   * Executes the treatment of importation.
    */
-  public void to(Supplier<OutputStream> outputSupplier) throws ICalendarException {
-    this.outputSupplier = outputSupplier;
+  public void forEach(Consumer<CalendarEvent> calendarEventConsumer) throws ICalendarException {
+    this.calendarEventConsumer = calendarEventConsumer;
     ICalendarExchange exchange = ICalendarExchange.get();
-    exchange.doExportOf(this);
+    exchange.doImportOf(this);
   }
 
-  /**
-   * Gets {@link CalendarEvent} instances to export.
-   * @return a list.
-   */
-  Stream<CalendarEvent> streamCalendarEvents() {
-    return calendarEventSupplier.get();
+  Supplier<InputStream> getInputSupplier() {
+    return inputSupplier;
   }
 
-  /**
-   * Gets {@link OutputStream} instance into which the export will be written.
-   * @return an output stream.
-   */
-  OutputStream getOutput() {
-    return outputSupplier.get();
+  Consumer<CalendarEvent> getCalendarEventConsumer() {
+    return calendarEventConsumer;
   }
 
   /**

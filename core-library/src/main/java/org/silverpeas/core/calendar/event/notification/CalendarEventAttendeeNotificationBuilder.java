@@ -24,21 +24,25 @@
 package org.silverpeas.core.calendar.event.notification;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.Attendee;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.ExternalAttendee;
 import org.silverpeas.core.calendar.event.InternalAttendee;
+import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -53,13 +57,15 @@ import java.util.stream.Collectors;
  * @author mmoquillon
  */
 class CalendarEventAttendeeNotificationBuilder
-    extends AbstractTemplateUserNotificationBuilder<CalendarEvent> {
+    extends AbstractTemplateUserNotificationBuilder<CalendarEvent>
+    implements RemoveSenderRecipientBehavior {
 
   private NotifAction notifCause;
   private UpdateCause updateCause = UpdateCause.NONE;
   private User sender;
   private List<Attendee> recipients;
   private List<Attendee> attendees;
+  private Pair<Boolean, String> rootTemplatePath;
 
   /**
    * Constructs a new builder of user notification against the attendee(s) of a calendar event.
@@ -128,7 +134,7 @@ class CalendarEventAttendeeNotificationBuilder
    * @return itself.
    */
   public CalendarEventAttendeeNotificationBuilder to(final Attendee attendee) {
-    this.recipients = Arrays.asList(attendee);
+    this.recipients = Collections.singletonList(attendee);
     return this;
   }
 
@@ -186,17 +192,41 @@ class CalendarEventAttendeeNotificationBuilder
     return null;
   }
 
+  /**
+   * @return a {@link Pair} instance which indicates first the StringTemplate repository as a
+   * boolean, true if it is the components one, false if it is the core one. It indicates secondly
+   * the template path into the root as a String.
+   */
+  private Pair<Boolean, String> getRootTemplatePath() {
+    if (rootTemplatePath == null) {
+      boolean componentRoot = false;
+      Optional<SilverpeasComponentInstance> componentInst =
+          SilverpeasComponentInstance.getById(getComponentInstanceId());
+      String templatePath = "calendar";
+      if (componentInst.isPresent() && SilverpeasStringTemplateUtil
+          .isComponentTemplateExist(componentInst.get().getName(), getFileName())) {
+        componentRoot = true;
+        templatePath = componentInst.get().getName();
+      }
+      rootTemplatePath = Pair.of(componentRoot, templatePath);
+    }
+    return rootTemplatePath;
+  }
+
   @Override
   protected String getTemplatePath() {
-    String componentId = getComponentInstanceId();
-    if (componentId != null) {
-      SilverpeasComponentInstance componentInst =
-          OrganizationController.get().getComponentInstance(componentId).orElse(null);
-      if (componentInst != null) {
-        return componentInst.getName();
-      }
+    return getRootTemplatePath().getSecond();
+  }
+
+  @Override
+  protected SilverpeasTemplate createTemplate() {
+    final SilverpeasTemplate template;
+    if (getRootTemplatePath().getFirst()) {
+      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
+    } else {
+      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(getTemplatePath());
     }
-    return "calendar";
+    return template;
   }
 
   @Override
@@ -206,11 +236,7 @@ class CalendarEventAttendeeNotificationBuilder
 
   @Override
   protected String getComponentInstanceId() {
-    final String componentId = getResource().getCalendar().getComponentInstanceId();
-    if (SilverpeasStringTemplateUtil.isComponentTemplateExist(componentId, getFileName())) {
-      return componentId;
-    }
-    return null;
+    return getResource().getCalendar().getComponentInstanceId();
   }
 
   @Override

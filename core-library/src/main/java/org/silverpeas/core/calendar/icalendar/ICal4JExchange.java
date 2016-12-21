@@ -36,8 +36,10 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Cn;
+import net.fortuna.ical4j.model.parameter.CuType;
 import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.*;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
@@ -74,6 +76,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.calendar.event.Attendee.ParticipationStatus.ACCEPTED;
+import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -94,7 +97,7 @@ public class ICal4JExchange implements ICalendarExchange {
   }
 
   @Override
-  public void export(final ICalendarExport export) throws ICalendarException {
+  public void doExportOf(final ICalendarExport anExport) throws ICalendarException {
     try {
 
       Calendar calendarIcs = new Calendar();
@@ -107,22 +110,30 @@ public class ICal4JExchange implements ICalendarExchange {
       TimeZone tz = registry.getTimeZone("UTC");
       calendarIcs.getComponents().add(tz.getVTimeZone());
 
-      try (Stream<CalendarEvent> events = export.streamCalendarEvents()) {
+      try (Stream<CalendarEvent> events = anExport.streamCalendarEvents()) {
         events.forEach(event -> {
 
-          long durationInSeconds =
-              event.getStartDateTime().until(event.getEndDateTime(), ChronoUnit.SECONDS);
-
           // ICal4J period
-          Date startDate = iCal4JDateCodec.encode(event.getStartDateTime());
-          Date endDate = iCal4JDateCodec.encode(event.getEndDateTime());
+          final Date startDate = iCal4JDateCodec.encode(event.getStartDate());
+          final Date endDate;
+          if (event.isOnAllDay() && !event.getStartDate().equals(event.getEndDate())) {
+            endDate = iCal4JDateCodec.encode(event.getEndDate().plus(1, ChronoUnit.DAYS));
+          } else {
+            endDate = iCal4JDateCodec.encode(event.getEndDate());
+          }
+          long durationInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
+
           DateTime createdDate =
               iCal4JDateCodec.encode(event.getCreateDate().toInstant().atOffset(ZoneOffset.UTC));
           DateTime lastUpdateDate = iCal4JDateCodec
               .encode(event.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
 
           // ICal4J event
-          VEvent iCalEvent = new VEvent(startDate, endDate, event.getTitle());
+          final String title =
+              formatTitle(event, anExport.getCalendar().getComponentInstanceId(), true);
+          VEvent iCalEvent = event.isOnAllDay() && startDate.equals(endDate) ?
+              new VEvent(startDate, title) :
+              new VEvent(startDate, endDate, title);
           iCalEvent.getProperties().add(new Created(createdDate));
           iCalEvent.getProperties().add(new LastModified(lastUpdateDate));
           iCalEvent.getProperties().add(new Sequence(event.getVersion().intValue()));
@@ -170,7 +181,8 @@ public class ICal4JExchange implements ICalendarExchange {
             iCalEvent.getProperties().add(new Categories(categoryList));
           }
           // Add attendees
-          Map<OffsetDateTime, List<Pair<org.silverpeas.core.calendar.event.Attendee, ParticipationStatus>>>
+          Map<OffsetDateTime, List<Pair<org.silverpeas.core.calendar.event.Attendee,
+              ParticipationStatus>>>
               participationRecurrence = new HashMap<>();
           if (event.getAttendees().isEmpty()) {
             iCalEvent.getProperties().add(Status.VEVENT_CONFIRMED);
@@ -223,12 +235,21 @@ public class ICal4JExchange implements ICalendarExchange {
             try {
               VEvent iCalAttPartRec = (VEvent) iCalEvent.copy();
               final OffsetDateTime dateKey = entry.getKey();
-              final DateTime startDateAttPartRec = iCal4JDateCodec.encode(dateKey);
-              final DateTime endDateAttPartRec =
-                  iCal4JDateCodec.encode(dateKey.plusSeconds(durationInSeconds));
+              final Date startDateAttPartRec;
+              final Date endDateAttPartRec;
+              if (event.isOnAllDay()) {
+                startDateAttPartRec = iCal4JDateCodec.encode(dateKey.toLocalDate());
+                endDateAttPartRec =
+                    iCal4JDateCodec.encode(dateKey.plusSeconds(durationInSeconds).toLocalDate());
+              } else {
+                startDateAttPartRec = iCal4JDateCodec.encode(dateKey);
+                endDateAttPartRec = iCal4JDateCodec.encode(dateKey.plusSeconds(durationInSeconds));
+              }
               iCalAttPartRec.getProperties().add(new RecurrenceId(startDateAttPartRec));
               ((DtStart) iCalAttPartRec.getProperty(Property.DTSTART)).setDate(startDateAttPartRec);
-              ((DtEnd) iCalAttPartRec.getProperty(Property.DTEND)).setDate(endDateAttPartRec);
+              if (!startDate.equals(endDate)) {
+                ((DtEnd) iCalAttPartRec.getProperty(Property.DTEND)).setDate(endDateAttPartRec);
+              }
               iCalAttPartRec.getProperties()
                   .removeIf(property -> property.getName().equals(Property.ATTENDEE));
               entry.getValue().forEach(
@@ -241,12 +262,11 @@ public class ICal4JExchange implements ICalendarExchange {
 
           // Add recurring data if any
           if (event.isRecurrent()) {
-            Recurrence eventRecurrence = event.getRecurrence();
-            Recur recur = iCal4JRecurrenceCodec.encode(eventRecurrence);
+            Recur recur = iCal4JRecurrenceCodec.encode(event);
             iCalEvent.getProperties().add(new RRule(recur));
-            final Set<OffsetDateTime> exceptionDates = eventRecurrence.getExceptionDates();
-            if (!exceptionDates.isEmpty()) {
-              iCalEvent.getProperties().add(new ExDate(iCal4JDateCodec.encode(exceptionDates)));
+            if (!event.getRecurrence().getExceptionDates().isEmpty()) {
+              iCalEvent.getProperties()
+                  .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
             }
           }
 
@@ -256,7 +276,7 @@ public class ICal4JExchange implements ICalendarExchange {
 
       CalendarOutputter outputter = new CalendarOutputter();
       try {
-        outputter.output(calendarIcs, export.getOutput());
+        outputter.output(calendarIcs, anExport.getOutput());
       } catch (Exception ex) {
         throw new SilverpeasRuntimeException(
             "The encoding of the events in iCal formatted text has failed!", ex);
@@ -311,6 +331,8 @@ public class ICal4JExchange implements ICalendarExchange {
         iCalEventAttendee = new Attendee("mailto:" + attendee.getId());
         iCalEventAttendee.getParameters().add(new Cn(attendee.getId()));
       }
+      iCalEventAttendee.getParameters().add(CuType.INDIVIDUAL);
+      iCalEventAttendee.getParameters().add(Rsvp.TRUE);
       convertPresenceStatus(attendee.getPresenceStatus())
           .ifPresent(role -> iCalEventAttendee.getParameters().add(role));
       convertParticipationStatus(participationStatus)
@@ -355,5 +377,9 @@ public class ICal4JExchange implements ICalendarExchange {
       default:
         return Optional.of(PartStat.NEEDS_ACTION);
     }
+  }
+
+  @Override
+  public void doImportOf(final ICalendarImport anImport) throws ICalendarException {
   }
 }

@@ -257,7 +257,7 @@ public class RecurrentCalendarEventCreationTest {
     assertThat(event.getRecurrence().getEndDate().isPresent(), is(true));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(NO_RECURRENCE_COUNT));
     assertThat(event.getRecurrence().getEndDate().get(),
-        is(today.plusWeeks(4).atTime(23, 59).atOffset(ZoneOffset.UTC)));
+        is(today.plusWeeks(4).atStartOfDay().atOffset(ZoneOffset.UTC)));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
     assertTitleAndDescriptionOf(event);
@@ -301,11 +301,11 @@ public class RecurrentCalendarEventCreationTest {
 
   private void assertEventTimePeriodOf(CalendarEvent event) {
     if (event.isOnAllDay()) {
-      assertThat(event.getStartDateTime(), is(today.atStartOfDay().atOffset(ZoneOffset.UTC)));
-      assertThat(event.getEndDateTime(), is(today.atTime(23, 59).atOffset(ZoneOffset.UTC)));
+      assertThat(event.getStartDate(), is(today));
+      assertThat(event.getEndDate(), is(today));
     } else {
-      assertThat(event.getStartDateTime(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
-      assertThat(event.getEndDateTime(), is(after2Hours.withOffsetSameInstant(ZoneOffset.UTC)));
+      assertThat(event.getStartDate(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
+      assertThat(event.getEndDate(), is(after2Hours.withOffsetSameInstant(ZoneOffset.UTC)));
     }
   }
 

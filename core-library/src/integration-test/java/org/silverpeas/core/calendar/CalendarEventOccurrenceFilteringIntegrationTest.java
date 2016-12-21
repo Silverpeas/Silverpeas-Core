@@ -33,7 +33,9 @@ import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,6 +48,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 @RunWith(Arquillian.class)
 public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalendarTest {
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -148,8 +156,8 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
     assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_3"));
     assertThat(occurrences.get(3).getCalendarEvent().getId(), is("ID_E_5"));
     assertThat(occurrences.get(4).getCalendarEvent().getId(), is("ID_E_5"));
-    assertThat(occurrences.get(3).getStartDateTime().toLocalDate(), is(LocalDate.of(2016, 1, 9)));
-    assertThat(occurrences.get(4).getStartDateTime().toLocalDate(), is(LocalDate.of(2016, 1, 23)));
+    assertThat(occurrences.get(3).getStartDate(), is(LocalDate.of(2016, 1, 9)));
+    assertThat(occurrences.get(4).getStartDate(), is(LocalDate.of(2016, 1, 23)));
   }
 
   /**

@@ -24,6 +24,7 @@
 package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
@@ -34,12 +35,16 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
+import org.silverpeas.core.webapi.calendar.CalendarEntity;
 import org.silverpeas.core.webapi.calendar.CalendarEventEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.buildCalendarURI;
 
 @WebComponentController(UserCalendarSettings.COMPONENT_NAME)
 public class UserCalendarWebController extends
@@ -77,6 +82,14 @@ public class UserCalendarWebController extends
   protected void beforeRequestProcessing(final UserCalendarWebRequestContext context) {
     super.beforeRequestProcessing(context);
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
+    CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
+    if (userCalendarEvent != null && !userCalendarEvent.canBeModifiedBy(context.getUser())) {
+      context.getRequest().setAttribute("highestUserRole", SilverpeasRole.user);
+    }
+    Calendar userMainCalendar = context.getMainUserCalendar();
+    context.getRequest().setAttribute("userMainCalendar",
+        CalendarEntity.fromCalendar(userMainCalendar)
+            .withURI(buildCalendarURI(CALENDAR_BASE_URI, userMainCalendar)));
   }
 
   /**

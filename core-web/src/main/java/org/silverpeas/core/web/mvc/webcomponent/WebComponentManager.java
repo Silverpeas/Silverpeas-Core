@@ -45,7 +45,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -343,10 +342,6 @@ public class WebComponentManager {
       webComponentController.onCreationCalled = true;
     }
 
-    // Common processing
-    webComponentRequestContext.beforeRequestProcessing();
-    webComponentController.beforeRequestProcessing(webComponentRequestContext);
-
     // Retrieving the web component manager
     WebComponentManager webComponentManager =
         managedWebComponentRouters.get(webComponentController.getClass().getName());
@@ -402,6 +397,10 @@ public class WebComponentManager {
           .addError(webComponentContext.getMultilang().getString("GML.action.user.forbidden"));
       pathToPerform = defaultPath;
     }
+
+    // Common processing
+    webComponentContext.beforeRequestProcessing();
+    webComponentController.beforeRequestProcessing(webComponentContext);
 
     // Reset navigation context if necessary
     if (pathToPerform == defaultPath) {

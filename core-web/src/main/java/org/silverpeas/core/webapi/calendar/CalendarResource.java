@@ -36,10 +36,10 @@ import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarExport;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
-import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -54,6 +54,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,6 +64,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -80,9 +82,6 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.ass
 @Authorized
 public class CalendarResource extends AbstractCalendarResource {
 
-  @Inject
-  private CalendarWebServiceProvider calendarWebServiceProvider;
-
   /**
    * Gets the JSON representation of a list of calendar.
    * If it doesn't exist, a 404 HTTP code is returned.
@@ -94,7 +93,7 @@ public class CalendarResource extends AbstractCalendarResource {
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEntity> getCalendars() {
     List<Calendar> calendars =
-        process(() -> calendarWebServiceProvider.getCalendarsOf(getComponentId())).execute();
+        process(() -> getCalendarWebServiceProvider().getCalendarsOf(getComponentId())).execute();
     return asWebEntities(calendars);
   }
 
@@ -130,7 +129,7 @@ public class CalendarResource extends AbstractCalendarResource {
     final Calendar calendar = new Calendar(getComponentId());
     calendarEntity.merge(calendar);
     Calendar createdCalendar =
-        process(() -> calendarWebServiceProvider.saveCalendar(calendar)).execute();
+        process(() -> getCalendarWebServiceProvider().saveCalendar(calendar)).execute();
     return asWebEntity(createdCalendar);
   }
 
@@ -154,7 +153,7 @@ public class CalendarResource extends AbstractCalendarResource {
     assertDataConsistency(getComponentId(), calendar);
     calendarEntity.merge(calendar);
     Calendar updatedCalendar =
-        process(() -> calendarWebServiceProvider.saveCalendar(calendar)).execute();
+        process(() -> getCalendarWebServiceProvider().saveCalendar(calendar)).execute();
     return asWebEntity(updatedCalendar);
   }
 
@@ -172,7 +171,7 @@ public class CalendarResource extends AbstractCalendarResource {
     final Calendar calendar = Calendar.getById(calendarId);
     assertDataConsistency(getComponentId(), calendar);
     process(() -> {
-      calendarWebServiceProvider.deleteCalendar(calendar);
+      getCalendarWebServiceProvider().deleteCalendar(calendar);
       return null;
     }).execute();
   }
@@ -195,11 +194,13 @@ public class CalendarResource extends AbstractCalendarResource {
       try {
         if (calendar.isMainPersonalOf(getUserDetail())) {
           ICalendarExport
-              .from(() -> Calendar.getEvents().filter(f -> f.onParticipants(getUserDetail())).stream())
+              .from(calendar, () -> Calendar.getEvents()
+                                    .filter(f -> f.onParticipants(getUserDetail())).stream())
               .to(() -> output);
         } else {
           ICalendarExport
-              .from(() -> Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream())
+              .from(calendar, () -> Calendar.getEvents()
+                                    .filter(f -> f.onCalendar(calendar)).stream())
               .to(() -> output);
         }
       } catch (ICalendarException e) {
@@ -238,7 +239,7 @@ public class CalendarResource extends AbstractCalendarResource {
   protected List<ParticipantCalendarEventOccurrencesEntity> getAllEventOccurrencesFrom(
       final LocalDate startDate, final LocalDate endDate, final Set<User> users) {
     Map<String, List<CalendarEventOccurrence>> occurrences = process(
-        () -> calendarWebServiceProvider
+        () -> getCalendarWebServiceProvider()
             .getAllEventOccurrencesByUserIds(Pair.of(getComponentId(), getUserDetail()), startDate,
                 endDate, users)).execute();
     List<ParticipantCalendarEventOccurrencesEntity> webEntities = new ArrayList<>();
@@ -280,7 +281,7 @@ public class CalendarResource extends AbstractCalendarResource {
   protected List<CalendarEventOccurrenceEntity> getEventOccurrencesOf(final Calendar calendar,
       final LocalDate startDate, final LocalDate endDate) {
     List<CalendarEventOccurrence> occurrences = process(
-        () -> calendarWebServiceProvider.getEventOccurrencesOf(calendar, startDate, endDate))
+        () -> getCalendarWebServiceProvider().getEventOccurrencesOf(calendar, startDate, endDate))
         .execute();
     return asOccurrenceWebEntities(occurrences);
   }
@@ -290,7 +291,7 @@ public class CalendarResource extends AbstractCalendarResource {
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with
    * @param eventId the identifier of event the returned occurrences must be linked with
-   * @param startDateTime optional. If it exists, it represents  an occurrence, and so, the
+   * @param startDate optional. If it exists, it represents  an occurrence, and so, the
    * service will return only the requested occurrence.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * occurrences.
@@ -302,29 +303,37 @@ public class CalendarResource extends AbstractCalendarResource {
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEventOccurrenceEntity> getEventOccurrencesOf(
       @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId,
-      @QueryParam("startDateTime") String startDateTime) {
+      @QueryParam("startDate") String startDate) {
     final Calendar calendar = Calendar.getById(calendarId);
     final CalendarEvent event = CalendarEvent.getById(eventId);
     assertDataConsistency(calendar.getComponentInstanceId(), calendar, event);
     CalendarEventOccurrenceRequestParameters params = RequestParameterDecoder
         .decode(getHttpRequest(), CalendarEventOccurrenceRequestParameters.class);
-    final LocalDate startDate;
-    final LocalDate endDate;
-    final OffsetDateTime occurrenceStartDateTime =
-        isDefined(startDateTime) ? OffsetDateTime.parse(startDateTime) : null;
-    if (occurrenceStartDateTime != null) {
-      startDate = occurrenceStartDateTime.minusDays(1).toLocalDate();
-      endDate = occurrenceStartDateTime.plusDays(1).toLocalDate();
+    final Temporal temporalStart;
+    final LocalDate occStartDate;
+    final LocalDate occEndDate;
+    if (isDefined(startDate)) {
+      if (event.isOnAllDay()) {
+        LocalDate date = LocalDate.parse(startDate);
+        temporalStart = date;
+        occStartDate = date.minusDays(1);
+        occEndDate = date.plusDays(1);
+      } else {
+        OffsetDateTime dateTime = OffsetDateTime.parse(startDate);
+        temporalStart = dateTime;
+        occStartDate = dateTime.minusDays(1).toLocalDate();
+        occEndDate = dateTime.plusDays(1).toLocalDate();
+      }
     } else {
-      startDate = params.getStartDateOfWindowTime().toLocalDate();
-      endDate = params.getEndDateOfWindowTime().toLocalDate();
+      temporalStart = null;
+      occStartDate = params.getStartDateOfWindowTime().toLocalDate();
+      occEndDate = params.getEndDateOfWindowTime().toLocalDate();
     }
     List<CalendarEventOccurrenceEntity> occurrences =
-        getEventOccurrencesOf(calendar, startDate, endDate);
+        getEventOccurrencesOf(calendar, occStartDate, occEndDate);
     occurrences.removeIf(occurrence -> !occurrence.getEvent().getId().equals(eventId) ||
-        (occurrenceStartDateTime != null &&
-            !occurrence.getStartDateTime().equals(occurrenceStartDateTime.toString())));
-    if (occurrenceStartDateTime != null && occurrences.isEmpty()) {
+        (temporalStart != null && !occurrence.getStartDate().equals(temporalStart.toString())));
+    if (temporalStart != null && occurrences.isEmpty()) {
       throw new WebApplicationException(NOT_FOUND);
     }
     return occurrences;
@@ -347,8 +356,8 @@ public class CalendarResource extends AbstractCalendarResource {
       CalendarEventEntity eventEntity) {
     final Calendar calendar = Calendar.getById(calendarId);
     assertDataConsistency(getComponentId(), calendar);
-    CalendarEvent createdEvent = process(() -> calendarWebServiceProvider
-        .createEvent(calendar, eventEntity.getMergedPersistentModel()))
+    CalendarEvent createdEvent = process(() -> getCalendarWebServiceProvider()
+        .createEvent(calendar, eventEntity.getMergedPersistentModel(null)))
         .execute();
     return asEventWebEntity(createdEvent);
   }
@@ -374,7 +383,7 @@ public class CalendarResource extends AbstractCalendarResource {
     final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
     final CalendarEvent eventDataToUpdate = occurrenceEntity.getMergedPersistentEventModel();
     assertDataConsistency(getComponentId(), originalCalendar, previousEventData, eventDataToUpdate);
-    List<CalendarEvent> updatedEvents = process(() -> calendarWebServiceProvider
+    List<CalendarEvent> updatedEvents = process(() -> getCalendarWebServiceProvider()
         .saveEventFromAnOccurrence(eventDataToUpdate, occurrenceEntity.getReferenceData(),
             occurrenceEntity.getUpdateMethodType()))
         .execute();
@@ -402,7 +411,7 @@ public class CalendarResource extends AbstractCalendarResource {
     final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
     final CalendarEvent eventDataToDelete = occurrenceEntity.getMergedPersistentEventModel();
     assertDataConsistency(getComponentId(), originalCalendar, previousEventData, eventDataToDelete);
-    CalendarEvent updatedEvent = process(() -> calendarWebServiceProvider
+    CalendarEvent updatedEvent = process(() -> getCalendarWebServiceProvider()
         .deleteEventFromAnOccurrence(eventDataToDelete, occurrenceEntity.getReferenceData(),
             occurrenceEntity.getDeleteMethodType()))
         .execute();
@@ -429,14 +438,19 @@ public class CalendarResource extends AbstractCalendarResource {
   public CalendarEventEntity updateEventAttendeeParticipation(
       @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId,
       @PathParam("attendeeId") String attendeeId, CalendarEventAttendeeAnswerEntity answerEntity) {
+    if(StringUtil.isLong(attendeeId) && !getUserDetail().getId().equals(attendeeId)) {
+      throw new WebApplicationException(FORBIDDEN);
+    }
     final Calendar originalCalendar = Calendar.getById(calendarId);
     final CalendarEvent event = CalendarEvent.getById(eventId);
     assertDataConsistency(originalCalendar.getComponentInstanceId(), originalCalendar, event);
     answerEntity.setId(attendeeId);
     CalendarEvent updatedEvent = process(
-        () -> calendarWebServiceProvider.updateEventAttendeeParticipationFromAnOccurrence(event,
+        () -> getCalendarWebServiceProvider().updateEventAttendeeParticipationFromAnOccurrence(event,
             answerEntity.getOccurrence().getReferenceData(), answerEntity.getId(),
-            answerEntity.getParticipationStatus(), answerEntity.getAnswerMethodType())).execute();
+            answerEntity.getParticipationStatus(), answerEntity.getAnswerMethodType()))
+        .lowestAccessRole(null)
+        .execute();
     return updatedEvent != null ? asEventWebEntity(updatedEvent) : null;
   }
 
@@ -526,7 +540,7 @@ public class CalendarResource extends AbstractCalendarResource {
         occurrence.getCalendarEvent().getAttendees().stream().map(attendee -> {
           CalendarEventAttendeeEntity entity = asAttendeeWebEntity(attendee);
           final Optional<Attendee.ParticipationStatus> participationStatusOptional =
-              attendee.getParticipationOn().get(occurrence.getStartDateTime());
+              attendee.getParticipationOn().get(occurrence.getStartDate());
           participationStatusOptional.ifPresent(entity::setParticipationStatus);
           return entity;
         }).collect(Collectors.toList());
@@ -561,5 +575,9 @@ public class CalendarResource extends AbstractCalendarResource {
     assertEntityIsDefined(attendee.getEvent());
     return (T) CalendarEventAttendeeEntity.from(attendee)
         .withURI(buildCalendarEventAttendeeURI(CALENDAR_BASE_URI, attendee));
+  }
+
+  private CalendarWebServiceProvider getCalendarWebServiceProvider() {
+    return CalendarWebServiceProvider.get();
   }
 }

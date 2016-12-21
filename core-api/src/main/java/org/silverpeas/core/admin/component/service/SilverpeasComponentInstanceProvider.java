@@ -25,6 +25,8 @@
 package org.silverpeas.core.admin.component.service;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -48,9 +50,25 @@ public interface SilverpeasComponentInstanceProvider {
   }
 
   /**
-   * Gets a silverpeas component instance from the specified identifier.
+   * Gets a any silverpeas component instance from the specified identifier.
    * @param componentInstanceId a component instance identifier as string.
    * @return an optional silverpeas component instance of {@link SilverpeasComponentInstance}.
    */
   Optional<SilverpeasComponentInstance> getById(String componentInstanceId);
+
+  /**
+   * Gets a shared silverpeas component instance from the specified identifier.
+   * @param sharedComponentInstanceId a shared component instance identifier as string.
+   * @return an optional silverpeas shared component instance of {@link
+   * SilverpeasPersonalComponentInstance}.
+   */
+  Optional<SilverpeasSharedComponentInstance> getSharedById(String sharedComponentInstanceId);
+
+  /**
+   * Gets a personal silverpeas component instance from the specified identifier.
+   * @param personalComponentInstanceId a personal component instance identifier as string.
+   * @return an optional silverpeas personal component instance of {@link
+   * SilverpeasPersonalComponentInstance}.
+   */
+  Optional<SilverpeasPersonalComponentInstance> getPersonalById(String personalComponentInstanceId);
 }

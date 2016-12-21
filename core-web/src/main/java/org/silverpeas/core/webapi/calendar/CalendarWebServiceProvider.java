@@ -45,7 +45,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,14 +61,6 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
  */
 @Singleton
 public class CalendarWebServiceProvider {
-
-  private static final AbstractComplexComparator<CalendarEventOccurrence>
-      CALENDAR_EVENT_OCCURRENCE_SORT = new AbstractComplexComparator<CalendarEventOccurrence>() {
-    @Override
-    protected ValueBuffer getValuesToCompare(final CalendarEventOccurrence occurrence) {
-      return new ValueBuffer().append(occurrence.getStartDateTime());
-    }
-  };
 
   private CalendarWebServiceProvider() {
   }
@@ -283,16 +275,16 @@ public class CalendarWebServiceProvider {
       successMessage("calendar.message.event.updated", result.getUpdatedEvent().getTitle());
     } else {
       final String bundleKey;
-      final OffsetDateTime endDateTime;
+      final Temporal endDate;
       if (methodType == UNIQUE) {
         bundleKey = "calendar.message.event.occurrence.updated.unique";
-        endDateTime = data.getOriginalStartDateTime();
+        endDate = data.getOriginalStartDate();
       } else {
         bundleKey = "calendar.message.event.occurrence.updated.from";
-        endDateTime = result.getUpdatedEvent().getRecurrence().getEndDate().get();
+        endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
       }
       successMessage(bundleKey, result.getUpdatedEvent().getTitle(),
-          getMessager().formatDate(endDateTime));
+          getMessager().formatDate(endDate));
     }
 
     final List<CalendarEvent> events = new ArrayList<>();
@@ -336,15 +328,15 @@ public class CalendarWebServiceProvider {
       successMessage("calendar.message.event.deleted", event.getTitle());
     } else {
       final String bundleKey;
-      final OffsetDateTime endDateTime;
+      final Temporal endDate;
       if (methodType == UNIQUE) {
         bundleKey = "calendar.message.event.occurrence.deleted.unique";
-        endDateTime = data.getOriginalStartDateTime();
+        endDate = data.getOriginalStartDate();
       } else {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
-        endDateTime = result.getUpdatedEvent().getRecurrence().getEndDate().get();
+        endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
       }
-      successMessage(bundleKey, event.getTitle(), getMessager().formatDate(endDateTime));
+      successMessage(bundleKey, event.getTitle(), getMessager().formatDate(endDate));
     }
 
     return result.getUpdatedEvent();
@@ -365,9 +357,9 @@ public class CalendarWebServiceProvider {
       CalendarEventOccurrenceReferenceData data, String attendeeId,
       ParticipationStatus participationStatus, OccurrenceEventActionMethodType answerMethodType) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;
-    OffsetDateTime participationOnDate = null;
+    Temporal participationOnDate = null;
     if (methodType == UNIQUE) {
-      participationOnDate = data.getOriginalStartDateTime();
+      participationOnDate = data.getOriginalStartDate();
     } else if (methodType != ALL) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
@@ -413,7 +405,7 @@ public class CalendarWebServiceProvider {
           case UNIQUE:
             successMessage(
                 "calendar.message.event.occurrence.attendee.participation.updated.unique",
-                event.getTitle(), getMessager().formatDate(data.getOriginalStartDateTime()));
+                event.getTitle(), getMessager().formatDate(data.getOriginalStartDate()));
             break;
         }
 
@@ -429,19 +421,13 @@ public class CalendarWebServiceProvider {
    * by the start and end date times.<br/>
    * The occurrences are sorted from the lowest to the highest date.
    * @param calendar the calendar the event occurrences belong to.
-   * @param startDateTime the start date time window.
-   * @param endDateTime the end date time window.
+   * @param startDate the start date of time window.
+   * @param endDate the end date of time window.
    * @return a list of entities of calendar event occurrences.
    */
   public List<CalendarEventOccurrence> getEventOccurrencesOf(Calendar calendar,
-      LocalDate startDateTime, LocalDate endDateTime) {
-    // Retrieving the occurrences
-    List<CalendarEventOccurrence> entities =
-        calendar.between(startDateTime, endDateTime).getEventOccurrences();
-    // Sorting them by ascending start date
-    entities.sort(CALENDAR_EVENT_OCCURRENCE_SORT);
-    // Returning the result
-    return entities;
+      LocalDate startDate, LocalDate endDate) {
+    return calendar.between(startDate, endDate).getEventOccurrences();
   }
 
   /**
@@ -451,17 +437,17 @@ public class CalendarWebServiceProvider {
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.
    * @param currentUserAndComponentInstanceId the current user and current the component instance
    * id from which the service is requested.
-   * @param startDateTime the start date time window.
-   * @param endDateTime the end date time window.
+   * @param startDate the start date of time window.
+   * @param endDate the end date of time window.
    * @param users the users to filter on.
    * @return a list of entities of calendar event occurrences mapped by user identifiers.
    */
   public Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
-      final Pair<String, User> currentUserAndComponentInstanceId, LocalDate startDateTime,
-      LocalDate endDateTime, Collection<User> users) {
+      final Pair<String, User> currentUserAndComponentInstanceId, LocalDate startDate,
+      LocalDate endDate, Collection<User> users) {
     // Retrieving the occurrences
     List<CalendarEventOccurrence> entities =
-        Calendar.getTimeWindowBetween(startDateTime, endDateTime)
+        Calendar.getTimeWindowBetween(startDate, endDate)
             .filter(f -> f.onParticipants(users))
             .getEventOccurrences();
     // Getting the occurrences by users

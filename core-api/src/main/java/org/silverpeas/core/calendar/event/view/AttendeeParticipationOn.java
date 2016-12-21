@@ -27,9 +27,14 @@ import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.event.Attendee.ParticipationStatus;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.Temporal;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,6 +57,30 @@ public class AttendeeParticipationOn implements Cloneable {
 
   /**
    * Sets the specified occurrence participation.
+   * @param startDate the start date of an occurrence of a {@link Plannable}.
+   * @param participationStatus the status of the participation to save.
+   */
+  public void set(Temporal startDate, ParticipationStatus participationStatus) {
+    if (startDate instanceof LocalDate) {
+      set((LocalDate) startDate, participationStatus);
+    } else if (startDate instanceof OffsetDateTime) {
+      set((OffsetDateTime) startDate, participationStatus);
+    } else {
+      throw new IllegalArgumentException("startDate must be of type LocalDate or OffsetDateTime");
+    }
+  }
+
+  /**
+   * Sets the specified occurrence participation.
+   * @param startDateTime the start date of an occurrence of a {@link Plannable}.
+   * @param participationStatus the status of the participation to save.
+   */
+  public void set(LocalDate startDateTime, ParticipationStatus participationStatus) {
+    participationOn.put(startDateTime.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(), participationStatus);
+  }
+
+  /**
+   * Sets the specified occurrence participation.
    * @param startDateTime the start date time of an occurrence of a {@link Plannable}.
    * @param participationStatus the status of the participation to save.
    */
@@ -69,11 +98,11 @@ public class AttendeeParticipationOn implements Cloneable {
 
   /**
    * Gets from a date the participation status if any.
-   * @param dateTime the date time key.
+   * @param date the date or the date time key.
    * @return an optional participation status.
    */
-  public Optional<ParticipationStatus> get(OffsetDateTime dateTime) {
-    return Optional.ofNullable(participationOn.get(dateTime));
+  public Optional<ParticipationStatus> get(Temporal date) {
+    return Optional.ofNullable(participationOn.get(asOffsetDateTime(date)));
   }
 
   /**
@@ -87,17 +116,34 @@ public class AttendeeParticipationOn implements Cloneable {
    * Clears registered occurrence participation on date.
    * @param onDateTime the date time on which the answer must be cleared.
    */
-  public void clearOn(OffsetDateTime onDateTime) {
-    participationOn.entrySet().removeIf(e ->  e.getKey().isEqual(onDateTime));
+  public void clearOn(Temporal onDateTime) {
+    participationOn.entrySet().removeIf(e -> e.getKey().isEqual(asOffsetDateTime(onDateTime)));
   }
 
   /**
    * Clears all registered occurrence participation from the given date.
    * @param fromDateTime the date time from which the participation must be cleared.
    */
-  public void clearFrom(OffsetDateTime fromDateTime) {
-    participationOn.entrySet()
-        .removeIf(e -> e.getKey().isEqual(fromDateTime) || e.getKey().isAfter(fromDateTime));
+  public void clearFrom(Temporal fromDateTime) {
+    participationOn.entrySet().removeIf(
+        e -> e.getKey().equals(fromDateTime) || e.getKey().isAfter(asOffsetDateTime(fromDateTime)));
+  }
+
+  private OffsetDateTime asOffsetDateTime(final Temporal temporal) {
+    if (temporal instanceof LocalDate) {
+      return asOffsetDateTime((LocalDate) temporal);
+    } else if (temporal instanceof OffsetDateTime) {
+      return asOffsetDateTime((OffsetDateTime) temporal);
+    }
+    throw new IllegalArgumentException("LocalDate or OffsetDateTime is expected");
+  }
+
+  private OffsetDateTime asOffsetDateTime(final OffsetDateTime dateTime) {
+    return dateTime.withOffsetSameInstant(ZoneOffset.UTC);
+  }
+
+  private OffsetDateTime asOffsetDateTime(final LocalDate date) {
+    return date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
   }
 
   /**

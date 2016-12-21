@@ -90,9 +90,9 @@
 
   /**
    * Some tool method in order to centralize common treatments.
-   * @type {SilverpeasCalendarTool}
+   * @type {SilverpeasCalendarTools}
    */
-  $window.SilverpeasCalendarTool = new function() {
+  $window.SilverpeasCalendarTools = new function() {
 
     /**
      * Extracts from an UI JavaScript bean the necessary data about the representation of an
@@ -103,13 +103,20 @@
       occurrence = occurrence ? occurrence : {};
       return {
         id : occurrence.id,
-        lastStartDateTime : occurrence.lastStartDateTime,
-        startDateTime : occurrence.startDateTime,
-        endDateTime : occurrence.endDateTime,
+        lastStartDate : occurrence.lastStartDate,
+        startDate : occurrence.startDate,
+        endDate : occurrence.endDate,
         event : occurrence.event,
         attendees : occurrence.attendees
       }
-    }
+    };
+
+    /**
+     * The reference on the full calendar extension.
+     * The useful added features: https://fullcalendar.io/docs/utilities/Moment/
+     * @type {*}
+     */
+    this.moment = $.fullCalendar.moment;
   };
 
   /**
@@ -353,6 +360,8 @@
       timeFormat: 'HH:mm',
       displayEventEnd: true,
       slotLabelFormat: 'HH:mm',
+      weekNumbers : true,
+      weekNumberTitle : $window.CalendarBundle.get("c.w").substring(0, 1),
       views: {
         agendaWeek: {
           columnFormat: 'ddd DD'

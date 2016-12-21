@@ -45,10 +45,10 @@
             }.bind(this);
 
             this.api = {
-              add : function() {
+              "add" : function() {
                 this.api.modify();
               }.bind(this),
-              modify : function(calendarToModify) {
+              "modify" : function(calendarToModify) {
                 notyReset();
                 this.calendar = extendsObject({title : ''}, calendarToModify);
                 this.creating = this.calendar.title.isNotDefined();
@@ -71,7 +71,7 @@
                   });
                 }.bind(this), 0);
               }.bind(this),
-              delete : function(calendarToRemove) {
+              "delete" : function(calendarToRemove) {
                 notyReset();
                 this.calendar = calendarToRemove;
 
@@ -81,13 +81,13 @@
                  * to the user.
                  */
                 var _deleteProcess = function() {
-                  CalendarService.delete(this.calendar).then(function() {
+                  CalendarService['delete'](this.calendar).then(function() {
                     this.onDeleted({calendar : calendarToRemove});
                   }.bind(this));
                 }.bind(this);
 
                 $timeout(function() {
-                  var message = this.messages.delete.replace('@name@', this.calendar.title);
+                  var message = this.messages["delete"].replace('@name@', this.calendar.title);
                   jQuery.popup.confirm(message, _deleteProcess);
                 }.bind(this), 0);
               }.bind(this)

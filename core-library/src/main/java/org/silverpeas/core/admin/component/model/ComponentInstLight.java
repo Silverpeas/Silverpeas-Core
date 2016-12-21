@@ -43,7 +43,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
  * The class ComponentInstLight is the representation in memory of a component instance
  */
 public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
-    implements SilverpeasComponentInstance {
+    implements SilverpeasSharedComponentInstance {
 
   private static final long serialVersionUID = 4859368422448142768L;
 

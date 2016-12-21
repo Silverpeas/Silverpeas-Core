@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.List;
@@ -105,7 +106,7 @@ public class ICal4JExchangeExportTest {
 
   @Test(expected = NullPointerException.class)
   public void undefinedListOfEvents() throws ICalendarException {
-    ICalendarExport.from(() -> null).to(ByteArrayOutputStream::new);
+    ICalendarExport.from(calendar, () -> null).to(ByteArrayOutputStream::new);
   }
 
   @Test
@@ -114,10 +115,9 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void simpleOneOfOneDayDuration() throws ICalendarException {
+  public void simpleOneOfTwoDaysDuration() throws ICalendarException {
     CalendarEvent event = CalendarEventMockBuilder.from(Period
-        .allDaysBetween(OffsetDateTime.parse("2016-12-14T23:00:00Z"),
-                        OffsetDateTime.parse("2016-12-15T23:00:00Z")))
+        .between(LocalDate.parse("2016-12-14"), LocalDate.parse("2016-12-15")))
         .plannedOn(calendar)
         .withId("EVENT-UUID")
         .withTitle("EVENT-TITLE")
@@ -128,14 +128,13 @@ public class ICal4JExchangeExportTest {
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .build();
 
-    exportAndVerifyResult(singletonList(event), "ical4j_export_simple_one_day_duration.txt");
+    exportAndVerifyResult(singletonList(event), "ical4j_export_simple_two_days_duration.txt");
   }
 
   @Test
   public void categorizedOneOfOneDayDuration() throws ICalendarException {
     CalendarEvent event = CalendarEventMockBuilder.from(Period
-        .allDaysBetween(OffsetDateTime.parse("2016-12-25T23:00:00Z"),
-                        OffsetDateTime.parse("2016-12-26T23:00:00Z")))
+        .between(LocalDate.parse("2016-12-25"), LocalDate.parse("2016-12-25")))
         .plannedOn(calendar)
         .withId("EVENT-UUID")
         .withTitle("EVENT-TITLE-CATEGORIZED")
@@ -178,7 +177,7 @@ public class ICal4JExchangeExportTest {
         .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
-            Recurrence.every(4, TimeUnit.DAY).upTo(OffsetDateTime.parse("2016-01-01T15:27:00Z")))
+            Recurrence.every(4, TimeUnit.DAY).upTo(OffsetDateTime.parse("2016-12-31T15:27:00Z")))
         .build();
     CalendarEvent event4 = CalendarEventMockBuilder.from(Period
         .between(OffsetDateTime.parse("2016-12-15T18:45:00Z"),
@@ -256,14 +255,121 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void simpleOneOfOneDayDurationWithAttendees() throws ICalendarException {
+  public void severalOnAllDaysAndDailyRecurrence() throws ICalendarException {
+    CalendarEvent event1 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-1")
+        .withTitle("EVENT-TITLE-1")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(Recurrence.every(TimeUnit.DAY))
+        .build();
+    CalendarEvent event2 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-2")
+        .withTitle("EVENT-TITLE-2")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(Recurrence.every(3, TimeUnit.DAY))
+        .build();
+    CalendarEvent event3 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-3")
+        .withTitle("EVENT-TITLE-3")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(
+            Recurrence.every(4, TimeUnit.DAY).upTo(LocalDate.parse("2016-12-31")))
+        .build();
+    CalendarEvent event4 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-4")
+        .withTitle("EVENT-TITLE-4")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(
+            Recurrence.every(2, TimeUnit.DAY).upTo(10))
+        .build();
+    CalendarEvent event5 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-5")
+        .withTitle("EVENT-TITLE-5")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(
+            Recurrence.every(TimeUnit.DAY)
+                .excludeEventOccurrencesStartingAt(LocalDate.parse("2016-12-18"),
+                    LocalDate.parse("2016-12-20"),
+                    LocalDate.parse("2016-12-25")))
+        .build();
+    CalendarEvent event6 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-6")
+        .withTitle("EVENT-TITLE-6")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(
+            Recurrence.every(2, TimeUnit.WEEK)
+                .on(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY))
+        .build();
+    CalendarEvent event7 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-7")
+        .withTitle("EVENT-TITLE-7")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(
+            Recurrence.every(1, TimeUnit.MONTH)
+                .on(DayOfWeekOccurrence.nth(3, DayOfWeek.FRIDAY)))
+        .build();
+    CalendarEvent event8 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-8")
+        .withTitle("EVENT-TITLE-8")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(Recurrence.every(TimeUnit.MONTH))
+        .build();
+    CalendarEvent event9 = CalendarEventMockBuilder.from(Period
+        .between(LocalDate.parse("2016-12-15"),
+                 LocalDate.parse("2016-12-15")))
+        .plannedOn(calendar)
+        .withId("EVENT-UUID-9")
+        .withTitle("EVENT-TITLE-9")
+        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
+        .withRecurrence(Recurrence.every(TimeUnit.YEAR))
+        .build();
+
+    exportAndVerifyResult(
+        asList(event1, event2, event3, event4, event5, event6, event7, event8, event9),
+        "ical4j_export_several_with_recurrence_on_all_day.txt");
+  }
+
+  @Test
+  public void simpleOneOfTwoDayDurationWithAttendees() throws ICalendarException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
     when(user.geteMail()).thenReturn("user.test@silverpeas.org");
     CalendarEvent event = CalendarEventMockBuilder.from(Period
-        .allDaysBetween(OffsetDateTime.parse("2016-12-14T23:00:00Z"),
-            OffsetDateTime.parse("2016-12-15T23:00:00Z")))
+        .between(LocalDate.parse("2016-12-14"), LocalDate.parse("2016-12-15")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-ATTENDEES")
         .withTitle("EVENT-TITLE")
@@ -281,7 +387,7 @@ public class ICal4JExchangeExportTest {
         .build();
 
     exportAndVerifyResult(singletonList(event),
-        "ical4j_export_simple_one_day_duration_with_attendees.txt");
+        "ical4j_export_simple_two_days_duration_with_attendees.txt");
   }
 
   @Test
@@ -290,9 +396,8 @@ public class ICal4JExchangeExportTest {
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
     when(user.geteMail()).thenReturn("user.test@silverpeas.org");
-    CalendarEvent event = CalendarEventMockBuilder.from(Period
-        .allDaysBetween(OffsetDateTime.parse("2016-11-30T23:00:00Z"),
-            OffsetDateTime.parse("2016-12-01T23:00:00Z")))
+    CalendarEvent event = CalendarEventMockBuilder
+        .from(Period.between(LocalDate.parse("2016-11-30"), LocalDate.parse("2016-11-30")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-RECURRENCE-ATTENDEES")
         .withTitle("EVENT-TITLE")
@@ -321,8 +426,7 @@ public class ICal4JExchangeExportTest {
     when(user.getDisplayedName()).thenReturn("User Test");
     when(user.geteMail()).thenReturn("user.test@silverpeas.org");
     CalendarEvent event = CalendarEventMockBuilder.from(Period
-        .allDaysBetween(OffsetDateTime.parse("2016-11-30T23:00:00Z"),
-            OffsetDateTime.parse("2016-12-01T23:00:00Z")))
+        .between(LocalDate.parse("2016-11-30"), LocalDate.parse("2016-11-30")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-RECURRENCE-ATTENDEES-ON-DATE-ANSWER")
         .withTitle("EVENT-TITLE")
@@ -331,20 +435,16 @@ public class ICal4JExchangeExportTest {
         .withAttendee(user, mockedAttendee -> {
           when(mockedAttendee.getPresenceStatus()).thenReturn(OPTIONAL);
           when(mockedAttendee.getParticipationStatus()).thenReturn(ACCEPTED);
-          mockedAttendee.getParticipationOn()
-              .set(OffsetDateTime.parse("2016-12-05T23:00:00Z"), DECLINED);
-          mockedAttendee.getParticipationOn()
-              .set(OffsetDateTime.parse("2016-12-08T23:00:00Z"), TENTATIVE);
+          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-06"), DECLINED);
+          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-09"), TENTATIVE);
         })
         .withAttendee("external.1@silverpeas.org", mockedAttendee -> {
           when(mockedAttendee.getPresenceStatus()).thenReturn(INFORMATIVE);
-          mockedAttendee.getParticipationOn()
-              .set(OffsetDateTime.parse("2016-12-05T23:00:00Z"), DECLINED);
+          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-06"), DECLINED);
         })
         .withAttendee("external.2@silverpeas.org", mockedAttendee -> {
           when(mockedAttendee.getParticipationStatus()).thenReturn(DECLINED);
-          mockedAttendee.getParticipationOn()
-              .set(OffsetDateTime.parse("2016-12-09T23:00:00Z"), ACCEPTED);
+          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-10"), ACCEPTED);
         })
         .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
@@ -375,12 +475,12 @@ public class ICal4JExchangeExportTest {
     try {
 
       ByteArrayOutputStream emptyExportResult = new ByteArrayOutputStream();
-      ICalendarExport.from(Stream::<CalendarEvent>empty).to(() -> emptyExportResult);
+      ICalendarExport.from(calendar, Stream::<CalendarEvent>empty).to(() -> emptyExportResult);
       List<String> empty = IOUtils.readLines(new StringReader(emptyExportResult.toString()));
       empty.remove(empty.size() - 1);
 
       ByteArrayOutputStream exportResult = new ByteArrayOutputStream();
-      ICalendarExport.from(calendarEvents::stream).to(() -> exportResult);
+      ICalendarExport.from(calendar, calendarEvents::stream).to(() -> exportResult);
 
       StringReader current = new StringReader(exportResult.toString());
       StringReader expected = new StringReader(getFileContent(fileNameOfExpectedResult));

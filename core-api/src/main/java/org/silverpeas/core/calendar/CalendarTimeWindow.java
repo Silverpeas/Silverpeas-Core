@@ -92,7 +92,7 @@ public class CalendarTimeWindow {
    */
   public List<CalendarEvent> getEvents() {
     return CalendarEventRepository.get()
-        .getAllBetween(filter, startDate.atStartOfDay().atOffset(ZoneOffset.UTC),
-            endDate.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC));
+        .getAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
+            endDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).minusMinutes(1).toOffsetDateTime());
   }
 }

@@ -36,11 +36,13 @@ import org.silverpeas.core.calendar.event.InternalAttendee;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,6 +58,12 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
   private static final String EVENT_WITH_ATTENDEE = "ID_E_1";
   private static final String EVENT_WITH_ATTENDEE_AND_DATE_PART = "ID_E_5";
   private static final String EVENT_WITHOUT_ATTENDEE = "ID_E_4";
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -90,6 +98,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     CalendarEvent eventWithAttendeesAndDatePart =
         CalendarEvent.getById(EVENT_WITH_ATTENDEE_AND_DATE_PART);
 
+    assertThat(eventWithAttendeesAndDatePart.isOnAllDay(), is(true));
     assertThat(eventWithAttendeesAndDatePart.getAttendees().size(), is(1));
 
     Attendee actualAttendee = in(eventWithAttendeesAndDatePart.getAttendees())
@@ -100,7 +109,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     assertThat(actualAttendee.getParticipationOn().getAll().size(), is(1));
     final Map.Entry<OffsetDateTime, Attendee.ParticipationStatus> entry =
         actualAttendee.getParticipationOn().getAll().entrySet().iterator().next();
-    assertThat(entry.getKey().toString(), is("2016-01-16T00:00:00Z"));
+    assertThat(entry.getKey().toLocalDate().toString(), is("2016-01-16"));
     assertThat(entry.getValue(), is(Attendee.ParticipationStatus.DECLINED));
   }
 

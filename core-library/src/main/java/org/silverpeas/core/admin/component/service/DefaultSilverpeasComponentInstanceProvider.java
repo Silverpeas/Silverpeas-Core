@@ -24,7 +24,10 @@
 
 package org.silverpeas.core.admin.component.service;
 
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Optional;
@@ -38,5 +41,22 @@ public class DefaultSilverpeasComponentInstanceProvider
   @Override
   public Optional<SilverpeasComponentInstance> getById(final String componentInstanceId) {
     return OrganizationController.get().getComponentInstance(componentInstanceId);
+  }
+
+  @Override
+  public Optional<SilverpeasSharedComponentInstance> getSharedById(
+      final String sharedComponentInstanceId) {
+    SilverpeasComponentInstance instance = getById(sharedComponentInstanceId).orElse(null);
+    if (instance instanceof SilverpeasSharedComponentInstance) {
+      return Optional.of((SilverpeasSharedComponentInstance) instance);
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<SilverpeasPersonalComponentInstance> getPersonalById(
+      final String personalComponentInstanceId) {
+    return Optional
+        .ofNullable(PersonalComponentInstance.from(personalComponentInstanceId).orElse(null));
   }
 }

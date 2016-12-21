@@ -92,14 +92,14 @@
       <div class="champs">
         <silverpeas-date-picker date-id="sp_cal_event_form_main_sd"
                                 name="startDate"
-                                date="$ctrl.data.startDateTime"
+                                date="$ctrl.data.startDate"
                                 status="$ctrl.data.startDateStatus"
                                 mandatory="true">
         </silverpeas-date-picker>
         <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
                                 time-id="sp_cal_event_form_main_sdt"
                                 name="startTime"
-                                time="$ctrl.data.startDateTime"
+                                time="$ctrl.data.startDate"
                                 status="$ctrl.data.startTimeStatus"
                                 mandatory="true">
           <span class="txtlibform" for="sp_cal_event_form_main_sdt">{{$ctrl.labels.atTime}}</span>
@@ -111,14 +111,14 @@
       <div class="champs">
         <silverpeas-date-picker date-id="sp_cal_event_form_main_ed"
                                 name="endDate"
-                                date="$ctrl.data.endDateTime"
+                                date="$ctrl.data.endDate"
                                 status="$ctrl.data.endDateStatus"
                                 mandatory="true">
         </silverpeas-date-picker>
         <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
                                 time-id="sp_cal_event_form_main_edt"
                                 name="endTime"µ
-                                time="$ctrl.data.endDateTime"
+                                time="$ctrl.data.endDate"
                                 status="$ctrl.data.endTimeStatus"
                                 mandatory="true">
           <span class="txtlibform" for="sp_cal_event_form_main_edt">{{$ctrl.labels.atTime}}</span>

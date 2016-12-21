@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,32 +22,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar.icalendar;
-
-import org.silverpeas.core.util.ServiceProvider;
+package org.silverpeas.core.calendar.event;
 
 /**
- * Provides some services around ICALENDAR data exchange.
  * @author Yohann Chastagnier
  */
-public interface ICalendarExchange {
+public class CalendarEventUtil {
 
-  static ICalendarExchange get() {
-    return ServiceProvider.getService(ICalendarExchange.class);
+  /**
+   * Centralizes the format treatment of title display, according the given parameters, which
+   * determine the context, the title is modified.
+   * @param event the event data.
+   * @param componentInstanceId the identifier of component instance into which the event is
+   * handled.
+   * @param canBeAccessed indicates if the event is accessible for the current user into the current
+   * context.
+   * @return the display title as string.
+   */
+  public static String formatTitle(final CalendarEvent event,
+      final String componentInstanceId, boolean canBeAccessed) {
+    String title = canBeAccessed ? event.getTitle() : null;
+    if (!componentInstanceId.equals(event.getCalendar().getComponentInstanceId())) {
+      title = '#' + (title != null ? (title + '\n') : "");
+      title += '(' + event.getCalendar().getTitle() + ')';
+    }
+    return title;
   }
-
-  /**
-   * Exports events according to the given settings.
-   * @param anExport the export settings.
-   * @throws ICalendarException if an error occurs during the export.
-   */
-  void doExportOf(ICalendarExport anExport) throws ICalendarException;
-
-  /**
-   * Imports events according to the given settings.<br/>
-   * Events are never deleted.
-   * @param anImport the anImport settings.
-   * @throws ICalendarException if an error occurs during the import.
-   */
-  void doImportOf(ICalendarImport anImport) throws ICalendarException;
 }

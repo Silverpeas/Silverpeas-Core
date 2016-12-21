@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar.event;
 
-import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Recur;
@@ -34,16 +34,22 @@ import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
@@ -52,40 +58,51 @@ import java.util.List;
 @Singleton
 public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccurrenceGenerator {
 
+  private final ICal4JDateCodec iCal4JDateCodec;
+  private final ICal4JRecurrenceCodec iCal4JRecurrenceCodec;
+
+  @Inject
+  public ICal4JCalendarEventOccurrenceGenerator(final ICal4JDateCodec iCal4JDateCodec,
+      final ICal4JRecurrenceCodec iCal4JRecurrenceCodec) {
+    this.iCal4JDateCodec = iCal4JDateCodec;
+    this.iCal4JRecurrenceCodec = iCal4JRecurrenceCodec;
+  }
+
   @Override
-  public List<CalendarEventOccurrence> generateOccurrencesOf(
-      final Collection<CalendarEvent> events, final Period inPeriod) {
+  public List<CalendarEventOccurrence> generateOccurrencesOf(final Collection<CalendarEvent> events,
+      final Period inPeriod) {
     List<CalendarEventOccurrence> occurrences = new ArrayList<>();
     events.forEach(event -> {
       VEvent vEvent = fromCalendarEvent(event);
       PeriodList periodList = vEvent.calculateRecurrenceSet(fromPeriod(inPeriod));
-      periodList.forEach(period -> {
-        net.fortuna.ical4j.model.Period occurPeriod = (net.fortuna.ical4j.model.Period) period;
-        OffsetDateTime occurStart = asOffsetDateTime(occurPeriod.getStart());
-        OffsetDateTime occurEnd = asOffsetDateTime(occurPeriod.getEnd());
+      periodList.forEach(occurPeriod -> {
+        final Temporal occurStart;
+        final Temporal occurEnd;
+        if (event.isOnAllDay()) {
+          occurStart = asOffsetDateTime(occurPeriod.getStart()).toLocalDate();
+          occurEnd = asOffsetDateTime(occurPeriod.getEnd()).toLocalDate();
+        } else {
+          occurStart = asOffsetDateTime(occurPeriod.getStart());
+          occurEnd = asOffsetDateTime(occurPeriod.getEnd());
+        }
         occurrences.add(new CalendarEventOccurrence(event, occurStart, occurEnd));
       });
     });
-    occurrences.sort((occurLeft, occurRight) -> occurLeft.getStartDateTime()
-        .compareTo(occurRight.getStartDateTime()));
+    occurrences.sort(Comparator.comparing(o -> Period.asOffsetDateTime(o.getStartDate())));
     return occurrences;
   }
 
-  private ExDate generateExceptionDates(final Recurrence recurrence) {
-    DateList exDateList = new DateList();
-    exDateList.setUtc(true);
-    recurrence.getExceptionDates()
-        .stream()
-        .map(offsetDateTime -> asDateTime(offsetDateTime))
-        .forEach(dateTime -> exDateList.add(dateTime));
-    return new ExDate(exDateList);
-  }
-
-  private RRule generateRecurrenceRule(final Recurrence recurrence) {
+  private RRule generateRecurrenceRule(final CalendarEvent event) {
+    Recurrence recurrence = event.getRecurrence();
     String recurrenceType = getRecurrentType(recurrence.getFrequency().getUnit());
     Recur recur;
-    if (recurrence.getEndDate().isPresent()) {
-      recur = new Recur(recurrenceType, asDateTime(recurrence.getEndDate().get().minusMinutes(1)));
+    final Optional<OffsetDateTime> endDate = recurrence.getEndDate();
+    if (endDate.isPresent()) {
+      if (event.isOnAllDay()) {
+        recur = new Recur(recurrenceType, iCal4JDateCodec.encode(endDate.get().toLocalDate()));
+      } else {
+        recur = new Recur(recurrenceType, iCal4JDateCodec.encode(endDate.get().plusDays(1)));
+      }
     } else if (recurrence.getRecurrenceCount() != Recurrence.NO_RECURRENCE_COUNT) {
       recur = new Recur(recurrenceType, recurrence.getRecurrenceCount());
     } else {
@@ -93,9 +110,9 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     }
     recur.setInterval(recurrence.getFrequency().getInterval());
 
-    recurrence.getDaysOfWeek().stream().
+    recurrence.getDaysOfWeek().
         forEach(dayOfWeekOccurrence -> {
-          WeekDay weekDay = fromDayOfWeek(dayOfWeekOccurrence.dayOfWeek());
+          WeekDay weekDay = iCal4JRecurrenceCodec.encode(dayOfWeekOccurrence.dayOfWeek());
           if (recurrence.getFrequency().isWeekly() || recurrence.getFrequency().isDaily() ||
               dayOfWeekOccurrence.nth() == 0) {
             recur.getDayList().add(weekDay);
@@ -128,57 +145,25 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   private VEvent fromCalendarEvent(CalendarEvent event) {
-    DateTime dtStart = asDateTime(event.getStartDateTime());
-    DateTime dtEnd = asDateTime(event.getEndDateTime());
-    dtStart.setUtc(true);
-    dtEnd.setUtc(true);
+    Date dtStart = iCal4JDateCodec.encode(event.getStartDate());
+    Date dtEnd = iCal4JDateCodec.encode(event.getEndDate());
     VEvent vEvent = new VEvent(dtStart, dtEnd, event.getTitle());
     vEvent.getProperties().add(new Uid(event.getId()));
     if (event.isRecurrent()) {
-      vEvent.getProperties().add(generateRecurrenceRule(event.getRecurrence()));
+      vEvent.getProperties().add(generateRecurrenceRule(event));
       if (!event.getRecurrence().getExceptionDates().isEmpty()) {
-        vEvent.getProperties().add(generateExceptionDates(event.getRecurrence()));
+        vEvent.getProperties().add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
       }
     }
     return vEvent;
   }
 
-  private WeekDay fromDayOfWeek(final DayOfWeek dayOfWeek) {
-    WeekDay weekDay = null;
-    switch (dayOfWeek) {
-      case MONDAY:
-        weekDay = WeekDay.MO;
-        break;
-      case TUESDAY:
-        weekDay = WeekDay.TU;
-        break;
-      case WEDNESDAY:
-        weekDay = WeekDay.WE;
-        break;
-      case THURSDAY:
-        weekDay = WeekDay.TH;
-        break;
-      case FRIDAY:
-        weekDay = WeekDay.FR;
-        break;
-      case SATURDAY:
-        weekDay = WeekDay.SA;
-        break;
-      case SUNDAY:
-        weekDay = WeekDay.SU;
-        break;
-    }
-    return weekDay;
-  }
-
   private net.fortuna.ical4j.model.Period fromPeriod(final Period period) {
+    final OffsetDateTime start = Period.asOffsetDateTime(period.getStartDate());
+    final OffsetDateTime end = Period.asOffsetDateTime(period.getEndDate());
     return new net.fortuna.ical4j.model.Period(
-        new DateTime(period.getStartDateTime().toInstant().toEpochMilli()),
-        new DateTime(period.getEndDateTime().toInstant().toEpochMilli()));
-  }
-
-  private DateTime asDateTime(OffsetDateTime offsetDateTime) {
-    return new DateTime(offsetDateTime.toInstant().toEpochMilli());
+        new DateTime(start.toInstant().toEpochMilli()),
+        new DateTime(end.toInstant().toEpochMilli()));
   }
 
   private OffsetDateTime asOffsetDateTime(DateTime dateTime) {

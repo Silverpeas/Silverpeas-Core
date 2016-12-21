@@ -33,7 +33,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
-import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 import java.util.Optional;
 
 /**
@@ -201,36 +201,36 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   /**
    * Resets the attendance on the specified date.
    */
-  void resetParticipationOn(OffsetDateTime dateTime) {
-    this.participationOn.clearOn(dateTime);
+  void resetParticipationOn(Temporal temporal) {
+    this.participationOn.clearOn(temporal);
   }
 
   /**
    * Resets the attendance from the specified date.
    */
-  void resetParticipationFrom(OffsetDateTime dateTime) {
-    this.participationOn.clearFrom(dateTime);
+  void resetParticipationFrom(Temporal temporal) {
+    this.participationOn.clearFrom(temporal);
   }
 
   /**
    * Accepts the attendance on specified date only.
    */
-  public void acceptOn(OffsetDateTime dateTime) {
-    this.participationOn.set(dateTime, ParticipationStatus.ACCEPTED);
+  public void acceptOn(Temporal date) {
+    this.participationOn.set(date, ParticipationStatus.ACCEPTED);
   }
 
   /**
    * Declines the attendance on specified date only.
    */
-  public void declineOn(OffsetDateTime dateTime) {
-    this.participationOn.set(dateTime, ParticipationStatus.DECLINED);
+  public void declineOn(Temporal date) {
+    this.participationOn.set(date, ParticipationStatus.DECLINED);
   }
 
   /**
    * Tentatively accepts the attendance on specified date only.
    */
-  public void tentativelyAcceptOn(OffsetDateTime dateTime) {
-    this.participationOn.set(dateTime, ParticipationStatus.TENTATIVE);
+  public void tentativelyAcceptOn(Temporal date) {
+    this.participationOn.set(date, ParticipationStatus.TENTATIVE);
   }
 
   /**

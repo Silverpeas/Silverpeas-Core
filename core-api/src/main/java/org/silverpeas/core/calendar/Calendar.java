@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.CalendarEvent;
@@ -277,10 +278,18 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    * @return true if it is, false otherwise.
    */
   public boolean isMainPersonalOf(final User user) {
-    SilverpeasComponentInstance instance =
-        SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
-    return instance.isPersonal() && getCreator().getId().equals(user.getId()) &&
-        getTitle().equals(user.getDisplayedName());
+    return isPersonalOf(user) && getTitle().equals(user.getDisplayedName());
+  }
+
+  /**
+   * Is this calendar a personal one of the given user?
+   * @param user the user to verify.
+   * @return true if it is, false otherwise.
+   */
+  public boolean isPersonalOf(final User user) {
+    Optional<SilverpeasPersonalComponentInstance> instance =
+        SilverpeasPersonalComponentInstance.getById(getComponentInstanceId());
+    return instance.isPresent() && instance.get().getUser().getId().equals(user.getId());
   }
 
   @Override

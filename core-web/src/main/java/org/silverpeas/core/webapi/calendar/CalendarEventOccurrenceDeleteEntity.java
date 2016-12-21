@@ -60,8 +60,8 @@ public class CalendarEventOccurrenceDeleteEntity extends CalendarEventOccurrence
     builder.append("deleteMethodType", getDeleteMethodType());
     builder.append("occurrenceId", getId());
     builder.append("event", getEvent().toString());
-    builder.append("startDateTime", getStartDateTime());
-    builder.append("endDateTime", getEndDateTime());
+    builder.append("startDate", getStartDate());
+    builder.append("endDate", getEndDate());
     return builder.toString();
   }
 }

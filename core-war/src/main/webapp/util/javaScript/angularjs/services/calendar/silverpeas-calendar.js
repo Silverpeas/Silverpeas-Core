@@ -63,8 +63,8 @@
           this.getEventOccurrencesBetween = function(eventUri, period) {
             var adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
             var criteria = {
-              startDateOfWindowTime: moment(period.startDateTime).toISOString(),
-              endDateOfWindowTime: moment(period.endDateTime).toISOString()
+              startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
+              endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString()
             }
             return adapter.find({
               url : adapter.url,
@@ -75,14 +75,14 @@
           /**
            * Gets the occurrence of an event represented by the given uri.
            * @param eventUri uri of calendar to get.
-           * @param startDateTime the start date time of the requested occurrence.
+           * @param startDate the start date or start date time of the requested occurrence.
            * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
            *     parameter.
            */
-          this.getEventOccurrenceAt = function(eventUri, startDateTime) {
+          this.getEventOccurrenceAt = function(eventUri, startDate) {
             var adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
             var criteria = {
-              startDateTime: moment(startDateTime).toISOString()
+              startDate: SilverpeasCalendarTools.moment(startDate).toISOString()
             }
             return adapter.find({
               url : adapter.url,
@@ -114,8 +114,8 @@
                 url : url,
                 criteria : adapter.criteria({
                   userIds : userIds,
-                  startDateOfWindowTime: moment(period.startDateTime).toISOString(),
-                  endDateOfWindowTime: moment(period.endDateTime).toISOString()
+                  startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
+                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString()
                 })
               });
             } else {
@@ -143,8 +143,8 @@
               this.between = function(period) {
                 var url = adapter.url;
                 var criteria = {
-                  startDateOfWindowTime: moment(period.startDateTime).toISOString(),
-                  endDateOfWindowTime: moment(period.endDateTime).toISOString()
+                  startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
+                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString()
                 }
                 return adapter.find({
                   url : url,
@@ -158,10 +158,8 @@
                * @returns {promise|a.fn.promise|*}
                */
               this.create = function(event) {
-                var eventCopy = angular.copy(event);
-                eventCopy.utcHourOffset = moment().utcOffset() / 60;
                 var adapter = RESTAdapter.get(calendarUri + '/events', CalendarEvent);
-                return adapter.post(eventCopy);
+                return adapter.post(event);
               }.bind(this);
 
               /**
@@ -173,8 +171,6 @@
                 var occurrenceCopy = angular.copy(occurrence);
                 occurrenceCopy.calendar = occurrence.event.calendar;
                 occurrenceCopy.updateMethodType = actionMethodType;
-                occurrenceCopy.utcHourOffset = moment().utcOffset() / 60;
-                occurrenceCopy.event.utcHourOffset = occurrenceCopy.utcHourOffset;
                 var eventId = occurrenceCopy.event.id;
                 var adapter = RESTAdapter.get(calendarUri + '/events/' + eventId + '/occurrences',
                     CalendarEvent);
@@ -189,12 +185,10 @@
               this.removeOccurrence = function(occurrence, actionMethodType) {
                 var occurrenceCopy = angular.copy(occurrence);
                 occurrenceCopy.deleteMethodType = actionMethodType;
-                occurrenceCopy.utcHourOffset = moment().utcOffset() / 60;
-                occurrenceCopy.event.utcHourOffset = occurrenceCopy.utcHourOffset;
                 var eventId = occurrenceCopy.event.id;
                 var adapter = RESTAdapter.get(calendarUri + '/events/' + eventId + '/occurrences',
                     CalendarEvent);
-                return adapter.delete(occurrenceCopy);
+                return adapter["delete"](occurrenceCopy);
               };
               /**
                * Updates th particpation status of attendee linked to given event occurrence.
@@ -206,8 +200,6 @@
                     var answerData = angular.copy(attendee);
                     answerData.answerMethodType = actionMethodType;
                     answerData.occurrence = angular.copy(occurrence);
-                    answerData.occurrence.utcHourOffset = moment().utcOffset() / 60;
-                    answerData.occurrence.event.utcHourOffset = answerData.occurrence.utcHourOffset;
                     var eventId = answerData.occurrence.event.id;
                     var adapter = RESTAdapter.get(
                         calendarUri + '/events/' + eventId + '/occurrences/attendees/' +
@@ -238,7 +230,6 @@
         // The Calendar type
         var Calendar = function() {
           this.$onInit = function() {
-            this.uri = baseUri + '/' + this.id;
             this.events = CalendarEventOccurrence.occurrences(this.uri);
           }
         };
@@ -282,12 +273,12 @@
         /**
          * Gets the occurrence of an event represented by the given uri.
          * @param eventUri uri of calendar to get.
-         * @param startDateTime the start date time of the requested occurrence.
+         * @param startDate the start date or start date time of the requested occurrence.
          * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
          *     parameter.
          */
-        this.getEventOccurrenceAt = function(eventUri, startDateTime) {
-          return CalendarEventOccurrence.getEventOccurrenceAt(eventUri, startDateTime);
+        this.getEventOccurrenceAt = function(eventUri, startDate) {
+          return CalendarEventOccurrence.getEventOccurrenceAt(eventUri, startDate);
         };
 
         /**
@@ -333,7 +324,7 @@
          * @param calendar the calendar to delete.
          * @returns {promise|a.fn.promise|*}
          */
-        this.delete = function(calendar) {
+        this["delete"] = function(calendar) {
           return adapter.remove(calendar.id);
         };
 
@@ -352,7 +343,7 @@
          * @param occurrence the coccurrence to update which contains all necessary data.
          */
         this.updateEventOccurrence = function(occurrence, actionMethodType) {
-          var occurrenceEntity = SilverpeasCalendarTool.extractEventOccurrenceEntityData(
+          var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
           var originalCalendarUri = occurrenceEntity.event.calendarUri;
           return this.getByUri(originalCalendarUri).then(function(originalCalendar) {
@@ -365,7 +356,7 @@
          * @param occurrence the coccurrence to delete which contains all necessary data.
          */
         this.removeEventOccurrence = function(occurrence, actionMethodType) {
-          var occurrenceEntity = SilverpeasCalendarTool.extractEventOccurrenceEntityData(
+          var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
           var originalCalendarUri = occurrenceEntity.event.calendarUri;
           return this.getByUri(originalCalendarUri).then(function(originalCalendar) {
@@ -379,7 +370,7 @@
          */
         this.updateEventOccurrenceAttendeeParticipation =
             function(occurrence, attendee, actionMethodType) {
-              var occurrenceEntity = SilverpeasCalendarTool.extractEventOccurrenceEntityData(
+              var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
                   occurrence);
               var originalCalendarUri = occurrenceEntity.event.calendarUri;
               return this.getByUri(originalCalendarUri).then(function(originalCalendar) {

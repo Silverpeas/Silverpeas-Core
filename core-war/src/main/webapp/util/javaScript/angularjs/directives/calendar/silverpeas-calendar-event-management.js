@@ -55,12 +55,12 @@
               return this.occurrence && this.occurrence.event.recurrence;
             }.bind(this);
             this.isFirstEventOccurrence = function() {
-              return this.occurrence && this.occurrence.lastStartDateTime === this.occurrence.event.startDateTime;
+              return this.occurrence && this.occurrence.lastStartDate === this.occurrence.event.startDate;
             }.bind(this);
             this.displayLastStartDate = function() {
               var formattedDate = '';
               if (this.occurrence) {
-                formattedDate = sp.moment.displayAsDate(this.occurrence.lastStartDateTime);
+                formattedDate = sp.moment.displayAsDate(this.occurrence.lastStartDate);
               }
               return formattedDate;
             }.bind(this);
@@ -176,7 +176,9 @@
                   CalendarService.updateEventOccurrenceAttendeeParticipation(this.occurrence,
                       attendee, answerMethodType).then(function(modifiedEvent) {
                     this.onEventAttendeeParticipationUpdated({
-                      occurrence : occurrence, event : modifiedEvent, attendee : attendee
+                      originalOccurrence : occurrence,
+                      updatedEvent : modifiedEvent,
+                      attendee : attendee
                     });
                   }.bind(this));
                 }.bind(this);

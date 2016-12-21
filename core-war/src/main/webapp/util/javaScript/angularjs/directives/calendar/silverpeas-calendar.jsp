@@ -43,7 +43,7 @@
                                         on-created="$ctrl.api.refetchCalendars()"
                                         on-occurrence-updated="$ctrl.api.refetchCalendars()"
                                         on-occurrence-deleted="$ctrl.api.refetchCalendars()"
-                                        on-event-attendee-participation-updated="$ctrl.api.refetchCalendarEvent(event)">
+                                        on-event-attendee-participation-updated="$ctrl.api.refetchCalendarEvent(updatedEvent)">
   </silverpeas-calendar-event-management>
   <silverpeas-calendar-header time-window-view-context="$ctrl.timeWindowViewContext"
                               view="$ctrl.api.changeView(type)"

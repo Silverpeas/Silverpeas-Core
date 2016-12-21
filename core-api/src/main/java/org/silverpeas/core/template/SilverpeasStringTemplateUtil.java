@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.template;
 
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -47,13 +48,15 @@ public class SilverpeasStringTemplateUtil {
 
   /**
    * Is the specified template exists in the component templates home directory.
-   * @param componentId the unique identifier of the component for which the template should exist.
-   * @param template the name of the template to check the existence.
+   * @param rootPath the root path into components of the template file.
+   * @param template the name of the template to check the existence (without the language and
+   * without the extension).
    * @return true if  the specified template exist for the specified Silverpeas component in the
    * component templates home directory. False otherwise.
    */
-  public static boolean isComponentTemplateExist(final String componentId, final String template) {
-    return Files.exists(Paths.get(defaultComponentsDir, componentId, template)) ||
-        Files.exists(Paths.get(customComponentsDir, componentId, template));
+  public static boolean isComponentTemplateExist(final String rootPath, final String template) {
+    String templateFileName = template + "_" + DisplayI18NHelper.getDefaultLanguage() + ".st";
+    return Files.exists(Paths.get(defaultComponentsDir, rootPath, templateFileName)) ||
+        Files.exists(Paths.get(customComponentsDir, rootPath, templateFileName));
   }
 }

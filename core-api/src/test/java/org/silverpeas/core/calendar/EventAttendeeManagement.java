@@ -90,7 +90,7 @@ public class EventAttendeeManagement {
     assertThat(attendee.getDelegate().isPresent(), is(true));
     assertThat(attendee.getDelegate().get(),
         is(ExternalAttendee.withEmail("averel@dalton.com").to(event)));
-    assertThat(attendee.getDelegate().get().getDelegate(), is(attendee));
+    assertThat(attendee.getDelegate().get().getDelegate().get(), is(attendee));
   }
 
   private CalendarEvent anEvent() {

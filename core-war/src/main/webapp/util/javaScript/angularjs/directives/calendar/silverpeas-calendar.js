@@ -171,29 +171,29 @@
             /**
              * Sets from a calendar and a list of occurrences the attributes attempted by
              * SilverpeasCalendar plugin to each occurrence of the list.
-             * The returned list is the one given as parameter.
+             * The result is a promise which contains as a result the decoracted occurrences.
              */
             var _decorateSpCalEventOccurrences = function(calendar, occurrences, callback) {
               occurrences.forEach(function(occurrence) {
                 // FullCalendar attributes
-                if (calendar.userId || calendar.uri !== occurrence.event.calendarUri) {
-                  occurrence.title =
-                      '#' + (occurrence.event.title ? (occurrence.event.title + '\n') : '');
-                  occurrence.title += '(' + calendar.title + ')';
-                  occurrence.event.title = occurrence.title;
-                } else {
-                  occurrence.title = occurrence.event.title;
-                }
+                occurrence.title = occurrence.event.title;
                 occurrence.allDay = occurrence.event.onAllDay;
-                occurrence.start = moment(occurrence.startDateTime);
-                occurrence.end = moment(occurrence.endDateTime);
+                occurrence.start = moment(occurrence.startDate);
+                if (!occurrence.allDay) {
+                  occurrence.end = moment(occurrence.endDate);
+                } else {
+                  // When it is an all day event, end date in fullcalendar is handled like a,
+                  // ICALENDAR VEVENT : if the event is on several day, the end date must be the
+                  // date after the last day.
+                  occurrence.end = moment(occurrence.endDate).add(1, 'days');
+                }
                 occurrence.editable = occurrence.event.canBeModified;
                 if (callback) {
                   callback(occurrence);
                 }
               });
-              return occurrences;
-            }.bind(this);
+              return sp.promise.resolveDirectlyWith(occurrences);
+            };
 
             /**
              * Decorates the calendar data:
@@ -292,7 +292,7 @@
                   var qTipOptions = {
                     content : {
                       title : {
-                        text : occurrence.event.title,
+                        text : occurrence.title,
                         button : this.labels.close
                       }
                     },
@@ -331,14 +331,31 @@
             var _occurrenceChange = function(occurrence, delta, revertFunc) {
               if (occurrence.editable) {
                 var previousOccurrence = angular.copy(
-                    SilverpeasCalendarTool.extractEventOccurrenceEntityData(occurrence));
-                occurrence.startDateTime = moment(occurrence.start).toISOString();
-                occurrence.endDateTime = moment(occurrence.end).toISOString();
+                    SilverpeasCalendarTools.extractEventOccurrenceEntityData(occurrence));
+                // New period
+                if (occurrence.allDay) {
+                  occurrence.startDate = occurrence.start.stripTime().toISOString();
+                  occurrence.endDate = occurrence.end.stripTime().add(-1, 'days').toISOString();
+                } else {
+                  occurrence.startDate = occurrence.start.toISOString();
+                  occurrence.endDate = occurrence.end.toISOString();
+                }
                 occurrence.event.onAllDay = occurrence.allDay;
+                // New recurrence end if any
+                if (occurrence.event.recurrence && occurrence.event.recurrence.endDate) {
+                  var $endDate = moment(occurrence.event.recurrence.endDate);
+                  if (occurrence.event.onAllDay) {
+                    $endDate = SilverpeasCalendarTools.moment($endDate).stripTime();
+                  } else {
+                    $endDate = $endDate.startOf('day');
+                  }
+                  occurrence.event.recurrence.endDate = $endDate.toISOString();
+                }
                 occurrence.revertToPreviousState = function() {
-                  occurrence.startDateTime = previousOccurrence.startDateTime;
-                  occurrence.endDateTime = previousOccurrence.endDateTime;
+                  occurrence.startDate = previousOccurrence.startDate;
+                  occurrence.endDate = previousOccurrence.endDate;
                   occurrence.event.onAllDay = previousOccurrence.event.onAllDay;
+                  occurrence.event.recurrence = previousOccurrence.event.recurrence;
                   revertFunc();
                 }
                 this.eventMng.modifyOccurrence(occurrence, previousOccurrence);
@@ -382,10 +399,9 @@
              * Gets the period of the current time window into the context of AJAX calls.
              */
             var __getAjaxCurrentTimeWindowPeriod = function() {
-              var $dateMin = __getCurrentDateMomentFromTimeWindowViewContext(
-                  this.timeWindowViewContext).startOf('month').add(-1, 'weeks');
-              var $dateMax = __getCurrentDateMomentFromTimeWindowViewContext(
-                  this.timeWindowViewContext).endOf('month').add(2, 'weeks');
+              var ref = __getCurrentDateMomentFromTimeWindowViewContext(this.timeWindowViewContext);
+              var $dateMin = moment(ref).startOf('month').add(-1, 'weeks');
+              var $dateMax = moment(ref).endOf('month').add(2, 'weeks');
               return {startDateTime : $dateMin, endDateTime : $dateMax};
             }.bind(this);
 
@@ -443,7 +459,6 @@
                   this.api.getCalendars().removeElement(calendar, 'id');
                 }
                 this.spCalendar.removeEventSource(calendar);
-                __calendarColorCache.unsetColor(calendar);
                 _decorate();
                 this.api.redrawCalendars();
               }.bind(this),
@@ -526,7 +541,8 @@
                * The given calendar must be directly linked to the component instance.
                */
               deleteCalendar : function(calendar) {
-                this.api.removeCalendar(calendar, true);
+                this.api.removeCalendar(calendar);
+                __calendarColorCache.unsetColor(calendar);
               }.bind(this),
               /**
                * Loads the event occurrences of the given calendar.
@@ -556,19 +572,23 @@
                 }.bind(this));
               }.bind(this),
               /**
-               * Refetches the given calendar event. (It must not exist a change about the number
-               * of occurrences)
+               * Refetches the event occurrences from the given calendar event.
+               * (It must not exist a change about the number of occurrences)
                * (Data reload by Ajax Requests)
                */
               refetchCalendarEvent : function(event) {
+                var _eventId = event.id;
+                var _eventUri = event.uri;
+
                 var occurrencesToRefresh = [];
                 this.spCalendar.forEachEvent(function(occurrence) {
-                  if (occurrence.event.id === event.id) {
+                  if (occurrence.event.id === _eventId) {
                     occurrencesToRefresh.push(occurrence);
                   }
                 }.bind(this));
+
                 var period = __getAjaxCurrentTimeWindowPeriod();
-                CalendarService.getEventOccurrencesBetween(event.uri, period).then(
+                CalendarService.getEventOccurrencesBetween(_eventUri, period).then(
                     function(occurrences) {
                       occurrences.forEach(function(occurrence) {
                         for (var i = 0; i < occurrencesToRefresh.length; i++) {
@@ -604,14 +624,17 @@
                   return CalendarService.getParticipationCalendarsBetween(
                       this.participationUserIds, period).then(
                       function(partipationCalendars) {
+                        var _promises = [];
                         for (var i = 0; i < partipationCalendars.length; i++) {
                           var participationCalendar = partipationCalendars[i];
                           participationCalendar.uri = participationCalendar.id;
                           participationCalendar.canBeRemoved = true;
-                          _decorateSpCalEventOccurrences(participationCalendar,
-                              participationCalendar.occurrences);
+                          _promises.push(_decorateSpCalEventOccurrences(participationCalendar,
+                              participationCalendar.occurrences));
                         }
-                        return partipationCalendars;
+                        return sp.promise.whenAllResolved(_promises).then(function() {
+                          return partipationCalendars;
+                        });
                       }.bind(this));
                 }
                 return sp.promise.resolveDirectlyWith([]);

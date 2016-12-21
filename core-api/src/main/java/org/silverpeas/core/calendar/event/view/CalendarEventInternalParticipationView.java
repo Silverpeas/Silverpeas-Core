@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar.event.view;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.event.InternalAttendee;
+import org.silverpeas.core.date.Period;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -81,7 +82,8 @@ public class CalendarEventInternalParticipationView implements CalendarEventView
       userOccurrences.sort((o1, o2) -> {
         int c = o1.getCalendarEvent().getCalendar().getId()
             .compareTo(o2.getCalendarEvent().getCalendar().getId());
-        return c == 0 ? o1.getStartDateTime().compareTo(o2.getStartDateTime()) : c;
+        return c == 0 ? Period.asOffsetDateTime(o1.getStartDate())
+            .compareTo(Period.asOffsetDateTime(o2.getStartDate())) : c;
       });
     });
     return view;

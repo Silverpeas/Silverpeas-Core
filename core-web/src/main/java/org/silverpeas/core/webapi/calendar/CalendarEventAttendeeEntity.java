@@ -124,7 +124,7 @@ public class CalendarEventAttendeeEntity implements WebEntity {
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  public Attendee addTo(CalendarEvent event) {
+  Attendee addTo(CalendarEvent event) {
     Attendee attendee = null;
     for (Attendee anAttendee : event.getAttendees()) {
       if (getId().equals(anAttendee.getId())) {

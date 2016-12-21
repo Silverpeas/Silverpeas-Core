@@ -37,8 +37,10 @@ import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -49,6 +51,12 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(Arquillian.class)
 public class CalendarManagementIntegrationTest extends BaseCalendarTest {
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();

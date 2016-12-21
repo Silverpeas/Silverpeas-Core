@@ -44,8 +44,7 @@ public final class CalendarResourceURIs {
   static final String CALENDAR_EVENT_URI_PART = "events";
   static final String CALENDAR_EVENT_ATTENDEE_URI_PART = "attendees";
   static final String CALENDAR_EVENT_OCCURRENCE_URI_PART = "occurrences";
-  static final String CALENDAR_BASE_URI = "calendar";
-  private static final String REQUEST_CACHE_KEY = "@" + CalendarResourceURIs.class.getSimpleName() + "@";
+  public static final String CALENDAR_BASE_URI = "calendar";
 
   /**
    * Centralizes the build of a calendar URI.
