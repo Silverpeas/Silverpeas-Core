@@ -661,8 +661,8 @@
               var selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
               var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
               var selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
-              window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds));
-              window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames));
+              window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)).trigger("change");
+              window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)).trigger("change");
               if(selectionTypeField != null && selectionTypeField.length > 0) {
 		window.opener.$('#' + selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
               }

@@ -238,7 +238,21 @@
       domain : '<%= chatSettings.getString("chat.xmpp.domain") %>',
       language : '<%= user.getUserPreferences().getLanguage() %>',
       avatar: webContext + '/display/avatar/60x/',
-      debug: true
+      debug: true,
+      selectUser: function(openChatWith) {
+        $('#userId').off('change').on('change', function() {
+          var id = $(this).val();
+          if (id && id !== '<%= user.getId() %>') {
+            User.get(id).then(function(user) {
+              if (user) {
+                console.log('SELECT USER', user);
+                openChatWith(user.chatId);
+              }
+            });
+          }
+        });
+        SP_openUserPanel(webContext + '/selectChatUser', '', 'menubar=no,scrollbars=no,statusbar=no');
+      }
     }).start();
     </c:when>
     <c:otherwise>
@@ -252,6 +266,10 @@
     </c:choose>
   })();
 </script>
+<form id="chat_selected_user">
+  <input type="hidden" name="userId" id="userId"/>
+  <input type="hidden" name="userName" id="userName"/>
+</form>
 </body>
 </html>
 <% } %>
