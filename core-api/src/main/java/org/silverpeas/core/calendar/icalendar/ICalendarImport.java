@@ -26,10 +26,14 @@ package org.silverpeas.core.calendar.icalendar;
 
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.util.Mutable;
 
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * In charge of importing ICALENDAR events from {@link InputStream} instance.<br/>
@@ -40,7 +44,7 @@ public class ICalendarImport {
 
   private final Calendar calendar;
   private final Supplier<InputStream> inputSupplier;
-  private Consumer<CalendarEvent> calendarEventConsumer;
+  private Consumer<List<CalendarEvent>> eventListConsumer;
 
   /**
    * Hidden constructor.
@@ -63,27 +67,34 @@ public class ICalendarImport {
   }
 
   /**
-   * Executes the treatment of importation.
+   * Executes the treatment of importation and gets.
+   * @return the stream of calendar events. The calendar event stream
+   * provides events each one representing the conversion of an event from iCalendar file. The
+   * stream does not provide a persisted {@link CalendarEvent} and so the id is never filled
+   * whereas the external id is.
+   * @throws ICalendarException
    */
-  public void forEach(Consumer<CalendarEvent> calendarEventConsumer) throws ICalendarException {
-    this.calendarEventConsumer = calendarEventConsumer;
+  public Stream<CalendarEvent> streamEvents() throws ICalendarException {
+    Mutable<List<CalendarEvent>> result = Mutable.of(Collections.emptyList());
+    this.eventListConsumer = result::set;
     ICalendarExchange exchange = ICalendarExchange.get();
     exchange.doImportOf(this);
+    return result.get().stream();
   }
 
   Supplier<InputStream> getInputSupplier() {
     return inputSupplier;
   }
 
-  Consumer<CalendarEvent> getCalendarEventConsumer() {
-    return calendarEventConsumer;
+  Consumer<List<CalendarEvent>> getEventListConsumer() {
+    return eventListConsumer;
   }
 
   /**
    * Gets the calendar which supplier belong to.
    * @return a {@link Calendar} instance.
    */
-  Calendar getCalendar() {
+  public Calendar getCalendar() {
     return calendar;
   }
 }

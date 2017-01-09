@@ -31,8 +31,10 @@ import net.fortuna.ical4j.validate.ValidationException;
 
 public class Html extends Property implements Escapable {
 
+  public static final String X_ALT_DESC = "X-ALT-DESC";
+
   private static final long serialVersionUID = 7287564228220558361L;
-  private static final String HTML = "X-ALT-DESC;FMTTYPE=text/html";
+  private static final String HTML = X_ALT_DESC + ";FMTTYPE=text/html";
 
   private String value;
 
@@ -40,8 +42,8 @@ public class Html extends Property implements Escapable {
    * Default constructor.
    */
   public Html() {
-		super(HTML, PropertyFactoryImpl.getInstance());
-	}
+    super(HTML, PropertyFactoryImpl.getInstance());
+  }
 
   /**
    * @param aValue a value string for this component
@@ -69,14 +71,14 @@ public class Html extends Property implements Escapable {
   /**
    * {@inheritDoc}
    */
-  public final void setValue(final String aValue) {
-    this.value = aValue;
+  public final String getValue() {
+    return value;
   }
 
   /**
    * {@inheritDoc}
    */
-  public final String getValue() {
-    return value;
+  public final void setValue(final String aValue) {
+    this.value = aValue;
   }
 }

@@ -93,7 +93,7 @@ public class ICalendarExport {
    * Gets the calendar which supplier belong to.
    * @return a {@link Calendar} instance.
    */
-  Calendar getCalendar() {
+  public Calendar getCalendar() {
     return calendar;
   }
 }

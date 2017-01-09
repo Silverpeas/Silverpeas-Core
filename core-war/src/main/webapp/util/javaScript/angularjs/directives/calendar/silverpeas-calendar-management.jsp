@@ -38,6 +38,10 @@
 <fmt:message var="deleteCalendarMessage" key="calendar.message.calendar.delete"><fmt:param>@name@</fmt:param></fmt:message>
 <fmt:message var="titleLabel" key="GML.title"/>
 
+<fmt:message key="calendar.menu.item.event.import" var="importEventLabel"/>
+<fmt:message key="calendar.label.event.import.ical" var="icalFileImportLabel"/>
+<fmt:message key="calendar.label.event.import.into" var="icalFileImportIntoLabel"/>
+
 <c:set var="mandatoryMessage"><b>@name@</b> <fmt:message key='GML.MustBeFilled'/></c:set>
 <c:set var="nbMaxMessage"><b>@name@</b> <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="2000"/></fmt:message></c:set>
 
@@ -49,10 +53,34 @@
   <span ng-init="$ctrl.messages.update= '${silfn:escapeJs(modifyCalendarLabel)}'"></span>
   <span ng-init="$ctrl.messages.delete= '${silfn:escapeJs(deleteCalendarMessage)}'"></span>
   <span ng-init="$ctrl.labels.title = '${silfn:escapeJs(titleLabel)}'"></span>
-  <div class="savePopin" title="{{$ctrl.creating ? $ctrl.messages.create : $ctrl.messages.update}}">
-    <p>
-      <span class="txtlibform">{{$ctrl.labels.title}}</span>
-      <input name="title" size="50" maxlength="2000" ng-model="$ctrl.calendar.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
-    </p>
-  </div>
 </div>
+
+<div class="silverpeas-calendar-management-save-popin" style="display: none" title="{{$ctrl.creating ? $ctrl.messages.create : $ctrl.messages.update}}">
+  <p>
+    <span class="txtlibform">{{$ctrl.labels.title}}</span>
+    <input name="title" size="50" maxlength="2000" ng-model="$ctrl.calendar.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
+  </p>
+</div>
+
+<div class="silverpeas-calendar-management-import-popin" style="display: none" title="${importEventLabel}">
+  <p>
+    <span class="champs">
+      <span class="txtlibform">${icalFileImportLabel}</span>
+      <silverpeas-file-upload api="$ctrl.fileUploadApi"
+                              multiple="false"
+                              info-inputs="false"
+                              display-into-fieldset="false"
+                              drag-and-drop-display-icon="false">
+      </silverpeas-file-upload>
+    </span>
+    <div class="champs">
+      <span class="txtlibform">${icalFileImportIntoLabel}</span>
+      <select ng-model="$ctrl.importEventCalendar"
+              ng-options="calendar as calendar.title for calendar in $ctrl.potentialCalendars | orderBy: 'createdDate' track by calendar.id"
+              class="txtnav">
+      </select>
+    </div>
+  </p>
+</div>
+
+<view:progressMessage/>

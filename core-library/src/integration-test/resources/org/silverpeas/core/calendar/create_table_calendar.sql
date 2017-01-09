@@ -173,6 +173,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Recurrence_Exception (
 
 CREATE TABLE IF NOT EXISTS SB_Cal_Event (
   id             VARCHAR(40)   NOT NULL,
+  externalId     VARCHAR(100)  NULL,
   calendarId     VARCHAR(40)   NOT NULL,
   inDays         BOOLEAN       NOT NULL,
   startDate      TIMESTAMP     NOT NULL,

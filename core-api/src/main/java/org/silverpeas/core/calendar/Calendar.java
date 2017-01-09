@@ -251,6 +251,20 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets either the calendar external event with the specified external identifier or nothing if no
+   * such event exists with the given external identifier.
+   * @param externalEventId the unique external identifier into context of calendar of the event
+   * to get.
+   * @return optionally an event with the specified identifier.
+   */
+  public Optional<CalendarEvent> externalEvent(String externalEventId) {
+    verifyCalendarIsPersisted();
+    CalendarEventRepository repository = CalendarEventRepository.get();
+    CalendarEvent event = repository.getByExternalId(this, externalEventId);
+    return Optional.ofNullable(event);
+  }
+
+  /**
    * Clears this calendar of all of the planned events.
    */
   public void clear() {

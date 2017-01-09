@@ -36,22 +36,23 @@ import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarExport;
+import org.silverpeas.core.calendar.icalendar.ICalendarImport;
+import org.silverpeas.core.io.upload.FileUploadManager;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.webapi.upload.FileUploadData;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
@@ -68,6 +69,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.packJSonObjectWithHtmlContainer;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
@@ -210,6 +212,44 @@ public class CalendarResource extends AbstractCalendarResource {
     .header("Content-Disposition",
         String.format("inline;filename=\"%s\"", calendar.getTitle() + ".ics"))
     .build();
+  }
+
+  /**
+   * Permits to import one iCalendar file from http request.
+   * The file upload is performed by FileUploadResource mechanism.<br/>
+   * This service is awaiting the upload parameters handled by silverpeas-fileUpload.js plugin.<br/>
+   * (see {@link FileUploadManager}) in order to get more information.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   */
+  @POST
+  @Path("{calendarId}/import/ical")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response importEventsAsICalendarFormat(@PathParam("calendarId") String calendarId) {
+    final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
+    assertDataConsistency(getComponentId(), calendar);
+    try {
+      FileUploadManager.getUploadedFiles(getHttpRequest(), getUserDetail()).forEach(uploadedFile -> {
+        try (final BufferedInputStream bis = new BufferedInputStream(new FileInputStream
+            (uploadedFile.getFile()))) {
+          getCalendarWebServiceProvider()
+              .importEventsAsICalendarFormat(ICalendarImport.from(calendar, () -> bis));
+        } catch (IOException | ICalendarException e) {
+          throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
+        } finally {
+          uploadedFile.getUploadSession().clear();
+        }
+      });
+    } catch (WebApplicationException e) {
+      Response.ResponseBuilder response = Response.fromResponse(e.getResponse());
+      if (e.getCause() != null && StringUtil.isDefined(e.getCause().getMessage())) {
+        response.entity(e.getCause().getMessage());
+      } else {
+        response.entity(e.getMessage());
+      }
+      return response.build();
+    }
+    return Response.ok().build();
   }
 
   /**

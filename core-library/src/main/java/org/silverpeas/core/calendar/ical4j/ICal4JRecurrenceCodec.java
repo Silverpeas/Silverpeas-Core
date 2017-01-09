@@ -23,23 +23,31 @@
  */
 package org.silverpeas.core.calendar.ical4j;
 
-import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.ExDate;
+import net.fortuna.ical4j.model.property.RRule;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.date.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.text.ParseException;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoField;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -54,6 +62,7 @@ import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE_COUNT;
 @Singleton
 public class ICal4JRecurrenceCodec {
 
+  public static final String ICAL_FREQ = "FREQ=";
   private final ICal4JDateCodec iCal4JDateCodec;
 
   @Inject
@@ -127,7 +136,7 @@ public class ICal4JRecurrenceCodec {
   }
 
   private String asICal4JFrequency(final RecurrencePeriod period) {
-    String freq = "FREQ=";
+    String freq = ICAL_FREQ;
     switch (period.getUnit()) {
       case SECOND:
         freq += Recur.SECONDLY;
@@ -188,5 +197,125 @@ public class ICal4JRecurrenceCodec {
         break;
     }
     return weekDay;
+  }
+
+  /**
+   * Decodes the recurrence of the specified iCal4J event into a Silverpeas event recurrence.<br/>
+   * The presence of an exception date must be verified before calling this method.
+   * @param vEvent the iCal4J event source which contains recurrence data.
+   * @param defaultZoneId the default zone id.
+   * @return the decoded Silverpeas event recurrence.
+   * @throws SilverpeasRuntimeException if the encoding fails.
+   */
+  public Recurrence decode(final VEvent vEvent, final ZoneId defaultZoneId)
+      throws SilverpeasRuntimeException {
+    final boolean isOnAllDay = !(vEvent.getStartDate().getDate() instanceof DateTime);
+    Recur recur = ((RRule) vEvent.getProperty(Property.RRULE)).getRecur();
+    if (recur == null) {
+      throw new IllegalArgumentException("VEVENT recurrence missing!");
+    }
+    RecurrencePeriod recurrencePeriod = decodeRecurrencePeriod(recur);
+    Recurrence recurrence = Recurrence.from(recurrencePeriod);
+    if (recur.getCount() > 0) {
+      recurrence.upTo(recur.getCount());
+    } else if (recur.getUntil() != null) {
+      Temporal temporalUntil = iCal4JDateCodec.decode(recur.getUntil(), defaultZoneId);
+      if (!isOnAllDay) {
+        temporalUntil = temporalUntil.minus(1, ChronoUnit.DAYS);
+      }
+      recurrence.upTo(temporalUntil);
+    }
+    if (recur.getDayList() != null && recur.getDayList().size() > 0) {
+      recurrence.on(recur.getDayList().stream().map(this::decode).collect(Collectors.toList()));
+    }
+    if (vEvent.getProperty(ExDate.EXDATE) != null) {
+      DateList exDates = ((ExDate) vEvent.getProperty(ExDate.EXDATE)).getDates();
+      // TODO activating following commented forEach after fix of EXDATE UTC management (iCal4J)
+      // cf. https://github.com/ical4j/ical4j/issues/113 for example
+
+      // exDates.forEach(exDate -> recurrence
+      //    .excludeEventOccurrencesStartingAt(iCal4JDateCodec.decode(exDate, defaultZoneId)));
+
+      // Deleting following forEach after fix of EXDATE UTC management (iCal4J)
+      // cf. https://github.com/ical4j/ical4j/issues/113 for example
+      exDates.forEach(exDate -> {
+        if (isOnAllDay) {
+          final LocalDate localDateToExclude = iCal4JDateCodec.decode(exDate);
+          recurrence.excludeEventOccurrencesStartingAt(localDateToExclude);
+        } else {
+          final OffsetDateTime startDate =
+              iCal4JDateCodec.decode((DateTime) vEvent.getStartDate().getDate(), defaultZoneId);
+          final OffsetDateTime offsetDateTimeToExclude =
+              iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC)
+                  .withHour(startDate.getHour()).withMinute(startDate.getMinute())
+                  .withSecond(startDate.getSecond());
+          recurrence.excludeEventOccurrencesStartingAt(offsetDateTimeToExclude);
+        }
+      });
+    }
+    return recurrence;
+  }
+
+  private RecurrencePeriod decodeRecurrencePeriod(final Recur recur) {
+    final RecurrencePeriod recurrencePeriod;
+    int interval = recur.getInterval() == -1 ? 1 : recur.getInterval();
+    switch (recur.getFrequency()) {
+      case Recur.SECONDLY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.SECOND);
+        break;
+      case Recur.MINUTELY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.MINUTE);
+        break;
+      case Recur.HOURLY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.HOUR);
+        break;
+      case Recur.DAILY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.DAY);
+        break;
+      case Recur.WEEKLY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.WEEK);
+        break;
+      case Recur.MONTHLY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.MONTH);
+        break;
+      case Recur.YEARLY:
+        recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.YEAR);
+        break;
+      default:
+        throw new IllegalArgumentException("not handled recurrence period");
+    }
+    return recurrencePeriod;
+  }
+
+  private DayOfWeekOccurrence decode(final WeekDay weekDay) {
+    return DayOfWeekOccurrence.nth(weekDay.getOffset(), decode(weekDay.getDay()));
+  }
+
+  private DayOfWeek decode(final WeekDay.Day weekDay) {
+    DayOfWeek dayOfWeek = null;
+    switch (weekDay) {
+      case MO:
+        dayOfWeek = DayOfWeek.MONDAY;
+        break;
+      case TU:
+        dayOfWeek = DayOfWeek.TUESDAY;
+        break;
+      case WE:
+        dayOfWeek = DayOfWeek.WEDNESDAY;
+        break;
+      case TH:
+        dayOfWeek = DayOfWeek.THURSDAY;
+        break;
+      case FR:
+        dayOfWeek = DayOfWeek.FRIDAY;
+        break;
+      case SA:
+        dayOfWeek = DayOfWeek.SATURDAY;
+        break;
+      case SU:
+        dayOfWeek = DayOfWeek.SUNDAY;
+        break;
+    }
+    return dayOfWeek;
   }
 }

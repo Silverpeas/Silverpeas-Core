@@ -31,31 +31,43 @@
           restrict : 'E',
           scope : {
             api : '=?',
-            displayIntoFieldset : '='
+            displayIntoFieldset : '=?',
+            multiple : '=?',
+            infoInputs : '=?',
+            dragAndDropDisplay : '=?',
+            dragAndDropDisplayIcon : '=?',
+            nbFileLimit : '=?'
           },
           controllerAs : '$ctrl',
           bindToController : true,
           controller : function($scope, $element, $attrs, $transclude) {
+            var _fileUploadApi;
 
             this.api = {
+              /**
+               * Resets the plugin of file upload.
+               */
+              reset : function() {
+                _fileUploadApi.reset();
+              }.bind(this),
               /**
                * Verifies that it does not exist an upload. Nothing is done if none.
                * An exception is sent otherwise with the appropriate message.
                */
               checkNoFileSending : function() {
-                this.fileUploadApi.checkNoFileSending();
+                _fileUploadApi.checkNoFileSending();
               }.bind(this),
               /**
                * Encodes a set of form elements as a string for submission.
                */
               serialize : function() {
-                return this.fileUploadApi.serialize();
+                return _fileUploadApi.serialize();
               }.bind(this),
               /**
                * Encodes a set of form elements as an array of names and values.
                */
               serializeArray : function() {
-                return this.fileUploadApi.serializeArray();
+                return _fileUploadApi.serializeArray();
               }.bind(this)
             }
 
@@ -64,14 +76,31 @@
              */
             this.$postLink = function() {
               whenSilverpeasReady(function() {
+                if (typeof this.multiple === 'undefined') {
+                  this.multiple = true;
+                }
+                if (typeof this.infoInputs === 'undefined') {
+                  this.infoInputs = true;
+                }
+                if (typeof this.dragAndDropDisplay === 'undefined') {
+                  this.dragAndDropDisplay = true;
+                }
+                if (typeof this.dragAndDropDisplayIcon === 'undefined') {
+                  this.dragAndDropDisplayIcon = true;
+                }
+                if (typeof this.nbFileLimit === 'undefined') {
+                  this.nbFileLimit = 0;
+                }
                 this.$fileUpload = jQuery(angular.element(".fileUpload", $element));
                 this.$fileUpload.fileUpload({
-                  multiple: true,
-                  dragAndDropDisplay: true,
-                  nbFileLimit: 0,
-                  labels: this.labels
+                  multiple : this.multiple,
+                  infoInputs : this.infoInputs,
+                  dragAndDropDisplay : this.dragAndDropDisplay,
+                  dragAndDropDisplayIcon : this.dragAndDropDisplayIcon,
+                  nbFileLimit : this.nbFileLimit,
+                  labels : this.labels
                 });
-                this.fileUploadApi = this.$fileUpload.fileUpload('api');
+                _fileUploadApi = this.$fileUpload.fileUpload('api');
               }.bind(this));
             }.bind(this);
           }

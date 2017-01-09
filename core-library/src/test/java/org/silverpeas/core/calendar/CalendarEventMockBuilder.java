@@ -78,6 +78,11 @@ public class CalendarEventMockBuilder {
     return this;
   }
 
+  public CalendarEventMockBuilder withExternalId(final String externalId) {
+    when(event.getExternalId()).thenReturn(externalId);
+    return this;
+  }
+
   public CalendarEventMockBuilder plannedOn(Calendar calendar) {
     when(event.getCalendar()).thenReturn(calendar);
     return this;
@@ -90,6 +95,16 @@ public class CalendarEventMockBuilder {
 
   public CalendarEventMockBuilder withDescription(String description) {
     when(event.getDescription()).thenReturn(description);
+    return this;
+  }
+
+  public CalendarEventMockBuilder withPriority(Priority priority) {
+    when(event.getPriority()).thenReturn(priority);
+    return this;
+  }
+
+  public CalendarEventMockBuilder withVisibilityLevel(VisibilityLevel visibilityLevel) {
+    when(event.getVisibilityLevel()).thenReturn(visibilityLevel);
     return this;
   }
 

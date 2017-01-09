@@ -148,6 +148,13 @@
   function __setApi($target, params) {
     var _api = {
       /**
+       * Resets the plugin.
+       */
+      reset : function() {
+        var $fileToDelete = $('.uploaded-file', params.$uploadedFileList);
+        $fileToDelete.trigger(EVENT.DELETE_FILE);
+      },
+      /**
        * Verifies is the system is currently uploading files.
        * True if an upload is currently performing, false otherwise.
        */
@@ -167,15 +174,28 @@
        * Encodes a set of form elements as a string for submission.
        */
       serialize : function() {
-        return $target.serialize();
+        var serialization = '';
+        _api.serializeArray().forEach(function(input) {
+          if (serialization.length) {
+            serialization += '&'
+          }
+          serialization += input.name + '=' + input.value
+        });
+        return serialization;
       },
       /**
        * Encodes a set of form elements as an array of names and values.
        */
       serializeArray : function() {
-        return $target.serializeArray();
+        var serialization = [];
+        $('input, textarea', params.$uploadedFileList).each(function(index, input) {
+          var $input = $(input);
+          serialization.push({name : $input.attr("name"), value : $input.val()});
+        });
+        return serialization;
       }
     };
+    params._api = _api;
     $target.data('fileUploadApi', _api);
   }
 
@@ -340,11 +360,14 @@
 
     // File
     $uploadBloc.empty();
-    var $img = $('<div>').append($('<img>', {
-      title: chooseFileLabel,
-      alt: chooseFileLabel,
-      src: webContext + '/util/icons/create-action/addFile.png'
-    })).addClass('icon');
+    var $img = undefined;
+    if (params.options.dragAndDropDisplayIcon) {
+      $img = $('<div>').append($('<img>', {
+        title: chooseFileLabel,
+        alt: chooseFileLabel,
+        src: webContext + '/util/icons/create-action/addFile.png'
+      })).addClass('icon');
+    }
     var $fileInputs = $('<div>').addClass('fileinputs').addClass('input');
     var $form = $('<form>', {
       id: 'form-' + params.containerOriginId,
@@ -362,7 +385,9 @@
       $fileInput.css('position', 'absolute');
       $fileInput.css('top', '-10000px');
       $fileInput.css('right', '0');
-      $img.addClass('dng');
+      if ($img) {
+        $img.addClass('dng');
+      }
       $uploadBloc.addClass('dng');
       var $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
         $fileInput.click();
@@ -470,14 +495,20 @@
     // Verify that upload is possible
     if (__verifyUploadIsPossible(params, files.length)) {
 
-      // One sending per file
-      $(files).each(function(index, file) {
-        var uploadCommons = __performAppendUploadCommons(params, [file]);
+      if (!params.options.multiple) {
+        params._api.reset();
+      }
 
-        // Perform uploads
-        __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
-                uploadCommons.$waitingEndOfUploadContainer, null, file));
-      });
+      setTimeout(function() {
+        // One sending per file
+        $(files).each(function(index, file) {
+          var uploadCommons = __performAppendUploadCommons(params, [file]);
+
+          // Perform uploads
+          __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
+              uploadCommons.$waitingEndOfUploadContainer, null, file));
+        });
+      }, 0);
     }
     return true;
   }
@@ -768,6 +799,9 @@
     var $fileDetails = $('<div>').addClass('details');
     var $fileInfos = $('<div>').addClass('infos');
     var $fileTitleInfo = $('<div>').addClass('infos-title');
+    if (!params.options.infoInputs) {
+      $fileInfos.css("display", "none");
+    }
     var $fileDescriptionInfo = $('<div>').addClass('infos-description');
     $file.append($fileDetails, $fileInfos.append($fileTitleInfo, $fileDescriptionInfo));
 
@@ -952,6 +986,8 @@
     var agregatedOptions = {
       multiple: true,
       dragAndDropDisplay: true,
+      dragAndDropDisplayIcon: true,
+      infoInputs: true,
       jqueryFormSelector: '',
       nbFileLimit: 0,
       labels: {

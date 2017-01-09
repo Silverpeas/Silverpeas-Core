@@ -51,6 +51,7 @@
 <fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
 <fmt:message key="usercalendar.menu.item.exportyourevents" var="exportYourEventLabel"/>
+<fmt:message key="calendar.menu.item.event.import" var="importEventLabel" bundle="${calendarBundle}"/>
 <fmt:message key="usercalendar.menu.item.viewuserparticipation" var="viewUserParticipationEventLabel"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -66,14 +67,19 @@
 <view:operationPane>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <silverpeas-calendar-management api="calMng"
-                                    on-created="userCalendar.addCalendar(calendar)"></silverpeas-calendar-management>
+                                    on-created="userCalendar.addCalendar(calendar)"
+                                    on-imported-events="userCalendar.refetchCalendars()"></silverpeas-calendar-management>
     <view:operation action="angularjs:calMng.add()" altText="${createCalendarLabel}"/>
     <fmt:message key="userCalendar.icons.addEvent" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationOfCreation action="angularjs:newEvent(userCalendar.getCalendars())"
                               altText="${addEventLabel}" icon="${opIcon}"/>
+    <view:operationSeparator />
     <view:operation action="${userMainCalendar.getURI()}/export/ical"
                               altText="${exportYourEventLabel}"/>
+    <view:operation action="angularjs:calMng.importICalEvents(userCalendar.getCalendars())"
+                    altText="${importEventLabel}"/>
+    <view:operationSeparator />
     <view:operation action="angularjs:selectUsersForViewingTheirEvents()"
                               altText="${viewUserParticipationEventLabel}"/>
   </c:if>

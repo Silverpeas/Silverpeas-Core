@@ -45,6 +45,13 @@ public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepositor
     implements CalendarEventRepository {
 
   @Override
+  public CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
+    NamedParameters params =
+        newNamedParameters().add("calendar", calendar).add("externalId", externalId);
+    return getFromNamedQuery("calendarEventByCalendarAndExternalId", params);
+  }
+
+  @Override
   public Stream<CalendarEvent> streamAll(final CalendarEventFilter filter) {
     String namedQuery = "calendarEvents";
     NamedParameters parameters = newNamedParameters();

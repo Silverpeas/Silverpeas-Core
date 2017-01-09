@@ -76,17 +76,20 @@ import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
     @NamedQuery(name = "calendarEventCount", query =
         "select count(e) from CalendarEvent e where e.calendar = :calendar"),
     @NamedQuery(name = "calendarEvents", query = "select e from CalendarEvent e"),
+    @NamedQuery(name = "calendarEventByCalendarAndExternalId", query =
+        "select e from CalendarEvent e " +
+        "where e.calendar = :calendar and e.externalId = :externalId"),
     @NamedQuery(name = "calendarEventsByCalendar", query =
         "select e from CalendarEvent e where e.calendar in :calendars"),
-    @NamedQuery(name = "calendarEventsByParticipants", query = "select distinct e from " +
-        "CalendarEvent e LEFT OUTER JOIN e.attendees a " +
-        " where (e.createdBy in :participantIds or a.attendeeId in :participantIds)" +
-        " order by e.createdBy, e.period.startDateTime"),
-    @NamedQuery(name = "calendarEventsByCalendarByParticipants", query = "select distinct e from " +
-        "CalendarEvent e LEFT OUTER JOIN e.attendees a " +
-        " where e.calendar in :calendars" +
-        " and (e.createdBy in :participantIds or a.attendeeId in :participantIds)" +
-        " order by e.createdBy, e.period.startDateTime"),
+    @NamedQuery(name = "calendarEventsByParticipants", query =
+        "select distinct e from CalendarEvent e LEFT OUTER JOIN e.attendees a " +
+        "where (e.createdBy in :participantIds or a.attendeeId in :participantIds) " +
+        "order by e.createdBy, e.period.startDateTime"),
+    @NamedQuery(name = "calendarEventsByCalendarByParticipants", query =
+        "select distinct e from CalendarEvent e LEFT OUTER JOIN e.attendees a " +
+        "where e.calendar in :calendars " +
+        "and (e.createdBy in :participantIds or a.attendeeId in :participantIds) " +
+        "order by e.createdBy, e.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByCalendarByPeriod", query =
         "select e from CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r " +
             "where e.calendar in :calendars and (" +
@@ -129,6 +132,9 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
   private static final long serialVersionUID = 1L;
+
+  @Column(name = "externalId")
+  private String externalId;
 
   @Embedded
   private Period period;
@@ -189,6 +195,17 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   /**
+   * Gets a calendar event by its external identifier and the calendar it belongs.
+   * @param calendar the calendar repository.
+   * @param externalId the external identifier of the aimed calendar event.
+   * @return the instance of the aimed calendar event or null if it does not exist.
+   */
+  public static CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
+    CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
+    return calendarEventRepository.getByExternalId(calendar, externalId);
+  }
+
+  /**
    * Creates a new calendar event that is spanning on the specified period of time.
    * @param period the period on which the event occurs.
    * @return a calendar event occurring on the specified period.
@@ -232,6 +249,35 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     } else {
       this.title = title;
     }
+  }
+
+  /**
+   * Gets the external identifier.<br/>
+   * This identifier is set when an event is coming outside from Silverpeas.<br/>
+   * This data is typically processed during export/import treatments.
+   * @return the external identifier as string.
+   */
+  public String getExternalId() {
+    return externalId;
+  }
+
+  /**
+   * Specifies an external identifier.
+   * @param externalId an external identifier as string.
+   */
+  public void withExternalId(final String externalId) {
+    if (externalId != null && externalId.equals(getId())) {
+      throw new IllegalArgumentException("externalId must be different from the id");
+    }
+    this.externalId = StringUtil.isDefined(externalId) ? externalId : null;
+  }
+
+  /**
+   * Indicates if the event is coming from another platform than Silverpeas.
+   * @return true if the event is coming from another platform, false otherwise.
+   */
+  public boolean isExternal() {
+    return this.externalId != null;
   }
 
   /**
@@ -547,6 +593,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   @Override
   public CalendarEvent clone() {
     CalendarEvent clone = super.clone();
+    clone.externalId = null;
     if (recurrence == Recurrence.NO_RECURRENCE) {
       clone.recurrence = Recurrence.NO_RECURRENCE;
     } else {
@@ -711,6 +758,27 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
           return new CalendarEventModificationResult(me);
         }
       };
+
+  /**
+   * Merges the data of the given event into the data of current event.<br/>
+   * It is not possible to merge the data of calendar which represents the repository of the event.
+   * @param event the event to merge into current one.
+   */
+  public CalendarEventModificationResult merge(CalendarEvent event) {
+    this.externalId = event.getExternalId();
+    this.period = event.period;
+    this.attributes = event.attributes;
+    this.title = event.title;
+    this.description = event.description;
+    this.location = event.location;
+    this.visibilityLevel = event.visibilityLevel;
+    this.priority = event.priority;
+    this.recurrence = event.recurrence;
+    this.attendees.clear();
+    this.attendees.addAll(event.attendees);
+    this.categories = event.categories;
+    return update();
+  }
 
   /**
    * Updates entirely the event referenced by this occurrence.

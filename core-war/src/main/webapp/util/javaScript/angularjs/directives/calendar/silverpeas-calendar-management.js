@@ -33,6 +33,7 @@
             onCreated : '&',
             onUpdated : '&',
             onDeleted : '&',
+            onImportedEvents : '&',
             api : '=?'
           },
           controllerAs : '$ctrl',
@@ -40,7 +41,8 @@
           controller : function($scope, $element, $attrs, $transclude) {
             this.$postLink = function() {
               this.dom = {
-                savePopin : angular.element('.savePopin', $element)
+                savePopin : angular.element('.silverpeas-calendar-management-save-popin', $element),
+                importPopin : angular.element('.silverpeas-calendar-management-import-popin', $element)
               }
             }.bind(this);
 
@@ -81,14 +83,51 @@
                  * to the user.
                  */
                 var _deleteProcess = function() {
+                  spProgressMessage.show();
                   CalendarService['delete'](this.calendar).then(function() {
+                    spProgressMessage.hide();
                     this.onDeleted({calendar : calendarToRemove});
-                  }.bind(this));
+                  }.bind(this), function() {
+                    spProgressMessage.hide();
+                  });
                 }.bind(this);
 
                 $timeout(function() {
                   var message = this.messages["delete"].replace('@name@', this.calendar.title);
                   jQuery.popup.confirm(message, _deleteProcess);
+                }.bind(this), 0);
+              }.bind(this),
+              "importICalEvents" : function(potentialCalendars) {
+                var __directive = this;
+                notyReset();
+                __directive.fileUploadApi.reset();
+                this.potentialCalendars = potentialCalendars;
+                this.importEventCalendar = potentialCalendars[0];
+                $timeout(function() {
+                  var $confirm = jQuery(this.dom.importPopin);
+                  $confirm.popup('validation', {
+                    callback : function() {
+                      try {
+                        __directive.fileUploadApi.checkNoFileSending();
+                      } catch (errorMsg) {
+                        notyInfo(errorMsg);
+                        return false;
+                      }
+                      spProgressMessage.show();
+                      var ajaxConfig = sp.ajaxConfig(
+                          __directive.importEventCalendar.uri + '/import/ical');
+                      __directive.fileUploadApi.serializeArray().forEach(function(param) {
+                        ajaxConfig.withParam(param.name, param.value);
+                      });
+                      silverpeasAjax(ajaxConfig.byPostMethod()).then(function() {
+                        spProgressMessage.hide();
+                        __directive.onImportedEvents({calendar : __directive.importEventCalendar});
+                      }, function(request) {
+                        notyError(request.responseText);
+                        spProgressMessage.hide();
+                      });
+                    }
+                  });
                 }.bind(this), 0);
               }.bind(this)
             };

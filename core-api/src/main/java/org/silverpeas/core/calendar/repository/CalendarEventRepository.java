@@ -45,6 +45,14 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   }
 
   /**
+   * Gets an event by its external identifier which is unique into context of a calendar.
+   * @param calendar the calendar to search into.
+   * @param externalId the external identifier as string.
+   * @return the calendar event if any, null otherwise.
+   */
+  CalendarEvent getByExternalId(final Calendar calendar, final String externalId);
+
+  /**
    * Gets all the events that belongs to the specified calendar.<br/>
    * Please be careful to always close the streams in order to avoid memory leaks!!!
    * <pre>

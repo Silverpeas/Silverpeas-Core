@@ -37,7 +37,9 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventMockBuilder;
 import org.silverpeas.core.calendar.CalendarMockBuilder;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
+import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.date.Period;
@@ -54,8 +56,10 @@ import java.io.StringReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
@@ -91,6 +95,7 @@ public class ICal4JExchangeExportTest {
     return commonAPI4Test;
   }
 
+  @SuppressWarnings("Duplicates")
   @Before
   public void setup() {
     final ICalendarExchange iCalendarExchange = iCalendarExchangeProvider.get();
@@ -153,7 +158,10 @@ public class ICal4JExchangeExportTest {
                  OffsetDateTime.parse("2016-12-15T13:32:00Z")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-1")
+        .withExternalId("EXT-EVENT-UUID-1")
         .withTitle("EVENT-TITLE-1")
+        .withPriority(Priority.HIGH)
+        .withVisibilityLevel(VisibilityLevel.PRIVATE)
         .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.DAY))
@@ -261,6 +269,7 @@ public class ICal4JExchangeExportTest {
                  LocalDate.parse("2016-12-15")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-1")
+        .withExternalId("EXT-EVENT-UUID-1")
         .withTitle("EVENT-TITLE-1")
         .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
@@ -518,5 +527,11 @@ public class ICal4JExchangeExportTest {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
   }
 }

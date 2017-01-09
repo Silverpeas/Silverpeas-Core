@@ -34,10 +34,14 @@ import org.silverpeas.core.calendar.event.CalendarEvent.CalendarEventModificatio
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData;
 import org.silverpeas.core.calendar.event.view.CalendarEventInternalParticipationView;
+import org.silverpeas.core.calendar.icalendar.ICalendarException;
+import org.silverpeas.core.calendar.icalendar.ICalendarImport;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
@@ -51,6 +55,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
@@ -225,6 +231,36 @@ public class CalendarWebServiceProvider {
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(getMultilang(userLanguage)
         .getStringWithParams("calendar.message.calendar.deleted", calendar.getTitle()));
+  }
+
+  /**
+   * Imports events as ICalendar format.
+   * @param eventImport the import to perform.
+   */
+  public void importEventsAsICalendarFormat(final ICalendarImport eventImport)
+      throws ICalendarException {
+    final Stream<CalendarEvent> events = eventImport.streamEvents();
+    Transaction.performInOne(() -> {
+      events.forEach(event -> {
+        // Adjustments
+        if (StringUtil.isNotDefined(event.getTitle())) {
+          event.withTitle("N/A");
+        }
+        // Persist operation
+        Optional<CalendarEvent> optionalPersistedEvent =
+            eventImport.getCalendar().externalEvent(event.getExternalId());
+        if (!optionalPersistedEvent.isPresent()) {
+          optionalPersistedEvent = eventImport.getCalendar().event(event.getExternalId());
+        }
+        if (optionalPersistedEvent.isPresent()) {
+          event.getAttendees().addAll(optionalPersistedEvent.get().getAttendees());
+          optionalPersistedEvent.get().merge(event);
+        } else {
+          event.planOn(eventImport.getCalendar());
+        }
+      });
+      return null;
+    });
   }
 
   /**
