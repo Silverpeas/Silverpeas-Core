@@ -72,6 +72,7 @@
 
   SettingBundle chatSettings = ChatServer.getChatSettings();
   ChatUser user = ChatUser.getCurrentRequester();
+  String iceServer = chatSettings.getString("chat.servers.ice", "");
 
   boolean componentExists = false;
   if (StringUtil.isDefined(componentIdFromRedirect)) {
@@ -235,24 +236,15 @@
       url : '<%= chatSettings.getString("chat.xmpp.httpBindUrl") %>',
       id : '<%= user.getChatLogin() %>',
       password : '<%= user.getChatPassword() %>',
-      domain : '<%= chatSettings.getString("chat.xmpp.domain") %>',
+      domain : '<%= user.getChatDomain() %>',
+      <% if (!iceServer.isEmpty()) { %>
+      ice : {
+        server: '<%= iceServer %>',
+        auth: true
+      },
+      <% } %>
       language : '<%= user.getUserPreferences().getLanguage() %>',
-      avatar: webContext + '/display/avatar/60x/',
-      debug: true,
-      selectUser: function(openChatWith) {
-        $('#userId').off('change').on('change', function() {
-          var id = $(this).val();
-          if (id && id !== '<%= user.getId() %>') {
-            User.get(id).then(function(user) {
-              if (user) {
-                console.log('SELECT USER', user);
-                openChatWith(user.chatId);
-              }
-            });
-          }
-        });
-        SP_openUserPanel(webContext + '/selectChatUser', '', 'menubar=no,scrollbars=no,statusbar=no');
-      }
+      avatar: webContext + '/display/avatar/60x/'
     }).start();
     </c:when>
     <c:otherwise>
@@ -266,10 +258,6 @@
     </c:choose>
   })();
 </script>
-<form id="chat_selected_user">
-  <input type="hidden" name="userId" id="userId"/>
-  <input type="hidden" name="userName" id="userName"/>
-</form>
 </body>
 </html>
 <% } %>

@@ -58,7 +58,7 @@
             cancelFullscreen();
             return this;
         }
-
+        
         var self = this;
 
         // Chrome trigger event on self, Firefox on document
@@ -67,7 +67,7 @@
         });
 
         $(self).add(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange msfullscreenchange', function() {
-            if (fullscreenStatus()){
+            if (fullscreenStatus()){ 
                 $(document).trigger('enabled.fullscreen');
             }else{
                 $(document).trigger('disabled.fullscreen');

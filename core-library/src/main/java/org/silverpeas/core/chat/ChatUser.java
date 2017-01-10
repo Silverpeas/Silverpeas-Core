@@ -7,8 +7,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasBundleList;
 
-import java.net.URL;
 import java.util.Date;
 
 /**
@@ -59,8 +59,7 @@ public class ChatUser extends UserDetail {
    * @return the unique identifier of the user the the chat service.
    */
   public String getChatId() {
-    SettingBundle settings = ChatServer.getChatSettings();
-    String xmppDomain = settings.getString("chat.xmpp.domain");
+    String xmppDomain = getChatDomain();
     return getChatLogin() + "@" + xmppDomain;
   }
 
@@ -78,6 +77,24 @@ public class ChatUser extends UserDetail {
    */
   public String getChatPassword() {
     return getToken();
+  }
+
+  /**
+   * Gets the chat domain to which this user belongs.
+   *
+   * The chat domain is read from the property file
+   * {@code org/silverpeas/chat/settings/chat.properties} and it depends on the Silverpeas domain of
+   * the user. If no chat domain is mapped to the Silverpeas domain of the user, then the default
+   * one (the one mapped with the Silverpeas domain with the unique identifier 0) is returned.
+   * @return the chat domain of the user.
+   */
+  public String getChatDomain() {
+    SettingBundle settings = ChatServer.getChatSettings();
+    String domain = settings.getString("chat.xmpp.domain." + getDomainId(), "");
+    if (domain.isEmpty()) {
+      domain = settings.getString("chat.xmpp.domain.0");
+    }
+    return domain;
   }
 
   @Override

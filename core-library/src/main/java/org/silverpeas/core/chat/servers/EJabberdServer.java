@@ -41,8 +41,6 @@ import java.util.function.Function;
 @DefaultChatServer
 public class EJabberdServer implements ChatServer {
 
-  private final String domain;
-
   private SilverLogger logger = SilverLogger.getLogger(this);
 
   private final String url;
@@ -55,7 +53,6 @@ public class EJabberdServer implements ChatServer {
   public EJabberdServer() {
     SettingBundle settings = ChatServer.getChatSettings();
     this.url = settings.getString("chat.xmpp.restUrl");
-    this.domain = settings.getString("chat.xmpp.domain");
     String key = settings.getString("chat.xmpp.restKey");
     this.requester = new HttpRequester("Bearer " + key);
   }
@@ -67,11 +64,11 @@ public class EJabberdServer implements ChatServer {
     ChatUser chatUser = ChatUser.fromUser(user);
     request("register",
         o -> o.put("user", chatUser.getChatLogin())
-        .put("host", domain)
+        .put("host", chatUser.getChatDomain())
         .put("password", chatUser.getChatPassword()));
     request("set_vcard",
         o -> o.put("user", chatUser.getChatLogin())
-        .put("host", domain)
+        .put("host", chatUser.getChatDomain())
         .put("name", "FN")
         .put("content", chatUser.getDisplayedName()));
   }
@@ -83,7 +80,7 @@ public class EJabberdServer implements ChatServer {
     ChatUser chatUser = ChatUser.fromUser(user);
     request("unregister",
         o -> o.put("username", chatUser.getChatLogin())
-            .put("hostname", domain));
+            .put("hostname", chatUser.getChatDomain()));
   }
 
   @Override
@@ -95,16 +92,16 @@ public class EJabberdServer implements ChatServer {
     ChatUser chatUser2 = ChatUser.fromUser(user2);
     request("add_rosteritem",
         o -> o.put("localuser", chatUser2.getChatLogin())
-            .put("localserver", domain)
+            .put("localserver", chatUser2.getChatDomain())
             .put("user", chatUser1.getChatLogin())
-            .put("server", domain)
+            .put("server", chatUser1.getChatDomain())
             .put("nick", chatUser1.getDisplayedName())
             .put("subs", "both"));
     request("add_rosteritem",
         o -> o.put("localuser", chatUser1.getChatLogin())
-        .put("localserver", domain)
+        .put("localserver", chatUser1.getChatDomain())
         .put("user", chatUser2.getChatLogin())
-        .put("server", domain)
+        .put("server", chatUser2.getChatDomain())
         .put("nick", chatUser2.getDisplayedName())
         .put("subs", "both"));
   }
@@ -118,20 +115,22 @@ public class EJabberdServer implements ChatServer {
     ChatUser chatUser2 = ChatUser.fromUser(user2);
     request("delete_rosteritem",
         o -> o.put("localuser", chatUser2.getChatLogin())
-            .put("localserver", domain)
+            .put("localserver", chatUser2.getChatDomain())
             .put("user", chatUser1.getChatLogin())
-            .put("server", domain));
+            .put("server", chatUser1.getChatDomain()));
     request("delete_rosteritem",
         o -> o.put("localuser", chatUser1.getChatLogin())
-        .put("localserver", domain)
+        .put("localserver", chatUser1.getChatDomain())
         .put("user", chatUser2.getChatLogin())
-        .put("server", domain));
+        .put("server", chatUser2.getChatDomain()));
   }
 
   @Override
   public boolean isUserExisting(final User user) throws ChatServerException {
     ChatUser chatUser = ChatUser.fromUser(user);
-    return request("check_account", o -> o.put("user", chatUser.getChatLogin()).put("host", domain),
+    return request("check_account",
+        o -> o.put("user", chatUser.getChatLogin())
+            .put("host", chatUser.getChatDomain()),
         r -> r.readEntity(Integer.class) == 0);
   }
 
