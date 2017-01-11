@@ -29,12 +29,12 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ResultGroupFilter {
-  private List<String> year = null;
 
   private Facet authorFacet = null;
   private Facet componentFacet = null;
   private Facet datatypeFacet = null;
   private Facet filetypeFacet = null;
+  private Facet lastUpdateFacet = null;
 
   private List<Facet> formfieldFacets;
 
@@ -43,14 +43,6 @@ public class ResultGroupFilter {
    */
   public ResultGroupFilter() {
     super();
-  }
-
-  public List<String> getYear() {
-    return year;
-  }
-
-  public void setYear(List<String> year) {
-    this.year = year;
   }
 
   public Facet getAuthorFacet() {
@@ -79,13 +71,19 @@ public class ResultGroupFilter {
 
   public void sortFacetsEntries() {
     EntryComparator comparator = new EntryComparator();
+    YearComparator yearComparator = new YearComparator();
     Collections.sort(authorFacet.getEntries(), comparator);
     Collections.sort(componentFacet.getEntries(), comparator);
     Collections.sort(datatypeFacet.getEntries(), comparator);
     Collections.sort(filetypeFacet.getEntries(), comparator);
+    Collections.sort(lastUpdateFacet.getEntries(), yearComparator);
 
     for (Facet formFieldFacet : formfieldFacets) {
-      Collections.sort(formFieldFacet.getEntries(), comparator);
+      if (formFieldFacet instanceof FacetOnDates) {
+        Collections.sort(formFieldFacet.getEntries(), yearComparator);
+      } else {
+        Collections.sort(formFieldFacet.getEntries(), comparator);
+      }
     }
   }
 
@@ -105,6 +103,14 @@ public class ResultGroupFilter {
     this.filetypeFacet = filetypeFacet;
   }
 
+  public Facet getLastUpdateFacet() {
+    return lastUpdateFacet;
+  }
+
+  public void setLastUpdateFacet(Facet lastUpdateFacet) {
+    this.lastUpdateFacet = lastUpdateFacet;
+  }
+
   private class EntryComparator implements Comparator<FacetEntryVO>{
     @Override
     public int compare(FacetEntryVO o1, FacetEntryVO o2) {
@@ -114,6 +120,13 @@ public class ResultGroupFilter {
       }
       // sort same weight entries according to alphabetical order
       return o1.getName().compareTo(o2.getName());
+    }
+  }
+
+  private class YearComparator implements Comparator<FacetEntryVO>{
+    @Override
+    public int compare(FacetEntryVO o1, FacetEntryVO o2) {
+      return o2.getName().compareTo(o1.getName());
     }
   }
 
