@@ -648,6 +648,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
 	<div id="facetSearchDivId">
 	<%
 	displayFacet(facets.getAuthorFacet(), resource, out);
+	displayFacet(facets.getLastUpdateFacet(), resource, out);
 
 	List<Facet> fieldFacets = facets.getFormFieldFacets();
 	for (Facet facet : fieldFacets) {

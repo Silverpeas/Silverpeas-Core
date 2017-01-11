@@ -34,7 +34,8 @@ public class ResultFilterVO {
   private String componentId = null;
   private String datatype = null;
   private String filetype = null;
-  private String year = null;
+  private String lastUpdate = null;
+
   private Map<String, String> formFieldFacets;
 
   /**
@@ -60,12 +61,12 @@ public class ResultFilterVO {
     this.componentId = componentId;
   }
 
-  public String getYear() {
-    return year;
+  public String getLastUpdate() {
+    return lastUpdate;
   }
 
-  public void setYear(String year) {
-    this.year = year;
+  public void setLastUpdate(final String lastUpdate) {
+    this.lastUpdate = lastUpdate;
   }
 
   public void addFormFieldSelectedFacetEntry(String facetId, String value) {
@@ -91,7 +92,8 @@ public class ResultFilterVO {
 
   public boolean isEmpty() {
     return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) &&
-        !StringUtil.isDefined(datatype) && !StringUtil.isDefined(filetype) && isSelectedFormFieldFacetsEmpty();
+        !StringUtil.isDefined(datatype) && !StringUtil.isDefined(filetype) &&
+        !StringUtil.isDefined(lastUpdate) && isSelectedFormFieldFacetsEmpty();
   }
 
   public Map<String, String> getFormFieldSelectedFacetEntries() {
