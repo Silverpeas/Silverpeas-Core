@@ -22,9 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Provides the Silverpeas Chat Engine. It defines a communication channel between Silverpeas and
+ * Provides the Silverpeas Chat Service. It defines a communication channel between Silverpeas and
  * a chat server in order to perform administrative tasks and to set a bridge between the social
  * networking system of Silverpeas and the social networking of the underlying chat system.
+ * By default, this service is disabled and must be explicitly enabled once the chat service
+ * properties correctly set in the {@code org/silverpeas/chat/settings/chat.properties} bundle.
  * @author mmoquillon
  */
 package org.silverpeas.core.chat;

@@ -48,6 +48,7 @@
     <module>workflow</module>
     <module>sharing</module>
     <module>search</module>
+    <module>chat</module>
   </modules>
 
 </project>

@@ -31,7 +31,7 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
 
     server.createRelationShip(uf1, uf2);
 
-    logger.info("XMPP relationship between {0} and {1} has been created", uf1.getId(), uf2.getId());
+    logger.info("Chat relationship between {0} and {1} has been created", uf1.getId(), uf2.getId());
   }
 
   @Override
@@ -43,6 +43,11 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
 
     server.deleteRelationShip(uf1, uf2);
 
-    logger.info("XMPP relationship between {0} and {1} has been deleted", uf1.getId(), uf2.getId());
+    logger.info("Chat relationship between {0} and {1} has been deleted", uf1.getId(), uf2.getId());
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return server.isAvailable();
   }
 }

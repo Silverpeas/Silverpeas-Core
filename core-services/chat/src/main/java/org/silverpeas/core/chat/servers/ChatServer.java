@@ -10,7 +10,7 @@ import org.silverpeas.core.util.SettingBundle;
  * the access to a concrete chat server.
  *
  * Configuration available in <code>Silverpeas-Core/core-configuration/src/main/config/
- * properties/org/silverpeas/chat/settings/chatSettings.properties</code>
+ * properties/org/silverpeas/chat/settings/chat.properties</code>
  * @author remipassmoilesel
  */
 public interface ChatServer {
@@ -71,4 +71,13 @@ public interface ChatServer {
    */
   boolean isUserExisting(User user) throws ChatServerException;
 
+  /**
+   * Is a chat server is available ? If no chat server is defined for Silverpeas, then the
+   * chat service must be disabled.
+   * @return true if a chat server is available. False if no chat server is defined in the
+   * {@code org/silverpeas/chat/settings/chat.properties} properties file.
+   */
+  default boolean isAvailable() {
+    return getChatSettings().getBoolean("chat.enable", false);
+  }
 }

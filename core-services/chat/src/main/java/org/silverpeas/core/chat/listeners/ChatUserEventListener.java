@@ -26,14 +26,18 @@ public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
   public void onCreation(final UserEvent event) throws Exception {
     UserDetail detail = event.getTransition().getAfter();
     server.createUser(detail);
-    logger.info("Xmpp account have been created for user {0}", detail.getId());
+    logger.info("Chat account have been created for user {0}", detail.getId());
   }
 
   @Override
   public void onDeletion(final UserEvent event) throws Exception {
     UserDetail detail = event.getTransition().getBefore();
     server.deleteUser(detail);
-    logger.info("Xmpp account have been deleted for user {0}", detail.getId());
+    logger.info("Chat account have been deleted for user {0}", detail.getId());
   }
 
+  @Override
+  public boolean isEnabled() {
+    return server.isAvailable();
+  }
 }

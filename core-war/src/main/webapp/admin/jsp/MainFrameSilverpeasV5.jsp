@@ -258,6 +258,11 @@
     </c:choose>
   })();
 </script>
+<form id="chat_selected_user">
+  <input type="hidden" name="userId" id="userId"/>
+  <input type="hidden" name="userName" id="userName"/>
+</form>
+
 </body>
 </html>
 <% } %>

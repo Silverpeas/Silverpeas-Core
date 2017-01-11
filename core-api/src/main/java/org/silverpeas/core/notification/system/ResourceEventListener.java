@@ -94,23 +94,39 @@ public interface ResourceEventListener<T extends ResourceEvent> {
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
   default void dispatchEvent(final T event) throws Exception {
-    switch (event.getType()) {
-      case CREATION:
-        onCreation(event);
-        break;
-      case UPDATE:
-        onUpdate(event);
-        break;
-      case REMOVING:
-        onRemoving(event);
-        break;
-      case DELETION:
-        onDeletion(event);
-        break;
-      default:
-        SilverLogger.getLogger(this).
-            warn("Event type {0} not yet supported", event.getType().toString());
-        break;
+    if (isEnabled()) {
+      switch (event.getType()) {
+        case CREATION:
+          onCreation(event);
+          break;
+        case UPDATE:
+          onUpdate(event);
+          break;
+        case REMOVING:
+          onRemoving(event);
+          break;
+        case DELETION:
+          onDeletion(event);
+          break;
+        default:
+          SilverLogger.getLogger(this).
+              warn("Event type {0} not yet supported", event.getType().toString());
+          break;
+      }
     }
+  }
+
+  /**
+   * Is this listener enabled? When a listener is enabled, it processes then all the incoming events
+   * it listens for. Otherwise, nothing the event isn't consumed.
+   *
+   * By default, the listener is enabled. If the listener has to be enabled according to some
+   * conditions, then overrides this method.
+   *
+   * @return true if this listener has to consume the events it listens for. False otherwise.
+   * Returns true by default.
+   */
+  default boolean isEnabled() {
+    return true;
   }
 }

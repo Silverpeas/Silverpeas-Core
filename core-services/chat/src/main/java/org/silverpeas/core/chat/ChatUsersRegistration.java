@@ -50,6 +50,15 @@ public class ChatUsersRegistration {
   private SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
+   * Is the chat service enabled in Silverpeas?
+   * @return true if the chat service is enabled and then the users can be registered into the
+   * chat service. False otherwise.
+   */
+  public boolean isChatServiceEnabled() {
+    return chatServer.isAvailable();
+  }
+
+  /**
    * Is the specified user already registered into the remote chat server?
    * @param user the user to check the existence.
    * @return true if the user has an account in the remote chat server, false otherwise.
@@ -62,7 +71,8 @@ public class ChatUsersRegistration {
 
   /**
    * Registers the specified user into the remote chat server. If the server is already registered
-   * into the remote chat server, then nothing is performed.
+   * into the remote chat server, then nothing is performed. If the chat service isn't enabled then
+   * nothing is performed.
    *
    * With the user registration, his relationships are also browsed in order to create each of them
    * into the remote chat server. If a user targeted by a relationship hasn't yet an account in
@@ -74,7 +84,7 @@ public class ChatUsersRegistration {
    * @throws ChatServerException if the registration fails.
    */
   public void registerUser(final User user) throws ChatServerException {
-    if (!chatServer.isUserExisting(user) && !user.isAccessAdmin()) {
+    if (chatServer.isAvailable() && !chatServer.isUserExisting(user) && !user.isAccessAdmin()) {
       logger.info("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       try {

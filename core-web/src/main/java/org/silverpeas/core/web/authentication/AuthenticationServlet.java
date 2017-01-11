@@ -164,11 +164,15 @@ public class AuthenticationServlet extends HttpServlet {
       writeSessionCookie(servletResponse, session, securedAccess);
 
       User currentUser = User.getCurrentRequester();
-      try {
-        chatUsersRegistration.registerUser(currentUser);
-        session.setAttribute("Silverpeas.Chat", true);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage());
+      if (chatUsersRegistration.isChatServiceEnabled()) {
+        try {
+          chatUsersRegistration.registerUser(currentUser);
+          session.setAttribute("Silverpeas.Chat", true);
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error(e.getMessage());
+          session.setAttribute("Silverpeas.Chat", false);
+        }
+      } else {
         session.setAttribute("Silverpeas.Chat", false);
       }
 
