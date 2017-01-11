@@ -41,6 +41,20 @@ import java.util.function.Function;
 @DefaultChatServer
 public class EJabberdServer implements ChatServer {
 
+  private static final String HOST_ATTR = "host";
+  private static final String SERVER_ATTR = "server";
+  private static final String LOCAL_SERVER_ATTR = "localserver";
+  private static final String PASSWORD_ATTR = "password";
+  private static final String USER_ATTR = "user";
+  private static final String LOCAL_USER_ATTR = "localuser";
+  private static final String NICK_ATTR = "nick";
+  private static final String SUBSCRIPTION_ATTR = "subs";
+  private static final String HOSTNAME_ATTR = "hostname";
+  private static final String USERNAME_ATTR = "username";
+  private static final String NAME_ATTR = "name";
+  private static final String CONTENT_ATTR = "content";
+  private static final String SUBSCRIPTION_VALUE = "both";
+
   private SilverLogger logger = SilverLogger.getLogger(this);
 
   private final String url;
@@ -58,79 +72,80 @@ public class EJabberdServer implements ChatServer {
   }
 
   @Override
-  public void createUser(final User user) throws ChatServerException {
+  public void createUser(final User user) {
     SilverLogger.getLogger(this)
         .info("Register user {0} ({1})", user.getDisplayedName(), user.getId());
     ChatUser chatUser = ChatUser.fromUser(user);
     request("register",
-        o -> o.put("user", chatUser.getChatLogin())
-        .put("host", chatUser.getChatDomain())
-        .put("password", chatUser.getChatPassword()));
+        o -> o.put(USER_ATTR, chatUser.getChatLogin())
+        .put(HOST_ATTR, chatUser.getChatDomain())
+        .put(PASSWORD_ATTR, chatUser.getChatPassword()));
     request("set_vcard",
-        o -> o.put("user", chatUser.getChatLogin())
-        .put("host", chatUser.getChatDomain())
-        .put("name", "FN")
-        .put("content", chatUser.getDisplayedName()));
+        o -> o.put(USER_ATTR, chatUser.getChatLogin())
+        .put(HOST_ATTR, chatUser.getChatDomain())
+        .put(NAME_ATTR, "FN")
+        .put(CONTENT_ATTR, chatUser.getDisplayedName()));
   }
 
   @Override
-  public void deleteUser(final User user) throws ChatServerException {
+  public void deleteUser(final User user) {
     SilverLogger.getLogger(this)
         .info("Unregister user {0} ({1})", user.getDisplayedName(), user.getId());
     ChatUser chatUser = ChatUser.fromUser(user);
-    request("unregister",
-        o -> o.put("username", chatUser.getChatLogin())
-            .put("hostname", chatUser.getChatDomain()));
+    request("unregister", o -> o.put(USERNAME_ATTR, chatUser.getChatLogin())
+        .put(HOSTNAME_ATTR, chatUser.getChatDomain()));
   }
 
   @Override
-  public void createRelationShip(final User user1, final User user2) throws ChatServerException {
+  public void createRelationShip(final User user1, final User user2) {
     SilverLogger.getLogger(this)
         .info("Add relationships between {0} ({1}) and {2} ({3})", user1.getDisplayedName(),
             user1.getId(), user2.getDisplayedName(), user2.getId());
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
-    request("add_rosteritem",
-        o -> o.put("localuser", chatUser2.getChatLogin())
-            .put("localserver", chatUser2.getChatDomain())
-            .put("user", chatUser1.getChatLogin())
-            .put("server", chatUser1.getChatDomain())
-            .put("nick", chatUser1.getDisplayedName())
-            .put("subs", "both"));
-    request("add_rosteritem",
-        o -> o.put("localuser", chatUser1.getChatLogin())
-        .put("localserver", chatUser1.getChatDomain())
-        .put("user", chatUser2.getChatLogin())
-        .put("server", chatUser2.getChatDomain())
-        .put("nick", chatUser2.getDisplayedName())
-        .put("subs", "both"));
+    final String command = "add_rosteritem";
+    request(command,
+        o -> o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
+        .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
+        .put(USER_ATTR, chatUser1.getChatLogin())
+        .put(SERVER_ATTR, chatUser1.getChatDomain())
+        .put(NICK_ATTR, chatUser1.getDisplayedName())
+        .put(SUBSCRIPTION_ATTR, SUBSCRIPTION_VALUE));
+    request(command,
+        o -> o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
+        .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
+        .put(USER_ATTR, chatUser2.getChatLogin())
+        .put(SERVER_ATTR, chatUser2.getChatDomain())
+        .put(NICK_ATTR, chatUser2.getDisplayedName())
+        .put(SUBSCRIPTION_ATTR, SUBSCRIPTION_VALUE));
   }
 
   @Override
-  public void deleteRelationShip(final User user1, final User user2) throws ChatServerException {
+  public void deleteRelationShip(final User user1, final User user2) {
     SilverLogger.getLogger(this)
         .info("Delete relationships between {0} ({1}) and {2} ({3})", user1.getDisplayedName(),
             user1.getId(), user2.getDisplayedName(), user2.getId());
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
-    request("delete_rosteritem",
-        o -> o.put("localuser", chatUser2.getChatLogin())
-            .put("localserver", chatUser2.getChatDomain())
-            .put("user", chatUser1.getChatLogin())
-            .put("server", chatUser1.getChatDomain()));
-    request("delete_rosteritem",
-        o -> o.put("localuser", chatUser1.getChatLogin())
-        .put("localserver", chatUser1.getChatDomain())
-        .put("user", chatUser2.getChatLogin())
-        .put("server", chatUser2.getChatDomain()));
+    final String command = "delete_rosteritem";
+    request(command,
+        o -> o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
+        .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
+        .put(USER_ATTR, chatUser1.getChatLogin())
+        .put(SERVER_ATTR, chatUser1.getChatDomain()));
+    request(command,
+        o -> o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
+        .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
+        .put(USER_ATTR, chatUser2.getChatLogin())
+        .put(SERVER_ATTR, chatUser2.getChatDomain()));
   }
 
   @Override
-  public boolean isUserExisting(final User user) throws ChatServerException {
+  public boolean isUserExisting(final User user) {
     ChatUser chatUser = ChatUser.fromUser(user);
     return request("check_account",
-        o -> o.put("user", chatUser.getChatLogin())
-            .put("host", chatUser.getChatDomain()),
+        o -> o.put(USER_ATTR, chatUser.getChatLogin())
+            .put(HOST_ATTR, chatUser.getChatDomain()),
         r -> r.readEntity(Integer.class) == 0);
   }
 
@@ -146,19 +161,8 @@ public class EJabberdServer implements ChatServer {
     try {
       response = this.requester.at(url, command).header("X-Admin", "true").post(argsProvider);
 
-      if (response.getStatus() != 200) {
-        logger.error("Failed to {0}: {1}", command, response.getStatusInfo().getReasonPhrase());
-        if (response.getStatus() == 403) {
-          throw new ChatServerException(
-              "Access to " + command + " is forbidden! Please check your authentication token");
-        } else if (response.getStatus() == 401) {
-          throw new ChatServerException(
-              "Access to " + command + " is forbidden! Please check your authorization to the " +
-                  command + " resource");
-        } else {
-          throw new ChatServerException(response.getStatusInfo().getReasonPhrase() + ": " +
-              response.readEntity(String.class));
-        }
+      if (response.getStatus() != HttpRequester.STATUS_OK) {
+        processError(command, response);
       }
       return responseProcessor.apply(response);
     } catch (Exception e) {
@@ -167,6 +171,21 @@ public class EJabberdServer implements ChatServer {
       if (response != null) {
         response.close();
       }
+    }
+  }
+
+  private void processError(final String command, final Response response) {
+    logger.error("Failed to {0}: {1}", command, response.getStatusInfo().getReasonPhrase());
+    if (response.getStatus() == HttpRequester.STATUS_FORBIDDEN) {
+      throw new ChatServerException(
+          "Access to " + command + " is forbidden! Please check your authentication token");
+    } else if (response.getStatus() == HttpRequester.STATUS_UNAUTHORIZED) {
+      throw new ChatServerException(
+          "Access to " + command + " is forbidden! Please check your authorization to the " +
+              command + " resource");
+    } else {
+      throw new ChatServerException(response.getStatusInfo().getReasonPhrase() + ": " +
+          response.readEntity(String.class));
     }
   }
 

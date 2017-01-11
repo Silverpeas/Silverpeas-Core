@@ -42,14 +42,14 @@ import java.util.List;
 @Singleton
 public class RelationShipService {
 
-  public static RelationShipService get() {
-    return ServiceProvider.getService(RelationShipService.class);
-  }
-
   @Inject
   private RelationShipDao relationShipDao;
   @Inject
   private RelationShipEventNotifier relationShipEventNotifier;
+
+  public static RelationShipService get() {
+    return ServiceProvider.getService(RelationShipService.class);
+  }
 
   protected RelationShipService() {
   }
@@ -194,20 +194,18 @@ public class RelationShipService {
   /**
    * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
    * Item and the first Index
-   * @param myId
    * @param myContactsIds
    * @param begin date
    * @param end date
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
-  public List<SocialInformation> getAllRelationShipsOfMyContact(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SQLException {
+  public List<SocialInformation> getAllRelationShipsOfContacts(List<String> myContactsIds,
+      Date begin, Date end) throws SQLException {
     Connection connection = null;
     try {
       connection = getConnection(true);
-      return relationShipDao.getAllRelationShipsOfMyContact(connection, myId, myContactsIds, begin,
-          end);
+      return relationShipDao.getAllRelationShipsOfContacts(connection, myContactsIds, begin, end);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {

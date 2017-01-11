@@ -47,16 +47,16 @@ import java.util.List;
 @Singleton
 public class InvitationService {
 
-  public static InvitationService get() {
-    return ServiceProvider.getService(InvitationService.class);
-  }
-
   @Inject
   private InvitationDao invitationDao;
   @Inject
   private RelationShipDao relationShipDao;
   @Inject
   private RelationShipEventNotifier relationShipEventNotifier;
+
+  public static InvitationService get() {
+    return ServiceProvider.getService(InvitationService.class);
+  }
 
   /**
    * Default Constructor

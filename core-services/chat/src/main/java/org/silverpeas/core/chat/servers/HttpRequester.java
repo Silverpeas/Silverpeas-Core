@@ -48,6 +48,32 @@ public class HttpRequester implements AutoCloseable {
 
   private static final String USER_AGENT = "Silverpeas chat client";
 
+  /**
+   * The status code for a successful request.
+   */
+  public static final int STATUS_OK = 200;
+
+  /**
+   * The status code for a forbidden request.
+   */
+  public static final int STATUS_FORBIDDEN = 403;
+
+  /**
+   * The status code for an unauthorized request.
+   */
+  public static final int STATUS_UNAUTHORIZED = 401;
+
+  /**
+   * The status code for a request resulting to a conflict in the server. For example, creating a
+   * resource that already exists.
+   */
+  public static final int STATUS_CONFLICT = 409;
+
+  /**
+   * The status code for a request resulting to the successful creation of a resource in the server.
+   */
+  public static final int STATUS_CREATED = 201;
+
   private Client client = ClientBuilder.newClient();
   private Invocation.Builder builder;
   private final String token;

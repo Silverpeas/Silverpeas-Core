@@ -35,14 +35,14 @@ public interface ChatServer {
    * @param user a Silverpeas user.
    * @throws ChatServerException if an error occurs while creating the user in the chat server.
    */
-  void createUser(User user) throws ChatServerException;
+  void createUser(User user);
 
   /**
    * Deletes in the chat server the account of the specified user.
    * @param user a Silverpeas user.
    * @throws ChatServerException if an error occurs while deleting the user in the chat server.
    */
-  void deleteUser(User user) throws ChatServerException;
+  void deleteUser(User user);
 
   /**
    * Creates a relationship between the two specified user in the chat server. If the relationship
@@ -52,7 +52,7 @@ public interface ChatServer {
    * @throws ChatServerException if an error occurs while creating a relationship between the two
    * users in the chat server.
    */
-  void createRelationShip(User user1, User user2) throws ChatServerException;
+  void createRelationShip(User user1, User user2);
 
   /**
    * Deletes the relationship existing between the two specified user in the chat server.
@@ -61,7 +61,7 @@ public interface ChatServer {
    * @throws ChatServerException if an error occurs while deleting a relationship between the two
    * users in the chat server.
    */
-  void deleteRelationShip(User user1, User user2) throws ChatServerException;
+  void deleteRelationShip(User user1, User user2);
 
   /**
    * Is the specified user has already an account in the chat server.
@@ -69,7 +69,7 @@ public interface ChatServer {
    * @return true if the user has an account in the chat server, false otherwise.
    * @throws ChatServerException if an error occurs while communicating with the chat server.
    */
-  boolean isUserExisting(User user) throws ChatServerException;
+  boolean isUserExisting(User user);
 
   /**
    * Is a chat server is available ? If no chat server is defined for Silverpeas, then the

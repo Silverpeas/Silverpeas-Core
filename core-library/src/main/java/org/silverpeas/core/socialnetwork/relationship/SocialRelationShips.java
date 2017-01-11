@@ -79,7 +79,7 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     try {
-      return relationShipService.getAllRelationShipsOfMyContact(myId, myContactsIds, begin,
+      return relationShipService.getAllRelationShipsOfContacts(myContactsIds, begin,
           end);
     } catch (SQLException ex) {
       throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",

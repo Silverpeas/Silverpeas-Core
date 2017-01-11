@@ -41,4 +41,8 @@ public class ChatLocalizationProvider {
   public static LocalizationBundle getLocalizationBundle(final String language) {
     return ResourceLocator.getLocalizationBundle(BUNDLE, language);
   }
+
+  private ChatLocalizationProvider() {
+
+  }
 }

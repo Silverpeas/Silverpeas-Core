@@ -44,6 +44,8 @@ public class RelationShip implements Serializable {
   }
 
   public RelationShip() {
+    // default constructor: it should be possible to create an empty relationship for persistence
+    // purpose.
   }
 
   /**

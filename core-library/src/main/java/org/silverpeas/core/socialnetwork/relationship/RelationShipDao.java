@@ -212,19 +212,16 @@ public class RelationShipDao {
 
   /**
    * Gets from the data source all the social information that were emitted between the two
-   * specified dates and that are about the relationships of the contacts of the specified
-   * user.
+   * specified dates and that are about the relationships of the specified contacts.
    * @param con the connection to the data source.
-   * @param myId the unique identifier of a user in Silverpeas.
    * @param myContactsIds a list of unique identifiers of the contacts of the user.
    * @param begin the begin date of the search interval.
    * @param end the end date of the search interval.
    * @return a list of {@link SocialInformationRelationShip} instances.
    * @throws SQLException if an error occurs while gettings the social information.
    */
-  List<SocialInformation> getAllRelationShipsOfMyContact(Connection con,
-      String myId, List<String> myContactsIds, Date begin, Date end) throws
-      SQLException {
+  List<SocialInformation> getAllRelationShipsOfContacts(Connection con,
+      List<String> myContactsIds, Date begin, Date end) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
     List<SocialInformation> listMyRelation = new ArrayList<SocialInformation>();
@@ -262,7 +259,7 @@ public class RelationShipDao {
   }
 
   private static String toSqlString(List<String> list) {
-    StringBuilder result = new StringBuilder(100);
+    StringBuilder result = new StringBuilder();
     if (list == null || list.isEmpty()) {
       return "''";
     }

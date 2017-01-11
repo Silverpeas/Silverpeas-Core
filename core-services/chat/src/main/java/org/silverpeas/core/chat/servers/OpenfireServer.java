@@ -24,17 +24,17 @@ public class OpenfireServer implements ChatServer {
    */
   private final String url;
 
-  private final HttpRequester requester;
+  private final HttpRequester theRequester;
 
   public OpenfireServer() {
     SettingBundle settings = ChatServer.getChatSettings();
     this.url = settings.getString("chat.xmpp.restUrl") + "/users";
     String key = settings.getString("chat.xmpp.restKey");
-    this.requester = new HttpRequester(key);
+    this.theRequester = new HttpRequester(key);
   }
 
   @Override
-  public void createUser(final User user) throws ChatServerException {
+  public void createUser(final User user) {
     // get cross domain login and password
     ChatUser chatUser = ChatUser.fromUser(user);
     Response response = null;
@@ -50,7 +50,7 @@ public class OpenfireServer implements ChatServer {
         return o;
       });
 
-      if (response.getStatus() != 201) {
+      if (response.getStatus() != HttpRequester.STATUS_OK) {
         logger.error("Error while creating XMPP user: {0}",
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
@@ -68,14 +68,14 @@ public class OpenfireServer implements ChatServer {
   }
 
   @Override
-  public void deleteUser(final User user) throws ChatServerException {
+  public void deleteUser(final User user) {
     ChatUser chatUser = ChatUser.fromUser(user);
     Response response = null;
     try {
       HttpRequester requester = request(url, chatUser.getChatLogin());
       response = requester.delete();
 
-      if (response.getStatus() != 200) {
+      if (response.getStatus() != HttpRequester.STATUS_OK) {
         logger.error("Error while deleting XMPP user: {0}",
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
@@ -93,7 +93,7 @@ public class OpenfireServer implements ChatServer {
   }
 
   @Override
-  public void createRelationShip(final User user1, final User user2) throws ChatServerException {
+  public void createRelationShip(final User user1, final User user2) {
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
     Response response = null;
@@ -102,10 +102,10 @@ public class OpenfireServer implements ChatServer {
       response =
           requester.post(o -> o.put("jid", chatUser2.getChatId()).put("subscriptionType", "3"));
 
-      if (response.getStatus() == 409) {
+      if (response.getStatus() == HttpRequester.STATUS_CONFLICT) {
         logger.warn("The XMPP relationship between users {0} and {1} already exists!",
             chatUser1.getId(), chatUser2.getId());
-      } else if (response.getStatus() != 201) {
+      } else if (response.getStatus() != HttpRequester.STATUS_CREATED) {
         logger.error("Error while creating XMPP relationship: {0}",
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
@@ -124,7 +124,7 @@ public class OpenfireServer implements ChatServer {
   }
 
   @Override
-  public void deleteRelationShip(final User user1, final User user2) throws ChatServerException {
+  public void deleteRelationShip(final User user1, final User user2) {
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
 
@@ -133,7 +133,7 @@ public class OpenfireServer implements ChatServer {
       HttpRequester requester = request(chatUser1.getChatLogin(), "roster", chatUser2.getChatId());
       response = requester.delete();
 
-      if (response.getStatus() != 200) {
+      if (response.getStatus() != HttpRequester.STATUS_OK) {
         logger.error("Error while deleting XMPP relationship: {0}",
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
@@ -158,7 +158,7 @@ public class OpenfireServer implements ChatServer {
     try {
       HttpRequester requester = request(url, chatUser.getChatLogin());
       response = requester.head();
-      return response.getStatus() == 200;
+      return response.getStatus() == HttpRequester.STATUS_OK;
 
     } catch (Exception e) {
       logger.error("Error while checking XMPP user: ", e.getMessage());
@@ -172,7 +172,7 @@ public class OpenfireServer implements ChatServer {
   }
 
   private HttpRequester request(String url, String... path) {
-    return requester.at(url, path);
+    return theRequester.at(url, path);
   }
 
 }
