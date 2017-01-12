@@ -36,7 +36,7 @@ import java.util.List;
 @Authenticated
 public class SearchResource extends RESTWebService {
 
-  static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+  private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -48,25 +48,7 @@ public class SearchResource extends RESTWebService {
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setTaxonomyPosition(position);
 
-    if (StringUtil.isDefined(startDate)) {
-      try {
-        String date = LocalDate.parse(startDate).format(formatter);
-        queryDescription.setRequestedCreatedAfter(date);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).info("Can't parse start date as Long : {0}",
-            new String[] {startDate}, e);
-      }
-    }
-
-    if (StringUtil.isDefined(endDate)) {
-      try {
-        String date = LocalDate.parse(endDate).format(formatter);
-        queryDescription.setRequestedCreatedBefore(date);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).info("Can't parse end date as Long : {0}",
-            new String[] {endDate}, e);
-      }
-    }
+    setCreationDateInterval(queryDescription, startDate, endDate);
 
     // determine where to search
     setComponents(queryDescription, spaceId, appId);
@@ -74,35 +56,7 @@ public class SearchResource extends RESTWebService {
     // add query parameters about form
     if (StringUtil.isDefined(form)) {
       List<String> paramNames = EnumerationUtils.toList(getHttpRequest().getParameterNames());
-      List<FieldDescription> formQuery = new ArrayList<>();
-      for (String paramName : paramNames) {
-        if (paramName.startsWith("field_")) {
-          String fieldName = paramName.replace("field_", "");
-          String value = getHttpRequest().getParameter(paramName);
-          formQuery.add(new FieldDescription(form+"$$"+fieldName, value, "fr"));
-        } else if (paramName.startsWith("fieldDate_")) {
-          String fieldName = paramName.replace("fieldDate_", "");
-          String value = getHttpRequest().getParameter(paramName);
-          String sDate = value.substring(0, value.indexOf(","));
-          String eDate = value.substring(value.indexOf(",")+1);
-          Date fromDate = null;
-          Date toDate = null;
-          try {
-            fromDate = DateUtil.parseISO8601Date(sDate);
-          } catch (ParseException e) {
-            // ignore unparsable date
-          }
-          try {
-            toDate = DateUtil.parseISO8601Date(eDate);
-          } catch (ParseException e) {
-            // ignore unparsable date
-          }
-          if (fromDate != null || toDate != null) {
-            formQuery.add(new FieldDescription(form+"$$"+fieldName, fromDate, toDate, "fr"));
-          }
-        }
-      }
-      queryDescription.setFieldQueries(formQuery);
+      setQueryFormFields(queryDescription, form, paramNames);
     }
 
     SearchService searchService = SearchService.get();
@@ -137,6 +91,62 @@ public class SearchResource extends RESTWebService {
         queryDescription.addComponent(id);
       }
     }
+  }
+
+  private void setCreationDateInterval(QueryDescription queryDescription, String startDate,
+      String endDate) {
+    if (StringUtil.isDefined(startDate)) {
+      try {
+        String date = LocalDate.parse(startDate).format(formatter);
+        queryDescription.setRequestedCreatedAfter(date);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).info("Can't parse start date as Long : {0}",
+            new String[] {startDate}, e);
+      }
+    }
+
+    if (StringUtil.isDefined(endDate)) {
+      try {
+        String date = LocalDate.parse(endDate).format(formatter);
+        queryDescription.setRequestedCreatedBefore(date);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).info("Can't parse end date as Long : {0}",
+            new String[] {endDate}, e);
+      }
+    }
+  }
+
+  private void setQueryFormFields(QueryDescription queryDescription, String form,
+      List<String> paramNames) {
+    List<FieldDescription> formQuery = new ArrayList<>();
+    for (String paramName : paramNames) {
+      if (paramName.startsWith("field_")) {
+        String fieldName = paramName.replace("field_", "");
+        String value = getHttpRequest().getParameter(paramName);
+        formQuery.add(new FieldDescription(form+"$$"+fieldName, value, "fr"));
+      } else if (paramName.startsWith("fieldDate_")) {
+        String fieldName = paramName.replace("fieldDate_", "");
+        String value = getHttpRequest().getParameter(paramName);
+        String sDate = value.substring(0, value.indexOf(","));
+        String eDate = value.substring(value.indexOf(",")+1);
+        Date fromDate = null;
+        Date toDate = null;
+        try {
+          fromDate = DateUtil.parseISO8601Date(sDate);
+        } catch (ParseException e) {
+          // ignore unparsable date
+        }
+        try {
+          toDate = DateUtil.parseISO8601Date(eDate);
+        } catch (ParseException e) {
+          // ignore unparsable date
+        }
+        if (fromDate != null || toDate != null) {
+          formQuery.add(new FieldDescription(form+"$$"+fieldName, fromDate, toDate, "fr"));
+        }
+      }
+    }
+    queryDescription.setFieldQueries(formQuery);
   }
 
   @Override

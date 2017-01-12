@@ -24,11 +24,10 @@
 
 package org.silverpeas.core.index.indexing.model;
 
+import org.silverpeas.core.i18n.I18NHelper;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.silverpeas.core.index.indexing.DateFormatter;
-import org.silverpeas.core.i18n.I18NHelper;
 
 /**
  * A FieldDescription pack all the needed information to parse and index a generic field (xml field,
@@ -43,6 +42,17 @@ import org.silverpeas.core.i18n.I18NHelper;
 public class FieldDescription implements Serializable {
 
   private static final long serialVersionUID = -475049855423827178L;
+
+  /**
+   * All the attributes are private and final.
+   */
+  private final String content;
+  private final String lang;
+  private final String fieldName;
+  private final boolean stored;
+  private final boolean basedOnDates;
+  private final Date startDate;
+  private final Date endDate;
 
   public FieldDescription(String fieldName, String content, String lang) {
     this.content = content;
@@ -110,15 +120,4 @@ public class FieldDescription implements Serializable {
   public Date getEndDate() {
     return endDate;
   }
-
-  /**
-   * All the attributes are private and final.
-   */
-  private final String content;
-  private final String lang;
-  private final String fieldName;
-  private final boolean stored;
-  private final boolean basedOnDates;
-  private final Date startDate;
-  private final Date endDate;
 }

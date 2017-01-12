@@ -614,11 +614,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return form.getRecordTemplate().getFieldTemplate(fieldName);
   }
 
-  private String getFieldLabel(String formName, String fieldName)
-      throws PublicationTemplateException, FormException {
-    return getFieldTemplate(formName, fieldName).getLabel(getLanguage());
-  }
-
   private String getFieldValue(String formName, String fieldName, String fieldValue)
       throws PublicationTemplateException, FormException {
     FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);

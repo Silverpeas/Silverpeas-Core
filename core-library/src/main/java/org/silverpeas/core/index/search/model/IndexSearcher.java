@@ -575,12 +575,15 @@ public class IndexSearcher {
       return null;
     }
 
-    if (!StringUtil.isDefined(beginDate)) {
-      beginDate = IndexEntry.STARTDATE_DEFAULT;
+    String start = beginDate;
+    if (!StringUtil.isDefined(start)) {
+      start = IndexEntry.STARTDATE_DEFAULT;
     }
-    if (!StringUtil.isDefined(endDate)) {
-      endDate = IndexEntry.ENDDATE_DEFAULT;
+
+    String end = endDate;
+    if (!StringUtil.isDefined(end)) {
+      end = IndexEntry.ENDDATE_DEFAULT;
     }
-    return new TermRangeQuery(fieldName, beginDate, endDate, true, true);
+    return new TermRangeQuery(fieldName, start, end, true, true);
   }
 }
