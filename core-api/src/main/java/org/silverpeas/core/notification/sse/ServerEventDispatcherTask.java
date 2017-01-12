@@ -105,13 +105,11 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param sessionId an identifier od a session.
    */
   public static void unregisterBySessionId(String sessionId) {
-    final List<SilverpeasAsyncContext> contextsToRemove = new ArrayList<>();
+    List<SilverpeasAsyncContext> contextsToRemove;
     synchronized (contexts) {
-      contexts.forEach(context -> {
-        if (sessionId.equals(context.getSessionId())) {
-          contextsToRemove.add(context);
-        }
-      });
+      contextsToRemove = contexts.stream()
+          .filter(c -> sessionId.equals(c.getSessionId()))
+          .collect(Collectors.toList());
     }
     contextsToRemove.forEach(ServerEventDispatcherTask::unregisterAsyncContext);
   }
@@ -199,7 +197,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       synchronized (contexts) {
         safeContexts = contexts.stream().collect(Collectors.toList());
       }
-      safeContexts.parallelStream().forEach(asyncContext -> {
+      safeContexts.forEach(asyncContext -> {
         try {
           HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
           HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
