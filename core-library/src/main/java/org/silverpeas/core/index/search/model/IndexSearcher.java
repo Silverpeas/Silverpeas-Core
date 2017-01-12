@@ -335,11 +335,19 @@ public class IndexSearcher {
 
       List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
       for (FieldDescription fieldQuery : fieldQueries) {
-        Query fieldI18NQuery =
-            getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages, analyzer);
-        booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
+        if (fieldQuery.isBasedOnDate()) {
+          TermRangeQuery rangeQuery = getTermRangeQuery(fieldQuery.getFieldName(),
+              DateUtil.date2SQLDate(fieldQuery.getStartDate()),
+              DateUtil.date2SQLDate(fieldQuery.getEndDate()));
+          if (rangeQuery != null) {
+            booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
+          }
+        } else {
+          Query fieldI18NQuery =
+              getQuery(fieldQuery.getFieldName(), fieldQuery.getContent(), languages, analyzer);
+          booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
+        }
       }
-
 
       return booleanQuery;
     } catch (ParseException e) {
@@ -537,32 +545,13 @@ public class IndexSearcher {
   protected TermRangeQuery getRangeQueryOnCreationDate(QueryDescription query) {
     String beginDate = query.getRequestedCreatedAfter();
     String endDate = query.getRequestedCreatedBefore();
-    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
-      return null;
-    }
-    if (!StringUtil.isDefined(beginDate)) {
-      beginDate = IndexEntry.STARTDATE_DEFAULT;
-    }
-    if (!StringUtil.isDefined(endDate)) {
-      endDate = IndexEntry.ENDDATE_DEFAULT;
-    }
-    return new TermRangeQuery(IndexManager.CREATIONDATE, beginDate, endDate, true, true);
+    return getTermRangeQuery(IndexManager.CREATIONDATE, beginDate, endDate);
   }
 
   protected TermRangeQuery getRangeQueryOnLastUpdateDate(QueryDescription query) {
     String beginDate = query.getRequestedUpdatedAfter();
     String endDate = query.getRequestedUpdatedBefore();
-    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
-      return null;
-    }
-
-    if (!StringUtil.isDefined(beginDate)) {
-      beginDate = IndexEntry.STARTDATE_DEFAULT;
-    }
-    if (!StringUtil.isDefined(endDate)) {
-      endDate = IndexEntry.ENDDATE_DEFAULT;
-    }
-    return new TermRangeQuery(IndexManager.LASTUPDATEDATE, beginDate, endDate, true, true);
+    return getTermRangeQuery(IndexManager.LASTUPDATEDATE, beginDate, endDate);
   }
 
   protected TermQuery getTermQueryOnAuthor(QueryDescription query) {
@@ -579,5 +568,22 @@ public class IndexSearcher {
     }
     Term term = new Term(IndexManager.PATH, query.getRequestedFolder());
     return new PrefixQuery(term);
+  }
+
+  private TermRangeQuery getTermRangeQuery(String fieldName, String beginDate, String endDate) {
+    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
+      return null;
+    }
+
+    String start = beginDate;
+    if (!StringUtil.isDefined(start)) {
+      start = IndexEntry.STARTDATE_DEFAULT;
+    }
+
+    String end = endDate;
+    if (!StringUtil.isDefined(end)) {
+      end = IndexEntry.ENDDATE_DEFAULT;
+    }
+    return new TermRangeQuery(fieldName, start, end, true, true);
   }
 }

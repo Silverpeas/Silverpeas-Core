@@ -118,20 +118,6 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
     }
   }
 
-  /**
-   * @deprecated use addField(String fieldName, String value) instead
-   */
-  public void addXMLField(String fieldName, String value) {
-    addXMLField(fieldName, value, null);
-  }
-
-  /**
-   * @deprecated use addField(String fieldName, String value, String language) instead
-   */
-  public void addXMLField(String fieldName, String value, String language) {
-    getFields().add(new FieldDescription(fieldName, value, language, false));
-  }
-
   public void addField(String fieldName, String value) {
     addField(fieldName, value, null, false);
   }
@@ -169,13 +155,6 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
    */
   public List<FileDescription> getLinkedFileContentList() {
     return getLinkedFileList();
-  }
-
-  /**
-   * @deprecated use getFields() instead
-   */
-  public List<FieldDescription> getXmlFields() {
-    return getFields();
   }
 
   private List<TextDescription> getTextList() {

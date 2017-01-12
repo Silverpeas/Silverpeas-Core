@@ -24,11 +24,10 @@
 
 package org.silverpeas.core.index.indexing.model;
 
+import org.silverpeas.core.i18n.I18NHelper;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.silverpeas.core.index.indexing.DateFormatter;
-import org.silverpeas.core.i18n.I18NHelper;
 
 /**
  * A FieldDescription pack all the needed information to parse and index a generic field (xml field,
@@ -44,11 +43,25 @@ public class FieldDescription implements Serializable {
 
   private static final long serialVersionUID = -475049855423827178L;
 
+  /**
+   * All the attributes are private and final.
+   */
+  private final String content;
+  private final String lang;
+  private final String fieldName;
+  private final boolean stored;
+  private final boolean basedOnDates;
+  private final Date startDate;
+  private final Date endDate;
+
   public FieldDescription(String fieldName, String content, String lang) {
     this.content = content;
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
+    this.basedOnDates = false;
+    this.startDate = null;
+    this.endDate = null;
   }
 
   public FieldDescription(String fieldName, String content, String lang, boolean stored) {
@@ -56,24 +69,23 @@ public class FieldDescription implements Serializable {
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = stored;
+    this.basedOnDates = false;
+    this.startDate = null;
+    this.endDate = null;
   }
 
   public FieldDescription(String fieldName, Date begin, Date end, String lang) {
-    String content = "";
-    if (begin != null && end != null)
-      content = "[" + DateFormatter.date2IndexFormat(begin) + " TO "
-          + DateFormatter.date2IndexFormat(end) + "]";
-    else if (begin != null && end == null)
-      content = "[" + DateFormatter.date2IndexFormat(begin) + " TO "
-          + DateFormatter.nullEndDate + "]";
-    else if (begin == null && end != null)
-      content = "[" + DateFormatter.nullBeginDate + " TO "
-          + DateFormatter.date2IndexFormat(end) + "]";
-
-    this.content = content;
+    this.content = "";
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
+    this.basedOnDates = true;
+    this.startDate = begin;
+    this.endDate = end;
+  }
+
+  public boolean isBasedOnDate() {
+    return basedOnDates;
   }
 
   /**
@@ -101,11 +113,11 @@ public class FieldDescription implements Serializable {
     return stored;
   }
 
-  /**
-   * All the attributes are private and final.
-   */
-  private final String content;
-  private final String lang;
-  private final String fieldName;
-  private final boolean stored;
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public Date getEndDate() {
+    return endDate;
+  }
 }

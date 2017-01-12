@@ -166,8 +166,16 @@ public class GenericRecordSet implements RecordSet, Serializable {
                   fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
                 String key = formName + "$$" + fieldName;
-                fieldDisplayer.index(indexEntry, key, fieldName, field, language,
-                    fieldTemplate.isUsedAsFacet());
+                if (fieldTemplate.isRepeatable()) {
+                  for (int i=0; i<fieldTemplate.getMaximumNumberOfOccurrences(); i++) {
+                    field.setStringValue(data.getField(fieldName, i).getStringValue());
+                    fieldDisplayer.index(indexEntry, key, fieldName, field, language,
+                        fieldTemplate.isUsedAsFacet());
+                  }
+                } else {
+                  fieldDisplayer.index(indexEntry, key, fieldName, field, language,
+                      fieldTemplate.isUsedAsFacet());
+                }
               }
             } catch (Exception e) {
               SilverTrace.error("form", "AbstractForm.update",
