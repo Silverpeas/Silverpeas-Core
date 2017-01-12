@@ -4,6 +4,7 @@ import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Map;
 
 /**
  * @author Nicolas Eysseric
@@ -34,6 +35,9 @@ public class ResultEntity {
   @XmlElement
   private String thumbnailURL;
 
+  @XmlElement
+  private Map<String, String> fieldsForFacets;
+
   private ResultEntity(SearchResult gsr) {
     this.name = gsr.getName();
     this.description = gsr.getDescription();
@@ -49,6 +53,8 @@ public class ResultEntity {
     if (StringUtil.isDefined(gsr.getThumbnailURL())) {
       this.thumbnailURL = gsr.getThumbnailURL().replaceFirst("/FileServer/", "/OnlineFileServer/");
     }
+
+    this.fieldsForFacets = gsr.getFormFieldsForFacets();
   }
 
   public static ResultEntity fromSearchResult(SearchResult gsr) {
@@ -109,6 +115,10 @@ public class ResultEntity {
 
   public void setThumbnailURL(final String thumbnailURL) {
     this.thumbnailURL = thumbnailURL;
+  }
+
+  public Map<String, String> getFieldsForFacets() {
+    return fieldsForFacets;
   }
 
   @Override

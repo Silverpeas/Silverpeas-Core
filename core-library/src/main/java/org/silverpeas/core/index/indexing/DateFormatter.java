@@ -29,9 +29,9 @@ import java.util.Date;
 
 public class DateFormatter {
 
-  private static final SimpleDateFormat indexFormatter = new SimpleDateFormat("yyyyMMdd");
-  public final static String nullBeginDate = "00000000";
-  public final static String nullEndDate = "99999999";
+  private static final SimpleDateFormat indexFormatter = new SimpleDateFormat("yyyy/MM/dd");
+  public final static String nullBeginDate = "0000/00/00";
+  public final static String nullEndDate = "9999/99/99";
 
   public synchronized static String date2IndexFormat(Date date) {
     return indexFormatter.format(date);

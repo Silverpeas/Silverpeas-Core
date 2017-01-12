@@ -49,6 +49,9 @@ public class FieldDescription implements Serializable {
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
+    this.basedOnDates = false;
+    this.startDate = null;
+    this.endDate = null;
   }
 
   public FieldDescription(String fieldName, String content, String lang, boolean stored) {
@@ -56,24 +59,23 @@ public class FieldDescription implements Serializable {
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = stored;
+    this.basedOnDates = false;
+    this.startDate = null;
+    this.endDate = null;
   }
 
   public FieldDescription(String fieldName, Date begin, Date end, String lang) {
-    String content = "";
-    if (begin != null && end != null)
-      content = "[" + DateFormatter.date2IndexFormat(begin) + " TO "
-          + DateFormatter.date2IndexFormat(end) + "]";
-    else if (begin != null && end == null)
-      content = "[" + DateFormatter.date2IndexFormat(begin) + " TO "
-          + DateFormatter.nullEndDate + "]";
-    else if (begin == null && end != null)
-      content = "[" + DateFormatter.nullBeginDate + " TO "
-          + DateFormatter.date2IndexFormat(end) + "]";
-
-    this.content = content;
+    this.content = "";
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
+    this.basedOnDates = true;
+    this.startDate = begin;
+    this.endDate = end;
+  }
+
+  public boolean isBasedOnDate() {
+    return basedOnDates;
   }
 
   /**
@@ -101,6 +103,14 @@ public class FieldDescription implements Serializable {
     return stored;
   }
 
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public Date getEndDate() {
+    return endDate;
+  }
+
   /**
    * All the attributes are private and final.
    */
@@ -108,4 +118,7 @@ public class FieldDescription implements Serializable {
   private final String lang;
   private final String fieldName;
   private final boolean stored;
+  private final boolean basedOnDates;
+  private final Date startDate;
+  private final Date endDate;
 }

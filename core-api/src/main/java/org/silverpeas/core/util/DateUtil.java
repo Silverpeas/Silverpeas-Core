@@ -34,6 +34,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +69,9 @@ public class DateUtil {
   public static final FastDateFormat ICALDATE_FORMATTER;
   public static final FastDateFormat ICALUTCDATE_FORMATTER;
   public static final FastDateFormat ISO8601_FORMATTER;
+  private static final DateTimeFormatter CUSTOM_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
   /**
    * Format and parse dates.
    */
@@ -346,6 +350,10 @@ public class DateUtil {
     synchronized (DATE_PARSER) {
       return DATE_PARSER.parse(date);
     }
+  }
+
+  public static LocalDate toLocalDate(String date) {
+    return LocalDate.parse(date, CUSTOM_FORMATTER);
   }
 
   /**

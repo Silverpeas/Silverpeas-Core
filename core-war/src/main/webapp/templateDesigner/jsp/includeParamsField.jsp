@@ -15,7 +15,7 @@ String usedAsFacet = "";
 boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
-boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
+boolean showFacetParam = "date".equals(displayer) || "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
 boolean showMultiValuesParam = "text".equals(displayer) || "textarea".equals(displayer) || "url".equals(displayer) || "file".equals(displayer) || "image".equals(displayer) || "video".equals(displayer);
 boolean shownInNewWindow = "pdc".equals(displayer);
 String checked = "checked=\"checked\"";
