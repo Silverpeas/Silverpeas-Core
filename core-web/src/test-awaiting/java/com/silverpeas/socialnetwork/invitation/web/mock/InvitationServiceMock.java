@@ -25,7 +25,7 @@ package org.silverpeas.core.socialnetwork.invitation.web.mock;
 
 import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
+import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import java.util.List;
 import javax.inject.Named;
 import static org.mockito.Mockito.mock;

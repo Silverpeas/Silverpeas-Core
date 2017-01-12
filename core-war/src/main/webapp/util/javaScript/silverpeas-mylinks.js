@@ -117,7 +117,7 @@
   function __getFromBundleKey(key) {
     if (webContext) {
       if (!__i18nInitialized) {
-        $.i18n.properties({
+        window.i18n.properties({
           name: 'myLinksBundle',
           path: webContext + '/services/bundles/org/silverpeas/mylinks/multilang/',
           language: getUserLanguage(),

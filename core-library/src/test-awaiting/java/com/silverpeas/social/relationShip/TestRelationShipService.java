@@ -25,8 +25,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShip;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 
 import org.junit.Test;
 

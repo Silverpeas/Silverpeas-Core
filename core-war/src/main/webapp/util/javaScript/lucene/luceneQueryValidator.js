@@ -26,7 +26,7 @@
 // Makes wildcard queries case-insensitive if true.
 // Refer to http://www.mail-archive.com/lucene-user@jakarta.apache.org/msg00646.html
 
-$.i18n.properties({
+window.i18n.properties({
   name: 'generalMultilang',
   path: webContext + '/services/bundles/org/silverpeas/multilang/',
   language: getUserLanguage(),

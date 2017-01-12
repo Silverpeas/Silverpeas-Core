@@ -24,19 +24,22 @@
 
 package org.silverpeas.core.socialnetwork.invitation;
 
-import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipDao;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.socialnetwork.relationship.RelationShip;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipDao;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipEventNotifier;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * @author Bensalem Nabil
@@ -44,14 +47,16 @@ import javax.inject.Singleton;
 @Singleton
 public class InvitationService {
 
-  public static InvitationService get() {
-    return ServiceProvider.getService(InvitationService.class);
-  }
-
   @Inject
   private InvitationDao invitationDao;
   @Inject
   private RelationShipDao relationShipDao;
+  @Inject
+  private RelationShipEventNotifier relationShipEventNotifier;
+
+  public static InvitationService get() {
+    return ServiceProvider.getService(InvitationService.class);
+  }
 
   /**
    * Default Constructor
@@ -65,7 +70,7 @@ public class InvitationService {
    * @return the following integer value
    * <ul>
    * <li>-1 if the invitation already exists</li>
-   * <li>-2 if the relationShip already exists</li>
+   * <li>-2 if the relationship already exists</li>
    * <li>the id of invitation if the adding has been done successfully</li>
    * </ul>
    */
@@ -87,8 +92,7 @@ public class InvitationService {
         }
       }
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation", "InvitationService.invite", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -105,8 +109,7 @@ public class InvitationService {
       connection = getConnection();
       invitationDao.deleteInvitation(connection, id);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.ignoreInvitation", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -125,19 +128,21 @@ public class InvitationService {
       connection = getConnection();
       connection.setAutoCommit(false);
       Invitation invitation = invitationDao.getInvitation(connection, idInvitation);
+      RelationShip ship1 = null;
+      RelationShip ship2 = null;
       if (invitation == null) {
         resultAccepteInvitation = -1;
       } else if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.
           getReceiverId())) {
         resultAccepteInvitation = -2;
       } else {
-        RelationShip ship1 = new RelationShip();
+        ship1 = new RelationShip();
         ship1.setUser1Id(invitation.getSenderId());
         ship1.setUser2Id(invitation.getReceiverId());
         ship1.setAcceptanceDate(new java.sql.Timestamp(new Date().getTime()));
         ship1.setInviterId(invitation.getSenderId());
 
-        RelationShip ship2 = new RelationShip();
+        ship2 = new RelationShip();
         ship2.setUser1Id(invitation.getReceiverId());
         ship2.setUser2Id(invitation.getSenderId());
         ship2.setAcceptanceDate(new java.sql.Timestamp(new Date().getTime()));
@@ -148,10 +153,15 @@ public class InvitationService {
         relationShipDao.createRelationShip(connection, ship2);
       }
       connection.commit();
+
+      if (ship1 != null && ship2 != null) {
+        // notify on relationship creation
+        relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship1);
+        relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship2);
+      }
     } catch (Exception ex) {
       resultAccepteInvitation = 0;
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.accepteInvitation", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
@@ -172,9 +182,7 @@ public class InvitationService {
       connection = getConnection();
       invitations = invitationDao.getAllMyInvitationsSent(connection, userId);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.ignoreInvitation", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -194,9 +202,7 @@ public class InvitationService {
       connection = getConnection();
       invitations = invitationDao.getAllMyInvitationsReceive(connection, myId);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.ignoreInvitation", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -215,8 +221,7 @@ public class InvitationService {
       connection = getConnection();
       return invitationDao.getInvitation(connection, id);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.ignoreInvitation", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -236,8 +241,7 @@ public class InvitationService {
       connection = getConnection();
       return invitationDao.getInvitation(connection, senderId, receiverId);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.ignoreInvitation", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -266,8 +270,7 @@ public class InvitationService {
       connection = getConnection();
       return relationShipDao.getRelationShip(connection, relationShipId);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
-          "InvitationService.getRelationShip", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }

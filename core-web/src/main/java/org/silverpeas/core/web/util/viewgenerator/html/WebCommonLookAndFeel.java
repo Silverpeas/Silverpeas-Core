@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.look.SilverpeasLook;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.look.SilverpeasLook;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -42,7 +42,7 @@ import javax.servlet.http.HttpSession;
 import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
-public class WebCommonLookAndFeel {
+class WebCommonLookAndFeel {
 
   private static final String SILVERPEAS_JS = "silverpeas.js";
   private static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
@@ -57,7 +57,7 @@ public class WebCommonLookAndFeel {
     return instance;
   }
 
-  public String getCommonHeader(HttpServletRequest request) {
+  String getCommonHeader(HttpServletRequest request) {
     HttpSession session = request.getSession();
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -84,19 +84,16 @@ public class WebCommonLookAndFeel {
       componentId = gef.getComponentIdOfCurrentRequest();
     }
 
-    return getCommonHeader(controller, spaceId, componentId);
+    return getCommonHeader(request, controller, spaceId, componentId);
   }
 
   private boolean isDefined(String[] context) {
     return StringUtil.isDefined(StringUtil.join(context));
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getCommonHeader(MainSessionController controller, String spaceId, String componentId) {
+  @SuppressWarnings("StringBufferReplaceableByString")
+  private String getCommonHeader(HttpServletRequest request, MainSessionController controller,
+      String spaceId, String componentId) {
 
     String language = controller.getFavoriteLanguage();
     String userLookName = controller.getFavoriteLook();
@@ -109,6 +106,7 @@ public class WebCommonLookAndFeel {
       }
     }
 
+    String silverpeasUrl = URLUtil.getFullApplicationURL(request);
     String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String charset =
         ResourceLocator.getGeneralSettingBundle().getString("charset", CharEncoding.UTF_8);
@@ -185,9 +183,17 @@ public class WebCommonLookAndFeel {
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-polyfills.js"));
 
     // append javascript
-    code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append
-        ("';").append(STR_NEW_LINE).append(addGlobalJSVariable(
-        language)).append("</script>\n");
+    // append javascript
+    code.append("<script type=\"text/javascript\">var webContext='")
+        .append(contextPath)
+        .append("';")
+        .append(STR_NEW_LINE)
+        .append("var silverpeasUrl = '")
+        .append(silverpeasUrl)
+        .append("';")
+        .append(STR_NEW_LINE)
+        .append(addGlobalJSVariable(language))
+        .append("</script>\n");
 
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
         GraphicElementFactory.MOMENT_JS));
@@ -195,13 +201,14 @@ public class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERY_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERYJSON_JS));
+        GraphicElementFactory.JQUERY_MIGRATION));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERYJSON_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERYUI_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERY_i18N_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
+        GraphicElementFactory.I18N_JS));
+
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
 
@@ -266,17 +273,19 @@ public class WebCommonLookAndFeel {
     return componentName;
   }
 
+  @SuppressWarnings("StringBufferReplaceableByString")
   private String addGlobalJSVariable(String language) {
     StringBuilder globalJSVariableBuilder = new StringBuilder();
     globalJSVariableBuilder.append("var userLanguage = '").append(language).append("';")
         .append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
         .append(" }").append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("function getString(key) { return jQuery.i18n.prop(key); }")
+    globalJSVariableBuilder.append("function getString(key) { return window.i18n.prop(key); }")
         .append(STR_NEW_LINE);
     return globalJSVariableBuilder.toString();
   }
 
+  @SuppressWarnings("StringBufferReplaceableByString")
   private String getYahooElements() {
     String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     StringBuilder code = new StringBuilder();

@@ -24,8 +24,8 @@
 package com.silverpeas.profile.web.mock;
 
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShip;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;

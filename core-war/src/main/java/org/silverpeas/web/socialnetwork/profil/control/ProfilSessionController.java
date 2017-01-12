@@ -25,7 +25,7 @@
 package org.silverpeas.web.socialnetwork.profil.control;
 
 import org.silverpeas.core.socialnetwork.SocialNetworkException;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

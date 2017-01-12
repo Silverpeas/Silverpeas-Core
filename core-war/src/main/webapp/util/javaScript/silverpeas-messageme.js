@@ -42,7 +42,7 @@
 
     if (!$.messageMe.initialized) {
       $.messageMe.initialized = true;
-      $.i18n.properties({
+      window.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/org/silverpeas/social/multilang/',
         language: '$$', /* by default the language of the user in the current session */
@@ -86,7 +86,7 @@
       $('<div>', {
         'id': 'notificationDialog'
       }).append($('<form>').append($('<table>').append($('<tr>').
-              append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.subject') + '&nbsp;:')).
+              append($('<td>').addClass('txtlibform').append(window.i18n.prop('GML.notification.subject') + '&nbsp;:')).
               append($('<td>').append($('<input>', {
                 'type': 'text',
                 'name': 'textSubject',
@@ -99,7 +99,7 @@
                 'height': '5',
                 'alt': 'mandatoryField'
               })))).append($('<tr>').
-              append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
+              append($('<td>').addClass('txtlibform').append(window.i18n.prop('GML.notification.message') + '&nbsp;:')).
               append($('<td>').append($('<textarea>', {
                 'name': 'textMessage',
                 'id': 'notification-message',
@@ -113,7 +113,7 @@
                 'width': '5',
                 'height': '5',
                 'alt': 'mandatoryField'
-              })).append('&nbsp;: ' + $.i18n.prop('GML.requiredField')))))
+              })).append('&nbsp;: ' + window.i18n.prop('GML.requiredField')))))
       ).appendTo($(document.body));
 
       $("#notificationDialog").dialog({
@@ -124,12 +124,12 @@
         width: 550,
         buttons: [
           {
-            text: $.i18n.prop('GML.ok'),
+            text: window.i18n.prop('GML.ok'),
             click: function() {
               var subject = $("#notification-subject").val();
               var message = $("#notification-message").val();
               if ($.trim(subject).length === 0)
-                alert($.i18n.prop('GML.thefield') + ' ' + $.i18n.prop('GML.notification.subject') + ' ' + $.i18n.prop('GML.isRequired'));
+                alert(window.i18n.prop('GML.thefield') + ' ' + window.i18n.prop('GML.notification.subject') + ' ' + window.i18n.prop('GML.isRequired'));
               else
                 $.ajax({
                   url: webContext + '/DirectoryJSON',
@@ -152,7 +152,7 @@
             }
           },
           {
-            text: $.i18n.prop('GML.cancel'),
+            text: window.i18n.prop('GML.cancel'),
             click: function() {
               closeMessagingPopup();
             }

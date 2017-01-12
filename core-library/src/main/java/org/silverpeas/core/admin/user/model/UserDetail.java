@@ -36,7 +36,7 @@ import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.StatusService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
@@ -674,7 +674,7 @@ public class UserDetail implements User {
   }
 
   @Override
-  public final UserPreferences getUserPreferences() {
+  public UserPreferences getUserPreferences() {
     return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getId());
   }
 

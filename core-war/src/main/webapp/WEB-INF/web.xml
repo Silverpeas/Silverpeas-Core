@@ -645,6 +645,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.core.webapi.notification.sse.CommonServerSentEventServlet</servlet-class>
     <async-supported>true</async-supported>
   </servlet>
+  <servlet>
+    <servlet-name>ChatUserSelection</servlet-name>
+    <servlet-class>org.silverpeas.web.chat.ChatUserSelectionServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
@@ -1048,6 +1052,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>CommonServerSentEvents</servlet-name>
     <url-pattern>/sse/common</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ChatUserSelection</servlet-name>
+    <url-pattern>/selectChatUser</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

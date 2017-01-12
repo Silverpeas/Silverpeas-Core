@@ -23,21 +23,22 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShip;
-import org.silverpeas.core.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.chat.ChatUser;
+import org.silverpeas.core.socialnetwork.relationship.RelationShip;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -56,8 +57,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_BASE_URI;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.USERS_BASE_URI;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -197,7 +198,7 @@ public class UserProfileResource extends RESTWebService {
     if (extended) {
       return asWebEntity(getUserFullMatching(userId), uri);
     } else {
-      return asWebEntity(getUserDetailMatching(userId), uri);
+      return asWebEntity(ChatUser.fromUser(getUserDetailMatching(userId)), uri);
     }
   }
 
@@ -372,6 +373,10 @@ public class UserProfileResource extends RESTWebService {
 
   private UserProfileExtendedEntity asWebEntity(final UserFull user, final URI userUri) {
     return UserProfileExtendedEntity.fromUser(user).withAsUri(userUri);
+  }
+
+  private UserProfileEntity asWebEntity(final ChatUser user, final URI userUri) {
+    return ChatUserProfileEntity.fromUser(user).withAsUri(userUri);
   }
 
   private UserDetail getUserDetailById(String userId) {

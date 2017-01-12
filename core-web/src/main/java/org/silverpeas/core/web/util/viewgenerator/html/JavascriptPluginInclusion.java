@@ -50,7 +50,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScrip
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
  * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
- * functionalities of the underlying plugin.
+ * functionality of the underlying plugin.
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
@@ -490,7 +490,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYUI_JS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYJSON_JS));
-    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_i18N_JS));
+    xhtml.addElement(script(jqueryPath + GraphicElementFactory.I18N_JS));
     return xhtml;
   }
 
@@ -558,6 +558,27 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent(
         JavascriptBundleProducer.fromCoreTemplate("chart", SILVERPEAS_CHART_I18N_ST, language)));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_CHART_JS));
+    return xhtml;
+  }
+
+  /**
+   * Includes all the scripts and stylesheets that made up the Silverpeas Chat client.
+   * @param xhtml the Web document as container of HTML elements.
+   * @return the container of HTML elements enriched with the scripts and stylesheets of the chat
+   * client.
+   */
+  public static ElementContainer includeChat(final ElementContainer xhtml) {
+    final String chatDir = URLUtil.getApplicationURL() + "/chat/";
+    final String jsxcDir = chatDir + "jsxc/";
+    xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
+    xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
+    xhtml.addElement(script(jsxcDir + "lib/jsxc.dep.min.js"));
+    xhtml.addElement(script(chatDir + "lib/strophe.chatstates.js"));
+    xhtml.addElement(script(jsxcDir + "jsxc.min.js"));
+    xhtml.addElement(script(chatDir + "js/silverchat.min.js"));
+    xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
+    xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
+    xhtml.addElement(link(chatDir + "css/silverchat.css"));
     return xhtml;
   }
 

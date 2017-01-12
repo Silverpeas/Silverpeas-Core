@@ -111,6 +111,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   private boolean connected = false;
   @XmlElement(defaultValue = "false")
   private boolean anonymous = false;
+  @XmlElement
+  private String apiToken;
 
   protected UserProfileEntity(UserDetail user) {
     this.user = user;
@@ -131,6 +133,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     this.webPage = getUserProfileWebPageURI();
     this.tchatPage = getTchatWebPageURI();
     this.anonymous = user.isAnonymous();
+    this.apiToken = user.getToken();
   }
 
   @Override

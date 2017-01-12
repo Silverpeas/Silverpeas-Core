@@ -74,7 +74,7 @@
 
     if (!$.calendar.initialized) {
       $.calendar.initialized = true;
-      $.i18n.properties({
+      window.i18n.properties({
         name: 'generalMultilang',
         path: webContext + '/services/bundles/org/silverpeas/multilang/',
         language: '$$', /* by default the language of the user in the current session */
@@ -117,22 +117,22 @@
       var options = {
         header: false,
         contentHeight:550,
-        monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
-          $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
-          $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
-        dayNames: [$.i18n.prop("GML.jour1"), $.i18n.prop("GML.jour2"), $.i18n.prop("GML.jour3"), $.i18n.prop("GML.jour4"),
-          $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
-        dayNamesShort: [$.i18n.prop("GML.shortJour1"), $.i18n.prop("GML.shortJour2"), $.i18n.prop("GML.shortJour3"),
-          $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
+        monthNames: [window.i18n.prop("GML.mois0"), window.i18n.prop("GML.mois1"), window.i18n.prop("GML.mois2"), window.i18n.prop("GML.mois3"),
+          window.i18n.prop("GML.mois4"), window.i18n.prop("GML.mois5"), window.i18n.prop("GML.mois6"), window.i18n.prop("GML.mois7"),
+          window.i18n.prop("GML.mois8"), window.i18n.prop("GML.mois9"), window.i18n.prop("GML.mois10"), window.i18n.prop("GML.mois11")],
+        dayNames: [window.i18n.prop("GML.jour1"), window.i18n.prop("GML.jour2"), window.i18n.prop("GML.jour3"), window.i18n.prop("GML.jour4"),
+          window.i18n.prop("GML.jour5"), window.i18n.prop("GML.jour6"), window.i18n.prop("GML.jour7")],
+        dayNamesShort: [window.i18n.prop("GML.shortJour1"), window.i18n.prop("GML.shortJour2"), window.i18n.prop("GML.shortJour3"),
+          window.i18n.prop("GML.shortJour4"), window.i18n.prop("GML.shortJour5"), window.i18n.prop("GML.shortJour6"), window.i18n.prop("GML.shortJour7")],
         buttonText: {
           prev: '&nbsp;&#9668;&nbsp;', // left triangle
           next: '&nbsp;&#9658;&nbsp;', // right triangle
           prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
           nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-          today: $.i18n.prop("GML.Today"),
-          month: $.i18n.prop("GML.month"),
-          week: $.i18n.prop("GML.week"),
-          day: $.i18n.prop("GML.day")
+          today: window.i18n.prop("GML.Today"),
+          month: window.i18n.prop("GML.month"),
+          week: window.i18n.prop("GML.week"),
+          day: window.i18n.prop("GML.day")
         },
         minTime: "08:00:00",
         allDayText: '',

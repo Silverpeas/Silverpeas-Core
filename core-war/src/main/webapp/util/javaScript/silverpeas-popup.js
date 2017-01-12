@@ -35,7 +35,7 @@
     initialized: false,
     doInitialize: function() {
       if (!$.popup.initialized) {
-        $.i18n.properties({
+        window.i18n.properties({
           name: 'generalMultilang',
           path: webContext + '/services/bundles/org/silverpeas/multilang/',
           language: '$$', /* by default the language of the user in the current session */
@@ -178,12 +178,12 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = $.i18n.prop('GML.information.dialog.title');
+        settings.title = window.i18n.prop('GML.information.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo: $.i18n.prop('GML.ok'),
+        buttonTextNo: window.i18n.prop('GML.ok'),
         isMaxWidth: true
       }));
 
@@ -203,12 +203,12 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = $.i18n.prop('GML.error.dialog.title');
+        settings.title = window.i18n.prop('GML.error.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo: $.i18n.prop('GML.ok'),
+        buttonTextNo: window.i18n.prop('GML.ok'),
         isMaxWidth: true
       }));
 
@@ -228,12 +228,12 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = $.i18n.prop('GML.help.dialog.title');
+        settings.title = window.i18n.prop('GML.help.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo: $.i18n.prop('GML.ok'),
+        buttonTextNo: window.i18n.prop('GML.ok'),
         isMaxWidth: true,
         dialogClass: 'help-modal-message'
       }));
@@ -256,8 +256,8 @@
 
       // Internal settings
       settings = $.extend(__buildInternalSettings({
-        buttonTextYes: $.i18n.prop('GML.validate'),
-        buttonTextNo: $.i18n.prop('GML.cancel'),
+        buttonTextYes: window.i18n.prop('GML.validate'),
+        buttonTextNo: window.i18n.prop('GML.cancel'),
         isMaxWidth: true
       }), settings);
 
@@ -278,7 +278,7 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = $.i18n.prop('GML.confirmation.dialog.title');
+        settings.title = window.i18n.prop('GML.confirmation.dialog.title');
       }
       var $title = $('<div>').attr('style', 'display: table;');
       var $titleRow = $('<div>').attr('style', 'display: table-row;');
@@ -294,8 +294,8 @@
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextYes: $.i18n.prop('GML.yes'),
-        buttonTextNo: $.i18n.prop('GML.no'),
+        buttonTextYes: window.i18n.prop('GML.yes'),
+        buttonTextNo: window.i18n.prop('GML.no'),
         isMaxWidth: true
       }));
 
@@ -316,10 +316,10 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      settings.title = $.i18n.prop('GML.preview.dialog.title');
+      settings.title = window.i18n.prop('GML.preview.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title =
-                settings.title + " " + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+                settings.title + " " + window.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
@@ -355,10 +355,10 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      settings.title = $.i18n.prop('GML.view.dialog.title');
+      settings.title = window.i18n.prop('GML.view.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title =
-                settings.title + " " + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
+                settings.title + " " + window.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings

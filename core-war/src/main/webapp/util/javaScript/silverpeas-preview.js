@@ -33,7 +33,7 @@
     initialized: false,
     doInitialize: function() {
       if (!$.preview.initialized) {
-        $.i18n.properties({
+        window.i18n.properties({
           name: 'generalMultilang',
           path: webContext + '/services/bundles/org/silverpeas/multilang/',
           language: '$$', /* by default the language of the user in the current session */
@@ -259,7 +259,7 @@
     } else {
       titlePropertyKey = 'GML.preview.help.file.next';
     }
-    $buttonContainer.attr('title', $.i18n.prop(titlePropertyKey));
+    $buttonContainer.attr('title', window.i18n.prop(titlePropertyKey));
 
     // This first call permits to load required images for a button hover event
     __configureVisualButtonAspect(type, true);

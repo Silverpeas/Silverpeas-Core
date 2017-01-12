@@ -42,7 +42,7 @@
 
     if (!$.invitMe.initialized) {
       $.invitMe.initialized = true;
-      $.i18n.properties({
+      window.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/org/silverpeas/social/multilang/',
         language: '$$', /* by default the language of the user in the current session */
@@ -85,7 +85,7 @@
       $('<div>', {
         'id': 'invitationDialog'
       }).append($('<form>').append($('<table>').append($('<tr>').
-              append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
+              append($('<td>').addClass('txtlibform').append(window.i18n.prop('GML.notification.message') + '&nbsp;:')).
               append($('<td>').append($('<textarea>', {
                 'name': 'textMessage',
                 'id': 'invitation-message',
@@ -101,7 +101,7 @@
         width: 550,
         buttons: [
           {
-            text: $.i18n.prop('GML.ok'),
+            text: window.i18n.prop('GML.ok'),
             click: function() {
               var message = $("#invitation-message").val();
               $.ajax({
@@ -130,7 +130,7 @@
             }
           },
           {
-            text: $.i18n.prop('GML.cancel'),
+            text: window.i18n.prop('GML.cancel'),
             click: function() {
               closeInvitationPopup();
             }

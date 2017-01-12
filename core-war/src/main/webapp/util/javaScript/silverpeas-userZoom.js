@@ -128,10 +128,10 @@
   function connectionStatus(user) {
     if (user.connected) {
       var onlineStatus = webContext + '/util/icons/online.gif';
-      var onlineStatusAlt = $.i18n.prop('connected');
+      var onlineStatusAlt = window.i18n.prop('connected');
     } else {
       var onlineStatus = webContext + '/util/icons/offline.gif';
-      var onlineStatusAlt = $.i18n.prop('notConnected');
+      var onlineStatusAlt = window.i18n.prop('notConnected');
     }
     return $('<img>', {
       src: onlineStatus,
@@ -150,16 +150,16 @@
     if (!$.userZoom.currentUser.isInMyContacts(user) && !$.userZoom.currentUser.isInMyInvitations(user))
       interactionBox.append($('<div>').addClass('userzoom-tooltip-interaction-action').append($('<a>', {
         href: '#'
-      }).addClass('userzoom-tooltip-interaction-action-invitation invitation').append($('<span>').append($.i18n.prop('invitation.send'))).invitMe(user)));
+      }).addClass('userzoom-tooltip-interaction-action-invitation invitation').append($('<span>').append(window.i18n.prop('invitation.send'))).invitMe(user)));
     interactionBox.append($('<a>', {
       href: user.webPage
-    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append($.i18n.prop('myProfile.tab.profile')))).
+    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
             append($('<a>', {
               href: '#'
-            }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append($.i18n.prop('ToContact'))).messageMe(user)).
+            }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user)).
             append($('<a>', {
               href: '#'
-            }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append($.i18n.prop('tchat'))).click(function() {
+            }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append(window.i18n.prop('tchat'))).click(function() {
               if (user.connected)
                 tchatWith(user);
             })).
@@ -234,7 +234,7 @@
 
     if (!$.userZoom.initialized) {
       $.userZoom.initialized = true;
-      $.i18n.properties({
+      window.i18n.properties({
         name: 'socialNetworkBundle',
         path: webContext + '/services/bundles/org/silverpeas/social/multilang/',
         language: '$$', /* by default the language of the user in the current session */
