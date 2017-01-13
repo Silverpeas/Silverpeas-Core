@@ -796,10 +796,10 @@
           text: "<fmt:message key="GML.delete"/>",
           click: function() {
             var $this = $(this);
-            $.progressMessage();
             var attachmentId = $this.data("id");
             <c:choose>
               <c:when test="${_isI18nHandled && not isVersionActive}">
+            $.progressMessage();
             var deleteOperations = [];
             $("input[name='languagesToDelete']").filter(':checked').each(function() {
               var me = this;
@@ -836,6 +836,7 @@
               </c:when>
               <c:otherwise>
             _performActionWithPotentialNotification(function(userResponse) {
+              $.progressMessage();
               var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
               $.ajax(userResponse.applyOnAjaxOptions({
                 url: deleteUrl,
