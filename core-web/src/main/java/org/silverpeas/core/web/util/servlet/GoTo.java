@@ -74,7 +74,7 @@ public abstract class GoTo extends HttpServlet {
         if (!res.isCommitted()) {
           // The response was not previously sent
           if (redirect == null || !redirect.startsWith("http")) {
-            redirect = URLUtil.getApplicationURL() + "/autoRedirect.jsp?" + redirect;
+            redirect = URLUtil.getFullApplicationURL(req) + "/autoRedirect.jsp?" + redirect;
           }
           res.sendRedirect(res.encodeRedirectURL(redirect));
         }
