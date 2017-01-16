@@ -24,11 +24,11 @@
 
 package org.silverpeas.web;
 
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
@@ -40,10 +40,12 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory
+    .GE_FACTORY_SESSION_ATT;
 
 /**
  * @author ehugonnet
@@ -138,7 +140,8 @@ public class AutoRedirectServlet extends HttpServlet {
       } else {
         if (isAccessComponentForbidden(componentId, mainController) ||
             isAccessSpaceForbidden(spaceId, mainController)) {
-          response.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+          response.sendRedirect(
+              URLUtil.getFullApplicationURL(request) + "/admin/jsp/accessForbidden.jsp");
         } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
             isAccessAdmin()) {
           out.println("<script>");

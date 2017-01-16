@@ -78,13 +78,11 @@ public class ChatUsersRegistration {
    * into the remote chat server. If a user targeted by a relationship hasn't yet an account in
    * the chat server, then he's registered before creating the relationship in the server.
    *
-   * Only non administrators can be registered into the remote chat server.
-   *
    * @param user the user to register if not yet done.
    * @throws ChatServerException if the registration fails.
    */
   public void registerUser(final User user) throws ChatServerException {
-    if (chatServer.isAvailable() && !chatServer.isUserExisting(user) && !user.isAccessAdmin()) {
+    if (chatServer.isAvailable() && !chatServer.isUserExisting(user)) {
       logger.info("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       try {
