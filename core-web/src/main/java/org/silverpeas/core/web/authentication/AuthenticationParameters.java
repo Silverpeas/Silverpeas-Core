@@ -24,7 +24,9 @@
 
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
@@ -48,6 +50,8 @@ import javax.servlet.http.HttpSession;
  */
 public class AuthenticationParameters {
 
+  private final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
   private final int keyMaxLength = 12;
 
   private String login;
@@ -56,12 +60,16 @@ public class AuthenticationParameters {
   private String storedPassword;
   private String cryptedPassword;
   private String clearPassword;
+  private String domainIdParam;
   private boolean casMode;
   private boolean ssoMode;
   private boolean userByInternalAuthTokenMode;
+  private boolean useNewEncryptionMode;
+  private boolean secured;
 
   private boolean socialNetworkMode;
   private SocialNetworkID networkId;
+  private AuthenticationCredential credential;
 
   public AuthenticationParameters(HttpServletRequest request) {
     SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
@@ -75,8 +83,11 @@ public class AuthenticationParameters {
     checkSocialNetworkMode(session);
 
     String stringKey = convert2Alpha(session.getId());
-    boolean useNewEncryptionMode = StringUtil.isDefined(request
+    useNewEncryptionMode = StringUtil.isDefined(request
         .getParameter("Var2"));
+
+    domainIdParam = request.getParameter("DomainId");
+    secured = request.isSecure();
 
     if (userByInternalAuthToken != null) {
       userByInternalAuthTokenMode = true;
@@ -107,6 +118,66 @@ public class AuthenticationParameters {
     decodePassword(cookieEnabled, stringKey, useNewEncryptionMode);
   }
 
+  public void setCredential(final AuthenticationCredential credential) {
+    this.credential = credential;
+  }
+
+  public AuthenticationCredential getCredential() {
+    return this.credential;
+  }
+
+  public boolean isNewEncryptionMode() {
+    return this.useNewEncryptionMode;
+  }
+
+  public boolean isSecuredAccess() {
+    return this.secured;
+  }
+
+  public String getLogin() {
+    return login;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public String getStoredPassword() {
+    return storedPassword;
+  }
+
+  public String getClearPassword() {
+    return clearPassword;
+  }
+
+  public boolean isCasMode() {
+    return casMode;
+  }
+
+  public boolean isSsoMode() {
+    return ssoMode;
+  }
+
+  public boolean isUserByInternalAuthTokenMode() {
+    return userByInternalAuthTokenMode;
+  }
+
+  public boolean isSocialNetworkMode() {
+    return socialNetworkMode;
+  }
+
+  public String getDomainId() {
+    if (isUserByInternalAuthTokenMode() || isSocialNetworkMode()) {
+      return domainId;
+    } else if (isSsoMode()) {
+      return authenticationSettings.getString("sso.authentication.domainId", "0");
+    } else if (isCasMode()) {
+      return authenticationSettings.getString("cas.authentication.domainId", "0");
+    }
+    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
+    return controller.getDomain(domainIdParam).getId();
+  }
+
   private void checkSocialNetworkMode(HttpSession session) {
     this.socialNetworkMode = false;
     this.networkId = SocialNetworkService.getInstance().getSocialNetworkIDUsedForLogin(session);
@@ -115,7 +186,7 @@ public class AuthenticationParameters {
           SocialNetworkService.getInstance().getStoredAuthorizationToken(session, networkId);
       String profileId =
           SocialNetworkService.getInstance().getSocialNetworkConnector(networkId)
-          .getUserProfileId(authorizationToken);
+              .getUserProfileId(authorizationToken);
       ExternalAccount account =
           SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
@@ -205,45 +276,4 @@ public class AuthenticationParameters {
     }
     return null;
   }
-
-  public String getLogin() {
-    return login;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public String getStoredPassword() {
-    return storedPassword;
-  }
-
-  public String getCryptedPassword() {
-    return cryptedPassword;
-  }
-
-  public String getClearPassword() {
-    return clearPassword;
-  }
-
-  public boolean isCasMode() {
-    return casMode;
-  }
-
-  public boolean isSsoMode() {
-    return ssoMode;
-  }
-
-  public boolean isUserByInternalAuthTokenMode() {
-    return userByInternalAuthTokenMode;
-  }
-
-  public boolean isSocialNetworkMode() {
-    return socialNetworkMode;
-  }
-
-  public String getDomainId() {
-    return domainId;
-  }
-
 }

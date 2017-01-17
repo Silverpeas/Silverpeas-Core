@@ -332,7 +332,7 @@ public class MapUtil {
     return result;
   }
 
-  public static <K, V> boolean equals(Map<? extends K, ? extends V> left,
+  public static <K, V> boolean areEqual(Map<? extends K, ? extends V> left,
       Map<? extends K, ? extends V> right) {
     Map<K, V> onlyOnRight = new HashMap<K, V>(right);
     for (Map.Entry<? extends K, ? extends V> entry : left.entrySet()) {

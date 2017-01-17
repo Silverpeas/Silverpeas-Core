@@ -79,6 +79,10 @@ public class ImageProfil {
     return image.inputStream();
   }
 
+  public boolean exist() {
+    return SilverpeasFileProvider.getFile(getImagePath()).exists();
+  }
+
   private String getImagePath() {
     return FileRepositoryManager.getAvatarPath() + File.separatorChar + photoFileName;
   }

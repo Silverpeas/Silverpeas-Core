@@ -39,6 +39,11 @@ import java.util.Date;
 public interface User extends Serializable, Comparable<User> {
 
   /**
+   * The path of the default avatar to use when a user has not specific avatar representing him.
+   */
+  String DEFAULT_AVATAR_PATH = "/directory/jsp/icons/avatar.png";
+
+  /**
    * Gets the detail about the specified user.
    * @param userId the unique identifier of the user to get.
    * @return the detail about the user with the specified identifier or null if no such user exists.

@@ -92,12 +92,6 @@ public class UserProfileResource extends RESTWebService {
   private RelationShipService relationShipService;
 
   /**
-   * Creates a new instance of UserProfileResource
-   */
-  public UserProfileResource() {
-  }
-
-  /**
    * @return The user entity corresponding to the token specified in the URI.
    */
   @GET
@@ -147,7 +141,7 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("domain") String domain,
       @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
-    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
+    String domainId = Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
@@ -245,7 +239,7 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("name") String name,
       @QueryParam("page") String page,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
-    String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
+    String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     String domainId = null;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -314,9 +308,9 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("page") String page,
       @QueryParam("domain") String domain,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
-    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
+    String domainId = Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain;
     UserDetail theUser = getUserDetailMatching(userId);
-    String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
+    String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     String[] contactIds = getContactIds(theUser.getId());
     ListSlice<UserDetail> contacts;
     if (contactIds.length > 0) {
@@ -365,10 +359,6 @@ public class UserProfileResource extends RESTWebService {
   private UserProfileEntity[] asWebEntity(final List<? extends UserDetail> allUsers,
       final URI baseUri) {
     return UserProfileEntity.fromUsers(allUsers, baseUri);
-  }
-
-  private UserProfileEntity asWebEntity(final UserDetail user, final URI userUri) {
-    return UserProfileEntity.fromUser(user).withAsUri(userUri);
   }
 
   private UserProfileExtendedEntity asWebEntity(final UserFull user, final URI userUri) {
@@ -433,7 +423,7 @@ public class UserProfileResource extends RESTWebService {
    * @return the detail about a user.
    */
   private UserDetail getUserDetailMatching(String identifier) {
-    if (identifier.equals("me")) {
+    if (isCurrentUser(identifier)) {
       return getUserDetail();
     } else {
       return getUserDetailById(identifier);
@@ -449,7 +439,7 @@ public class UserProfileResource extends RESTWebService {
    * @return the detail about a user.
    */
   private UserFull getUserFullMatching(String identifier) {
-    if (identifier.equals("me")) {
+    if (isCurrentUser(identifier)) {
       return getUserFullById(getUserDetail().getId());
     } else {
       return getUserFullById(identifier);
@@ -467,5 +457,9 @@ public class UserProfileResource extends RESTWebService {
       }
     }
     return paginationPage;
+  }
+
+  private boolean isCurrentUser(String identifier) {
+    return "me".equals(identifier);
   }
 }

@@ -81,16 +81,9 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
         // nothing is done here, explicit component implementation must exist.
         break;
       case NODE:
-        Collection<NodeDetail> path = null;
-        if (!"kmax".equals(componentInstanceId)) {
-          path = getNodeService().getPath(new NodePK(resourceId, componentInstanceId));
-        }
-        if (path != null) {
-          for (final NodeDetail descendant : path) {
-            subscribers.addAll(getSubscribeService()
-                .getSubscribers(NodeSubscriptionResource.from(descendant.getNodePK())));
-          }
-        }
+        Collection<NodeDetail> path = !"kmax".equals(componentInstanceId) ?
+            getNodeService().getPath(new NodePK(resourceId, componentInstanceId)) : null;
+        addAllSubscribersForEachNode(path, subscribers);
       case COMPONENT:
         subscribers.addAll(getSubscribeService()
             .getSubscribers(ComponentSubscriptionResource.from(componentInstanceId)));
@@ -98,6 +91,16 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
     }
 
     return new SubscriptionSubscriberList(subscribers);
+  }
+
+  protected void addAllSubscribersForEachNode(Collection<NodeDetail> nodes,
+      Collection<SubscriptionSubscriber> subscribers) {
+    if (nodes != null) {
+      for (final NodeDetail node : nodes) {
+        subscribers.addAll(getSubscribeService()
+            .getSubscribers(NodeSubscriptionResource.from(node.getNodePK())));
+      }
+    }
   }
 
   protected NodeService getNodeService() {

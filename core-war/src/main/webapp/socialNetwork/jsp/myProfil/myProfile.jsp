@@ -42,6 +42,7 @@
 <%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -60,6 +61,7 @@
 
     String m_context = URLUtil.getApplicationURL();
 %>
+<c:set var="defaultAvatar"><%= User.DEFAULT_AVATAR_PATH %></c:set>
 <c:set var="nbContacts" value="${requestScope.ContactsNumber}" />
 <c:set var="contacts" value="${requestScope.Contacts}" />
 <c:set var="currentUser" value="${requestScope.UserFull}" />
@@ -280,7 +282,7 @@ function hideImageFile() {
         <form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
           <div>
             <div class="txtlibform"><fmt:message key="profil.image" /> :</div>
-            <c:if test="${'/directory/jsp/icons/avatar.png' != currentUser.avatar}">
+            <c:if test="${defaultAvatar != currentUser.avatar}">
               <div id="ImageFile">
                 <a href="<c:url value='${currentUser.avatar}' />" target="_blank"><c:out value="${currentUser.avatarFileName}" /></a>
                 <a href="javascript:onclick=hideImageFile();"><img src="<%=resources.getIcon("socialNetwork.smallDelete")%>" border="0"/></a>

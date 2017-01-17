@@ -21,8 +21,6 @@
 package org.silverpeas.core.web.authentication;
 
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.security.authentication.Authentication;
@@ -67,6 +65,16 @@ import java.util.Map;
  */
 public class AuthenticationServlet extends HttpServlet {
 
+  private static final long serialVersionUID = -8695946617361150513L;
+  private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
+  private static final String TECHNICAL_ISSUE = "2";
+  private static final String INCORRECT_LOGIN_PWD = "1";
+  private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
+  private static final String CHAT_ATTRIBUTE = "Silverpeas.Chat";
+  private static final String LOGIN_ERROR_PAGE = "/Login.jsp?ErrorCode=";
+  private static final String COOKIE_PASSWORD = "svpPassword";
+  private static int COOKIE_TIMELIFE = 31536000;
+
   @Inject
   private ChatUsersRegistration chatUsersRegistration;
   @Inject
@@ -77,11 +85,7 @@ public class AuthenticationServlet extends HttpServlet {
   private CredentialEncryption credentialEncryption;
   @Inject
   private MandatoryQuestionChecker mandatoryQuestionChecker;
-  private static final long serialVersionUID = -8695946617361150513L;
-  private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
-  private static final String TECHNICAL_ISSUE = "2";
-  private static final String INCORRECT_LOGIN_PWD = "1";
-  private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
+  private SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
@@ -105,168 +109,189 @@ public class AuthenticationServlet extends HttpServlet {
       session.invalidate();
     }
 
-    // Get the authentication settings
-    SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.authentication.settings.authenticationSettings");
-    boolean securedAccess = request.isSecure();
-    boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
-    String domainId = getDomain(request, authenticationParameters, authenticationSettings);
-    AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
-        authenticationParameters.getLogin())
-        .withAsPassword(authenticationParameters.getPassword())
-        .withAsDomainId(domainId);
-
-    String authenticationKey = authenticate(request, authenticationParameters, domainId);
-    String url = "";
+    String authenticationKey = authenticate(request, authenticationParameters);
 
     // Verify if the user can try again to login.
     UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier
-        = AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential);
+        = AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(
+            authenticationParameters.getCredential());
     userCanTryAgainToLoginVerifier.clearSession(request);
 
-    if (!authService.isInError(authenticationKey)) {
+    if (authService.isInError(authenticationKey)) {
+      processError(authenticationKey, request, servletResponse, authenticationParameters,
+          userCanTryAgainToLoginVerifier);
+    } else {
+      openNewSession(authenticationKey, request, servletResponse, authenticationParameters,
+          userCanTryAgainToLoginVerifier);
+    }
+  }
 
-      // Clearing user connection attempt cache.
-      userCanTryAgainToLoginVerifier.clearCache();
+  private void openNewSession(String authenticationKey,
+      HttpRequest request,
+      HttpServletResponse response,
+      AuthenticationParameters authenticationParameters,
+      UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier)
+      throws ServletException, IOException {
+    // Clearing user connection attempt cache.
+    userCanTryAgainToLoginVerifier.clearCache();
 
-      if (domainId != null) {
-        storeDomain(servletResponse, domainId, securedAccess);
-      }
-      storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-          securedAccess);
+    if (authenticationParameters.getDomainId() != null) {
+      storeDomain(response, authenticationParameters.getDomainId(),
+          authenticationParameters.isSecuredAccess());
+    }
+    storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+        authenticationParameters.getLogin(),
+        authenticationParameters.isSecuredAccess());
 
-      // if required by user, store password in cookie
-      storePassword(servletResponse, authenticationParameters.getStoredPassword(), isNewEncryptMode,
-          authenticationParameters.getClearPassword(), securedAccess);
+    // if required by user, store password in cookie
+    storePassword(response, authenticationParameters.getStoredPassword(),
+        authenticationParameters.isNewEncryptionMode(),
+        authenticationParameters.getClearPassword(), authenticationParameters.isSecuredAccess());
 
-      if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
-        UserMustAcceptTermsOfServiceVerifier verifier = AuthenticationUserVerifierFactory.
-            getUserMustAcceptTermsOfServiceVerifier(credential);
-        try {
-          verifier.verify();
-        } catch (AuthenticationUserMustAcceptTermsOfService authenticationUserMustAcceptTermsOfService) {
-          forward(request, servletResponse, verifier.getDestination(request));
-          return;
-        }
-      }
-
-      if (mandatoryQuestionChecker.check(request, authenticationKey)) {
-        forward(request, servletResponse, mandatoryQuestionChecker.getDestination());
+    if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
+      UserMustAcceptTermsOfServiceVerifier verifier = AuthenticationUserVerifierFactory.
+          getUserMustAcceptTermsOfServiceVerifier(authenticationParameters.getCredential());
+      try {
+        verifier.verify();
+      } catch (AuthenticationUserMustAcceptTermsOfService authenticationUserMustAcceptTermsOfService) {
+        logger.error(authenticationUserMustAcceptTermsOfService.getMessage(),
+            authenticationUserMustAcceptTermsOfService);
+        forward(request, response, verifier.getDestination(request));
         return;
       }
+    }
 
-      String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
-      // fetch the new opened session
-      session = request.getSession(false);
-      session.
-          setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
-      writeSessionCookie(servletResponse, session, securedAccess);
-
-      User currentUser = User.getCurrentRequester();
-      if (chatUsersRegistration.isChatServiceEnabled()) {
-        try {
-          chatUsersRegistration.registerUser(currentUser);
-          session.setAttribute("Silverpeas.Chat", true);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage());
-          session.setAttribute("Silverpeas.Chat", false);
-        }
-      } else {
-        session.setAttribute("Silverpeas.Chat", false);
-      }
-
-      servletResponse.sendRedirect(servletResponse.encodeRedirectURL(absoluteUrl));
+    if (mandatoryQuestionChecker.check(request, authenticationKey)) {
+      forward(request, response, mandatoryQuestionChecker.getDestination());
       return;
     }
-    // Authentication failed : remove password from cookies to avoid infinite loop
-    removeStoredPassword(servletResponse, securedAccess);
+
+    String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
+    // fetch the new opened session
+    HttpSession session = request.getSession(false);
+    session.
+        setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
+    writeSessionCookie(response, session, authenticationParameters.isSecuredAccess());
+
+    User currentUser = User.getCurrentRequester();
+    if (chatUsersRegistration.isChatServiceEnabled()) {
+      try {
+        chatUsersRegistration.registerUser(currentUser);
+        session.setAttribute(CHAT_ATTRIBUTE, true);
+      } catch (Exception e) {
+        logger.error(e.getMessage());
+        session.setAttribute(CHAT_ATTRIBUTE, false);
+      }
+    } else {
+      session.setAttribute(CHAT_ATTRIBUTE, false);
+    }
+
+    response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
+  }
+
+  private void processError(final String errorCode,
+      final HttpRequest request,
+      final HttpServletResponse response,
+      final AuthenticationParameters authenticationParameters,
+      final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier)
+      throws ServletException, IOException {
+    String url = "";
+    HttpSession session = request.getSession();
+    removeStoredPassword(response, authenticationParameters.isSecuredAccess());
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
-      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey) ||
-          AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode) ||
+          AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
         try {
           if (userCanTryAgainToLoginVerifier.isActivated()) {
-            storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-                securedAccess);
-            storeDomain(servletResponse, domainId, securedAccess);
+            storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+                authenticationParameters.getLogin(),
+                authenticationParameters.isSecuredAccess());
+            storeDomain(response, authenticationParameters.getDomainId(),
+                authenticationParameters.isSecuredAccess());
           }
-          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
             url = userCanTryAgainToLoginVerifier.verify()
-              .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
-          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+                .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD);
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
             url = userCanTryAgainToLoginVerifier.verify()
-                .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN);
+                .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN);
           }
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
+          logger.error(e.getMessage());
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
-      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey) ||
-          UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(authenticationKey)) {
+      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(errorCode) ||
+          UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(errorCode)) {
         if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
             userCanTryAgainToLoginVerifier.getUser().getId())) {
           // If user can try again to login verifier is activated or if the user has been found
           // from credential, the login and the domain are stored
-          storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-              securedAccess);
-          storeDomain(servletResponse, domainId, securedAccess);
+          storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+              authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
+          storeDomain(response, authenticationParameters.getDomainId(),
+              authenticationParameters.isSecuredAccess());
           url = AuthenticationUserVerifierFactory
               .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
               .getErrorDestination();
         } else {
-          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
-            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
-          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
-            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN;
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
+            url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD;
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
+            url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN;
           }
         }
-      } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)) {
+      } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(errorCode)) {
         String allowPasswordChange = (String) session.getAttribute(
             Authentication.PASSWORD_CHANGE_ALLOWED);
         if (StringUtil.getBooleanValue(allowPasswordChange)) {
           SettingBundle settings = ResourceLocator.getSettingBundle(
               "org.silverpeas.authentication.settings.passwordExpiration");
           url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
-              getLogin() + "&domainId=" + domainId;
+              getLogin() + "&domainId=" + authenticationParameters.getDomainId();
         } else {
-          url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
+          url = LOGIN_ERROR_PAGE + AuthenticationService.ERROR_PWD_EXPIRED;
         }
-      } else if (AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(authenticationKey)) {
+      } else if (AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(errorCode)) {
         String allowPasswordChange = (String) session.getAttribute(
             Authentication.PASSWORD_CHANGE_ALLOWED);
         if (StringUtil.getBooleanValue(allowPasswordChange)) {
           SettingBundle settings = ResourceLocator.getSettingBundle(
               "org.silverpeas.authentication.settings.passwordExpiration");
           url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
-              getLogin() + "&domainId=" + domainId;
+              getLogin() + "&domainId=" + authenticationParameters.getDomainId();
         } else {
-          url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
+          url = LOGIN_ERROR_PAGE + AuthenticationService.ERROR_PWD_EXPIRED;
         }
       } else if (UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN
-          .equals(authenticationKey)) {
+          .equals(errorCode)) {
         // User has been successfully authenticated, but he has to change his password on his
         // first login and login / domain id can be stored
-        storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-            securedAccess);
-        storeDomain(servletResponse, domainId, securedAccess);
-        url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential)
-            .getDestinationOnFirstLogin(request);
-        forward(request, servletResponse, url);
+        storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+            authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
+        storeDomain(response, authenticationParameters.getDomainId(),
+            authenticationParameters.isSecuredAccess());
+        url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(
+            authenticationParameters.getCredential()).getDestinationOnFirstLogin(request);
+        forward(request, response, url);
         return;
       } else if (authenticationParameters.isSsoMode()) {
         // User has been successfully authenticated on AD, but he has no user account on Silverpeas
         // -> login / domain id can be stored
-        storeDomain(servletResponse, domainId, securedAccess);
-        storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-            securedAccess);
-        url = "/Login.jsp?ErrorCode=" + SSO_UNEXISTANT_USER_ACCOUNT;
+        storeDomain(response, authenticationParameters.getDomainId(),
+            authenticationParameters.isSecuredAccess());
+        storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+            authenticationParameters.getLogin(),
+            authenticationParameters.isSecuredAccess());
+        url = LOGIN_ERROR_PAGE + SSO_UNEXISTANT_USER_ACCOUNT;
       } else {
-        url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
+        url = LOGIN_ERROR_PAGE + TECHNICAL_ISSUE;
       }
     }
-    servletResponse.sendRedirect(
-        servletResponse.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));
+    response.sendRedirect(
+        response.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));
   }
 
   private void forward(HttpServletRequest request, HttpServletResponse response,
@@ -280,12 +305,12 @@ public class AuthenticationServlet extends HttpServlet {
     if (StringUtil.getBooleanValue(shoudStorePasword)) {
       if (newEncryptMode) {
         writeCookie(response, "var2", credentialEncryption.encode(clearPassword), -1, secured);
-        writeCookie(response, "var2", credentialEncryption.encode(clearPassword), 31536000,
+        writeCookie(response, "var2", credentialEncryption.encode(clearPassword), COOKIE_TIMELIFE,
             secured);
       } else {
-        writeCookie(response, "svpPassword", credentialEncryption.encode(clearPassword), -1,
+        writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword), -1,
             secured);
-        writeCookie(response, "svpPassword", credentialEncryption.encode(clearPassword), 31536000,
+        writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword), COOKIE_TIMELIFE,
             secured);
       }
     }
@@ -293,7 +318,7 @@ public class AuthenticationServlet extends HttpServlet {
 
   private void removeStoredPassword(HttpServletResponse response, boolean secured) {
     writeCookie(response, "var2", "", 0, secured);
-    writeCookie(response, "svpPassword", "", 0, secured);
+    writeCookie(response, COOKIE_PASSWORD, "", 0, secured);
   }
 
   private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin,
@@ -302,48 +327,37 @@ public class AuthenticationServlet extends HttpServlet {
       writeCookie(response, "var1", credentialEncryption.encode(sLogin),
           -1, secured);
       writeCookie(response, "var1", credentialEncryption.encode(sLogin),
-          31536000, secured);
+          COOKIE_TIMELIFE, secured);
     } else {
       writeCookie(response, "svpLogin", sLogin, -1, secured);
-      writeCookie(response, "svpLogin", sLogin, 31536000, secured);
+      writeCookie(response, "svpLogin", sLogin, COOKIE_TIMELIFE, secured);
     }
   }
 
   private void storeDomain(HttpServletResponse response, String sDomainId, boolean secured) {
     writeCookie(response, "defaultDomain", sDomainId, -1, secured);
-    writeCookie(response, "defaultDomain", sDomainId, 31536000, secured);
-  }
-
-  private String getDomain(HttpServletRequest request, AuthenticationParameters authParameters,
-      SettingBundle authSettings) {
-    if (authParameters.isUserByInternalAuthTokenMode()) {
-      return authParameters.getDomainId();
-    } else if (authParameters.isSsoMode()) {
-      return authSettings.getString("sso.authentication.domainId", "0");
-    } else if (authParameters.isCasMode()) {
-      return authSettings.getString("cas.authentication.domainId", "0");
-    }
-    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
-    return controller.getDomain(request.getParameter("DomainId")).getId();
+    writeCookie(response, "defaultDomain", sDomainId, COOKIE_TIMELIFE, secured);
   }
 
   private String authenticate(HttpServletRequest request,
-      AuthenticationParameters authenticationParameters, String sDomainId) {
+      AuthenticationParameters authenticationParameters) {
     String key = request.getParameter("TestKey");
     if (!StringUtil.isDefined(key)) {
       AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(
           authenticationParameters.getLogin());
       if (authenticationParameters.isUserByInternalAuthTokenMode() || authenticationParameters.
           isSsoMode() || authenticationParameters.isCasMode()) {
-        key = authService.authenticate(credential.withAsDomainId(sDomainId));
+        key = authService.authenticate(
+            credential.withAsDomainId(authenticationParameters.getDomainId()));
       } else if (authenticationParameters.isSocialNetworkMode()) {
         key = authService.authenticate(credential.withAsDomainId(authenticationParameters.
             getDomainId()));
       } else {
         key = authService.authenticate(credential
             .withAsPassword(authenticationParameters.getClearPassword())
-            .withAsDomainId(sDomainId));
+            .withAsDomainId(authenticationParameters.getDomainId()));
       }
+      authenticationParameters.setCredential(credential);
       HttpSession session = request.getSession(false);
       for (Map.Entry<String, Object> capability : credential.getCapabilities().entrySet()) {
         session.setAttribute(capability.getKey(), capability.getValue());
@@ -382,6 +396,7 @@ public class AuthenticationServlet extends HttpServlet {
     try {
       cookieValue = URLEncoder.encode(value, CharEncoding.UTF_8);
     } catch (UnsupportedEncodingException ex) {
+      logger.error(ex.getMessage());
       cookieValue = value;
     }
     Cookie cookie = new Cookie(name, cookieValue);

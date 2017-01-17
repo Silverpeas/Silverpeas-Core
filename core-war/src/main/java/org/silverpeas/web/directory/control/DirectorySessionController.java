@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contact.model.CompleteContact;
@@ -609,7 +610,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       UserItem user = (UserItem) item;
       imageTag.setSrc(user.getAvatar());
     } else {
-      imageTag.setSrc("/directory/jsp/icons/avatar.png");
+      imageTag.setSrc(User.DEFAULT_AVATAR_PATH);
     }
 
     return imageTag.generateHtml();

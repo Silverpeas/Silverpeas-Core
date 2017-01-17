@@ -634,7 +634,7 @@ public class UserDetail implements User {
     if (isAvatarPersonnalized()) {
       return AVATAR_BASEURI + avatar;
     }
-    return "/directory/jsp/icons/avatar.png";
+    return User.DEFAULT_AVATAR_PATH;
   }
 
   @Override

@@ -17,6 +17,16 @@ import javax.ws.rs.core.Response;
  */
 public class OpenfireServer implements ChatServer {
 
+  private static final String XMPP_USER = "XMPP user";
+  private static final String XMPP_RELATIONSHIP = "XMPP relationship";
+  private static final String BETWEEN = " <-> ";
+  private static final String ERROR_USER_ADD_PATTERN = "Error while creating XMPP user: {0}";
+  private static final String ERROR_USER_DEL_PATTERN = "Error while deleting XMPP user: {0}";
+  private static final String ERROR_RELATIONSHIP_ADD_PATTERN =
+      "Error while creating XMPP relationship: {0}";
+  private static final String ERROR_RELATIONSHIP_DEL_PATTERN =
+      "Error while deleting XMPP relationship: {0}";
+  
   private SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
@@ -51,15 +61,15 @@ public class OpenfireServer implements ChatServer {
       });
 
       if (response.getStatus() != HttpRequester.STATUS_OK) {
-        logger.error("Error while creating XMPP user: {0}",
+        logger.error(ERROR_USER_ADD_PATTERN,
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
-            SilverpeasExceptionMessages.failureOnAdding("XMPP user", chatUser.getId()));
+            SilverpeasExceptionMessages.failureOnAdding(XMPP_USER, chatUser.getId()));
       }
     } catch (Exception e) {
-      logger.error("Error while creating XMPP user: {0}", e.getMessage());
+      logger.error(ERROR_USER_ADD_PATTERN, e.getMessage());
       throw new ChatServerException(
-          SilverpeasExceptionMessages.failureOnAdding("XMPP user", chatUser.getId()), e);
+          SilverpeasExceptionMessages.failureOnAdding(XMPP_USER, chatUser.getId()), e);
     } finally {
       if (response != null) {
         response.close();
@@ -76,15 +86,15 @@ public class OpenfireServer implements ChatServer {
       response = requester.delete();
 
       if (response.getStatus() != HttpRequester.STATUS_OK) {
-        logger.error("Error while deleting XMPP user: {0}",
+        logger.error(ERROR_USER_DEL_PATTERN,
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
-            SilverpeasExceptionMessages.failureOnDeleting("XMPP user", chatUser.getId()));
+            SilverpeasExceptionMessages.failureOnDeleting(XMPP_USER, chatUser.getId()));
       }
     } catch (Exception e) {
-      logger.error("Error while deleting XMPP user: {0}", e.getMessage());
+      logger.error(ERROR_USER_DEL_PATTERN, e.getMessage());
       throw new ChatServerException(
-          SilverpeasExceptionMessages.failureOnDeleting("XMPP user", chatUser.getId()), e);
+          SilverpeasExceptionMessages.failureOnDeleting(XMPP_USER, chatUser.getId()), e);
     } finally {
       if (response != null) {
         response.close();
@@ -106,16 +116,16 @@ public class OpenfireServer implements ChatServer {
         logger.warn("The XMPP relationship between users {0} and {1} already exists!",
             chatUser1.getId(), chatUser2.getId());
       } else if (response.getStatus() != HttpRequester.STATUS_CREATED) {
-        logger.error("Error while creating XMPP relationship: {0}",
+        logger.error(ERROR_RELATIONSHIP_ADD_PATTERN,
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
-            SilverpeasExceptionMessages.failureOnAdding("XMPP relationship",
-                chatUser1.getId() + " <-> " + chatUser2.getId()));
+            SilverpeasExceptionMessages.failureOnAdding(XMPP_RELATIONSHIP,
+                chatUser1.getId() + BETWEEN + chatUser2.getId()));
       }
     } catch (Exception e) {
-      logger.error("Error while creating XMPP relationship: {0}", e.getMessage());
-      throw new ChatServerException(SilverpeasExceptionMessages.failureOnAdding("XMPP relationship",
-          chatUser1.getId() + " <-> " + chatUser2.getId()), e);
+      logger.error(ERROR_RELATIONSHIP_ADD_PATTERN, e.getMessage());
+      throw new ChatServerException(SilverpeasExceptionMessages.failureOnAdding(XMPP_RELATIONSHIP,
+          chatUser1.getId() + BETWEEN + chatUser2.getId()), e);
     } finally {
       if (response != null) {
         response.close();
@@ -134,16 +144,16 @@ public class OpenfireServer implements ChatServer {
       response = requester.delete();
 
       if (response.getStatus() != HttpRequester.STATUS_OK) {
-        logger.error("Error while deleting XMPP relationship: {0}",
+        logger.error(ERROR_RELATIONSHIP_DEL_PATTERN,
             response.getStatusInfo().getReasonPhrase());
         throw new ChatServerException(
-            SilverpeasExceptionMessages.failureOnDeleting("XMPP relationship",
-                chatUser1.getId() + " <-> " + chatUser2.getId()));
+            SilverpeasExceptionMessages.failureOnDeleting(XMPP_RELATIONSHIP,
+                chatUser1.getId() + BETWEEN + chatUser2.getId()));
       }
     } catch (Exception e) {
-      logger.error("Error while creating XMPP relationship: {0}", e.getMessage());
-      throw new ChatServerException(SilverpeasExceptionMessages.failureOnAdding("XMPP relationship",
-          chatUser1.getId() + " <-> " + chatUser2.getId()), e);
+      logger.error(ERROR_RELATIONSHIP_ADD_PATTERN, e.getMessage());
+      throw new ChatServerException(SilverpeasExceptionMessages.failureOnAdding(XMPP_RELATIONSHIP,
+          chatUser1.getId() + BETWEEN + chatUser2.getId()), e);
     } finally {
       if (response != null) {
         response.close();
@@ -163,7 +173,7 @@ public class OpenfireServer implements ChatServer {
     } catch (Exception e) {
       logger.error("Error while checking XMPP user: ", e.getMessage());
       throw new ChatServerException(
-          SilverpeasExceptionMessages.failureOnGetting("XMPP user", chatUser.getId()));
+          SilverpeasExceptionMessages.failureOnGetting(XMPP_USER, chatUser.getId()));
     } finally {
       if (response != null) {
         response.close();

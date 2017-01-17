@@ -40,13 +40,19 @@ public class ImageDisplay extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    ImageProfil profile = new ImageProfil(getAvatar(req));
-    try (InputStream in = profile.getImage();
-         OutputStream out = res.getOutputStream()) {
-      IOUtils.copy(in, out);
-    } catch (IOException e) {
-      SilverLogger.getLogger(this).error("Cannot get image", e);
-      throw e;
+    SilverLogger logger = SilverLogger.getLogger(this);
+    String avatarPath = getAvatar(req);
+    ImageProfil profile = new ImageProfil(avatarPath);
+    if (!profile.exist()) {
+      logger.warn("The image {0} doesn't exist", avatarPath);
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } else {
+      try (InputStream in = profile.getImage(); OutputStream out = res.getOutputStream()) {
+        IOUtils.copy(in, out);
+      } catch (IOException e) {
+        logger.error("Error while getting image {0}", avatarPath);
+        throw e;
+      }
     }
   }
 

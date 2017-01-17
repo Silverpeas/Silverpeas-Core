@@ -25,8 +25,6 @@
 package org.silverpeas.core.util;
 
 import org.junit.Test;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.MapUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -267,14 +265,14 @@ public class MapUtilTest {
 
     right.put(1, "bart");
     right.put(2, "lisa");
-    assertThat(MapUtil.equals(left, right), is(true));
+    assertThat(MapUtil.areEqual(left, right), is(true));
 
     left.remove(2);
-    assertThat(MapUtil.equals(left, right), is(false));
+    assertThat(MapUtil.areEqual(left, right), is(false));
 
     left.put(2, "lisa");
     left.put(3, "homer");
-    assertThat(MapUtil.equals(left, right), is(false));
+    assertThat(MapUtil.areEqual(left, right), is(false));
   }
 
 }
