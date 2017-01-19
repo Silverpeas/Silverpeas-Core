@@ -135,7 +135,7 @@
 
   /**
    * When configured with mode: 'map', allows access to bundle values by specifying its key.
-   * Eg, jQuery.i18n.prop('com.company.bundles.menu_add')
+   * Eg, window.i18n.prop('com.company.bundles.menu_add')
    */
   window.i18n.prop = function (key /* Add parameters as function arguments as necessary  */) {
     var value = window.i18n.map[key];

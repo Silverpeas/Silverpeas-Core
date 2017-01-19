@@ -24,6 +24,7 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link href="smartpaginator.css" rel="stylesheet" type="text/css"/>
   <link type="text/css" rel="stylesheet" href="repositorySharing.css"/>
   <link href="ui-lightness/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
@@ -31,7 +32,7 @@
   <script type="text/javascript" src="jquery-2.2.4.min.js"></script>
   <script type="text/javascript" src="jquery-migrate-1.4.1.min.js"></script>
   <script type="text/javascript" src="jquery-ui.min.js"></script>
-  <script type="text/javascript" src="jquery.i18n.properties.min.js"></script>
+  <script type="text/javascript" src="i18n.properties.js"></script>
   <script type="text/javascript" src="jstree.min.js"></script>
   <script type="text/javascript" src="smartpaginator.js"></script>
   <script type="text/javascript" src="sharing.js"></script>
@@ -214,14 +215,14 @@ $(function () {
 			mode:'map'
 		});
 
-		$("#expirationLabel").html(jQuery.i18n.prop("expiration"));
-		$(".expiration").html(jQuery.i18n.prop("expiration.unlimited"));
-		$("#download-link").attr("title", jQuery.i18n.prop("download.a.title"));
-		$("#download-link").html(jQuery.i18n.prop("download.a"));
-		$("#downloadZip-dialog").attr("title", jQuery.i18n.prop("download.dialog.title"));
-		$("#downloadZip-dialog a").html(jQuery.i18n.prop("download.dialog.content"));
-		$(".silverpeasLink").attr("title", jQuery.i18n.prop("silverpeas.link"));
-		$("#empty-folder").html(jQuery.i18n.prop("folder.empty"));
+		$("#expirationLabel").html(window.i18n.prop("expiration"));
+		$(".expiration").html(window.i18n.prop("expiration.unlimited"));
+		$("#download-link").attr("title", window.i18n.prop("download.a.title"));
+		$("#download-link").html(window.i18n.prop("download.a"));
+		$("#downloadZip-dialog").attr("title", window.i18n.prop("download.dialog.title"));
+		$("#downloadZip-dialog a").html(window.i18n.prop("download.dialog.content"));
+		$(".silverpeasLink").attr("title", window.i18n.prop("silverpeas.link"));
+		$("#empty-folder").html(window.i18n.prop("folder.empty"));
 	}
 
 	$('#download-link').click(function processZip() {
@@ -242,7 +243,7 @@ $(function () {
 					resizable: false,
 					width: 400,
 					buttons: [{
-						text: jQuery.i18n.prop("download.dialog.close"),
+						text: window.i18n.prop("download.dialog.close"),
 						click: function() { $(this).dialog("close"); }}
 						]
 				});
