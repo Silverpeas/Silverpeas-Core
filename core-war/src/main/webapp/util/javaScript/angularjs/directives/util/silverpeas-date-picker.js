@@ -51,6 +51,7 @@
           scope : {
             dateId: '@',
             name: '@',
+            zoneId : '=',
             date : '=',
             mandatory : '=',
             status : '=?',
@@ -68,14 +69,15 @@
               this.status.empty = false;
               this.status.unknown = false;
               if (this.status.valid) {
-                var $dateToSet = moment(this.formattedDate, 'L');
-                var $date = sp.moment.adjustTimeMinutes(moment().startOf('minutes'));
+                var $dateToSet = sp.moment.make(this.formattedDate, 'L');
+                var $date = sp.moment.adjustTimeMinutes(
+                    sp.moment.atZoneIdSimilarLocal(moment(), this.zoneId).startOf('minutes'));
                 if (this.date) {
-                  $date = moment(this.date);
+                  $date = sp.moment.make(this.date);
                 }
                 $date.year($dateToSet.year());
                 $date.dayOfYear($dateToSet.dayOfYear());
-                this.date = $date.toISOString();
+                this.date = $date.format();
               } else {
                 if (!this.formattedDate) {
                   this.status.empty = true;

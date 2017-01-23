@@ -243,6 +243,14 @@ out.println(window.printBefore());
         <view:formatDateTime value="${userInfos.lastLoginDate}"/>
       </div>
     </li>
+    <!--User ZoneId-->
+    <li class="field" id="form-row-user-zone-id">
+      <label class="txtlibform"><fmt:message key="JDP.userPreferredZoneId"/></label>
+
+      <div class="champs">
+        <viewTags:userPreferredZoneIdSelector user="${userInfos}" readOnly="true"/>
+      </div>
+    </li>
 	</ul>
 </fieldset>
 

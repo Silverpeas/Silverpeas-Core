@@ -103,6 +103,7 @@
       occurrence = occurrence ? occurrence : {};
       return {
         id : occurrence.id,
+        calendarZoneId : occurrence.calendarZoneId,
         lastStartDate : occurrence.lastStartDate,
         startDate : occurrence.startDate,
         endDate : occurrence.endDate,
@@ -356,7 +357,7 @@
       defaultTimedEventDuration: '01:00:00',
       defaultAllDayEventDuration : {days : 1},
       forceEventDuration : true,
-      timezone: 'local',
+      timezone: options.timezone ? options.timezone : 'local',
       timeFormat: 'HH:mm',
       displayEventEnd: true,
       slotLabelFormat: 'HH:mm',

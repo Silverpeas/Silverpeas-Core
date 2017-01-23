@@ -75,13 +75,13 @@ public class UserCalendarWebController extends
   @Override
   protected void onInstantiation(final UserCalendarWebRequestContext context) {
     timeWindowViewContext =
-        new UserCalendarTimeWindowViewContext(context.getComponentInstanceId(), getLanguage());
+        new UserCalendarTimeWindowViewContext(context.getComponentInstanceId(), getLanguage(),
+            getPersonalization().getZoneId());
   }
 
   @Override
   protected void beforeRequestProcessing(final UserCalendarWebRequestContext context) {
     super.beforeRequestProcessing(context);
-    context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
     CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
     if (userCalendarEvent != null && !userCalendarEvent.canBeModifiedBy(context.getUser())) {
       context.getRequest().setAttribute("highestUserRole", SilverpeasRole.user);
@@ -90,6 +90,8 @@ public class UserCalendarWebController extends
     context.getRequest().setAttribute("userMainCalendar",
         CalendarEntity.fromCalendar(userMainCalendar)
             .withURI(buildCalendarURI(CALENDAR_BASE_URI, userMainCalendar)));
+    timeWindowViewContext.setZoneId(userMainCalendar.getZoneId());
+    context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }
 
   /**

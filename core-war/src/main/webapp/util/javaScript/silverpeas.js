@@ -1018,13 +1018,47 @@ if (typeof window.sp === 'undefined') {
     },
     moment : {
       /**
+       * Creates a new moment by taking of offset if any.
+       * @param date
+       * @param format
+       */
+      make : function(date, format) {
+        if (typeof date === 'string' && !format) {
+          return moment.parseZone(date);
+        }
+        return moment.apply(undefined, arguments);
+      },
+      /**
+       * Gets the offset ('-01:00' for example) of the given zone id.
+       * @param zoneId the zone id ('Europe/Berlin' for example)
+       */
+      getOffsetFromZoneId : function(zoneId) {
+        return moment().tz(zoneId).format('Z');
+      },
+      /**
+       * Sets the given date at the given timezone.
+       * @param date a data like the one given to the moment constructor
+       * @param zoneId the zone id ('Europe/Berlin' for example)
+       */
+      atZoneIdSameInstant : function(date, zoneId) {
+        return sp.moment.make(date).tz(zoneId);
+      },
+      /**
+       * Sets the given date at the given timezone without changing the time.
+       * @param date a data like the one given to the moment constructor
+       * @param zoneId the zone id ('Europe/Berlin' for example)
+       */
+      atZoneIdSimilarLocal : function(date, zoneId) {
+        return moment.utc(date).utcOffset(sp.moment.getOffsetFromZoneId(zoneId), true);
+      },
+      /**
        * Adjusts the the time minutes in order to get a rounded time.
        * @param date a data like the one given to the moment constructor.
        * @param hasToCurrentTime true to set current time, false otherwise
        * @private
        */
       adjustTimeMinutes : function(date, hasToCurrentTime) {
-        var myMoment = moment(date);
+        var myMoment = sp.moment.make(date);
         if (hasToCurrentTime) {
           var $timeToSet = moment();
           myMoment.hour($timeToSet.hour());
@@ -1041,7 +1075,7 @@ if (typeof window.sp === 'undefined') {
        * @private
        */
       nthDayOfMonth : function(date) {
-        var dayInMonth = moment(date).date();
+        var dayInMonth = sp.moment.make(date).date();
         return Math.ceil(dayInMonth / 7);
       },
       /**
@@ -1050,7 +1084,15 @@ if (typeof window.sp === 'undefined') {
        * @private
        */
       displayAsDate : function(date) {
-        return moment(date).format('L');
+        return sp.moment.make(date).format('L');
+      },
+      /**
+       * Formats the given moment in order to display it as a time.
+       * @param time a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsTime : function(time) {
+        return moment.parseZone(time).format('HH:mm');
       },
       /**
        * Formats the given moment in order to display it as a date time.
@@ -1058,7 +1100,7 @@ if (typeof window.sp === 'undefined') {
        * @private
        */
       displayAsDateTime : function(date) {
-        return sp.moment.displayAsDate(date) + moment(date).format('LT');
+        return sp.moment.displayAsDate(date) + sp.moment.make(date).format('LT');
       },
       /**
        * Replaces from the given text date or date time which are specified into an ISO format.

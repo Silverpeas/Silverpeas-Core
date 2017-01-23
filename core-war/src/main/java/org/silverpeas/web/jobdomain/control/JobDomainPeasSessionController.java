@@ -237,10 +237,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewUser.setId(idRet);
 
     // Registering the preferred user language if any and if it is different from the default one
-    if (StringUtil.isDefined(userRequestData.getLanguage()) &&
-        !userRequestData.getLanguage().equals(DisplayI18NHelper.getDefaultLanguage())) {
+    final boolean isPreferredLanguageFilled =
+        !userRequestData.getLanguage().equals(DisplayI18NHelper.getDefaultLanguage());
+    final boolean isPreferredZoneIdFilled =
+        !userRequestData.getZoneId().equals(DisplayI18NHelper.getDefaultZoneId());
+    if (isPreferredLanguageFilled || isPreferredZoneIdFilled) {
       UserPreferences userPreferences = theNewUser.getUserPreferences();
       userPreferences.setLanguage(userRequestData.getLanguage());
+      userPreferences.setZoneId(userRequestData.getZoneId());
       getPersonalizationService().saveUserSettings(userPreferences);
     }
 

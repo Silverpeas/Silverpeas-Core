@@ -56,6 +56,7 @@ import java.io.StringReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.List;
@@ -83,7 +84,8 @@ public class ICal4JExchangeExportTest {
 
   private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
-  private Calendar calendar = CalendarMockBuilder.from("instanceId").withId("calendarUuid").build();
+  private Calendar calendar = CalendarMockBuilder.from("instanceId").withId("calendarUuid")
+      .atZoneId(ZoneId.of("Europe/Paris")).build();
 
   @Inject
   private Provider<ICalendarExchange> iCalendarExchangeProvider;

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.personalization;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
@@ -34,6 +35,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "personalization")
@@ -46,6 +48,8 @@ public class UserPreferences
 
   @Column(name = "languages")
   private String language = null;
+  @Column(name = "zoneId")
+  private String zoneId = null;
   @Column(name = "look")
   private String look = null;
   @Column(name = "personalwspace")
@@ -62,18 +66,19 @@ public class UserPreferences
   public UserPreferences() {
   }
 
-  public UserPreferences(String userId, String language, String look,
-      String collaborativeWorkSpaceId, boolean thesaurusEnabled,
-      boolean dragAndDropEnabled, boolean webdavEditionEnabled, UserMenuDisplay display) {
-    this(language, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
+  public UserPreferences(String userId, String language, final ZoneId zoneId, String look,
+      String collaborativeWorkSpaceId, boolean thesaurusEnabled, boolean dragAndDropEnabled,
+      boolean webdavEditionEnabled, UserMenuDisplay display) {
+    this(language, zoneId, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
         webdavEditionEnabled, display);
     setId(userId);
   }
 
-  public UserPreferences(String language, String look, String collaborativeWorkSpaceId,
-      boolean thesaurusEnabled, boolean dragAndDropEnabled, boolean webdavEditionEnabled,
-      UserMenuDisplay display) {
+  public UserPreferences(String language, final ZoneId zoneId, String look,
+      String collaborativeWorkSpaceId, boolean thesaurusEnabled, boolean dragAndDropEnabled,
+      boolean webdavEditionEnabled, UserMenuDisplay display) {
     this.language = language;
+    this.zoneId = zoneId.toString();
     this.look = look;
     this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
     this.thesaurusStatus = thesaurusEnabled ? 1 : 0;
@@ -82,12 +87,24 @@ public class UserPreferences
     this.menuDisplay = display.name();
   }
 
+  public User getUser() {
+    return User.getById(getId());
+  }
+
   public void setLanguage(String language) {
     this.language = language;
   }
 
   public String getLanguage() {
     return this.language;
+  }
+
+  public ZoneId getZoneId() {
+    return ZoneId.of(zoneId);
+  }
+
+  public void setZoneId(final ZoneId zoneId) {
+    this.zoneId = zoneId.toString();
   }
 
   public String getLook() {
@@ -168,6 +185,9 @@ public class UserPreferences
         other.language)) {
       return false;
     }
+    if ((this.zoneId == null) ? (other.zoneId != null) : !this.zoneId.equals(other.zoneId)) {
+      return false;
+    }
     if ((this.look == null) ? (other.look != null) : !this.look.equals(other.look)) {
       return false;
     }
@@ -192,6 +212,7 @@ public class UserPreferences
   public int hashCode() {
     int result = getId() != null ? getId().hashCode() : 0;
     result = 31 * result + (language != null ? language.hashCode() : 0);
+    result = 31 * result + (zoneId != null ? zoneId.hashCode() : 0);
     result = 31 * result + (look != null ? look.hashCode() : 0);
     result =
         31 * result + (collaborativeWorkSpaceId != null ? collaborativeWorkSpaceId.hashCode() : 0);

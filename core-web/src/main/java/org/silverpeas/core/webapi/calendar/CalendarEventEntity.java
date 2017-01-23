@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -309,8 +310,8 @@ public class CalendarEventEntity implements WebEntity {
     User currentUser = User.getCurrentRequester();
     id = calendarEvent.getId();
     onAllDay = calendarEvent.isOnAllDay();
-    startDate = calendarEvent.getStartDate().toString();
-    endDate = calendarEvent.getEndDate().toString();
+    startDate = formatDateWithOffset(calendarEvent, calendarEvent.getStartDate());
+    endDate = formatDateWithOffset(calendarEvent, calendarEvent.getEndDate());
     createDate = calendarEvent.getCreateDate();
     lastUpdateDate = calendarEvent.getLastUpdateDate();
     ownerName = calendarEvent.getCreator().getDisplayedName();

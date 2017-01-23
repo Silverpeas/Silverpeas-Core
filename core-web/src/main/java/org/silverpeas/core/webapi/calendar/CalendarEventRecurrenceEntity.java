@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -149,7 +150,7 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     endDate = offsetDateTimeOptional.isPresent() ?
         (event.isOnAllDay() ?
             offsetDateTimeOptional.get().toLocalDate().toString() :
-            offsetDateTimeOptional.get().toString()) :
+            formatDateWithOffset(event, offsetDateTimeOptional.get())) :
         null;
     daysOfWeek = recurrence.getDaysOfWeek().stream().map(DayOfWeekOccurrenceEntity::from)
         .collect(Collectors.toList());

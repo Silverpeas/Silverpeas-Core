@@ -178,14 +178,15 @@
                 // FullCalendar attributes
                 occurrence.title = occurrence.event.title;
                 occurrence.allDay = occurrence.event.onAllDay;
-                occurrence.start = moment(occurrence.startDate);
+                occurrence.start = occurrence.startDate;
                 if (!occurrence.allDay) {
-                  occurrence.end = moment(occurrence.endDate);
+                  occurrence.end = occurrence.endDate;
                 } else {
                   // When it is an all day event, end date in fullcalendar is handled like a,
                   // ICALENDAR VEVENT : if the event is on several day, the end date must be the
                   // date after the last day.
-                  occurrence.end = moment(occurrence.endDate).add(1, 'days');
+                  occurrence.end =
+                      SilverpeasCalendarTools.moment(occurrence.endDate).add(1, 'days').format();
                 }
                 occurrence.editable = occurrence.event.canBeModified;
                 if (callback) {
@@ -325,7 +326,12 @@
             }.bind(this);
 
             var _dayClick = function(momentDate) {
-              this.onDayClick({startMoment : momentDate});
+              var momentWithOffset = momentDate;
+              if (momentDate.hasTime()) {
+                momentWithOffset =
+                    sp.moment.atZoneIdSimilarLocal(momentDate, this.timeWindowViewContext.zoneId);
+              }
+              this.onDayClick({startMoment : momentWithOffset});
             }.bind(this)
 
             var _occurrenceChange = function(occurrence, delta, revertFunc) {
@@ -334,22 +340,29 @@
                     SilverpeasCalendarTools.extractEventOccurrenceEntityData(occurrence));
                 // New period
                 if (occurrence.allDay) {
-                  occurrence.startDate = occurrence.start.stripTime().toISOString();
-                  occurrence.endDate = occurrence.end.stripTime().add(-1, 'days').toISOString();
+                  occurrence.startDate = occurrence.start.stripTime().format();
+                  occurrence.endDate = occurrence.end.stripTime().add(-1, 'days').format();
                 } else {
-                  occurrence.startDate = occurrence.start.toISOString();
-                  occurrence.endDate = occurrence.end.toISOString();
+                  var startWithOffset = sp.moment.atZoneIdSimilarLocal(occurrence.start,
+                      this.timeWindowViewContext.zoneId)
+                  var endWithOffset = sp.moment.atZoneIdSimilarLocal(occurrence.end,
+                      this.timeWindowViewContext.zoneId)
+                  occurrence.startDate = startWithOffset.format();
+                  occurrence.endDate = endWithOffset.format();
                 }
                 occurrence.event.onAllDay = occurrence.allDay;
                 // New recurrence end if any
                 if (occurrence.event.recurrence && occurrence.event.recurrence.endDate) {
-                  var $endDate = moment(occurrence.event.recurrence.endDate);
+                  var $endDate;
                   if (occurrence.event.onAllDay) {
+                    $endDate = sp.moment.make(occurrence.event.recurrence.endDate);
                     $endDate = SilverpeasCalendarTools.moment($endDate).stripTime();
                   } else {
+                    $endDate = sp.moment.atZoneIdSimilarLocal(occurrence.event.recurrence.endDate,
+                        occurrence.calendarZoneId);
                     $endDate = $endDate.startOf('day');
                   }
-                  occurrence.event.recurrence.endDate = $endDate.toISOString();
+                  occurrence.event.recurrence.endDate = $endDate.format();
                 }
                 occurrence.revertToPreviousState = function() {
                   occurrence.startDate = previousOccurrence.startDate;
@@ -400,8 +413,8 @@
              */
             var __getAjaxCurrentTimeWindowPeriod = function() {
               var ref = __getCurrentDateMomentFromTimeWindowViewContext(this.timeWindowViewContext);
-              var $dateMin = moment(ref).startOf('month').add(-1, 'weeks');
-              var $dateMax = moment(ref).endOf('month').add(2, 'weeks');
+              var $dateMin = sp.moment.make(ref).startOf('month').add(-1, 'weeks');
+              var $dateMax = sp.moment.make(ref).endOf('month').add(2, 'weeks');
               return {startDateTime : $dateMin, endDateTime : $dateMax};
             }.bind(this);
 
@@ -678,6 +691,7 @@
                 allDaySlot : true,
                 view : twvc.viewType,
                 weekends : twvc.withWeekend,
+                timezone : twvc.zoneId,
                 firstDayOfWeek : twvc.firstDayOfWeek,
                 currentDate : __getCurrentDateMomentFromTimeWindowViewContext(twvc),
                 eventrender : _eventOccurrenceRender,

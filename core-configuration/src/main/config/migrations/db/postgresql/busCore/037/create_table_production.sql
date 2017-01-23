@@ -6,6 +6,7 @@ CREATE TABLE UniqueId (
 CREATE TABLE Personalization (
 	id varchar(100) NOT NULL ,
 	languages varchar(100) NULL,
+	zoneId varchar(100) NULL,
 	look varchar(50) NULL,
 	personalWSpace varchar(50) NULL,
 	thesaurusStatus int NOT NULL,

@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.calendar;
 
+import java.time.ZoneId;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +44,11 @@ public class CalendarMockBuilder {
 
   public CalendarMockBuilder withId(String id) {
     when(calendar.getId()).thenReturn(id);
+    return this;
+  }
+
+  public CalendarMockBuilder atZoneId(final ZoneId zoneId) {
+    when(calendar.getZoneId()).thenReturn(zoneId);
     return this;
   }
 

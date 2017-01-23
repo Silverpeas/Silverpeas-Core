@@ -27,7 +27,7 @@
 <migration module="busCore" order="1"
            xmlns="http://www.silverpeas.org/schema/migration">
 
-  <current version="036">
+  <current version="037">
     <script name="create_table.sql" type="sql"/>
     <script name="create_table_production.sql" type="sql" />
     <script name="create_constraint.sql" type="sql" />
@@ -43,6 +43,10 @@
   </upgrade>
 
   <upgrade fromVersion="035">
+    <script name="update_table.sql" type="sql"/>
+  </upgrade>
+
+  <upgrade fromVersion="036">
     <script name="update_table.sql" type="sql"/>
   </upgrade>
 

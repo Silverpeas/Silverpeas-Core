@@ -86,14 +86,19 @@ public class ICal4JRecurrenceCodec {
         if (event.isOnAllDay()) {
           return iCal4JDateCodec.encode(offsetDateTime.toLocalDate());
         } else {
-          return iCal4JDateCodec.encode(offsetDateTime);
+          return iCal4JDateCodec.encode(event, offsetDateTime);
         }
       })
       .sorted()
       .collect(Collectors.toCollection(() -> {
         Value type = event.isOnAllDay() ? Value.DATE : Value.DATE_TIME;
         final DateList list = new DateList(type);
-        list.setUtc(!event.isOnAllDay());
+        if (iCal4JDateCodec.isEventDateToBeEncodedIntoUtc(event)) {
+          list.setUtc(true);
+        } else {
+          list.setUtc(false);
+          list.setTimeZone(iCal4JDateCodec.getTimeZone(event.getCalendar().getZoneId()));
+        }
         return list;
       }));
   }
@@ -243,12 +248,19 @@ public class ICal4JRecurrenceCodec {
           final LocalDate localDateToExclude = iCal4JDateCodec.decode(exDate);
           recurrence.excludeEventOccurrencesStartingAt(localDateToExclude);
         } else {
-          final OffsetDateTime startDate =
-              iCal4JDateCodec.decode((DateTime) vEvent.getStartDate().getDate(), defaultZoneId);
-          final OffsetDateTime offsetDateTimeToExclude =
-              iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC)
-                  .withHour(startDate.getHour()).withMinute(startDate.getMinute())
-                  .withSecond(startDate.getSecond());
+          final DateTime startDateTime = (DateTime) vEvent.getStartDate().getDate();
+          final OffsetDateTime offsetDateTimeToExclude;
+          if (startDateTime.isUtc()) {
+            final OffsetDateTime startDate =
+                iCal4JDateCodec.decode((DateTime) vEvent.getStartDate().getDate(), defaultZoneId);
+            offsetDateTimeToExclude = iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC)
+                .withHour(startDate.getHour()).withMinute(startDate.getMinute())
+                .withSecond(startDate.getSecond());
+          } else {
+            ZoneId zoneId = startDateTime.getTimeZone() != null ?
+                ZoneId.of(startDateTime.getTimeZone().getID()) : defaultZoneId;
+            offsetDateTimeToExclude = iCal4JDateCodec.decode((DateTime) exDate, zoneId);
+          }
           recurrence.excludeEventOccurrencesStartingAt(offsetDateTimeToExclude);
         }
       });

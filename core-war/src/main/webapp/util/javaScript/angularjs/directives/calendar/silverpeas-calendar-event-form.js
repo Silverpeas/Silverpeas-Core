@@ -104,8 +104,8 @@
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormMain',
-      ['$timeout', 'visibleFilter', 'defaultFilter',
-        function($timeout, visibleFilter, defaultFilter) {
+      ['$timeout',
+        function($timeout) {
           return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-main.jsp',
@@ -187,7 +187,7 @@
                   }
                 }.bind(this));
                 if (verifyPeriod &&
-                     moment(this.data.endDate).isBefore(moment(this.data.startDate))) {
+                    sp.moment.make(this.data.endDate).isBefore(sp.moment.make(this.data.startDate))) {
                   SilverpeasError.add(this.getMessages().period.correct.replace('@end@',
                       this.labels.endDate).replace('@start@', this.labels.startDate));
                 }
@@ -195,8 +195,8 @@
               }.bind(this),
               updateData : function(ceo) {
                 if (this.data.event.onAllDay) {
-                  ceo.startDate =  SilverpeasCalendarTools.moment(this.data.startDate).stripTime().toISOString();
-                  ceo.endDate =  SilverpeasCalendarTools.moment(this.data.endDate).stripTime().toISOString();
+                  ceo.startDate =  SilverpeasCalendarTools.moment(this.data.startDate).stripTime().format();
+                  ceo.endDate =  SilverpeasCalendarTools.moment(this.data.endDate).stripTime().format();
                 } else {
                   ceo.startDate = this.data.startDate;
                   ceo.endDate = this.data.endDate;
@@ -222,16 +222,16 @@
                 if (_fromOnAllDayListener) {
                   if (this.data.event.onAllDay) {
                     this.data.endDate =
-                         moment(this.data.endDate).startOf('day').toISOString();
+                         sp.moment.make(this.data.endDate).startOf('day').format();
                   } else {
                     this.data.endDate =
                         sp.moment.adjustTimeMinutes(this.data.endDate, true).add(
-                            this.offsetDateTime, 'ms').toISOString();
+                            this.offsetDateTime, 'ms').format();
                   }
                   _fromOnAllDayListener = false;
                 } else {
                   this.data.endDate =
-                       moment(dateTime).add(this.offsetDateTime, 'milliseconds').toISOString();
+                      sp.moment.make(dateTime).add(this.offsetDateTime, 'milliseconds').format();
                 }
               }
             }.bind(this));
@@ -239,26 +239,25 @@
             $scope.$watch('$ctrl.data.endDate', function(dateTime) {
               if (dateTime && this.data.startDate) {
                 if (!this.data.event.onAllDay) {
-                  var $startDate =  moment(this.data.startDate);
-                  var $endDate =  moment(dateTime);
+                  var $startDate =  sp.moment.make(this.data.startDate);
+                  var $endDate =  sp.moment.make(dateTime);
                   if ($endDate.isSameOrBefore($startDate) &&
                       $startDate.diff($endDate, 'days') === 0) {
-                    this.data.endDate =  moment(dateTime).add(1, 'days').toISOString();
+                    this.data.endDate =  sp.moment.make(dateTime).add(1, 'days').format();
                   }
                 }
                 this.offsetDateTime =
-                    moment(dateTime).diff(moment(this.data.startDate), 'milliseconds');
+                    sp.moment.make(dateTime).diff(sp.moment.make(this.data.startDate), 'milliseconds');
               }
             }.bind(this));
 
             $scope.$watch('$ctrl.data.event.onAllDay', function(onAllDay, previousOnAllDay) {
               if (previousOnAllDay !== onAllDay && this.data.startDate) {
+                var startDate = sp.moment.make(this.data.startDate);
                 if (onAllDay) {
-                  this.data.startDate =
-                       moment(this.data.startDate).startOf('day').toISOString();
+                  this.data.startDate = startDate.startOf('day').format();
                 } else {
-                  this.data.startDate =
-                      sp.moment.adjustTimeMinutes(this.data.startDate, true).toISOString();
+                  this.data.startDate = sp.moment.adjustTimeMinutes(startDate, true).format();
                   this.offsetDateTime = 1 * 60 * 60 * 1000;
                 }
                 _fromOnAllDayListener = true;
@@ -266,30 +265,26 @@
             }.bind(this)) ;
 
             var initialize = function() {
-              if (!this.data.event.calendar && this.visibleCalendars &&
-                  this.visibleCalendars.length) {
-                this.data.event.calendar = this.visibleCalendars[0];
-              }
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
               if (this.data.event.onAllDay) {
-                var startDate = this.data.startDate ?  moment(this.data.startDate) :  moment();
-                var endDate = this.data.endDate ?  moment(this.data.endDate) :  moment(startDate);
-                this.data.startDate = startDate.startOf('day').toISOString();
-                this.data.endDate = endDate.startOf('day').toISOString();
+                var startDate = this.data.startDate ?  sp.moment.make(this.data.startDate) :  defaultMoment;
+                var endDate = this.data.endDate ?  sp.moment.make(this.data.endDate) :  sp.moment.make(startDate);
+                this.data.startDate = startDate.startOf('day').format();
+                this.data.endDate = endDate.startOf('day').format();
                 this.offsetDateTime =
-                    moment(this.data.endDate).diff(moment(this.data.startDate),
+                    sp.moment.make(this.data.endDate).diff(sp.moment.make(this.data.startDate),
                         'milliseconds');
               } else {
                 if (!this.data.startDate) {
                   this.data.startDate =
-                      sp.moment.adjustTimeMinutes(moment().startOf('minute')).toISOString();
+                      sp.moment.adjustTimeMinutes(defaultMoment.startOf('minute')).format();
                 }
                 if (!this.data.endDate) {
                   this.data.endDate =
-                       moment(this.data.startDate).add(this.offsetDateTime, 'ms').toISOString();
+                      sp.moment.make(this.data.startDate).add(this.offsetDateTime, 'ms').format();
                 } else {
-                  this.offsetDateTime =
-                       moment(this.data.endDate).diff(moment(this.data.startDate),
-                          'milliseconds');
+                  this.offsetDateTime = sp.moment.make(this.data.endDate).diff(
+                      sp.moment.make(this.data.startDate), 'milliseconds');
                 }
               }
               if (this.defaultVisibility && !this.data.event.visibility) {
@@ -302,10 +297,6 @@
 
             this.$onInit = function() {
               this.offsetDateTime = 1 * 60 * 60 * 1000;
-              this.visibleCalendars = visibleFilter(this.calendars, true);
-              if (this.visibleCalendars && !this.visibleCalendars.length) {
-                this.visibleCalendars = defaultFilter(this.calendars, true);
-              }
               this.visibilities = SilverpeasCalendarConst.visibilities;
               this.priorities = SilverpeasCalendarConst.priorities;
               initialize();
@@ -352,13 +343,15 @@
               return this.recurrenceType  === 'MONTH';
             }.bind(this);
             this.getDefaultMonthDayNumber = function() {
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(undefined, this.data.event.calendar.zoneId);
               var startDate = this.data.startDate ?
-                   moment(this.data.startDate, 'YYYY-MM-DD') :  moment();
-              return  moment(startDate).date();
+                  sp.moment.make(this.data.startDate, 'YYYY-MM-DD') :  defaultMoment;
+              return  sp.moment.make(startDate).date();
             }.bind(this);
             this.getDefaultMonthNthDay = function() {
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(undefined, this.data.event.calendar.zoneId);
               var startDate = this.data.startDate ?
-                   moment(this.data.startDate, 'YYYY-MM-DD') :  moment();
+                  sp.moment.make(this.data.startDate, 'YYYY-MM-DD') :  defaultMoment;
               var nth = sp.moment.nthDayOfMonth(startDate);
               return (nth > 4) ? -1 : nth;
             }.bind(this);
@@ -454,14 +447,14 @@
                       ceo.event.recurrence.endDate = '';
                       break;
                     case 'THE' :
-                      var $endDate = SilverpeasCalendarTools.moment(dataRecurrence.endDate);
+                      var $endDate = SilverpeasCalendarTools.moment.parseZone(dataRecurrence.endDate);
                       if (ceo.event.onAllDay) {
                         $endDate = $endDate.stripTime();
                       } else {
                         $endDate = $endDate.startOf('day');
                       }
                       ceo.event.recurrence.count = '';
-                      ceo.event.recurrence.endDate = $endDate.toISOString();
+                      ceo.event.recurrence.endDate = $endDate.format();
                       break;
                     default :
                       ceo.event.recurrence.count = '';
@@ -472,8 +465,9 @@
             };
 
             var initialize = function() {
-              var startDate = this.data.startDate ?  moment(this.data.startDate) :  moment();
-              var endDate = this.data.endDate ?  moment(this.data.endDate) :  moment(startDate);
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
+              var startDate = this.data.startDate ?  sp.moment.make(this.data.startDate) :  defaultMoment;
+              var endDate = this.data.endDate ?  sp.moment.make(this.data.endDate) :  sp.moment.make(startDate);
 
               var dataRecurrence = this.data.event.recurrence ? this.data.event.recurrence : {};
               this.data.event.recurrence = dataRecurrence;
@@ -532,8 +526,8 @@
               }
               if (!dataRecurrence.endDate) {
                 $timeout(function() {
-                  endDate =  moment(this.data.endDate).add(2, 'years');
-                  dataRecurrence.endDate = endDate.toISOString();
+                  endDate =  sp.moment.make(this.data.endDate).add(2, 'years');
+                  dataRecurrence.endDate = endDate.format();
                 }.bind(this), 0);
               }
             }.bind(this);

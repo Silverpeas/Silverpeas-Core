@@ -26,6 +26,7 @@ package org.silverpeas.core.ui;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,22 +39,13 @@ import java.util.List;
  */
 public class DisplayI18NHelper {
 
+  private static final String ZONE_ID_COMPOSED_WITH_LETTERS_ONLY = "(?i)^[a-z_]+/[a-z_]+";
   private static List<String> languages = new ArrayList<>();
   private static String defaultLanguage;
+  private static List<String> zoneIds = new ArrayList<>();
+  private static ZoneId defaultZoneId;
 
-  static {
-    SettingBundle settings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.personalization.settings.personalizationPeasSettings");
-
-    defaultLanguage = settings.getString("DefaultLanguage");
-
-    String[] supportedLanguages = settings.getString("languages").split(",");
-    for (String lang: supportedLanguages) {
-      lang = lang.trim();
-      if (!lang.isEmpty()) {
-        languages.add(lang);
-      }
-    }
+  private DisplayI18NHelper() {
   }
 
   /**
@@ -65,11 +57,27 @@ public class DisplayI18NHelper {
   }
 
   /**
+   * Returns the default zone id used dor user interface (UI)
+   * @return an instance of {@link ZoneId}.
+   */
+  public static ZoneId getDefaultZoneId() {
+    return defaultZoneId;
+  }
+
+  /**
    * Returns all languages available to display user interface
    * @return a List of String (ie : 'fr', 'en' or another two-letters code)
    */
   public static List<String> getLanguages() {
     return Collections.unmodifiableList(languages);
+  }
+
+  /**
+   * Returns all zone identifiers available for user interface
+   * @return a List of String.
+   */
+  public static List<String> getZoneIds() {
+    return Collections.unmodifiableList(zoneIds);
   }
 
   /**
@@ -85,6 +93,34 @@ public class DisplayI18NHelper {
     return getDefaultLanguage();
   }
 
-  private DisplayI18NHelper() {
+  /**
+   * Verifies if the given user zone id is handled by the server.
+   * @return the given user zone id if it is handled by the server, the default user zone id
+   * otherwise.
+   */
+  public static ZoneId verifyZoneId(String zoneId) {
+    if (zoneIds.contains(zoneId)) {
+      return ZoneId.of(zoneId);
+    }
+    return getDefaultZoneId();
+  }
+
+  static {
+    SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.personalization.settings.personalizationPeasSettings");
+
+    defaultLanguage = settings.getString("DefaultLanguage");
+    defaultZoneId = ZoneId.of(settings.getString("DefaultZoneId"));
+
+    String[] supportedLanguages = settings.getString("languages").split(",");
+    for (String lang: supportedLanguages) {
+      lang = lang.trim();
+      if (!lang.isEmpty()) {
+        languages.add(lang);
+      }
+    }
+
+    ZoneId.getAvailableZoneIds().stream().filter(s -> s.matches(ZONE_ID_COMPOSED_WITH_LETTERS_ONLY))
+        .sorted().forEach(s -> zoneIds.add(s));
   }
 }

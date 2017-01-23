@@ -179,6 +179,8 @@ class WebCommonLookAndFeel {
 
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
         GraphicElementFactory.MOMENT_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
+        GraphicElementFactory.MOMENT_TIMEZONE_JS));
 
     // append javascript
     // append javascript
@@ -193,8 +195,6 @@ class WebCommonLookAndFeel {
         .append(addGlobalJSVariable(controller))
         .append("</script>\n");
 
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
-        GraphicElementFactory.MOMENT_JS));
     code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERY_JS));

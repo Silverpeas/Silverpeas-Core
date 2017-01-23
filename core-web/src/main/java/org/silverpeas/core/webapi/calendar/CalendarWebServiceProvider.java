@@ -33,6 +33,7 @@ import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEvent.CalendarEventModificationResult;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData;
+import org.silverpeas.core.calendar.event.CalendarEventUtil;
 import org.silverpeas.core.calendar.event.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
@@ -58,6 +59,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.calendar.event.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
@@ -320,7 +322,7 @@ public class CalendarWebServiceProvider {
         endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
       }
       successMessage(bundleKey, result.getUpdatedEvent().getTitle(),
-          getMessager().formatDate(endDate));
+          getMessager().formatDate(getDateWithOffset(event, endDate)));
     }
 
     final List<CalendarEvent> events = new ArrayList<>();
@@ -372,7 +374,8 @@ public class CalendarWebServiceProvider {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
         endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
       }
-      successMessage(bundleKey, event.getTitle(), getMessager().formatDate(endDate));
+      successMessage(bundleKey, event.getTitle(),
+          getMessager().formatDate(getDateWithOffset(event, endDate)));
     }
 
     return result.getUpdatedEvent();
@@ -441,7 +444,8 @@ public class CalendarWebServiceProvider {
           case UNIQUE:
             successMessage(
                 "calendar.message.event.occurrence.attendee.participation.updated.unique",
-                event.getTitle(), getMessager().formatDate(data.getOriginalStartDate()));
+                event.getTitle(),
+                getMessager().formatDate(getDateWithOffset(event, data.getOriginalStartDate())));
             break;
         }
 

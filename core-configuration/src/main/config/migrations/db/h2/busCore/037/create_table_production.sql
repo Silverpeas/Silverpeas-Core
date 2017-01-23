@@ -1,17 +1,18 @@
 CREATE TABLE UniqueId (
-	maxId BIGINT NOT NULL ,
+	maxId BIGINT NOT NULL,
 	tableName varchar(100) NOT NULL
 );
 
 CREATE TABLE Personalization (
 	id varchar(100) NOT NULL ,
 	languages varchar(100) NULL,
+	zoneId varchar(100) NULL,
 	look varchar(50) NULL,
 	personalWSpace varchar(50) NULL,
 	thesaurusStatus int NOT NULL,
-	dragAndDropStatus int NOT NULL default 1,
-  webdavEditingStatus int NOT NULL default 0,
-	menuDisplay varchar(50) DEFAULT 'DEFAULT'
+	dragAndDropStatus int DEFAULT 1,
+  webdavEditingStatus int DEFAULT 0,
+  menuDisplay varchar(50) DEFAULT 'DEFAULT'
 );
 
 
@@ -31,9 +32,8 @@ CREATE TABLE subscribe (
   space              VARCHAR(50)  NOT NULL,
   instanceId         VARCHAR(50)  NOT NULL,
   creatorId          VARCHAR(100) NOT NULL,
-  creationDate       DATETIME     NOT NULL
+  creationDate       TIMESTAMP    NOT NULL
 );
-
 
 CREATE TABLE model_contact (
 	id int NOT NULL ,
@@ -52,7 +52,7 @@ CREATE TABLE model (
 	imageName varchar(100) NULL ,
 	htmlDisplayer varchar(3500) NOT NULL ,
 	htmlEditor varchar(3500) NOT NULL ,
-	partId int NOT NULL default 1
+	partId int default 1 NOT NULL
 );
 
 CREATE TABLE calendarJournal (
@@ -135,7 +135,7 @@ CREATE TABLE ST_FormDesigner_Connectors (
 	URL varchar(1000) NOT NULL,
 	LOGIN varchar(1000) NOT NULL,
 	PASSWD varchar(1000) NULL,
-	SQLQUERY varchar(5000) NOT NULL,
+	SQLQUERY varchar(4000) NOT NULL,
 	TYPE varchar(50) NOT NULL
 );
 

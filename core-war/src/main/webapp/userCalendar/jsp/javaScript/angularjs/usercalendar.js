@@ -27,8 +27,9 @@ var userCalendar = angular.module('silverpeas.usercalendar',
     ['silverpeas.services', 'silverpeas.components', 'silverpeas.controllers']);
 
 /* the main controller of the application */
-userCalendar.controller('mainController', ['$controller', 'context', 'CalendarService', '$scope',
-  function($controller, context, CalendarService, $scope) {
+userCalendar.controller('mainController',
+    ['$controller', 'context', 'CalendarService', '$scope', 'visibleFilter', 'defaultFilter',
+      function($controller, context, CalendarService, $scope, visibleFilter, defaultFilter) {
     $controller('silverpeasCalendarController', {$scope : $scope});
 
     $scope.getCalendarService = function() {
@@ -54,6 +55,13 @@ userCalendar.controller('mainController', ['$controller', 'context', 'CalendarSe
     $scope.editEventOccurrence = function(calendars, occurrence) {
       var uri = context.componentUriBase + 'calendars/events/' + occurrence.event.id + '/edit';
       _goToOccurrencePage(uri, calendars, occurrence);
+    };
+    $scope.getVisibleCalendars = function(calendars) {
+      var visibleCalendars = visibleFilter(calendars, true);
+      if (visibleCalendars && !visibleCalendars.length) {
+        visibleCalendars = defaultFilter(calendars, true);
+      }
+      return visibleCalendars;
     };
     $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[1].name;
   }]);
@@ -86,9 +94,12 @@ userCalendar.controller('editController', ['$controller', 'context', 'CalendarSe
   function($controller, context, CalendarService, $scope) {
     $controller('mainController', {$scope : $scope});
 
-    $scope.calendars = $scope.navigation.getCalendars();
+    $scope.calendars = $scope.getVisibleCalendars($scope.navigation.getCalendars());
     $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
         function(reloadedOccurrence) {
+          if (!reloadedOccurrence.event.calendar && $scope.calendars && $scope.calendars.length) {
+            reloadedOccurrence.event.calendar = $scope.calendars[0];
+          }
           $scope.ceo = reloadedOccurrence;
         });
   }]);

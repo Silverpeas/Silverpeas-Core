@@ -58,5 +58,8 @@
         <span class="txtnav">{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
       </div>
     </div>
+    <div id="calendar-timezone">
+      <span>{{$ctrl.timeWindowViewContext.zoneId}}</span>
+    </div>
   </div>
 </div>

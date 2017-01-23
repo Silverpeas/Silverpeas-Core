@@ -40,6 +40,7 @@
 <fmt:message var="descriptionLabel" key="GML.description"/>
 <fmt:message var="locationLabel" key="calendar.label.event.location"/>
 <fmt:message var="onAllDayLabel" key="calendar.label.event.onallday"/>
+<fmt:message var="timezoneLabel" key="calendar.label.timezone"/>
 <fmt:message var="startDateLabel" key="GML.dateBegin"/>
 <fmt:message var="endDateLabel" key="GML.dateEnd"/>
 <fmt:message var="atTimeLabel" key="GML.at"/>
@@ -53,6 +54,7 @@
   <span ng-init="$ctrl.labels.description = '${silfn:escapeJs(descriptionLabel)}'"></span>
   <span ng-init="$ctrl.labels.location = '${silfn:escapeJs(locationLabel)}'"></span>
   <span ng-init="$ctrl.labels.onAllDay = '${silfn:escapeJs(onAllDayLabel)}'"></span>
+  <span ng-init="$ctrl.labels.timezone = '${silfn:escapeJs(timezoneLabel)}'"></span>
   <span ng-init="$ctrl.labels.startDate = '${silfn:escapeJs(startDateLabel)}'"></span>
   <span ng-init="$ctrl.labels.endDate = '${silfn:escapeJs(endDateLabel)}'"></span>
   <span ng-init="$ctrl.labels.atTime = '${silfn:escapeJs(atTimeLabel)}'"></span>
@@ -63,12 +65,12 @@
 <fieldset class="skinFieldset">
   <legend>{{$ctrl.labels.mainInfo}}</legend>
   <div class="fields">
-    <div class="field" ng-if="$ctrl.visibleCalendars">
+    <div class="field" ng-if="$ctrl.calendars">
       <label class="txtlibform" for="sp_cal_event_form_main_c">{{$ctrl.labels.calendar}}</label>
       <div class="champs">
-        <span class="txtnav" ng-if="$ctrl.visibleCalendars.length == 1">{{$ctrl.data.event.calendar.title}}</span>
-        <select ng-if="$ctrl.visibleCalendars.length > 1" ng-model="$ctrl.data.event.calendar"
-                ng-options="calendar as calendar.title for calendar in $ctrl.visibleCalendars | orderBy: 'createdDate' track by calendar.id"
+        <span class="txtnav" ng-if="$ctrl.calendars.length == 1">{{$ctrl.data.event.calendar.title}}</span>
+        <select ng-if="$ctrl.calendars.length > 1" ng-model="$ctrl.data.event.calendar"
+                ng-options="calendar as calendar.title for calendar in $ctrl.calendars | orderBy: 'createdDate' track by calendar.id"
                 id="sp_cal_event_form_main_c" class="txtnav">
         </select>
       </div>
@@ -88,10 +90,17 @@
       </div>
     </div>
     <div class="field">
+      <label class="txtlibform" for="sp_cal_event_form_main_tz">{{$ctrl.labels.timezone}}</label>
+      <div class="champs">
+        <span>{{$ctrl.data.event.calendar.zoneId}}</span>
+      </div>
+    </div>
+    <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_sd">{{$ctrl.labels.startDate}}</label>
       <div class="champs">
         <silverpeas-date-picker date-id="sp_cal_event_form_main_sd"
                                 name="startDate"
+                                zone-id="$ctrl.data.event.calendar.zoneId"
                                 date="$ctrl.data.startDate"
                                 status="$ctrl.data.startDateStatus"
                                 mandatory="true">
@@ -99,6 +108,7 @@
         <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
                                 time-id="sp_cal_event_form_main_sdt"
                                 name="startTime"
+                                zone-id="$ctrl.data.event.calendar.zoneId"
                                 time="$ctrl.data.startDate"
                                 status="$ctrl.data.startTimeStatus"
                                 mandatory="true">
@@ -111,13 +121,15 @@
       <div class="champs">
         <silverpeas-date-picker date-id="sp_cal_event_form_main_ed"
                                 name="endDate"
+                                zone-id="$ctrl.data.event.calendar.zoneId"
                                 date="$ctrl.data.endDate"
                                 status="$ctrl.data.endDateStatus"
                                 mandatory="true">
         </silverpeas-date-picker>
         <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
                                 time-id="sp_cal_event_form_main_edt"
-                                name="endTime"µ
+                                name="endTime"
+                                zone-id="$ctrl.data.event.calendar.zoneId"
                                 time="$ctrl.data.endDate"
                                 status="$ctrl.data.endTimeStatus"
                                 mandatory="true">

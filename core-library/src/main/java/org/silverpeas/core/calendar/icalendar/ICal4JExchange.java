@@ -119,19 +119,19 @@ public class ICal4JExchange implements ICalendarExchange {
       calendarIcs.getProperties().add(Method.PUBLISH);
 
       // Adding VTimeZone component (mandatory with Outlook)
-      TimeZone tz = iCal4JDateCodec.getUtcTimeZone();
+      TimeZone tz = iCal4JDateCodec.getTimeZone(anExport.getCalendar().getZoneId());
       calendarIcs.getComponents().add(tz.getVTimeZone());
 
       try (Stream<CalendarEvent> events = anExport.streamCalendarEvents()) {
         events.forEach(event -> {
 
           // ICal4J period
-          final Date startDate = iCal4JDateCodec.encode(event.getStartDate());
+          final Date startDate = iCal4JDateCodec.encode(event, event.getStartDate());
           final Date endDate;
           if (event.isOnAllDay() && !event.getStartDate().equals(event.getEndDate())) {
-            endDate = iCal4JDateCodec.encode(event.getEndDate().plus(1, ChronoUnit.DAYS));
+            endDate = iCal4JDateCodec.encode(event, event.getEndDate().plus(1, ChronoUnit.DAYS));
           } else {
-            endDate = iCal4JDateCodec.encode(event.getEndDate());
+            endDate = iCal4JDateCodec.encode(event, event.getEndDate());
           }
           long durationInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
@@ -148,7 +148,7 @@ public class ICal4JExchange implements ICalendarExchange {
               new VEvent(startDate, endDate, title);
           iCalEvent.getProperties().add(new Created(createdDate));
           iCalEvent.getProperties().add(new LastModified(lastUpdateDate));
-          iCalEvent.getProperties().add(new Sequence(event.getVersion().intValue()));
+          iCalEvent.getProperties().add(new Sequence(0));
 
           // Set UID which is the one of the event
           final String eventId =
@@ -256,8 +256,8 @@ public class ICal4JExchange implements ICalendarExchange {
                 endDateAttPartRec =
                     iCal4JDateCodec.encode(dateKey.plusSeconds(durationInSeconds).toLocalDate());
               } else {
-                startDateAttPartRec = iCal4JDateCodec.encode(dateKey);
-                endDateAttPartRec = iCal4JDateCodec.encode(dateKey.plusSeconds(durationInSeconds));
+                startDateAttPartRec = iCal4JDateCodec.encode(event, dateKey);
+                endDateAttPartRec = iCal4JDateCodec.encode(event, dateKey.plusSeconds(durationInSeconds));
               }
               iCalAttPartRec.getProperties().add(new RecurrenceId(startDateAttPartRec));
               ((DtStart) iCalAttPartRec.getProperty(Property.DTSTART)).setDate(startDateAttPartRec);

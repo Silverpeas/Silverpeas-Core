@@ -75,7 +75,7 @@
             }
           }, SilverpeasCalendarTools.extractEventOccurrenceEntityData(context.eventOccurrence));
           if (context.startMoment) {
-            context.eventOccurrence.startDate = context.startMoment.toISOString();
+            context.eventOccurrence.startDate = context.startMoment.format();
             if (!context.startMoment.hasTime()) {
               context.eventOccurrence.event.onAllDay = true;
             }

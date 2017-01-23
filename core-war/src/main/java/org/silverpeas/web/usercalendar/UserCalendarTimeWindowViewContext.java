@@ -25,6 +25,8 @@ package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.web.calendar.CalendarTimeWindowViewContext;
 
+import java.time.ZoneId;
+
 /**
  * The specific time window view context for user calendar component which inherits of all behaviors
  * of centralized {@link CalendarTimeWindowViewContext}.
@@ -36,8 +38,10 @@ public class UserCalendarTimeWindowViewContext extends CalendarTimeWindowViewCon
    * Constructs a new calendar view of the specified user calendar.<br/>
    * @param componentInstanceId the component instance identifier.
    * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
+   * @param zoneId the zoneId to take into account (ZoneId.of("Europe/Paris") for example).
    */
-  UserCalendarTimeWindowViewContext(final String componentInstanceId, final String locale) {
-    super(componentInstanceId, locale);
+  UserCalendarTimeWindowViewContext(final String componentInstanceId, final String locale, final
+      ZoneId zoneId) {
+    super(componentInstanceId, locale, zoneId);
   }
 }

@@ -28,8 +28,6 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.personalization.UserPreferences;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,12 +36,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,17 +67,18 @@ public class PersonalizationRepositoryTest {
   public static final Operation TABLES_CREATION =
       Operations.sql("CREATE TABLE IF NOT EXISTS Personalization (" +
           "id varchar(100) PRIMARY KEY NOT NULL, languages varchar(100) NULL, " +
+          "zoneId varchar(100) NULL, " +
           "look varchar(50) NULL, personalWSpace varchar(50) NULL, " +
           "thesaurusStatus int NOT NULL, dragAndDropStatus int DEFAULT 1, " +
           "onlineEditingStatus int DEFAULT 1, webdavEditingStatus int DEFAULT 0, " +
           "menuDisplay varchar(50) DEFAULT 'DISABLE')");
   public static final Operation CLEAN_UP = Operations.deleteAllFrom("Personalization");
   public static final Operation USER_PREFERENCE_SET_UP = Operations.insertInto("Personalization")
-      .columns("id", "languages", "look", "personalwspace", "thesaurusstatus", "draganddropstatus",
+      .columns("id", "languages", "zoneId", "look", "personalwspace", "thesaurusstatus", "draganddropstatus",
           "webdaveditingstatus", "menuDisplay")
-      .values("1000", "fr", "Initial", "", 0, 1, 1, "DISABLE")
-      .values("1010", "en", "Silverpeas", "WA26", 0, 1, 1, "ALL")
-      .values("2020", "de", "Silverpeas_V6", "WA26", 1, 0, 1, "BOOKMARKS").build();
+      .values("1000", "fr", "Europe/Paris", "Initial", "", 0, 1, 1, "DISABLE")
+      .values("1010", "en", "UTC", "Silverpeas", "WA26", 0, 1, 1, "ALL")
+      .values("2020", "de", "Europe/Berlin", "Silverpeas_V6", "WA26", 1, 0, 1, "BOOKMARKS").build();
 
   @Before
   public void prepareDataSource() {
@@ -139,8 +141,8 @@ public class PersonalizationRepositoryTest {
     assertThat(dao.getById(userId), nullValue());
 
     final UserPreferences expectedDetail_1020 =
-        new UserPreferences(userId, "fr", "Test", "WA500", false, false, false,
-            UserMenuDisplay.BOOKMARKS);
+        new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Test", "WA500", false, false,
+            false, UserMenuDisplay.BOOKMARKS);
 
     Transaction.performInOne(() -> dao.save(expectedDetail_1020));
 
@@ -151,8 +153,8 @@ public class PersonalizationRepositoryTest {
 
     userId = "1030";
     final UserPreferences expectedDetail_1030 =
-        new UserPreferences(userId, "en", "Silverpeas", "WA26", true, false, false,
-            UserMenuDisplay.DISABLE);
+        new UserPreferences(userId, "en", ZoneId.of("UTC"), "Silverpeas", "WA26", true, false,
+            false, UserMenuDisplay.DISABLE);
 
     Transaction.performInOne(() -> dao.save(expectedDetail_1030));
 
@@ -163,8 +165,8 @@ public class PersonalizationRepositoryTest {
 
     userId = "1040";
     final UserPreferences expectedDetail_1040 =
-        new UserPreferences(userId, "de", "Silverpeas_V", "WA38", false, true, false,
-            UserMenuDisplay.ALL);
+        new UserPreferences(userId, "de", ZoneId.of("Europe/Berlin"), "Silverpeas_V", "WA38", false,
+            true, false, UserMenuDisplay.ALL);
 
     Transaction.performInOne(() -> dao.save(expectedDetail_1040));
 
@@ -175,8 +177,8 @@ public class PersonalizationRepositoryTest {
 
     userId = "1050";
     final UserPreferences expectedDetail_1050 =
-        new UserPreferences(userId, "dl", "Silverpeas_V6", "WA38", false, false, true,
-            UserMenuDisplay.DEFAULT);
+        new UserPreferences(userId, "dl", ZoneId.of("Europe/Berlin"), "Silverpeas_V6", "WA38",
+            false, false, true, UserMenuDisplay.DEFAULT);
 
     Transaction.performInOne(() -> dao.save(expectedDetail_1050));
 
@@ -225,12 +227,12 @@ public class PersonalizationRepositoryTest {
   private UserPreferences actualUserPreferencesForUserId(String userId) {
     try {
       return JdbcSqlQuery.createSelect(
-          "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, " +
+          "id, languages, zoneId, look, personalWSpace, thesaurusStatus, dragAndDropStatus, " +
               "webdavEditingStatus, menuDisplay FROM personalization where " +
               "id = ?", userId).executeUnique(
-          row -> new UserPreferences(row.getString(1), row.getString(2), row.getString(3),
-              row.getString(4), row.getBoolean(5), row.getBoolean(6), row.getBoolean(7),
-              UserMenuDisplay.valueOf(row.getString(8))));
+          row -> new UserPreferences(row.getString(1), row.getString(2),
+              ZoneId.of(row.getString(3)), row.getString(4), row.getString(5), row.getBoolean(6),
+              row.getBoolean(7), row.getBoolean(8), UserMenuDisplay.valueOf(row.getString(9))));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

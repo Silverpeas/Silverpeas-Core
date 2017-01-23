@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -145,8 +144,8 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   private VEvent fromCalendarEvent(CalendarEvent event) {
-    Date dtStart = iCal4JDateCodec.encode(event.getStartDate());
-    Date dtEnd = iCal4JDateCodec.encode(event.getEndDate());
+    Date dtStart = iCal4JDateCodec.encode(event, event.getStartDate());
+    Date dtEnd = iCal4JDateCodec.encode(event, event.getEndDate());
     VEvent vEvent = new VEvent(dtStart, dtEnd, event.getTitle());
     vEvent.getProperties().add(new Uid(event.getId()));
     if (event.isRecurrent()) {

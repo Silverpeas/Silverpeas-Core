@@ -30,6 +30,7 @@ import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.date.Temporal;
 
 import javax.inject.Singleton;
@@ -55,18 +56,13 @@ public class ICal4JDateCodec {
   private static final String ICAL_UTC_PATTERN = ICAL_LOCAL_PATTERN + "'Z'";
   private static final String ICAL_DATE_PATTERN = "yyyyMMdd";
 
-  private TimeZone utcTimeZone;
-
   /**
-   * Gets the UTC time zone
-   * @return the ICal UTC TimeZone instance.
+   * Indicates if the date of an event must be encoded in UTC.
+   * @param event the event data from which to verify the conditions.
+   * @return true if dates must be encoded into UTC, false otherwise.
    */
-  public TimeZone getUtcTimeZone() {
-    if (utcTimeZone == null) {
-      TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-      utcTimeZone = registry.getTimeZone("UTC");
-    }
-    return utcTimeZone;
+  public boolean isEventDateToBeEncodedIntoUtc(final CalendarEvent event) {
+    return event.isOnAllDay() || !event.isRecurrent();
   }
 
   /**
@@ -77,6 +73,20 @@ public class ICal4JDateCodec {
    */
   public Date encode(final Temporal<?> aDate) throws SilverpeasRuntimeException {
     return encode(aDate, false);
+  }
+
+  /**
+   * Encodes a temporal data into an iCal4J date.
+   * @param event the event data to use to encode the given temporal.
+   * @param aTemporal the temporal data to encode which have to be extracted from the given event.
+   * @return an iCal4J date.
+   * @throws SilverpeasRuntimeException if the encoding fails.
+   */
+  public Date encode(final CalendarEvent event, final java.time.temporal.Temporal aTemporal)
+      throws SilverpeasRuntimeException {
+    final java.time.temporal.Temporal temporal = isEventDateToBeEncodedIntoUtc(event) ? aTemporal :
+        ((OffsetDateTime) aTemporal).atZoneSameInstant(event.getCalendar().getZoneId());
+    return encode(temporal);
   }
 
   /**
@@ -204,8 +214,12 @@ public class ICal4JDateCodec {
   }
 
   private TimeZone getTimeZone(final ZonedDateTime date) {
+    return getTimeZone(date.getZone());
+  }
+
+  public TimeZone getTimeZone(final ZoneId zoneId) {
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    return registry.getTimeZone(date.getZone().getId());
+    return registry.getTimeZone(zoneId.getId());
   }
 
   /**

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,6 +36,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -50,6 +52,7 @@ public class CalendarEntity implements WebEntity {
   private URI uri;
   private String id;
   private String title;
+  private String zoneId;
   private boolean userMainPersonal;
   private boolean userPersonal;
   private String ownerName;
@@ -98,6 +101,14 @@ public class CalendarEntity implements WebEntity {
     this.title = title;
   }
 
+  public String getZoneId() {
+    return zoneId;
+  }
+
+  public void setZoneId(final String zoneId) {
+    this.zoneId = zoneId;
+  }
+
   @XmlElement
   public boolean isUserMainPersonal() {
     return userMainPersonal;
@@ -141,6 +152,7 @@ public class CalendarEntity implements WebEntity {
     User currentUser = User.getCurrentRequester();
     this.id = calendar.getId();
     this.title = calendar.getTitle();
+    this.zoneId = calendar.getZoneId().toString();
     this.userMainPersonal = calendar.isMainPersonalOf(currentUser);
     this.userPersonal = calendar.isPersonalOf(currentUser);
     this.ownerName = calendar.getCreator().getDisplayedName();
@@ -157,6 +169,7 @@ public class CalendarEntity implements WebEntity {
     builder.append("uri", getURI());
     builder.append("id", getId());
     builder.append("title", getTitle());
+    builder.append("zoneId", getZoneId());
     return builder.toString();
   }
 
@@ -169,6 +182,11 @@ public class CalendarEntity implements WebEntity {
    */
   public Calendar merge(Calendar calendar) {
     calendar.setTitle(getTitle());
+    if (StringUtil.isDefined(getZoneId())) {
+      calendar.setZoneId(ZoneId.of(getZoneId()));
+    } else {
+      calendar.setZoneId(User.getCurrentRequester().getUserPreferences().getZoneId());
+    }
     return calendar;
   }
 }

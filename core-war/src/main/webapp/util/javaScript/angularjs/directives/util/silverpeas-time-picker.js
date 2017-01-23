@@ -32,6 +32,7 @@
           scope : {
             timeId: '@',
             name: '@',
+            zoneId : '=',
             time : '=',
             mandatory : '=',
             status : '=?',
@@ -50,14 +51,15 @@
               this.status.empty = false;
               this.status.unknown = false;
               if (this.status.valid) {
-                var $timeToSet = moment(this.formattedTime, 'HH:mm');
-                var $time = sp.moment.adjustTimeMinutes(moment().startOf('minutes'));
+                var $timeToSet = sp.moment.make(this.formattedTime, 'HH:mm');
+                var $time = sp.moment.adjustTimeMinutes(
+                    sp.moment.atZoneIdSimilarLocal(moment(), this.zoneId).startOf('minutes'));
                 if (this.time) {
-                  $time = moment(this.time);
+                  $time = sp.moment.make(this.time);
                 }
                 $time.hour($timeToSet.hour());
                 $time.minute($timeToSet.minute());
-                this.time = $time.toISOString();
+                this.time = $time.format();
               } else {
                 if (!this.formattedTime) {
                   this.status.empty = true;
@@ -69,7 +71,7 @@
 
             $scope.$watch('$ctrl.time', function(time) {
               if (time && /^[0-9].+/.exec(time)) {
-                this.formattedTime = moment(time).format('HH:mm');
+                this.formattedTime = sp.moment.displayAsTime(time);
               } else {
                 this.formattedTime = '';
               }
@@ -82,7 +84,7 @@
               this.status = this.status ? this.status : {};
               this.formattedTime = '';
               if (this.time) {
-                this.formattedTime = moment(this.time).format('HH:mm');
+                this.formattedTime = sp.moment.displayAsTime(this.time);
               }
               this.valueChanged();
             }.bind(this);

@@ -32,6 +32,7 @@ import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.http.UnescapeHtml;
 
 import javax.ws.rs.FormParam;
+import java.time.ZoneId;
 
 /**
  * This class is a user data container which the data are retrieved from an HTTP request that
@@ -114,6 +115,12 @@ public class UserRequestData {
    */
   @FormParam("SelectedUserLanguage")
   private String language;
+
+  /**
+   * The preferred zone identifier of the user.
+   */
+  @FormParam("SelectedUserZoneId")
+  private String zoneId;
 
   /**
    * The indicator that enables the limitation on the maximum number of recipient the user can
@@ -269,6 +276,14 @@ public class UserRequestData {
 
   public void setExtraMessage(final String extraMessage) {
     this.extraMessage = extraMessage;
+  }
+
+  public ZoneId getZoneId() {
+    return DisplayI18NHelper.verifyZoneId(zoneId);
+  }
+
+  public void setZoneId(final ZoneId zoneId) {
+    this.zoneId = zoneId.toString();
   }
 
   protected boolean getUserManualNotifReceiverLimitEnabled() {

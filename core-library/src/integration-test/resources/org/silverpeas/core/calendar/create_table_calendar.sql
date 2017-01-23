@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Calendar (
   id             VARCHAR(40)   NOT NULL,
   instanceId     VARCHAR(30)   NOT NULL,
   title          VARCHAR(2000) NOT NULL,
+  zoneId         VARCHAR(40)   NOT NULL,
   createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate TIMESTAMP     NOT NULL,

@@ -109,7 +109,7 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Gets the date or date time at which this occurrence should starts
+   * Gets the date or date time at which this occurrence should starts.
    * @return the start date or date time of the event occurrence.
    */
   public Temporal getStartDate() {
@@ -117,7 +117,7 @@ public class CalendarEventOccurrence {
   }
 
   /**
-   * Gets the date or date time at which this event should ends
+   * Gets the date or date time at which this event should ends.
    * @return the end date or date time of the event occurrence.
    */
   public Temporal getEndDate() {

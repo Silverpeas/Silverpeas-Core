@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.calendar.event;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -47,5 +50,29 @@ public class CalendarEventUtil {
       title += '(' + event.getCalendar().getTitle() + ')';
     }
     return title;
+  }
+
+  /**
+   * Gets the given temporal according to the calendar event data.<br/>
+   * If the event is on all days, no offset is applied.
+   * @param event the event data.
+   * @param temporal the temporal to format.
+   * @return the date, with offset if the event is not on all days.
+   */
+  public static Temporal getDateWithOffset(final CalendarEvent event, final Temporal temporal) {
+    return event.isOnAllDay() ? temporal :
+        ((OffsetDateTime) temporal).atZoneSameInstant(event.getCalendar().getZoneId())
+            .toOffsetDateTime();
+  }
+
+  /**
+   * Formats the given temporal according to the calendar event data.<br/>
+   * If the event is on all day, no offset is applied.
+   * @param event the event data.
+   * @param temporal the temporal to format.
+   * @return the formatted date.
+   */
+  public static String formatDateWithOffset(final CalendarEvent event, final Temporal temporal) {
+    return getDateWithOffset(event, temporal).toString();
   }
 }

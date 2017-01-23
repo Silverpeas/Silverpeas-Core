@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
@@ -32,17 +33,21 @@ import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.*;
@@ -244,6 +249,16 @@ public class CalendarEventOccurrenceGenerationTest {
             .recur(Recurrence.every(MONTH)
                 .on(DayOfWeekOccurrence.all(THURSDAY), DayOfWeekOccurrence.nth(3, FRIDAY))
                 .upTo(date(2016, 6, 30))));
+
+    Calendar calendar = new Calendar();
+    calendar.setZoneId(ZoneId.of("UTC"));
+    for (CalendarEvent event : events) {
+      try {
+        FieldUtils.writeDeclaredField(event, "calendar", calendar, true);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    }
     return events;
   }
 
@@ -273,5 +288,11 @@ public class CalendarEventOccurrenceGenerationTest {
 
   private static OffsetDateTime dateTime(int year, int month, int day, int hour, int minute) {
     return OffsetDateTime.of(year, month, day, hour, minute, 0, 0, ZoneOffset.UTC);
+  }
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
   }
 }

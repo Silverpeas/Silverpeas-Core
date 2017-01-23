@@ -55,6 +55,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,8 @@ public class ICal4JExchangeImportTest {
 
   private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
-  private Calendar calendar = CalendarMockBuilder.from("instanceId").withId("calendarUuid").build();
+  private Calendar calendar = CalendarMockBuilder.from("instanceId").withId("calendarUuid")
+      .atZoneId(ZoneId.of("Europe/Paris")).build();
 
   @Inject
   private Provider<ICalendarExchange> iCalendarExchangeProvider;
@@ -105,7 +107,7 @@ public class ICal4JExchangeImportTest {
     assertThat(reason + "getTitle",
         actual.getTitle(), is(expected.getTitle()));
     assertThat(reason + "getDescription",
-        actual.getDescription(), is(expected.getDescription()));
+        actual.getDescription(), is(defaultStringIfNotDefined(expected.getDescription())));
     assertThat(reason + "getLocation",
         actual.getLocation(), is(defaultStringIfNotDefined(expected.getLocation())));
     assertThat(reason + "isRecurrent",

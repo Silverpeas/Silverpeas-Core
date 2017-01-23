@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.personalization.service;
 
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.dao.PersonalizationRepository;
+import org.silverpeas.core.personalization.notification.UserPreferenceEventNotifier;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -68,7 +71,15 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
+    final UserPreferences previous =
+        Transaction.performInNew(() -> personalizationRepository.getById(userPreferences.getId()));
     personalizationRepository.saveAndFlush(userPreferences);
+    if (previous == null) {
+      UserPreferenceEventNotifier.get().notifyEventOn(ResourceEvent.Type.CREATION, userPreferences);
+    } else {
+      UserPreferenceEventNotifier.get()
+          .notifyEventOn(ResourceEvent.Type.UPDATE, previous, userPreferences);
+    }
   }
 
   @Override
@@ -91,8 +102,8 @@ public class DefaultPersonalizationService implements PersonalizationService {
   }
 
   private UserPreferences getDefaultUserSettings(String userId) {
-    return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        getDefaultThesaurusStatus(), getDefaultDragNDropStatus(), getDefaultWebDAVEditingStatus(),
-        getDefaultMenuDisplay());
+    return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(),
+        DisplayI18NHelper.getDefaultZoneId(), DEFAULT_LOOK, "", getDefaultThesaurusStatus(),
+        getDefaultDragNDropStatus(), getDefaultWebDAVEditingStatus(), getDefaultMenuDisplay());
   }
 }

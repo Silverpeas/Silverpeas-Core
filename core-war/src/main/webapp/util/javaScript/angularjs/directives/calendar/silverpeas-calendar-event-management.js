@@ -55,12 +55,19 @@
               return this.occurrence && this.occurrence.event.recurrence;
             }.bind(this);
             this.isFirstEventOccurrence = function() {
-              return this.occurrence && this.occurrence.lastStartDate === this.occurrence.event.startDate;
+              if (this.occurrence) {
+                var lastStartDate = sp.moment.make(this.occurrence.lastStartDate);
+                var startDate = sp.moment.make(this.occurrence.event.startDate);
+                return lastStartDate.isSame(startDate);
+              }
+              return false;
             }.bind(this);
             this.displayLastStartDate = function() {
               var formattedDate = '';
               if (this.occurrence) {
-                formattedDate = sp.moment.displayAsDate(this.occurrence.lastStartDate);
+                var lastStartDate = sp.moment.atZoneIdSameInstant(this.occurrence.lastStartDate,
+                    this.occurrence.calendarZoneId);
+                formattedDate = sp.moment.displayAsDate(lastStartDate);
               }
               return formattedDate;
             }.bind(this);

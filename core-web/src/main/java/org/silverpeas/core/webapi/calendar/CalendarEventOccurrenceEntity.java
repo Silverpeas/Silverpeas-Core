@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatDateWithOffset;
+
 /**
  * It represents the state of a calendar event in a calendar as transmitted within the
  * body of an HTTP response or an HTTP request.
@@ -55,6 +57,7 @@ import java.util.List;
 public class CalendarEventOccurrenceEntity implements WebEntity {
 
   private String occurrenceId;
+  private String calendarZoneId;
   private String lastStartDate;
   private CalendarEventEntity event;
   private String startDate;
@@ -98,6 +101,14 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
 
   protected void setId(String occurrenceId) {
     this.occurrenceId = occurrenceId;
+  }
+
+  public String getCalendarZoneId() {
+    return calendarZoneId;
+  }
+
+  public void setCalendarZoneId(final String calendarZoneId) {
+    this.calendarZoneId = calendarZoneId;
   }
 
   public String getLastStartDate() {
@@ -192,10 +203,12 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
 
   protected CalendarEventOccurrenceEntity decorate(
       final CalendarEventOccurrence calendarEventOccurrence) {
+    final CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
     this.occurrenceId = calendarEventOccurrence.getId();
+    this.calendarZoneId = event.getCalendar().getZoneId().toString();
     this.lastStartDate = calendarEventOccurrence.getLastStartDate().toString();
-    this.startDate = calendarEventOccurrence.getStartDate().toString();
-    this.endDate = calendarEventOccurrence.getEndDate().toString();
+    this.startDate = formatDateWithOffset(event, calendarEventOccurrence.getStartDate());
+    this.endDate = formatDateWithOffset(event, calendarEventOccurrence.getEndDate());
     return this;
   }
 
@@ -203,6 +216,7 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("occurrenceId", getId());
+    builder.append("calendarZoneId", getCalendarZoneId());
     builder.append("event", getEvent().toString());
     builder.append("lastStartDate", getLastStartDate());
     builder.append("startDate", getStartDate());

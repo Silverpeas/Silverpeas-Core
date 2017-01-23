@@ -37,6 +37,7 @@ import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
@@ -118,6 +119,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     Calendar newCalendar = new Calendar(INSTANCE_ID);
     newCalendar.setTitle("a title");
+    newCalendar.setZoneId(ZoneId.systemDefault());
 
     assertThat(newCalendar.getId(), nullValue());
     assertThat(newCalendar.getComponentInstanceId(), is(INSTANCE_ID));
@@ -140,6 +142,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     assertThat(persistedCalendar.get("instanceId"), is(INSTANCE_ID));
     assertThat(persistedCalendar.get("title"), is("a title"));
+    assertThat(persistedCalendar.get("zoneId"), is(ZoneId.systemDefault().getId()));
     Date createDate = persistedCalendar.get("createDate");
     String createdBy = persistedCalendar.get("createdBy");
     assertThat(createDate, greaterThanOrEqualTo(testStartingDate));

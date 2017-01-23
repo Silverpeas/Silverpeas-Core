@@ -34,9 +34,11 @@ import org.silverpeas.core.util.ResourceLocator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
@@ -53,6 +55,7 @@ public class CalendarTimeWindowViewContext implements Serializable {
       EnumSet.of(PeriodType.week, PeriodType.day);
 
   private String locale = null;
+  private ZoneId zoneId = null;
   private final String componentInstanceId;
   private CalendarViewType viewType = CalendarViewType.MONTHLY;
   private CalendarDay referenceDay;
@@ -63,10 +66,13 @@ public class CalendarTimeWindowViewContext implements Serializable {
    * Default constructor.
    * @param componentInstanceId the component instance identifier
    * @param locale the locale
+   * @param zoneId the zoneId
    */
-  public CalendarTimeWindowViewContext(final String componentInstanceId, final String locale) {
+  public CalendarTimeWindowViewContext(final String componentInstanceId, final String locale,
+      final ZoneId zoneId) {
     this.componentInstanceId = componentInstanceId;
     this.locale = locale;
+    this.zoneId = zoneId;
     setReferenceDay(DateUtil.getDate());
   }
 
@@ -275,5 +281,27 @@ public class CalendarTimeWindowViewContext implements Serializable {
     }
     // Result
     return periodLabel.toString();
+  }
+
+  /**
+   * Gets the zone identifier of the view.
+   * @return the zone identifier as {@link ZoneId} instance.
+   */
+  @XmlElement(name = "zoneId")
+  public String getZoneIdAsString() {
+    return getZoneId().toString();
+  }
+
+  /**
+   * Gets the zone identifier of the view.
+   * @return the zone identifier as {@link ZoneId} instance.
+   */
+  @XmlTransient
+  public ZoneId getZoneId() {
+    return zoneId;
+  }
+
+  public void setZoneId(final ZoneId zoneId) {
+    this.zoneId = zoneId;
   }
 }

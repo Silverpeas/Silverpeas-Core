@@ -39,6 +39,8 @@ import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.time.ZoneId;
+
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -61,6 +63,8 @@ public class UserRequestDataTest {
   public void setup() {
     reflectionRule.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
     reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
+    reflectionRule.setField(DisplayI18NHelper.class, asList("Europe/Paris", "Europe/Berlin"), "zoneIds");
+    reflectionRule.setField(DisplayI18NHelper.class, ZoneId.of("Europe/Berlin"), "defaultZoneId");
     mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
     httpServletRequestMock = mock(HttpServletRequest.class);
@@ -100,15 +104,20 @@ public class UserRequestDataTest {
     assertThat(userRequestData.isSendEmail(), is(false));
     assertThat(userRequestData.getGroupId(), is("user.groupId"));
     assertThat(userRequestData.getLanguage(), is("en"));
+    assertThat(userRequestData.getZoneId(), is(ZoneId.of("Europe/Berlin")));
     assertThat(userRequestData.getUserManualNotifReceiverLimitEnabled(), is(false));
     assertThat(userRequestData.getUserManualNotifReceiverLimitValue(), is(0));
 
+    setHttpParameter("SelectedUserLanguage", "fr");
+    setHttpParameter("SelectedUserZoneId", "Europe/Paris");
     setHttpParameter("userPasswordValid", "false");
     setHttpParameter("sendEmail", "true");
     setHttpParameter("userManualNotifReceiverLimitEnabled", "false");
     userRequestData =
         RequestParameterDecoder.decode(httpRequest, UserRequestData.class);
 
+    assertThat(userRequestData.getLanguage(), is("fr"));
+    assertThat(userRequestData.getZoneId(), is(ZoneId.of("Europe/Paris")));
     assertThat(userRequestData.isPasswordValid(), is(false));
     assertThat(userRequestData.isSendEmail(), is(true));
     assertThat(userRequestData.getUserManualNotifReceiverLimitEnabled(), is(false));

@@ -50,6 +50,7 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +79,9 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   @Column(name = "title")
   private String title;
+
+  @Column(name = "zoneId")
+  private String zoneId;
 
   @OneToMany(mappedBy = "calendar", fetch = FetchType.LAZY, cascade = {CascadeType.ALL},
       orphanRemoval = true)
@@ -156,6 +160,18 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  /**
+   * Gets the identifier of the location zone the calendar belongs to.
+   * @return the zone id as {@link ZoneId} instance.
+   */
+  public ZoneId getZoneId() {
+    return ZoneId.of(zoneId);
+  }
+
+  public void setZoneId(final ZoneId zoneId) {
+    this.zoneId = zoneId.toString();
   }
 
   /**

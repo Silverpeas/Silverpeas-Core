@@ -360,7 +360,7 @@ public class CalendarResource extends AbstractCalendarResource {
         occEndDate = date.plusDays(1);
       } else {
         OffsetDateTime dateTime = OffsetDateTime.parse(startDate);
-        temporalStart = dateTime;
+        temporalStart = dateTime.atZoneSameInstant(calendar.getZoneId()).toOffsetDateTime();
         occStartDate = dateTime.minusDays(1).toLocalDate();
         occEndDate = dateTime.plusDays(1).toLocalDate();
       }

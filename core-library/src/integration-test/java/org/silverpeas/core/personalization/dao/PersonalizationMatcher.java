@@ -54,6 +54,7 @@ public class PersonalizationMatcher extends BaseMatcher<UserPreferences> {
       EqualsBuilder matcher = new EqualsBuilder();
       matcher.append(expected.getId(), actual.getId());
       matcher.append(expected.getLanguage(), actual.getLanguage());
+      matcher.append(expected.getZoneId(), actual.getZoneId());
       matcher.append(expected.getLook(), actual.getLook());
       matcher.append(expected.getPersonalWorkSpaceId(), actual.getPersonalWorkSpaceId());
       matcher.append(expected.isThesaurusEnabled(), actual.isThesaurusEnabled());
