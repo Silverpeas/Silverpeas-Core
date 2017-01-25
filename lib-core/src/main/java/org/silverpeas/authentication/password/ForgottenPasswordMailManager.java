@@ -41,9 +41,6 @@ public class ForgottenPasswordMailManager {
   private static final String CONTENT = "content";
   private static final String SUBJECT = "subject";
 
-  private ResourceLocator resource = new ResourceLocator(
-      "com.silverpeas.authentication.multilang.forgottenPasswordMail", "");
-
   // SMTP parameters
   private String fromAddress;
   private String fromName;
@@ -87,6 +84,9 @@ public class ForgottenPasswordMailManager {
 
   private void sendMail(ForgottenPasswordMailParameters parameters, String resourcePrefix)
       throws MessagingException {
+    ResourceLocator resource =
+        new ResourceLocator("org.silverpeas.authentication.multilang.forgottenPasswordMail",
+            parameters.getUserLanguage());
     parameters.setSubject(resource.getString(resourcePrefix + "." + SUBJECT));
     parameters.setContent(resource.getString(resourcePrefix + "." + CONTENT));
     MailSending.from(eMail(fromAddress).withName(fromName)).to(eMail(parameters.getToAddress()))

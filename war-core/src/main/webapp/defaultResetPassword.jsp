@@ -32,9 +32,10 @@
 <%@ include file="headLog.jsp" %>
 
 <%
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
   UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
+  String userLanguage = userDetail.getUserPreferences().getLanguage();
+  ResourceLocator authenticationBundle =
+      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", userLanguage);
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">

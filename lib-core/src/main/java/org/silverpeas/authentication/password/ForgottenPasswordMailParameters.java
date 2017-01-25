@@ -46,6 +46,7 @@ public class ForgottenPasswordMailParameters {
   private String toAddress;
   private String subject;
   private String content;
+  private String language;
   private HashMap<String, String> parametersValues;
 
   public ForgottenPasswordMailParameters() {
@@ -106,6 +107,14 @@ public class ForgottenPasswordMailParameters {
 
   public void setUserName(String userName) {
     parametersValues.put(KEY_USER_NAME, userName);
+  }
+
+  public void setUserLanguage(String lang) {
+    this.language = lang;
+  }
+
+  public String getUserLanguage() {
+    return language;
   }
 
   public String getFilledContent() {

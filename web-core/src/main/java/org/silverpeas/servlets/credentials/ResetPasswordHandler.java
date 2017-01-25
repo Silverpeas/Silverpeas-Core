@@ -22,14 +22,15 @@ package org.silverpeas.servlets.credentials;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import org.silverpeas.password.service.PasswordServiceFactory;
+
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 public class ResetPasswordHandler extends FunctionHandler {
 
@@ -57,6 +58,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         UserFull user;
         try {
           user = getAdmin().getUserFull(userId);
+          request.setAttribute("UserLanguage", user.getUserPreferences().getLanguage());
         } catch (AdminException e) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",

@@ -28,10 +28,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="headLog.jsp" %>
 <%
+  String lang = (String) request.getAttribute("UserLanguage");
+
   ResourceLocator reinitPasswordBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.forgottenPasswordMail", "");
+      new ResourceLocator("org.silverpeas.authentication.multilang.forgottenPasswordMail", lang);
   ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", lang);
 
   String action = request.getParameter("Action");
   String actionLabel = "";

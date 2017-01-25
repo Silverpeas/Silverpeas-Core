@@ -24,6 +24,7 @@
 
 package org.silverpeas.servlets.credentials;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
@@ -49,6 +50,8 @@ public class ForgotPasswordHandler extends FunctionHandler {
     String userId;
     try {
       userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
+      request.setAttribute("UserLanguage",
+          UserDetail.getById(userId).getUserPreferences().getLanguage());
     } catch (AdminException e) {
       // Login incorrect.
       request.setAttribute("login", login);
