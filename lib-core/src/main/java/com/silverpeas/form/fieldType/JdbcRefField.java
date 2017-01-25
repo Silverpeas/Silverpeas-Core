@@ -23,6 +23,7 @@ package com.silverpeas.form.fieldType;
 import com.silverpeas.form.AbstractField;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.silverpeas.util.StringUtil;
 import org.owasp.encoder.Encode;
 
 public class JdbcRefField extends AbstractField {
@@ -86,7 +87,7 @@ public class JdbcRefField extends AbstractField {
 
   @Override
   public boolean isNull() {
-    return (getStringValue() == null || getStringValue().trim().equals(""));
+    return !StringUtil.isDefined(getStringValue());
   }
 
   @Override

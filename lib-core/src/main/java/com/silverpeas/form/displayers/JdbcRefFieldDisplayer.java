@@ -58,6 +58,7 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
 
     Input input = new Input();
     input.setName(fieldName);
+    input.setID(fieldName);
     input.setValue(EncodeHelper.javaStringToHtmlString(!field.isNull() ? field.getValue(language)
         : ""));
     input.setType(Input.text);
