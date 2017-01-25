@@ -42,7 +42,7 @@ public class LoginQuestionHandler extends FunctionHandler {
     String domainId = request.getParameter("DomainId");
     try {
       String userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
-      UserDetail userDetail = getAdmin().getUserDetail(userId);
+      UserDetail userDetail = UserDetail.getById(userId);
       if (StringUtil.isDefined(userDetail.getLoginQuestion())) {
         request.setAttribute("userDetail", userDetail);
         return getGeneral().getString("userLoginQuestionPage");
