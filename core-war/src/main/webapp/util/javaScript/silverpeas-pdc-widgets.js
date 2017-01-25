@@ -60,12 +60,12 @@ function uriOfPdCClassification(resource) {
 /**************************************************************************************************/
 
 /**
- * Build the URI identifying the PdC. The PdC can be the one parameterized for the specified resource.
- * The name of the Silverpeas web context is provided by the 'context' property of the resource.
- * If resource.content is set, then the axis are parameterized according to the existing
+ * Build the URI identifying the PdC. The PdC can be the one parameterized for the specified
+ * resource. The name of the Silverpeas web context is provided by the 'context' property of the
+ * resource. If resource.content is set, then the axis are parameterized according to the existing
  * classification of the context (if any).
- * @param {{context: string, component: string, content: ?number}} resource the resource representing
- * a content belonging to a given component instance in Silverpeas.
+ * @param {{context: string, component: string, content: ?number}} resource the resource
+ *     representing a content belonging to a given component instance in Silverpeas.
  * @returns {String} the URI of the PdC.
  */
 function uriOfPdC(resource) {
@@ -142,10 +142,10 @@ function splitUri(uri) {
  * The resource is an object of type:
  * {
  *   context: the name of Silverpeas web application context,
- *   component: the unique identifier of the component instance for which a predefined classification
- *   has been be set,
- *   node: the unique identifier of the node for which a predefined classification has been set or
- *   null. If null, the predefined classification for the component instance is fetched.
+ *   component: the unique identifier of the component instance for which a predefined
+ * classification has been be set, node: the unique identifier of the node for which a predefined
+ * classification has been set or null. If null, the predefined classification for the component
+ * instance is fetched.
  * }
  * @param {Object} resource the resource to which a predefined classification has be defined.
  * @see its description above.
@@ -333,8 +333,8 @@ function deletePosition(uri, position, confirmationMsg, onSuccess, onError) {
 /**
  * Posts the specified position in the classification on the PdC identified by the specified URI.
  * If the position is successfully posted, then the onSuccess callback function is invoked with as
- * parameter the updated classification on the PdC. Otherwise, the optional onError callback function
- * is invoked with as parameter the error coming from the server. If no onError callback
+ * parameter the updated classification on the PdC. Otherwise, the optional onError callback
+ * function is invoked with as parameter the error coming from the server. If no onError callback
  * is passed then an error message is displayed to the user. The error is an object of type:
  * {
  *   status: the error status,
@@ -367,11 +367,12 @@ function postPosition(uri, position, onSuccess, onError) {
 /**************************************************************************************************/
 
 /**
- * Asks for updating the specified position in the classification on the PdC identified by the specified URI.
- * If the position is successfully updated, then the onSuccess callback function is invoked with as
- * parameter the updated classification on the PdC.  Otherwise, the optional onError callback function
- * is invoked with as parameter the error coming from the server. If no onError callback
- * is passed then an error message is displayed to the user. The error is an object of type:
+ * Asks for updating the specified position in the classification on the PdC identified by the
+ * specified URI. If the position is successfully updated, then the onSuccess callback function is
+ * invoked with as parameter the updated classification on the PdC.  Otherwise, the optional
+ * onError callback function is invoked with as parameter the error coming from the server. If no
+ * onError callback is passed then an error message is displayed to the user. The error is an
+ * object of type:
  * {
  *   status: the error status,
  *   message: the error message
@@ -500,9 +501,10 @@ function areAlreadyInClassification(somePositions, classification) {
 
 /**
  * Are the specified positions not already in the the specified classification?
- * If all the specified positions are not in the specified classification, true is returned. If at least
- * one of the specified positions is present in the specified classification, false is returned.
- * A position is in a classification if it already exists a position with exactly the same values.
+ * If all the specified positions are not in the specified classification, true is returned. If at
+ * least one of the specified positions is present in the specified classification, false is
+ * returned. A position is in a classification if it already exists a position with exactly the
+ * same values.
  */
 function areNotAlreadyInClassification(somePositions, classification) {
   var exist = false;
@@ -579,9 +581,9 @@ function removePosition(position, positions) {
       });
     },
     /**
-     * This method is used to refresh the positions listed by this plugin. Some additional parameters
-     * can be passed as an optional parameter in order to perform some refinements during the refresh.
-     * The optional parameter is an object of type:
+     * This method is used to refresh the positions listed by this plugin. Some additional
+     * parameters can be passed as an optional parameter in order to perform some refinements
+     * during the refresh. The optional parameter is an object of type:
      * {
      *   title: true|false, // the new title to display with the widget
      *   update: true|false, // is the update of a position activated?
@@ -1015,11 +1017,11 @@ function removePosition(position, positions) {
   /**
    * Renders the specified axis as an XHMLT select element. Each option represents a value of the
    * axis.
-   * If a value is set among the first selected position, then the corresponding option is preselected.
-   * If the axis is already rendered through an XHTML select element, then renders another occurrence
-   * of the select element just below the previous one. Several XHML select elements for the same
-   * axis is the way to select multiple values of the given axis; each of them generating then a
-   * different position.
+   * If a value is set among the first selected position, then the corresponding option is
+   * preselected. If the axis is already rendered through an XHTML select element, then renders
+   * another occurrence of the select element just below the previous one. Several XHML select
+   * elements for the same axis is the way to select multiple values of the given axis; each of
+   * them generating then a different position.
    */
   function renderAxis($axisDiv, settings, selectedPositions, anAxis) {
     var mandatoryField = '', idPrefix = settings.id + '_' + anAxis.id + '_', i = 0;
@@ -1090,7 +1092,12 @@ function removePosition(position, positions) {
       })).appendTo($axisDiv);
     }
 
-    var option = $('<option>').attr('value', '-1').html('&nbsp;').appendTo(axisValuesSelection);
+    var emptyOptionLabel = '&nbsp;';
+    if (settings.labelInsideSelect) {
+      emptyOptionLabel = anAxis.name;
+    }
+    var option = $('<option>').attr('value', '-1').attr('class', 'no-value').html(
+        emptyOptionLabel).appendTo(axisValuesSelection);
 
     // browse the values of the current axis and for each of them print out an option XHTML element
     renderValues(anAxis, axisValuesSelection, settings, selectedPositions);
@@ -1168,11 +1175,17 @@ function removePosition(position, positions) {
 
       // browse the axis of the PdC and for each of them print out a select HTML element
       $.each(settings.axis, function(axisindex, anAxis) {
+        var label = $('<label >', {
+          'for' : settings.id + '_' + anAxis.id + '_0'
+        }).addClass('txtlibform').html(anAxis.name);
+        var parentDiv = $('<div>').addClass('field');
+        if (!settings.labelInsideSelect) {
+          label.appendTo(parentDiv);
+        }
         var currentAxisDiv = $('<div>', {
           id: settings.id + '_' + anAxis.id
-        }).addClass('champs pdcAxis').appendTo($('<div>').addClass('field').append($('<label >', {
-          'for': settings.id + '_' + anAxis.id + '_0'
-        }).addClass('txtlibform').html(anAxis.name)).appendTo($thisPdcAxisValuesSelector));
+        }).addClass('champs pdcAxis').appendTo(parentDiv);
+        parentDiv.appendTo($thisPdcAxisValuesSelector);
 
         hasMandatoryAxis = anAxis.mandatory || hasMandatoryAxis;
         hasInvariantAxis = anAxis.invariant || hasInvariantAxis;
