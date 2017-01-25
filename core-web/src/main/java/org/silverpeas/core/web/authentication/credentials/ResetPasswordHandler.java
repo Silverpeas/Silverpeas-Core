@@ -22,8 +22,6 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserFull;
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
@@ -31,6 +29,9 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
+
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 public class ResetPasswordHandler extends FunctionHandler {
 
@@ -58,6 +59,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         UserFull user;
         try {
           user = getAdminService().getUserFull(userId);
+          request.setAttribute("UserLanguage", user.getUserPreferences().getLanguage());
         } catch (AdminException e) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",

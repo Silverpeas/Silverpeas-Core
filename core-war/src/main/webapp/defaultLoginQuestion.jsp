@@ -38,7 +38,7 @@
   UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
   LocalizationBundle authenticationBundle =
       ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication",
-          request.getLocale().getLanguage());
+          userDetail.getUserPreferences().getLanguage());
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">

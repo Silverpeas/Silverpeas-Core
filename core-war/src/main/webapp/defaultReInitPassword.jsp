@@ -31,12 +31,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="headLog.jsp" %>
 <%
+  String lang = (String) request.getAttribute("UserLanguage");
   LocalizationBundle reinitPasswordBundle = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.authentication.multilang.forgottenPasswordMail",
-      request.getLocale().getLanguage());
+      lang);
   LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.authentication.multilang.authentication",
-      request.getLocale().getLanguage());
+      lang);
 
   String action = request.getParameter("Action");
   String actionLabel = "";

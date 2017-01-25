@@ -24,10 +24,11 @@
 
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -42,7 +43,7 @@ public class LoginQuestionHandler extends FunctionHandler {
     String domainId = request.getParameter("DomainId");
     try {
       String userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
-      UserDetail userDetail = getAdminService().getUserDetail(userId);
+      UserDetail userDetail = UserDetail.getById(userId);
       if (StringUtil.isDefined(userDetail.getLoginQuestion())) {
         request.setAttribute("userDetail", userDetail);
         return getGeneral().getString("userLoginQuestionPage");

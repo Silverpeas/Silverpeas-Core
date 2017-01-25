@@ -35,10 +35,10 @@
 <%@ include file="headLog.jsp" %>
 
 <%
+  UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
   LocalizationBundle authenticationBundle =
       ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication",
-          request.getLocale().getLanguage());
-  UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
+          userDetail.getUserPreferences().getLanguage());
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">

@@ -24,14 +24,15 @@
 
 package org.silverpeas.core.web.authentication.credentials;
 
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.domain.model.Domain;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +51,7 @@ public class ForgotPasswordHandler extends FunctionHandler {
     String userId;
     try {
       userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
+      request.setAttribute("UserLanguage", User.getById(userId).getUserPreferences().getLanguage());
     } catch (AdminException e) {
       // Login incorrect.
       request.setAttribute("login", login);
