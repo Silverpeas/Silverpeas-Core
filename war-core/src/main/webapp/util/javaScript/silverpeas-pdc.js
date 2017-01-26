@@ -34,7 +34,9 @@
     component: null,
     values: [], /* an array of value object with at least the following properties:
      id for the value path and axisId for the unique identifier of the axis it belongs to.*/
-    withSecondaryAxis: false
+    withSecondaryAxis: false,
+    axisTypeDisplay: true,
+    labelInsideSelect: false
   };
 
   var methods = {
@@ -161,13 +163,14 @@
       multiValuation: false,
       dialogBox: false,
       classifiedContentCount: true,
-      axisTypeDisplay: true,
+      axisTypeDisplay: settings.axisTypeDisplay,
       rootValueDisplay: true,
       primaryAxisIcon: webContext + '/pdcPeas/jsp/icons/primary.gif',
       secondaryAxisIcon: webContext + '/pdcPeas/jsp/icons/secondary.gif',
       axis: [],
       values: [],
-      onValuesSelected: null
+      onValuesSelected: null,
+      labelInsideSelect: settings.labelInsideSelect
     };
     if (!settings.values)
       settings.values = [];
