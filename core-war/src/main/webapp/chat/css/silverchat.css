@@ -7,10 +7,6 @@
   font-size: 13px;
 }
 
-/*.jsxc_video {
-  display: none!important;
-}*/
-
 .jsxc_bar {
   background-color: #1c94d4;
 }
@@ -36,20 +32,60 @@
   cursor:pointer;
 }
 
-#silverchat_roster .notification_count {
-  background-color: #ffa500;
-  border-radius: 11px;
-  color: #000;
-  font-size: 80%;
-  padding: 2px;
-  position: relative;
+#silverchat_roster_header  #silverchat_notice span{
+  background:#1c94d4 url(../img/packIconsChat.png) right -199px no-repeat;
+  width:34px;
+  line-height: 27px;
+  height:30px;
+  position:absolute;
+  right:0;
+  top:0;
+  text-align:center;
+  font-weight:bold;
   -webkit-animation: bounce 2s 1s infinite;
   animation: bounce 2s 1s infinite;
 }
+#silverchat_roster_header  #silverchat_notice span:empty{
+  display:none;
+  }
 
-#silverchat_roster .notification_count:empty {
-  display: none;
+#silverchat_roster_menu #jsxc_notice {
+  height: auto;
+  width: auto;
+  float: none;
+  text-align: left;
+  line-height: 30px;
 }
+
+#silverchat_roster_menu #jsxc_notice .silverchat_menu_item {
+  padding: 0em;
+  margin: 0em 0.5em 0em 0.3em;
+  border-bottom: 1px solid #f9e98e;
+}
+
+#silverchat_roster_menu #jsxc_notice .silverchat_menu_item  li {
+  background:#fbf7aa;
+  border-top: 1px solid #f9e98e;
+}
+#silverchat_roster_menu #jsxc_notice span {
+  display:inline-block;
+  background:#FFF url(../img/packIconsChat.png) right -199px no-repeat;
+  border-radius: 0;
+  color: #FFF;
+  width:34px;
+  line-height: 27px;
+  height:30px;
+  font-size:100%;
+  padding: 0;
+  position: relative;
+  text-align:center;
+  font-weight:bold;
+  -webkit-animation: bounce 2s 1s infinite;
+  animation: bounce 2s 1s infinite;
+}
+#silverchat_roster_menu #jsxc_notice span:empty{
+  display:none;
+  }
 
 #silverchat_roster_body {
   overflow: hidden;
@@ -382,7 +418,7 @@
 }
 
 .jsxc_windowItem .jsxc_window .jsxc_menu .jsxc_verification {
-  display: none; !important;
+  display: none !important;
 }
 
 .jsxc_bar {
@@ -420,14 +456,60 @@
   opacity:1;
 }
 
-
-#silverchat_video {
-  z-index: 10000;
+#jsxc_webrtc {
+  z-index: 1000!important;
   position: fixed;
   top: 0px;
   left: 0px;
   overflow: auto;
   width: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  height: 40%;
+  background: rgba(0, 0, 0, 0.8)!important;
+  height: 300px!important;
+}
+
+#jsxc_webrtc.jsxc_state_hidden {
+  display: block;
+  top:-250px;
+  -webkit-transition: top 0.5s;
+  transition: top 0.5s;
+}
+
+#jsxc_webrtc.jsxc_state_shown {
+  display: block;
+  -webkit-transition: top 0.5s;
+  transition: top 0.5s;
+}
+
+@media (min-width: 768px) {
+  .jsxc_videoContainer {
+    right: 0px !important;
+  }
+
+  .jsxc_controlbar {
+    bottom: 5px;
+  }
+}
+
+.jsxc_remotevideo {
+  min-width: 200px;
+  min-height: 200px;
+  z-index: 9000;
+  background-color: #999999;
+}
+
+.jsxc_controlbar .jsxc_toggleVideo {
+  background:transparent url('../img/packIconsChat.png') right -62px no-repeat;
+  background-size:inherit
+}
+
+.jsxc_controlbar.jsxc_visible .jsxc_toggleVideo {
+  background:transparent url('../img/packIconsChat.png') right -106px no-repeat;
+  background-size:inherit
+}
+
+.jsxc_localvideo{
+  border: 3px solid #efefef;
+}
+.jsxc_videoContainer{
+  border-bottom: 1px solid #656565;
 }
