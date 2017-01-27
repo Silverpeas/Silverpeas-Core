@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,6 +84,17 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.ass
 @Path(CALENDAR_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class CalendarResource extends AbstractCalendarResource {
+
+  @QueryParam("zoneid")
+  private String zoneId;
+
+  /**
+   * Gets the zoneId into which dates must be set.
+   * @return a {@link ZoneId} instance if zoneid parameter has been set, null otherwise.
+   */
+  public ZoneId getZoneId() {
+    return StringUtil.isDefined(zoneId) ? ZoneId.of(zoneId) : null;
+  }
 
   /**
    * Gets the JSON representation of a list of calendar.
@@ -359,8 +371,9 @@ public class CalendarResource extends AbstractCalendarResource {
         occStartDate = date.minusDays(1);
         occEndDate = date.plusDays(1);
       } else {
+        ZoneId zoneId = getZoneId() != null ? getZoneId() : calendar.getZoneId();
         OffsetDateTime dateTime = OffsetDateTime.parse(startDate);
-        temporalStart = dateTime.atZoneSameInstant(calendar.getZoneId()).toOffsetDateTime();
+        temporalStart = dateTime.atZoneSameInstant(zoneId).toOffsetDateTime();
         occStartDate = dateTime.minusDays(1).toLocalDate();
         occEndDate = dateTime.plusDays(1).toLocalDate();
       }
@@ -425,7 +438,7 @@ public class CalendarResource extends AbstractCalendarResource {
     assertDataConsistency(getComponentId(), originalCalendar, previousEventData, eventDataToUpdate);
     List<CalendarEvent> updatedEvents = process(() -> getCalendarWebServiceProvider()
         .saveEventFromAnOccurrence(eventDataToUpdate, occurrenceEntity.getReferenceData(),
-            occurrenceEntity.getUpdateMethodType()))
+            occurrenceEntity.getUpdateMethodType(), getZoneId()))
         .execute();
     return asEventWebEntities(updatedEvents);
   }
@@ -453,7 +466,7 @@ public class CalendarResource extends AbstractCalendarResource {
     assertDataConsistency(getComponentId(), originalCalendar, previousEventData, eventDataToDelete);
     CalendarEvent updatedEvent = process(() -> getCalendarWebServiceProvider()
         .deleteEventFromAnOccurrence(eventDataToDelete, occurrenceEntity.getReferenceData(),
-            occurrenceEntity.getDeleteMethodType()))
+            occurrenceEntity.getDeleteMethodType(), getZoneId()))
         .execute();
     return updatedEvent != null ? asEventWebEntity(updatedEvent) : null;
   }
@@ -485,10 +498,10 @@ public class CalendarResource extends AbstractCalendarResource {
     final CalendarEvent event = CalendarEvent.getById(eventId);
     assertDataConsistency(originalCalendar.getComponentInstanceId(), originalCalendar, event);
     answerEntity.setId(attendeeId);
-    CalendarEvent updatedEvent = process(
-        () -> getCalendarWebServiceProvider().updateEventAttendeeParticipationFromAnOccurrence(event,
+    CalendarEvent updatedEvent = process(() -> getCalendarWebServiceProvider()
+        .updateEventAttendeeParticipationFromAnOccurrence(event,
             answerEntity.getOccurrence().getReferenceData(), answerEntity.getId(),
-            answerEntity.getParticipationStatus(), answerEntity.getAnswerMethodType()))
+            answerEntity.getParticipationStatus(), answerEntity.getAnswerMethodType(), getZoneId()))
         .lowestAccessRole(null)
         .execute();
     return updatedEvent != null ? asEventWebEntity(updatedEvent) : null;
@@ -543,7 +556,7 @@ public class CalendarResource extends AbstractCalendarResource {
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
-      entity = CalendarEventEntity.fromEvent(event, getComponentId())
+      entity = CalendarEventEntity.fromEvent(event, getComponentId(), getZoneId())
           .withURI(buildCalendarEventURI(CALENDAR_BASE_URI, event))
           .withCalendarURI(buildCalendarURI(CALENDAR_BASE_URI, event.getCalendar()))
           .withAttendees(asAttendeeWebEntities(event.getAttendees()));
@@ -584,7 +597,7 @@ public class CalendarResource extends AbstractCalendarResource {
           participationStatusOptional.ifPresent(entity::setParticipationStatus);
           return entity;
         }).collect(Collectors.toList());
-    return (T) CalendarEventOccurrenceEntity.fromOccurrence(occurrence)
+    return (T) CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getZoneId())
         .withEventEntity(asEventWebEntity(occurrence.getCalendarEvent()))
         .withAttendees(attendeeEntities);
   }

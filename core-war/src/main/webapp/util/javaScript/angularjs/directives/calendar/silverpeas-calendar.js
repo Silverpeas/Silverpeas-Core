@@ -24,73 +24,6 @@
 
 (function() {
 
-  var __potentialColors = ["#008cd6", "#7cb63e", "#eb9b0f", "#f53333", "#cf1a4d", "#7d2a70",
-    "#144476", "#458277", "#dc776f", "#7d5a5a", "#777777", "#000000"];
-
-  var SilverpeasCalendarColorCache = SilverpeasCache.extend({
-    getColor: function(calendar) {
-      return this.get(calendar.id);
-    },
-    setColor: function(calendar, color) {
-      if (color === 'none') {
-        this.unsetColor(calendar);
-      } else {
-        this.put(calendar.id, color);
-      }
-    },
-    unsetColor: function(calendar) {
-      this.remove(calendar.id);
-    }
-  });
-
-  var __calendarColorCache = new SilverpeasCalendarColorCache("silverpeas-calendar-color");
-  var __calendarVisibility = new SilverpeasSessionCache("silverpeas-calendar-visibility");
-
-  /**
-   * In charge of applying automatically the calendar colors.
-   * @param calendars the calendars to decorate.
-   * @param potentialColors the potential colors.
-   * @private
-   */
-  function __decorateCalendarWithColors(calendars, potentialColors) {
-    var usedColors = [];
-    calendars.forEach(function(calendar) {
-      var color = __calendarColorCache.getColor(calendar);
-      if (color) {
-        usedColors.push(color);
-      }
-    });
-    var colorIndex = 0;
-    calendars.forEach(function(calendar) {
-      var color = __calendarColorCache.getColor(calendar);
-      if (!color) {
-        for(var i = 0 ; !color &&  i < potentialColors.length ; i++) {
-          var position = !colorIndex ? colorIndex : (colorIndex % potentialColors.length);
-          var potentialColor = potentialColors[position];
-          if (usedColors.indexOf(potentialColor) < 0) {
-            color = potentialColor;
-          }
-          colorIndex = position + 1;
-        }
-        if (!color) {
-          color = potentialColors[0];
-        }
-      }
-      calendar.color = color;
-    });
-  }
-
-  /**
-   * In charge of applying automatically the calendar visibility.
-   * @param calendars the calendars to decorate.
-   * @private
-   */
-  function __decorateCalendarWithVisibility(calendars) {
-    calendars.forEach(function(calendar) {
-      calendar.notVisible = __calendarVisibility.get(calendar.id);
-    });
-  }
-
   /**
    * Custom AngularJS filter in charge of filtering the given array of items on an attribute of
    * visibility.
@@ -202,9 +135,8 @@
              * - visibility
              */
             var _decorate = function() {
-              var allCalendars = __getAllCalendars();
-              __decorateCalendarWithColors(allCalendars, __potentialColors);
-              __decorateCalendarWithVisibility(allCalendars);
+              var _allCalendars = __getAllCalendars();
+              SilverpeasCalendarTools.decorateCalendars(_allCalendars);
             }.bind(this);
 
             /**
@@ -480,7 +412,7 @@
                * The calendar is one of any type handled by this component.
                */
               setCalendarColor : function(calendar, color) {
-                __calendarColorCache.setColor(calendar, color);
+                SilverpeasCalendarTools.setCalendarColor(calendar, color);
                 _decorate();
                 this.api.redrawCalendars();
               }.bind(this),
@@ -495,12 +427,7 @@
                * The calendar is one of any type handled by this component.
                */
               toggleCalendarVisibility : function(calendar) {
-                calendar.notVisible = !calendar.notVisible;
-                if (calendar.notVisible) {
-                  __calendarVisibility.put(calendar.id, true);
-                } else {
-                  __calendarVisibility.remove(calendar.id);
-                }
+                SilverpeasCalendarTools.toggleCalendarVisibility(calendar);
                 this.api.redrawCalendars();
               }.bind(this),
               /**
@@ -555,7 +482,7 @@
                */
               deleteCalendar : function(calendar) {
                 this.api.removeCalendar(calendar);
-                __calendarColorCache.unsetColor(calendar);
+                SilverpeasCalendarTools.unsetCalendarColor(calendar);
               }.bind(this),
               /**
                * Loads the event occurrences of the given calendar.
@@ -751,7 +678,7 @@
               jQuery.fn.qtip.zindex = 1000;
               this.timeWindowViewContext = {};
               this.participationCalendars = [];
-              this.calendarPotentialColors = __potentialColors;
+              this.calendarPotentialColors = SilverpeasCalendarTools.getCalendarPotentialColors();
               saveContext();
             }.bind(this);
 

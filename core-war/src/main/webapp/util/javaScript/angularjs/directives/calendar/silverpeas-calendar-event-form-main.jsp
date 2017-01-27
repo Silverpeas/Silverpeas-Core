@@ -92,7 +92,7 @@
     <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_tz">{{$ctrl.labels.timezone}}</label>
       <div class="champs">
-        <span>{{$ctrl.data.event.calendar.zoneId}}</span>
+        <span>{{$ctrl.zoneId}}</span>
       </div>
     </div>
     <div class="field">
@@ -100,7 +100,7 @@
       <div class="champs">
         <silverpeas-date-picker date-id="sp_cal_event_form_main_sd"
                                 name="startDate"
-                                zone-id="$ctrl.data.event.calendar.zoneId"
+                                zone-id="$ctrl.zoneId"
                                 date="$ctrl.data.startDate"
                                 status="$ctrl.data.startDateStatus"
                                 mandatory="true">
@@ -108,7 +108,7 @@
         <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
                                 time-id="sp_cal_event_form_main_sdt"
                                 name="startTime"
-                                zone-id="$ctrl.data.event.calendar.zoneId"
+                                zone-id="$ctrl.zoneId"
                                 time="$ctrl.data.startDate"
                                 status="$ctrl.data.startTimeStatus"
                                 mandatory="true">
@@ -121,7 +121,7 @@
       <div class="champs">
         <silverpeas-date-picker date-id="sp_cal_event_form_main_ed"
                                 name="endDate"
-                                zone-id="$ctrl.data.event.calendar.zoneId"
+                                zone-id="$ctrl.zoneId"
                                 date="$ctrl.data.endDate"
                                 status="$ctrl.data.endDateStatus"
                                 mandatory="true">
@@ -129,7 +129,7 @@
         <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
                                 time-id="sp_cal_event_form_main_edt"
                                 name="endTime"
-                                zone-id="$ctrl.data.event.calendar.zoneId"
+                                zone-id="$ctrl.zoneId"
                                 time="$ctrl.data.endDate"
                                 status="$ctrl.data.endTimeStatus"
                                 mandatory="true">

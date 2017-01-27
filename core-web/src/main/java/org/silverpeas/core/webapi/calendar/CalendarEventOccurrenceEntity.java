@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,8 +69,8 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
   }
 
   public static CalendarEventOccurrenceEntity fromOccurrence(
-      final CalendarEventOccurrence occurrence) {
-    return new CalendarEventOccurrenceEntity().decorate(occurrence);
+      final CalendarEventOccurrence occurrence, final ZoneId zoneId) {
+    return new CalendarEventOccurrenceEntity().decorate(occurrence, zoneId);
   }
 
   public CalendarEventOccurrenceEntity withEventEntity(CalendarEventEntity eventEntity) {
@@ -202,13 +203,13 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
   }
 
   protected CalendarEventOccurrenceEntity decorate(
-      final CalendarEventOccurrence calendarEventOccurrence) {
+      final CalendarEventOccurrence calendarEventOccurrence, final ZoneId zoneId) {
     final CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
     this.occurrenceId = calendarEventOccurrence.getId();
     this.calendarZoneId = event.getCalendar().getZoneId().toString();
     this.lastStartDate = calendarEventOccurrence.getLastStartDate().toString();
-    this.startDate = formatDateWithOffset(event, calendarEventOccurrence.getStartDate());
-    this.endDate = formatDateWithOffset(event, calendarEventOccurrence.getEndDate());
+    this.startDate = formatDateWithOffset(event, calendarEventOccurrence.getStartDate(), zoneId);
+    this.endDate = formatDateWithOffset(event, calendarEventOccurrence.getEndDate(), zoneId);
     return this;
   }
 

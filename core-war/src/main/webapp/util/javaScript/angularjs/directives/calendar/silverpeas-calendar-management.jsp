@@ -73,7 +73,7 @@
                               drag-and-drop-display-icon="false">
       </silverpeas-file-upload>
     </span>
-    <div class="champs">
+    <div class="champs" ng-if="$ctrl.importEventCalendar">
       <span class="txtlibform">${icalFileImportIntoLabel}</span>
       <select ng-model="$ctrl.importEventCalendar"
               ng-options="calendar as calendar.title for calendar in $ctrl.potentialCalendars | orderBy: 'createdDate' track by calendar.id"

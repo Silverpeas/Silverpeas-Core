@@ -24,13 +24,7 @@
 
 (function() {
 
-  var NavigationSessionCache = SilverpeasSessionCache.extend({
-    setCalendars : function(calendars) {
-      this.put('calendars', calendars);
-    },
-    getCalendars : function() {
-      return this.get('calendars');
-    },
+  var NavigationCache = SilverpeasSessionCache.extend({
     setCalendarEventOccurrence : function(ceo) {
       var cachedCeo = ceo;
       if (cachedCeo) {
@@ -43,7 +37,7 @@
     }
   });
 
-  var ParticipationSessionCache = SilverpeasCache.extend({
+  var ParticipationCache = SilverpeasCache.extend({
     setParticipants : function(participants) {
       this.put('participants', participants);
     },
@@ -57,8 +51,15 @@
         $scope.getCalendarService = function() {
           alert('Please implement this method into the child controller.')
         };
-        $scope.navigation = new NavigationSessionCache(context.componentUriBase + "_navigation");
-        $scope.participation = new ParticipationSessionCache(context.componentUriBase + "_participation");
+        $scope.navigation = new NavigationCache(context.componentUriBase + "_navigation");
+        $scope.participation = new ParticipationCache(context.componentUriBase + "_participation");
+
+        $scope.loadCalendarsFromContext = function() {
+          return CalendarService.list().then(function(calendars) {
+            SilverpeasCalendarTools.decorateCalendars(calendars);
+            return calendars;
+          });
+        };
 
         $scope.goToPage = function(uri, context) {
           context = extendsObject(false, {}, context);
@@ -80,7 +81,6 @@
               context.eventOccurrence.event.onAllDay = true;
             }
           }
-          $scope.navigation.setCalendars(context.calendars ? context.calendars : undefined);
           $scope.navigation.setCalendarEventOccurrence(context.eventOccurrence);
           silverpeasFormSubmit(sp.formConfig(uri));
         };

@@ -89,6 +89,7 @@ silverpeas-calendar-event-occurrence-tip-actions .sp_buttonPane {
   display: inline-flex;
 }
 
+silverpeas-calendar-event-view .field,
 silverpeas-calendar-event-form .field {
   width: 98%;
   clear: both;
@@ -98,10 +99,12 @@ silverpeas-calendar-event-form .champs label {
   font-weight: normal;
 }
 
+silverpeas-calendar-event-view-main legend,
 silverpeas-calendar-event-form-main legend {
   background: transparent url(../../util/icons/mini_publi.gif) 11px 0px no-repeat;
 }
 
+silverpeas-calendar-event-view-recurrence legend,
 silverpeas-calendar-event-form-recurrence legend {
   background: transparent url(../../util/icons/periodicity.gif) 11px 0px no-repeat;
 }

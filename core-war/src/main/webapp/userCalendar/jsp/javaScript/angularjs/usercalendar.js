@@ -94,23 +94,27 @@ userCalendar.controller('editController', ['$controller', 'context', 'CalendarSe
   function($controller, context, CalendarService, $scope) {
     $controller('mainController', {$scope : $scope});
 
-    $scope.calendars = $scope.getVisibleCalendars($scope.navigation.getCalendars());
-    $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
-        function(reloadedOccurrence) {
-          if (!reloadedOccurrence.event.calendar && $scope.calendars && $scope.calendars.length) {
-            reloadedOccurrence.event.calendar = $scope.calendars[0];
-          }
-          $scope.ceo = reloadedOccurrence;
-        });
+    $scope.loadCalendarsFromContext().then(function(calendars) {
+      $scope.calendars = $scope.getVisibleCalendars(calendars);
+      $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+          function(reloadedOccurrence) {
+            if (!reloadedOccurrence.event.calendar && $scope.calendars && $scope.calendars.length) {
+              reloadedOccurrence.event.calendar = $scope.calendars[0];
+            }
+            $scope.ceo = reloadedOccurrence;
+          });
+    });
   }]);
 
 /* the view controller of the application */
 userCalendar.controller('viewController', ['$controller', 'context', 'CalendarService', '$scope',
   function($controller, context, CalendarService, $scope) {
     $controller('mainController', {$scope : $scope});
-
-    $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
-        function(reloadedOccurrence) {
-          $scope.ceo = reloadedOccurrence;
-        });
+    $scope.reloadView = function() {
+      $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+          function(reloadedOccurrence) {
+            $scope.ceo = reloadedOccurrence;
+          });
+    };
+    $scope.reloadView();
   }]);

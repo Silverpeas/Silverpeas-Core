@@ -45,6 +45,7 @@
 <c:set var="currentUserId"          value="${currentUser.id}"/>
 <c:set var="componentId"            value="${requestScope.browseContext[3]}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
+<jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 
 <c:set var="event" value="${requestScope.event}"/>
 
@@ -58,7 +59,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.usercalendar">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel/>
+  <view:looknfeel withFieldsetStyle="true"/>
   <view:includePlugin name="calendar"/>
   <view:script src="/userCalendar/jsp/javaScript/angularjs/services/usercalendar.js"/>
   <view:script src="/userCalendar/jsp/javaScript/angularjs/usercalendar.js"/>
@@ -66,10 +67,11 @@
 <body ng-controller="viewController">
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}"/>
 <view:operationPane>
+  <silverpeas-calendar-event-management api="eventMng"
+                                        on-occurrence-deleted="goToPage('${backUri}')"
+                                        on-event-attendee-participation-updated="reloadView()">
+  </silverpeas-calendar-event-management>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-    <silverpeas-calendar-event-management api="eventMng"
-                                          on-occurrence-deleted="goToPage('${backUri}')">
-    </silverpeas-calendar-event-management>
     <view:operation
         action="angularjs:editEventOccurrence(calendars, ceo)"
         altText="${modifyLabel}"/>
@@ -80,6 +82,19 @@
 </view:operationPane>
 <view:window>
   <view:frame>
+    <silverpeas-calendar-event-view ng-if="ceo"
+                                    calendar-event-occurrence="ceo">
+      <silverpeas-calendar-event-view-main
+          calendar-event-occurrence="ceo">
+      </silverpeas-calendar-event-view-main>
+      <silverpeas-calendar-event-view-recurrence
+          calendar-event-occurrence="ceo">
+      </silverpeas-calendar-event-view-recurrence>
+      <silverpeas-calendar-event-view-attendees
+          calendar-event-occurrence="ceo"
+          on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
+      </silverpeas-calendar-event-view-attendees>
+    </silverpeas-calendar-event-view>
     <view:buttonPane>
       <view:button label="${back}" action="${backUri}"/>
     </view:buttonPane>
@@ -93,7 +108,8 @@
     currentUserLanguage : '${currentUserLanguage}',
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
-    userRole : '${highestUserRole}'
+    userRole : '${highestUserRole}',
+    zoneId : '${timeWindowViewContext.zoneId.toString()}'
   });
 </script>
 </body>

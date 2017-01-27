@@ -134,6 +134,33 @@ __silverpeasAngularModule.filter('noHTML', function () {
 })
 
 /**
+ * This filter permits to transform ISO String date into a readable date.
+ */
+__silverpeasAngularModule.filter('displayAsDate', function () {
+  return function(dateAsText) {
+    return dateAsText ? sp.moment.displayAsDate(dateAsText) : dateAsText;
+  }
+})
+
+/**
+ * This filter permits to transform ISO String date time into a readable time.
+ */
+__silverpeasAngularModule.filter('displayAsTime', function () {
+  return function(dateAsText) {
+    return dateAsText ? sp.moment.displayAsTime(dateAsText) : dateAsText;
+  }
+})
+
+/**
+ * This filter permits to transform ISO String date time into a readable one.
+ */
+__silverpeasAngularModule.filter('displayAsDateTime', function () {
+  return function(dateAsText) {
+    return dateAsText ? sp.moment.displayAsDateTime(dateAsText) : dateAsText;
+  }
+})
+
+/**
  * Common directive to provide solution to update HTML DOM with partial HTML
  * containing angular directives get from AJAX REQUEST.
  * The mechanism is simple :

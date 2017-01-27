@@ -33,7 +33,6 @@ import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.CalendarEvent.CalendarEventModificationResult;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData;
-import org.silverpeas.core.calendar.event.CalendarEventUtil;
 import org.silverpeas.core.calendar.event.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
@@ -50,6 +49,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -288,10 +288,12 @@ public class CalendarWebServiceProvider {
    * @param event the event reference from which the update is performed.
    * @param data the occurrence necessary data to perform the operation.
    * @param updateMethodType indicates the method of the occurrence update.
+   * @param zoneId the zoneId into which dates are displayed (optional).
    * @return the calendar event.
    */
   public List<CalendarEvent> saveEventFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType updateMethodType) {
+      CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType updateMethodType,
+      final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, event);
     OccurrenceEventActionMethodType methodType = updateMethodType == null ? ALL : updateMethodType;
@@ -322,7 +324,7 @@ public class CalendarWebServiceProvider {
         endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
       }
       successMessage(bundleKey, result.getUpdatedEvent().getTitle(),
-          getMessager().formatDate(getDateWithOffset(event, endDate)));
+          getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
     }
 
     final List<CalendarEvent> events = new ArrayList<>();
@@ -342,9 +344,11 @@ public class CalendarWebServiceProvider {
    * @param event the event reference from which the deletion is performed.
    * @param data the occurrence necessary data to perform the operation.
    * @param deleteMethodType indicates the method of the occurrence deletion.
+   * @param zoneId the zoneId into which dates are displayed (optional).
    */
   public CalendarEvent deleteEventFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType deleteMethodType) {
+      CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType deleteMethodType,
+      final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, event);
     OccurrenceEventActionMethodType methodType = deleteMethodType == null ? ALL : deleteMethodType;
@@ -375,7 +379,7 @@ public class CalendarWebServiceProvider {
         endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
       }
       successMessage(bundleKey, event.getTitle(),
-          getMessager().formatDate(getDateWithOffset(event, endDate)));
+          getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
     }
 
     return result.getUpdatedEvent();
@@ -391,10 +395,12 @@ public class CalendarWebServiceProvider {
    * @param attendeeId the identifier of the attendee which answered.
    * @param participationStatus the participation answer of the attendee.
    * @param answerMethodType indicates the method of the occurrence deletion.
+   * @param zoneId the zoneId into which dates are displayed (optional).
    */
   public CalendarEvent updateEventAttendeeParticipationFromAnOccurrence(CalendarEvent event,
       CalendarEventOccurrenceReferenceData data, String attendeeId,
-      ParticipationStatus participationStatus, OccurrenceEventActionMethodType answerMethodType) {
+      ParticipationStatus participationStatus, OccurrenceEventActionMethodType answerMethodType,
+      final ZoneId zoneId) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;
     Temporal participationOnDate = null;
     if (methodType == UNIQUE) {
@@ -444,8 +450,8 @@ public class CalendarWebServiceProvider {
           case UNIQUE:
             successMessage(
                 "calendar.message.event.occurrence.attendee.participation.updated.unique",
-                event.getTitle(),
-                getMessager().formatDate(getDateWithOffset(event, data.getOriginalStartDate())));
+                event.getTitle(), getMessager()
+                    .formatDate(getDateWithOffset(event, data.getOriginalStartDate(), zoneId)));
             break;
         }
 

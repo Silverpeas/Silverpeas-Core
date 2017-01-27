@@ -36,7 +36,7 @@
 
 <script type="text/ng-template" id="###silverpeas.user.attendees.content">
   <div class="buttonPanel">
-    <a href="#" class="explorePanel" ng-click="$ctrl.api.select()">
+    <a href="#" class="explorePanel" ng-click="$ctrl.api.select()" ng-if="$ctrl.isWriteMode">
       <span>${selectActionLabel}</span>
     </a>
   </div>
@@ -45,7 +45,8 @@
       <silverpeas-attendee attendee="userAttendee"
                            on-remove="$ctrl.removeUserAttendee(attendee)"
                            is-write-mode="$ctrl.isWriteMode"
-                           is-view-mode="$ctrl.isViewMode">
+                           is-view-mode="$ctrl.isViewMode"
+                           on-answer="$ctrl.onAttendeeAnswer({attendee:attendee})">
       </silverpeas-attendee>
     </li>
   </ul>

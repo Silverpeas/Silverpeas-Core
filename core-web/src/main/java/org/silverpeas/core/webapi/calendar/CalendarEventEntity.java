@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -84,8 +85,8 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   public static CalendarEventEntity fromEvent(final CalendarEvent event,
-      final String componentInstanceId) {
-    return new CalendarEventEntity().decorate(event, componentInstanceId);
+      final String componentInstanceId, final ZoneId zoneId) {
+    return new CalendarEventEntity().decorate(event, componentInstanceId, zoneId);
   }
 
   /**
@@ -306,12 +307,12 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
-      final String componentInstanceId) {
+      final String componentInstanceId, final ZoneId zoneId) {
     User currentUser = User.getCurrentRequester();
     id = calendarEvent.getId();
     onAllDay = calendarEvent.isOnAllDay();
-    startDate = formatDateWithOffset(calendarEvent, calendarEvent.getStartDate());
-    endDate = formatDateWithOffset(calendarEvent, calendarEvent.getEndDate());
+    startDate = formatDateWithOffset(calendarEvent, calendarEvent.getStartDate(), zoneId);
+    endDate = formatDateWithOffset(calendarEvent, calendarEvent.getEndDate(), zoneId);
     createDate = calendarEvent.getCreateDate();
     lastUpdateDate = calendarEvent.getLastUpdateDate();
     ownerName = calendarEvent.getCreator().getDisplayedName();
@@ -322,7 +323,7 @@ public class CalendarEventEntity implements WebEntity {
       location = calendarEvent.getLocation();
       visibility = calendarEvent.getVisibilityLevel();
       priority = calendarEvent.getPriority();
-      recurrence = CalendarEventRecurrenceEntity.from(calendarEvent);
+      recurrence = CalendarEventRecurrenceEntity.from(calendarEvent, zoneId);
       canBeModified = calendarEvent.canBeModifiedBy(currentUser);
       canBeDeleted = calendarEvent.canBeDeletedBy(currentUser);
     } else {

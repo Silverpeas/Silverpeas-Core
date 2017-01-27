@@ -106,7 +106,8 @@
     currentUserLanguage : '${currentUserLanguage}',
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
-    userRole: '${highestUserRole}'
+    userRole: '${highestUserRole}',
+    zoneId : '${timeWindowViewContext.zoneId.toString()}'
   });
 </script>
 </body>

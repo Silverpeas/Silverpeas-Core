@@ -64,7 +64,8 @@
             var adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
             var criteria = {
               startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
-              endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString()
+              endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString(),
+              zoneid: context.zoneId
             }
             return adapter.find({
               url : adapter.url,
@@ -82,7 +83,8 @@
           this.getEventOccurrenceAt = function(eventUri, startDate) {
             var adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
             var criteria = {
-              startDate: SilverpeasCalendarTools.moment(startDate).toISOString()
+              startDate: SilverpeasCalendarTools.moment(startDate).toISOString(),
+              zoneid : context.zoneId
             }
             return adapter.find({
               url : adapter.url,
@@ -115,7 +117,8 @@
                 criteria : adapter.criteria({
                   userIds : userIds,
                   startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
-                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString()
+                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString(),
+                  zoneid: context.zoneId
                 })
               });
             } else {
@@ -144,7 +147,8 @@
                 var url = adapter.url;
                 var criteria = {
                   startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
-                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString()
+                  endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString(),
+                  zoneid: context.zoneId
                 }
                 return adapter.find({
                   url : url,
@@ -172,7 +176,8 @@
                 occurrenceCopy.calendar = occurrence.event.calendar;
                 occurrenceCopy.updateMethodType = actionMethodType;
                 var eventId = occurrenceCopy.event.id;
-                var adapter = RESTAdapter.get(calendarUri + '/events/' + eventId + '/occurrences',
+                var adapter = RESTAdapter.get(
+                    calendarUri + '/events/' + eventId + '/occurrences?zoneid=' + context.zoneId,
                     CalendarEvent);
                 return adapter.put(occurrenceCopy);
               };
@@ -186,7 +191,8 @@
                 var occurrenceCopy = angular.copy(occurrence);
                 occurrenceCopy.deleteMethodType = actionMethodType;
                 var eventId = occurrenceCopy.event.id;
-                var adapter = RESTAdapter.get(calendarUri + '/events/' + eventId + '/occurrences',
+                var adapter = RESTAdapter.get(
+                    calendarUri + '/events/' + eventId + '/occurrences?zoneid=' + context.zoneId,
                     CalendarEvent);
                 return adapter["delete"](occurrenceCopy);
               };
@@ -203,7 +209,7 @@
                     var eventId = answerData.occurrence.event.id;
                     var adapter = RESTAdapter.get(
                         calendarUri + '/events/' + eventId + '/occurrences/attendees/' +
-                        attendee.id, CalendarEvent);
+                        attendee.id + '?zoneid=' + context.zoneId, CalendarEvent);
                     return adapter.put(answerData);
                   };
             };

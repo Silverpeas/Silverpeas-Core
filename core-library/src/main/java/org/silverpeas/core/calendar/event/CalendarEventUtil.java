@@ -25,6 +25,7 @@
 package org.silverpeas.core.calendar.event;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.Temporal;
 
 /**
@@ -55,24 +56,30 @@ public class CalendarEventUtil {
   /**
    * Gets the given temporal according to the calendar event data.<br/>
    * If the event is on all days, no offset is applied.
+   * If a specific zoneId is given, then the date is set to the offset of the given zoneId
+   * instead of the one linked to the calendar.
    * @param event the event data.
    * @param temporal the temporal to format.
+   * @param zoneId the zoneId requested (optional).
    * @return the date, with offset if the event is not on all days.
    */
-  public static Temporal getDateWithOffset(final CalendarEvent event, final Temporal temporal) {
+  public static Temporal getDateWithOffset(final CalendarEvent event, final Temporal temporal,
+      final ZoneId zoneId) {
+    final ZoneId toZoneId = zoneId != null ? zoneId : event.getCalendar().getZoneId();
     return event.isOnAllDay() ? temporal :
-        ((OffsetDateTime) temporal).atZoneSameInstant(event.getCalendar().getZoneId())
-            .toOffsetDateTime();
+        ((OffsetDateTime) temporal).atZoneSameInstant(toZoneId).toOffsetDateTime();
   }
 
   /**
-   * Formats the given temporal according to the calendar event data.<br/>
-   * If the event is on all day, no offset is applied.
+   * Formats the given temporal according to the calendar event data and given zoneId.
    * @param event the event data.
    * @param temporal the temporal to format.
+   * @param zoneId the zoneId requested (optional).
    * @return the formatted date.
+   * @see #getDateWithOffset(CalendarEvent, Temporal, ZoneId)
    */
-  public static String formatDateWithOffset(final CalendarEvent event, final Temporal temporal) {
-    return getDateWithOffset(event, temporal).toString();
+  public static String formatDateWithOffset(final CalendarEvent event, final Temporal temporal,
+      final ZoneId zoneId) {
+    return getDateWithOffset(event, temporal, zoneId).toString();
   }
 }

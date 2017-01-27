@@ -45,6 +45,7 @@
 <c:set var="currentUserId"          value="${currentUser.id}"/>
 <c:set var="componentId"            value="${requestScope.browseContext[3]}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
+<jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 
 <c:set var="event" value="${requestScope.event}"/>
 <c:set var="target" value="add"/>
@@ -136,7 +137,8 @@
     currentUserLanguage : '${currentUserLanguage}',
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
-    userRole : '${highestUserRole}'
+    userRole : '${highestUserRole}',
+    zoneId : '${timeWindowViewContext.zoneId.toString()}'
   });
 </script>
 </body>

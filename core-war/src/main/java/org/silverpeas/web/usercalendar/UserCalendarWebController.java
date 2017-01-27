@@ -130,8 +130,9 @@ public class UserCalendarWebController extends
   public void viewEvent(UserCalendarWebRequestContext context) {
     CalendarEvent userCalendarEvent = context.getUserCalendarEventById();
     if (userCalendarEvent != null) {
-      CalendarEventEntity entity =
-          CalendarEventEntity.fromEvent(userCalendarEvent, context.getComponentInstanceId());
+      CalendarEventEntity entity = CalendarEventEntity
+          .fromEvent(userCalendarEvent, context.getComponentInstanceId(),
+              getCalendarTimeWindowContext().getZoneId());
       context.getRequest().setAttribute("event", entity);
 
       context.getNavigationContext().navigationStepFrom(EVENT_VIEW_NS_ID)

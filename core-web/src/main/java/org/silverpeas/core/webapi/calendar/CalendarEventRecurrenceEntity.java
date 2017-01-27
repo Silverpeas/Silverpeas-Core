@@ -41,6 +41,7 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -67,11 +68,11 @@ public class CalendarEventRecurrenceEntity implements Serializable {
   protected CalendarEventRecurrenceEntity() {
   }
 
-  public static CalendarEventRecurrenceEntity from(final CalendarEvent event) {
+  public static CalendarEventRecurrenceEntity from(final CalendarEvent event, final ZoneId zoneId) {
     if (event.getRecurrence() == Recurrence.NO_RECURRENCE) {
       return null;
     }
-    return new CalendarEventRecurrenceEntity().decorate(event);
+    return new CalendarEventRecurrenceEntity().decorate(event, zoneId);
   }
 
   public FrequencyEntity getFrequency() {
@@ -142,16 +143,14 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     return recurrence;
   }
 
-  protected CalendarEventRecurrenceEntity decorate(final CalendarEvent event) {
+  protected CalendarEventRecurrenceEntity decorate(final CalendarEvent event, final ZoneId zoneId) {
     final Recurrence recurrence = event.getRecurrence();
     frequency = FrequencyEntity.from(recurrence.getFrequency());
     count = recurrence.getRecurrenceCount();
     Optional<OffsetDateTime> offsetDateTimeOptional = recurrence.getEndDate();
     endDate = offsetDateTimeOptional.isPresent() ?
-        (event.isOnAllDay() ?
-            offsetDateTimeOptional.get().toLocalDate().toString() :
-            formatDateWithOffset(event, offsetDateTimeOptional.get())) :
-        null;
+        (event.isOnAllDay() ? offsetDateTimeOptional.get().toLocalDate().toString() :
+            formatDateWithOffset(event, offsetDateTimeOptional.get(), zoneId)) : null;
     daysOfWeek = recurrence.getDaysOfWeek().stream().map(DayOfWeekOccurrenceEntity::from)
         .collect(Collectors.toList());
     return this;

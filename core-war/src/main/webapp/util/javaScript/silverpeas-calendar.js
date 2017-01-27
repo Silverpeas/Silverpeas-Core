@@ -37,6 +37,28 @@
     $window.CalendarBundle = new SilverpeasPluginBundle();
   }
 
+  var __potentialColors = ["#008cd6", "#7cb63e", "#eb9b0f", "#f53333", "#cf1a4d", "#7d2a70",
+    "#144476", "#458277", "#dc776f", "#7d5a5a", "#777777", "#000000"];
+
+  var SilverpeasCalendarColorCache = SilverpeasCache.extend({
+    getColor: function(calendar) {
+      return this.get(calendar.id);
+    },
+    setColor: function(calendar, color) {
+      if (color === 'none') {
+        this.unsetColor(calendar);
+      } else {
+        this.put(calendar.id, color);
+      }
+    },
+    unsetColor: function(calendar) {
+      this.remove(calendar.id);
+    }
+  });
+
+  var __calendarColorCache = new SilverpeasCalendarColorCache("silverpeas-calendar-color");
+  var __calendarVisibilityCache = new SilverpeasSessionCache("silverpeas-calendar-visibility");
+
   var monthNames = [];
   var dayNames = [];
   var shortDayNames = [];
@@ -89,6 +111,51 @@
   sp.log.debugActivated = sp.log.debugActivated || calendarDebug;
 
   /**
+   * In charge of applying automatically the calendar colors.
+   * @param calendars the calendars to decorate.
+   * @param potentialColors the potential colors.
+   * @private
+   */
+  function __decorateCalendarWithColors(calendars, potentialColors) {
+    var usedColors = [];
+    calendars.forEach(function(calendar) {
+      var color = __calendarColorCache.getColor(calendar);
+      if (color) {
+        usedColors.push(color);
+      }
+    });
+    var colorIndex = 0;
+    calendars.forEach(function(calendar) {
+      var color = __calendarColorCache.getColor(calendar);
+      if (!color) {
+        for(var i = 0 ; !color &&  i < potentialColors.length ; i++) {
+          var position = !colorIndex ? colorIndex : (colorIndex % potentialColors.length);
+          var potentialColor = potentialColors[position];
+          if (usedColors.indexOf(potentialColor) < 0) {
+            color = potentialColor;
+          }
+          colorIndex = position + 1;
+        }
+        if (!color) {
+          color = potentialColors[0];
+        }
+      }
+      calendar.color = color;
+    });
+  }
+
+  /**
+   * In charge of applying automatically the calendar visibility.
+   * @param calendars the calendars to decorate.
+   * @private
+   */
+  function __decorateCalendarWithVisibility(calendars) {
+    calendars.forEach(function(calendar) {
+      calendar.notVisible = __calendarVisibilityCache.get(calendar.id);
+    });
+  }
+
+  /**
    * Some tool method in order to centralize common treatments.
    * @type {SilverpeasCalendarTools}
    */
@@ -118,6 +185,52 @@
      * @type {*}
      */
     this.moment = $.fullCalendar.moment;
+
+    /**
+     * Sets to the given calendar the specified color.
+     * The calendar is one of any type handled by this component.
+     */
+    this.setCalendarColor = function(calendar, color) {
+      __calendarColorCache.setColor(calendar, color);
+    };
+
+    /**
+     * Sets to the given calendar the specified color.
+     * The calendar is one of any type handled by this component.
+     */
+    this.unsetCalendarColor = function(calendar) {
+      __calendarColorCache.unsetColor(calendar);
+    };
+
+    /**
+     * Toggles the visibility of given calendar.
+     */
+    this.toggleCalendarVisibility = function(calendar) {
+      calendar.notVisible = !calendar.notVisible;
+      if (calendar.notVisible) {
+        __calendarVisibilityCache.put(calendar.id, true);
+      } else {
+        __calendarVisibilityCache.remove(calendar.id);
+      }
+      return !calendar.notVisible;
+    };
+
+    /**
+     * Gets the potential colors available for calendars.
+     * @returns {[*]}
+     */
+    this.getCalendarPotentialColors = function() {
+      return __potentialColors;
+    };
+
+    /**
+     * Decorates the calendars with color and visibility status.
+     * @param calendars the calendar list to process.
+     */
+    this.decorateCalendars = function(calendars) {
+      __decorateCalendarWithColors(calendars, __potentialColors);
+      __decorateCalendarWithVisibility(calendars);
+    };
   };
 
   /**

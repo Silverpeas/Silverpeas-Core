@@ -104,8 +104,8 @@
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormMain',
-      ['$timeout',
-        function($timeout) {
+      ['$timeout', 'context',
+        function($timeout, context) {
           return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-main.jsp',
@@ -296,6 +296,7 @@
             }.bind(this);
 
             this.$onInit = function() {
+              this.zoneId = context.zoneId;
               this.offsetDateTime = 1 * 60 * 60 * 1000;
               this.visibilities = SilverpeasCalendarConst.visibilities;
               this.priorities = SilverpeasCalendarConst.priorities;
@@ -316,8 +317,8 @@
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormRecurrence',
-      ['$timeout',
-        function($timeout) {
+      ['$timeout', 'context',
+        function($timeout, context) {
           return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-recurrence.jsp',
@@ -533,6 +534,7 @@
             }.bind(this);
 
             this.$onInit = function() {
+              this.zoneId = context.zoneId;
               this.recurrences = SilverpeasCalendarConst.recurrences;
               this.daysOfWeek = SilverpeasCalendarConst.daysOfWeek;
               this.nthDaysOfWeek = SilverpeasCalendarConst.nthDaysOfWeek;
