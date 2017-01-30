@@ -32,6 +32,7 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.index.search.qualifiers.TaxonomySearch;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -79,13 +80,34 @@ public class SearchService {
 
     if (fullTextSearch && taxonomySearch) {
       // mixed search : retains only common results
-      taxonomyResults.retainAll(fullTextResults);
-      return taxonomyResults;
+      return getResultsFromMixedSearch(taxonomyResults, fullTextResults);
     } else if (fullTextSearch) {
       return fullTextResults;
     } else {
       return taxonomyResults;
     }
+  }
+
+  /**
+   * Returns common results. Results returned are from fullTextResults list because they are most
+   * complete than taxonomyResults ones.
+   * @param taxonomyResults Results from taxonomy search
+   * @param fullTextResults Results from fulltext search
+   * @return the common results from both lists
+   */
+  private List<SearchResult> getResultsFromMixedSearch(List<SearchResult> taxonomyResults,
+      List<SearchResult> fullTextResults) {
+    List<SearchResult> results = new ArrayList<>();
+    if (!CollectionUtil.isEmpty(fullTextResults)) {
+      for (SearchResult taxonomyResult : taxonomyResults) {
+        int index = fullTextResults.indexOf(taxonomyResult);
+        if (index != -1) {
+          SearchResult result = fullTextResults.get(index);
+          results.add(result);
+        }
+      }
+    }
+    return results;
   }
 
   private Set<String> extractComponentIds(List<SearchResult> results) {

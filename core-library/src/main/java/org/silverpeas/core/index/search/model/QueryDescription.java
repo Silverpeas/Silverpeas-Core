@@ -268,7 +268,7 @@ public final class QueryDescription implements Serializable {
     boolean xmlQueryDefined = getXmlQuery() != null;
     boolean filtersDefined = isSearchBySpace() || isSearchByComponentType() ||
         StringUtil.isDefined(getRequestedAuthor());
-    filtersDefined = filtersDefined && isPeriodDefined();
+    filtersDefined = filtersDefined || isPeriodDefined();
     return !queryDefined && !xmlQueryDefined && !filtersDefined;
   }
 
