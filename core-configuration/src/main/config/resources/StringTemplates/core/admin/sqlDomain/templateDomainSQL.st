@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2000 - 2015 Silverpeas
+# Copyright (C) 2000 - 2016 Silverpeas
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,11 @@ database.SQLDataSourceJNDIName = $SQLDataSourceJNDIName$
 database.SQLUserTableName      = $SQLUserTableName$
 database.SQLGroupTableName     = $SQLGroupTableName$
 database.SQLUserGroupTableName = $SQLUserGroupTableName$
+
+# Domain settings
+#-----------------
+# A coma separated list of look names that are available to the users of this domain
+#domain.looks=
 
 # Generic Properties
 # ------------------
