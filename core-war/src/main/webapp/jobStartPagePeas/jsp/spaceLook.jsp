@@ -50,7 +50,7 @@ boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEna
 DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
-List<String>	availableLooks		= gef.getAvailableLooks();
+List<String>	availableLooks		= gef.getAvailableLooksForUser();
 String			spaceLook			= space.getLook();
 
 browseBar.setSpaceId(spaceId);

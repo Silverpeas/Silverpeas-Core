@@ -218,7 +218,7 @@ public class SilverpeasSessionOpener {
     String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
 
     // Put a graphicElementFactory in the session
-    GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
+    GraphicElementFactory gef = new GraphicElementFactory(controller);
     if (StringUtil.isDefined(personalWs)) {
       gef.setSpaceIdForCurrentRequest(personalWs);
     }

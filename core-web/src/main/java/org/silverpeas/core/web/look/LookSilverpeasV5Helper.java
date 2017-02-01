@@ -255,9 +255,8 @@ public class LookSilverpeasV5Helper extends LookHelper {
       spaceLook = getMainSessionController().getFavoriteLook();
     }
     if (spaceLook != null && !spaceLook.equals(currentLookName)) {
-      getGraphicElementFactory().setLook(spaceLook);
+      currentLookName = getGraphicElementFactory().setLook(spaceLook);
       init(getGraphicElementFactory().getFavoriteLookSettings());
-      currentLookName = spaceLook;
     }
   }
 

@@ -20,15 +20,19 @@
  */
 package org.silverpeas.core.admin.domain.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.quota.model.Quota;
-
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class Domain implements Serializable {
 
@@ -208,7 +212,19 @@ public class Domain implements Serializable {
 
   public boolean isMixedOne() {
     return MIXED_DOMAIN_ID.equals(getId());
+  }
 
+  public List<String> getLooks() {
+    String param = getSettings().getString("domain.looks", "");
+    return Arrays.asList(StringUtil.split(param, ','));
+  }
+
+  public SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle(getPropFileName());
+  }
+
+  public boolean getProperty(String name, boolean defaultValue) {
+    return getSettings().getBoolean(name, defaultValue);
   }
 
   @Override
