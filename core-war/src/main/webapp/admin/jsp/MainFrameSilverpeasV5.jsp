@@ -244,7 +244,21 @@
       },
       <% } %>
       language : '<%= user.getUserPreferences().getLanguage() %>',
-      avatar: webContext + '/display/avatar/60x/'
+      avatar: webContext + '/display/avatar/60x/',
+      debug: true,
+      selectUser: function(openChatWith) {
+        $('#userId').off('change').on('change', function() {
+          var id = $(this).val();
+          if (id && id !== '<%= user.getId() %>') {
+            User.get(id).then(function(user) {
+              if (user) {
+                openChatWith(user.chatId, user.fullName);
+              }
+            });
+          }
+        });
+        SP_openUserPanel(webContext + '/selectChatUser', '', 'menubar=no,scrollbars=no,statusbar=no');
+      }
     }).start();
     </c:when>
     <c:otherwise>
