@@ -228,7 +228,7 @@ public class GraphicElementFactory {
       return look.exists();
     } catch (MissingResourceException e) {
       SilverLogger.getLogger(GraphicElementFactory.class)
-          .warn("Look named '"+lookName+" not found", e);
+          .error("Look named '" + lookName + "' not found", e);
       return false;
     }
   }
