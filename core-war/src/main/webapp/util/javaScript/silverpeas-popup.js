@@ -26,7 +26,7 @@
  * Silverpeas plugin build upon JQuery to display a modal dialog box.
  * It uses the JQuery UI framework.
  */
-(function($) {
+(function($, top$) {
 
   var __displayFullscreenModalBackground = (top !== window && top.spLayout);
 
@@ -589,23 +589,8 @@
       __localSpFullscreenModalBackgroundContext.count = 0;
       var $container = this.getContainer();
       if ($container.length > 0) {
-        try {
-          $container.dialog("close");
-          $container.dialog("destroy");
-        } catch (e) {
-          __logDebug(e);
-          __logDebug("cleaning manually jQuery.ui.dialog");
-          var $domToClear = $("div[aria-describedby=spFullscreenModalBackground]", top.document);
-          if ($domToClear.length) {
-            var zIndexToTarget = "" + ($domToClear[0].style.zIndex - 1);
-            $(".ui-widget-overlay", top.document).each(function(i, overlay) {
-              if (overlay.style.zIndex === zIndexToTarget) {
-                $(overlay).remove();
-              }
-            });
-            $domToClear.remove();
-          }
-        }
+        $container.dialog("close");
+        $container.dialog("destroy");
         $container.remove();
         spLayout.getBody().getContent().setOnBackground();
       }
@@ -622,7 +607,7 @@
       }
     };
     this.getContainer = function() {
-      return $("#spFullscreenModalBackground", top.document);
+      return top$("#spFullscreenModalBackground", top.document);
     };
     this.isFirst = function() {
       return __localSpFullscreenModalBackgroundContext.count === 1;
@@ -641,9 +626,9 @@
     spFullscreenModalBackgroundContext.increase();
 
     if (spFullscreenModalBackgroundContext.isFirst()) {
-      var $container = $("<div>").attr('id', 'spFullscreenModalBackground').attr('style',
+      var $container = top$("<div>").attr('id', 'spFullscreenModalBackground').attr('style',
           'display: none; border: 0; padding: 0; height: 0; width: 0; overflow: hidden;');
-      $(top.document.body).append($container);
+      top$(top.document.body).append($container);
 
       $container.dialog({
         fullscreenModalBackground : true,
@@ -706,7 +691,7 @@
     var position = dialogOptions.position;
     if (position.my === "center" && position.at === "center" && position.of === window) {
       var headerHeightOffset = spLayout.getHeader().getContainer().offsetHeight / 2;
-      var isContentFullWidth = !($(spLayout.getBody().getContent().getContainer()).position().left);
+      var isContentFullWidth = !(top$(spLayout.getBody().getContent().getContainer()).position().left);
       if (isContentFullWidth) {
         var navigationHeightOffset = spLayout.getBody().getNavigation().getContainer().offsetHeight / 2;
         position.at = "center center-" + (headerHeightOffset + navigationHeightOffset);
@@ -754,7 +739,7 @@
     spFullscreenModalBackgroundContext.clear();
   }
 
-})(jQuery);
+})(jQuery, top.jQuery);
 
 /**
  * Some helpers
