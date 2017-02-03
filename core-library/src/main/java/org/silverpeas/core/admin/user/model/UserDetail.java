@@ -35,6 +35,7 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.StatusService;
@@ -724,25 +725,43 @@ public class UserDetail implements User {
   }
 
   /**
-   * Indicates if the current user is in relation with, or invited by, a user represented by the
-   * given identifier.
-   * @param userId the identifier of the user which the current user is potentially in relation
-   * with or invited by.
-   * @return true if the current user is in relation with, or invited by, the user represented by
+   * Indicates if the current user is in relation with a user represented by the given identifier.
+   * @param userId the identifier of user which the current user is potentially in relation with.
+   * @return true if the current user is in relation with the user represented by
    * the given identifier, false otherwise.
    */
-  public boolean isInRelationWithOrInvitedBy(String userId) {
+  public boolean isInRelationWith(String userId) {
     RelationShipService relation = RelationShipService.get();
-    InvitationService invitation = InvitationService.get();
     try {
-      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId())) ||
-          (invitation.getInvitation(Integer.parseInt(userId), Integer.parseInt(getId())) != null);
+      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId()));
     } catch (Exception e) {
       SilverLogger.getLogger(this)
-          .warn("not possible to verify relation with or invitation of userId ''{0}'' ({0})",
+          .warn("not possible to verify relation with ''{0}'' ({0})",
               userId, e.getMessage());
     }
     return false;
+  }
+
+  public Invitation getInvitationSentTo(String userId) {
+    return getInvitation(getId(), userId);
+  }
+
+  public Invitation getInvitationReceivedFrom(String userId) {
+    return getInvitation(userId, getId());
+  }
+
+  private Invitation getInvitation(String fromUserId, String toUserId) {
+    InvitationService invitationService = InvitationService.get();
+    Invitation invitation = null;
+    try {
+      invitation =
+          invitationService.getInvitation(Integer.parseInt(fromUserId), Integer.parseInt(toUserId));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this)
+          .warn("not possible to verify relation invitation from userId ''{0}'' and ''{1}''",
+              fromUserId, toUserId, e);
+    }
+    return invitation;
   }
 
   /**

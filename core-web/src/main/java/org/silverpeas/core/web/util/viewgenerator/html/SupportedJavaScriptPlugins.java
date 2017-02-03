@@ -67,11 +67,12 @@ public enum SupportedJavaScriptPlugins {
    */
   userZoom,
   /**
-   * Silverpeas plugin to send a relationship asking to a given user. The HTML element on which the
-   * plugin is invoked must present the rel attribute valued with the user identifier and optionally
-   * the user full name (comma separated).
+   * Silverpeas plugin to manage relationship (invitation, acceptation, cancellation, deletion).
+   * The HTML element on which the plugin is invoked must present the rel attribute valued with
+   * the user or invitation identifier and optionally the user full name of a callback function's
+   * name(comma separated).
    */
-  invitme,
+  relationship,
   /**
    * Silverpeas plugin to send a message (a user notification) to a given user. The HTML element on
    * which the plugin is invoked must present the rel attribute valued with the user identifier and

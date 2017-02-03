@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 
@@ -43,13 +44,8 @@ public class StatusDao {
 
   private static final String INSERT_STATUS =
       "INSERT INTO sb_sn_status (id, userid, creationdate, description) VALUES (?, ?, ?, ?)";
-  private static final String DELETE_STATUS = "DELETE FROM sb_sn_status WHERE id = ?";
-  private static final String SELECT_STATUS_BY_ID =
-      "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE id = ? ";
   private static final String SELECT_LAST_STATUS_BY_USERID =
       " SELECT * FROM sb_sn_status WHERE userid = ? ORDER BY creationdate DESC";
-  private static final String UPDATE_STATUS_BY_ID =
-      "UPDATE sb_sn_status  SET  description = ? WHERE id = ? ";
 
   /**
    * Change my Status
@@ -77,58 +73,6 @@ public class StatusDao {
   }
 
   /**
-   * delete my status
-   * @param connection
-   * @param id
-   * @return boolean
-   * @throws SQLException
-   */
-  public boolean deleteStatus(Connection connection, int id) throws SQLException {
-    PreparedStatement pstmt = null;
-    boolean endAction = false;
-    try {
-      pstmt = connection.prepareStatement(DELETE_STATUS);
-      pstmt.setInt(1, id);
-      pstmt.executeUpdate();
-      endAction = true;
-    } finally {
-      DBUtil.close(pstmt);
-    }
-    return endAction;
-  }
-
-  /**
-   * get Status for user
-   * @param connection
-   * @param id
-   * @return Status
-   * @throws SQLException
-   */
-  public Status getStatus(Connection connection, int id) throws SQLException {
-    Status status = null;
-    ResultSet rs = null;
-    PreparedStatement pstmt = null;
-    try {
-      pstmt = connection.prepareStatement(SELECT_STATUS_BY_ID);
-      pstmt.setInt(1, id);
-
-      rs = pstmt.executeQuery();
-      if (rs.next()) {
-        status = new Status();
-        status.setId(rs.getInt(1));
-        status.setUserId(rs.getInt(2));
-        status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
-        status.setDescription(rs.getString(4));
-
-      }
-
-    } finally {
-      DBUtil.close(pstmt);
-    }
-    return status;
-  }
-
-  /**
    * get last status for user
    * @param connection
    * @param userid
@@ -144,40 +88,15 @@ public class StatusDao {
       pstmt.setInt(1, userid);
       rs = pstmt.executeQuery();
       if (rs.next()) {
-
         status.setId(rs.getInt(1));
         status.setUserId(rs.getInt(2));
         status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
         status.setDescription(rs.getString(4));
       }
-
     } finally {
       DBUtil.close(pstmt);
     }
     return status;
-  }
-
-  /**
-   * UpdateStatus
-   * @param connection
-   * @param status
-   * @return boolean
-   * @throws SQLException
-   */
-  public boolean updateStatus(Connection connection, Status status) throws SQLException {
-    PreparedStatement pstmt = null;
-    boolean endAction = false;
-    try {
-      pstmt = connection.prepareStatement(UPDATE_STATUS_BY_ID);
-      pstmt.setString(1, status.getDescription());
-      pstmt.setInt(2, status.getId());
-      pstmt.executeUpdate();
-      endAction = true;
-
-    } finally {
-      DBUtil.close(pstmt);
-    }
-    return endAction;
   }
 
   /**
@@ -250,7 +169,9 @@ public class StatusDao {
       status.setUserId(rs.getInt(2));
       status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
       status.setDescription(rs.getString(4));
-      status_list.add(new SocialInformationStatus(status));
+      if (StringUtil.isDefined(status.getDescription())) {
+        status_list.add(new SocialInformationStatus(status));
+      }
     }
     return status_list;
   }

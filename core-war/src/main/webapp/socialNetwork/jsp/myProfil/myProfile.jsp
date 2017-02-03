@@ -149,30 +149,27 @@ function ifFileCorrectExecute(callback) {
 
 $(document).ready(function(){
     var statusDialogOpts = {
-		resizable: false,
-            modal: true,
-            autoOpen: false,
-            height: "auto",
-            width: 400,
-            title: "<fmt:message key="profil.actions.changeStatus" />",
-            buttons: {
+      resizable: false,
+      modal: true,
+      autoOpen: false,
+      height: "auto",
+      width: 400,
+      title: "<fmt:message key="profil.actions.changeStatus" />",
+      buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
 						var status = $("#newStatus");
-
-
-					    var url = "<%=m_context %>/RmyProfilJSON?Action=updateStatus";
+            var url = "<%=m_context %>/RmyProfilJSON?Action=updateStatus";
 						url+='&status='+encodeURIComponent(status.val());
-
 						// prevents from IE amazing cache
 						url+='&IEFix='+Math.round(new Date().getTime());
-				        $.getJSON(url, function(data){
-						if(data.status === "silverpeastimeout") {
-							alert("<fmt:message key="myProfile.status.timeout" />")
-						} else {
-                    $( "#myProfileFiche .statut").html(data.status);
-                    $("#newStatus").html(data.status);
-                  }
-				        });
+            $.getJSON(url, function(data){
+						  if(data.status === "silverpeastimeout") {
+							  alert("<fmt:message key="myProfile.status.timeout" />")
+						  } else {
+                $( "#myProfileFiche .statut").html(data.status);
+                $("#newStatus").html(data.status);
+              }
+            });
 						$( this ).dialog( "close" );
 				},
 				"<fmt:message key="GML.cancel"/>": function() {
@@ -254,22 +251,22 @@ function hideImageFile() {
 
 	<div class="info tableBoard">
 		<h2 class="userName"><c:out value="${currentUser.firstName}" /> <br /><c:out value="${currentUser.lastName}" /></h2>
-	<p class="statut"><c:out value="${silfn:escapeHtmlWhitespaces(currentUser.status)}" escapeXml="false" /></p>
-	    <div class="action">
-		<a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
-            <br />
-            <a href="#" class="link updateAvatar" onclick="updateAvatar()"><fmt:message key="profil.actions.changePhoto" /></a>
-            <br/>
+	  <p class="statut"><c:out value="${silfn:escapeHtmlWhitespaces(currentUser.status)}" escapeXml="false" /></p>
+    <div class="action">
+		  <a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
+      <br />
+      <a href="#" class="link updateAvatar" onclick="updateAvatar()"><fmt:message key="profil.actions.changePhoto" /></a>
+      <br/>
 			<a href="#" class="link" onclick="logIntoFB();" id="FBLoginButton"><fmt:message key="profil.actions.connectTo" /> FACEBOOK</a>
 			<a href="#" class="link" onclick="publishToFB();" id="FBPublishButton"><fmt:message key="profil.actions.publishStatus"/> FACEBOOK</a>
-            <br/>
+      <br/>
 			<a href="#" class="link" onclick="logIntoLinkedIN();" id="LinkedInLoginButton"><fmt:message key="profil.actions.connectTo" /> LINKEDIN</a>
 			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>
-        </div>
-        <div class="profilPhoto">
+    </div>
+    <div class="profilPhoto">
 			<view:image src="${currentUser.avatar}" type="avatar.profil" alt="viewUser" css="avatar"/>
-        </div>
-        <br clear="all" />
+    </div>
+    <br clear="all" />
 	</div>
 
 	<div id="statusDialog">

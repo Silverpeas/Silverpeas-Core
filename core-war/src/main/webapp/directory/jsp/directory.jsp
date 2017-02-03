@@ -60,7 +60,6 @@
 <head>
   <title></title>
   <view:looknfeel/>
-  <view:includePlugin name="invitme"/>
   <view:includePlugin name="messageme"/>
   <view:includePlugin name="popup"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
@@ -151,11 +150,11 @@
         return true;
       });
 
-      <c:if test="${showHelp}">
       $(document).ready(function() {
-        showAutoHelp();
+        <c:if test="${showHelp}">
+          showAutoHelp();
+        </c:if>
       });
-      </c:if>
     });
   </script>
 
@@ -217,7 +216,7 @@
         <div id="users">
           <ol class="message_list aff_colonnes">
             <c:forEach items="${fragments}" var="fragment">
-              <li class="intfdcolor ${fragment.type}" id="user-${fragment.userId}">
+              <li class="intfdcolor ${fragment.type} showActionsOnMouseOver" id="user-${fragment.userId}">
                   ${fragment.fragment}
                 <br clear="all"/>
               </li>

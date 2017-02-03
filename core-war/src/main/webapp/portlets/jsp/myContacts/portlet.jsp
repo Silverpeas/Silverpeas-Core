@@ -31,6 +31,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <portlet:defineObjects/>
 
@@ -65,7 +66,7 @@
 				</span>
 
 				<div class="userStatut">
-					<p title="${member.status}">${member.status}</p>
+					<p title="${member.status}">${silfn:escapeHtml(member.status)}</p>
 				</div>
 
 				<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"

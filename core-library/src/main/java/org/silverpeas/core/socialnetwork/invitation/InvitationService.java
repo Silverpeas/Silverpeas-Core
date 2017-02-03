@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.socialnetwork.invitation;
 
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipDao;
@@ -89,6 +89,7 @@ public class InvitationService {
           invitationRslt = -2;
         } else {
           invitationRslt = invitationDao.createInvitation(connection, invitation);
+          notifyGuest(invitation);
         }
       }
     } catch (Exception ex) {
@@ -159,6 +160,9 @@ public class InvitationService {
         relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship1);
         relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship2);
       }
+
+      // alert sender of receiver acceptation
+      alertAcceptation(invitation);
     } catch (Exception ex) {
       resultAccepteInvitation = 0;
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
@@ -248,32 +252,15 @@ public class InvitationService {
     return null;
   }
 
-  /**
-   * initialize the Connection to database
-   * @return Connection
-   * @throws UtilException
-   * @throws SQLException
-   */
-
   private Connection getConnection() throws SQLException {
     return DBUtil.openConnection();
   }
 
-  /**
-   * @param relationShipId the relationship identifier
-   * @return a RelationShip
-   */
-  public RelationShip getRelationShip(int relationShipId) {
-    Connection connection = null;
+  private void alertAcceptation(Invitation invitation) {
+    UserNotificationHelper.buildAndSend(new AcceptationUserNotification(invitation));
+  }
 
-    try {
-      connection = getConnection();
-      return relationShipDao.getRelationShip(connection, relationShipId);
-    } catch (Exception ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
-    }
-    return null;
+  private void notifyGuest(Invitation invitation) {
+    UserNotificationHelper.buildAndSend(new NewInvitationUserNotification(invitation));
   }
 }
