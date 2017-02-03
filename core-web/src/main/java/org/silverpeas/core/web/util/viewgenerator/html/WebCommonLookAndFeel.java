@@ -192,7 +192,7 @@ class WebCommonLookAndFeel {
         .append(silverpeasUrl)
         .append("';")
         .append(STR_NEW_LINE)
-        .append(addGlobalJSVariable(language))
+        .append(addGlobalJSVariable(controller))
         .append("</script>\n");
 
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
@@ -219,7 +219,7 @@ class WebCommonLookAndFeel {
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includePopup(new ElementContainer()).toString()).append(STR_NEW_LINE);
-    code.append(includeUserZoom(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includeUserZoom(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeCkeditorAddOns(new ElementContainer(), language).toString()).append(
         STR_NEW_LINE);
 
@@ -274,14 +274,16 @@ class WebCommonLookAndFeel {
   }
 
   @SuppressWarnings("StringBufferReplaceableByString")
-  private String addGlobalJSVariable(String language) {
+  private String addGlobalJSVariable(MainSessionController controller) {
     StringBuilder globalJSVariableBuilder = new StringBuilder();
-    globalJSVariableBuilder.append("var userLanguage = '").append(language).append("';")
-        .append(STR_NEW_LINE);
+    globalJSVariableBuilder.append("var userLanguage = '").append(controller.getFavoriteLanguage())
+        .append("';").append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
         .append(" }").append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getString(key) { return window.i18n.prop(key); }")
         .append(STR_NEW_LINE);
+    globalJSVariableBuilder.append("var currentUserId = '").append(controller.getUserId())
+        .append("';").append(STR_NEW_LINE);
     return globalJSVariableBuilder.toString();
   }
 

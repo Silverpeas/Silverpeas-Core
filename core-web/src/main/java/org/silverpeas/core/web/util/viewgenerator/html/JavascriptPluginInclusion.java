@@ -25,6 +25,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
@@ -96,7 +97,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_LAYOUT = "silverpeas-layout.js";
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
-  private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
+  private static final String SILVERPEAS_INVITME = "silverpeas-relationship.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_RESPONSIBLES = "silverpeas-responsibles.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
@@ -379,15 +380,41 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeUserZoom(final ElementContainer xhtml) {
+  public static ElementContainer includeUserZoom(final ElementContainer xhtml,
+      final String language) {
     xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
+    includeRelationship(xhtml, language);
     xhtml.addElement(script(javascriptPath + SILVERPEAS_USERZOOM));
     return xhtml;
   }
 
-  public static ElementContainer includeInvitMe(final ElementContainer xhtml) {
+  public static ElementContainer includeRelationship(final ElementContainer xhtml,
+      final String language) {
+    LocalizationBundle bundle = ResourceLocator
+        .getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
+    xhtml.addElement(scriptContent(JavascriptBundleProducer.bundleVariableName("RelationshipBundle")
+        .add(ResourceLocator.getGeneralLocalizationBundle(language),
+            "GML.ok",
+            "GML.cancel",
+            "GML.yes",
+            "GML.no",
+            "GML.notification.message")
+        .add(bundle,
+            "myProfile.invitations.dialog.cancel.title",
+            "myProfile.invitations.dialog.cancel.message",
+            "myProfile.invitations.cancel.feedback",
+            "myProfile.invitations.dialog.ignore.title",
+            "myProfile.invitations.dialog.ignore.message",
+            "myProfile.invitations.ignore.feedback",
+            "myProfile.invitations.sent.feedback",
+            "myProfile.invitations.dialog.accept.title",
+            "myProfile.invitations.dialog.accept.message",
+            "myProfile.invitations.accept.feedback",
+            "myProfile.relations.delete.feedback",
+            "myProfile.relations.dialog.delete.title",
+            "myProfile.relations.dialog.delete.message")
+        .produce()));
     xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
     return xhtml;

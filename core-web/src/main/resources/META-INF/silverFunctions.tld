@@ -192,7 +192,7 @@
     <description>Function to encode a java whitespace String into a HTML whitespace String.</description>
     <name>escapeHtmlWhitespaces</name>
     <function-class>org.silverpeas.core.util.WebEncodeHelper</function-class>
-    <function-signature>java.lang.String convertWhiteSpacesForHTMLDisplay( java.lang.String ) </function-signature>
+    <function-signature>java.lang.String javaStringToHtmlParagraphe( java.lang.String ) </function-signature>
   </function>
   <function>
     <description>Function to tell if Silverpeas is in mode i18N.</description>

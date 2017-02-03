@@ -45,6 +45,7 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
@@ -76,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
 /**
@@ -553,17 +555,29 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
-    template.setAttribute("user", user.getUserDetail());
-    if (StringUtil.isDefined(user.getUserDetail().getStatus())) {
-      template.setAttribute("status", javaStringToHtmlString(user.getUserDetail().getStatus()));
+    UserDetail userDetail = user.getUserDetail();
+    template.setAttribute("user", userDetail);
+    if (StringUtil.isDefined(userDetail.getStatus())) {
+      template.setAttribute("status", javaStringToHtmlParagraphe(userDetail.getStatus()));
     } else {
       template.setAttribute("status", null);
     }
     template.setAttribute("type", getString("GML.user.type." + user.getAccessLevel()));
     template.setAttribute("context", URLUtil.getApplicationURL());
     template.setAttribute("notMyself", !user.getOriginalId().equals(getUserId()));
-    template.setAttribute("notAContact", !user.getUserDetail().isInRelationWithOrInvitedBy(
-        getUserId()));
+    template.setAttribute("aContact", userDetail.isInRelationWith(getUserId()));
+    Invitation invitationSent = getUserDetail().getInvitationSentTo(userDetail.getId());
+    if (invitationSent != null) {
+      template.setAttribute("invitationSent", invitationSent.getId());
+    } else {
+      template.setAttribute("invitationSent", null);
+    }
+    Invitation invitationReceived = getUserDetail().getInvitationReceivedFrom(userDetail.getId());
+    if (invitationReceived != null) {
+      template.setAttribute("invitationReceived",invitationReceived.getId());
+    } else {
+      template.setAttribute("invitationReceived", null);
+    }
 
     UserFull userFull = getUserFul(user.getOriginalId());
     HashMap<String, String> extra = new HashMap<String, String>();

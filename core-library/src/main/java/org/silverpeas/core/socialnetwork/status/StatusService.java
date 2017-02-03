@@ -81,45 +81,6 @@ public class StatusService {
   }
 
   /**
-   * delete my Status
-   * @param id
-   * @return boolean
-   */
-  public boolean deleteStatusService(int id) {
-    Connection connection = null;
-    boolean delete_status = false;
-    try {
-      connection = getConnection();
-      delete_status = statusDao.deleteStatus(connection, id);
-    } catch (Exception ex) {
-      SilverTrace
-          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.deleteStatus", "", ex);
-    } finally {
-      DBUtil.close(connection);
-    }
-    return delete_status;
-  }
-
-  /**
-   * get Status for user
-   * @param id
-   * @return Status
-   */
-  public Status getStatusService(int id) {
-    Connection connection = null;
-    Status status = new Status();
-    try {
-      connection = getConnection();
-      status = statusDao.getStatus(connection, id);
-    } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getStatus", "", ex);
-    } finally {
-      DBUtil.close(connection);
-    }
-    return status;
-  }
-
-  /**
    * get last status for user
    * @param userid
    * @return
@@ -138,27 +99,6 @@ public class StatusService {
     }
     return status;
 
-  }
-
-  /**
-   * update status
-   * @param status
-   * @return boolean
-   * @unused
-   */
-  public boolean updateStatusService(Status status) {
-    Connection connection = null;
-    boolean update_status = false;
-    try {
-      connection = getConnection();
-      update_status = statusDao.updateStatus(connection, status);
-    } catch (Exception ex) {
-      SilverTrace
-          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.UpdateStatus", "", ex);
-    } finally {
-      DBUtil.close(connection);
-    }
-    return update_status;
   }
 
   /**

@@ -29,7 +29,6 @@ import org.silverpeas.core.webapi.base.WebEntity;
 
 import java.net.URI;
 import java.util.Date;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -50,9 +49,9 @@ public class InvitationEntity extends Invitation implements WebEntity {
 
   @XmlElement
   private URI uri;
-  @XmlElement @NotNull
+  @XmlElement
   private URI senderUri;
-  @XmlElement @NotNull
+  @XmlElement
   private URI receiverUri;
   private final Invitation invitation;
 
@@ -100,13 +99,13 @@ public class InvitationEntity extends Invitation implements WebEntity {
     invitation.setId(id);
   }
 
-  @XmlElement @NotNull
+  @XmlElement
   @Override
   public int getSenderId() {
     return invitation.getSenderId();
   }
 
-  @XmlElement @NotNull
+  @XmlElement
   @Override
   public int getReceiverId() {
     return invitation.getReceiverId();
@@ -118,7 +117,7 @@ public class InvitationEntity extends Invitation implements WebEntity {
     return invitation.getMessage();
   }
 
-  @XmlElement @NotNull
+  @XmlElement
   @Override
   public Date getInvitationDate() {
     return invitation.getInvitationDate();

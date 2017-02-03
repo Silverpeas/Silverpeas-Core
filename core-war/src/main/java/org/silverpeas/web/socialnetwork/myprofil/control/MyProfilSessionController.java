@@ -29,15 +29,8 @@ import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
@@ -49,26 +42,18 @@ import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.Link;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 
 /**
  * @author Bensalem Nabil
@@ -88,13 +73,12 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * get all RelationShips ids for this user.
-   * @param userId the user identifier
+   * get all RelationShips ids for current user.
    * @return :List<String>
    */
-  public List<String> getContactsIdsForUser(String userId) {
+  public List<String> getContactsIdsForUser() {
     try {
-      return relationShipService.getMyContactsIds(Integer.parseInt(userId));
+      return relationShipService.getMyContactsIds(Integer.parseInt(getUserId()));
     } catch (SQLException ex) {
       SilverTrace
           .error("MyProfilSessionController", "MyProfilSessionController.getContactsIdsForUser", "",
@@ -218,149 +202,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
           .add(new InvitationUser(varI, getUserDetail(Integer.toString(varI.getSenderId()))));
     }
     return invitationUsers;
-  }
-
-  public void sendInvitation(String receiverId, String message) {
-    Invitation invitation =
-        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
-            new Date());
-    if (invitationService.invite(invitation) >= 0) {
-      notifyUser(receiverId, message);
-    }
-  }
-
-  /**
-   * @param receiverId the receiver user identifier
-   * @param message the message
-   */
-  private void notifyUser(String receiverId, String message) {
-    try {
-      NotificationSender notificationSender = new NotificationSender(null);
-
-      // Send a notification to alert people about a new relationship ask.
-      Map<String, SilverpeasTemplate> templates = new HashMap<>();
-      String subject = getString("myProfile.invitations.notification.send.subject");
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-              "sendInvitation");
-
-      UserDetail senderUser = getUserDetail();
-      notifMetaData.setSource(senderUser.getDisplayedName());
-
-      List<String> languages = DisplayI18NHelper.getLanguages();
-      for (String language : languages) {
-        // Create a new silverpeas template
-        SilverpeasTemplate template = getNewTemplate();
-        template.setAttribute("senderUser", senderUser);
-        template.setAttribute("userName", senderUser.getDisplayedName());
-        template.setAttribute("senderMessage", message);
-        templates.put(language, template);
-        notifMetaData.addLanguage(language, subject, "");
-        LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
-            "org.silverpeas.social.multilang.socialNetworkBundle", language);
-        String translation;
-        try {
-          translation =
-              localizedMessage.getString("myProfile.invitations.notification.send.subject");
-        } catch (MissingResourceException ex) {
-          translation = subject;
-        }
-        notifMetaData.addLanguage(language, translation, "");
-
-        String url = URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null)
-            + "MyInvitations";
-        Link link = new Link(url, localizedMessage.getString("myProfile.invitations.notification.notifLinkLabel"));
-        notifMetaData.setLink(link, language);
-        if (StringUtil.isDefined(message)) {
-          setNotificationContent(notifMetaData, message, language);
-        }
-      }
-      notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipient(new UserRecipient(receiverId));
-      notificationSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
-      SilverTrace.error("MyProfilSessionController", "MyProfilSessionController.sendInvitation",
-          "root.EX_CANT_SEND_MESSAGE", e);
-    }
-  }
-
-  private void setNotificationContent(NotificationMetaData notif, String message, String language) {
-    notif.addExtraMessage(message, language);
-  }
-
-  /**
-   * @param id the invitation identifier
-   * @see InvitationService#ignoreInvitation(int)
-   */
-  public void ignoreInvitation(String id) {
-    invitationService.ignoreInvitation(Integer.parseInt(id));
-  }
-
-  /**
-   * @param invitationId the invitation identifier
-   */
-  public void acceptInvitation(String invitationId) {
-    int relationShipId = invitationService.accepteInvitation(Integer.parseInt(invitationId));
-    if (relationShipId >= 0) {
-      acceptInvitationNotif(relationShipId);
-    }
-  }
-
-  /**
-   * @param relationShipId
-   */
-  private void acceptInvitationNotif(int relationShipId) {
-    RelationShip curRelation = invitationService.getRelationShip(relationShipId);
-    try {
-      // Retrieve sender information
-      UserDetail senderUser = getUserDetail();
-      String displayedName = senderUser.getDisplayedName();
-
-      NotificationSender notificationSender = new NotificationSender(null);
-      // Send a notification to alert people about new relationship.
-      Map<String, SilverpeasTemplate> templates = new HashMap<>();
-      String subject =
-          displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
-
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-              "acceptInvitation");
-
-      notifMetaData.setSource(displayedName);
-
-      List<String> languages = DisplayI18NHelper.getLanguages();
-      for (String language : languages) {
-        // Create a new silverpeas template
-        SilverpeasTemplate template = getNewTemplate();
-        template.setAttribute("senderUser", senderUser);
-        template.setAttribute("userName", senderUser.getDisplayedName());
-        templates.put(language, template);
-        notifMetaData.addLanguage(language, subject, "");
-        LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
-            "org.silverpeas.social.multilang.socialNetworkBundle", language);
-        String translation;
-        try {
-          translation =
-              localizedMessage.getString("myProfile.invitations.notification.accept.subject");
-        } catch (MissingResourceException ex) {
-          translation = subject;
-        }
-        notifMetaData.addLanguage(language, translation, "");
-      }
-      notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(curRelation.getInviterId())));
-      notificationSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
-      SilverTrace.error("MyProfilSessionController", "MyProfilSessionController.sendInvitation",
-          "root.EX_CANT_SEND_MESSAGE", e);
-    }
-  }
-
-  /**
-   * @return a SilverpeasTemplate
-   */
-  private SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("socialNetwork");
   }
 
   public boolean updatablePropertyExists() {

@@ -30,10 +30,16 @@ import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.List;
 
@@ -71,6 +77,43 @@ public class InvitationResource extends RESTWebService {
     return asWebEntity(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
   }
 
+  @Path("{id}")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public InvitationEntity getInvitation(@PathParam("id") final Integer id) {
+    Invitation invitation = invitationService.getInvitation(id);
+    return asWebEntity(invitation, locatedAt(getUriInfo().getAbsolutePathBuilder()));
+  }
+
+  @DELETE
+  @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response cancelInvitation(@PathParam("id") final Integer id) {
+    invitationService.ignoreInvitation(id);
+    return Response.ok().build();
+  }
+
+  @PUT
+  @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response acceptInvitation(@PathParam("id") final Integer id) {
+    invitationService.accepteInvitation(id);
+    return Response.ok().build();
+  }
+
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createInvitation(final InvitationEntity invitationEntity) {
+    Invitation invitation = new Invitation();
+    invitation.setReceiverId(invitationEntity.getReceiverId());
+    invitation.setMessage(invitationEntity.getMessage());
+    invitation.setSenderId(Integer.parseInt(getUserDetail().getId()));
+    int id = invitationService.invite(invitation);
+    invitationEntity.setId(id);
+    return Response.ok(invitationEntity).build();
+  }
+
   @Override
   public String getComponentId() {
     throw new UnsupportedOperationException("The InvitationResource doesn't belong to any component"
@@ -90,5 +133,10 @@ public class InvitationResource extends RESTWebService {
               getId()));
     }
     return entities;
+  }
+
+  private InvitationEntity asWebEntity(Invitation invitation, UriBuilder baseUri) {
+    baseUri.path("{invitationId}");
+    return InvitationEntity.fromInvitation(invitation).withAsUri(baseUri.build(invitation.getId()));
   }
 }

@@ -39,11 +39,17 @@
      </li>
    </ul>
  </div>
-<div class="action">
+<div class="action actionShownOnMouseOver">
   $if(notMyself)$
-	$if(notAContact)$
-	  <a href="#" rel="$user.id$,$user.lastName$ $user.firstName$" class="link invitation">Envoyer une invitation</a>
-	$endif$
-	<a href="#" rel="$user.id$,$user.lastName$ $user.firstName$" class="link notification">Envoyer un message</a>
+	  $if(invitationSent)$
+	    <a href="#" rel="$invitationSent$" class="link cancel-invitation">Annuler l'invitation</a>
+    $elseif(invitationReceived)$
+      <a href="$context$/RMyProfil/jsp/MyInvitations" class="link view-invitation">Voir l'invitation</a>
+    $elseif(aContact)$
+      <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link delete-relation">Retirer de mes contacts</a>
+    $else$
+      <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link invitation">Envoyer une invitation</a>
+    $endif$
+	  <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link notification">Envoyer un message</a>
   $endif$
 </div>

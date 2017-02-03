@@ -75,10 +75,10 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           includeBreadCrumb(xhtml);
           break;
         case userZoom:
-          includeUserZoom(xhtml);
+          includeUserZoom(xhtml, getLanguage());
           break;
-        case invitme:
-          includeInvitMe(xhtml);
+        case relationship:
+          includeRelationship(xhtml, getLanguage());
           break;
         case messageme:
           includeMessageMe(xhtml);

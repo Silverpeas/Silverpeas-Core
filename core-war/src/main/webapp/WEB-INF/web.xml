@@ -561,10 +561,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.web.directory.servlets.ImageDisplay</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>InvitationJSONServlet</servlet-name>
-    <servlet-class>org.silverpeas.web.socialnetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ProfilRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.socialnetwork.profil.servlets.ProfilRequestRouter</servlet-class>
   </servlet>
@@ -968,10 +964,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>ImageDisplay</servlet-name>
     <url-pattern>/display/avatar/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>InvitationJSONServlet</servlet-name>
-    <url-pattern>/InvitationJSON</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ProfilRequestRouter</servlet-name>
