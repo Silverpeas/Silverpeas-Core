@@ -142,11 +142,12 @@ ALTER TABLE ST_Group_User_Rel ADD CONSTRAINT FK_Group_User_Rel_2 FOREIGN KEY (us
 CREATE TABLE Personalization (
   id                  VARCHAR(100) NOT NULL,
   languages           VARCHAR(100) NULL,
+  zoneId              VARCHAR(100) NULL,
   look                VARCHAR(50)  NULL,
   personalWSpace      VARCHAR(50)  NULL,
   thesaurusStatus     INT          NOT NULL,
-  dragAndDropStatus   INT DEFAULT 1,
-  webdavEditingStatus INT DEFAULT 0,
-  menuDisplay         VARCHAR(50) DEFAULT 'DEFAULT'
+  dragAndDropStatus   INT          DEFAULT 1,
+  webdavEditingStatus INT          DEFAULT 0,
+  menuDisplay         VARCHAR(50)  DEFAULT 'DEFAULT'
 );
 ALTER TABLE Personalization  ADD CONSTRAINT PK_Personalization PRIMARY KEY (id);

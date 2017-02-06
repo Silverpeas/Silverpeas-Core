@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.component.notification;
 
 import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -68,8 +70,9 @@ public class ComponentInstanceEventNotificationIntegrationTest {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
             Translation.class, ComponentInstanceI18NRow.class, StateTransition.class,
-            ComponentI18N.class, AbstractI18NBean.class, I18NBean.class, ComponentInst.class,
-            ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
+            ComponentI18N.class, AbstractI18NBean.class, I18NBean.class,
+            SilverpeasComponentInstance.class, SilverpeasSharedComponentInstance.class,
+            ComponentInst.class, ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
             TestComponentInstanceEventObserver.class)
         .addPackage("org.silverpeas.core.notification.system")
         .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
