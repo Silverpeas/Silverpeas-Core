@@ -90,31 +90,38 @@ userCalendar.controller('calendarController', ['$controller', 'context', 'Calend
   }]);
 
 /* the edit controller of the application */
-userCalendar.controller('editController', ['$controller', 'context', 'CalendarService', '$scope',
-  function($controller, context, CalendarService, $scope) {
-    $controller('mainController', {$scope : $scope});
+userCalendar.controller('editController',
+    ['$controller', 'context', 'CalendarService', '$scope', '$timeout',
+      function($controller, context, CalendarService, $scope, $timeout) {
+        $controller('mainController', {$scope : $scope});
 
-    $scope.loadCalendarsFromContext().then(function(calendars) {
-      $scope.calendars = $scope.getVisibleCalendars(calendars);
-      $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
-          function(reloadedOccurrence) {
-            if (!reloadedOccurrence.event.calendar && $scope.calendars && $scope.calendars.length) {
-              reloadedOccurrence.event.calendar = $scope.calendars[0];
-            }
-            $scope.ceo = reloadedOccurrence;
-          });
-    });
-  }]);
+        $scope.loadCalendarsFromContext().then(function(calendars) {
+          $scope.calendars = $scope.getVisibleCalendars(calendars);
+          $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+              function(reloadedOccurrence) {
+                if (!reloadedOccurrence.event.calendar && $scope.calendars &&
+                    $scope.calendars.length) {
+                  reloadedOccurrence.event.calendar = $scope.calendars[0];
+                }
+                $timeout(function() {
+                  $scope.ceo = reloadedOccurrence;
+                }, 0);
+              });
+        });
+      }]);
 
 /* the view controller of the application */
-userCalendar.controller('viewController', ['$controller', 'context', 'CalendarService', '$scope',
-  function($controller, context, CalendarService, $scope) {
-    $controller('mainController', {$scope : $scope});
-    $scope.reloadView = function() {
-      $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
-          function(reloadedOccurrence) {
-            $scope.ceo = reloadedOccurrence;
-          });
-    };
-    $scope.reloadView();
-  }]);
+userCalendar.controller('viewController',
+    ['$controller', 'context', 'CalendarService', '$scope', '$timeout',
+      function($controller, context, CalendarService, $scope, $timeout) {
+        $controller('mainController', {$scope : $scope});
+        $scope.reloadView = function() {
+          $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+              function(reloadedOccurrence) {
+                $timeout(function() {
+                  $scope.ceo = reloadedOccurrence;
+                }, 0);
+              });
+        };
+        $scope.reloadView();
+      }]);
