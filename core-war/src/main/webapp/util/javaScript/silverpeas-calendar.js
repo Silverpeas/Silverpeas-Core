@@ -168,7 +168,7 @@
         weekends: calendar.weekends
       };
 
-      if (calendar.allDaySlot !== 'undefined') {
+      if (typeof calendar.allDaySlot !== 'undefined') {
         options.allDaySlot = calendar.allDaySlot;
       }
 
