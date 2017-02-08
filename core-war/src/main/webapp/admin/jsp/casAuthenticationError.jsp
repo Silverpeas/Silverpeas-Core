@@ -43,7 +43,7 @@
 	}
 	String m_context = "../../.." + sURI.substring(0, sURI.lastIndexOf(sServletPath));
 
-	String styleSheet = general.getString("defaultStyleSheet", m_context + "/util/styleSheets/globalSP.css");
+	String styleSheet = general.getString("defaultStyleSheet", m_context + "/util/styleSheets/globalSP_SilverpeasV5.css");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
