@@ -28,6 +28,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -217,8 +218,8 @@ public class NewsFeedJSONServlet extends HttpServlet {
         if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
           UserDetail contactUser2 = UserDetail.getById(information.getTitle());
           jsonSocialInfo.putJSONObject("title", userDetailToJSON(contactUser2));
-          jsonSocialInfo.put("label", multilang
-              .getStringWithParams("newsFeed.relationShip.label", contactUser2.getDisplayedName()));
+          jsonSocialInfo.put("label", multilang.getStringWithParams("newsFeed.relationShip.label",
+              UserNameGenerator.toString(contactUser2, "-1")));
         } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
           if (!information.isUpdated() &&
               information.getIcon().startsWith(information.getType() + "_private")) {

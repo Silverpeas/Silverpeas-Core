@@ -42,6 +42,7 @@ function displayFeedContent(url) {
     if (!listEmpty) {
       $('.linkMore').show();
     }
+    activateUserZoom();
     offset++;
   });
 }
