@@ -129,9 +129,11 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
         append(fieldName).append("\" value=\"").
         append(WebEncodeHelper.javaStringToHtmlString(groupId)).append("\" />");
 
+    String displayedElementId = fieldName + "_name";
+
     if (!template.isHidden()) {
       html.append("<input type=\"text\" disabled=\"disabled\" size=\"50\" " + " id=\"").
-          append(fieldName).append("_name\" name=\"").append(fieldName).
+          append(displayedElementId).append("\" name=\"").append(fieldName).
           append("$$name\" value=\"").
           append(WebEncodeHelper.javaStringToHtmlString(groupName)).append("\" />");
     }
@@ -149,7 +151,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
           .append("/RselectionPeasWrapper/jsp/open" + "?formName=")
           .append(pageContext.getFormName())
           .append("&elementId=").append(fieldName)
-          .append("&elementName=").append(fieldName).append("_name")
+          .append("&elementName=").append(displayedElementId)
           .append("&selectable=").append(GROUP)
           .append("&selectedGroup=").append((groupId == null) ? "" : groupId)
           .append(groupsOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
@@ -158,10 +160,10 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
       html.append("<img src=\"").append(selectGroupImg).
           append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(selectGroupLab).
           append("\" align=\"top\" title=\"").append(selectGroupLab).append("\"/></a>");
-      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.").
-          append(pageContext.getFormName()).append(".").append(fieldName).
-          append(".value='';" + "document.").append(pageContext.getFormName()).append(".").
-          append(fieldName).append("$$name" + ".value='';return false;" + "\">");
+      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:").
+          append("$('#").append(fieldName).append("').val('');").
+          append("$('#").append(displayedElementId).append("').val('')").
+          append(";return false;\">");
       html.append("<img src=\"").append(deleteImg).append(
           "\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).append(
           "\" align=\"top\" title=\"").append(deleteLab).append("\"/></a>");

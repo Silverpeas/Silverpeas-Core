@@ -125,10 +125,12 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
         "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\""
         + WebEncodeHelper.javaStringToHtmlString(userId) + "\"/>";
 
+    String displayedElementId = fieldName + "_name";
+
     if (!template.isHidden()) {
       html +=
           "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
-          + "id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\""
+          + "id=\"" + displayedElementId + "\" name=\"" + fieldName + "$$name\" value=\""
           + WebEncodeHelper.javaStringToHtmlString(userName) + "\"/>";
     }
 
@@ -147,7 +149,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
           + URLUtil.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + pageContext.getFormName()
           + "&elementId=" + fieldName
-          + "&elementName=" + fieldName + "_name"
+          + "&elementName=" + displayedElementId
           + "&selectedUser=" + ((userId == null) ? "" : userId);
       if (usersOfInstanceOnly) {
         html += "&instanceId=" + pageContext.getComponentId();
@@ -163,9 +165,9 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
           + selectUserLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + pageContext.getFormName() + "." + fieldName + ".value='';"
-          + "document." + pageContext.getFormName() + "." + fieldName + "$$name"
-          + ".value='';return false;"
+          + "$('#"+fieldName+"').val('');"
+          + "$('#"+displayedElementId+"').val('')"
+          + ";return false;"
           + "\">";
       html += "<img src=\""
           + deleteUserImg

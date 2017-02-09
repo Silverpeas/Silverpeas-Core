@@ -29,7 +29,6 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%
-   String formName = (String) request.getAttribute("formName");
    String elementId = (String) request.getAttribute("elementId");
    String elementName = (String) request.getAttribute("elementName");
 
@@ -57,9 +56,9 @@
 <SCRIPT language='Javascript'>
 function resetOpener()
 {
-	window.opener.document.forms['<%=formName%>'].elements['<%=elementId%>'].value="<%=userId%>";
-	window.opener.document.forms['<%=formName%>'].elements['<%=elementName%>'].value="<%=userName%>";
-	window.close();
+  window.opener.document.getElementById('<%=elementId%>').value="<%=userId%>";
+  window.opener.document.getElementById('<%=elementName%>').value="<%=userName%>";
+  window.close();
 }
 </SCRIPT>
 </HEAD>

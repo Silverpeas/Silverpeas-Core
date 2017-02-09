@@ -142,8 +142,10 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
         .append(fieldName)
         .append("\" value=\"").append(WebEncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
 
+    String displayedElementId = fieldName + "_name";
+
     if (!template.isHidden()) {
-      html.append("<textarea id=\"").append(fieldName).append("_name\" name=\"").append(fieldName)
+      html.append("<textarea id=\"").append(displayedElementId).append("\" name=\"").append(fieldName)
           .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"")
           .append(cols)
           .append("\">")
@@ -156,7 +158,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
           .append(URLUtil.getApplicationURL())
           .append("/RselectionPeasWrapper/jsp/open?formName=").append(pageContext.getFormName())
           .append("&elementId=").append(fieldName)
-          .append("&elementName=").append(fieldName).append("$$name")
+          .append("&elementName=").append(displayedElementId)
           .append("&selectedUsers=").append(userIds == null ? "" : userIds)
           .append(usersOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
           .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
