@@ -60,16 +60,14 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
     boolean endRaw = false;
     int nbTd = 0;
 
-    result.append("<CENTER>");
-    result
-        .append("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" class=tableNavigationList>\n");
-    result.append("<tr>\n");
-    result
-        .append("<td class=\"navigationListTitle\" nowrap align=center height=\"19\">\n");
+    result.append("<div class=\"tableNavigationList\">\n");
+
+    result.append("<div class=\"navigationListTitle\">");
     result.append(title);
-    result.append("</td>\n");
-    result.append("</tr>\n");
-    result.append("<tr><td>\n");
+    result.append("</div>");
+    
+    result.append("</div>");
+
     result
         .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\">\n");
 
@@ -86,43 +84,25 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
       if (j <= nbCol) {
         result.append("<td valign=\"top\" width=\"").append((98 / nbCol))
             .append("%\">\n");
-        result
-            .append("\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
-        result.append("\t\t\t\t<tr>\n");
-        result.append("\t\t\t\t\t<td width=\"5\" valign=middle><img src=\"")
-            .append(iconsPath).append("puce.gif\" border=\"0\">&nbsp;</td>\n");
-        result.append("\t\t\t\t\t<td valign=middle>\n");
-        result.append("\t\t\t\t\t<a href=\"").append(item.getURL()).append(
-            "\"><B>").append(item.getLabel()).append("</B></a>");
+
+        result.append("<a href=\"").append(item.getURL()).append("\">").append(item.getLabel()).append("</a>");
         if (item.getNbelem() >= 0) {
-          result.append("<i>(").append(item.getNbelem()).append(")</i>\n");
+          result.append("(").append(item.getNbelem()).append(")\n");
         }
         if (item.getUniversalLink() != null) {
           result.append("&nbsp;").append(item.getUniversalLink());
         }
-        result.append("\t\t\t\t\t</td>\n");
-        result.append("\t\t\t\t</tr>\n");
+
         if (item.getInfo() != null) {
-          result.append("\t\t\t\t<tr>\n");
-          result.append("\t\t\t\t\t<td>&nbsp;</td>\n");
-          result.append("\t\t\t\t\t<td>").append(item.getInfo()).append(
-              "</td>\n");
-          result.append("\t\t\t\t</tr>\n");
+          result.append("<div>").append(item.getInfo()).append("</div>");
         }
         if (links != null) {
-          result.append("\t\t\t\t<tr>\n");
-          result.append("\t\t\t\t\t<td>&nbsp;</td>\n");
-          result.append("\t\t\t\t\t<td>");
+
 
           for (Link link : links) {
-            result.append("\n\t\t<a href=\"").append(link.getURL()).append(
-                "\" class=\"txtnote\">").append(link.getLabel()).append(
-                "</a>&nbsp&nbsp");
+            result.append("<a href=\"").append(link.getURL()).append("\" class=\"txtnote\">").append(link.getLabel()).append("</a>");
           }
-          result.append("</td>\n");
-          result.append("\t\t\t\t</tr>\n");
         }
-        result.append("\t\t\t</table>\n");
         result.append("\n\t\t</td>");
         j++;
       }
@@ -142,8 +122,7 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
       }
       result.append("</tr>\n");
     }
-    result.append("</table></td></tr></table>");
-    result.append("</CENTER>");
+    result.append("</table>");
     return result.toString();
   }
 }
