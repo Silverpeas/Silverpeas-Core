@@ -1074,6 +1074,14 @@ Style Utilise par le ViewGenerator
   text-decoration: none;
 }
 
+.tableNavigationList {
+  text-align:center
+}
+
+.navigationListTitle {
+  padding:0.5em;
+}
+
 .pageNav {
   white-space: nowrap;
   margin: 0 auto;
