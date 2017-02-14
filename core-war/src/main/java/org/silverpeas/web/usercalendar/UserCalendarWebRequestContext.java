@@ -47,6 +47,7 @@ public class UserCalendarWebRequestContext
     userCalendars = Calendar.getByComponentInstanceId(getComponentInstanceId());
     if (userCalendars.isEmpty()) {
       UserCalendarInitialization.initialize(getComponentInstanceId());
+      userCalendars = Calendar.getByComponentInstanceId(getComponentInstanceId());
     }
   }
 

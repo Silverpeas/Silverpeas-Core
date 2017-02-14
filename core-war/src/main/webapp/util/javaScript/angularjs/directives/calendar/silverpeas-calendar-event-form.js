@@ -265,19 +265,20 @@
             }.bind(this)) ;
 
             var initialize = function() {
-              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
+              var _zoneId = this.data.event.calendar.zoneId;
+              var _defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), _zoneId);
               if (this.data.event.onAllDay) {
-                var startDate = this.data.startDate ?  sp.moment.make(this.data.startDate) :  defaultMoment;
+                var startDate = this.data.startDate ?  sp.moment.make(this.data.startDate) :  _defaultMoment;
                 var endDate = this.data.endDate ?  sp.moment.make(this.data.endDate) :  sp.moment.make(startDate);
-                this.data.startDate = startDate.startOf('day').format();
-                this.data.endDate = endDate.startOf('day').format();
+                this.data.startDate = sp.moment.atZoneIdSimilarLocal(startDate, _zoneId).startOf('day').format();
+                this.data.endDate = sp.moment.atZoneIdSimilarLocal(endDate, _zoneId).startOf('day').format();
                 this.offsetDateTime =
                     sp.moment.make(this.data.endDate).diff(sp.moment.make(this.data.startDate),
                         'milliseconds');
               } else {
                 if (!this.data.startDate) {
                   this.data.startDate =
-                      sp.moment.adjustTimeMinutes(defaultMoment.startOf('minute')).format();
+                      sp.moment.adjustTimeMinutes(_defaultMoment.startOf('minute')).format();
                 }
                 if (!this.data.endDate) {
                   this.data.endDate =
@@ -344,13 +345,13 @@
               return this.recurrenceType  === 'MONTH';
             }.bind(this);
             this.getDefaultMonthDayNumber = function() {
-              var defaultMoment = sp.moment.atZoneIdSimilarLocal(undefined, this.data.event.calendar.zoneId);
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
               var startDate = this.data.startDate ?
                   sp.moment.make(this.data.startDate, 'YYYY-MM-DD') :  defaultMoment;
               return  sp.moment.make(startDate).date();
             }.bind(this);
             this.getDefaultMonthNthDay = function() {
-              var defaultMoment = sp.moment.atZoneIdSimilarLocal(undefined, this.data.event.calendar.zoneId);
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
               var startDate = this.data.startDate ?
                   sp.moment.make(this.data.startDate, 'YYYY-MM-DD') :  defaultMoment;
               var nth = sp.moment.nthDayOfMonth(startDate);

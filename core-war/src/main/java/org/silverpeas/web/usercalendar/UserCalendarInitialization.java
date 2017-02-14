@@ -49,6 +49,7 @@ class UserCalendarInitialization {
 
       Calendar userCalendar = new Calendar(userCalendarInstanceId);
       userCalendar.setTitle(user.getDisplayedName());
+      userCalendar.setZoneId(user.getUserPreferences().getZoneId());
       userCalendar.save();
 
       /*

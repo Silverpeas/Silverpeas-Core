@@ -1024,7 +1024,7 @@ if (typeof window.sp === 'undefined') {
        */
       make : function(date, format) {
         if (typeof date === 'string' && !format) {
-          return moment.parseZone(date);
+          return date.length === 10 ? moment(date, 'YYYY-MM-DD') : moment.parseZone(date);
         }
         return moment.apply(undefined, arguments);
       },
@@ -1049,7 +1049,7 @@ if (typeof window.sp === 'undefined') {
        * @param zoneId the zone id ('Europe/Berlin' for example)
        */
       atZoneIdSimilarLocal : function(date, zoneId) {
-        return moment.utc(date).utcOffset(sp.moment.getOffsetFromZoneId(zoneId), true);
+        return sp.moment.make(date).utcOffset(sp.moment.getOffsetFromZoneId(zoneId), true);
       },
       /**
        * Adjusts the the time minutes in order to get a rounded time.

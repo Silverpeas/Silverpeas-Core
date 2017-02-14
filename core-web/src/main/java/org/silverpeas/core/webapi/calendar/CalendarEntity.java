@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.util.StringUtil;
@@ -182,10 +183,10 @@ public class CalendarEntity implements WebEntity {
    */
   public Calendar merge(Calendar calendar) {
     calendar.setTitle(getTitle());
-    if (StringUtil.isDefined(getZoneId())) {
-      calendar.setZoneId(ZoneId.of(getZoneId()));
-    } else {
+    if(PersonalComponentInstance.from(calendar.getComponentInstanceId()).isPresent()) {
       calendar.setZoneId(User.getCurrentRequester().getUserPreferences().getZoneId());
+    } else {
+      calendar.setZoneId(ZoneId.of(getZoneId()));
     }
     return calendar;
   }
