@@ -30,6 +30,7 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
@@ -1286,5 +1287,9 @@ public class OrganizationController implements OrganisationController {
       items.addAll(Arrays.asList(componentIds));
     }
     return items;
+  }
+
+  public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
+    return getAdminService().getSpaceProfile(spaceId, role);
   }
 }
