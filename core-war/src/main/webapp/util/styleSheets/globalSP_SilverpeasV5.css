@@ -1082,6 +1082,42 @@ Style Utilise par le ViewGenerator
   padding:0.5em;
 }
 
+.navigationList {
+  margin:0;
+  padding:0;
+	display: flex;
+	flex-direction: row ;
+	flex-wrap:wrap;
+	justify-content: center;
+	align-items: initial;
+	align-content: flex-start;
+	list-style-type:none;
+}
+
+.navigationList li{
+	float:left;
+	flex-grow:1;
+  background: #efefef url(../icons/folder.png) 3px 1px no-repeat;
+  margin: 0.5em 0 0 0.5em;
+  padding: 7px 5px 5px 27px;
+  height: auto;
+  position: relative;
+  border-radius: 6px;
+  min-height: 20px;
+  cursor:pointer;
+}
+.navigationList li:hover{
+  background-color: #eaeaea;
+}
+
+.bookmark .navigationList li {
+  cursor:inherit;
+}
+
+.bookmark .navigationList li a{
+  display:block;
+}
+
 .pageNav {
   white-space: nowrap;
   margin: 0 auto;
