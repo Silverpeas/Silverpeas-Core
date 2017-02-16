@@ -33,6 +33,8 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
+import org.silverpeas.core.util.StringUtil;
+
 import java.util.Collection;
 
 /**
@@ -53,76 +55,53 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
    */
   public String print() {
     StringBuilder result = new StringBuilder(50);
-    String iconsPath = getIconsPath() + "/navigationList/";
     String title = getTitle();
     int nbCol = getNbcol();
     Collection<Item> items = getItems();
-    boolean endRaw = false;
-    int nbTd = 0;
 
     result.append("<div class=\"tableNavigationList\">\n");
-
-    result.append("<div class=\"navigationListTitle\">");
-    result.append(title);
-    result.append("</div>");
-    
+    if(StringUtil.isDefined(title)) {
+      result.append("<div class=\"navigationListTitle\">");
+      result.append(title);
+      result.append("</div>");
+    }
     result.append("</div>");
 
     result
-        .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\">\n");
+        .append("<ul class=\"navigationList cols").append(nbCol).append("\">\n");
 
-    int j = 1;
 
     for (Item item : items) {
       Collection<Link> links = item.getLinks();
-
-      if (j == 1) {
-        result.append("<tr>\n");
-        result.append("<td width=\"2%\">&nbsp;</td>\n");
-        endRaw = false;
-      }
-      if (j <= nbCol) {
-        result.append("<td valign=\"top\" width=\"").append((98 / nbCol))
-            .append("%\">\n");
-
-        result.append("<a href=\"").append(item.getURL()).append("\">").append(item.getLabel()).append("</a>");
-        if (item.getNbelem() >= 0) {
-          result.append("(").append(item.getNbelem()).append(")\n");
+        
+        String itemURL = item.getURL();
+        if (itemURL.startsWith("javascript")) {
+          result.append("<li class=\"navigationListItem\" onclick=\"").append(itemURL).append("\">");
+        }else{
+          result.append("<li class=\"navigationListItem\">");
         }
-        if (item.getUniversalLink() != null) {
-          result.append("&nbsp;").append(item.getUniversalLink());
-        }
-
-        if (item.getInfo() != null) {
-          result.append("<div>").append(item.getInfo()).append("</div>");
-        }
-        if (links != null) {
-
-
-          for (Link link : links) {
-            result.append("<a href=\"").append(link.getURL()).append("\" class=\"txtnote\">").append(link.getLabel()).append("</a>");
+          result.append("<a href=\"").append(itemURL).append("\">").append(item.getLabel());
+            if (item.getNbelem() >= 0) {
+              result.append("(").append(item.getNbelem()).append(")\n");
+            }
+          result.append("</a>");
+          if (item.getUniversalLink() != null) {
+            result.append("&nbsp;").append(item.getUniversalLink());
           }
-        }
-        result.append("\n\t\t</td>");
-        j++;
-      }
-      if (j > nbCol) {
-        result.append("\t</tr>");
-        endRaw = true;
-        j = 1;
-      }
-    }
-    if (!endRaw) {
-      nbTd = nbCol - j + 1;
-      int k = 1;
 
-      while (k <= nbTd) {
-        result.append("<td valign=\"top\">&nbsp;</td>\n");
-        k++;
-      }
-      result.append("</tr>\n");
+          if (item.getInfo() != null) {
+            result.append("<div>").append(item.getInfo()).append("</div>");
+          }
+          if (links != null) {
+
+
+            for (Link link : links) {
+              result.append("<a href=\"").append(link.getURL()).append("\" class=\"txtnote\">").append(link.getLabel()).append("</a>");
+            }
+          }
+        result.append("\n</li>");
     }
-    result.append("</table>");
+    result.append("</ul>");
     return result.toString();
   }
 }
