@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
+<%@ page import="org.silverpeas.core.admin.service.SpaceProfile" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -37,26 +38,14 @@
 <c:set var="m_SpaceExtraInfos" value="${requestScope['SpaceExtraInfos']}"/>
 
 <%
-	SpaceProfileInst 	m_Profile 			= (SpaceProfileInst) request.getAttribute("Profile");
-	List<Group>			m_listGroup 		= (List<Group>) request.getAttribute("listGroupSpace");
-	List<UserDetail> 	m_listUser 			= (List<UserDetail>) request.getAttribute("listUserSpace");
+	SpaceProfile spaceProfile = (SpaceProfile) request.getAttribute("SpaceProfile");
 	String				role				= (String) request.getAttribute("Role");
 	boolean 			isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
-	List<Group>			inheritedGroups		= (List<Group>) request.getAttribute("listInheritedGroups"); //List of GroupDetail
-	List<UserDetail>	inheritedUsers 		= (List<UserDetail>) request.getAttribute("listInheritedUsers"); //List of UserDetail
 	String 				spaceId				= (String) request.getAttribute("CurrentSpaceId");
-
-	String nameProfile = null;
-	if (m_Profile == null) {
-		nameProfile = resource.getString("JSPP."+role);
-	} else {
-		nameProfile = m_Profile.getLabel();
-		if (!StringUtil.isDefined(nameProfile)) {
-			nameProfile = resource.getString("JSPP."+role);
-		}
-	}
-
+	
+	String nameProfile =  resource.getString("JSPP."+role);
+	
 	browseBar.setSpaceId(spaceId);
 	browseBar.setExtraInformation(nameProfile);
 
@@ -94,16 +83,14 @@ out.println(tabbedPane.print());
 	<br clear="all"/>
 <% } %>
 
-	<% if ((inheritedGroups != null && !inheritedGroups.isEmpty()) || (inheritedUsers != null && !inheritedUsers.isEmpty())) { %>
-    <viewTags:displayListOfUsersAndGroups users="<%=inheritedUsers%>" groups="<%=inheritedGroups%>" label="<%=labelInheritedRights%>" displayAvatar="false"/>
-	<% } %>
+	<viewTags:displayListOfUsersAndGroups userIds="<%=spaceProfile.getInheritedUserIds()%>" groupIds="<%=spaceProfile.getInheritedGroupIds()%>" label="<%=labelInheritedRights%>" displayAvatar="false" hideEmptyList="true"/>
 
   <form name="roleList" action="EffectiveSetSpaceProfile" method="post">
     <c:set var="callback" value=""/>
     <c:if test="${m_SpaceExtraInfos.admin}">
       <c:set var="callback" value="SelectUsersGroupsSpace"/>
     </c:if>
-    <viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>"
+    <viewTags:displayListOfUsersAndGroups userIds="<%=spaceProfile.getUserIds()%>" groupIds="<%=spaceProfile.getGroupIds()%>"
                                           label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>"
                                           id="roleItems" updateCallback="${callback}" displayAvatar="false"
                                           formSaveSelector="form[name=roleList]"/>

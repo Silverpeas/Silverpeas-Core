@@ -3970,6 +3970,36 @@ class Admin implements Administration {
   }
 
   @Override
+  public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
+    SpaceProfile spaceProfile = new SpaceProfile();
+    SpaceInst space = getSpaceInstById(spaceId);
+
+    // get profile explicitly defined
+    SpaceProfileInst profile = space.getSpaceProfileInst(role.getName());
+    if (profile != null) {
+      spaceProfile.setProfile(profile);
+    }
+
+    if (role == SilverpeasRole.Manager) {
+      // get groups and users implicitly inherited from space parents
+      boolean root = space.isRoot();
+      String parentId = space.getDomainFatherId();
+      while (!root) {
+        SpaceInst parent = getSpaceInstById(parentId);
+        SpaceProfileInst parentProfile = parent.getSpaceProfileInst(role.getName());
+        spaceProfile.addInheritedProfile(parentProfile);
+        root = parent.isRoot();
+        parentId = parent.getDomainFatherId();
+      }
+    } else {
+      // get groups and users from inherited profile
+      spaceProfile.addInheritedProfile(space.getInheritedSpaceProfileInst(role.getName()));
+    }
+
+    return spaceProfile;
+  }
+
+  @Override
   public List<String> getUserManageableGroupIds(String sUserId) throws AdminException {
     try {
       // get all groups of user

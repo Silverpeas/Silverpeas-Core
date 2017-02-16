@@ -39,6 +39,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
@@ -1186,5 +1187,15 @@ public class DefaultOrganizationController implements OrganizationController {
       }
     }
     return toolIds;
+  }
+
+  @Override
+  public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) {
+    try {
+      return getAdminService().getSpaceProfile(spaceId, role);
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return null;
+    }
   }
 }

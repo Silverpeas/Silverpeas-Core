@@ -42,6 +42,7 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -936,6 +937,16 @@ public interface Administration {
    */
   String[] getUserManageableSubSpaceIds(String sUserId, String sParentSpaceId)
       throws AdminException;
+
+  /**
+   * Gets the space profile instance which provides all user and group identifiers through simple
+   * methods.
+   * @param spaceId the identifier of aimed space.
+   * @param role the aimed technical role name.
+   * @return the {@link SpaceProfile} instance.
+   * @throws AdminException on a technical error.
+   */
+  SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException;
 
   List<String> getUserManageableGroupIds(String sUserId) throws AdminException;
 

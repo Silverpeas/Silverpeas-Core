@@ -23,9 +23,9 @@ package org.silverpeas.core.web.look;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -839,27 +839,11 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   public List<UserDetail> getSpaceAdmins(String spaceId) {
     List<UserDetail> admins = new ArrayList<UserDetail>();
-    SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
-    List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-    profiles.addAll(spaceInst.getInheritedProfiles());
-    profiles.addAll(spaceInst.getProfiles());
-
-    for (SpaceProfileInst profile : profiles) {
-      SilverpeasRole role = SilverpeasRole.from(profile.getName());
-      if (role != null && role.equals(SilverpeasRole.Manager)) {
-        // Users
-        for (String userId : profile.getAllUsers()) {
-          admins.add(UserDetail.getById(userId));
-        }
-
-        // Groups
-        for (String groupId : profile.getAllGroups()) {
-          UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
-          for (UserDetail user : users) {
-            admins.add(user);
-          }
-        }
-      }
+    SpaceProfile spaceProfile =
+        getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
+    List<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
+    for (String userId : userIds) {
+      admins.add(UserDetail.getById(userId));
     }
     return admins;
   }

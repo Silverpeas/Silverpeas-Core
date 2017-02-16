@@ -20,21 +20,42 @@
  */
 package org.silverpeas.web.jobstartpage.control;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.admin.component.model.*;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.service.RightRecover;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceSelection;
+import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.SpaceTemplate;
+import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
@@ -42,42 +63,22 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
+import org.silverpeas.core.web.look.SilverpeasLook;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionException;
 import org.silverpeas.web.jobstartpage.AllComponentParameters;
 import org.silverpeas.web.jobstartpage.DisplaySorted;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasException;
 import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 import org.silverpeas.web.jobstartpage.NavBarManager;
 import org.silverpeas.web.jobstartpage.SpaceLookHelper;
-import org.silverpeas.core.web.look.SilverpeasLook;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.core.admin.space.SpaceServiceProvider;
-import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.util.memory.MemoryUnit;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -765,77 +766,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return name;
   }
 
-  // arrayList de Group
-  public List<Group> getAllCurrentGroupSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
-    return getGroupsFromSpaceProfile(m_SpaceProfileInst);
-  }
-
-  // List de userDetail
-  public List<UserDetail> getAllCurrentUserSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
-    return getUsersFromSpaceProfile(m_SpaceProfileInst);
-  }
-
-  private List<UserDetail> getUsersFromSpaceProfile(SpaceProfileInst profile) {
-    List<UserDetail> res = new ArrayList<UserDetail>();
-    if (profile != null) {
-      List<String> alUserIds = profile.getAllUsers();
-      for (String alUserId : alUserIds) {
-        UserDetail userDetail = adminController.getUserDetail(alUserId);
-        if (!res.contains(userDetail)) {
-          res.add(userDetail);
-        }
-      }
-    }
-    return res;
-  }
-
-  private List<Group> getGroupsFromSpaceProfile(SpaceProfileInst profile) {
-    List<Group> res = new ArrayList<Group>();
-    if (profile != null) {
-      List<String> groupIds = profile.getAllGroups();
-      for (String groupId : groupIds) {
-        Group group = adminController.getGroupById(groupId);
-        if (!res.contains(group)) {
-          res.add(group);
-        }
-      }
-    }
-    return res;
-  }
-
-  public List<UserDetail> getUsersManagerOfParentSpace() {
-    List<UserDetail> res = new ArrayList<UserDetail>();
-    List<SpaceInst> path = getCurrentSpacePath(true);
-    for (SpaceInst space : path) {
-      // get managers of each parent space
-      res.addAll(getUsersFromSpaceProfile(space.getSpaceProfileInst("Manager")));
-    }
-    return res;
-  }
-
-  public List<Group> getGroupsManagerOfParentSpace() {
-    List<Group> res = new ArrayList<Group>();
-    List<SpaceInst> path = getCurrentSpacePath(true);
-    for (SpaceInst space : path) {
-      // get managers of each parent space
-      res.addAll(getGroupsFromSpaceProfile(space.getSpaceProfileInst("Manager")));
-    }
-    return res;
-  }
-
-  private List<SpaceInst> getCurrentSpacePath(boolean excludeSpace) {
-    List<SpaceInst> path = getOrganisationController().getSpacePath(getSpaceInstById().getId());
-    if (!excludeSpace) {
-      return path;
-    }
-    if (path.size() >= 2) {
-      // ignore current space
-      path.remove(path.size() - 1);
-      return path;
-    }
-    return new ArrayList<SpaceInst>();
+  public SpaceProfile getCurrentSpaceProfile(String role) throws AdminException {
+    return getOrganisationController()
+        .getSpaceProfile(getManagedSpaceId(), SilverpeasRole.from(role));
   }
 
   // user panel de selection de n groupes et n users

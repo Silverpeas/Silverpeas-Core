@@ -29,11 +29,10 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -608,37 +607,16 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
-      SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
-      if (profile != null) {
-        request.setAttribute("Profile", profile);
-      }
-
       // get groups and users which manage current space
-      List<Group> groupes = jobStartPageSC.getAllCurrentGroupSpace(role);
-      List<UserDetail> users = jobStartPageSC.getAllCurrentUserSpace(role);
-      request.setAttribute("listGroupSpace", groupes);
-      request.setAttribute("listUserSpace", users);
+      SpaceProfile spaceProfile = jobStartPageSC.getCurrentSpaceProfile(role);
+      request.setAttribute("SpaceProfile", spaceProfile);
 
       request.setAttribute("SpaceExtraInfos", jobStartPageSC.getManagedSpace());
-      request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
       request.setAttribute("Role", role);
 
-      if ("Manager".equals(role)) {
-        request.setAttribute("InheritedProfile", "Manager");
-        // get groups and users which manage space parent
-        request.setAttribute("listInheritedGroups", jobStartPageSC.getGroupsManagerOfParentSpace());
-        request.setAttribute("listInheritedUsers", jobStartPageSC.getUsersManagerOfParentSpace());
+      if (SilverpeasRole.Manager == SilverpeasRole.from(role)) {
         request.setAttribute("IsInheritanceEnable", true);
       } else {
-        // get inherited profile
-        SpaceProfileInst inheritedProfile = spaceint1.getInheritedSpaceProfileInst(role);
-        if (inheritedProfile != null) {
-          request.setAttribute("InheritedProfile", inheritedProfile);
-          request.setAttribute("listInheritedGroups",
-              jobStartPageSC.groupIds2groups(inheritedProfile.getAllGroups()));
-          request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
-              getAllUsers()));
-        }
         request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
       }
 

@@ -12,6 +12,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -461,4 +462,14 @@ public interface OrganizationController extends java.io.Serializable {
    * @return a list of component instance identifiers.
    */
   List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria);
+
+  /**
+   * Gets the space profile instance which provides all user and group identifiers through simple
+   * methods.
+   * @param spaceId the identifier of aimed space.
+   * @param role the aimed technical role name.
+   * @return the {@link SpaceProfile} instance.
+   * @throws AdminException on a technical error.
+   */
+  SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role);
 }

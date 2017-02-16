@@ -23,21 +23,22 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -151,8 +152,7 @@ public class SpaceResource extends AbstractAdminResource {
       // Getting space profiles
       SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
       List<SpaceProfileInst> profiles = new ArrayList<>();
-      profiles.addAll(spaceInst.getInheritedProfiles());
-      profiles.addAll(spaceInst.getProfiles());
+      profiles.addAll(spaceInst.getAllSpaceProfilesInst());
 
       // Building entities
       LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
@@ -171,14 +171,22 @@ public class SpaceResource extends AbstractAdminResource {
             result.put(role, roleEntity);
           }
 
+          List<String> userIds = profile.getAllUsers();
+          List<String> groupIds = profile.getAllGroups();
+          if (role == SilverpeasRole.Manager) {
+            SpaceProfile admins = getOrganisationController().getSpaceProfile(spaceId, role);
+            userIds = admins.getAllUserIds();
+            groupIds = admins.getAllGroupIds();
+          }
+
           // Users
-          for (String userId : profile.getAllUsers()) {
+          for (String userId : userIds) {
             roleEntity.addUser(buildURI(getUriInfo().getBaseUri().toString(),
                 ProfileResourceBaseURIs.USERS_BASE_URI, userId));
           }
 
           // Groups
-          for (String groupId : profile.getAllGroups()) {
+          for (String groupId : groupIds) {
             roleEntity.addGroup(buildURI(getUriInfo().getBaseUri().toString(),
                 ProfileResourceBaseURIs.GROUPS_BASE_URI, groupId));
           }
