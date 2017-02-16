@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.admin.components.LocalizedParameter;
 import com.silverpeas.admin.components.LocalizedParameterList;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.SpaceProfile;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
@@ -653,41 +655,16 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
-      SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
-      if (profile != null) {
-        SilverTrace.info("jobStartPagePeas",
-            "JobStartPagePeasRequestRouter.SpaceManager()",
-            "root.MSG_GEN_PARAM_VALUE", "profileName=" + profile.getName()
-            + " profileName=" + profile.getLabel());
-        request.setAttribute("Profile", profile);
-      }
-
       // get groups and users which manage current space
-      List<Group> groupes = jobStartPageSC.getAllCurrentGroupSpace(role);
-      List<UserDetail> users = jobStartPageSC.getAllCurrentUserSpace(role);
-      request.setAttribute("listGroupSpace", groupes);
-      request.setAttribute("listUserSpace", users);
+      SpaceProfile spaceProfile = jobStartPageSC.getCurrentSpaceProfile(role);
+      request.setAttribute("SpaceProfile", spaceProfile);
 
       request.setAttribute("SpaceExtraInfos", jobStartPageSC.getManagedSpace());
-      request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
       request.setAttribute("Role", role);
 
-      if ("Manager".equals(role)) {
-        request.setAttribute("InheritedProfile", "Manager");
-        // get groups and users which manage space parent
-        request.setAttribute("listInheritedGroups", jobStartPageSC.getGroupsManagerOfParentSpace());
-        request.setAttribute("listInheritedUsers", jobStartPageSC.getUsersManagerOfParentSpace());
+      if (SilverpeasRole.Manager == SilverpeasRole.from(role)) {
         request.setAttribute("IsInheritanceEnable", true);
       } else {
-        // get inherited profile
-        SpaceProfileInst inheritedProfile = spaceint1.getInheritedSpaceProfileInst(role);
-        if (inheritedProfile != null) {
-          request.setAttribute("InheritedProfile", inheritedProfile);
-          request.setAttribute("listInheritedGroups",
-              jobStartPageSC.groupIds2groups(inheritedProfile.getAllGroups()));
-          request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
-              getAllUsers()));
-        }
         request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
       }
 

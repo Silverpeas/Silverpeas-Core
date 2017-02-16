@@ -24,20 +24,9 @@
 package com.silverpeas.web.mock;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.ComponentSearchCriteria;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.*;
+
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
@@ -515,5 +504,9 @@ public class OrganizationControllerMockWrapper implements OrganisationController
   @Override
   public List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria) {
     return mock.getSearchableComponentsByCriteria(criteria);
+  }
+
+  public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
+    return mock.getSpaceProfile(spaceId, role);
   }
 }
