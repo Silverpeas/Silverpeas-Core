@@ -24,6 +24,7 @@
 
 package com.silverpeas.portlets.portal.portletwindow;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class PortletWindowInvoker extends WindowInvoker {
       Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
       "org.silverpeas.portlets.PCDLogMessages");
   private final static ResourceLocator messages =
-      new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle", "");
+      new ResourceLocator("org.silverpeas.portlet.multilang.portletBundle", "");
 
   @Override
   public void init(ServletContext servletContext, HttpServletRequest request,
@@ -177,7 +178,11 @@ public class PortletWindowInvoker extends WindowInvoker {
       MainSessionController sessionController =
           (MainSessionController) getOriginalRequest().getSession().
           getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      messages.setLanguage(sessionController.getFavoriteLanguage());
+      if (sessionController != null) {
+        messages.setLanguage(sessionController.getFavoriteLanguage());
+      } else {
+        messages.setLanguage(DisplayI18NHelper.getDefaultLanguage());
+      }
       String portletTitle = getDefaultTitle();
       setTitle(messages.getString(portletTitle, portletTitle));
     }
