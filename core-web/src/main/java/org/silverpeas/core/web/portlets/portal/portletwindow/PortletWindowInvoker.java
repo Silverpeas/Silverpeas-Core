@@ -24,13 +24,14 @@
 
 package org.silverpeas.core.web.portlets.portal.portletwindow;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import com.sun.portal.container.*;
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
 import com.sun.portal.portletcontainer.invoker.WindowInvoker;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -58,8 +59,6 @@ public class PortletWindowInvoker extends WindowInvoker {
   private static final Logger logger =
       Logger.getLogger("org.silverpeas.core.web.portlets.portal.portletwindow",
       "org.silverpeas.portlets.PCDLogMessages");
-  private LocalizationBundle messages =
-      ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle");
 
   @Override
   public void init(ServletContext servletContext, HttpServletRequest request,
@@ -169,9 +168,10 @@ public class PortletWindowInvoker extends WindowInvoker {
       MainSessionController sessionController =
           (MainSessionController) getOriginalRequest().getSession().
           getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      messages =
-          ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle",
-              sessionController.getFavoriteLanguage());
+      final String locale = sessionController != null ? sessionController.getFavoriteLanguage() :
+          DisplayI18NHelper.getDefaultLanguage();
+      final LocalizationBundle messages = ResourceLocator
+          .getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle", locale);
       String portletTitle = getDefaultTitle();
       String translation;
       try {
