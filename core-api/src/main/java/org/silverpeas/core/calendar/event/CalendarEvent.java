@@ -33,7 +33,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
@@ -44,13 +44,12 @@ import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -61,74 +60,112 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 
 /**
- * The event in a calendar. An event in a calendar is a {@link Recurrent} and a {@link Plannable}
- * general business object that can be planned on one and only one given existing {@link Calendar};
+ * An event planned in a calendar.
+ *
+ * An event in a calendar is a possibly {@link Recurrent} and a {@link Plannable} general business
+ * component that can be planned on one and only one given existing {@link Calendar};
  * we ensures an event is unique in a per-calendar basis.
  * It occurs on a {@link Period} and as a such it must be well limited in the time (id est it must
  * have a start and an end dates/date times).
- * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}.
+ * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}s.
  * In order to be customized for different kinds of use, some additional information can be set
  * through its {@link Attributes} property.
+ *
+ * An event in a calendar in Silverpeas can be originated from an external calendar. This comes
+ * from an export process of the events planned in an external calendar (for example from a calendar
+ * in Google Calendar). When such an event is in a Silverpeas's calendar, then the identifier of
+ * this event on the external calendar can be get with the {@link CalendarEvent#getExternalId()}
+ * method.
+ *
+ * When a list of events is retrieved from one or more calendars, they are all ordered by the
+ * component instance that owns the calendar, then by the calendar on which they are planned, then
+ * by the user who authored them, and finally by their starting  date in the timeline of the
+ * calendar.
  */
 @Entity
 @Table(name = "sb_cal_event")
 @NamedQueries({
     @NamedQuery(name = "calendarEventCount", query =
-        "select count(e) from CalendarEvent e where e.calendar = :calendar"),
-    @NamedQuery(name = "calendarEvents", query = "select e from CalendarEvent e"),
+        "SELECT COUNT(e) FROM CalendarEvent e WHERE e.component.calendar = :calendar"),
+    @NamedQuery(name = "calendarEvents", query =
+        "SELECT e FROM CalendarEvent e " +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
     @NamedQuery(name = "calendarEventByCalendarAndExternalId", query =
-        "select e from CalendarEvent e " +
-        "where e.calendar = :calendar and e.externalId = :externalId"),
+        "SELECT e FROM CalendarEvent e " +
+            "WHERE e.component.calendar = :calendar AND e.externalId = :externalId"),
     @NamedQuery(name = "calendarEventsByCalendar", query =
-        "select e from CalendarEvent e where e.calendar in :calendars"),
+        "SELECT e FROM CalendarEvent e WHERE e.component.calendar IN :calendars " +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByParticipants", query =
-        "select distinct e from CalendarEvent e LEFT OUTER JOIN e.attendees a " +
-        "where (e.createdBy in :participantIds or a.attendeeId in :participantIds) " +
-        "order by e.createdBy, e.period.startDateTime"),
+        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
+            "WHERE (e.component.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByCalendarByParticipants", query =
-        "select distinct e from CalendarEvent e LEFT OUTER JOIN e.attendees a " +
-        "where e.calendar in :calendars " +
-        "and (e.createdBy in :participantIds or a.attendeeId in :participantIds) " +
-        "order by e.createdBy, e.period.startDateTime"),
+        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
+            "WHERE e.component.calendar IN :calendars " +
+            "AND (e.component.createdBy IN :participantIds OR a.attendeeId IN :participantIds)" +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByCalendarByPeriod", query =
-        "select e from CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r " +
-            "where e.calendar in :calendars and (" +
-            "(e.period.startDateTime <= :startDateTime and e.period.endDateTime >= " +
-            ":startDateTime) " +
-            "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= " +
-            ":endDateTime)" +
-            " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
-            "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
-            ") order by e.period.startDateTime"),
+        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
+            "e.component.calendar IN :calendars AND (" +
+            "(e.component.period.startDateTime <= :startDateTime AND " +
+            "  e.component.period.endDateTime >= :startDateTime) OR " +
+            "(e.component.period.startDateTime >= :startDateTime AND " +
+            "  e.component.period.startDateTime <= :endDateTime) OR " +
+            "(e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+            "  (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))" +
+            " GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByPeriod", query =
-        "select e from CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r " +
-            "where (e.period.startDateTime <= :startDateTime and e.period.endDateTime >= " +
-            ":startDateTime) " +
-            "or (e.period.startDateTime >= :startDateTime and e.period.startDateTime <= " +
-            ":endDateTime)" +
-            " or (e.period.endDateTime < :startDateTime and e.recurrence is not null and " +
-            "(e.recurrence.endDateTime >= :startDateTime or e.recurrence.endDateTime is null))" +
-            "order by e.period.startDateTime"),
-    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query = "select distinct e from " +
-        "CalendarEvent e LEFT OUTER JOIN e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
-        " where (e" +
-        ".createdBy in :participantIds or a.attendeeId in :participantIds) and ((e.period" +
-        ".startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) or (e" +
-        ".period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime) or " +
-        "(e.period.endDateTime < :startDateTime and e.recurrence is not null and (e.recurrence" +
-        ".endDateTime >= :startDateTime or e.recurrence.endDateTime is null))) order by e" +
-        ".createdBy, e.period.startDateTime"),
+        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
+            "(e.component.period.startDateTime <= :startDateTime AND " +
+            "  e.component.period.endDateTime >= :startDateTime) OR " +
+            "(e.component.period.startDateTime >= :startDateTime AND " +
+            "  e.component.period.startDateTime <= :endDateTime) OR " +
+            "(e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+            "  (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))"  +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
+    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query =
+        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
+            "LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
+            "(e.component.createdBy IN :participantIds OR a.attendeeId in :participantIds) AND " +
+            "((e.component.period.startDateTime <= :startDateTime AND " +
+            "   e.component.period.endDateTime >= :startDateTime) OR " +
+            " (e.component.period.startDateTime >= :startDateTime AND " +
+            "   e.component.period.startDateTime <= :endDateTime) OR " +
+            " (e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+            "   (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))" +
+            ")" +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime"),
     @NamedQuery(name = "calendarEventsByCalendarByParticipantsByPeriod", query =
-        "select distinct e from " +
-        "CalendarEvent e LEFT OUTER JOIN e.attendees a LEFT OUTER JOIN FETCH e.recurrence r" +
-        " where e.calendar in :calendars and (e" +
-        ".createdBy in :participantIds or a.attendeeId in :participantIds) and ((e.period" +
-        ".startDateTime <= :startDateTime and e.period.endDateTime >= :startDateTime) or (e" +
-        ".period.startDateTime >= :startDateTime and e.period.startDateTime <= :endDateTime) or " +
-        "(e.period.endDateTime < :startDateTime and e.recurrence is not null and (e.recurrence" +
-        ".endDateTime >= :startDateTime or e.recurrence.endDateTime is null))) order by e" +
-        ".createdBy, e.period.startDateTime")})
-public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdentifier>
+        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
+            "LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
+            "e.component.calendar IN :calendars AND " +
+            "(e.component.createdBy IN :participantIds OR a.attendeeId IN :participantIds) AND " +
+            "((e.component.period.startDateTime <= :startDateTime AND " +
+            "   e.component.period.endDateTime >= :startDateTime) OR " +
+            " (e.component.period.startDateTime >= :startDateTime AND " +
+            "   e.component.period.startDateTime <= :endDateTime) OR " +
+            " (e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+            "   (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))"
+            +
+            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
+            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
+            "  e.component.period.startDateTime")})
+public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
   private static final long serialVersionUID = 1L;
@@ -136,52 +173,24 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   @Column(name = "externalId")
   private String externalId;
 
-  @Embedded
-  private Period period;
-
-  @Embedded
-  private Attributes attributes = new Attributes();
-
-  @ManyToOne(fetch = FetchType.EAGER, optional = false)
-  @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
-  private Calendar calendar;
-
-  @Column(name = "title", nullable = false)
-  @Size(min = 1)
-  @NotNull
-  private String title;
-
-  @Column(name = "description")
-  private String description;
-
-  @Column(name = "location")
-  private String location;
+  @OneToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "componentId", referencedColumnName = "id", unique = true)
+  private CalendarComponent component;
 
   @Column(name = "visibility")
   @Enumerated(EnumType.STRING)
   @NotNull
   private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
 
-  @Column(name = "priority", nullable = false)
-  @NotNull
-  private Priority priority = Priority.NORMAL;
+  @Embedded
+  private Categories categories = new Categories();
 
   @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
   @JoinColumn(name = "recurrenceId", referencedColumnName = "id", unique = true)
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
 
-  @Embedded
-  private Categories categories = new Categories();
-
-  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true,
-      fetch = FetchType.EAGER)
-  private Set<Attendee> attendees = new HashSet<>();
-
-  protected CalendarEvent(Period period) {
-    this.period = period;
-  }
-
-  protected CalendarEvent() {
+  private static CalendarEventOccurrenceGenerator generator() {
+    return CalendarEventOccurrenceGenerator.get();
   }
 
   /**
@@ -196,9 +205,13 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
   /**
    * Gets a calendar event by its external identifier and the calendar it belongs.
+   * An external identifier is the identifier of an event that was imported from a external
+   * calendar into a calendar in Silverpeas. This identifier is the one of the event in the
+   * external calendar.
    * @param calendar the calendar repository.
-   * @param externalId the external identifier of the aimed calendar event.
-   * @return the instance of the aimed calendar event or null if it does not exist.
+   * @param externalId the identifier of the calendar event in the external calendar from which it
+   * was imported.
+   * @return the instance of the asked calendar event or null if it does not exist.
    */
   public static CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
     CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
@@ -223,8 +236,64 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     return new CalendarEvent(Period.between(day, day));
   }
 
-  private static CalendarEventOccurrenceGenerator generator() {
-    return CalendarEventOccurrenceGenerator.get();
+  /**
+   * Constructs a new calendar event that spawns to the specified period of time.
+   * @param period a period of time in which this event occurs.
+   */
+  protected CalendarEvent(Period period) {
+    this.component = new CalendarComponent(period);
+  }
+
+  /**
+   * Constructs an empty calendar event. This constructor is dedicated to the persistence engine
+   * when loading events from the data source.
+   */
+  protected CalendarEvent() {
+    // this constructor is for the persistence engine.
+  }
+
+  /**
+   * This event is created by the specified user.
+   * @param user the user to set as the creator of this event.
+   * @return itself.
+   */
+  public CalendarEvent createdBy(final User user) {
+    this.component.createdBy(user);
+    return this;
+  }
+
+  /**
+   * This event is created by the specified user.
+   * @param userId the unique identifier of the user to set as the creator of this event.
+   * @return itself.
+   */
+  public CalendarEvent createdBy(final String userId) {
+    this.component.createdBy(userId);
+    return this;
+  }
+
+  /**
+   * Gets the user who created and planned this event.
+   * @return the user that has authored this event.
+   */
+  public User getCreator() {
+    return this.component.getCreator();
+  }
+
+  /**
+   * Gets the last user who updated this planned event.
+   * @return the user who has last updated this event.
+   */
+  public User getLastUpdater() {
+    return this.component.getLastUpdater();
+  }
+
+  public Date getCreationDate() {
+    return this.component.getCreateDate();
+  }
+
+  public Date getLastUpdateDate() {
+    return this.component.getLastUpdateDate();
   }
 
   /**
@@ -234,21 +303,17 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * saved into a given calendar.
    */
   public Calendar getCalendar() {
-    return calendar;
+    return this.component.getCalendar();
   }
 
   @Override
   public String getTitle() {
-    return title;
+    return component.getTitle();
   }
 
   @Override
   public void setTitle(String title) {
-    if (title == null) {
-      this.title = "";
-    } else {
-      this.title = title;
-    }
+    this.component.setTitle(title);
   }
 
   /**
@@ -319,7 +384,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   @Override
   public CalendarEvent withPriority(Priority priority) {
-    this.priority = priority;
+    this.component.setPriority(priority);
     return this;
   }
 
@@ -329,7 +394,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   @Override
   public Categories getCategories() {
-    return categories;
+    return this.categories;
   }
 
   /**
@@ -346,7 +411,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * event.
    */
   public String getDescription() {
-    return description;
+    return component.getDescription();
   }
 
   /**
@@ -354,11 +419,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @param description a new description of the event.
    */
   public void setDescription(final String description) {
-    if (description == null) {
-      this.description = "";
-    } else {
-      this.description = description;
-    }
+    this.component.setDescription(description);
   }
 
   /**
@@ -367,7 +428,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    */
   @Override
   public Priority getPriority() {
-    return priority;
+    return this.component.getPriority();
   }
 
   /**
@@ -375,7 +436,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return the additional attributes of this event.
    */
   public Attributes getAttributes() {
-    return attributes;
+    return this.component.getAttributes();
   }
 
   /**
@@ -384,7 +445,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return the event's location.
    */
   public String getLocation() {
-    return (this.location == null ? "" : this.location);
+    return this.component.getLocation();
   }
 
   /**
@@ -392,7 +453,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @param location a location where the event occurs.
    */
   public void setLocation(String location) {
-    this.location = location;
+    this.component.setLocation(location);
   }
 
   /**
@@ -501,7 +562,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @param newPeriod a new period of time on which this event will occur or has actually occurred.
    */
   public void setPeriod(final Period newPeriod) {
-    this.period = newPeriod;
+    this.component.setPeriod(newPeriod);
   }
 
   /**
@@ -510,7 +571,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @param newDay the new day at which this event will occur or has actually occurred.
    */
   public void setDay(final LocalDate newDay) {
-    this.period = Period.between(newDay, newDay);
+    this.component.setPeriod(Period.between(newDay, newDay));
   }
 
   @Override
@@ -532,30 +593,6 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     return isPersisted();
   }
 
-  private void deleteFromPersistence() {
-    if (isPersisted()) {
-      Transaction.getTransaction().perform(() -> {
-        CalendarEventRepository repository = CalendarEventRepository.get();
-        repository.delete(this);
-        return null;
-      });
-    }
-    notify(ResourceEvent.Type.DELETION, this);
-  }
-
-  private void updateIntoPersistence() {
-    if (getNativeId() != null) {
-      Optional<CalendarEvent> before = Transaction.performInNew(() -> getCalendar().event(getId()));
-      if (before.isPresent()) {
-        CalendarEvent event = Transaction.getTransaction().perform(() -> {
-          CalendarEventRepository repository = CalendarEventRepository.get();
-          return repository.save(this);
-        });
-        notify(ResourceEvent.Type.UPDATE, before.get(), event);
-      }
-    }
-  }
-
   /**
    * Gets the attendees. The adding or the removing of an attendee should be done
    * only by the creator of this event. Nevertheless, there is actually no validation of this
@@ -564,7 +601,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return a set of attendees to this event.
    */
   public Set<Attendee> getAttendees() {
-    return this.attendees;
+    return this.component.getAttendees();
   }
 
   /**
@@ -574,7 +611,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return the event itself.
    */
   public CalendarEvent withAttendee(User user) {
-    getAttendees().add(InternalAttendee.fromUser(user).to(this));
+    getAttendees().add(InternalAttendee.fromUser(user).to(asCalendarComponent()));
     return this;
   }
 
@@ -586,7 +623,7 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
    * @return the event itself.
    */
   public CalendarEvent withAttendee(String email) {
-    getAttendees().add(ExternalAttendee.withEmail(email).to(this));
+    getAttendees().add(ExternalAttendee.withEmail(email).to(asCalendarComponent()));
     return this;
   }
 
@@ -599,43 +636,11 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     } else {
       clone.recurrence = recurrence.clone();
     }
-    clone.period = period.clone();
     clone.categories = categories.clone();
-    clone.attributes = attributes.clone();
-    clone.categories = categories.clone();
-    clone.location = this.location;
-    clone.attendees = new HashSet<>();
-    attendees.forEach(a -> a.cloneFor(clone));
+    clone.component = component.clone();
+    clone.visibilityLevel = visibilityLevel;
     return clone;
   }
-
-  protected void setCalendar(final Calendar calendar) {
-    this.calendar = calendar;
-  }
-
-  private Period getPeriod() {
-    return this.period;
-  }
-
-  private void notify(ResourceEvent.Type type, CalendarEvent... events) {
-    Transaction.performInNew(() -> {
-      CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
-      notifier.notifyEventOn(type, events);
-      return null;
-    });
-  }
-
-  /**
-   * Handles the simple deletion of an event.
-   */
-  @Transient
-  private final Function<CalendarEvent, CalendarEventModificationResult> simpleDeletion =
-      (previousEvent) -> {
-        if (previousEvent != null) {
-          previousEvent.deleteFromPersistence();
-        }
-        return new CalendarEventModificationResult();
-      };
 
   /**
    * Deletes entirely the event referenced by this occurrence.
@@ -689,93 +694,15 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
   }
 
   /**
-   * Handles the simple update of an event.
-   */
-  @Transient
-  private final Function<CalendarEvent, CalendarEventModificationResult> simpleUpdate =
-      (previousEvent) -> {
-        if (previousEvent == null) {
-          return new CalendarEventModificationResult();
-        }
-        final CalendarEvent me = this;
-
-        // Verify date changes
-        final boolean dateChanged =
-            !previousEvent.getStartDate().equals(me.getStartDate()) ||
-            !previousEvent.getEndDate().equals(me.getEndDate());
-
-        final boolean recurrenceChanged;
-        final Recurrence currentRecurrence = me.getRecurrence();
-        final Recurrence previousRecurrence = previousEvent.getRecurrence();
-        if ((currentRecurrence != null && previousRecurrence == null) ||
-            (currentRecurrence == null && previousRecurrence != null)) {
-          recurrenceChanged = true;
-        } else if (currentRecurrence != null) {
-          if (!currentRecurrence.getDaysOfWeek().equals(previousRecurrence.getDaysOfWeek()) ||
-              !currentRecurrence.getFrequency().equals(previousRecurrence.getFrequency()) ||
-              currentRecurrence.getRecurrenceCount() != previousRecurrence.getRecurrenceCount()) {
-            recurrenceChanged = true;
-          } else {
-            recurrenceChanged = false;
-            if (!currentRecurrence.getExceptionDates()
-                .equals(previousRecurrence.getExceptionDates())) {
-              // Removing participation dates
-              currentRecurrence.getExceptionDates().forEach(dateTime -> getAttendees()
-                  .forEach(attendee -> attendee.resetParticipationOn(dateTime)));
-            }
-            if (currentRecurrence.getEndDate().isPresent() &&
-                !currentRecurrence.getEndDate().equals(previousRecurrence.getEndDate())) {
-              // Removing also participation dates
-              getAttendees().forEach(attendee -> attendee
-                  .resetParticipationFrom(currentRecurrence.getEndDate().get()));
-            }
-          }
-        } else {
-          recurrenceChanged = false;
-        }
-
-        // Clears exception dates when switching on all day data
-        if (getRecurrence() != null && previousEvent.isOnAllDay() != isOnAllDay()) {
-          getRecurrence().clearsAllExceptionDates();
-        }
-
-        // If it exists date or recurrence changes, participation of attendees are reset.
-        if (dateChanged || recurrenceChanged) {
-          me.getAttendees().forEach(Attendee::resetParticipation);
-        }
-
-        final boolean hasCalendarChanged =
-            !previousEvent.getCalendar().getId().equals(me.getCalendar().getId());
-        if (hasCalendarChanged) {
-          // New event is created on other calendar
-          CalendarEvent newEvent = me.clone();
-          newEvent.planOn(me.getCalendar());
-          // Deleting previous event
-          simpleDeletion.apply(previousEvent);
-          return new CalendarEventModificationResult(me);
-        } else {
-          me.updateIntoPersistence();
-          return new CalendarEventModificationResult(me);
-        }
-      };
-
-  /**
    * Merges the data of the given event into the data of current event.<br/>
    * It is not possible to merge the data of calendar which represents the repository of the event.
    * @param event the event to merge into current one.
    */
   public CalendarEventModificationResult merge(CalendarEvent event) {
     this.externalId = event.getExternalId();
-    this.period = event.period;
-    this.attributes = event.attributes;
-    this.title = event.title;
-    this.description = event.description;
-    this.location = event.location;
+    this.component = event.component;
     this.visibilityLevel = event.visibilityLevel;
-    this.priority = event.priority;
     this.recurrence = event.recurrence;
-    this.attendees.clear();
-    this.attendees.addAll(event.attendees);
     this.categories = event.categories;
     return update();
   }
@@ -835,6 +762,84 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
           .forEach(attendee -> attendee.resetParticipationFrom(endDate));
       previousEvent.updateIntoPersistence();
       return new CalendarEventModificationResult(previousEvent, createdEvent);
+    });
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    boolean canBeAccessed = getCalendar().canBeAccessedBy(user) || isUserParticipant.test(user);
+    if (!canBeAccessed && PUBLIC == getVisibilityLevel()) {
+      SilverpeasComponentInstance componentInstance =
+          SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).orElse(null);
+      if (componentInstance != null) {
+        canBeAccessed = componentInstance.isPublic() || componentInstance.isPersonal();
+      }
+    }
+    return canBeAccessed;
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getCalendar().getComponentInstanceId(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+  }
+
+  /**
+   * Gets the {@link CalendarComponent} representation of this event. Any change to the returned
+   * calendar component will change also the related event.
+   * @return a {@link CalendarComponent} instance representing this event (without the specific
+   * properties related to a calendar event).
+   */
+  public CalendarComponent asCalendarComponent() {
+    return this.component;
+  }
+
+  /**
+   * Sets a new calendar to this event. This moves the event from its initial calendar to the
+   * specified calendar. This will be effective once the {@link CalendarEvent#update()} method
+   * invoked.
+   * @param calendar the new calendar into which the event has to move.
+   */
+  protected void setCalendar(final Calendar calendar) {
+    this.component.setCalendar(calendar);
+  }
+
+  private void deleteFromPersistence() {
+    if (isPersisted()) {
+      Transaction.getTransaction().perform(() -> {
+        CalendarEventRepository repository = CalendarEventRepository.get();
+        repository.delete(this);
+        return null;
+      });
+    }
+    notify(ResourceEvent.Type.DELETION, this);
+  }
+
+  private void updateIntoPersistence() {
+    if (getNativeId() != null) {
+      Optional<CalendarEvent> before = Transaction.performInNew(() -> getCalendar().event(getId()));
+      if (before.isPresent()) {
+        CalendarEvent event = Transaction.getTransaction().perform(() -> {
+          this.component.markAsModified();
+          CalendarEventRepository repository = CalendarEventRepository.get();
+          return repository.save(this);
+        });
+        notify(ResourceEvent.Type.UPDATE, before.get(), event);
+      }
+    }
+  }
+
+  private Period getPeriod() {
+    return this.component.getPeriod();
+  }
+
+  private void notify(ResourceEvent.Type type, CalendarEvent... events) {
+    Transaction.performInNew(() -> {
+      CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
+      notifier.notifyEventOn(type, events);
+      return null;
     });
   }
 
@@ -934,6 +939,94 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     });
   }
 
+  /**
+   * Handles the simple deletion of an event.
+   */
+  @Transient
+  private final Function<CalendarEvent, CalendarEventModificationResult> simpleDeletion =
+      (previousEvent) -> {
+        if (previousEvent != null) {
+          previousEvent.deleteFromPersistence();
+        }
+        return new CalendarEventModificationResult();
+      };
+
+  /**
+   * Handles the simple update of an event.
+   */
+  @Transient
+  private final Function<CalendarEvent, CalendarEventModificationResult> simpleUpdate =
+      (previousEvent) -> {
+        if (previousEvent == null) {
+          return new CalendarEventModificationResult();
+        }
+        final CalendarEvent me = this;
+
+        // Verify date changes
+        final boolean dateChanged =
+            !previousEvent.getStartDate().equals(me.getStartDate()) ||
+                !previousEvent.getEndDate().equals(me.getEndDate());
+
+        final boolean recurrenceChanged;
+        final Recurrence currentRecurrence = me.getRecurrence();
+        final Recurrence previousRecurrence = previousEvent.getRecurrence();
+        if ((currentRecurrence != null && previousRecurrence == null) ||
+            (currentRecurrence == null && previousRecurrence != null)) {
+          recurrenceChanged = true;
+        } else if (currentRecurrence != null) {
+          if (!currentRecurrence.getDaysOfWeek().equals(previousRecurrence.getDaysOfWeek()) ||
+              !currentRecurrence.getFrequency().equals(previousRecurrence.getFrequency()) ||
+              currentRecurrence.getRecurrenceCount() != previousRecurrence.getRecurrenceCount()) {
+            recurrenceChanged = true;
+          } else {
+            recurrenceChanged = false;
+            if (!currentRecurrence.getExceptionDates()
+                .equals(previousRecurrence.getExceptionDates())) {
+              // Removing participation dates
+              currentRecurrence.getExceptionDates().forEach(dateTime -> getAttendees()
+                  .forEach(attendee -> attendee.resetParticipationOn(dateTime)));
+            }
+            if (currentRecurrence.getEndDate().isPresent() &&
+                !currentRecurrence.getEndDate().equals(previousRecurrence.getEndDate())) {
+              // Removing also participation dates
+              getAttendees().forEach(attendee -> attendee
+                  .resetParticipationFrom(currentRecurrence.getEndDate().get()));
+            }
+          }
+        } else {
+          recurrenceChanged = false;
+        }
+
+        // Clears exception dates when switching on all day data
+        if (getRecurrence() != null && previousEvent.isOnAllDay() != isOnAllDay()) {
+          getRecurrence().clearsAllExceptionDates();
+        }
+
+        // If it exists date or recurrence changes, participation of attendees are reset.
+        if (dateChanged || recurrenceChanged) {
+          me.getAttendees().forEach(Attendee::resetParticipation);
+        }
+
+        final boolean hasCalendarChanged =
+            !previousEvent.getCalendar().getId().equals(me.getCalendar().getId());
+        if (hasCalendarChanged) {
+          // New event is created on other calendar
+          CalendarEvent newEvent = me.clone();
+          newEvent.planOn(me.getCalendar());
+          // Deleting previous event
+          simpleDeletion.apply(previousEvent);
+          return new CalendarEventModificationResult(me);
+        } else {
+          me.updateIntoPersistence();
+          return new CalendarEventModificationResult(me);
+        }
+      };
+
+  @Transient
+  private final Predicate<User> isUserParticipant =
+      (user) -> !getAttendees().stream().filter(attendee -> attendee.getId().equals(user.getId()))
+          .collect(Collectors.toList()).isEmpty();
+
   public static class CalendarEventModificationResult extends ModificationResult<CalendarEvent> {
 
     CalendarEventModificationResult() {
@@ -950,29 +1043,4 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
     }
   }
 
-  @Transient
-  private final Predicate<User> isUserParticipant =
-      (user) -> !getAttendees().stream().filter(attendee -> attendee.getId().equals(user.getId()))
-          .collect(Collectors.toList()).isEmpty();
-
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    boolean canBeAccessed = getCalendar().canBeAccessedBy(user) || isUserParticipant.test(user);
-    if (!canBeAccessed && PUBLIC == getVisibilityLevel()) {
-      SilverpeasComponentInstance componentInstance =
-          SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).orElse(null);
-      if (componentInstance != null) {
-        canBeAccessed = componentInstance.isPublic() || componentInstance.isPersonal();
-      }
-    }
-    return canBeAccessed;
-  }
-
-  @Override
-  public boolean canBeModifiedBy(final User user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getCalendar().getComponentInstanceId(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
-  }
 }

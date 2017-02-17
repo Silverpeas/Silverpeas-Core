@@ -25,10 +25,10 @@ package org.silverpeas.core.web.calendar.ical;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.calendar.event.ExternalAttendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.event.ExternalAttendee;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
@@ -270,7 +270,8 @@ public class ExportIcalManager {
         if (user != null) {
           String email = user.geteMail();
           if (StringUtil.isDefined(email)) {
-            event.getAttendees().add(ExternalAttendee.withEmail(email).to(event));
+            event.getAttendees()
+                .add(ExternalAttendee.withEmail(email).to(event.asCalendarComponent()));
           }
         }
       }

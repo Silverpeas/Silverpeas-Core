@@ -254,7 +254,7 @@ public class CalendarEventOccurrenceGenerationTest {
     calendar.setZoneId(ZoneId.of("UTC"));
     for (CalendarEvent event : events) {
       try {
-        FieldUtils.writeDeclaredField(event, "calendar", calendar, true);
+        FieldUtils.writeDeclaredField(event.asCalendarComponent(), "calendar", calendar, true);
       } catch (IllegalAccessException e) {
         throw new RuntimeException(e);
       }

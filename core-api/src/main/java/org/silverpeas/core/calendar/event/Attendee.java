@@ -54,8 +54,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Column(nullable = false)
   private String attendeeId;
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
-  @JoinColumn(name = "eventId", referencedColumnName = "id", nullable = false)
-  private CalendarEvent event;
+  @JoinColumn(name = "componentId", referencedColumnName = "id", nullable = false)
+  private CalendarComponent component;
   @OneToOne
   @JoinColumn(name = "delegate", referencedColumnName = "id")
   private Attendee delegate;
@@ -74,14 +74,14 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Constructs a participant in the specified calendar event.
+   * Constructs a participant in the specified calendar component.
    * @param id the unique identifier of the attendee. It can be an address email, an identifier of a
    * user in Silverpeas, or anything from which we can notify him.
-   * @param event the event in which the attendee participates.
+   * @param component a calendar component in which the attendee participates.
    */
-  public Attendee(String id, CalendarEvent event) {
+  public Attendee(String id, CalendarComponent component) {
     this.attendeeId = id;
-    this.event = event;
+    this.component = component;
   }
 
   /**
@@ -101,11 +101,11 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   abstract public String getFullName();
 
   /**
-   * Gets the event in which this attendee participates.
-   * @return the event in which this attendee participates.
+   * Gets the calendar component for which this attendee participates.
+   * @return the calendar component in which this attendee participates.
    */
-  public CalendarEvent getEvent() {
-    return this.event;
+  public CalendarComponent getCalendarComponent() {
+    return this.component;
   }
 
   /**
@@ -144,11 +144,10 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void delegateTo(final User user) {
     this.participationStatus = ParticipationStatus.DELEGATED;
-    this.delegate = InternalAttendee.fromUser(user)
-        .to(this.event)
+    this.delegate = InternalAttendee.fromUser(user).to(this.component)
         .withPresenceStatus(this.presenceStatus);
     this.delegate.delegate = this;
-    this.event.getAttendees().add(this.delegate);
+    this.component.getAttendees().add(this.delegate);
   }
 
   /**
@@ -159,11 +158,10 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void delegateTo(final String email) {
     this.participationStatus = ParticipationStatus.DELEGATED;
-    this.delegate = ExternalAttendee.withEmail(email)
-        .to(this.event)
+    this.delegate = ExternalAttendee.withEmail(email).to(this.component)
         .withPresenceStatus(this.presenceStatus);
     this.delegate.delegate = this;
-    this.event.getAttendees().add(this.delegate);
+    this.component.getAttendees().add(this.delegate);
   }
 
   /**
@@ -283,7 +281,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     if (!attendeeId.equals(attendee.attendeeId)) {
       return false;
     }
-    if (!event.equals(attendee.event)) {
+    if (!component.equals(attendee.component)) {
       return false;
     }
     return true;
@@ -296,20 +294,20 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(attendeeId).append(event).toHashCode();
+    return new HashCodeBuilder().append(attendeeId).append(component).toHashCode();
   }
 
   /**
-   * Clones this attendee for the specified event. The cloned attendee is added in the given
-   * event before returning it.
-   * @param event the event for which this attendee is cloned.
-   * @return the clone of this attendee but for the specified event.
+   * Clones this attendee for the specified calendar component. The cloned attendee is added in
+   * the given calendar component before returning it.
+   * @param calendarComponent a calendar component for which this attendee is cloned.
+   * @return the clone of this attendee but for the specified calendar component.
    */
-  public Attendee cloneFor(CalendarEvent event) {
+  public Attendee cloneFor(CalendarComponent calendarComponent) {
     Attendee clone = clone();
-    clone.event = event;
+    clone.component = calendarComponent;
     clone.participationOn = participationOn.clone();
-    event.getAttendees().add(clone);
+    calendarComponent.getAttendees().add(clone);
     return clone;
   }
 
@@ -401,10 +399,11 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   public interface AttendeeSupplier {
 
     /**
-     * Supplies an instance of an {@link Attendee} to the specified event.
-     * @param event the event to which the attendee has to participate.
+     * Supplies an instance of an {@link Attendee} to the specified calendar component.
+     * @param calendarComponent the calendar component to which the attendee has to participate.
      * @return an instance of {@link Attendee}.
      */
-    Attendee to(final CalendarEvent event);
+    Attendee to(final CalendarComponent calendarComponent);
   }
+
 }

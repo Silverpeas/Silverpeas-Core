@@ -23,30 +23,64 @@
  */
 package org.silverpeas.core.calendar.event;
 
+import org.silverpeas.core.calendar.Attributes;
 import org.silverpeas.core.calendar.CalendarTimeWindow;
+import org.silverpeas.core.calendar.Categories;
+import org.silverpeas.core.calendar.Priority;
+import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 import java.util.List;
+import java.util.Set;
 
 
 /**
- * The occurrence of an event in a Silverpeas calendar. An event occurrence starts and ends at a
- * given date and it represents an event that has occurred or that is going to occur at a given
- * moment in time.
+ * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
+ * timeline of a calendar; it represents an event starting and ending at a given date or date time
+ * in the calendar.
+ *
+ * A non-recurrent event is a singleton, meaning that is has only one single instance occurring in
+ * the calendar (so the name occurrence). A recurrent event has one or more occurrences in the
+ * timeline. It occurs several time in the calendar in a regular way according to its recurrence
+ * rule; at each time such an event occurs is represented by an occurrence.
+ *
+ * By default, the occurrences of an event aren't persisted but they are generated from the period
+ * of time at which occurs the event and, if any, from its recurrence rule. If an occurrence of a
+ * non-recurrent event is deleted, then the related event is deleted. If an occurrence of a
+ * recurrent event is deleted, then an exception is added into the recurrence rule of the event.
+ * This operation is done with one of the following methods:
+ * {@link CalendarEvent#delete(CalendarEventOccurrenceReferenceData)},
+ * {@link CalendarEvent#deleteFrom(CalendarEventOccurrenceReferenceData)}.
+ * If an occurrence of a non-recurrent event is modified, then the modification is directly
+ * applied to the event itself (as it is a singleton). If an occurrence of a recurrent event is
+ * modified, then the modification is applied to the occurrence only and this occurrence is
+ * persisted as a modification related to the recurrence rule of the concerned event.
  */
-public class CalendarEventOccurrence {
+@Entity
+@Table(name = "sb_cal_occurrences")
+public class CalendarEventOccurrence implements Serializable {
 
+  @Id
   private String id;
-  private Period period;
+
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
+  @JoinColumn(name = "eventId", referencedColumnName = "id")
   private CalendarEvent event;
 
+  @OneToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "componentId", referencedColumnName = "id", unique = true)
+  private CalendarComponent component;
+
   /**
-   * Hidden constructor.
+   * Constructor for only persistence context.
    */
-  private CalendarEventOccurrence() {
+  protected CalendarEventOccurrence() {
+    // this constructor is dedicated to be used by the persistence context.
   }
 
   /**
@@ -60,7 +94,8 @@ public class CalendarEventOccurrence {
       final Temporal endDate) {
     this.id = event.getId() + "@" + startDate;
     this.event = event;
-    this.period = Period.between(startDate, endDate);
+    this.component = event.asCalendarComponent().clone();
+    this.component.setPeriod(Period.between(startDate, endDate));
   }
 
   private static CalendarEventOccurrenceGenerator generator() {
@@ -113,7 +148,7 @@ public class CalendarEventOccurrence {
    * @return the start date or date time of the event occurrence.
    */
   public Temporal getStartDate() {
-    return period.getStartDate();
+    return this.component.getPeriod().getStartDate();
   }
 
   /**
@@ -121,7 +156,7 @@ public class CalendarEventOccurrence {
    * @return the end date or date time of the event occurrence.
    */
   public Temporal getEndDate() {
-    return period.getEndDate();
+    return this.component.getPeriod().getEndDate();
   }
 
   /**
@@ -167,7 +202,7 @@ public class CalendarEventOccurrence {
    * occurred.
    */
   public void setPeriod(final Period newPeriod) {
-    this.period = newPeriod;
+    this.component.setPeriod(newPeriod);
   }
 
   /**
@@ -175,7 +210,7 @@ public class CalendarEventOccurrence {
    * @return a period.
    */
   public Period getPeriod() {
-    return period;
+    return this.component.getPeriod();
   }
 
   /**
@@ -187,4 +222,107 @@ public class CalendarEventOccurrence {
     Period newPeriod = Period.between(newDay, newDay);
     setPeriod(newPeriod);
   }
+
+  /**
+   * Gets the title of this event occurrence. The title is either the one of the related event or
+   * the one that was modified for this occurrence.
+   * @return the title of the event occurrence.
+   */
+  public String getTitle() {
+    return this.component.getTitle();
+  }
+
+  public void setTitle(final String title) {
+    this.component.setTitle(title);
+  }
+
+  public Set<Attendee> getAttendees() {
+    return this.component.getAttendees();
+  }
+
+  /**
+   * Gets the description of this event occurrence. The description is either the one of the
+   * related event or the one that was modified for this occurrence.
+   * @return the description of the event occurrence.
+   */
+  public String getDescription() {
+    return this.component.getDescription();
+  }
+
+  /**
+   * Sets a new description for this event occurrence.
+   * @param description a new description related to this event occurrence.
+   */
+  public void setDescription(String description) {
+    this.component.setDescription(description);
+  }
+
+  /**
+   * Gets the location of this event occurrence. The location is either the one of the related
+   * event or the one that was modified for this occurrence.
+   * @return the location of the event occurrence.
+   */
+  public String getLocation() {
+    return this.component.getLocation();
+  }
+
+  /**
+   * Sets a new location for this event occurrence.
+   * @param location the new location where this occurrence should take place.
+   */
+  public void setLocation(String location) {
+    this.component.setLocation(location);
+  }
+
+  /**
+   * Gets the attributes of this event occurrence. The attributes are either those related
+   * to the event or those that were modified for this occurrence.
+   * @return the extra attributes of the event occurrence.
+   */
+  public Attributes getAttributes() {
+    return this.component.getAttributes();
+  }
+
+  /**
+   * Gets the priority of this event occurrence. The priority is the one that is set for the event.
+   * @return the priority of the event occurrence.
+   */
+  public Priority getPriority() {
+    return this.component.getPriority();
+  }
+
+  /**
+   * Sets a new priority to this event occurrence.
+   * @param priority the new priority of this event occurrence.
+   */
+  public void setPriority(final Priority priority) {
+    this.component.setPriority(priority);
+  }
+
+  /**
+   * Gets the categories of this event occurrence. The categories are those that are set for the
+   * event.
+   * @return the categories of the event occurrence.
+   */
+  public Categories getCategories() {
+    return this.event.getCategories();
+  }
+
+  /**
+   * Gets the level of visibility of this event occurrence. The visibility level is the one that is
+   * set for the event.
+   * @return the level of visibility of the event occurrence.
+   */
+  public VisibilityLevel getVisibilityLevel() {
+    return this.event.getVisibilityLevel();
+  }
+
+  /**
+   * Is this event occurrence occurring on all the day(s)?
+   * @return true if this event occurrence is occurring on all its day(s).
+   */
+  public boolean isOnAllDay() {
+    return getCalendarEvent().isOnAllDay();
+  }
+
 }

@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar.event.notification;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarComponent;
 import org.silverpeas.core.calendar.event.ExternalAttendee;
 import org.silverpeas.core.calendar.event.InternalAttendee;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
@@ -46,8 +46,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * A builder of notifications to attendees in a calendar event to inform them about some
- * changes in the event or in the attendance.
+ * A builder of notifications to attendees in a calendar component to inform them about some
+ * changes in the component or in the attendance.
  * <p>
  * The message in the notification is built from a {@link SilverpeasTemplate}. The Silverpeas
  * Calendar API provides a default set of such templates but they can be overridden by the templates
@@ -56,8 +56,8 @@ import java.util.stream.Collectors;
  * default one.
  * @author mmoquillon
  */
-class CalendarEventAttendeeNotificationBuilder
-    extends AbstractTemplateUserNotificationBuilder<CalendarEvent>
+class AttendeeNotificationBuilder
+    extends AbstractTemplateUserNotificationBuilder<CalendarComponent>
     implements RemoveSenderRecipientBehavior {
 
   private NotifAction notifCause;
@@ -68,13 +68,13 @@ class CalendarEventAttendeeNotificationBuilder
   private Pair<Boolean, String> rootTemplatePath;
 
   /**
-   * Constructs a new builder of user notification against the attendee(s) of a calendar event.
-   * @param event the calendar event concerned by the notification.
+   * Constructs a new builder of user notification against the attendee(s) of a calendar component.
+   * @param calendarComponent the calendar component concerned by the notification.
    * @param action the action that was performed onto the event.
    */
-  public CalendarEventAttendeeNotificationBuilder(final CalendarEvent event,
+  AttendeeNotificationBuilder(final CalendarComponent calendarComponent,
       final NotifAction action) {
-    super(event);
+    super(calendarComponent);
     this.notifCause = action;
   }
 
@@ -92,7 +92,7 @@ class CalendarEventAttendeeNotificationBuilder
    * @param attendees the attendees concerned by the update.
    * @return itself.
    */
-  public CalendarEventAttendeeNotificationBuilder about(UpdateCause cause,
+  public AttendeeNotificationBuilder about(UpdateCause cause,
       List<Attendee> attendees) {
     this.updateCause = cause;
     this.attendees = attendees;
@@ -113,7 +113,7 @@ class CalendarEventAttendeeNotificationBuilder
    * @param attendees the attendees concerned by the update.
    * @return itself.
    */
-  public CalendarEventAttendeeNotificationBuilder about(UpdateCause cause,
+  public AttendeeNotificationBuilder about(UpdateCause cause,
       final Attendee... attendees) {
     return about(cause, Arrays.asList(attendees));
   }
@@ -123,7 +123,7 @@ class CalendarEventAttendeeNotificationBuilder
    * @param attendees a list of recipients for the notification.
    * @return itself.
    */
-  public CalendarEventAttendeeNotificationBuilder to(final List<Attendee> attendees) {
+  public AttendeeNotificationBuilder to(final List<Attendee> attendees) {
     this.recipients = attendees;
     return this;
   }
@@ -133,7 +133,7 @@ class CalendarEventAttendeeNotificationBuilder
    * @param attendee the recipient for the notification.
    * @return itself.
    */
-  public CalendarEventAttendeeNotificationBuilder to(final Attendee attendee) {
+  public AttendeeNotificationBuilder to(final Attendee attendee) {
     this.recipients = Collections.singletonList(attendee);
     return this;
   }
@@ -143,7 +143,7 @@ class CalendarEventAttendeeNotificationBuilder
    * @param sender the sender of the notification.
    * @return itself.
    */
-  public CalendarEventAttendeeNotificationBuilder from(final User sender) {
+  public AttendeeNotificationBuilder from(final User sender) {
     this.sender = sender;
     return this;
   }
@@ -166,7 +166,7 @@ class CalendarEventAttendeeNotificationBuilder
   }
 
   @Override
-  protected void performTemplateData(final String language, final CalendarEvent resource,
+  protected void performTemplateData(final String language, final CalendarComponent resource,
       final SilverpeasTemplate template) {
     template.setAttribute("sender", this.sender.getDisplayedName());
     template.setAttribute("event", resource);
@@ -175,7 +175,8 @@ class CalendarEventAttendeeNotificationBuilder
   }
 
   @Override
-  protected void performNotificationResource(final String language, final CalendarEvent resource,
+  protected void performNotificationResource(final String language,
+      final CalendarComponent resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setComponentInstanceId(

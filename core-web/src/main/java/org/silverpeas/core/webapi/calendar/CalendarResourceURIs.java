@@ -91,9 +91,9 @@ public final class CalendarResourceURIs {
     }
     return UriBuilder.fromUri(URLUtil.getApplicationURL())
         .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(baseUri)
-        .path(attendee.getEvent().getCalendar().getComponentInstanceId())
-        .path(attendee.getEvent().getCalendar().getId())
-        .path(CALENDAR_EVENT_URI_PART).path(attendee.getEvent().getId())
+        .path(attendee.getCalendarComponent().getCalendar().getComponentInstanceId())
+        .path(attendee.getCalendarComponent().getCalendar().getId())
+        .path(CALENDAR_EVENT_URI_PART).path(attendee.getCalendarComponent().getId())
         .path(CALENDAR_EVENT_ATTENDEE_URI_PART).path(attendee.getId()).build();
   }
 }

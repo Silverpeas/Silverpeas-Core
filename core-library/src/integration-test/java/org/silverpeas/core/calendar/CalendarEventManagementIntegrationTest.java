@@ -42,7 +42,7 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
-import java.time.temporal.Temporal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -92,11 +92,44 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(getCalendarEventTableLines(), hasSize(5));
   }
 
+  /**
+   * We test we get well all the events ordered by the component instance, then by the calendar,
+   * and finally by their start date.
+   */
   @Test
   public void getAllEvents() {
     try(Stream<CalendarEvent> events = Calendar.getEvents().stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
       assertThat(allEvents, hasSize(5));
+
+      String previousComponentInstanceId = "";
+      String previousCalendarId = "";
+      OffsetDateTime previousStartDate = OffsetDateTime.of(1000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+      for (CalendarEvent event : allEvents) {
+        if (event.getCalendar().getComponentInstanceId().equals(previousComponentInstanceId)) {
+          if (event.getCalendar().getId().equals(previousCalendarId)) {
+              if (event.isOnAllDay()) {
+                assertThat(LocalDate.from(event.getStartDate()),
+                    greaterThanOrEqualTo(previousStartDate.toLocalDate()));
+                previousStartDate =
+                    LocalDate.from(event.getStartDate()).atStartOfDay().atOffset(ZoneOffset.UTC);
+              } else {
+                assertThat(OffsetDateTime.from(event.getStartDate()),
+                    greaterThanOrEqualTo(previousStartDate));
+                previousStartDate = OffsetDateTime.from(event.getStartDate());
+              }
+            } else {
+            assertThat(event.getCalendar().getId(), greaterThan(previousCalendarId));
+            previousCalendarId = event.getCalendar().getId();
+            previousStartDate = OffsetDateTime.of(1000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+          }
+        } else {
+          assertThat(event.getCalendar().getComponentInstanceId(),
+              greaterThan(previousComponentInstanceId));
+          previousComponentInstanceId = event.getCalendar().getComponentInstanceId();
+          previousCalendarId = "";
+        }
+      }
     }
   }
 
@@ -347,7 +380,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
   @Test
   public void deleteAnEventShouldDeleteAllItsAttributesAndAttendees() throws Exception {
-    List<TableLine> allAttributes = getAttributesTableLinesByEventId("ID_E_1");
+    List<TableLine> allAttributes = getAttributesTableLinesByEventId("ID_C_1");
     List<TableLine> allAttendees = getAttendeesTableLines();
     assertThat(allAttributes, hasSize(1));
     assertThat(allAttendees, hasSize(3));
@@ -356,16 +389,17 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEvent event = calendar.event("ID_E_1").get();
     event.delete();
 
-    allAttributes = getAttributesTableLinesByEventId("ID_E_1");
+    allAttributes = getAttributesTableLinesByEventId("ID_C_1");
     allAttendees = getAttendeesTableLines();
     assertThat(allAttributes, hasSize(0));
     assertThat(allAttendees, hasSize(1));
   }
 
   @Test
-  public void updateAPlannedEvent() {
+  public void updateTheDateOfAPlannedEvent() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_3").get();
+    Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
     assertThat(event.isOnAllDay(), is(false));
 
@@ -374,9 +408,58 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     event.update();
 
     event = calendar.event("ID_E_3").get();
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.isOnAllDay(), is(true));
     assertThat(event.getStartDate(), is(LocalDate.parse("2016-01-12")));
     assertThat(event.getEndDate(), is(eventEndDate));
+  }
+
+  @Test
+  public void updateTheTitleOfAPlannedEvent() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event("ID_E_3").get();
+    Date lastUpdateDate = event.getLastUpdateDate();
+    assertThat(event.isPlanned(), is(true));
+
+    final String title = "An updated title";
+    event.setTitle(title);
+    event.update();
+
+    event = calendar.event("ID_E_3").get();
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(event.getTitle(), is(title));
+  }
+
+  @Test
+  public void updateTheCategoryOfAPlannedEvent() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event("ID_E_3").get();
+    Date lastUpdateDate = event.getLastUpdateDate();
+    assertThat(event.isPlanned(), is(true));
+
+    final String category = "Personal";
+    event.getCategories().add(category);
+    event.update();
+
+    event = calendar.event("ID_E_3").get();
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(event.getCategories().contains(category), is(true));
+  }
+
+  @Test
+  public void updateTheVisibilityOfAPlannedEvent() {
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event("ID_E_3").get();
+    Date lastUpdateDate = event.getLastUpdateDate();
+    assertThat(event.isPlanned(), is(true));
+    assertThat(event.getVisibilityLevel(), not(VisibilityLevel.CONFIDENTIAL));
+
+    event.withVisibilityLevel(VisibilityLevel.CONFIDENTIAL);
+    event.update();
+
+    event = calendar.event("ID_E_3").get();
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(event.getVisibilityLevel(), is(VisibilityLevel.CONFIDENTIAL));
   }
 
   @Test
@@ -407,7 +490,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(occurrence.getEndDate(), is(OffsetDateTime.parse("2016-01-21T16:50:00Z")));
 
     CalendarEvent event = occurrence.getCalendarEvent();
-    event.setLastUpdatedBy("1");
+    event.asCalendarComponent().setLastUpdatedBy("1");
     final Period newPeriod =
         Period.between(occurrence.getStartDate(), OffsetDateTime.parse("2016-01-05T10:30:00Z"));
     event.update(fromOccurrenceId(occurrence.getId()).withPeriod(newPeriod));

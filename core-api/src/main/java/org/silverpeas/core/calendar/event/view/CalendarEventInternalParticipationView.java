@@ -65,7 +65,7 @@ public class CalendarEventInternalParticipationView implements CalendarEventView
       final List<CalendarEventOccurrence> occurrences) {
     Map<String, List<CalendarEventOccurrence>> view = new HashMap<>();
     for (CalendarEventOccurrence occurrence : occurrences) {
-      final String createdBy = occurrence.getCalendarEvent().getCreatedBy();
+      final String createdBy = occurrence.getCalendarEvent().getCreator().getId();
       if (filterOnParticipantIds.isEmpty() || filterOnParticipantIds.contains(createdBy)) {
         add(view, createdBy, occurrence);
       }

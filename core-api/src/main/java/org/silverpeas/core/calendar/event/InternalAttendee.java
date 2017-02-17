@@ -39,8 +39,8 @@ import javax.persistence.EntityManager;
 @DiscriminatorValue("0")
 public class InternalAttendee extends Attendee {
 
-  private InternalAttendee(final User user, final CalendarEvent event) {
-    super(user.getId(), event);
+  private InternalAttendee(final User user, final CalendarComponent calendarComponent) {
+    super(user.getId(), calendarComponent);
   }
 
   protected InternalAttendee() {

@@ -136,7 +136,7 @@ public class ICal4JExchange implements ICalendarExchange {
           long durationInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
           DateTime createdDate =
-              iCal4JDateCodec.encode(event.getCreateDate().toInstant().atOffset(ZoneOffset.UTC));
+              iCal4JDateCodec.encode(event.getCreationDate().toInstant().atOffset(ZoneOffset.UTC));
           DateTime lastUpdateDate = iCal4JDateCodec
               .encode(event.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
 
@@ -500,10 +500,10 @@ public class ICal4JExchange implements ICalendarExchange {
 
         // Technical data
         if (vEvent.getCreated() != null) {
-          JpaEntityReflection.setCreateDate(event, vEvent.getCreated().getDate());
+          JpaEntityReflection.setCreateDate(event.asCalendarComponent(), vEvent.getCreated().getDate());
         }
         if (vEvent.getLastModified() != null) {
-          JpaEntityReflection.setLastUpdateDate(event, vEvent.getLastModified().getDate());
+          JpaEntityReflection.setLastUpdateDate(event.asCalendarComponent(), vEvent.getLastModified().getDate());
         }
 
         // New event to perform

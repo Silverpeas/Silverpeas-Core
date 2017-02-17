@@ -110,7 +110,7 @@ public class CalendarWebServiceProvider {
   public static void assertDataConsistency(final String componentInstanceId,
       final Calendar originalCalendar, final CalendarEvent event) {
     assertDataConsistency(componentInstanceId, originalCalendar);
-    assertEntityIsDefined(event);
+    assertEntityIsDefined(event.asCalendarComponent());
     // Checking the component instance id.
     if (!originalCalendar.getComponentInstanceId().equals(componentInstanceId) ||
         !event.getCalendar().getComponentInstanceId().equals(componentInstanceId)) {
@@ -140,7 +140,7 @@ public class CalendarWebServiceProvider {
       final Calendar originalCalendar, final CalendarEvent previousOne,
       final CalendarEvent newOne) {
     assertDataConsistency(componentInstanceId, originalCalendar, previousOne);
-    assertEntityIsDefined(newOne);
+    assertEntityIsDefined(newOne.asCalendarComponent());
     // Checking the component instance id with the new event data.
     if (!newOne.getCalendar().getComponentInstanceId().equals(componentInstanceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -295,7 +295,7 @@ public class CalendarWebServiceProvider {
       CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType updateMethodType,
       final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, event);
+    checkUserIsCreator(owner, event.asCalendarComponent());
     OccurrenceEventActionMethodType methodType = updateMethodType == null ? ALL : updateMethodType;
 
     final CalendarEventModificationResult result;
@@ -350,7 +350,7 @@ public class CalendarWebServiceProvider {
       CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType deleteMethodType,
       final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, event);
+    checkUserIsCreator(owner, event.asCalendarComponent());
     OccurrenceEventActionMethodType methodType = deleteMethodType == null ? ALL : deleteMethodType;
 
     final CalendarEventModificationResult result;
@@ -507,7 +507,7 @@ public class CalendarWebServiceProvider {
         CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
         return event.getCalendar().getComponentInstanceId()
             .equals(currentUserAndComponentInstanceId.getLeft()) &&
-            event.getCreatedBy().equals(currentUserId);
+            event.getCreator().getId().equals(currentUserId);
       });
     }
     return result;

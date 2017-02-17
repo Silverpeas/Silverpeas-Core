@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.event.Attendee;
+import org.silverpeas.core.calendar.event.CalendarComponent;
 import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.event.ExternalAttendee;
 import org.silverpeas.core.calendar.event.InternalAttendee;
@@ -113,8 +114,8 @@ public class CalendarEventMockBuilder {
     return this;
   }
 
-  public CalendarEventMockBuilder withCreateDate(final OffsetDateTime createDate) {
-    when(event.getCreateDate()).thenReturn(Date.from(createDate.toInstant()));
+  public CalendarEventMockBuilder withCreationDate(final OffsetDateTime createDate) {
+    when(event.getCreationDate()).thenReturn(Date.from(createDate.toInstant()));
     return this;
   }
 
@@ -174,8 +175,7 @@ public class CalendarEventMockBuilder {
   }
 
   public CalendarEventMockBuilder withCreator(final User creator) {
-    final String creatorId = creator.getId();
-    when(event.getCreatedBy()).thenReturn(creatorId);
+    when(event.getCreator()).thenReturn(creator);
     return this;
   }
 }

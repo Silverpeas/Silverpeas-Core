@@ -44,17 +44,20 @@ public class EventAttendeeManagement {
     CalendarEvent event =
         anEvent().withAttendee("joe@dalton.com").withAttendee("averel@dalton.com");
     assertThat(
-        event.getAttendees().contains(ExternalAttendee.withEmail("joe@dalton.com").to(event)),
+        event.getAttendees().contains(ExternalAttendee.withEmail("joe@dalton.com")
+            .to(event.asCalendarComponent())),
         is(true));
     assertThat(
-        event.getAttendees().contains(ExternalAttendee.withEmail("averel@dalton.com").to(event)),
+        event.getAttendees().contains(ExternalAttendee.withEmail("averel@dalton.com")
+            .to(event.asCalendarComponent())),
         is(true));
   }
 
   @Test
   public void delegateAnAttendeeToAnotherUserAddThisUserAmongTheAttendeesToTheEvent() {
     CalendarEvent event = anEvent();
-    Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com").to(event);
+    Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com")
+        .to(event.asCalendarComponent());
     event.getAttendees().add(attendee);
     assertThat(event.getAttendees().size(), is(1));
 
@@ -62,14 +65,16 @@ public class EventAttendeeManagement {
 
     assertThat(event.getAttendees().size(), is(2));
     assertThat(
-        event.getAttendees().contains(ExternalAttendee.withEmail("averel@dalton.com").to(event)),
+        event.getAttendees().contains(ExternalAttendee.withEmail("averel@dalton.com")
+            .to(event.asCalendarComponent())),
         is(true));
   }
 
   @Test
   public void delegateAnAttendeeToAnotherUserChangeTheParticipationStatus() {
     CalendarEvent event = anEvent();
-    Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com").to(event);
+    Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com")
+        .to(event.asCalendarComponent());
     event.getAttendees().add(attendee);
     assertThat(event.getAttendees().size(), is(1));
 
@@ -81,7 +86,8 @@ public class EventAttendeeManagement {
   @Test
   public void delegateAnAttendeeToAnotherUserSetsTheDelegationBetweenTwoThem() {
     CalendarEvent event = anEvent();
-    Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com").to(event);
+    Attendee attendee = ExternalAttendee.withEmail("joe@dalton.com")
+        .to(event.asCalendarComponent());
     event.getAttendees().add(attendee);
     assertThat(event.getAttendees().size(), is(1));
 
@@ -89,7 +95,8 @@ public class EventAttendeeManagement {
 
     assertThat(attendee.getDelegate().isPresent(), is(true));
     assertThat(attendee.getDelegate().get(),
-        is(ExternalAttendee.withEmail("averel@dalton.com").to(event)));
+        is(ExternalAttendee.withEmail("averel@dalton.com")
+            .to(event.asCalendarComponent())));
     assertThat(attendee.getDelegate().get().getDelegate().get(), is(attendee));
   }
 

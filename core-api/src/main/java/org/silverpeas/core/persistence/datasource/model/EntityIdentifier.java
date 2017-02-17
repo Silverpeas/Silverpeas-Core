@@ -32,7 +32,7 @@ import java.io.Serializable;
  * By this way, all entities have a typed identifier that only the entity knows.
  * @author Yohann Chastagnier
  */
-public interface EntityIdentifier extends ResourceIdentifier, Serializable {
+public interface EntityIdentifier extends ResourceIdentifier, Serializable, Comparable<EntityIdentifier> {
 
   /**
    * Sets the id value from a String.
@@ -51,4 +51,17 @@ public interface EntityIdentifier extends ResourceIdentifier, Serializable {
    * @return the entity identifier instance.
    */
   EntityIdentifier generateNewId(final String tableName, final String tableColumnIdName);
+
+  /**
+   * Compares this identifier of entity with the specified one. The comparing is done by their
+   * String representation.
+   * @param o another entity identifier.
+   * @return a negative integer, zero, or a positive integer as this object is less than, equal to,
+   * or greater than the specified object.
+   * @see Comparable#compareTo(Object)
+   */
+  @Override
+  default int compareTo(final EntityIdentifier o) {
+    return asString().compareTo(o.asString());
+  }
 }

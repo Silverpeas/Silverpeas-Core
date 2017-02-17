@@ -29,16 +29,16 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 /**
- * A notifier of attendees about their participation in a calendar event. It listens for change
+ * A notifier of attendees about their participation in a calendar component. It listens for change
  * in the attendance and then, for each change, it notifies the concerned attendee(s) about it.
  * <p>
- * When a calendar event is planned in a given calendar or when such an event
+ * When a calendar component is planned in a given calendar or when such a calendar component
  * is unplanned then a change is also occurring in the attendance as the attendees are all
  * respectively just added or just deleted. This notifier will then also inform such of
  * lifecycle events.
  * @author mmoquillon
  */
-public class CalendarEventAttendeeNotifier extends AttendeeNotifier<AttendeeLifeCycleEvent> {
+public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<AttendeeLifeCycleEvent> {
 
   /**
    * An attendee has been removed. The attendee is informed about it (he shouldn't be the user
@@ -50,7 +50,7 @@ public class CalendarEventAttendeeNotifier extends AttendeeNotifier<AttendeeLife
   public void onDeletion(final AttendeeLifeCycleEvent event) throws Exception {
     Attendee attendee = event.getTransition().getBefore();
     UserNotification notification =
-        new CalendarEventAttendeeNotificationBuilder(attendee.getEvent(), NotifAction.UPDATE).from(
+        new AttendeeNotificationBuilder(attendee.getCalendarComponent(), NotifAction.UPDATE).from(
             User.getCurrentRequester())
             .to(attendee)
             .about(UpdateCause.ATTENDEE_REMOVING, attendee)
@@ -75,7 +75,7 @@ public class CalendarEventAttendeeNotifier extends AttendeeNotifier<AttendeeLife
     Attendee after = event.getTransition().getAfter();
     if (before.getPresenceStatus() != after.getPresenceStatus()) {
       UserNotification notification =
-          new CalendarEventAttendeeNotificationBuilder(after.getEvent(), NotifAction.UPDATE).from(
+          new AttendeeNotificationBuilder(after.getCalendarComponent(), NotifAction.UPDATE).from(
               User.getCurrentRequester())
               .to(after)
               .about(UpdateCause.ATTENDEE_PRESENCE, after)
@@ -83,9 +83,8 @@ public class CalendarEventAttendeeNotifier extends AttendeeNotifier<AttendeeLife
       notification.send();
     } else {
       UserNotification notification =
-          new CalendarEventAttendeeNotificationBuilder(after.getEvent(), NotifAction.UPDATE).from(
-              User.getCurrentRequester())
-              .to(concernedAttendeesIn(after.getEvent()))
+          new AttendeeNotificationBuilder(after.getCalendarComponent(), NotifAction.UPDATE).from(
+              User.getCurrentRequester()).to(concernedAttendeesIn(after.getCalendarComponent()))
               .about(UpdateCause.ATTENDEE_PARTICIPATION, after)
               .build();
       notification.send();
@@ -102,7 +101,7 @@ public class CalendarEventAttendeeNotifier extends AttendeeNotifier<AttendeeLife
   public void onCreation(final AttendeeLifeCycleEvent event) throws Exception {
     Attendee attendee = event.getTransition().getAfter();
     UserNotification notification =
-        new CalendarEventAttendeeNotificationBuilder(attendee.getEvent(), NotifAction.UPDATE).from(
+        new AttendeeNotificationBuilder(attendee.getCalendarComponent(), NotifAction.UPDATE).from(
             User.getCurrentRequester())
             .to(attendee)
             .about(UpdateCause.ATTENDEE_ADDING, attendee)

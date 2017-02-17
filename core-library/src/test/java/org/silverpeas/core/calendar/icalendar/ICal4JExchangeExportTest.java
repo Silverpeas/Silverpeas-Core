@@ -131,7 +131,7 @@ public class ICal4JExchangeExportTest {
         .withDescription("EVENT-DESCRIPTION <a href=\"#\">Click me...</a> !!!")
         .withLocation("Grenoble")
         .withAttribute("url", "http://www.silverpeas.org/events/EVENT-UUID")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .build();
 
@@ -146,7 +146,7 @@ public class ICal4JExchangeExportTest {
         .withId("EVENT-UUID")
         .withTitle("EVENT-TITLE-CATEGORIZED")
         .withCategories("Work", "Project")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .build();
 
@@ -164,7 +164,7 @@ public class ICal4JExchangeExportTest {
         .withTitle("EVENT-TITLE-1")
         .withPriority(Priority.HIGH)
         .withVisibilityLevel(VisibilityLevel.PRIVATE)
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.DAY))
         .build();
@@ -174,7 +174,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-2")
         .withTitle("EVENT-TITLE-2")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(3, TimeUnit.DAY))
         .build();
@@ -184,7 +184,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-3")
         .withTitle("EVENT-TITLE-3")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(4, TimeUnit.DAY).upTo(OffsetDateTime.parse("2016-12-31T15:27:00Z")))
@@ -195,7 +195,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-4")
         .withTitle("EVENT-TITLE-4")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(2, TimeUnit.DAY).upTo(10))
@@ -206,7 +206,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-5")
         .withTitle("EVENT-TITLE-5")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(TimeUnit.DAY)
@@ -220,7 +220,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-6")
         .withTitle("EVENT-TITLE-6")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(2, TimeUnit.WEEK)
@@ -232,7 +232,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-7")
         .withTitle("EVENT-TITLE-7")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(1, TimeUnit.MONTH)
@@ -244,7 +244,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-8")
         .withTitle("EVENT-TITLE-8")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.MONTH))
         .build();
@@ -254,7 +254,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-9")
         .withTitle("EVENT-TITLE-9")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.YEAR))
         .build();
@@ -273,7 +273,7 @@ public class ICal4JExchangeExportTest {
         .withId("EVENT-UUID-1")
         .withExternalId("EXT-EVENT-UUID-1")
         .withTitle("EVENT-TITLE-1")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.DAY))
         .build();
@@ -283,7 +283,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-2")
         .withTitle("EVENT-TITLE-2")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(3, TimeUnit.DAY))
         .build();
@@ -293,7 +293,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-3")
         .withTitle("EVENT-TITLE-3")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(4, TimeUnit.DAY).upTo(LocalDate.parse("2016-12-31")))
@@ -304,7 +304,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-4")
         .withTitle("EVENT-TITLE-4")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(2, TimeUnit.DAY).upTo(10))
@@ -315,7 +315,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-5")
         .withTitle("EVENT-TITLE-5")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(TimeUnit.DAY)
@@ -329,7 +329,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-6")
         .withTitle("EVENT-TITLE-6")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(2, TimeUnit.WEEK)
@@ -341,7 +341,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-7")
         .withTitle("EVENT-TITLE-7")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
             Recurrence.every(1, TimeUnit.MONTH)
@@ -353,7 +353,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-8")
         .withTitle("EVENT-TITLE-8")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.MONTH))
         .build();
@@ -363,7 +363,7 @@ public class ICal4JExchangeExportTest {
         .plannedOn(calendar)
         .withId("EVENT-UUID-9")
         .withTitle("EVENT-TITLE-9")
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.YEAR))
         .build();
@@ -393,7 +393,7 @@ public class ICal4JExchangeExportTest {
             when(mockedAttendee.getPresenceStatus()).thenReturn(INFORMATIVE))
         .withAttendee("external.2@silverpeas.org", mockedAttendee ->
             when(mockedAttendee.getParticipationStatus()).thenReturn(DECLINED))
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .build();
 
@@ -422,7 +422,7 @@ public class ICal4JExchangeExportTest {
             when(mockedAttendee.getPresenceStatus()).thenReturn(INFORMATIVE))
         .withAttendee("external.2@silverpeas.org", mockedAttendee ->
             when(mockedAttendee.getParticipationStatus()).thenReturn(DECLINED))
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .build();
 
@@ -457,7 +457,7 @@ public class ICal4JExchangeExportTest {
           when(mockedAttendee.getParticipationStatus()).thenReturn(DECLINED);
           mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-10"), ACCEPTED);
         })
-        .withCreateDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
+        .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .build();
 

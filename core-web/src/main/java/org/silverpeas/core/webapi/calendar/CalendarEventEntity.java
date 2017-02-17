@@ -313,7 +313,7 @@ public class CalendarEventEntity implements WebEntity {
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(calendarEvent, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(calendarEvent, calendarEvent.getEndDate(), zoneId);
-    createDate = calendarEvent.getCreateDate();
+    createDate = calendarEvent.getCreationDate();
     lastUpdateDate = calendarEvent.getLastUpdateDate();
     ownerName = calendarEvent.getCreator().getDisplayedName();
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);

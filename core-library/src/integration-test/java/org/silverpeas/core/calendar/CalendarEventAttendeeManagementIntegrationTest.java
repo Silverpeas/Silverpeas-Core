@@ -37,11 +37,13 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -80,14 +82,12 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
 
     assertThat(eventWithAttendees.getAttendees().size(), is(2));
 
-    Attendee actualAttendee = in(eventWithAttendees.getAttendees()).find(
-        InternalAttendee.fromUser(expectedUser()).to(eventWithAttendees));
+    Attendee actualAttendee = in(eventWithAttendees.getAttendees()).find(expectedUser().getId());
     assertThat(actualAttendee.getDelegate().isPresent(), is(false));
     assertThat(actualAttendee.getParticipationStatus(), is(Attendee.ParticipationStatus.ACCEPTED));
     assertThat(actualAttendee.getPresenceStatus(), is(Attendee.PresenceStatus.OPTIONAL));
 
-    actualAttendee = in(eventWithAttendees.getAttendees()).find(
-        ExternalAttendee.withEmail("john.doe@silverpeas.org").to(eventWithAttendees));
+    actualAttendee = in(eventWithAttendees.getAttendees()).find("john.doe@silverpeas.org");
     assertThat(actualAttendee.getDelegate().isPresent(), is(false));
     assertThat(actualAttendee.getParticipationStatus(), is(Attendee.ParticipationStatus.TENTATIVE));
     assertThat(actualAttendee.getPresenceStatus(), is(Attendee.PresenceStatus.REQUIRED));
@@ -101,8 +101,8 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     assertThat(eventWithAttendeesAndDatePart.isOnAllDay(), is(true));
     assertThat(eventWithAttendeesAndDatePart.getAttendees().size(), is(1));
 
-    Attendee actualAttendee = in(eventWithAttendeesAndDatePart.getAttendees())
-        .find(InternalAttendee.fromUser(expectedUser()).to(eventWithAttendeesAndDatePart));
+    Attendee actualAttendee =
+        in(eventWithAttendeesAndDatePart.getAttendees()).find(expectedUser().getId());
     assertThat(actualAttendee.getDelegate().isPresent(), is(false));
     assertThat(actualAttendee.getParticipationStatus(), is(Attendee.ParticipationStatus.AWAITING));
     assertThat(actualAttendee.getPresenceStatus(), is(Attendee.PresenceStatus.OPTIONAL));
@@ -117,17 +117,20 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
   public void addNewAttendees() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event(EVENT_WITHOUT_ATTENDEE).get();
+    Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.getAttendees().isEmpty(), is(true));
 
-    Attendee silverpeasUser = InternalAttendee.fromUser(getMockedUser()).to(event);
+    Attendee silverpeasUser =
+        InternalAttendee.fromUser(getMockedUser()).to(event.asCalendarComponent());
     Attendee externalUser = ExternalAttendee.withEmail("toto@chez-les-papoos")
-        .to(event)
+        .to(event.asCalendarComponent())
         .withPresenceStatus(Attendee.PresenceStatus.OPTIONAL);
     event.getAttendees().add(silverpeasUser);
     event.getAttendees().add(externalUser);
     event.update();
 
     event = calendar.event(EVENT_WITHOUT_ATTENDEE).get();
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getAttendees().size(), is(2));
 
     Attendee actualAttendee = in(event.getAttendees()).find(silverpeasUser);
@@ -145,17 +148,17 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
   public void updateAnAttendee() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
+    Date lastUpdateDate = eventWithAttendees.getLastUpdateDate();
 
-    Attendee attendee = in(eventWithAttendees.getAttendees()).find(
-        ExternalAttendee.withEmail("john.doe@silverpeas.org").to(eventWithAttendees));
+    Attendee attendee = in(eventWithAttendees.getAttendees()).find("john.doe@silverpeas.org");
     assertThat(attendee.getParticipationStatus(), is(Attendee.ParticipationStatus.TENTATIVE));
     assertThat(attendee.getPresenceStatus(), is(Attendee.PresenceStatus.REQUIRED));
     attendee.withPresenceStatus(Attendee.PresenceStatus.OPTIONAL).accept();
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
-    attendee = in(eventWithAttendees.getAttendees()).find(
-        ExternalAttendee.withEmail("john.doe@silverpeas.org").to(eventWithAttendees));
+    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    attendee = in(eventWithAttendees.getAttendees()).find("john.doe@silverpeas.org");
     assertThat(attendee.getParticipationStatus(), is(Attendee.ParticipationStatus.ACCEPTED));
     assertThat(attendee.getPresenceStatus(), is(Attendee.PresenceStatus.OPTIONAL));
   }
@@ -164,13 +167,15 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
   public void removeAnAttendee() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
-    Attendee attendeeToRemove =
-        ExternalAttendee.withEmail("john.doe@silverpeas.org").to(eventWithAttendees);
+    Date lastUpdateDate = eventWithAttendees.getLastUpdateDate();
+    Attendee attendeeToRemove = ExternalAttendee.withEmail("john.doe@silverpeas.org")
+        .to(eventWithAttendees.asCalendarComponent());
 
     eventWithAttendees.getAttendees().remove(attendeeToRemove);
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
+    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(eventWithAttendees.getAttendees().size(), is(1));
     Optional<Attendee> actualAttendee = eventWithAttendees.getAttendees()
         .stream()
@@ -183,18 +188,19 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
   public void delegateTheAttendanceToAnotherUser() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
+    Date lastUpdateDate = eventWithAttendees.getLastUpdateDate();
 
-    Attendee attendeeToDelegate = in(eventWithAttendees.getAttendees()).find(
-        InternalAttendee.fromUser(expectedUser()).to(eventWithAttendees));
+    Attendee attendeeToDelegate =
+        in(eventWithAttendees.getAttendees()).find(expectedUser().getId());
     attendeeToDelegate.delegateTo(getMockedUser());
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
+    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(eventWithAttendees.getAttendees().size(), is(3));
-    Attendee delegate = in(eventWithAttendees.getAttendees()).find(
-        InternalAttendee.fromUser(getMockedUser()).to(eventWithAttendees));
-    attendeeToDelegate = in(eventWithAttendees.getAttendees()).find(
-        InternalAttendee.fromUser(expectedUser()).to(eventWithAttendees));
+
+    Attendee delegate = in(eventWithAttendees.getAttendees()).find(getMockedUser().getId());
+    attendeeToDelegate = in(eventWithAttendees.getAttendees()).find(expectedUser().getId());
     assertThat(delegate.getDelegate().isPresent(), is(true));
     assertThat(delegate.getDelegate().get(), is(attendeeToDelegate));
     assertThat(attendeeToDelegate.getDelegate().isPresent(), is(true));
@@ -221,11 +227,15 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
       this.attendees = attendees;
     }
 
-    public Attendee find(final Attendee attendeeToFind) {
+    public Attendee find(final String attendeeToFind) {
       Optional<Attendee> actualAttendee =
-          attendees.stream().filter(a -> a.equals(attendeeToFind)).findFirst();
+          attendees.stream().filter(a -> a.getId().equals(attendeeToFind)).findFirst();
       assertThat(actualAttendee.isPresent(), is(true));
       return actualAttendee.get();
+    }
+
+    public Attendee find(final Attendee attendeeToFind) {
+      return find(attendeeToFind.getId());
     }
   }
 

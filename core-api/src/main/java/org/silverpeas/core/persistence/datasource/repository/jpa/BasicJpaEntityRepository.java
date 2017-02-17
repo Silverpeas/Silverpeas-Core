@@ -24,6 +24,7 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
@@ -63,7 +64,9 @@ public class BasicJpaEntityRepository<E extends IdentifiableEntity>
   @Override
   public SilverpeasList<E> save(final List<E> entities) {
     SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
+    final OperationContext context = OperationContext.fromCurrentRequester();
     for (E entity : entities) {
+      context.putIntoCache();
       if (entity.isPersisted()) {
         savedEntities.add(getEntityManager().merge(entity));
       } else {

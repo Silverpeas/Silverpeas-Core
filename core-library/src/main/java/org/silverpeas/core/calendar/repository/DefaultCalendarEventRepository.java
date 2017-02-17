@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
@@ -41,7 +41,7 @@ import java.util.stream.Stream;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepository<CalendarEvent>
+public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<CalendarEvent>
     implements CalendarEventRepository {
 
   @Override
@@ -96,7 +96,8 @@ public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepositor
   @Override
   public void deleteAll(final Calendar calendar) {
     NamedParameters params = newNamedParameters().add("calendar", calendar);
-    String idQuery = "select e.id.id from CalendarEvent e where e.calendar = :calendar";
+    String idQuery =
+        "select e.id.id from CalendarEvent e where e.component.calendar = :calendar";
     String eventBatchQuery = "select e from CalendarEvent e where e.id.id in :eventIds";
     List<String> ids = listFromJpqlString(idQuery, params, String.class);
     for(Collection<String> batchIds : split(ids)) {

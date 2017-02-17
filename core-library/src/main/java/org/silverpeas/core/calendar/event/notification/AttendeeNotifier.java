@@ -24,7 +24,7 @@
 package org.silverpeas.core.calendar.event.notification;
 
 import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.event.CalendarComponent;
 import org.silverpeas.core.calendar.event.InternalAttendee;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -36,11 +36,13 @@ import java.util.List;
  * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
  * @author mmoquillon
  */
-public class AttendeeNotifier<T extends ResourceEvent> extends CDIResourceEventListener<T> {
+public abstract class AttendeeNotifier<T extends ResourceEvent>
+    extends CDIResourceEventListener<T> {
 
-  protected List<Attendee> concernedAttendeesIn(final CalendarEvent calendarEvent) {
-    List<Attendee> attendees = new ArrayList<>(calendarEvent.getAttendees());
-    attendees.add(InternalAttendee.fromUser(calendarEvent.getLastUpdater()).to(calendarEvent));
+  protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
+    List<Attendee> attendees = new ArrayList<>(calendarComponent.getAttendees());
+    attendees.add(
+        InternalAttendee.fromUser(calendarComponent.getLastUpdater()).to(calendarComponent));
     return attendees;
   }
 }

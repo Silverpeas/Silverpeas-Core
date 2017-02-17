@@ -135,9 +135,9 @@ public class CalendarEventAttendeeEntity implements WebEntity {
     if (attendee == null) {
       // Attendee has not been found from the existing set
       if (StringUtil.isLong(getId())) {
-        attendee = InternalAttendee.fromUser(User.getById(getId())).to(event);
+        attendee = InternalAttendee.fromUser(User.getById(getId())).to(event.asCalendarComponent());
       } else {
-        attendee = ExternalAttendee.withEmail(getId()).to(event);
+        attendee = ExternalAttendee.withEmail(getId()).to(event.asCalendarComponent());
       }
       event.getAttendees().add(attendee);
     }

@@ -42,6 +42,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -485,8 +486,13 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
   }
 
   protected Class<T> getEntityClass() {
-    return (Class<T>) ((ParameterizedType) this.getClass()
-        .getGenericSuperclass()).getActualTypeArguments()[0];
+    Type type = this.getClass().getGenericSuperclass();
+    if (type instanceof ParameterizedType) {
+      return ((Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0]);
+    } else {
+      return (Class<T>) ((ParameterizedType) this.getClass().getSuperclass()
+          .getGenericSuperclass()).getActualTypeArguments()[0];
+    }
   }
 
   private T getByIdentifier(final EntityIdentifier id) {

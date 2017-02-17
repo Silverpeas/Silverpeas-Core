@@ -164,7 +164,7 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
   public void addingAnAttendeeSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event(EVENT_ID).get();
-    event.getAttendees().add(InternalAttendee.fromUser(User.getById("2")).to(event));
+    event.withAttendee(User.getById("2"));
     event.update();
 
     assertThat(eventListener.hasBeenNotified(), is(true));

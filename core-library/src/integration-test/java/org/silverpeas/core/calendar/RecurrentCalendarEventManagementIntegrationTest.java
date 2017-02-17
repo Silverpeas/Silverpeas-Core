@@ -41,6 +41,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -377,14 +378,16 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   public void updateRecurrenceOfAnEvent() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_5").get();
+    Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, WEEK)));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(8));
 
-    event.setLastUpdatedBy("1");
+    event.asCalendarComponent().setLastUpdatedBy("1");
     event.recur(Recurrence.every(1, DAY).upTo(5));
     event.update();
 
     event = calendar.event("ID_E_5").get();
+    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, DAY)));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(5));
   }
@@ -407,7 +410,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
 
     CalendarEvent previousEvent = occurrence.getCalendarEvent();
     occurrence.setDay(LocalDate.of(2016, 1, 24));
-    previousEvent.setLastUpdatedBy("1");
+    previousEvent.asCalendarComponent().setLastUpdatedBy("1");
     CalendarEventModificationResult result = previousEvent.update(
         fromOccurrenceId(occurrence.getId()).withPeriod(occurrence.getPeriod()));
     assertThat(result, notNullValue());

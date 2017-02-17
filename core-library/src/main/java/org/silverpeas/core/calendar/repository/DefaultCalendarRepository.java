@@ -28,6 +28,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,5 +43,30 @@ public class DefaultCalendarRepository extends SilverpeasJpaEntityRepository<Cal
     NamedParameters parameters = newNamedParameters();
     return findByNamedQuery("calendarsByComponentInstanceId",
         parameters.add("componentInstanceId", componentInstanceId));
+  }
+
+  @Override
+  public void delete(final List<Calendar> calendars) {
+    deleteAllEventsIn(calendars);
+    super.delete(calendars);
+  }
+
+  @Override
+  public long deleteById(final Collection<String> calendarIds) {
+    deleteAllEventsIn(getById(calendarIds));
+    return super.deleteById(calendarIds);
+  }
+
+  @Override
+  public long deleteByComponentInstanceId(final String componentInstanceId) {
+    deleteAllEventsIn(getByComponentInstanceId(componentInstanceId));
+    return super.deleteByComponentInstanceId(componentInstanceId);
+  }
+
+  private void deleteAllEventsIn(final List<Calendar> calendars) {
+    CalendarEventRepository eventRepository = CalendarEventRepository.get();
+    for (Calendar calendar: calendars) {
+      eventRepository.deleteAll(calendar);
+    }
   }
 }

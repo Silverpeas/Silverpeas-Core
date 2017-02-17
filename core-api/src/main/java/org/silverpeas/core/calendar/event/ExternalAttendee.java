@@ -39,8 +39,8 @@ import javax.persistence.EntityManager;
 @DiscriminatorValue("1")
 public class ExternalAttendee extends Attendee {
 
-  private ExternalAttendee(final String email, final CalendarEvent event) {
-    super(email, event);
+  private ExternalAttendee(final String email, final CalendarComponent calendarComponent) {
+    super(email, calendarComponent);
   }
 
   @Override

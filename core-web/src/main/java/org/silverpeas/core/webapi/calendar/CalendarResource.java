@@ -38,11 +38,9 @@ import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarExport;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.io.upload.FileUploadManager;
-import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.webapi.upload.FileUploadData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -50,9 +48,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -70,7 +66,6 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.packJSonObjectWithHtmlContainer;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
@@ -552,7 +547,7 @@ public class CalendarResource extends AbstractCalendarResource {
    */
   @SuppressWarnings("unchecked")
   public <T extends CalendarEventEntity> T asEventWebEntity(CalendarEvent event) {
-    assertEntityIsDefined(event);
+    assertEntityIsDefined(event.asCalendarComponent());
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
@@ -588,7 +583,7 @@ public class CalendarResource extends AbstractCalendarResource {
   @SuppressWarnings("unchecked")
   public <T extends CalendarEventOccurrenceEntity> T asOccurrenceWebEntity(
       CalendarEventOccurrence occurrence) {
-    assertEntityIsDefined(occurrence.getCalendarEvent());
+    assertEntityIsDefined(occurrence.getCalendarEvent().asCalendarComponent());
     List<CalendarEventAttendeeEntity> attendeeEntities =
         occurrence.getCalendarEvent().getAttendees().stream().map(attendee -> {
           CalendarEventAttendeeEntity entity = asAttendeeWebEntity(attendee);
@@ -625,7 +620,7 @@ public class CalendarResource extends AbstractCalendarResource {
    */
   @SuppressWarnings("unchecked")
   public <T extends CalendarEventAttendeeEntity> T asAttendeeWebEntity(Attendee attendee) {
-    assertEntityIsDefined(attendee.getEvent());
+    assertEntityIsDefined(attendee.getCalendarComponent());
     return (T) CalendarEventAttendeeEntity.from(attendee)
         .withURI(buildCalendarEventAttendeeURI(CALENDAR_BASE_URI, attendee));
   }
