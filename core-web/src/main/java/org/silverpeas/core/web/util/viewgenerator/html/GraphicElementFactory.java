@@ -307,12 +307,14 @@ public class GraphicElementFactory {
   }
 
   public List<String> getAvailableLooksForUser() {
-    String domainId = User.getById(getMainSessionController().getUserId()).getDomainId();
-    OrganizationController controller = OrganizationController.get();
-    Domain domain = controller.getDomain(domainId);
-    List<String> domainLooks = domain.getLooks();
-    if (!domainLooks.isEmpty()) {
-      return domainLooks;
+    if (getMainSessionController() != null) {
+      String domainId = User.getById(getMainSessionController().getUserId()).getDomainId();
+      OrganizationController controller = OrganizationController.get();
+      Domain domain = controller.getDomain(domainId);
+      List<String> domainLooks = domain.getLooks();
+      if (!domainLooks.isEmpty()) {
+        return domainLooks;
+      }
     }
     return getAvailableLooks();
   }
