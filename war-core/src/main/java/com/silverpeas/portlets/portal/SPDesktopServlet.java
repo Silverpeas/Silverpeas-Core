@@ -23,6 +23,7 @@ package com.silverpeas.portlets.portal;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -46,7 +47,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -70,7 +70,7 @@ import java.util.logging.Logger;
 import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static com.silverpeas.util.StringUtil.isDefined;
 
-public class SPDesktopServlet extends HttpServlet {
+public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -3241648887903159985L;
   private ServletContext context;
@@ -92,7 +92,7 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   @Override
-  protected void service(HttpServletRequest request, HttpServletResponse response)
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     String spaceHomePage = null;
@@ -591,15 +591,6 @@ public class SPDesktopServlet extends HttpServlet {
 
     return prefixSpaceId(spaceId);
   }
-
-  private MainSessionController getMainSessionController(final HttpServletRequest request) {
-    HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-
-    return m_MainSessionCtrl;
-  }
   
   private String getDefaultSpaceHomepageURL(final HttpServletRequest request) {
     HttpSession session = request.getSession();
@@ -768,5 +759,41 @@ public class SPDesktopServlet extends HttpServlet {
     
     session.removeAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS);
     session.setAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS, listPortlet);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doHead(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doPut(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doOptions(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doTrace(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
   }
 }
