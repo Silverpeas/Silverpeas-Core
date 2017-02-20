@@ -48,7 +48,6 @@ import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
-import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -4719,6 +4718,35 @@ public class Admin {
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId + "' Space = "
           + sParentSpaceId, e);
     }
+  }
+
+  public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
+    SpaceProfile spaceProfile = new SpaceProfile();
+    SpaceInst space = getSpaceInstById(spaceId);
+
+    // get profile explicitly defined
+    SpaceProfileInst profile = space.getSpaceProfileInst(role.getName());
+    if (profile != null) {
+      spaceProfile.setProfile(profile);
+    }
+
+    if (role == SilverpeasRole.Manager) {
+      // get groups and users implicitly inherited from space parents
+      boolean root = space.isRoot();
+      String parentId = space.getDomainFatherId();
+      while (!root) {
+        SpaceInst parent = getSpaceInstById(parentId);
+        SpaceProfileInst parentProfile = parent.getSpaceProfileInst(role.getName());
+        spaceProfile.addInheritedProfile(parentProfile);
+        root = parent.isRoot();
+        parentId = parent.getDomainFatherId();
+      }
+    } else {
+      // get groups and users from inherited profile
+      spaceProfile.addInheritedProfile(space.getInheritedSpaceProfileInst(role.getName()));
+    }
+
+    return spaceProfile;
   }
 
   public List<String> getUserManageableGroupIds(String sUserId) throws AdminException {

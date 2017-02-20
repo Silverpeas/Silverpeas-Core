@@ -34,6 +34,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceProfile;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang.StringUtils;
@@ -150,12 +151,11 @@ public class SpaceResource extends AbstractAdminResource {
       // Getting space profiles
       SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
       List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-      profiles.addAll(spaceInst.getInheritedProfiles());
-      profiles.addAll(spaceInst.getProfiles());
+      profiles.addAll(spaceInst.getAllSpaceProfilesInst());
 
       // Building entities
       ResourceLocator resource =
-          new ResourceLocator("com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
+          new ResourceLocator("org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
               getUserPreferences().getLanguage());
       UsersAndGroupsRoleEntity roleEntity;
       for (SpaceProfileInst profile : profiles) {
@@ -170,14 +170,22 @@ public class SpaceResource extends AbstractAdminResource {
             result.put(role, roleEntity);
           }
 
+          List<String> userIds = profile.getAllUsers();
+          List<String> groupIds = profile.getAllGroups();
+          if (role == SilverpeasRole.Manager) {
+            SpaceProfile admins = getOrganisationController().getSpaceProfile(spaceId, role);
+            userIds = admins.getAllUserIds();
+            groupIds = admins.getAllGroupIds();
+          }
+
           // Users
-          for (String userId : profile.getAllUsers()) {
+          for (String userId : userIds) {
             roleEntity.addUser(buildURI(getUriInfo().getBaseUri().toString(),
                 ProfileResourceBaseURIs.USERS_BASE_URI, userId));
           }
 
           // Groups
-          for (String groupId : profile.getAllGroups()) {
+          for (String groupId : groupIds) {
             roleEntity.addGroup(buildURI(getUriInfo().getBaseUri().toString(),
                 ProfileResourceBaseURIs.GROUPS_BASE_URI, groupId));
           }
