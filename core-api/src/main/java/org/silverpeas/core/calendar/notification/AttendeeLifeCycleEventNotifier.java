@@ -21,49 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * An attendee that is a user in Silverpeas.
+ * A notifier of lifecycle events of {@link Attendee}s.
  * @author mmoquillon
  */
-@Entity
-@DiscriminatorValue("0")
-public class InternalAttendee extends Attendee {
+public class AttendeeLifeCycleEventNotifier
+    extends CDIResourceEventNotifier<Attendee, AttendeeLifeCycleEvent> {
 
-  private InternalAttendee(final User user, final CalendarComponent calendarComponent) {
-    super(user.getId(), calendarComponent);
-  }
-
-  protected InternalAttendee() {
+  public static AttendeeLifeCycleEventNotifier get() {
+    return ServiceProvider.getService(AttendeeLifeCycleEventNotifier.class);
   }
 
   @Override
-  public String getFullName() {
-    return getUser().getDisplayedName();
-  }
-
-  public static AttendeeSupplier fromUser(final User user) {
-    return p -> new InternalAttendee(user, p);
-  }
-
-  public User getUser() {
-    return User.getById(getId());
-  }
-
-  @Override
-  protected Attendee getFromPersistenceContext() {
-    return Transaction.performInNew(() -> {
-      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
-      return entityManager.find(InternalAttendee.class, getNativeId());
-    });
+  protected AttendeeLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Attendee... attendees) {
+    return new AttendeeLifeCycleEvent(type, attendees);
   }
 }

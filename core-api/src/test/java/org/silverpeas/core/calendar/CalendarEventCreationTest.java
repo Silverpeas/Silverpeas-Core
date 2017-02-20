@@ -24,7 +24,6 @@
 package org.silverpeas.core.calendar;
 
 import org.junit.Test;
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;

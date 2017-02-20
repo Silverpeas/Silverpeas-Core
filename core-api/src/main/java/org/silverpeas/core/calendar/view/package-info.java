@@ -28,4 +28,4 @@
  * Provides a set of useful different views on the occurrences of calendar events in order to
  * easily handle them by some specific properties.
  */
-package org.silverpeas.core.calendar.event.view;
+package org.silverpeas.core.calendar.view;

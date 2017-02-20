@@ -21,13 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.*;
-import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEventNotifier;
+import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -660,7 +659,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * </ul>
    * @param data the occurrence necessary data to perform the operation.
    */
-  public CalendarEventModificationResult delete(CalendarEventOccurrenceReferenceData data) {
+  public CalendarEventModificationResult delete(CalendarEventOccurrenceReference data) {
     return doEitherOr(data, simpleDeletion, (previousEvent) -> {
       previousEvent.getRecurrence()
           .excludeEventOccurrencesStartingAt(data.getOriginalStartDate());
@@ -682,7 +681,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * </ul>
    * @param data the occurrence necessary data to perform the operation.
    */
-  public CalendarEventModificationResult deleteFrom(CalendarEventOccurrenceReferenceData data) {
+  public CalendarEventModificationResult deleteFrom(CalendarEventOccurrenceReference data) {
     return doEitherOr(data, simpleDeletion, (previousEvent) -> {
       final Temporal endDate = data.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
       previousEvent.getRecurrence().upTo(endDate);
@@ -728,7 +727,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @param data the occurrence necessary data to perform the operation.
    * event.
    */
-  public CalendarEventModificationResult update(CalendarEventOccurrenceReferenceData data) {
+  public CalendarEventModificationResult update(CalendarEventOccurrenceReference data) {
     return doEitherOr(data, simpleUpdate, (previousEvent) -> {
       final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), true);
       previousEvent.getRecurrence()
@@ -753,7 +752,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @param data the occurrence necessary data to perform the operation.
    * event.
    */
-  public CalendarEventModificationResult updateFrom(CalendarEventOccurrenceReferenceData data) {
+  public CalendarEventModificationResult updateFrom(CalendarEventOccurrenceReference data) {
     return doEitherOr(data, simpleUpdate, (previousEvent) -> {
       final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), false);
       final Temporal endDate = data.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
@@ -904,7 +903,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return event;
   }
 
-  private CalendarEventModificationResult doEitherOr(CalendarEventOccurrenceReferenceData data,
+  private CalendarEventModificationResult doEitherOr(CalendarEventOccurrenceReference data,
       Function<CalendarEvent, CalendarEventModificationResult> ifSingleOccurrence,
       Function<CalendarEvent, CalendarEventModificationResult> ifManyOccurrences) {
 
@@ -925,7 +924,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         List<CalendarEventOccurrence> occurrences = generator()
             .generateOccurrencesOf(Collections.singletonList(previousEvent),
                 Period.between(recurrenceStart, recurrenceEnd));
-        if (occurrences.size() == 1 && data.concerns(occurrences.get(0))) {
+        if (occurrences.size() == 1 && data.refers(occurrences.get(0))) {
           setPeriod(data.getPeriod());
           result = ifSingleOccurrence.apply(previousEvent);
         } else {

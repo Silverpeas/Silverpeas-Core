@@ -21,27 +21,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 
 /**
- * A notifier of lifecycle events of {@link Attendee}s.
+ * An attendee that is a person external to Silverpeas. It can only be notified, and hence
+ * identified, by an email address.
  * @author mmoquillon
  */
-public class AttendeeLifeCycleEventNotifier
-    extends CDIResourceEventNotifier<Attendee, AttendeeLifeCycleEvent> {
+@Entity
+@DiscriminatorValue("1")
+public class ExternalAttendee extends Attendee {
 
-  public static AttendeeLifeCycleEventNotifier get() {
-    return ServiceProvider.getService(AttendeeLifeCycleEventNotifier.class);
+  private ExternalAttendee(final String email, final CalendarComponent calendarComponent) {
+    super(email, calendarComponent);
   }
 
   @Override
-  protected AttendeeLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Attendee... attendees) {
-    return new AttendeeLifeCycleEvent(type, attendees);
+  public String getFullName() {
+    return this.getId();
+  }
+
+  protected ExternalAttendee() {
+  }
+
+  public static AttendeeSupplier withEmail(final String email) {
+    return p -> new ExternalAttendee(email, p);
+  }
+
+  @Override
+  protected Attendee getFromPersistenceContext() {
+    return Transaction.performInNew(() -> {
+      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
+      return entityManager.find(ExternalAttendee.class, getNativeId());
+    });
   }
 }

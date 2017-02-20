@@ -21,12 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.notification.AttendeeLifeCycleEventNotifier;
-import org.silverpeas.core.calendar.event.view.AttendeeParticipationOn;
+import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -37,11 +36,11 @@ import java.time.temporal.Temporal;
 import java.util.Optional;
 
 /**
- * An attendee is a user that participates in an event. It is uniquely defined by an identifier, for
- * example, an email address
- * so that it can be notified about changes on the
- * {@link org.silverpeas.core.calendar.event.CalendarEvent} object or about its attendance. Its
- * participation in a {@link org.silverpeas.core.calendar.event.CalendarEvent} is qualified by a
+ * An attendee is a user that participates in a calendar component that can be an event or anything
+ * that can be planned in a calendar. It is uniquely defined by an identifier, for example, an
+ * email address so that it can be notified about changes on the
+ * {@link org.silverpeas.core.calendar.CalendarComponent} object or about its attendance. Its
+ * participation in a {@link org.silverpeas.core.calendar.CalendarComponent} is qualified by a
  * status and by its presence requirement.
  * @author mmoquillon
  */
@@ -63,7 +62,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Enumerated(EnumType.STRING)
   private ParticipationStatus participationStatus = ParticipationStatus.AWAITING;
   @Embedded
-  private AttendeeParticipationOn participationOn = new AttendeeParticipationOn();
+  private ParticipationStatusException participationOn = new ParticipationStatusException();
   @Column(name = "presence", nullable = false)
   @Enumerated(EnumType.STRING)
   private PresenceStatus presenceStatus = PresenceStatus.REQUIRED;
@@ -120,7 +119,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * Gets the participation on specified dates.
    * @return participation on specific dates.
    */
-  public AttendeeParticipationOn getParticipationOn() {
+  public ParticipationStatusException getParticipationOn() {
     return participationOn;
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,28 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar.view;
 
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarComponent;
-import org.silverpeas.core.calendar.event.InternalAttendee;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
+ * A view in which the occurrences of the calendar events are grouped by a given event
+ * or occurrence property whose type is T.
  * @author mmoquillon
  */
-public abstract class AttendeeNotifier<T extends ResourceEvent>
-    extends CDIResourceEventListener<T> {
+@FunctionalInterface
+public interface CalendarEventView<T> {
 
-  protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
-    List<Attendee> attendees = new ArrayList<>(calendarComponent.getAttendees());
-    attendees.add(
-        InternalAttendee.fromUser(calendarComponent.getLastUpdater()).to(calendarComponent));
-    return attendees;
-  }
+  /**
+   * Applies this view on the specified list of calendar event occurrences. The occurrences will
+   * be grouped by a specific property.
+   * @param occurrences a list of calendar event occurrences.
+   * @return a map in which the occurrences are grouped by a specific property of type T.
+   */
+  Map<T, List<CalendarEventOccurrence>> apply(final List<CalendarEventOccurrence> occurrences);
 }
+  

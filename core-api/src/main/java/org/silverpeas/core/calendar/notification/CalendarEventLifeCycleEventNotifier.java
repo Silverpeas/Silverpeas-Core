@@ -21,29 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.notification.system.AbstractResourceEvent;
-
-import javax.validation.constraints.NotNull;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * An lifecycle event of an {@link Attendee}. Such an event is triggered
- * when a change occurred in the lifecycle of an attendee (the attendee is added in an event, its
- * participation status has changed, and so on) and it is sent by the system notification bus.
+ * A notifier of lifecycle events of {@link CalendarEvent} instances.
  * @author mmoquillon
  */
-public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
+public class CalendarEventLifeCycleEventNotifier
+    extends CDIResourceEventNotifier<CalendarEvent, CalendarEventLifeCycleEvent> {
 
-  /**
-   * Constructs a new lifecycle event with the specified type and with the specified {@link
-   * Attendee} instances representing each of them a state in a transition in the lifecycle of
-   * an attendee.
-   * @param type the type of the event in the lifecycle of an attendee.
-   * @param attendees the different states of an attendee concerned by the event in its lifecycle.
-   */
-  public AttendeeLifeCycleEvent(final Type type, @NotNull final Attendee... attendees) {
-    super(type, attendees);
+  public static CalendarEventLifeCycleEventNotifier get() {
+    return ServiceProvider.getService(CalendarEventLifeCycleEventNotifier.class);
+  }
+
+  @Override
+  protected CalendarEventLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final CalendarEvent... resource) {
+    return new CalendarEventLifeCycleEvent(type, resource);
   }
 }

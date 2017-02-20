@@ -21,27 +21,49 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 
 /**
- * A notifier of lifecycle events of {@link CalendarEvent} instances.
+ * An attendee that is a user in Silverpeas.
  * @author mmoquillon
  */
-public class CalendarEventLifeCycleEventNotifier
-    extends CDIResourceEventNotifier<CalendarEvent, CalendarEventLifeCycleEvent> {
+@Entity
+@DiscriminatorValue("0")
+public class InternalAttendee extends Attendee {
 
-  public static CalendarEventLifeCycleEventNotifier get() {
-    return ServiceProvider.getService(CalendarEventLifeCycleEventNotifier.class);
+  private InternalAttendee(final User user, final CalendarComponent calendarComponent) {
+    super(user.getId(), calendarComponent);
+  }
+
+  protected InternalAttendee() {
   }
 
   @Override
-  protected CalendarEventLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final CalendarEvent... resource) {
-    return new CalendarEventLifeCycleEvent(type, resource);
+  public String getFullName() {
+    return getUser().getDisplayedName();
+  }
+
+  public static AttendeeSupplier fromUser(final User user) {
+    return p -> new InternalAttendee(user, p);
+  }
+
+  public User getUser() {
+    return User.getById(getId());
+  }
+
+  @Override
+  protected Attendee getFromPersistenceContext() {
+    return Transaction.performInNew(() -> {
+      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
+      return entityManager.find(InternalAttendee.class, getNativeId());
+    });
   }
 }

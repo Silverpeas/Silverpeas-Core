@@ -36,7 +36,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.inject.Inject;

@@ -30,8 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -51,7 +49,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData
+import static org.silverpeas.core.calendar.CalendarEventOccurrenceReference
     .fromOccurrenceId;
 
 /**

@@ -21,15 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * A lifecycle event of {@link org.silverpeas.core.calendar.event.CalendarEvent}
+ * A lifecycle event of {@link org.silverpeas.core.calendar.CalendarEvent}
  * instances. Such an event is triggered when a change occurred in the lifecycle of a calendar
  * event (the event is planned into calendar, its state has changed, and so on) and it is sent by
  * the system notification bus.

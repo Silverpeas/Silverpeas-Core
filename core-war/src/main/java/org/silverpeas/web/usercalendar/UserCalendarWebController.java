@@ -25,7 +25,7 @@ package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;

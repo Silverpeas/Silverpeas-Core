@@ -21,45 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
 
 /**
- * An attendee that is a person external to Silverpeas. It can only be notified, and hence
- * identified, by an email address.
+ * An lifecycle event of an {@link Attendee}. Such an event is triggered
+ * when a change occurred in the lifecycle of an attendee (the attendee is added in an event, its
+ * participation status has changed, and so on) and it is sent by the system notification bus.
  * @author mmoquillon
  */
-@Entity
-@DiscriminatorValue("1")
-public class ExternalAttendee extends Attendee {
+public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
 
-  private ExternalAttendee(final String email, final CalendarComponent calendarComponent) {
-    super(email, calendarComponent);
-  }
-
-  @Override
-  public String getFullName() {
-    return this.getId();
-  }
-
-  protected ExternalAttendee() {
-  }
-
-  public static AttendeeSupplier withEmail(final String email) {
-    return p -> new ExternalAttendee(email, p);
-  }
-
-  @Override
-  protected Attendee getFromPersistenceContext() {
-    return Transaction.performInNew(() -> {
-      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
-      return entityManager.find(ExternalAttendee.class, getNativeId());
-    });
+  /**
+   * Constructs a new lifecycle event with the specified type and with the specified {@link
+   * Attendee} instances representing each of them a state in a transition in the lifecycle of
+   * an attendee.
+   * @param type the type of the event in the lifecycle of an attendee.
+   * @param attendees the different states of an attendee concerned by the event in its lifecycle.
+   */
+  public AttendeeLifeCycleEvent(final Type type, @NotNull final Attendee... attendees) {
+    super(type, attendees);
   }
 }

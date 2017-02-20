@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;

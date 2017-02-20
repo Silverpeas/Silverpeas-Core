@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 

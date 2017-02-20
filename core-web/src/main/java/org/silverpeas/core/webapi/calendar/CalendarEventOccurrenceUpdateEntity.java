@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

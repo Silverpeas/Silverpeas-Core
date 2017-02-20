@@ -27,7 +27,6 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.Transaction;

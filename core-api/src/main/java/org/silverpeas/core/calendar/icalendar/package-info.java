@@ -24,6 +24,6 @@
 
 /**
  * Provides the services around the importation/exportation of {@link
- * org.silverpeas.core.calendar.event.CalendarEvent} instances.
+ * org.silverpeas.core.calendar.CalendarEvent} instances.
  */
 package org.silverpeas.core.calendar.icalendar;

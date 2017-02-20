@@ -25,12 +25,6 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarComponent;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.ExternalAttendee;
-import org.silverpeas.core.calendar.event.InternalAttendee;
-import org.silverpeas.core.calendar.event.view.AttendeeParticipationOn;
 import org.silverpeas.core.date.Period;
 
 import java.time.OffsetDateTime;
@@ -41,8 +35,8 @@ import java.util.function.Consumer;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.core.calendar.event.Attendee.ParticipationStatus.AWAITING;
-import static org.silverpeas.core.calendar.event.Attendee.PresenceStatus.REQUIRED;
+import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING;
+import static org.silverpeas.core.calendar.Attendee.PresenceStatus.REQUIRED;
 
 /**
  * @author Yohann Chastagnier
@@ -155,7 +149,7 @@ public class CalendarEventMockBuilder {
     when(mockedAttendee.getFullName()).thenReturn(userDisplayedName);
     when(mockedAttendee.getPresenceStatus()).thenReturn(REQUIRED);
     when(mockedAttendee.getParticipationStatus()).thenReturn(AWAITING);
-    when(mockedAttendee.getParticipationOn()).thenReturn(new AttendeeParticipationOn());
+    when(mockedAttendee.getParticipationOn()).thenReturn(new ParticipationStatusException());
     mockedAttendeeConfigurer.accept(mockedAttendee);
     attendees.add(mockedAttendee);
     return this;
@@ -168,7 +162,7 @@ public class CalendarEventMockBuilder {
     when(mockedAttendee.getFullName()).thenReturn(email);
     when(mockedAttendee.getPresenceStatus()).thenReturn(REQUIRED);
     when(mockedAttendee.getParticipationStatus()).thenReturn(AWAITING);
-    when(mockedAttendee.getParticipationOn()).thenReturn(new AttendeeParticipationOn());
+    when(mockedAttendee.getParticipationOn()).thenReturn(new ParticipationStatusException());
     mockedAttendeeConfigurer.accept(mockedAttendee);
     attendees.add(mockedAttendee);
     return this;

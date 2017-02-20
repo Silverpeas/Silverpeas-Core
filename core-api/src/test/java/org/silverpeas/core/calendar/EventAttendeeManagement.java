@@ -24,10 +24,6 @@
 package org.silverpeas.core.calendar;
 
 import org.junit.Test;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.ExternalAttendee;
-
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.is;

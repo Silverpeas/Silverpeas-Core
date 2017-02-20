@@ -21,17 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.Attributes;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
-import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.HashSet;

@@ -40,7 +40,7 @@ import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;

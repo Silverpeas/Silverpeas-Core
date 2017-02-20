@@ -21,16 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.Attributes;
-import org.silverpeas.core.calendar.CalendarTimeWindow;
-import org.silverpeas.core.calendar.Categories;
-import org.silverpeas.core.calendar.Priority;
-import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -54,8 +56,8 @@ import java.util.Set;
  * non-recurrent event is deleted, then the related event is deleted. If an occurrence of a
  * recurrent event is deleted, then an exception is added into the recurrence rule of the event.
  * This operation is done with one of the following methods:
- * {@link CalendarEvent#delete(CalendarEventOccurrenceReferenceData)},
- * {@link CalendarEvent#deleteFrom(CalendarEventOccurrenceReferenceData)}.
+ * {@link CalendarEvent#delete(CalendarEventOccurrenceReference)},
+ * {@link CalendarEvent#deleteFrom(CalendarEventOccurrenceReference)}.
  * If an occurrence of a non-recurrent event is modified, then the modification is directly
  * applied to the event itself (as it is a singleton). If an occurrence of a recurrent event is
  * modified, then the modification is applied to the occurrence only and this occurrence is

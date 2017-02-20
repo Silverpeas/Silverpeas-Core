@@ -27,9 +27,9 @@ package org.silverpeas.web.usercalendar.services;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.calendar.CalendarEntity;
@@ -37,12 +37,10 @@ import org.silverpeas.core.webapi.calendar.CalendarEventAttendeeEntity;
 import org.silverpeas.core.webapi.calendar.CalendarEventEntity;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
-import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;

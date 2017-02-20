@@ -21,9 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.CalendarTimeWindow;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 

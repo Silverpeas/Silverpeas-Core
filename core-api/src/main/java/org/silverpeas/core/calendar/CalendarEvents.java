@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 
 import java.util.function.Consumer;

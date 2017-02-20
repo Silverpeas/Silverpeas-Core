@@ -40,7 +40,7 @@ import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
@@ -70,9 +70,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.core.calendar.event.Attendee.ParticipationStatus.*;
-import static org.silverpeas.core.calendar.event.Attendee.PresenceStatus.INFORMATIVE;
-import static org.silverpeas.core.calendar.event.Attendee.PresenceStatus.OPTIONAL;
+import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.*;
+import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
+import static org.silverpeas.core.calendar.Attendee.PresenceStatus.OPTIONAL;
 import static org.silverpeas.core.util.CollectionUtil.asList;
 
 /**

@@ -26,8 +26,8 @@ package org.silverpeas.core.webapi.calendar;
 
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 

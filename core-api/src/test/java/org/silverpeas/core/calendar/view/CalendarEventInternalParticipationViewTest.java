@@ -1,11 +1,11 @@
-package org.silverpeas.core.calendar.event.view;
+package org.silverpeas.core.calendar.view;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.event.TestCalendarEventOccurrenceBuilder;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.TestCalendarEventOccurrenceBuilder;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.TestUserProvider;
 import org.silverpeas.core.test.rule.CommonAPI4Test;

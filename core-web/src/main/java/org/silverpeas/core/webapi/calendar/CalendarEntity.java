@@ -29,7 +29,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;

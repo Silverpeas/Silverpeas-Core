@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
@@ -33,7 +33,6 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;

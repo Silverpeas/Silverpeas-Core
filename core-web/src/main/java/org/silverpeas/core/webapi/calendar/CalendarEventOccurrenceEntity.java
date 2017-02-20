@@ -26,9 +26,9 @@ package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.CalendarEventOccurrenceReference;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.base.WebEntity;
 
@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatDateWithOffset;
+import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 
 /**
  * It represents the state of a calendar event in a calendar as transmitted within the
@@ -185,11 +185,11 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
 
   /**
    * Gets the reference data of the occurrence, previous start date time and new period.
-   * @return an instance of {@link CalendarEventOccurrenceReferenceData}.
+   * @return an instance of {@link CalendarEventOccurrenceReference}.
    */
   @XmlTransient
-  CalendarEventOccurrenceReferenceData getReferenceData() {
-    return CalendarEventOccurrenceReferenceData.fromOccurrenceId(getId()).withPeriod(getPeriod());
+  CalendarEventOccurrenceReference getReferenceData() {
+    return CalendarEventOccurrenceReference.fromOccurrenceId(getId()).withPeriod(getPeriod());
   }
 
   /**

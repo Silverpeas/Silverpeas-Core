@@ -29,9 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.CalendarEvent.CalendarEventModificationResult;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.CalendarEvent.CalendarEventModificationResult;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -49,7 +47,7 @@ import java.util.TimeZone;
 import static java.time.DayOfWeek.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData
+import static org.silverpeas.core.calendar.CalendarEventOccurrenceReference
     .fromOccurrenceId;
 import static org.silverpeas.core.date.TimeUnit.*;
 

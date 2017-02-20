@@ -21,10 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.view;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.Plannable;
-import org.silverpeas.core.calendar.event.Attendee.ParticipationStatus;
+import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -32,20 +31,19 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * A set of attendee participation on date of a {@link Plannable} object. It permits the
- * user to specify some participation exceptions when it exists a recurrence on the {@link
- * Plannable}.
+ * A set of participation status per starting date of a calendar component instance. It permits the
+ * user to specify some exceptions in its general attendance in a calendar component when the
+ * latter is a recurrent {@link Plannable} object. The exception is about the status of its
+ * participation.
  * @author Yohann Chastagnier
  */
 @Embeddable
-public class AttendeeParticipationOn implements Cloneable {
+public class ParticipationStatusException implements Cloneable {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapsId
@@ -159,11 +157,11 @@ public class AttendeeParticipationOn implements Cloneable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof AttendeeParticipationOn)) {
+    if (!(o instanceof ParticipationStatusException)) {
       return false;
     }
 
-    final AttendeeParticipationOn that = (AttendeeParticipationOn) o;
+    final ParticipationStatusException that = (ParticipationStatusException) o;
     return participationOn.equals(that.participationOn);
   }
 
@@ -172,15 +170,15 @@ public class AttendeeParticipationOn implements Cloneable {
     return participationOn.hashCode();
   }
 
-  public AttendeeParticipationOn() {
+  public ParticipationStatusException() {
 
   }
 
   @Override
-  public AttendeeParticipationOn clone() {
-    AttendeeParticipationOn clone = null;
+  public ParticipationStatusException clone() {
+    ParticipationStatusException clone = null;
     try {
-      clone = (AttendeeParticipationOn) super.clone();
+      clone = (ParticipationStatusException) super.clone();
       clone.participationOn = new HashMap<>(participationOn);
     } catch (CloneNotSupportedException ignore) {
     }

@@ -25,16 +25,10 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrenceGenerator;
-import org.silverpeas.core.calendar.event.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.OffsetDateTime;

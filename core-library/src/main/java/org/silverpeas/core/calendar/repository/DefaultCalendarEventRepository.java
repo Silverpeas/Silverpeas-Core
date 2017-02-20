@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar.repository;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventFilter;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 

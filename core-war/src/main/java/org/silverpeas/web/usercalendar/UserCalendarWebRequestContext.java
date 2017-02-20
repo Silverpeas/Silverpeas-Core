@@ -24,7 +24,7 @@
 package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
 import javax.ws.rs.WebApplicationException;

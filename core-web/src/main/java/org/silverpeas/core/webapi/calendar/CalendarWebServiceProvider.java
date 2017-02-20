@@ -27,13 +27,13 @@ package org.silverpeas.core.webapi.calendar;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.Attendee.ParticipationStatus;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.CalendarEvent.CalendarEventModificationResult;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrenceReferenceData;
-import org.silverpeas.core.calendar.event.view.CalendarEventInternalParticipationView;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent.CalendarEventModificationResult;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.CalendarEventOccurrenceReference;
+import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.persistence.Transaction;
@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.calendar.event.CalendarEventUtil.getDateWithOffset;
+import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
@@ -292,7 +292,7 @@ public class CalendarWebServiceProvider {
    * @return the calendar event.
    */
   public List<CalendarEvent> saveEventFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType updateMethodType,
+      CalendarEventOccurrenceReference data, OccurrenceEventActionMethodType updateMethodType,
       final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, event.asCalendarComponent());
@@ -347,7 +347,7 @@ public class CalendarWebServiceProvider {
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
   public CalendarEvent deleteEventFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReferenceData data, OccurrenceEventActionMethodType deleteMethodType,
+      CalendarEventOccurrenceReference data, OccurrenceEventActionMethodType deleteMethodType,
       final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, event.asCalendarComponent());
@@ -398,7 +398,7 @@ public class CalendarWebServiceProvider {
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
   public CalendarEvent updateEventAttendeeParticipationFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReferenceData data, String attendeeId,
+      CalendarEventOccurrenceReference data, String attendeeId,
       ParticipationStatus participationStatus, OccurrenceEventActionMethodType answerMethodType,
       final ZoneId zoneId) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;

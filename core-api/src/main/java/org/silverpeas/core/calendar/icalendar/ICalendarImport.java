@@ -25,7 +25,7 @@
 package org.silverpeas.core.calendar.icalendar;
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.util.Mutable;
 
 import java.io.InputStream;

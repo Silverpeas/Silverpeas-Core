@@ -66,7 +66,7 @@ import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.calendar.event.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;

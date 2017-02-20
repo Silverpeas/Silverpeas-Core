@@ -27,12 +27,12 @@ package org.silverpeas.core.webapi.calendar;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.Attendee.ParticipationStatus;
-import org.silverpeas.core.calendar.event.Attendee.PresenceStatus;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.ExternalAttendee;
-import org.silverpeas.core.calendar.event.InternalAttendee;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
+import org.silverpeas.core.calendar.Attendee.PresenceStatus;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.ExternalAttendee;
+import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.WebEntity;
 

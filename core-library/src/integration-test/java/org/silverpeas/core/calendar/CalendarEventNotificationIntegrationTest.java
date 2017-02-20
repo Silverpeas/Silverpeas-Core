@@ -31,12 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.InternalAttendee;
-import org.silverpeas.core.calendar.event.notification.AttendeeLifeCycleEvent;
-import org.silverpeas.core.calendar.event.notification.AttendeeNotifier;
-import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.AttendeeNotifier;
+import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEvent;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -49,9 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**

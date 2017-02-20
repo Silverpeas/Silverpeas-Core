@@ -22,21 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.date.Period;
 
 import java.time.temporal.Temporal;
 
-import static org.silverpeas.core.calendar.event.CalendarEventOccurrence.getLastStartDateFrom;
+import static org.silverpeas.core.calendar.CalendarEventOccurrence.getLastStartDateFrom;
 
 /**
- * This class represents the reference data of an occurrence of an event.
+ * This class represents the reference to an occurrence of a calendar event.
  * It provides methods which permit to identify an occurrence, to get its period and also to know
  * the time zone of the user or the system.
  * @author Yohann Chastagnier
  */
-public class CalendarEventOccurrenceReferenceData {
+public class CalendarEventOccurrenceReference {
 
   private String occurrenceId;
   private Period period;
@@ -45,7 +45,7 @@ public class CalendarEventOccurrenceReferenceData {
    * Hidden constructor.
    * @param occurrenceId the identifier of a {@link CalendarEventOccurrence}.
    */
-  private CalendarEventOccurrenceReferenceData(final String occurrenceId) {
+  private CalendarEventOccurrenceReference(final String occurrenceId) {
     this.occurrenceId = occurrenceId;
   }
 
@@ -54,8 +54,8 @@ public class CalendarEventOccurrenceReferenceData {
    * @param occurrenceId identifier of an event occurrence.
    * @return the initialized instance.
    */
-  public static CalendarEventOccurrenceReferenceData fromOccurrenceId(final String occurrenceId) {
-    return new CalendarEventOccurrenceReferenceData(occurrenceId);
+  public static CalendarEventOccurrenceReference fromOccurrenceId(final String occurrenceId) {
+    return new CalendarEventOccurrenceReference(occurrenceId);
   }
 
   /**
@@ -63,7 +63,7 @@ public class CalendarEventOccurrenceReferenceData {
    * @param period a period.
    * @return itself.
    */
-  public CalendarEventOccurrenceReferenceData withPeriod(Period period) {
+  public CalendarEventOccurrenceReference withPeriod(Period period) {
     this.period = period;
     return this;
   }
@@ -86,11 +86,11 @@ public class CalendarEventOccurrenceReferenceData {
   }
 
   /**
-   * Indicates if the given occurrence concerns the one specified by the data of the instance.
+   * Indicates if this reference is about the specified occurrence.
    * @param occurrence the occurrence to verify.
-   * @return true if the given occurrence concerns this data, false otherwise.
+   * @return true if the given occurrence is referred by this reference, false otherwise.
    */
-  public boolean concerns(final CalendarEventOccurrence occurrence) {
+  public boolean refers(final CalendarEventOccurrence occurrence) {
     return occurrenceId.equals(occurrence.getId());
   }
 }

@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.base.WebEntity;
 
@@ -46,8 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatDateWithOffset;
-import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatTitle;
+import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
+import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**

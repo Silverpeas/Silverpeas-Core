@@ -21,18 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event;
+package org.silverpeas.core.calendar;
 
-import org.mockito.Mockito;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

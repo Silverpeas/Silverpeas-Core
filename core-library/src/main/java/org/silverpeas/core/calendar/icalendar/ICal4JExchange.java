@@ -47,10 +47,10 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.event.Attendee.ParticipationStatus;
-import org.silverpeas.core.calendar.event.Attendee.PresenceStatus;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.InternalAttendee;
+import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
+import org.silverpeas.core.calendar.Attendee.PresenceStatus;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.calendar.ical4j.Html;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
@@ -85,8 +85,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.calendar.event.Attendee.ParticipationStatus.ACCEPTED;
-import static org.silverpeas.core.calendar.event.CalendarEventUtil.formatTitle;
+import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
+import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -195,7 +195,7 @@ public class ICal4JExchange implements ICalendarExchange {
             iCalEvent.getProperties().add(new Categories(categoryList));
           }
           // Add attendees
-          Map<OffsetDateTime, List<Pair<org.silverpeas.core.calendar.event.Attendee,
+          Map<OffsetDateTime, List<Pair<org.silverpeas.core.calendar.Attendee,
               ParticipationStatus>>>
               participationRecurrence = new HashMap<>();
           if (event.getAttendees().isEmpty()) {
@@ -204,7 +204,7 @@ public class ICal4JExchange implements ICalendarExchange {
             iCalEvent.getProperties().add(convertOrganizer(event.getCreator()));
             final Mutable<Status> mutableStatus = Mutable.of(Status.VEVENT_CONFIRMED);
             event.getAttendees().stream()
-                .sorted(Comparator.comparing(org.silverpeas.core.calendar.event.Attendee::getId))
+                .sorted(Comparator.comparing(org.silverpeas.core.calendar.Attendee::getId))
                 .forEach(attendee -> {
                   iCalEvent.getProperties().add(convertAttendee(attendee));
 
@@ -220,15 +220,15 @@ public class ICal4JExchange implements ICalendarExchange {
                         mutableStatus.set(Status.VEVENT_TENTATIVE);
                       }
                       participationRecurrence.computeIfAbsent(date, dateTime -> {
-                        List<Pair<org.silverpeas.core.calendar.event.Attendee, ParticipationStatus>>
+                        List<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
                             attSts = new ArrayList<>();
                         event.getAttendees().stream().sorted(Comparator
-                            .comparing(org.silverpeas.core.calendar.event.Attendee::getId))
+                            .comparing(org.silverpeas.core.calendar.Attendee::getId))
                             .forEach(a -> attSts.add(Pair.of(a, a.getParticipationStatus())));
                         return attSts;
                       });
                       participationRecurrence.computeIfPresent(date, (dateTime, pairs) -> {
-                        ListIterator<Pair<org.silverpeas.core.calendar.event.Attendee, ParticipationStatus>>
+                        ListIterator<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
                             it = pairs.listIterator();
                         while (it.hasNext()) {
                           if (it.next().getFirst().equals(attendee)) {
@@ -321,7 +321,7 @@ public class ICal4JExchange implements ICalendarExchange {
    * @param attendee a silverpeas attendee.
    * @return the corresponding ICal4J attendee.
    */
-  private Attendee convertAttendee(final org.silverpeas.core.calendar.event.Attendee attendee) {
+  private Attendee convertAttendee(final org.silverpeas.core.calendar.Attendee attendee) {
     return convertAttendee(attendee, attendee.getParticipationStatus());
   }
 
@@ -331,7 +331,7 @@ public class ICal4JExchange implements ICalendarExchange {
    * @param participationStatus the participation status to set
    * @return the corresponding ICal4J attendee.
    */
-  private Attendee convertAttendee(final org.silverpeas.core.calendar.event.Attendee attendee,
+  private Attendee convertAttendee(final org.silverpeas.core.calendar.Attendee attendee,
       final ParticipationStatus participationStatus) {
     final Attendee iCalEventAttendee;
     try {

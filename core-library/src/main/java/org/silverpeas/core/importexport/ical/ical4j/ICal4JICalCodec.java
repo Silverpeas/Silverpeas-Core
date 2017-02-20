@@ -26,19 +26,16 @@ package org.silverpeas.core.importexport.ical.ical4j;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
-import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
-import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.Html;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
@@ -52,12 +49,9 @@ import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * An iCal encoder/decoder by using the iCal4J library.
@@ -156,7 +150,7 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }
       // Add attendees
-      for (org.silverpeas.core.calendar.event.Attendee attendee : event.getAttendees()) {
+      for (org.silverpeas.core.calendar.Attendee attendee : event.getAttendees()) {
         try {
           iCalEvent.getProperties().add(new Attendee(attendee.getId()));
         } catch (URISyntaxException ex) {

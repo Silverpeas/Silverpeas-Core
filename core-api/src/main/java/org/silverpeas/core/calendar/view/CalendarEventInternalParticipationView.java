@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.view;
+package org.silverpeas.core.calendar.view;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.event.InternalAttendee;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.date.Period;
 
 import java.util.Collection;
@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.silverpeas.core.calendar.event.Attendee.ParticipationStatus.DECLINED;
-import static org.silverpeas.core.calendar.event.Attendee.PresenceStatus.REQUIRED;
+import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.DECLINED;
+import static org.silverpeas.core.calendar.Attendee.PresenceStatus.REQUIRED;
 
 /**
  * A view in which the occurrences of calendar events are grouped by their participants.

@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.event.notification;
+package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarComponent;
-import org.silverpeas.core.calendar.event.ExternalAttendee;
-import org.silverpeas.core.calendar.event.InternalAttendee;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarComponent;
+import org.silverpeas.core.calendar.ExternalAttendee;
+import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
