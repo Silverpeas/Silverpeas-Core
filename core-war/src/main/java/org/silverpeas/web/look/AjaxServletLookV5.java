@@ -23,40 +23,40 @@
  */
 package org.silverpeas.web.look;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
-import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.look.SilverpeasLook;
-import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.SearchAxis;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.PersonalSpaceController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.SearchAxis;
+import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.look.SilverpeasLook;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.web.jobstartpage.JobStartPagePeasSettings;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -66,7 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AjaxServletLookV5 extends HttpServlet {
+public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
 

@@ -20,13 +20,6 @@
  */
 package org.silverpeas.web.portlets.portal;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.portlets.portal.PortletWindowData;
-import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.PortletType;
@@ -40,17 +33,24 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.portlets.portal.PortletWindowData;
+import org.silverpeas.core.web.portlets.portal.PortletWindowDataImpl;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -65,7 +65,7 @@ import java.util.logging.Logger;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
-public class SPDesktopServlet extends HttpServlet {
+public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -3241648887903159985L;
   private ServletContext context;
@@ -87,7 +87,7 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   @Override
-  protected void service(HttpServletRequest request, HttpServletResponse response)
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     String spaceHomePage = null;
@@ -575,15 +575,6 @@ public class SPDesktopServlet extends HttpServlet {
     return prefixSpaceId(spaceId);
   }
 
-  private MainSessionController getMainSessionController(final HttpServletRequest request) {
-    HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-
-    return m_MainSessionCtrl;
-  }
-
   private String getDefaultSpaceHomepageURL(final HttpServletRequest request) {
     HttpSession session = request.getSession();
     GraphicElementFactory gef =
@@ -758,5 +749,41 @@ public class SPDesktopServlet extends HttpServlet {
 
     session.removeAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS);
     session.setAttribute(DesktopConstants.AVAILABLE_PORTLET_WINDOWS, listPortlet);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doHead(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doPut(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doDelete(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doOptions(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
+  }
+
+  @Override
+  protected void doTrace(final HttpServletRequest req, final HttpServletResponse resp)
+      throws ServletException, IOException {
+    doPost(req, resp);
   }
 }
