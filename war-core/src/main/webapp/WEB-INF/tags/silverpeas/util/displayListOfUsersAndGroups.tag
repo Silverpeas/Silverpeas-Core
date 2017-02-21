@@ -30,11 +30,17 @@
 <%@ taglib prefix="plugins" tagdir="/WEB-INF/tags/silverpeas/plugins" %>
 
 <%-- Creator --%>
-<%@ attribute name="users" required="false" type="java.util.List"
+<%@ attribute name="users" required="false" type="java.util.Collection"
               description="The list of users to display" %>
 
-<%@ attribute name="groups" required="false" type="java.util.List"
+<%@ attribute name="userIds" required="false" type="java.util.Collection"
+              description="The list of userIds to display" %>
+
+<%@ attribute name="groups" required="false" type="java.util.Collection"
               description="The list of groups to display" %>
+
+<%@ attribute name="groupIds" required="false" type="java.util.Collection"
+              description="The list of groupIds to display" %>
 
 <%@ attribute name="label" required="false" type="java.lang.String"
               description="Label to use as fieldset legend" %>
@@ -85,7 +91,7 @@
 <c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 <view:includePlugin name="listOfUsersAndGroups"/>
 
-<c:set var="hideEmptyList" value="${hideEmptyList && empty groups && empty users}"/>
+<c:set var="hideEmptyList" value="${hideEmptyList && empty groups && empty users && empty groupIds && empty userIds}"/>
 <div>
   <c:choose>
     <c:when test="${hideEmptyList}">
@@ -109,12 +115,20 @@
 <c:if test="${not hideEmptyList}">
 <script type="text/javascript">
   whenSilverpeasReady(function() {
+    var userIds = [<c:forEach items="${users}" var="user" varStatus="status"><c:if test="${not status.first}">, </c:if>${user.id}</c:forEach>];
+    if (userIds.length == 0) {
+      userIds = [<c:forEach items="${userIds}" var="userId" varStatus="status"><c:if test="${not status.first}">, </c:if>${userId}</c:forEach>];
+    }
+    var groupIds = [<c:forEach items="${groups}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>${group.id}</c:forEach>];
+    if (groupIds.length == 0) {
+      groupIds = [<c:forEach items="${groupIds}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>${groupId}</c:forEach>];
+    }
     new ListOfUsersAndGroups({
       userPanelId : '${id}',
       currentUserId : ${currentUserId},
       rootContainerId : "root-profile-list-${id}",
-      initialUserIds : [<c:forEach items="${users}" var="user" varStatus="status"><c:if test="${not status.first}">, </c:if>${user.id}</c:forEach>],
-      initialGroupIds : [<c:forEach items="${groups}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>${group.id}</c:forEach>],
+      initialUserIds : userIds,
+      initialGroupIds : groupIds,
       userPanelCallback : '${updateCallback}',
       jsSaveCallback : ${empty jsSaveCallback ? false : silfn:escapeJs(jsSaveCallback)},
       formSaveSelector : '${empty formSaveSelector ? '' : silfn:escapeJs(formSaveSelector)}',

@@ -29,10 +29,11 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.beans.admin.SpaceProfile;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -58,6 +59,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
@@ -848,27 +850,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   public List<UserDetail> getSpaceAdmins(String spaceId) {
     List<UserDetail> admins = new ArrayList<UserDetail>();
-    SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
-    List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-    profiles.addAll(spaceInst.getInheritedProfiles());
-    profiles.addAll(spaceInst.getProfiles());
-
-    for (SpaceProfileInst profile : profiles) {
-      SilverpeasRole role = SilverpeasRole.from(profile.getName());
-      if (role != null && role.equals(SilverpeasRole.Manager)) {
-        // Users
-        for (String userId : profile.getAllUsers()) {
-          admins.add(UserDetail.getById(userId));
-        }
-
-        // Groups
-        for (String groupId : profile.getAllGroups()) {
-          UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
-          for (UserDetail user : users) {
-            admins.add(user);
-          }
-        }
+    try {
+      SpaceProfile spaceProfile =
+          getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
+      Set<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
+      for (String userId : userIds) {
+        admins.add(UserDetail.getById(userId));
       }
+    } catch (AdminException e) {
+      e.printStackTrace();
     }
     return admins;
   }

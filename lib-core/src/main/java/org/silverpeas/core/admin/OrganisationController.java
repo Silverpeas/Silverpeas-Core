@@ -1,6 +1,7 @@
 package org.silverpeas.core.admin;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;
@@ -454,4 +455,6 @@ public interface OrganisationController extends java.io.Serializable {
    * @return a list of component instance identifiers.
    */
   List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria);
+
+  SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException;
 }

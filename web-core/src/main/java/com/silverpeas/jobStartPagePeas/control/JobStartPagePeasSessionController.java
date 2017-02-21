@@ -36,6 +36,8 @@ import java.util.Set;
 
 import com.silverpeas.admin.components.*;
 import com.silverpeas.jobStartPagePeas.AllComponentParameters;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
@@ -75,20 +77,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.ComponentSelection;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.Recover;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceSelection;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -808,77 +796,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return name;
   }
 
-  // arrayList de Group
-  public List<Group> getAllCurrentGroupSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
-    return getGroupsFromSpaceProfile(m_SpaceProfileInst);
-  }
-
-  // List de userDetail
-  public List<UserDetail> getAllCurrentUserSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
-    return getUsersFromSpaceProfile(m_SpaceProfileInst);
-  }
-
-  private List<UserDetail> getUsersFromSpaceProfile(SpaceProfileInst profile) {
-    List<UserDetail> res = new ArrayList<UserDetail>();
-    if (profile != null) {
-      List<String> alUserIds = profile.getAllUsers();
-      for (String alUserId : alUserIds) {
-        UserDetail userDetail = adminController.getUserDetail(alUserId);
-        if (!res.contains(userDetail)) {
-          res.add(userDetail);
-        }
-      }
-    }
-    return res;
-  }
-
-  private List<Group> getGroupsFromSpaceProfile(SpaceProfileInst profile) {
-    List<Group> res = new ArrayList<Group>();
-    if (profile != null) {
-      List<String> groupIds = profile.getAllGroups();
-      for (String groupId : groupIds) {
-        Group group = adminController.getGroupById(groupId);
-        if (!res.contains(group)) {
-          res.add(group);
-        }
-      }
-    }
-    return res;
-  }
-
-  public List<UserDetail> getUsersManagerOfParentSpace() {
-    List<UserDetail> res = new ArrayList<UserDetail>();
-    List<SpaceInst> path = getCurrentSpacePath(true);
-    for (SpaceInst space : path) {
-      // get managers of each parent space
-      res.addAll(getUsersFromSpaceProfile(space.getSpaceProfileInst("Manager")));
-    }
-    return res;
-  }
-
-  public List<Group> getGroupsManagerOfParentSpace() {
-    List<Group> res = new ArrayList<Group>();
-    List<SpaceInst> path = getCurrentSpacePath(true);
-    for (SpaceInst space : path) {
-      // get managers of each parent space
-      res.addAll(getGroupsFromSpaceProfile(space.getSpaceProfileInst("Manager")));
-    }
-    return res;
-  }
-
-  private List<SpaceInst> getCurrentSpacePath(boolean excludeSpace) {
-    List<SpaceInst> path = getOrganisationController().getSpacePath(getSpaceInstById().getId());
-    if (!excludeSpace) {
-      return path;
-    }
-    if (path.size() >= 2) {
-      // ignore current space
-      path.remove(path.size() - 1);
-      return path;
-    }
-    return new ArrayList<SpaceInst>();
+  public SpaceProfile getCurrentSpaceProfile(String role) throws AdminException {
+    return getOrganisationController()
+        .getSpaceProfile(getManagedSpaceId(), SilverpeasRole.from(role));
   }
 
   // user panel de selection de n groupes et n users
