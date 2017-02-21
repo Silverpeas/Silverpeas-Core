@@ -24,6 +24,7 @@
 package org.silverpeas.admin.mock;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.util.ListSlice;
 
@@ -462,5 +463,11 @@ public class OrganizationControllerMockWrapper extends DefaultOrganizationContro
   @Override
   public boolean isToolAvailable(String toolId) {
     return mock.isToolAvailable(toolId);
+  }
+
+  @Override
+  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
+      throws AdminException {
+    return mock.getSpaceProfile(spaceId, role);
   }
 }
