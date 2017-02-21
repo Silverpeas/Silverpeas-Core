@@ -811,7 +811,7 @@ public class NodeDAO {
         "fatherId = " + nd.getFatherPK().getId() + ", nbBrothers = "
         + nbBrothers);
 
-    int order = nbBrothers + 1;
+    nd.setOrder(nbBrothers + 1);
 
     try {
       if (nd.isUseId()) {
@@ -843,7 +843,7 @@ public class NodeDAO {
       prepStmt.setString(10, status);
       prepStmt.setString(11, nd.getNodePK().getComponentName());
       prepStmt.setString(12, type);
-      prepStmt.setInt(13, order);
+      prepStmt.setInt(13, nd.getOrder());
       prepStmt.setString(14, language);
       prepStmt.setInt(15, nd.getRightsDependsOn());
       prepStmt.executeUpdate();
