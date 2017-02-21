@@ -2,16 +2,20 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Created by Nicolas on 15/02/2017.
+ * Getting user identifiers and group identifiers of behind a Silverpeas profiles linked to a
+ * space.
+ * @author Nicolas Eysseric
  */
 public class SpaceProfile {
 
   private SpaceProfileInst profile;
-  private List<String> inheritedUserIds = new ArrayList<String>();
-  private List<String> inheritedGroupIds = new ArrayList<String>();
+  private Set<String> inheritedUserIds = new HashSet<String>();
+  private Set<String> inheritedGroupIds = new HashSet<String>();
 
   public void setProfile(SpaceProfileInst profile) {
     this.profile = profile;
@@ -19,40 +23,40 @@ public class SpaceProfile {
 
   public List<String> getGroupIds() {
     if (profile == null) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     return profile.getAllGroups();
   }
 
   public List<String> getUserIds() {
     if (profile == null) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     return profile.getAllUsers();
   }
 
-  public List<String> getInheritedGroupIds() {
+  public Set<String> getInheritedGroupIds() {
     return inheritedGroupIds;
   }
 
-  public List<String> getInheritedUserIds() {
+  public Set<String> getInheritedUserIds() {
     return inheritedUserIds;
   }
 
-  public List<String> getAllUserIds() {
-    List<String> ids = getInheritedUserIds();
+  public Set<String> getAllUserIds() {
+    Set<String> ids = getInheritedUserIds();
     ids.addAll(getUserIds());
     return ids;
   }
 
-  public List<String> getAllGroupIds() {
-    List<String> ids = getInheritedGroupIds();
+  public Set<String> getAllGroupIds() {
+    Set<String> ids = getInheritedGroupIds();
     ids.addAll(getGroupIds());
     return ids;
   }
 
-  public List<String> getAllUserIdsIncludingAllGroups() {
-    List<String> ids = getInheritedUserIds();
+  public Set<String> getAllUserIdsIncludingAllGroups() {
+    Set<String> ids = getInheritedUserIds();
     for (String groupId : inheritedGroupIds) {
       ids.addAll(getAllUserIdsOfGroup(groupId));
     }
@@ -65,6 +69,7 @@ public class SpaceProfile {
     return ids;
   }
 
+  @SuppressWarnings("unchecked")
   private List<String> getAllUserIdsOfGroup(String groupId) {
     List<String> userIds = new ArrayList<String>();
     Group group = Group.getById(groupId);

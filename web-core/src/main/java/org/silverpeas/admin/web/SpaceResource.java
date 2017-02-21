@@ -170,12 +170,15 @@ public class SpaceResource extends AbstractAdminResource {
             result.put(role, roleEntity);
           }
 
-          List<String> userIds = profile.getAllUsers();
-          List<String> groupIds = profile.getAllGroups();
+          final List<String> userIds;
+          final List<String> groupIds;
           if (role == SilverpeasRole.Manager) {
             SpaceProfile admins = getOrganisationController().getSpaceProfile(spaceId, role);
-            userIds = admins.getAllUserIds();
-            groupIds = admins.getAllGroupIds();
+            userIds = new ArrayList<String>(admins.getAllUserIds());
+            groupIds = new ArrayList<String>(admins.getAllGroupIds());
+          } else {
+            userIds = profile.getAllUsers();
+            groupIds = profile.getAllGroups();
           }
 
           // Users

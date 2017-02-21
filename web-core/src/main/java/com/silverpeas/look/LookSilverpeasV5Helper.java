@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
@@ -852,7 +853,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     try {
       SpaceProfile spaceProfile =
           getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
-      List<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
+      Set<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
       for (String userId : userIds) {
         admins.add(UserDetail.getById(userId));
       }

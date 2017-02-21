@@ -30,16 +30,16 @@
 <%@ taglib prefix="plugins" tagdir="/WEB-INF/tags/silverpeas/plugins" %>
 
 <%-- Creator --%>
-<%@ attribute name="users" required="false" type="java.util.List"
+<%@ attribute name="users" required="false" type="java.util.Collection"
               description="The list of users to display" %>
 
-<%@ attribute name="userIds" required="false" type="java.util.List"
+<%@ attribute name="userIds" required="false" type="java.util.Collection"
               description="The list of userIds to display" %>
 
-<%@ attribute name="groups" required="false" type="java.util.List"
+<%@ attribute name="groups" required="false" type="java.util.Collection"
               description="The list of groups to display" %>
 
-<%@ attribute name="groupIds" required="false" type="java.util.List"
+<%@ attribute name="groupIds" required="false" type="java.util.Collection"
               description="The list of groupIds to display" %>
 
 <%@ attribute name="label" required="false" type="java.lang.String"

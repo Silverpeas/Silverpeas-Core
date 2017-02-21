@@ -193,7 +193,7 @@ out.println(window.printBefore());
 <br/>
 <view:areaOfOperationOfCreation/>
 <%
-  ArrayPane arrayPane = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
+  ArrayPane arrayPane = gef.getArrayPane("_dc_groupe", "domainContent.jsp", request, session);
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
   arrayPane.setTitle(resource.getString("JDP.groups") + " (" +  subGroups.length + ")");
 
@@ -229,7 +229,7 @@ out.println(window.printBefore());
 
 <%
   if (!mixedDomain) {
-	  ArrayPane arrayPaneUser = gef.getArrayPane("users", "domainContent.jsp", request, session);
+	  ArrayPane arrayPaneUser = gef.getArrayPane("_dc_users", "domainContent.jsp", request, session);
 
 	  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
 	  arrayPaneUser.setTitle(resource.getString("GML.users") + " (" +  subUsers.size() + ")");
