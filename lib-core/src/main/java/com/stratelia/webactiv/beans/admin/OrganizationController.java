@@ -1289,6 +1289,7 @@ public class OrganizationController implements OrganisationController {
     return items;
   }
 
+  @Override
   public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
     return getAdminService().getSpaceProfile(spaceId, role);
   }

@@ -506,7 +506,9 @@ public class OrganizationControllerMockWrapper implements OrganisationController
     return mock.getSearchableComponentsByCriteria(criteria);
   }
 
-  public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
+  @Override
+  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
+      throws AdminException {
     return mock.getSpaceProfile(spaceId, role);
   }
 }
