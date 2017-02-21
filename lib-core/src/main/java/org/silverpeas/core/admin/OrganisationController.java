@@ -456,5 +456,13 @@ public interface OrganisationController extends java.io.Serializable {
    */
   List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria);
 
+  /**
+   * Gets the space profile instance which provides all user and group identifiers through simple
+   * methods.
+   * @param spaceId the identifier of aimed space.
+   * @param role the aimed technical role name
+   * @return the {@link SpaceProfile} instance.
+   * @throws AdminException
+   */
   SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException;
 }
