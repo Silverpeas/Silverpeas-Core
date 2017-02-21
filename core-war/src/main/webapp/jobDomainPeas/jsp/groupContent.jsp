@@ -182,7 +182,7 @@ if (showTabs) {
 <view:areaOfOperationOfCreation/>
 <%
 	if (!grObject.isSynchronized()) {
-		ArrayPane arrayPane = gef.getArrayPane("groupe", "groupContent.jsp", request, session);
+		ArrayPane arrayPane = gef.getArrayPane("_gc_groupe", "groupContent.jsp", request, session);
 		Group[] subGroups = (Group[])request.getAttribute("subGroups");
 
 		arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
@@ -219,7 +219,7 @@ if (showTabs) {
 
 	out.println("<br/>");
 
-  ArrayPane arrayPaneUser = gef.getArrayPane("users", "groupContent.jsp", request, session);
+  ArrayPane arrayPaneUser = gef.getArrayPane("_gc_users", "groupContent.jsp", request, session);
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);

@@ -58,6 +58,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper extends LookHelper {
@@ -839,11 +840,11 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   public List<UserDetail> getSpaceAdmins(String spaceId) {
     List<UserDetail> admins = new ArrayList<UserDetail>();
-    SpaceProfile spaceProfile =
-        getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
-    List<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
-    for (String userId : userIds) {
-      admins.add(UserDetail.getById(userId));
+      SpaceProfile spaceProfile =
+          getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
+      Set<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
+      for (String userId : userIds) {
+        admins.add(UserDetail.getById(userId));
     }
     return admins;
   }
