@@ -400,6 +400,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
     assertThat(event.isOnAllDay(), is(false));
+    assertThat(event.getSequence(), is(0l));
 
     LocalDate eventEndDate = ((OffsetDateTime) event.getEndDate()).toLocalDate();
     event.setPeriod(Period.between(LocalDate.parse("2016-01-12"), eventEndDate));
@@ -407,6 +408,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     event = calendar.event("ID_E_3").get();
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(event.getSequence(), is(1l));
     assertThat(event.isOnAllDay(), is(true));
     assertThat(event.getStartDate(), is(LocalDate.parse("2016-01-12")));
     assertThat(event.getEndDate(), is(eventEndDate));
@@ -482,6 +484,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));
     CalendarEventOccurrence occurrence = occurrences.get(0);
+    assertThat(occurrence.getSequence(), is(0l));
+    assertThat(occurrence.getCalendarEvent().getSequence(), is(0l));
     assertThat(occurrence.getCalendarEvent().isOnAllDay(), is(false));
     assertThat(occurrence.getCalendarEvent().getRecurrence(), nullValue());
     assertThat(occurrence.getStartDate(), is(OffsetDateTime.parse("2016-01-05T08:00:00Z")));
@@ -496,7 +500,10 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     occurrences = calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));
     occurrence = occurrences.get(0);
+    assertThat(occurrence.getSequence(), is(1l));
+
     CalendarEvent updatedEvent = occurrence.getCalendarEvent();
+    assertThat(updatedEvent.getSequence(), is(1l));
     assertThat(updatedEvent.getStartDate(), is(OffsetDateTime.parse("2016-01-05T08:00:00Z")));
     assertThat(updatedEvent.getEndDate(), is(OffsetDateTime.parse("2016-01-05T10:30:00Z")));
     assertThat(updatedEvent, is(event));

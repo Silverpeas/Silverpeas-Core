@@ -377,6 +377,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_5").get();
     Date lastUpdateDate = event.getLastUpdateDate();
+    assertThat(event.getSequence(), is(0l));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, WEEK)));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(8));
 
@@ -385,6 +386,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     event.update();
 
     event = calendar.event("ID_E_5").get();
+    assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, DAY)));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(5));
@@ -398,6 +400,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
             .getEventOccurrences();
     CalendarEventOccurrence occurrence = occurrences.get(0);
     assertThat(occurrences.size(), is(5));
+    assertThat(occurrence.getSequence(), is(0l));
     assertThat(occurrence.getCalendarEvent().getId(), is("ID_E_5"));
     assertThat(occurrence.getCalendarEvent().isOnAllDay(), is(true));
     assertThat(occurrence.getStartDate(), is(LocalDate.parse("2016-01-23")));

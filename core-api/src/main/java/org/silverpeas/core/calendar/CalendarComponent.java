@@ -44,9 +44,13 @@ import java.util.Set;
 /**
  * A calendar component is a set of properties that express a common semantic for all objects in a
  * calendar. Those objects can be an event, a to-do, and so one and they share a common set of
- * properties that are defined in this class. This class is dedicated to be used in a transparent
- * way (by inheritance or by composition) by the more concrete representations of a calendar
- * component (like for example {@link CalendarEvent}).
+ * properties that are defined in this class.
+ *
+ * This class is dedicated to be used into an implementation composition by the more concrete
+ * representations of a calendar component (like for example {@link CalendarEvent}). We recommend
+ * strongly to force the update of the {@link CalendarComponent} instance when a property is
+ * modified in the outer object; this is a requirement for date properties (like the recurrence
+ * rule for a recurrent outer object).
  * @author mmoquillon
  */
 @Entity
@@ -81,6 +85,9 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   @OneToMany(mappedBy = "component", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
       FetchType.EAGER)
   private Set<Attendee> attendees = new HashSet<>();
+
+  @Column(nullable = false)
+  private long sequence = 0l;
 
   /**
    * Constructs an empty calendar component. This method is dedicated to the persistence engine
@@ -235,6 +242,27 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     return this.attendees;
   }
 
+  /**
+   * Gets the revision sequence number of the calendar component within a sequence of revisions.
+   * Any changes to some properties of a calendar component increment this sequence number. This
+   * number is mainly dedicated with the synchronization or syndication mechanism of calendar
+   * components with external calendars. Its meaning comes from the icalendar specification.
+   *
+   * The sequence number will be always incremented when a date property is modified (the period at
+   * which the component occurs in the calendar, the recurrence rule for a recurrent component).
+   * Nevertheless, it can also be incremented with the change of some other properties.
+   *
+   * Actually the sequence number has the same meaning than the version number
+   * ({@link CalendarComponent#getVersion()}) minus the sequence number can to be not incremented
+   * with the change of some properties. This means than the version number matches always the
+   * number of updates of the calendar component whereas the sequence number matches only a
+   * subset of update of the calendar component.
+   * @return the revision number of this calendar component;
+   */
+  public long getSequence() {
+    return this.sequence;
+  }
+
   @Override
   public CalendarComponent clone() {
     CalendarComponent clone = super.clone();
@@ -247,4 +275,9 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     return clone;
   }
 
+  @Override
+  protected void performBeforeUpdate() {
+    this.sequence += 1l;
+    super.performBeforeUpdate();
+  }
 }

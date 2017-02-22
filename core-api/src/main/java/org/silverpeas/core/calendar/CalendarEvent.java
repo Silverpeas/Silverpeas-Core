@@ -439,6 +439,18 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   /**
+   * Gets the revision sequence number of this calendar event within a sequence of revisions.
+   * Any changes to some properties of a calendar event increment this sequence number. This
+   * number is mainly dedicated with the synchronization or syndication mechanism of calendar
+   * events with external calendars. Its meaning comes from the icalendar specification.
+   * @return the sequence number of this event.
+   * @see CalendarComponent#getSequence()
+   */
+  public long getSequence() {
+    return this.component.getSequence();
+  }
+
+  /**
    * Gets the location where the event occurs. It can be an address, a designation or a GPS
    * coordinates.
    * @return the event's location.

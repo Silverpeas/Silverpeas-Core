@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Components (
   location       VARCHAR(255)  NULL,
   attributes     VARCHAR(40)   NULL,
   priority       INT           NOT NULL,
-  sequence       INT           NOT NULL DEFAULT 0,
+  sequence       INT8          NOT NULL DEFAULT 0,
   createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate TIMESTAMP     NOT NULL,

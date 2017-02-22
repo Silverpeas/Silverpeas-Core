@@ -327,4 +327,15 @@ public class CalendarEventOccurrence implements Serializable {
     return getCalendarEvent().isOnAllDay();
   }
 
+  /**
+   * Gets the revision sequence number of this event occurrence within a sequence of revisions.
+   * Any changes to some properties of this event occurrence increment this sequence number. This
+   * number is mainly dedicated with the synchronization or syndication mechanism of event instances
+   * with external calendars. Its meaning comes from the icalendar specification.
+   * @return the sequence number of this event occurrence.
+   * @see CalendarComponent#getSequence()
+   */
+  public long getSequence() {
+    return (this.component.isPersisted() ? this.component.getSequence() : this.event.getSequence());
+  }
 }
