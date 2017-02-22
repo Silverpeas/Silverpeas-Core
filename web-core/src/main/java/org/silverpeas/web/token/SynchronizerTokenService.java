@@ -85,7 +85,8 @@ public class SynchronizerTokenService {
    */
   public void setUpSessionTokens(SessionInfo session) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
-      UserDetail user = session.getUserDetail();
+      UserDetail user = session.getUserDetail() != null ? session.getUserDetail() :
+          UserDetail.getCurrentRequester();
       Token token = session.getAttribute(SESSION_TOKEN_KEY);
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       if (token != null) {
