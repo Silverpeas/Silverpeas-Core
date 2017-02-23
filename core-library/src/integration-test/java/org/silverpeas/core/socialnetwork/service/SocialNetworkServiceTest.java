@@ -8,31 +8,12 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.DefaultUserProvider;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.model.SearchCriteria;
-import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
-import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.socialnetwork.mock.OrganizationControllerMock;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -67,16 +48,11 @@ public class SocialNetworkServiceTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(SocialNetworkServiceTest.class)
-        .addJpaPersistenceFeatures()
+        .addAdministrationFeatures()
         .addMavenDependencies("org.springframework.social:spring-social-linkedin",
             "org.springframework.social:spring-social-facebook").testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.util.exception");
-          warBuilder.addClasses(OrganizationController.class, Group.class, ComponentInst.class,
-              SpaceInst.class, UserFull.class, ComponentInstLight.class, SpaceInstLight.class,
-              UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, ProfileInst.class,
-              ObjectType.class, ComponentSearchCriteria.class, SearchCriteria.class, Domain.class,
-              CompoSpace.class, ListSlice.class, WAComponent.class, DefaultUserProvider.class,
-              OrganizationControllerMock.class, OrganizationControllerProvider.class);
+          warBuilder.addClasses(OrganizationControllerMock.class);
           warBuilder.testFocusedOn(
               war -> war.addPackages(true, "org.silverpeas.core.socialnetwork.service")
                   .addPackages(true, "org.silverpeas.core.socialnetwork.qualifiers")

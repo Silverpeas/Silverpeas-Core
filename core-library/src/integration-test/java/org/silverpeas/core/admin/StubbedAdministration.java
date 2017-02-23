@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.RightAssignationContext;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -45,6 +46,7 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -874,6 +876,12 @@ public class StubbedAdministration implements Administration {
   public String[] getUserManageableSubSpaceIds(final String sUserId, final String sParentSpaceId)
       throws AdminException {
     return new String[0];
+  }
+
+  @Override
+  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
+      throws AdminException {
+    return null;
   }
 
   @Override

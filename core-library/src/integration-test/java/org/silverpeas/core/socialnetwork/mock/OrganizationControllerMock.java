@@ -31,29 +31,35 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
-import javax.jws.soap.SOAPBinding;
 import java.util.List;
 import java.util.Map;
 
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier
  */
+@Alternative
+@Priority(APPLICATION + 10)
 @Named("organizationController")
 public class OrganizationControllerMock implements OrganizationController {
   private static final long serialVersionUID = 1L;
@@ -505,6 +511,11 @@ public class OrganizationControllerMock implements OrganizationController {
 
   @Override
   public List<String> getSearchableComponentsByCriteria(final ComponentSearchCriteria criteria) {
+    return null;
+  }
+
+  @Override
+  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role) {
     return null;
   }
 

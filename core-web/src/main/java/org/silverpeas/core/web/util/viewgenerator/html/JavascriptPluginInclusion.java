@@ -490,7 +490,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYUI_JS));
     xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYJSON_JS));
-    xhtml.addElement(script(jqueryPath + GraphicElementFactory.I18N_JS));
+    xhtml.addElement(script(javascriptPath + GraphicElementFactory.I18N_JS));
     return xhtml;
   }
 

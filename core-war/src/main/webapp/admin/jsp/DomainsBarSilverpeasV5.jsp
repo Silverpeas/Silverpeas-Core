@@ -343,8 +343,8 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:login();", false);
                 %>
                     <table border="0" cellpadding="0" cellspacing="2">
-                        <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><%@ include file="../../inputLogin.jsp" %></td></tr>
-                        <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><%@ include file="inputPasswordSilverpeasV5.jsp" %></td></tr>
+                        <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><input type="text" name="Login" size="14" maxlength="50"></td></tr>
+                        <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><input type="password" name="Password" size="14" maxlength="32" onkeydown="checkSubmitToLogin(event)"></td></tr>
                         <c:choose>
 				<c:when test="${!pageScope.multipleDomains}">
 				<tr><td colspan="2"><input type="hidden" name="DomainId" value="<%=listDomains.get(0).getId()%>"/></td></tr>
