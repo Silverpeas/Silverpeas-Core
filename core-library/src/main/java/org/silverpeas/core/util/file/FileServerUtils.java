@@ -234,11 +234,11 @@ public class FileServerUtils {
     return url;
   }
 
-  public static String getUrl(String logicalName, String physicalName, String mimeType) {
+  public static String getUrl(String logicalName, String physicalName, String componentId) {
     StringBuilder url = new StringBuilder();
     String newLogicalName = URLEncoder.encodePathSegment(logicalName);
-    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-        "?SourceFile=").append(physicalName).append("&TypeUpload=link&MimeType=").append(mimeType);
+    url.append(getApplicationContext()).append("/SilverCrawlerFileServer/").append(newLogicalName).append(
+        "?SourceFile=").append(physicalName).append("&TypeUpload=link&ComponentId=").append(componentId);
     return url.toString();
   }
 

@@ -75,7 +75,6 @@ import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -932,8 +931,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else if (resultType.equals("LinkedFile")) {
           // open the linked file inside a popup window
           downloadLink =
-              FileServerUtils.getUrl(result.getName(), result.getId(),
-              FileUtil.getMimeType(result.getName()));
+              FileServerUtils.getUrl(result.getName(), result.getId(), componentId);
           // window opener is reloaded on the main page of the component
           underLink = URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId)
               + "Main";
