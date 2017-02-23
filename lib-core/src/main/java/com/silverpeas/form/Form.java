@@ -102,6 +102,12 @@ public interface Form {
    */
   public String getTitle();
 
+  /**
+   * Gets the template of all fields that make this form
+   * @return a List of FieldTemplate
+   */
+  public List<FieldTemplate> getFieldTemplates();
+
   public String toString(PagesContext pagesContext, DataRecord record);
 
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);

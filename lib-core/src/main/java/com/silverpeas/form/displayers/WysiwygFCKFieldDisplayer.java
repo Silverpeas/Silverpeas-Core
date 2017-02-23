@@ -506,6 +506,15 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
   }
 
+  public String duplicateContent(Field field, FieldTemplate template, ForeignPK from, ForeignPK to,
+      String language) throws FormException {
+    String code = field.getStringValue();
+    code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), code, language);
+    String fileName = setContentIntoFile(to.getInstanceId(), to.getId(), template.
+        getFieldName(), code, language);
+    return dbKey + fileName;
+  }
+
   public void duplicateContent(Field field, FieldTemplate template,
       PagesContext pageContext, String newObjectId) throws FormException {
 
