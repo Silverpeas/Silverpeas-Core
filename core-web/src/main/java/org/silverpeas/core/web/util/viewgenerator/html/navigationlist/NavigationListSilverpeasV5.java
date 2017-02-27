@@ -33,6 +33,8 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.navigationlist;
 
+import org.silverpeas.core.util.StringUtil;
+
 import java.util.Collection;
 
 /**
@@ -53,97 +55,53 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
    */
   public String print() {
     StringBuilder result = new StringBuilder(50);
-    String iconsPath = getIconsPath() + "/navigationList/";
     String title = getTitle();
     int nbCol = getNbcol();
     Collection<Item> items = getItems();
-    boolean endRaw = false;
-    int nbTd = 0;
 
-    result.append("<CENTER>");
-    result
-        .append("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" class=tableNavigationList>\n");
-    result.append("<tr>\n");
-    result
-        .append("<td class=\"navigationListTitle\" nowrap align=center height=\"19\">\n");
-    result.append(title);
-    result.append("</td>\n");
-    result.append("</tr>\n");
-    result.append("<tr><td>\n");
-    result
-        .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\">\n");
+    result.append("<div class=\"tableNavigationList\">\n");
+    if(StringUtil.isDefined(title)) {
+      result.append("<div class=\"navigationListTitle\">");
+      result.append(title);
+      result.append("</div>");
+    }
+    result.append("</div>");
 
-    int j = 1;
+    result
+        .append("<ul class=\"navigationList cols").append(nbCol).append("\">\n");
+
 
     for (Item item : items) {
       Collection<Link> links = item.getLinks();
-
-      if (j == 1) {
-        result.append("<tr>\n");
-        result.append("<td width=\"2%\">&nbsp;</td>\n");
-        endRaw = false;
-      }
-      if (j <= nbCol) {
-        result.append("<td valign=\"top\" width=\"").append((98 / nbCol))
-            .append("%\">\n");
-        result
-            .append("\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
-        result.append("\t\t\t\t<tr>\n");
-        result.append("\t\t\t\t\t<td width=\"5\" valign=middle><img src=\"")
-            .append(iconsPath).append("puce.gif\" border=\"0\">&nbsp;</td>\n");
-        result.append("\t\t\t\t\t<td valign=middle>\n");
-        result.append("\t\t\t\t\t<a href=\"").append(item.getURL()).append(
-            "\"><B>").append(item.getLabel()).append("</B></a>");
-        if (item.getNbelem() >= 0) {
-          result.append("<i>(").append(item.getNbelem()).append(")</i>\n");
+        
+        String itemURL = item.getURL();
+        if (itemURL.startsWith("javascript")) {
+          result.append("<li class=\"navigationListItem\" onclick=\"").append(itemURL).append("\">");
+        }else{
+          result.append("<li class=\"navigationListItem\">");
         }
-        if (item.getUniversalLink() != null) {
-          result.append("&nbsp;").append(item.getUniversalLink());
-        }
-        result.append("\t\t\t\t\t</td>\n");
-        result.append("\t\t\t\t</tr>\n");
-        if (item.getInfo() != null) {
-          result.append("\t\t\t\t<tr>\n");
-          result.append("\t\t\t\t\t<td>&nbsp;</td>\n");
-          result.append("\t\t\t\t\t<td>").append(item.getInfo()).append(
-              "</td>\n");
-          result.append("\t\t\t\t</tr>\n");
-        }
-        if (links != null) {
-          result.append("\t\t\t\t<tr>\n");
-          result.append("\t\t\t\t\t<td>&nbsp;</td>\n");
-          result.append("\t\t\t\t\t<td>");
-
-          for (Link link : links) {
-            result.append("\n\t\t<a href=\"").append(link.getURL()).append(
-                "\" class=\"txtnote\">").append(link.getLabel()).append(
-                "</a>&nbsp&nbsp");
+          result.append("<a href=\"").append(itemURL).append("\">").append(item.getLabel());
+            if (item.getNbelem() >= 0) {
+              result.append("(").append(item.getNbelem()).append(")\n");
+            }
+          result.append("</a>");
+          if (item.getUniversalLink() != null) {
+            result.append("&nbsp;").append(item.getUniversalLink());
           }
-          result.append("</td>\n");
-          result.append("\t\t\t\t</tr>\n");
-        }
-        result.append("\t\t\t</table>\n");
-        result.append("\n\t\t</td>");
-        j++;
-      }
-      if (j > nbCol) {
-        result.append("\t</tr>");
-        endRaw = true;
-        j = 1;
-      }
-    }
-    if (!endRaw) {
-      nbTd = nbCol - j + 1;
-      int k = 1;
 
-      while (k <= nbTd) {
-        result.append("<td valign=\"top\">&nbsp;</td>\n");
-        k++;
-      }
-      result.append("</tr>\n");
+          if (item.getInfo() != null) {
+            result.append("<div>").append(item.getInfo()).append("</div>");
+          }
+          if (links != null) {
+
+
+            for (Link link : links) {
+              result.append("<a href=\"").append(link.getURL()).append("\" class=\"txtnote\">").append(link.getLabel()).append("</a>");
+            }
+          }
+        result.append("\n</li>");
     }
-    result.append("</table></td></tr></table>");
-    result.append("</CENTER>");
+    result.append("</ul>");
     return result.toString();
   }
 }
