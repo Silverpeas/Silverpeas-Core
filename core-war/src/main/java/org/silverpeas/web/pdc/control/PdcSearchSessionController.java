@@ -38,7 +38,6 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -259,11 +258,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * plain search methods /
    * ****************************************************************************************************************
    */
-  public void setResults(List<GlobalSilverContent> globalSilverResults) {
-    indexOfFirstResultToDisplay = 0;
-    setLastResults(globalSilverResults);
-  }
-
   public int getIndexOfFirstResultToDisplay() {
     return indexOfFirstResultToDisplay;
   }

@@ -66,7 +66,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   public String getProfile() {
     if (!StringUtil.isDefined(this.currentProfile)) {
-      this.currentProfile = getUserRoleLevel();
+      this.currentProfile = getHighestSilverpeasUserRole().getName();
     }
     return this.currentProfile;
   }

@@ -18,17 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * @author nicolas et didier
- * @version 1.0
- */
 package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.util.ArrayUtil;
 
 /**
- * Built by the main sesion controller the ComponentContext objects store the context of a component
+ * Built by the main session controller the ComponentContext objects store the context of a component
  * instance : space, user, ... Used by the abstract component session controllers.
+ * @author nicolas and didier
  */
 public class ComponentContext {
 
@@ -108,15 +105,15 @@ public class ComponentContext {
     return m_sCurCompoLabel;
   }
 
-  public void setCurrentProfile(String[] asCurrentProfile) {
+  public String[] getCurrentProfile() {
+    return m_asCurProfile;
+  }
+
+  void setCurrentProfile(String[] asCurrentProfile) {
     if (asCurrentProfile != null) {
       m_asCurProfile = asCurrentProfile.clone();
     } else {
       m_asCurProfile = ArrayUtil.EMPTY_STRING_ARRAY;
     }
-  }
-
-  public String[] getCurrentProfile() {
-    return m_asCurProfile;
   }
 }

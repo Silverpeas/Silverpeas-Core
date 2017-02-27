@@ -22,64 +22,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @author nicolas eysseric et didier wenzek
- * @version 1.0
- */
-
 package org.silverpeas.core.web.mvc.controller;
 
+import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * The interface for all component session controllers.
+ * @author nicolas eysseric and didier wenzek
  */
 
 public interface ComponentSessionController {
   /** Return the organizationController */
-  public OrganizationController getOrganisationController();
+  OrganizationController getOrganisationController();
 
   /** Return the user language */
-  public String getLanguage();
+  String getLanguage();
 
   /** Return the UserDetail of the current user */
-  public UserDetail getUserDetail();
+  UserDetail getUserDetail();
 
   /** Return the UserId of the current user */
-  public String getUserId();
+  String getUserId();
 
   /** Return the space label (as known by the user) */
-  public String getSpaceLabel();
+  String getSpaceLabel();
 
   /** Return the space id */
-  public String getSpaceId();
+  String getSpaceId();
 
   /** Return the name of the component (as specified in the xmlComponent) */
-  public String getComponentName();
+  String getComponentName();
 
   /** Return the component label (as known by the user) */
-  public String getComponentLabel();
+  String getComponentLabel();
 
   /** Return the component id */
-  public String getComponentId();
-
-  /** Return the parameters for this component instance */
-  public List getComponentParameters();
+  String getComponentId();
 
   /**
    * Return the parameter value of current component instance from a given parameter name
    */
-  public String getComponentParameterValue(String parameterName);
+  String getComponentParameterValue(String parameterName);
 
   /**
    * Return the parameter value of current component instance from a given centralized parameter
@@ -87,70 +79,59 @@ public interface ComponentSessionController {
    */
   String getComponentParameterValue(ComponentInstanceParameterName parameterName);
 
-  public String[] getUserAvailComponentIds();
+  String[] getUserAvailComponentIds();
 
-  public String[] getUserAvailSpaceIds();
-
-  public String getComponentUrl();
+  String getComponentUrl();
 
   /**
    * Gets the roles the user has on the component.
    * @return a list of user roles.
    */
-  public Collection<SilverpeasRole> getSilverpeasUserRoles();
+  Collection<SilverpeasRole> getSilverpeasUserRoles();
 
   /**
    * Gets the highest role the user has on the component.
    * @return a user role.
    */
-  public SilverpeasRole getHighestSilverpeasUserRole();
+  SilverpeasRole getHighestSilverpeasUserRole();
 
   /** Return the name of the user's roles */
   @Deprecated
-  public String[] getUserRoles();
+  String[] getUserRoles();
 
-  /** Return the higher user's role (admin, publisher or user) */
-  @Deprecated
-  public String getUserRoleLevel();
+  UserPreferences getPersonalization();
 
-  public UserPreferences getPersonalization();
+  LocalizationBundle getMultilang();
 
-  public LocalizationBundle getMultilang();
+  SettingBundle getIcon();
 
-  public SettingBundle getIcon();
-
-  public SettingBundle getSettings();
+  SettingBundle getSettings();
 
   // Maintenance Mode
-  public boolean isAppInMaintenance();
+  boolean isAppInMaintenance();
 
-  public void setAppModeMaintenance(boolean mode);
+  void setAppModeMaintenance(boolean mode);
 
-  public boolean isSpaceInMaintenance(String spaceId);
+  boolean isSpaceInMaintenance(String spaceId);
 
-  public void setSpaceModeMaintenance(String spaceId, boolean mode);
+  void setSpaceModeMaintenance(String spaceId, boolean mode);
 
-  public Collection getClipboardSelectedObjects() throws Exception;
+  Collection getClipboardSelectedObjects() throws Exception;
 
-  public String getClipboardErrorMessage() throws Exception;
+  String getClipboardErrorMessage() throws Exception;
 
-  public Exception getClipboardExceptionError() throws Exception;
+  Exception getClipboardExceptionError() throws Exception;
 
-  public Collection getClipboardObjects() throws Exception;
+  Collection getClipboardObjects() throws Exception;
 
-  public void addClipboardSelection(ClipboardSelection selection) throws Exception;
+  void addClipboardSelection(ClipboardSelection selection) throws Exception;
 
-  public String getClipboardName() throws Exception;
+  void clipboardPasteDone() throws Exception;
 
-  public Integer getClipboardCount() throws Exception;
+  void setClipboardSelectedElement(int index, boolean selected) throws Exception;
 
-  public void clipboardPasteDone() throws Exception;
+  int getClipboardSize() throws Exception;
 
-  public void setClipboardSelectedElement(int index, boolean selected) throws Exception;
+  void removeClipboardElement(int index) throws Exception;
 
-  public int getClipboardSize() throws Exception;
-
-  public void removeClipboardElement(int index) throws Exception;
-
-  public void setClipboardError(String messageId, Exception ex) throws Exception;
 }

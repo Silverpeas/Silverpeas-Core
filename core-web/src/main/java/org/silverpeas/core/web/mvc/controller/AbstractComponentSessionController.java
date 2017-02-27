@@ -25,25 +25,24 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
-import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
@@ -64,7 +63,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   /**
    * The default character encoded supported by Silverpeas.
    */
-  public static final String CHARACTER_ENCODING = "UTF-8";
+  private static final String CHARACTER_ENCODING = "UTF-8";
   protected ComponentContext context = null;
   private MainSessionController controller = null;
   private String rootName = null;
@@ -76,13 +75,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   private SettingBundle settings = null;
   private String settingsFile = null;
 
-  /**
-   * Constructor declaration
-   * @param controller
-   * @param spaceId
-   * @param componentId
-   * @see
-   */
   public AbstractComponentSessionController(MainSessionController controller,
       String spaceId, String componentId) {
     this.controller = controller;
@@ -90,24 +82,11 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     setComponentRootName(URLUtil.getComponentNameFromComponentId(componentId));
   }
 
-  /**
-   * Constructor declaration
-   * @param controller
-   * @param context
-   * @see
-   */
   public AbstractComponentSessionController(MainSessionController controller,
       ComponentContext context) {
     this(controller, context, null);
   }
 
-  /**
-   * Constructor declaration
-   * @param controller
-   * @param context
-   * @param resourceFileName
-   * @see
-   */
   public AbstractComponentSessionController(MainSessionController controller,
       ComponentContext context, String resourceFileName) {
     this.controller = controller;
@@ -121,7 +100,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     this.controller = controller;
     this.context = context;
     setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
-    setMultilangFileName(multilangFileName);
+    setLocalizationBundle(multilangFileName);
     setIconFileName(iconFileName);
   }
 
@@ -131,7 +110,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     this.controller = controller;
     this.context = context;
     setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
-    setMultilangFileName(multilangFileName);
+    setLocalizationBundle(multilangFileName);
     setIconFileName(iconFileName);
     this.settingsFile = settingsFileName;
   }
@@ -141,7 +120,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
     if (message != null && !message.getLocale().getLanguage().equals(
         controller.getFavoriteLanguage())) {
-      setMultilangFileName(messageFile);
+      setLocalizationBundle(messageFile);
     }
     return message;
   }
@@ -162,75 +141,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     return settings;
   }
 
-  /**
-   * Method declaration
-   * @param multilangFileName
-   */
-  public final void setMultilangFileName(String multilangFileName) {
-    messageFile = multilangFileName;
-    if (messageFile != null) {
-      try {
-        messageLanguage = getLanguage();
-        message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
-        // messageLanguage = getLanguage();
-
-      } catch (Exception e) {
-        SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
-            "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile + "|Language="
-            + getLanguage(), e);
-        message = ResourceLocator.getLocalizationBundle(messageFile);
-        messageLanguage = getLanguage();
-      }
-    } else {
-      message = null;
-    }
-  }
-
-  /**
-   * Sets the icon file by its name. The icon file is a file in which is stored the icon that
-   * represents the underlying Silverpeas component this controller works with.
-   * @param iconFileName the name of the icon file.
-   */
-  public final void setIconFileName(String iconFileName) {
-    iconFile = iconFileName;
-    if (iconFile != null) {
-        icon = ResourceLocator.getSettingBundle(iconFile);
-    } else {
-      icon = null;
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param resourceFileName
-   * @see
-   */
-  public final void setResourceFileName(String resourceFileName) {
-
-    messageFile = resourceFileName;
-    if (messageFile != null) {
-      try {
-        messageLanguage = getLanguage();
-        message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
-
-      } catch (Exception e) {
-        SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
-            "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
-            + "|Language=" + getLanguage(), e);
-        message = ResourceLocator.getLocalizationBundle(messageFile);
-        messageLanguage = getLanguage();
-      }
-    } else {
-      message = null;
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param resName
-   * @return
-   * @see
-   */
   public String getString(String resName) {
     String theLanguage = getLanguage();
     if ((theLanguage != null) || (message == null)) {
@@ -244,11 +154,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     return message.getString(resName);
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   @Override
   public OrganizationController getOrganisationController() {
     return OrganizationControllerProvider.getOrganisationController();
@@ -261,18 +166,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   @Override
   public String getLanguage() {
     return controller.getFavoriteLanguage();
-  }
-
-  public String getFavoriteSpace() {
-    return controller.getFavoriteSpace();
-  }
-
-  /**
-   * The utilization of this method is allowed only for PersonalizationSessionController
-   * @param newSpace the new user favorite space.
-   */
-  public void setFavoriteSpaceToMainSessionController(String newSpace) {
-    controller.setFavoriteSpace(newSpace);
   }
 
   /**
@@ -376,15 +269,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   /**
-   * Gets the parameters for the current component instance.
-   * @return a list of current component parameters.
-   */
-  @Override
-  public List<Parameter> getComponentParameters() {
-    return controller.getComponentParameters(getComponentId());
-  }
-
-  /**
    * Gets the value of the specified current component's parameter.
    * @param parameterName the name of the parameter to get.
    * @return the value of the parameter.
@@ -414,27 +298,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   /**
-   * Gets the user's available workspace.
-   * @return an array with all available spaces identifiers.
-   */
-  @Override
-  public String[] getUserAvailSpaceIds() {
-    return controller.getUserAvailSpaceIds();
-  }
-
-  public String[] getUserManageableSpaceIds() {
-    return controller.getUserManageableSpaceIds();
-  }
-
-  public List<String> getUserManageableGroupIds() {
-    return controller.getUserManageableGroupIds();
-  }
-
-  public boolean isGroupManager() {
-    return !getUserManageableGroupIds().isEmpty();
-  }
-
-  /**
    * Gets all of the roles the current user plays in Silverpeas.
    * @return an array with all the user role names.
    */
@@ -442,28 +305,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   @Deprecated
   public String[] getUserRoles() {
     return context.getCurrentProfile();
-  }
-
-  /**
-   * Gets the highest privileged role the current user can play (administrator, publisher or user).
-   * @return the highest privileged role name of the current user.
-   */
-  @Override
-  @Deprecated
-  public String getUserRoleLevel() {
-    String[] profiles = getUserRoles();
-    String flag = SilverpeasRole.user.toString();
-
-    for (String profile : profiles) {
-      // if admin, return it, we won't find a better profile
-      if (SilverpeasRole.admin.isInRole(profile)) {
-        return profile;
-      }
-      if (SilverpeasRole.publisher.isInRole(profile)) {
-        flag = profile;
-      }
-    }
-    return flag;
   }
 
   @SuppressWarnings("unchecked")
@@ -484,7 +325,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   @Override
   public SilverpeasRole getHighestSilverpeasUserRole() {
-    SilverpeasRole highestUserRole = SilverpeasRole.getGreaterFrom(getSilverpeasUserRoles());
+    SilverpeasRole highestUserRole = SilverpeasRole.getGreatestFrom(getSilverpeasUserRoles());
     if (highestUserRole == null) {
       highestUserRole = SilverpeasRole.reader;
     }
@@ -502,10 +343,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   public Selection getSelection() {
     return controller.getSelection();
-  }
-
-  public SubscriptionContext getSubscriptionContext() {
-    return controller.getSubscriptionContext();
   }
 
   public AlertUser getAlertUser() {
@@ -533,18 +370,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     controller.setSpaceModeMaintenance(spaceId, mode);
   }
 
-  public String getServerNameAndPort() {
-    return controller.getServerNameAndPort();
-  }
-
-  public List<GlobalSilverContent> getLastResults() {
-    return controller.getLastResults();
-  }
-
-  public void setLastResults(List<GlobalSilverContent> results) {
-    controller.setLastResults(results);
-  }
-
   public void close() {
   }
 
@@ -553,27 +378,9 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   public String getRSSUrl() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("/rss").append(getComponentRootName()).append('/').append(getComponentId());
-    builder.append("?userId=").append(getUserId()).append("&login=");
-    builder.append(getUrlEncodedParameter(getUserDetail().getLogin()));
-    builder.append("&password=");
-    builder.append(getUrlEncodedParameter(getOrganisationController().getUserFull(
-        getUserId()).getPassword()));
-    return builder.toString();
-  }
-
-  /**
-   * Gets the URL encoded representation of the specified parameter.
-   * @param param the parameter.
-   * @return a URL encoded representation of the parameter.
-   */
-  protected String getUrlEncodedParameter(String param) {
-    try {
-      return URLEncoder.encode(param, CHARACTER_ENCODING);
-    } catch (UnsupportedEncodingException ex) {
-      return param;
-    }
+    return "/rss" + getComponentRootName() + "/" + getComponentId() + "?userId=" + getUserId() +
+        "&login=" + getUrlEncodedParameter(getUserDetail().getLogin()) +
+        "&password=" + getUrlEncodedParameter(UserFull.getById(getUserId()).getPassword());
   }
 
   @Override
@@ -602,16 +409,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   @Override
-  public String getClipboardName() {
-    return controller.getClipboardName();
-  }
-
-  @Override
-  public Integer getClipboardCount() throws ClipboardException {
-    return controller.getCount();
-  }
-
-  @Override
   public void clipboardPasteDone() throws ClipboardException {
     controller.PasteDone();
   }
@@ -631,12 +428,73 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     controller.removeObject(index);
   }
 
-  @Override
-  public void setClipboardError(String messageId, Exception ex) throws ClipboardException {
-    controller.setMessageError(messageId, ex);
+  protected String[] getUserManageableSpaceIds() {
+    return controller.getUserManageableSpaceIds();
+  }
+
+  protected List<String> getUserManageableGroupIds() {
+    return controller.getUserManageableGroupIds();
+  }
+
+  protected boolean isGroupManager() {
+    return !getUserManageableGroupIds().isEmpty();
+  }
+
+  protected SubscriptionContext getSubscriptionContext() {
+    return controller.getSubscriptionContext();
+  }
+
+  /**
+   * Gets the URL encoded representation of the specified parameter.
+   * @param param the parameter.
+   * @return a URL encoded representation of the parameter.
+   */
+  protected String getUrlEncodedParameter(String param) {
+    try {
+      return URLEncoder.encode(param, CHARACTER_ENCODING);
+    } catch (UnsupportedEncodingException ex) {
+      return param;
+    }
   }
 
   protected ComponentAccessController getComponentAccessController() {
     return ServiceProvider.getService(ComponentAccessController.class);
+  }
+
+  private void setResourceFileName(String resourceFileName) {
+    setLocalizationBundle(resourceFileName);
+  }
+
+  private void setLocalizationBundle(String bundleName) {
+    messageFile = bundleName;
+    if (messageFile != null) {
+      try {
+        messageLanguage = getLanguage();
+        message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
+        // messageLanguage = getLanguage();
+
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error("Localization bundle '" + messageFile +
+            "' not found for language " + messageLanguage, e);
+        message = ResourceLocator.getLocalizationBundle(messageFile);
+        messageLanguage = getLanguage();
+      }
+    } else {
+      message = null;
+    }
+  }
+
+  /**
+   * Sets the icon file by its name. The icon file is a file in which is stored the icon that
+   * represents the underlying Silverpeas component this controller works with.
+   * @param iconFileName the name of the icon file.
+   */
+  private void setIconFileName(String iconFileName) {
+    iconFile = iconFileName;
+    if (iconFile != null) {
+      icon = ResourceLocator.getSettingBundle(iconFile);
+    } else {
+      icon = null;
+    }
   }
 }
