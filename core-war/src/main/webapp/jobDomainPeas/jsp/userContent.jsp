@@ -235,6 +235,12 @@ out.println(window.printBefore());
         <viewTags:userPreferredLanguageSelector user="${userInfos}" readOnly="true"/>
       </div>
     </li>
+    <li class="field" id="form-row-user-lastConnection">
+      <label class="txtlibform"><fmt:message key="GML.user.lastConnection"/></label>
+      <div class="champs">
+        <view:formatDateTime value="${userInfos.lastLoginDate}"/>
+      </div>
+    </li>
 	</ul>
 </fieldset>
 
