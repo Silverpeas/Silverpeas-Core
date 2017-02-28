@@ -1140,8 +1140,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else if (resultType.equals("LinkedFile")) {
           // open the linked file inside a popup window
           downloadLink =
-              FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
-              FileUtil.getMimeType(indexEntry.getTitle()));
+              FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(), componentId);
           // window opener is reloaded on the main page of the component
           underLink = URLManager.getApplicationURL() + URLManager.getURL("useless", componentId)
               + "Main";

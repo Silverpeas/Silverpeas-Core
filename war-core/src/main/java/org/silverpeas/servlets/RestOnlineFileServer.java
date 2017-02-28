@@ -44,6 +44,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
@@ -74,9 +75,16 @@ public class RestOnlineFileServer extends AbstractFileSender {
     try {
       SilverpeasFile file = getWantedFile(restRequest);
       if (file != null) {
+        if (file == SilverpeasFile.NO_FILE) {
+          throw new FileNotFoundException();
+        }
         sendFile(res, file);
         return;
       }
+    } catch (FileNotFoundException ex) {
+      res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      res.sendError(res.getStatus());
+      return;
     } catch (IllegalAccessException ex) {
       res.setStatus(HttpServletResponse.SC_FORBIDDEN);
       res.sendError(res.getStatus());
