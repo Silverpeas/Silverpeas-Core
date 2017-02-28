@@ -20,12 +20,15 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.util.file.FileUtil;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,8 +36,8 @@ import java.util.List;
  */
 public class RepositoryIndexer {
 
-  public static final String ADD_ACTION = "add";
-  public static final String REMOVE_ACTION = "remove";
+  private static final String ADD_ACTION = "add";
+  private static final String REMOVE_ACTION = "remove";
   private String spaceId = null;
   private String componentId = null;
   private int count = 0;
@@ -52,66 +55,73 @@ public class RepositoryIndexer {
     return componentId;
   }
 
-  public void pathIndexer(String path, String creationDate, String creatorId, String action) {
-    pathIndexer(new File(path), creationDate, creatorId, action);
+  public void addPath(Path path, String creatorId) {
+    performPath(path, LocalDate.now(), creatorId, ADD_ACTION);
   }
 
-  public void pathIndexer(File path, String creationDate, String creatorId, String action) {
-    if (path.isDirectory()) {
+  public void removePath(Path path, String creatorId) {
+    performPath(path, LocalDate.now(), creatorId, REMOVE_ACTION);
+  }
+
+  private void performPath(Path path, LocalDate creationDate, String creatorId, String action) {
+    if (Files.isDirectory(path)) {
       // index directory
-      indexDirectory(action, creationDate, creatorId, path);
+      indexDirectory(path, creationDate, creatorId, action);
       // index directory's content
       processFileList(path, creationDate, creatorId, action);
+    } else if (Files.exists(path)) {
+      // index file
+      indexFile(path.toFile(), creationDate, creatorId, action);
     }
-
   }
 
   /**
    * Recursive function which covers directories. For each file, the file is indexed.
    */
-  private void processFileList(File dir, String creationDate, String creatorId, String action) {
+  private void processFileList(Path dir, LocalDate creationDate, String creatorId, String action) {
     if (count % 10000 == 0) {
-
+      SilverLogger.getLogger(this).info("# of indexed documents = {0}", count);
     }
 
-    File[] dirs = dir.listFiles(DirectorySPFilter.getInstance());
-    File[] files = dir.listFiles(FileSPFilter.getInstance());
+    File[] dirs = dir.toFile().listFiles(DirectorySPFilter.getInstance());
+    File[] files = dir.toFile().listFiles(FileSPFilter.getInstance());
 
-    List<File> dirList = Arrays.asList(dirs);
-    Collections.sort(dirList, FilenameComparator.comparator);
+    List<File> dirList = Arrays.asList(dirs != null ? dirs : new File[0]);
+    dirList.sort(FilenameComparator.comparator);
 
-    List<File> fileList = Arrays.asList(files);
-    Collections.sort(fileList, FilenameComparator.comparator);
+    List<File> fileList = Arrays.asList(files != null ? files : new File[0]);
+    fileList.sort(FilenameComparator.comparator);
 
     for (File currentFile : fileList) {
-      indexFile(action, creationDate, creatorId, currentFile);
+      indexFile(currentFile, creationDate, creatorId, action);
     }
     for (File currentDir : dirList) {
-      indexDirectory(action, creationDate, creatorId, currentDir);
+      final Path currentDirectoryPath = currentDir.toPath();
+      indexDirectory(currentDirectoryPath, creationDate, creatorId, action);
       // recursive call to get the current object
-      processFileList(currentDir, creationDate, creatorId, action);
+      processFileList(currentDirectoryPath, creationDate, creatorId, action);
     }
   }
 
-  private void indexDirectory(String action, String creationDate, String creatorId, File directory) {
-    String unixDirectoty = FilenameUtils.separatorsToUnix(directory.getPath());
+  private void indexDirectory(Path directory, LocalDate creationDate, String creatorId,
+      String action) {
+    String unixDirectory = FilenameUtils.separatorsToUnix(directory.toString());
     if (ADD_ACTION.equals(action)) {
       // indexer le répertoire
-      FullIndexEntry fullIndexEntry = new FullIndexEntry(getComponentId(), "LinkedDir",
-          unixDirectoty);
-      fullIndexEntry.setTitle(directory.getName());
+      FullIndexEntry fullIndexEntry =
+          new FullIndexEntry(getComponentId(), "LinkedDir", unixDirectory);
+      fullIndexEntry.setTitle(directory.toFile().getName());
       fullIndexEntry.setCreationDate(creationDate);
       fullIndexEntry.setCreationUser(creatorId);
       IndexEngineProxy.addIndexEntry(fullIndexEntry);
       count++;
     } else if (REMOVE_ACTION.equals(action)) {
-      IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "LinkedDir", unixDirectoty);
+      IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "LinkedDir", unixDirectory);
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
   }
 
-  public void indexFile(String action, String creationDate, String creatorId, File file) {
-    // String path = currentPath + separator + fileName;
+  private void indexFile(File file, LocalDate creationDate, String creatorId, String action) {
 
     String unixFilePath = FilenameUtils.separatorsToUnix(file.getPath());
 
@@ -141,7 +151,8 @@ public class RepositoryIndexer {
       }
       IndexEngineProxy.addIndexEntry(fullIndexEntry);
       count++;
-    } else if (REMOVE_ACTION.equals(action)) { // Remove file from index
+    } else if (REMOVE_ACTION.equals(action)) {
+      // Remove file from index
       IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "LinkedFile", unixFilePath);
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }

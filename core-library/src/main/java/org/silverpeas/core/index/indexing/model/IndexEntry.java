@@ -26,6 +26,8 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -286,6 +288,14 @@ public class IndexEntry implements Serializable, Cloneable {
    */
   public void setCreationDate(Date creationDate) {
     this.creationDate = DateUtil.date2SQLDate(creationDate);
+  }
+
+  /**
+   * Set the creation time of the indexed document.
+   */
+  public void setCreationDate(LocalDate creationDate) {
+    Date date = Date.from(creationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    this.creationDate = DateUtil.date2SQLDate(date);
   }
 
   /**
