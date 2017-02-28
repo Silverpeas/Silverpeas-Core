@@ -59,43 +59,59 @@
       User.get('me').then(function(me) {
         self.currentUser = me;
         self.currentUser.isInMyContacts = function(aUser) {
-          var isOk = false;
-          aUser.relationships().then(function(contacts) {
-            for (var i in contacts) {
-              if (this.id === contacts[i].id) {
-                isOk = true;
-                ;
+          return new Promise(function (resolve, reject) {
+            aUser.relationships().then(function(contacts) {
+              var isOK = false;
+              for (var i in contacts) {
+                if (me.id === contacts[i].id) {
+                  isOK = true;
+                  break;
+                }
               }
-            }
-          });
-          return isOk;
+              if (isOK) {
+                resolve();
+              } else {
+                reject();
+              }
+            });
+          })
         };
 
         self.currentUser.isInMyInvitations = function(aUser) {
-          var invitations = this.sentInvitations;
-          for (var i in invitations) {
-            if (invitations[i].receiverId === aUser.id) {
-              return true;
-            }
-          }
-          return false;
+          return new Promise(function (resolve, reject) {
+            self.currentUser.sentInvitationsPromise.then(function(invitations) {
+              var isOK = false;
+              for (var i=0; i<invitations.length; i++) {
+                if (invitations[i].receiverId == aUser.id) {
+                  isOK = true;
+                  break;
+                }
+              }
+              if (isOK) {
+                resolve();
+              } else {
+                reject();
+              }
+            });
+          })
         };
 
-        self.currentUser.onMySentInvitations = function(callback) {
-          $.ajax({
-            url: webContext + '/services/invitations/outbox',
-            type: 'GET',
-            dataType: 'json',
-            cache: false,
-            success: function(invitations, status, jqXHR) {
-              this.sentInvitations = invitations;
-              if (callback)
-                callback(invitations);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-              alert(errorThrown);
-            }
+        self.currentUser.onMySentInvitations = function() {
+          self.currentUser.sentInvitationsPromise = new Promise(function (resolve, reject) {
+            $.ajax({
+              url: webContext + '/services/invitations/outbox',
+              type: 'GET',
+              dataType: 'json',
+              cache: false,
+              success: function(invitations, status, jqXHR) {
+                resolve(invitations);
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                reject(errorThrown);
+              }
+            });
           });
+          return self.currentUser.sentInvitationsPromise;
         };
       });
 
@@ -145,25 +161,37 @@
    */
   function interactionWith(user) {
     var disabledCss = '', interactionBox = $('<div>').addClass('userzoom-tooltip-interaction');
-    if (!user.connected)
+    if (!user.connected) {
       disabledCss = ' disabled';
-    if (!$.userZoom.currentUser.isInMyContacts(user) && !$.userZoom.currentUser.isInMyInvitations(user))
-      interactionBox.append($('<div>').addClass('userzoom-tooltip-interaction-action').append($('<a>', {
+    }
+
+    var appendCommonActions = function() {
+      interactionBox.append($('<a>', {
+        href: user.webPage
+      }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
+      append($('<a>', {
         href: '#'
-      }).addClass('userzoom-tooltip-interaction-action-invitation invitation').append($('<span>').append(window.i18n.prop('invitation.send'))).invitMe(user)));
-    interactionBox.append($('<a>', {
-      href: user.webPage
-    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
-            append($('<a>', {
-              href: '#'
-            }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user)).
-            append($('<a>', {
-              href: '#'
-            }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append(window.i18n.prop('tchat'))).click(function() {
-              if (user.connected)
-                tchatWith(user);
-            })).
-            append($('<div>').addClass('userzoom-tooltip-arrow'));
+      }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user)).
+      append($('<a>', {
+        href: '#'
+      }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append(window.i18n.prop('tchat'))).click(function() {
+        if (user.connected)
+          tchatWith(user);
+      })).
+      append($('<div>').addClass('userzoom-tooltip-arrow'));
+    };
+
+    $.userZoom.currentUser.isInMyContacts(user).then(appendCommonActions, function() {
+      $.userZoom.currentUser.isInMyInvitations(user).then(appendCommonActions, function() {
+        interactionBox.append(
+            $('<div>').addClass('userzoom-tooltip-interaction-action').append($('<a>', {
+              href : '#'
+            }).addClass('userzoom-tooltip-interaction-action-invitation invitation').append(
+                $('<span>').append(window.i18n.prop('invitation.send'))).invitMe('sendInvitation',
+                {user : user})));
+        appendCommonActions();
+      })
+    });
 
     return interactionBox;
   }
@@ -337,13 +365,13 @@
           __markRenderingDone(target);
           return;
         }
-        user.relationships({name: $.userZoom.currentUser.lastName}).then(function(contacts) {
-          $.userZoom.currentUser.onMySentInvitations(function() {
+        //user.relationships({name: $.userZoom.currentUser.lastName}).then(function(contacts) {
+          $.userZoom.currentUser.onMySentInvitations().then(function() {
             var element = tooltip(target, user);
             $.userZoom.set(target, element);
             __markRenderingDone(target);
           });
-        });
+        //});
       }, 750);
     }, function(){
       __markRenderingDone(target);

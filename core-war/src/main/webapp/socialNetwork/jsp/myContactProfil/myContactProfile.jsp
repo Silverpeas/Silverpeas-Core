@@ -70,22 +70,23 @@
 		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
 		<p class="infoConnection">
 		<% if (member.isConnected()) { %>
-				<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=member.getDuration()%>
-			<% } else { %>
-		<img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="GML.user.offline" />
-            <% } %>
-        </p>
-	<p class="statut">
+      <img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=member.getDuration()%>
+    <% } else { %>
+		  <img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="GML.user.offline" />
+    <% } %>
+    </p>
+	  <p class="statut">
 			<%=userFull.getStatus() %>
-        </p>
-        <!-- action  -->
-        <div class="action">
-            <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
-        </div> <!-- /action  -->
-        <div class="profilPhoto">
+    </p>
+    <!-- action  -->
+    <div class="action">
+      <a href="#" class="link delete-relation" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="myProfile.relations.delete" /></a>
+      <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
+    </div> <!-- /action  -->
+    <div class="profilPhoto">
 			<view:image src="<%=userFull.getAvatar()%>" alt="viewUser" type="avatar.profil" css="avatar"/>
-        </div>
-        <br clear="all" />
+    </div>
+    <br clear="all" />
 	</div>
 
 	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
@@ -119,18 +120,18 @@
 		  UserDetail contact = (UserDetail) commonContacts.get(i);
 	%>
 		<!-- unContact  -->
-	    <div class="unContact">
-		<div class="profilPhotoContact">
-			<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><view:image css="avatar" alt="viewUser" src="<%=contact.getAvatar() %>" type="avatar" /></a>
-		</div>
-	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
-	    </div> <!-- /unContact  -->
+    <div class="unContact">
+		  <div class="profilPhotoContact">
+			  <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><view:image css="avatar" alt="viewUser" src="<%=contact.getAvatar() %>" type="avatar" /></a>
+      </div>
+      <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
+    </div> <!-- /unContact  -->
 	<% } %>
 
 	<% if (showAllCommonContactLink) { %>
 		<br clear="all" />
-	    <a href="<%=m_context %>/Rdirectory/jsp/CommonContacts?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
-	    <br clear="all" />
+    <a href="<%=m_context %>/Rdirectory/jsp/CommonContacts?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
+    <br clear="all" />
 	<% } %>
 	</div><!-- /contactCommun  -->
 

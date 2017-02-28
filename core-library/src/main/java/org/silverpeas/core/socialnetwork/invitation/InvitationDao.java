@@ -71,7 +71,7 @@ public class InvitationDao {
       pstmt.setInt(2, invitation.getSenderId());
       pstmt.setInt(3, invitation.getReceiverId());
       pstmt.setString(4, invitation.getMessage());
-      pstmt.setTimestamp(5, new Timestamp(invitation.getInvitationDate().getTime()));
+      pstmt.setTimestamp(5, new Timestamp(new Date().getTime()));
       pstmt.executeUpdate();
     } finally {
       DBUtil.close(pstmt);

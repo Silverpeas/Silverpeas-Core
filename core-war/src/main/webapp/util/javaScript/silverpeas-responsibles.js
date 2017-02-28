@@ -336,7 +336,7 @@
    */
   function __loadUserZoomPlugins() {
     $.ajax({
-      url: webContext + "/util/javaScript/silverpeas-invitme.js",
+      url: webContext + "/util/javaScript/silverpeas-relationship.js",
       dataType: "script"
     });
     $.ajax({

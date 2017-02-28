@@ -184,7 +184,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     socialNetworkHelper.setupJSAttributes(myProfilSC, request);
 
     request.setAttribute("UserFull", snUserFull.getUserFull());
-    List<String> contactIds = myProfilSC.getContactsIdsForUser(myProfilSC.getUserId());
+    List<String> contactIds = myProfilSC.getContactsIdsForUser();
     request.setAttribute("Contacts", getContactsToDisplay(contactIds, myProfilSC));
     request.setAttribute("ContactsNumber", contactIds.size());
     return destination;

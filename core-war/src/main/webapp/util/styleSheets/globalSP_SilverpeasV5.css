@@ -5994,3 +5994,11 @@ ul.sm-map {
 #pdcFrame .pdcFrameGroup #razButton img {
   vertical-align: middle;
 }
+
+.showActionsOnMouseOver .actionShownOnMouseOver {
+  display: none;
+}
+
+.showActionsOnMouseOver:hover .actionShownOnMouseOver {
+  display: block;
+}
