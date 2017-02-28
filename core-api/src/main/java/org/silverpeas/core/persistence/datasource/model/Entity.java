@@ -48,8 +48,8 @@ import java.util.Date;
  * definition.
  * @author Yohann Chastagnier
  */
-public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
-    extends IdentifiableEntity {
+public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
+    IDENTIFIER_TYPE extends EntityIdentifier> extends IdentifiableEntity {
 
   /**
    * Gets the date of the entity creation (in the persistence environment).

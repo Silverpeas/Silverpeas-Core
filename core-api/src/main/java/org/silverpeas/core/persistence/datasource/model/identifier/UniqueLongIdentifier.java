@@ -49,10 +49,6 @@ public class UniqueLongIdentifier implements EntityIdentifier {
     return new UniqueLongIdentifier().fromString(value);
   }
 
-  public static List<UniqueLongIdentifier> fromStrings(Collection<String> values) {
-    return values.stream().map(UniqueLongIdentifier::from).collect(Collectors.toList());
-  }
-
   public static UniqueLongIdentifier from(long value) {
     return new UniqueLongIdentifier().setId(value);
   }
@@ -80,10 +76,17 @@ public class UniqueLongIdentifier implements EntityIdentifier {
     return setId(Long.valueOf(id));
   }
 
+  /**
+   * Generates a new numeric identifier encoded in 64 bits.
+   * @param parameters the name of the SQL table in which are stored the entities and the name of
+   * the SQL column in the SQL table that stores the identifier values.
+   * @return a new numeric identifier encoded in 64 bits.
+   */
   @Override
-  public UniqueLongIdentifier generateNewId(final String tableName,
-      final String tableColumnIdName) {
+  public UniqueLongIdentifier generateNewId(String ... parameters) {
     try {
+      final String tableName = parameters[0];
+      final String tableColumnIdName = parameters[1];
       this.id = (long) DBUtil.getNextId(tableName, tableColumnIdName);
     } catch (SQLException e) {
       throw new RuntimeException(e.getMessage(), e);

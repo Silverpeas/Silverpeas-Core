@@ -197,6 +197,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
 
   /**
    * Resets the attendance on the specified date.
+   * @deprecated
+   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
   void resetParticipationOn(Temporal temporal) {
     this.participationOn.clearOn(temporal);
@@ -204,6 +206,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
 
   /**
    * Resets the attendance from the specified date.
+   * @deprecated
+   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
   void resetParticipationFrom(Temporal temporal) {
     this.participationOn.clearFrom(temporal);
@@ -211,6 +215,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
 
   /**
    * Accepts the attendance on specified date only.
+   * @deprecated
+   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
   public void acceptOn(Temporal date) {
     this.participationOn.set(date, ParticipationStatus.ACCEPTED);
@@ -218,6 +224,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
 
   /**
    * Declines the attendance on specified date only.
+   * @deprecated
+   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
   public void declineOn(Temporal date) {
     this.participationOn.set(date, ParticipationStatus.DECLINED);
@@ -225,6 +233,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
 
   /**
    * Tentatively accepts the attendance on specified date only.
+   * @deprecated
+   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
   public void tentativelyAcceptOn(Temporal date) {
     this.participationOn.set(date, ParticipationStatus.TENTATIVE);

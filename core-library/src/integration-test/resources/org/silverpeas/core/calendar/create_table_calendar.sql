@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Event (
   CONSTRAINT FK_Event_Recurrence FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
 );
 
-CREATE TABLE IF NOT EXISTS SB_Cal_Occurrence (
+CREATE TABLE IF NOT EXISTS SB_Cal_Occurrences (
   id             VARCHAR(40)   NOT NULL,
   eventId        VARCHAR(40)   NOT NULL,
   componentId    VARCHAR(40)   NOT NULL,

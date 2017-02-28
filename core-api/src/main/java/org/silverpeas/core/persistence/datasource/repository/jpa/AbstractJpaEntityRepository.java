@@ -25,7 +25,7 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifierConverter;
-import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
@@ -63,7 +63,7 @@ import static org.silverpeas.core.persistence.datasource.repository.PaginationCr
  * @param <T> the class name of the identifiable entity which is handled by the repository.
  * @author mmoquillon
  */
-public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
+public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
     implements EntityRepository<T> {
 
   private static final int DEFAULT_MAXIMUM_ITEMS_IN_CLAUSE = 500;

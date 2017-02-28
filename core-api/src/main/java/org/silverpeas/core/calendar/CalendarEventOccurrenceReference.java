@@ -26,20 +26,23 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.date.Period;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
-
-import static org.silverpeas.core.calendar.CalendarEventOccurrence.getLastStartDateFrom;
 
 /**
  * This class represents the reference to an occurrence of a calendar event.
  * It provides methods which permit to identify an occurrence, to get its period and also to know
  * the time zone of the user or the system.
  * @author Yohann Chastagnier
+ * @deprecated
+ * TODO CALENDAR remove this class once the transfer to the new code is achieved
  */
 public class CalendarEventOccurrenceReference {
 
   private String occurrenceId;
   private Period period;
+  private CalendarEventOccurrence occurrence;
 
   /**
    * Hidden constructor.
@@ -50,12 +53,32 @@ public class CalendarEventOccurrenceReference {
   }
 
   /**
+   * Hidden constructor.
+   * @param occurrence an instance of {@link CalendarEventOccurrence}.
+   */
+  private CalendarEventOccurrenceReference(final CalendarEventOccurrence occurrence) {
+    this.occurrence = occurrence;
+    this.occurrenceId = occurrence.getId();
+    this.period = occurrence.getPeriod();
+  }
+
+  /**
    * Initialize an instance from the identifier of an event occurrence.
    * @param occurrenceId identifier of an event occurrence.
    * @return the initialized instance.
    */
   public static CalendarEventOccurrenceReference fromOccurrenceId(final String occurrenceId) {
     return new CalendarEventOccurrenceReference(occurrenceId);
+  }
+
+  /**
+   * Initialize an instance from the identifier of an event occurrence.
+   * @param occurrence an occurrence of a calendar event.
+   * @return the initialized instance.
+   */
+  public static CalendarEventOccurrenceReference fromOccurrence(
+      final CalendarEventOccurrence occurrence) {
+    return new CalendarEventOccurrenceReference(occurrence);
   }
 
   /**
@@ -69,7 +92,7 @@ public class CalendarEventOccurrenceReference {
   }
 
   /**
-   * Gets the period.
+   * Gets the actual period of this occurrence. This period can be an updated one.
    * @return a period.
    */
   public Period getPeriod() {
@@ -82,7 +105,15 @@ public class CalendarEventOccurrenceReference {
    * @return a temporal of type LocalDate or OffsetDateTime.
    */
   public Temporal getOriginalStartDate() {
-    return getLastStartDateFrom(occurrenceId);
+    if (this.occurrence != null) {
+      return this.occurrence.getOriginalStartDate();
+    }
+    String temporal = this.occurrenceId.split("@")[1];
+    if (temporal.contains("T")) {
+      return OffsetDateTime.parse(temporal);
+    } else {
+      return LocalDate.parse(temporal);
+    }
   }
 
   /**

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
-import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 import org.silverpeas.core.util.SilverpeasArrayList;
@@ -51,7 +51,7 @@ import java.util.List;
  * entity.
  * @author ebonnet
  */
-public class BasicJpaEntityRepository<E extends IdentifiableEntity>
+public class BasicJpaEntityRepository<E extends BasicJpaEntity>
     extends AbstractJpaEntityRepository<E> implements WithSaveAndFlush<E> {
 
   @Override

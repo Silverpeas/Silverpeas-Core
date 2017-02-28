@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -46,7 +47,10 @@ public interface CalendarEventOccurrenceGenerator {
   }
 
   /**
-   * Generates the occurrences of the calendar events that occur in the specified window of time.
+   * Generates the actual occurrences of the calendar events that occur in the specified window of
+   * time. The occurrences that were modified and hence persisted are taken in charge.
+   *
+   * This method doesn't require to be implemented.
    * @param timeWindow the time window in which the events occur.
    * @return a set of event occurrences that occur in the specified window of time sorted by the
    * date and time at which they start.
@@ -59,12 +63,47 @@ public interface CalendarEventOccurrenceGenerator {
   }
 
   /**
-   * Generates the occurrences of the specified events and that occur in the period of time.
+   * Generates the actual occurrences of the specified events and that occur in the period of time.
+   * The occurrences that were modified and hence persisted are taken in charge.
+   *
+   * This method doesn't require to be implemented.
    * @param events the events.
-   * @param inPeriod the period of time the event instances occurs.
+   * @param inPeriod the period of time the instances of the events occur.
    * @return a set of event occurrences that occur in the specified period sorted by the date and
    * time at which they start.
    */
-  List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
-      Period inPeriod);
+  default List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
+      Period inPeriod) {
+    List<CalendarEventOccurrence> occurrences = computeOccurrencesOf(events, inPeriod);
+    List<CalendarEventOccurrence> modified = CalendarEventOccurrenceRepository.get().getAll();
+    modified.forEach(o -> {
+      int idx = occurrences.indexOf(o);
+      occurrences.set(idx, o);
+    });
+    return occurrences;
+  }
+
+  /**
+   * Computes the occurrences of the specified events from their recurrence rule, their date and
+   * times, and for the specified period of time. This method is used by the generation methods.
+   * <p>
+   * The computation doesn't take into account the occurrences that were modified; to consider an
+   * actual set of occurrences of the specified events in the given period, you have to consider
+   * one of the following methods:
+   * <p>
+   * <ul>
+   * <li>
+   * {@link CalendarEventOccurrenceGenerator#generateOccurrencesIn(CalendarTimeWindow)}
+   * </li>
+   * <li>
+   * {@link CalendarEventOccurrenceGenerator#generateOccurrencesOf(Collection, Period)}
+   * </li>
+   * </ul>
+   * @param events the events to consider.
+   * @param period the period of time the instances of the events occur.
+   * @return a set of event occurrences that occur in the specified period sorted by the date and
+   * time at which they start.
+   */
+  List<CalendarEventOccurrence> computeOccurrencesOf(Collection<CalendarEvent> events,
+      Period period);
 }

@@ -67,7 +67,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   @Override
-  public List<CalendarEventOccurrence> generateOccurrencesOf(final Collection<CalendarEvent> events,
+  public List<CalendarEventOccurrence> computeOccurrencesOf(final Collection<CalendarEvent> events,
       final Period inPeriod) {
     List<CalendarEventOccurrence> occurrences = new ArrayList<>();
     events.forEach(event -> {
@@ -166,5 +166,11 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
 
   private OffsetDateTime asOffsetDateTime(DateTime dateTime) {
     return dateTime.toInstant().atOffset(ZoneOffset.UTC);
+  }
+
+  private CalendarEventOccurrence occurrenceFor(final CalendarEvent event, final Temporal startDate,
+      final Temporal endDate) {
+    CalendarEventOccurrence occurrence = new CalendarEventOccurrence(event, startDate, endDate);
+    return occurrence;
   }
 }

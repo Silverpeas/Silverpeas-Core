@@ -67,6 +67,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.calendar.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.repository.DefaultCalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -736,6 +737,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
     addClasses(
         ICal4JCalendarEventOccurrenceGenerator.class,
+        DefaultCalendarEventOccurrenceRepository.class,
         DefaultCalendarRepository.class,
         DefaultCalendarEventRepository.class);
     return this;

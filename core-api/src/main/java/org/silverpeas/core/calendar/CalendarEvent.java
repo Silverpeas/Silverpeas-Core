@@ -657,50 +657,51 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Deletes entirely the event referenced by this occurrence.
    */
   @Override
-  public CalendarEventModificationResult delete() {
-    return Transaction.performInOne(() -> simpleDeletion.apply(getPreviousEventData()));
+  public EventOperationResult delete() {
+    return Transaction.performInOne(() -> simpleDeletion.apply(getEventPreviousState()));
   }
 
   /**
-   * Deletes from this event the occurrence represented by the given occurrence identifier.
+   * Deletes from this event the occurrence referred by the given occurrence reference.
+   *
    * <ul>
    * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
    * <li>If the occurrence is one of among any of the event, then the date time at which this
    * occurrence starts is added as an exception in the recurrence rule of the event.</li>
    * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
    * </ul>
-   * @param data the occurrence necessary data to perform the operation.
+   * @param occurrence a reference to the occurrence to delete.
    */
-  public CalendarEventModificationResult delete(CalendarEventOccurrenceReference data) {
-    return doEitherOr(data, simpleDeletion, (previousEvent) -> {
-      previousEvent.getRecurrence()
-          .excludeEventOccurrencesStartingAt(data.getOriginalStartDate());
-      previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDate()));
-      previousEvent.updateIntoPersistence();
-      return new CalendarEventModificationResult(previousEvent);
+  public EventOperationResult deleteOnly(CalendarEventOccurrence occurrence) {
+    return doEitherOr(occurrence, simpleDeletion, (me) -> {
+      me.getRecurrence()
+          .excludeEventOccurrencesStartingAt(occurrence.getOriginalStartDate());
+      occurrence.delete();
+      me.updateIntoPersistence();
+      return new EventOperationResult().withUpdated(me);
     });
   }
 
   /**
-   * Deletes from this event the occurrence represented by the given occurrence identifier and
-   * all the ones after.
+   * Deletes from this event all the occurrences since the occurrence referred by the specified
+   * occurrence reference.
+   *
    * <ul>
    * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
-   * <li>If the occurrence is one of among any of the event, then recurrence end date time is
+   * <li>If the occurrence is one of among any of the event, then the recurrence end date time is
    * updated.</li>
    * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
    * </ul>
-   * @param data the occurrence necessary data to perform the operation.
+   * @param occurrence a reference to the occurrence since which all the occurrences (with the
+   * referred occurrence) will be deleted.
    */
-  public CalendarEventModificationResult deleteFrom(CalendarEventOccurrenceReference data) {
-    return doEitherOr(data, simpleDeletion, (previousEvent) -> {
-      final Temporal endDate = data.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
-      previousEvent.getRecurrence().upTo(endDate);
-      previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationFrom(endDate));
-      previousEvent.updateIntoPersistence();
-      return new CalendarEventModificationResult(previousEvent);
+  public EventOperationResult deleteSince(CalendarEventOccurrence occurrence) {
+    return doEitherOr(occurrence, simpleDeletion, (me) -> {
+      final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
+      me.getRecurrence().upTo(endDate);
+      occurrence.deleteAllSinceMe();
+      me.updateIntoPersistence();
+      return new EventOperationResult().withUpdated(me);
     });
   }
 
@@ -709,7 +710,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * It is not possible to merge the data of calendar which represents the repository of the event.
    * @param event the event to merge into current one.
    */
-  public CalendarEventModificationResult merge(CalendarEvent event) {
+  public EventOperationResult merge(CalendarEvent event) {
     this.externalId = event.getExternalId();
     this.component = event.component;
     this.visibilityLevel = event.visibilityLevel;
@@ -719,60 +720,59 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   /**
-   * Updates entirely the event referenced by this occurrence.
+   * Updates this event. The modifications to this event are saved for all its occurrences.
+   * Its sequence number is incremented by one.
    */
   @Override
-  public CalendarEventModificationResult update() {
-    return Transaction.performInOne(() -> simpleUpdate.apply(getPreviousEventData()));
+  public EventOperationResult update() {
+    return Transaction.performInOne(() -> simpleUpdate.apply(getEventPreviousState()));
   }
 
   /**
-   * Applies the change done to this event the occurrence represented by the given occurrence
-   * identifier. According to the state of the event, this will either create a new non-recurrent
-   * event or update directly the event from which this occurrence was spawned:
-   * <ul>
-   * <li>The event is recurrent: the occurrence start date time before the change is set as an
-   * exception date in the event's recurrence and a new event is created with the
-   * modifications</li>
-   * <li>It is the only occurrence of the event: the event is then directly modified.</li>
-   * </ul>
-   * @param data the occurrence necessary data to perform the operation.
-   * event.
+   * Updates all the occurrences of this event since and including the specified occurrence with
+   * the modifications to this event. The modifications to this event are saved for all the
+   * occurrences since and including the specified occurrence. The occurrences occurring before the
+   * specified occurrence won't be updated.
+   *
+   * If the specified occurrence is in fact the single one of this event, then this event is
+   * itself updated (this is equivalent to the {@link CalendarEvent#update()} method. Otherwise a
+   * new event is created from the modifications to this event.
+   * @param occurrence the occurrence of the event since which the changes to the event should be
+   * applied.
    */
-  public CalendarEventModificationResult update(CalendarEventOccurrenceReference data) {
-    return doEitherOr(data, simpleUpdate, (previousEvent) -> {
-      final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), true);
-      previousEvent.getRecurrence()
-          .excludeEventOccurrencesStartingAt(data.getOriginalStartDate());
-      previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationOn(data.getOriginalStartDate()));
-      previousEvent.updateIntoPersistence();
-      return new CalendarEventModificationResult(previousEvent, createdEvent);
-    });
+  public EventOperationResult updateSince(CalendarEventOccurrence occurrence) {
+    return doEitherOr(occurrence, simpleUpdate,
+        (me) -> {
+          final CalendarEvent createdEvent = createNewEventFromMeSince(occurrence);
+          final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
+          me.getRecurrence().upTo(endDate);
+          occurrence.deleteAllSinceMe();
+          me.updateIntoPersistence();
+          return new EventOperationResult().withUpdated(me).withCreated(createdEvent);
+        });
   }
 
   /**
-   * Applies the change done to this occurrence from this occurrence period. According to the
-   * state of the event, this will either create a new non-recurrent event or update directly the
-   * event from which this occurrence was spawned:
-   * <ul>
-   * <li>The event is recurrent: the occurrence start date time before the change is set as the
-   * end date minus one day of the event's recurrence and a new event is created with the
-   * modifications</li>
-   * <li>It is the only occurrence of the event: the event is then directly modified.</li>
-   * </ul>
-   * @param data the occurrence necessary data to perform the operation.
-   * event.
+   * Updates only the specified occurrence among the occurrences of this event. If the given
+   * occurrence is the single one of the event then the event is itself updated. Otherwise the
+   * changes in the occurrence are persisted and its sequence number is incremented by one,
+   * diverging then from the sequence number of the event it comes from.
+   * <p>
+   * In the case the date at which the occurrence starts is modified, the participation status
+   * of all the attendees in this occurrence is cleared.
+   * @param occurrence a reference to an occurrence of the event with the data modified.
    */
-  public CalendarEventModificationResult updateFrom(CalendarEventOccurrenceReference data) {
-    return doEitherOr(data, simpleUpdate, (previousEvent) -> {
-      final CalendarEvent createdEvent = createNewEventFromMe(data.getPeriod(), false);
-      final Temporal endDate = data.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
-      previousEvent.getRecurrence().upTo(endDate);
-      previousEvent.getAttendees()
-          .forEach(attendee -> attendee.resetParticipationFrom(endDate));
-      previousEvent.updateIntoPersistence();
-      return new CalendarEventModificationResult(previousEvent, createdEvent);
+  public EventOperationResult updateOnly(CalendarEventOccurrence occurrence) {
+    return doEitherOr(occurrence, simpleUpdate,
+        (previousEvent) -> {
+          CalendarEventOccurrence previous = CalendarEventOccurrence.getById(occurrence.getId());
+          if ((previous != null && !previous.getPeriod().equals(occurrence.getPeriod())) ||
+              (previous == null &&
+                  !occurrence.getOriginalStartDate().equals(occurrence.getStartDate()))) {
+            occurrence.getAttendees().forEach(Attendee::resetParticipation);
+          }
+          occurrence.save();
+          return new EventOperationResult().withInstance(occurrence);
     });
   }
 
@@ -833,7 +833,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       Optional<CalendarEvent> before = Transaction.performInNew(() -> getCalendar().event(getId()));
       if (before.isPresent()) {
         CalendarEvent event = Transaction.getTransaction().perform(() -> {
-          this.component.markAsModified();
           CalendarEventRepository repository = CalendarEventRepository.get();
           return repository.save(this);
         });
@@ -854,15 +853,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     });
   }
 
-  private CalendarEvent createNewEventFromMe(Period newPeriod, final boolean unsetRecurrence) {
-    CalendarEvent me = this;
-    CalendarEvent newEvent = me.clone();
-    if (unsetRecurrence) {
-      newEvent.unsetRecurrence();
-    }
+  private CalendarEvent createNewEventFromMeSince(final CalendarEventOccurrence occurrence) {
+    CalendarEvent newEvent = this.clone();
+    newEvent.asCalendarComponent().incrementSequence();
     newEvent.getAttendees().forEach(Attendee::resetParticipation);
-    newEvent.setPeriod(newPeriod);
-    newEvent.planOn(me.getCalendar());
+    newEvent.setPeriod(occurrence.getPeriod());
+    newEvent.planOn(this.getCalendar());
     return newEvent;
   }
 
@@ -893,11 +889,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   /**
-   * Gets the previous data of an event from the persistence.
-   * @return an instance of calendar event which contains data loaded from the persistence
-   * without taking into account entity manager caches.
+   * Gets the previous state of an event from the persistence.
+   * @return an instance of this calendar event but with its states loaded from the persistence
+   * context and without taking into account entity manager caches.
    */
-  private CalendarEvent getPreviousEventData() {
+  private CalendarEvent getEventPreviousState() {
     if (StringUtil.isNotDefined(this.getId())) {
       return null;
     }
@@ -915,36 +911,36 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return event;
   }
 
-  private CalendarEventModificationResult doEitherOr(CalendarEventOccurrenceReference data,
-      Function<CalendarEvent, CalendarEventModificationResult> ifSingleOccurrence,
-      Function<CalendarEvent, CalendarEventModificationResult> ifManyOccurrences) {
+  private EventOperationResult doEitherOr(CalendarEventOccurrence occurrence,
+      Function<CalendarEvent, EventOperationResult> ifSingleOccurrence,
+      Function<CalendarEvent, EventOperationResult> ifManyOccurrences) {
 
     // Getting previous data from the persistence.
-    final CalendarEvent previousEvent = getPreviousEventData();
-    if (previousEvent == null) {
-      return new CalendarEventModificationResult();
+    final CalendarEvent eventPreviousState = getEventPreviousState();
+    if (eventPreviousState == null) {
+      return new EventOperationResult();
     }
 
     // Performing the treatment
     return Transaction.getTransaction().perform(() -> {
-      final CalendarEventModificationResult result;
-      if (previousEvent.isRecurrent() && previousEvent.getRecurrence().isEndless()) {
-        result = ifManyOccurrences.apply(previousEvent);
-      } else if (previousEvent.isRecurrent()) {
-        OffsetDateTime recurrenceStart = Period.asOffsetDateTime(previousEvent.getStartDate());
-        OffsetDateTime recurrenceEnd = endDateTimeOf(previousEvent.getRecurrence(), recurrenceStart);
+      final EventOperationResult result;
+      if (eventPreviousState.isRecurrent() && eventPreviousState.getRecurrence().isEndless()) {
+        result = ifManyOccurrences.apply(eventPreviousState);
+      } else if (eventPreviousState.isRecurrent()) {
+        OffsetDateTime recurrenceStart = Period.asOffsetDateTime(eventPreviousState.getStartDate());
+        OffsetDateTime recurrenceEnd = endDateTimeOf(eventPreviousState.getRecurrence(), recurrenceStart);
         List<CalendarEventOccurrence> occurrences = generator()
-            .generateOccurrencesOf(Collections.singletonList(previousEvent),
+            .generateOccurrencesOf(Collections.singletonList(eventPreviousState),
                 Period.between(recurrenceStart, recurrenceEnd));
-        if (occurrences.size() == 1 && data.refers(occurrences.get(0))) {
-          setPeriod(data.getPeriod());
-          result = ifSingleOccurrence.apply(previousEvent);
+        if (occurrences.size() == 1 && occurrence.equals(occurrences.get(0))) {
+          setPeriod(occurrence.getPeriod());
+          result = ifSingleOccurrence.apply(eventPreviousState);
         } else {
-          result = ifManyOccurrences.apply(previousEvent);
+          result = ifManyOccurrences.apply(eventPreviousState);
         }
       } else {
-        setPeriod(data.getPeriod());
-        result = ifSingleOccurrence.apply(previousEvent);
+        setPeriod(occurrence.getPeriod());
+        result = ifSingleOccurrence.apply(eventPreviousState);
       }
       return result;
     });
@@ -954,33 +950,33 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Handles the simple deletion of an event.
    */
   @Transient
-  private final Function<CalendarEvent, CalendarEventModificationResult> simpleDeletion =
-      (previousEvent) -> {
-        if (previousEvent != null) {
-          previousEvent.deleteFromPersistence();
+  private final Function<CalendarEvent, EventOperationResult> simpleDeletion =
+      (previousState) -> {
+        if (previousState != null) {
+          previousState.deleteFromPersistence();
         }
-        return new CalendarEventModificationResult();
+        return new EventOperationResult();
       };
 
   /**
    * Handles the simple update of an event.
    */
   @Transient
-  private final Function<CalendarEvent, CalendarEventModificationResult> simpleUpdate =
-      (previousEvent) -> {
-        if (previousEvent == null) {
-          return new CalendarEventModificationResult();
+  private final Function<CalendarEvent, EventOperationResult> simpleUpdate =
+      (previousState) -> {
+        if (previousState == null) {
+          return new EventOperationResult();
         }
         final CalendarEvent me = this;
 
         // Verify date changes
         final boolean dateChanged =
-            !previousEvent.getStartDate().equals(me.getStartDate()) ||
-                !previousEvent.getEndDate().equals(me.getEndDate());
+            !previousState.getStartDate().equals(me.getStartDate()) ||
+                !previousState.getEndDate().equals(me.getEndDate());
 
-        final boolean recurrenceChanged;
+        boolean recurrenceChanged = false;
         final Recurrence currentRecurrence = me.getRecurrence();
-        final Recurrence previousRecurrence = previousEvent.getRecurrence();
+        final Recurrence previousRecurrence = previousState.getRecurrence();
         if ((currentRecurrence != null && previousRecurrence == null) ||
             (currentRecurrence == null && previousRecurrence != null)) {
           recurrenceChanged = true;
@@ -989,27 +985,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
               !currentRecurrence.getFrequency().equals(previousRecurrence.getFrequency()) ||
               currentRecurrence.getRecurrenceCount() != previousRecurrence.getRecurrenceCount()) {
             recurrenceChanged = true;
-          } else {
-            recurrenceChanged = false;
-            if (!currentRecurrence.getExceptionDates()
-                .equals(previousRecurrence.getExceptionDates())) {
-              // Removing participation dates
-              currentRecurrence.getExceptionDates().forEach(dateTime -> getAttendees()
-                  .forEach(attendee -> attendee.resetParticipationOn(dateTime)));
-            }
-            if (currentRecurrence.getEndDate().isPresent() &&
-                !currentRecurrence.getEndDate().equals(previousRecurrence.getEndDate())) {
-              // Removing also participation dates
-              getAttendees().forEach(attendee -> attendee
-                  .resetParticipationFrom(currentRecurrence.getEndDate().get()));
-            }
           }
-        } else {
-          recurrenceChanged = false;
         }
 
         // Clears exception dates when switching on all day data
-        if (getRecurrence() != null && previousEvent.isOnAllDay() != isOnAllDay()) {
+        if (getRecurrence() != null && previousState.isOnAllDay() != isOnAllDay()) {
           getRecurrence().clearsAllExceptionDates();
         }
 
@@ -1019,17 +999,18 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         }
 
         final boolean hasCalendarChanged =
-            !previousEvent.getCalendar().getId().equals(me.getCalendar().getId());
+            !previousState.getCalendar().getId().equals(me.getCalendar().getId());
         if (hasCalendarChanged) {
           // New event is created on other calendar
           CalendarEvent newEvent = me.clone();
           newEvent.planOn(me.getCalendar());
           // Deleting previous event
-          simpleDeletion.apply(previousEvent);
-          return new CalendarEventModificationResult(me);
+          simpleDeletion.apply(previousState);
+          return new EventOperationResult().withCreated(newEvent);
         } else {
+          me.component.markAsModified();
           me.updateIntoPersistence();
-          return new CalendarEventModificationResult(me);
+          return new EventOperationResult().withUpdated(me);
         }
       };
 
@@ -1038,20 +1019,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       (user) -> !getAttendees().stream().filter(attendee -> attendee.getId().equals(user.getId()))
           .collect(Collectors.toList()).isEmpty();
 
-  public static class CalendarEventModificationResult extends ModificationResult<CalendarEvent> {
+  public static class EventOperationResult
+      extends OperationResult<CalendarEvent, CalendarEventOccurrence> {
 
-    CalendarEventModificationResult() {
-      this(null);
-    }
-
-    CalendarEventModificationResult(final CalendarEvent updatedEvent) {
-      this(updatedEvent, null);
-    }
-
-    CalendarEventModificationResult(final CalendarEvent updatedEvent,
-        final CalendarEvent createdEvent) {
-      super(updatedEvent, createdEvent);
-    }
   }
 
 }

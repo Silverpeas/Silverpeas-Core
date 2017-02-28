@@ -23,17 +23,22 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
+import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
@@ -57,7 +62,7 @@ import java.util.Set;
  * recurrent event is deleted, then an exception is added into the recurrence rule of the event.
  * This operation is done with one of the following methods:
  * {@link CalendarEvent#delete(CalendarEventOccurrenceReference)},
- * {@link CalendarEvent#deleteFrom(CalendarEventOccurrenceReference)}.
+ * {@link CalendarEvent#deleteSince(CalendarEventOccurrenceReference)}.
  * If an occurrence of a non-recurrent event is modified, then the modification is directly
  * applied to the event itself (as it is a singleton). If an occurrence of a recurrent event is
  * modified, then the modification is applied to the occurrence only and this occurrence is
@@ -65,10 +70,19 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "sb_cal_occurrences")
-public class CalendarEventOccurrence implements Serializable {
-
-  @Id
-  private String id;
+@NamedQueries({
+    @NamedQuery(name = "byEventSince", query =
+        "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event AND " +
+            "o.component.period.startDateTime >= :date"),
+    @NamedQuery(name = "byEventsAndByPeriod", query =
+        "SELECT o FROM CalendarEventOccurrence o WHERE o.event in :events AND " +
+            "((o.component.period.startDateTime <= :startDateTime AND " +
+            "  o.component.period.endDateTime >= :startDateTime) OR " +
+            "(o.component.period.startDateTime >= :startDateTime AND " +
+            "  o.component.period.startDateTime <= :endDateTime))")})
+public class CalendarEventOccurrence
+    extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
+    implements IdentifiableEntity {
 
   @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "eventId", referencedColumnName = "id")
@@ -77,6 +91,13 @@ public class CalendarEventOccurrence implements Serializable {
   @OneToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "componentId", referencedColumnName = "id", unique = true)
   private CalendarComponent component;
+
+  static CalendarEventOccurrence getById(final String id) {
+    return Transaction.performInOne(() -> {
+      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+      return repository.getById(id);
+    });
+  }
 
   /**
    * Constructor for only persistence context.
@@ -94,7 +115,7 @@ public class CalendarEventOccurrence implements Serializable {
    */
   CalendarEventOccurrence(final CalendarEvent event, final Temporal startDate,
       final Temporal endDate) {
-    this.id = event.getId() + "@" + startDate;
+    setId(generateId(event, startDate));
     this.event = event;
     this.component = event.asCalendarComponent().clone();
     this.component.setPeriod(Period.between(startDate, endDate));
@@ -112,22 +133,8 @@ public class CalendarEventOccurrence implements Serializable {
    */
   public static List<CalendarEventOccurrence> getOccurrencesIn(
       final CalendarTimeWindow timeWindow) {
-    return generator().generateOccurrencesIn(timeWindow);
-  }
 
-  /**
-   * Gets the date (and time if not on all day) from an occurrence identifier.
-   * @param occurrenceId an occurrence identifier.
-   * @return the start date (and time if not on all day) of the event occurrence before any
-   * recent change.
-   */
-  static Temporal getLastStartDateFrom(String occurrenceId) {
-    String lastOccurrenceDate = occurrenceId.split("@")[1];
-    try {
-      return LocalDate.parse(lastOccurrenceDate);
-    } catch (Exception e) {
-      return OffsetDateTime.parse(lastOccurrenceDate);
-    }
+    return generator().generateOccurrencesIn(timeWindow);
   }
 
   /**
@@ -161,40 +168,24 @@ public class CalendarEventOccurrence implements Serializable {
     return this.component.getPeriod().getEndDate();
   }
 
-  /**
-   * Gets the unique identifier of this occurrence.
-   * @return the unique identifier of this occurrence.
-   */
-  public String getId() {
-    return String.valueOf(id);
+  @Override
+  public boolean isPersisted() {
+    return false;
   }
 
   /**
-   * Gets the date or the date and time at which this occurrence originally starts before any
-   * changes.
-   * @return the start date of the event occurrence before any recent change.
+   * Gets the original start date of this occurrence. If the start date wasn't modified, then the
+   * returning date should be the same than the start date returned by the method
+   * {@link CalendarEventOccurrence#getStartDate()}.
+   * @return the original start date of this occurrence of calendar event.
    */
-  public Temporal getLastStartDate() {
-    return getLastStartDateFrom(getId());
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
+  public Temporal getOriginalStartDate() {
+    String temporal = this.getId().split("@")[1];
+    if (temporal.contains("T")) {
+      return OffsetDateTime.parse(temporal);
+    } else {
+      return LocalDate.parse(temporal);
     }
-    if (!(o instanceof CalendarEventOccurrence)) {
-      return false;
-    }
-
-    final CalendarEventOccurrence that = (CalendarEventOccurrence) o;
-    return id.equals(that.id);
-
-  }
-
-  @Override
-  public int hashCode() {
-    return id.hashCode();
   }
 
   /**
@@ -337,5 +328,50 @@ public class CalendarEventOccurrence implements Serializable {
    */
   public long getSequence() {
     return (this.component.isPersisted() ? this.component.getSequence() : this.event.getSequence());
+  }
+
+  /**
+   * Saves this occurrence of a calendar event into a data source so that it can be get later.
+   * <p>
+   * Saving an event occurrence is done when this occurrence has changed from the event or from
+   * its original planning in the timeline of a calendar. This is only done with occurrences of
+   * a recurrent event as any change to the single occurrence of a non-recurrent event modifies the
+   * event itself.
+   * @return the persisted event occurrence.
+   */
+  CalendarEventOccurrence save() {
+    return Transaction.performInOne(() -> {
+      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+      this.component.incrementSequence();
+      return repository.save(this);
+    });
+  }
+
+  /**
+   * Deletes this occurrence of a calendar event in the data source. If this occurrences wasn't
+   * persisted, then nothing is done.
+   */
+  void delete() {
+    Transaction.performInOne(() -> {
+      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+      repository.delete(this);
+      return null;
+    });
+  }
+
+  /**
+   * Deletes this occurrence and all the occurrences belonging to the same event of this occurrence
+   * and that are after this one.
+   * @return the count of actually occurrences removed from the data source.
+   */
+  long deleteAllSinceMe() {
+    return Transaction.performInOne(() -> {
+      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+      return repository.deleteSince(this);
+    });
+  }
+
+  private String generateId(CalendarEvent event, Temporal occurrenceStartDate) {
+    return event.getId() + "@" + occurrenceStartDate;
   }
 }

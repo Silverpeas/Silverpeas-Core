@@ -274,6 +274,10 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     attendees.forEach(a -> a.cloneFor(clone));
     return clone;
   }
+  
+  void incrementSequence() {
+    this.sequence += 1;
+  }
 
   @Override
   protected void performBeforeUpdate() {

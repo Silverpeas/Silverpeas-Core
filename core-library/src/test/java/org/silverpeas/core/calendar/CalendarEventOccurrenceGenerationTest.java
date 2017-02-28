@@ -24,10 +24,14 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
+import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -48,6 +52,10 @@ import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TimeUnit.MONTH;
 import static org.silverpeas.core.date.TimeUnit.WEEK;
 
@@ -65,6 +73,16 @@ public class CalendarEventOccurrenceGenerationTest {
   private CalendarEventOccurrenceGenerator generator =
       new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
           new ICal4JRecurrenceCodec(new ICal4JDateCodec()));
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Before
+  public void mockCalendarOccurrenceRepository() {
+    CalendarEventOccurrenceRepository repository = mock(CalendarEventOccurrenceRepository.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(repository);
+    when(repository.getAll(anyCollection(), any(Period.class))).thenReturn(Collections.emptyList());
+  }
 
   @Test
   public void nothingDoneWithAnEmptyListOfEvents() {

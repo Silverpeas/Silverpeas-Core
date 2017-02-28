@@ -141,4 +141,10 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Attendees"));
   }
+
+  protected TableLine getCalendarComponentTableLineById(String id) throws Exception {
+    return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from sb_cal_components")
+        .where("id = ?", id)));
+  }
 }

@@ -113,11 +113,11 @@ public interface Plannable extends Serializable {
    * Deletes this planned object from the calendar it belongs to. If it was not planned (aka saved)
    * in a given calendar, then nothing is done.
    */
-  ModificationResult delete();
+  OperationResult delete();
 
   /**
    * Updates this planned object in the underlying calendar it belongs to. If it was not planned
    * (aka saved) in a given calendar, then nothing is done.
    */
-  ModificationResult update();
+  OperationResult update();
 }

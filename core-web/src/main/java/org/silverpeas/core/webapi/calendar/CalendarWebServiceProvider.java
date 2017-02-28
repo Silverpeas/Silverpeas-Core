@@ -26,16 +26,16 @@ package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEvent.CalendarEventModificationResult;
+import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceReference;
-import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
+import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -53,7 +53,6 @@ import java.time.ZoneId;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,9 +69,6 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
 @Singleton
 public class CalendarWebServiceProvider {
 
-  private CalendarWebServiceProvider() {
-  }
-
   /**
    * Gets the singleton instance of the provider.
    */
@@ -86,7 +82,7 @@ public class CalendarWebServiceProvider {
    * @param componentInstanceId the identifier of current handled component instance.
    * @param originalCalendar the calendar to check against the other data.
    */
-  public static void assertDataConsistency(final String componentInstanceId,
+  static void assertDataConsistency(final String componentInstanceId,
       final Calendar originalCalendar) {
     assertEntityIsDefined(originalCalendar);
     if (!originalCalendar.getComponentInstanceId().equals(componentInstanceId)) {
@@ -107,7 +103,7 @@ public class CalendarWebServiceProvider {
    * @param originalCalendar the calendar to check against the other data.
    * @param event the event to check against the others.
    */
-  public static void assertDataConsistency(final String componentInstanceId,
+  static void assertDataConsistency(final String componentInstanceId,
       final Calendar originalCalendar, final CalendarEvent event) {
     assertDataConsistency(componentInstanceId, originalCalendar);
     assertEntityIsDefined(event.asCalendarComponent());
@@ -136,7 +132,7 @@ public class CalendarWebServiceProvider {
    * @param previousOne the previous event data to check against the others.
    * @param newOne the new event data to check against the others.
    */
-  public static void assertDataConsistency(final String componentInstanceId,
+  static void assertDataConsistency(final String componentInstanceId,
       final Calendar originalCalendar, final CalendarEvent previousOne,
       final CalendarEvent newOne) {
     assertDataConsistency(componentInstanceId, originalCalendar, previousOne);
@@ -155,22 +151,39 @@ public class CalendarWebServiceProvider {
    * Asserts the specified entity is well defined, otherwise an HTTP 404 error is sent back.
    * @param entity the entity to check.
    */
-  public static void assertEntityIsDefined(final Entity entity) {
+  static void assertEntityIsDefined(final Entity entity) {
     if (entity == null || isNotDefined(entity.getId())) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
   }
 
+  private CalendarWebServiceProvider() {
+  }
+
   /**
-   * Centralization of checking if the specified user is the creator of the specified calendar.
-   * @param user the user to verify.
-   * @param calendar the calendar to check.
+   * Creates an event from the given calendar and event data.<br/>
+   * This method handles also a common behavior the UI must have between each way an event is
+   * saved (from a controller, a WEB service...)
+   * @param calendar the calendar on which the event is added.
+   * @param event the event to create.
+   * @return the calendar event.
    */
-  public static void checkUserIsCreator(User user, Entity calendar) {
-    assertEntityIsDefined(calendar);
-    if (!user.equals(calendar.getCreator())) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
+  public CalendarEvent createEvent(Calendar calendar, CalendarEvent event) {
+    User owner = User.getCurrentRequester();
+    checkUserIsCreator(owner, calendar);
+    event.planOn(calendar);
+    successMessage("calendar.message.event.created", event.getTitle());
+    return event;
+  }
+
+  /**
+   * Gets the common calendar bundle according to the given locale.
+   * @param locale the locale into which the requested bundle must be set.
+   * @return a localized bundle.
+   */
+  public LocalizationBundle getLocalizationBundle(String locale) {
+    return ResourceLocator.getLocalizationBundle("org.silverpeas.calendar.multilang.calendarBundle",
+        locale);
   }
 
   /**
@@ -178,11 +191,11 @@ public class CalendarWebServiceProvider {
    * @param componentInstanceId the identifier of the component instance.
    * @return the list of calendars.
    */
-  public List<Calendar> getCalendarsOf(final String componentInstanceId) {
+  List<Calendar> getCalendarsOf(final String componentInstanceId) {
     // Retrieving the calendars
     List<Calendar> entities = Calendar.getByComponentInstanceId(componentInstanceId);
     // Sorting them by ascending creation date
-    Collections.sort(entities, new AbstractComplexComparator<Calendar>() {
+    entities.sort(new AbstractComplexComparator<Calendar>() {
       @Override
       protected ValueBuffer getValuesToCompare(final Calendar object) {
         return new ValueBuffer().append(object.getCreateDate());
@@ -199,7 +212,7 @@ public class CalendarWebServiceProvider {
    * @param calendar the calendar to save.
    * @return the calendar.
    */
-  public Calendar saveCalendar(Calendar calendar) {
+  Calendar saveCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
     String successfulMessageKey = calendar.isPersisted() ? "calendar.message.calendar.updated" :
         "calendar.message.calendar.created";
@@ -213,7 +226,8 @@ public class CalendarWebServiceProvider {
     calendar.save();
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(
-        getMultilang(userLanguage).getStringWithParams(successfulMessageKey, calendar.getTitle()));
+        getLocalizationBundle(userLanguage).getStringWithParams(successfulMessageKey,
+            calendar.getTitle()));
     return calendar;
   }
 
@@ -223,7 +237,7 @@ public class CalendarWebServiceProvider {
    * deleted (from a controller, a WEB service...)
    * @param calendar the calendar to delete.
    */
-  public void deleteCalendar(Calendar calendar) {
+  void deleteCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, calendar);
     if (owner.getDisplayedName().equals(calendar.getTitle())) {
@@ -231,7 +245,7 @@ public class CalendarWebServiceProvider {
     }
     calendar.delete();
     String userLanguage = owner.getUserPreferences().getLanguage();
-    getMessager().addSuccess(getMultilang(userLanguage)
+    getMessager().addSuccess(getLocalizationBundle(userLanguage)
         .getStringWithParams("calendar.message.calendar.deleted", calendar.getTitle()));
   }
 
@@ -239,7 +253,7 @@ public class CalendarWebServiceProvider {
    * Imports events as ICalendar format.
    * @param eventImport the import to perform.
    */
-  public void importEventsAsICalendarFormat(final ICalendarImport eventImport)
+  void importEventsAsICalendarFormat(final ICalendarImport eventImport)
       throws ICalendarException {
     final Stream<CalendarEvent> events = eventImport.streamEvents();
     Transaction.performInOne(() -> {
@@ -266,22 +280,6 @@ public class CalendarWebServiceProvider {
   }
 
   /**
-   * Creates an event from the given calendar and event data.<br/>
-   * This method handles also a common behavior the UI must have between each way an event is
-   * saved (from a controller, a WEB service...)
-   * @param calendar the calendar on which the event is added.
-   * @param event the event to create.
-   * @return the calendar event.
-   */
-  public CalendarEvent createEvent(Calendar calendar, CalendarEvent event) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, calendar);
-    event.planOn(calendar);
-    successMessage("calendar.message.event.created", event.getTitle());
-    return event;
-  }
-
-  /**
    * Saves an event from the given calendar event occurrence.<br/>
    * This method handles also a common behavior the UI must have between each way an event is
    * saved (from a controller, a WEB service...)
@@ -291,49 +289,59 @@ public class CalendarWebServiceProvider {
    * @param zoneId the zoneId into which dates are displayed (optional).
    * @return the calendar event.
    */
-  public List<CalendarEvent> saveEventFromAnOccurrence(CalendarEvent event,
+  List<CalendarEvent> saveEventFromAnOccurrence(CalendarEvent event,
       CalendarEventOccurrenceReference data, OccurrenceEventActionMethodType updateMethodType,
       final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, event.asCalendarComponent());
     OccurrenceEventActionMethodType methodType = updateMethodType == null ? ALL : updateMethodType;
 
-    final CalendarEventModificationResult result;
+    final EventOperationResult result;
     switch (methodType) {
       case FROM:
-        result = event.updateFrom(data);
+        // TODO CALENDAR update the event since the given occurrence
+        //result = event.updateSince(data);
+        result = null;
         break;
       case UNIQUE:
-        result = event.update(data);
+        // TODO CALENDAR update the event occurrence itself
+        //result = event.update(data);
+        result = null;
         break;
       default:
         result = event.update();
         break;
     }
 
-    if (!result.isCreatedEvent() || !result.getUpdatedEvent().isRecurrent()) {
-      successMessage("calendar.message.event.updated", result.getUpdatedEvent().getTitle());
-    } else {
-      final String bundleKey;
-      final Temporal endDate;
-      if (methodType == UNIQUE) {
-        bundleKey = "calendar.message.event.occurrence.updated.unique";
-        endDate = data.getOriginalStartDate();
-      } else {
-        bundleKey = "calendar.message.event.occurrence.updated.from";
-        endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
-      }
-      successMessage(bundleKey, result.getUpdatedEvent().getTitle(),
-          getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
-    }
-
     final List<CalendarEvent> events = new ArrayList<>();
-    events.add(result.getUpdatedEvent());
-    if (result.isCreatedEvent()) {
-      final CalendarEvent createdEvent = result.getCreatedEvent();
-      events.add(createdEvent);
-      successMessage("calendar.message.event.created", createdEvent.getTitle());
-    }
+    Optional<CalendarEvent> createdEvent = result.created();
+    Optional<CalendarEvent> updatedEvent = result.updated();
+
+    updatedEvent.ifPresent(e -> {
+      if (!createdEvent.isPresent() || e.isRecurrent()) {
+        successMessage("calendar.message.event.updated", e.getTitle());
+      } else {
+        final String bundleKey;
+        final Temporal endDate;
+        if (methodType == UNIQUE) {
+          bundleKey = "calendar.message.event.occurrence.updated.unique";
+          endDate = data.getOriginalStartDate();
+        } else {
+          bundleKey = "calendar.message.event.occurrence.updated.from";
+          //noinspection OptionalGetWithoutIsPresent
+          endDate = e.getRecurrence().getEndDate().get();
+        }
+        successMessage(bundleKey, e.getTitle(),
+            getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
+      }
+      events.add(e);
+    });
+
+    createdEvent.ifPresent(e -> {
+      events.add(e);
+      successMessage("calendar.message.event.created", e.getTitle());
+    });
+
     return events;
   }
 
@@ -346,27 +354,32 @@ public class CalendarWebServiceProvider {
    * @param deleteMethodType indicates the method of the occurrence deletion.
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
-  public CalendarEvent deleteEventFromAnOccurrence(CalendarEvent event,
+  CalendarEvent deleteEventFromAnOccurrence(CalendarEvent event,
       CalendarEventOccurrenceReference data, OccurrenceEventActionMethodType deleteMethodType,
       final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, event.asCalendarComponent());
     OccurrenceEventActionMethodType methodType = deleteMethodType == null ? ALL : deleteMethodType;
 
-    final CalendarEventModificationResult result;
+    final EventOperationResult result;
     switch (methodType) {
       case FROM:
-        result = event.deleteFrom(data);
+        // TODO CALENDAR delete the event since the given occurrence
+        //result = event.deleteSince(data);
+        result = null;
         break;
       case UNIQUE:
-        result = event.delete(data);
+        // TODO CALENDAR delete the event occurrence itself
+        //result = event.deleteOnly(data);
+        result = null;
         break;
       default:
         result = event.delete();
         break;
     }
 
-    if (!result.isUpdatedEvent() || !result.getUpdatedEvent().isRecurrent()) {
+    Optional<CalendarEvent> updatedEvent = result.updated();
+    if (!updatedEvent.isPresent() || !updatedEvent.get().isRecurrent()) {
       successMessage("calendar.message.event.deleted", event.getTitle());
     } else {
       final String bundleKey;
@@ -376,13 +389,14 @@ public class CalendarWebServiceProvider {
         endDate = data.getOriginalStartDate();
       } else {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
-        endDate = result.getUpdatedEvent().getRecurrence().getEndDate().get();
+        //noinspection OptionalGetWithoutIsPresent
+        endDate = updatedEvent.get().getRecurrence().getEndDate().get();
       }
       successMessage(bundleKey, event.getTitle(),
           getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
     }
 
-    return result.getUpdatedEvent();
+    return updatedEvent.get();
   }
 
   /**
@@ -397,7 +411,7 @@ public class CalendarWebServiceProvider {
    * @param answerMethodType indicates the method of the occurrence deletion.
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
-  public CalendarEvent updateEventAttendeeParticipationFromAnOccurrence(CalendarEvent event,
+  CalendarEvent updateEventAttendeeParticipationFromAnOccurrence(CalendarEvent event,
       CalendarEventOccurrenceReference data, String attendeeId,
       ParticipationStatus participationStatus, OccurrenceEventActionMethodType answerMethodType,
       final ZoneId zoneId) {
@@ -441,7 +455,7 @@ public class CalendarWebServiceProvider {
           }
         }
 
-        final CalendarEventModificationResult result = event.update();
+        final EventOperationResult result = event.update();
         switch (methodType) {
           case ALL:
             successMessage("calendar.message.event.attendee.participation.updated",
@@ -455,7 +469,7 @@ public class CalendarWebServiceProvider {
             break;
         }
 
-        return result.getUpdatedEvent();
+        return result.updated().get();
       }
     }
 
@@ -471,7 +485,7 @@ public class CalendarWebServiceProvider {
    * @param endDate the end date of time window.
    * @return a list of entities of calendar event occurrences.
    */
-  public List<CalendarEventOccurrence> getEventOccurrencesOf(Calendar calendar,
+  List<CalendarEventOccurrence> getEventOccurrencesOf(Calendar calendar,
       LocalDate startDate, LocalDate endDate) {
     return calendar.between(startDate, endDate).getEventOccurrences();
   }
@@ -488,7 +502,7 @@ public class CalendarWebServiceProvider {
    * @param users the users to filter on.
    * @return a list of entities of calendar event occurrences mapped by user identifiers.
    */
-  public Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
+  Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
       final Pair<String, User> currentUserAndComponentInstanceId, LocalDate startDate,
       LocalDate endDate, Collection<User> users) {
     // Retrieving the occurrences
@@ -514,6 +528,18 @@ public class CalendarWebServiceProvider {
   }
 
   /**
+   * Centralization of checking if the specified user is the creator of the specified entity.
+   * @param user the user to verify.
+   * @param entity the calendar to check.
+   */
+  private void checkUserIsCreator(User user, Entity entity) {
+    assertEntityIsDefined(entity);
+    if (!user.equals(entity.getCreator())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
    * Push a success message to the current user.
    * @param messageKey the key of the message.
    * @param params the message parameters.
@@ -521,20 +547,11 @@ public class CalendarWebServiceProvider {
   private void successMessage(String messageKey, String... params) {
     User owner = User.getCurrentRequester();
     String userLanguage = owner.getUserPreferences().getLanguage();
-    getMessager().addSuccess(getMultilang(userLanguage).getStringWithParams(messageKey, params));
+    getMessager().addSuccess(
+        getLocalizationBundle(userLanguage).getStringWithParams(messageKey, params));
   }
 
   private WebMessager getMessager() {
     return WebMessager.getInstance();
-  }
-
-  /**
-   * Gets the common calendar bundle according to the given locale.
-   * @param locale the locale into which the requested bundle must be set.
-   * @return a localized bundle.
-   */
-  public LocalizationBundle getMultilang(String locale) {
-    return ResourceLocator
-        .getLocalizationBundle("org.silverpeas.calendar.multilang.calendarBundle", locale);
   }
 }

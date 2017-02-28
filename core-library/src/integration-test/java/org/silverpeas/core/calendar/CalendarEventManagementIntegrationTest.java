@@ -49,8 +49,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.core.calendar.CalendarEventOccurrenceReference
-    .fromOccurrenceId;
 
 /**
  * Integration tests on the getting, on the saving, on the deletion and on the update of the events
@@ -361,7 +359,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   }
 
   @Test
-  public void deleteTheSingleEventOccurrenceDeleteTheEventItself() {
+  public void deleteTheSingleEventOccurrenceDeleteTheEventItself() throws Exception {
     Calendar calendar = Calendar.getById("ID_2");
     List<CalendarEventOccurrence> occurrences =
         calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
@@ -369,11 +367,15 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEventOccurrence occurrence = occurrences.get(0);
     CalendarEvent event = occurrence.getCalendarEvent();
     String eventIdBeforeDeletion = event.getId();
-    event.delete(fromOccurrenceId(occurrence.getId()));
+    event.deleteOnly(occurrence);
 
     assertThat(calendar.event(eventIdBeforeDeletion).isPresent(), is(false));
     assertThat(calendar.in(YearMonth.of(2016, 1)).getEventOccurrences().isEmpty(),
         is(true));
+
+    TableLine component =
+        getCalendarComponentTableLineById(event.asCalendarComponent().getId());
+    assertThat(component, nullValue());
   }
 
   @Test
@@ -420,12 +422,14 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEvent event = calendar.event("ID_E_3").get();
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
+    assertThat(event.getSequence(), is(0l));
 
     final String title = "An updated title";
     event.setTitle(title);
     event.update();
 
     event = calendar.event("ID_E_3").get();
+    assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getTitle(), is(title));
   }
@@ -436,12 +440,14 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEvent event = calendar.event("ID_E_3").get();
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
+    assertThat(event.getSequence(), is(0l));
 
     final String category = "Personal";
     event.getCategories().add(category);
     event.update();
 
     event = calendar.event("ID_E_3").get();
+    assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getCategories().contains(category), is(true));
   }
@@ -451,6 +457,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_3").get();
     Date lastUpdateDate = event.getLastUpdateDate();
+    assertThat(event.getSequence(), is(0l));
     assertThat(event.isPlanned(), is(true));
     assertThat(event.getVisibilityLevel(), not(VisibilityLevel.CONFIDENTIAL));
 
@@ -458,6 +465,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     event.update();
 
     event = calendar.event("ID_E_3").get();
+    assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getVisibilityLevel(), is(VisibilityLevel.CONFIDENTIAL));
   }
@@ -486,16 +494,15 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEventOccurrence occurrence = occurrences.get(0);
     assertThat(occurrence.getSequence(), is(0l));
     assertThat(occurrence.getCalendarEvent().getSequence(), is(0l));
-    assertThat(occurrence.getCalendarEvent().isOnAllDay(), is(false));
     assertThat(occurrence.getCalendarEvent().getRecurrence(), nullValue());
     assertThat(occurrence.getStartDate(), is(OffsetDateTime.parse("2016-01-05T08:00:00Z")));
     assertThat(occurrence.getEndDate(), is(OffsetDateTime.parse("2016-01-21T16:50:00Z")));
 
     CalendarEvent event = occurrence.getCalendarEvent();
-    event.asCalendarComponent().setLastUpdatedBy("1");
     final Period newPeriod =
         Period.between(occurrence.getStartDate(), OffsetDateTime.parse("2016-01-05T10:30:00Z"));
-    event.update(fromOccurrenceId(occurrence.getId()).withPeriod(newPeriod));
+    occurrence.setPeriod(newPeriod);
+    event.updateOnly(occurrence);
 
     occurrences = calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));

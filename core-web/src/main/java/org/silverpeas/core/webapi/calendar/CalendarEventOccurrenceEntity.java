@@ -207,7 +207,7 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
     final CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
     this.occurrenceId = calendarEventOccurrence.getId();
     this.calendarZoneId = event.getCalendar().getZoneId().toString();
-    this.lastStartDate = calendarEventOccurrence.getLastStartDate().toString();
+    this.lastStartDate = calendarEventOccurrence.getOriginalStartDate().toString();
     this.startDate = formatDateWithOffset(event, calendarEventOccurrence.getStartDate(), zoneId);
     this.endDate = formatDateWithOffset(event, calendarEventOccurrence.getEndDate(), zoneId);
     return this;
