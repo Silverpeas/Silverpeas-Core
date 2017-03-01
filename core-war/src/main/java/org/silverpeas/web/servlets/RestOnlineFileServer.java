@@ -42,7 +42,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
-import org.silverpeas.core.webapi.attachment.SimpleDocumentResource;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -52,12 +51,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
- * @deprecated this servlet is replaced by the SimpleDocumentResource REST service
- * @see SimpleDocumentResource#getFileContent(String)
+ * This servlet serves the content of attachments whatever their types.
  */
-@Deprecated
 public class RestOnlineFileServer extends AbstractFileSender {
   private static final long serialVersionUID = 4039504051749955604L;
 
@@ -79,39 +77,38 @@ public class RestOnlineFileServer extends AbstractFileSender {
   public void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(req, "");
-
     try {
-      SilverpeasFile file = getWantedFile(restRequest);
-      if (file != null) {
-        if (file == SilverpeasFile.NO_FILE) {
-          throw new FileNotFoundException();
-        }
-        sendFile(res, file);
-        return;
+      Optional<SilverpeasFile> file = getWantedFile(restRequest);
+      if (file.isPresent()) {
+        sendFile(res, file.get());
+      } else {
+        displayWarningHtmlCode(res);
       }
     } catch (FileNotFoundException ex) {
+      SilverLogger.getLogger(this).error("Requested file not found!", ex);
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
       res.sendError(res.getStatus());
-      return;
     } catch (IllegalAccessException ex) {
+      SilverLogger.getLogger(this).error("Forbidden access to the requested file", ex);
       res.setStatus(HttpServletResponse.SC_FORBIDDEN);
       res.sendError(res.getStatus());
-      return;
     } catch (Exception ex) {
       throw new ServletException(ex);
     }
-    displayWarningHtmlCode(res);
   }
 
-  protected SilverpeasFile getWantedFile(RestRequest restRequest) throws Exception {
+  private Optional<SilverpeasFile> getWantedFile(RestRequest restRequest) throws Exception {
     SilverpeasFile file = getWantedAttachment(restRequest);
     if (file == SilverpeasFile.NO_FILE) {
       file = getWantedVersionnedDocument(restRequest);
     }
-    return file;
+    if (file == SilverpeasFile.NO_FILE) {
+      throw new FileNotFoundException();
+    }
+    return Optional.ofNullable(file);
   }
 
-  protected SilverpeasFile getWantedAttachment(RestRequest restRequest) throws Exception {
+  private SilverpeasFile getWantedAttachment(RestRequest restRequest) throws Exception {
     String componentId = restRequest.getElementValue("componentId");
     String attachmentId = restRequest.getElementValue("attachmentId");
     String language = restRequest.getElementValue("lang");
@@ -135,7 +132,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return file;
   }
 
-  protected SilverpeasFile getWantedVersionnedDocument(RestRequest restRequest) throws Exception {
+  private SilverpeasFile getWantedVersionnedDocument(RestRequest restRequest) throws Exception {
     String componentId = restRequest.getElementValue("componentId");
     String documentId = restRequest.getElementValue("documentId");
     String fileName = restRequest.getElementValue("name");
@@ -190,8 +187,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return false;
   }
 
-  private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment)
-      throws Exception {
+  private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment) {
     AccessController<SimpleDocument> accessController = AccessControllerProvider
         .getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(userId, attachment,
