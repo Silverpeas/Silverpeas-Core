@@ -4253,6 +4253,7 @@ input.search:focus {
   z-index:100;
 }
 
+.userzoom-tooltip-interaction-action-relation,
 .userzoom-tooltip-interaction-action-invitation  {
   border: 1px solid #aeaeae;
   color: #333366;
@@ -4263,10 +4264,20 @@ input.search:focus {
   display:block;
 }
 
+.userzoom-tooltip-interaction-action-relation span,
 .userzoom-tooltip-interaction-action-invitation span {
-  background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
   padding-left:32px;
   display:block;
+}
+
+.userzoom-tooltip-interaction-action-invitation.invitation span {
+  background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
+}
+
+.userzoom-tooltip-interaction-action-invitation.view-invitation span,
+.userzoom-tooltip-interaction-action-invitation.cancel-invitation span,
+.userzoom-tooltip-interaction-action-relation.delete-relation span {
+  background:transparent url(../icons/contacts.png) 10px 4px no-repeat;
 }
 
 .userzoom-tooltip-info-userName a{

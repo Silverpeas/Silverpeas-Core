@@ -38,6 +38,7 @@ import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class InvitationService {
   /**
    * Default Constructor
    */
-  public InvitationService() {
+  private InvitationService() {
   }
 
   /**
@@ -122,8 +123,8 @@ public class InvitationService {
    * @return -1 if this Invitation not exists, -2 if the RelationShip already exists, else the id of
    * RelationShip if the action has been done successfully
    */
-  public int accepteInvitation(int idInvitation) {
-    int resultAccepteInvitation = 0;
+  public int acceptInvitation(int idInvitation) {
+    int resultAcceptInvitation = 0;
     Connection connection = null;
     try {
       connection = getConnection();
@@ -132,10 +133,10 @@ public class InvitationService {
       RelationShip ship1 = null;
       RelationShip ship2 = null;
       if (invitation == null) {
-        resultAccepteInvitation = -1;
+        resultAcceptInvitation = -1;
       } else if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.
           getReceiverId())) {
-        resultAccepteInvitation = -2;
+        resultAcceptInvitation = -2;
       } else {
         ship1 = new RelationShip();
         ship1.setUser1Id(invitation.getSenderId());
@@ -150,27 +151,28 @@ public class InvitationService {
         ship2.setInviterId(invitation.getSenderId());
 
         invitationDao.deleteSameInvitations(connection, idInvitation);
-        resultAccepteInvitation = relationShipDao.createRelationShip(connection, ship1);
+        resultAcceptInvitation = relationShipDao.createRelationShip(connection, ship1);
         relationShipDao.createRelationShip(connection, ship2);
       }
       connection.commit();
 
-      if (ship1 != null && ship2 != null) {
+      if (ship1 != null) {
         // notify on relationship creation
-        relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship1);
-        relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship2);
+        for (RelationShip ship : Arrays.asList(ship1, ship2)) {
+          relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.CREATION, ship);
+        }
       }
 
       // alert sender of receiver acceptation
       alertAcceptation(invitation);
     } catch (Exception ex) {
-      resultAccepteInvitation = 0;
+      resultAcceptInvitation = 0;
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
-    return resultAccepteInvitation;
+    return resultAcceptInvitation;
   }
 
   /**

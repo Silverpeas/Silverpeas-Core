@@ -25,6 +25,7 @@ package org.silverpeas.web.directory.servlets;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -106,6 +107,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           destination = doPagination(request, users, directorySC);
         }
         request.setAttribute("ShowHelp", true);
+      } else if ("RemoveUserFromLists".equals(function)) {
+        String userId = request.getParameter("UserId");
+        if (StringUtil.isDefined(userId)) {
+          directorySC.removeUserFromLists(User.getById(userId));
+        }
+        users = directorySC.getLastListOfUsersCalled();
+        destination = doPagination(request, users, directorySC);
       } else if ("CommonContacts".equals(function)) {
         String userId = request.getParameter("UserId");
         users = directorySC.getCommonContacts(userId);

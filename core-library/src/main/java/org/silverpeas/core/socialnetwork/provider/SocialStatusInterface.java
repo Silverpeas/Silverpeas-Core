@@ -40,7 +40,7 @@ public interface SocialStatusInterface {
    * @return
    * @throws SilverpeasException
    */
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end)
       throws
       SilverpeasException;
 
@@ -53,6 +53,6 @@ public interface SocialStatusInterface {
    * @return
    * @throws SilverpeasException
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
+  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> myContactsIds,
       Date begin, Date end);
 }

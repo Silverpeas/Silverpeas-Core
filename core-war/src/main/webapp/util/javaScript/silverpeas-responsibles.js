@@ -44,7 +44,6 @@
         $(target).empty();
         __getResponsibles(true, spaceId).then(function(data) {
           __prepareContent($(target), userId, true, data.usersAndGroupsRoles, onlySpaceManagers);
-          __loadUserZoomPlugins();
         });
       });
     },
@@ -97,7 +96,6 @@
     $display = $('<div>', {id: 'responsible-popup-content'}).css('display',
         'none').appendTo(document.body);
     __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles, false);
-    __loadUserZoomPlugins();
 
     // Popup
     $display.popup('free', {
@@ -129,11 +127,11 @@
             });
           });
     }
-    return Promise.resolve(result);
+    return sp.promise.resolveDirectlyWith(result);
   }
 
   /**
-   * Prepares the content to display.
+   * Prepares the content to display and returns a promise when dom is prepared.
    * @param $target
    * @param userId
    * @param isSpace
@@ -142,10 +140,12 @@
    * @private
    */
   function __prepareContent($target, userId, isSpace, usersAndGroupsRoles, onlySpaceManagers) {
+    var aimedRoles = ['Manager', 'admin'];
+    var promises = [];
     var $newLine = null;
-    $.each(['Manager', 'admin'], function(index, role) {
+    $.each(aimedRoles, function(index, role) {
       var usersAndGroups = usersAndGroupsRoles[role];
-      __getAllDataOfUsers(usersAndGroups).then(function(dataOfUsers) {
+      var userPromise = __getAllDataOfUsers(usersAndGroups).then(function(dataOfUsers) {
         if (dataOfUsers.length > 0) {
           $target.append($newLine);
           if (isSpace) {
@@ -161,9 +161,10 @@
           $newLine = $('<br/>');
         }
       });
+      promises.push(userPromise);
     });
     if (!onlySpaceManagers && isSpace) {
-      User.get({
+      var adminPromise = User.get({
         accessLevel : ['ADMINISTRATOR']
       }).then(function(users) {
         var administrators = [];
@@ -180,7 +181,11 @@
           $newLine = $('<br/>');
         }
       });
+      promises.push(adminPromise);
     }
+    return sp.promise.whenAllResolved(promises).then(function() {
+      __loadUserZoomPlugins();
+    });
   }
 
   /**
@@ -243,7 +248,7 @@
               }));
             }
           });
-          Promise.all(userPromises).then(function() {
+          sp.promise.whenAllResolved(userPromises).then(function() {
             resolve();
           });
         }));
@@ -272,19 +277,19 @@
               })
             }));
           });
-          Promise.all(groupPromises).then(function() {
+          sp.promise.whenAllResolved(groupPromises).then(function() {
             resolve();
           });
         }));
       }
 
       // Sorting users by their names
-      return Promise.all(promises).then(function() {
+      return sp.promise.whenAllResolved(promises).then(function() {
         dataOfUsers.sort(__sortByName);
         return dataOfUsers;
       });
     }
-    return Promise.resolve([]);
+    return sp.promise.resolveDirectlyWith([]);
   }
 
   /**
@@ -328,21 +333,15 @@
         });
       }));
     }
-    return Promise.all(promises);
+    return sp.promise.whenAllResolved(promises);
   }
 
   /**
    * Centralized method to load user zoom plugins.
    */
   function __loadUserZoomPlugins() {
-    $.ajax({
-      url: webContext + "/util/javaScript/silverpeas-relationship.js",
-      dataType: "script"
-    });
-    $.ajax({
-      url: webContext + "/util/javaScript/silverpeas-userZoom.js",
-      dataType: "script"
-    });
+    $.getScript(webContext + '/util/javaScript/silverpeas-relationship.js');
+    $.getScript(webContext + '/util/javaScript/silverpeas-userZoom.js');
   }
 
   /**

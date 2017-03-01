@@ -32,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +72,7 @@ public class InvitationDao {
       pstmt.setInt(2, invitation.getSenderId());
       pstmt.setInt(3, invitation.getReceiverId());
       pstmt.setString(4, invitation.getMessage());
-      pstmt.setTimestamp(5, new Timestamp(new Date().getTime()));
+      pstmt.setTimestamp(5, Timestamp.from(Instant.now()));
       pstmt.executeUpdate();
     } finally {
       DBUtil.close(pstmt);

@@ -167,7 +167,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
           break;
 
         case STATUS:
-          listResult = getSocialStatusInterface().getSocialInformationsList(userId, begin, end);
+          listResult = getSocialStatusInterface().getSocialInformationList(userId, begin, end);
           break;
 
         case RELATIONSHIP:
@@ -353,7 +353,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case STATUS:
           list = getSocialStatusInterface()
-              .getSocialInformationsListOfMyContacts(myContactsIds, begin, end);
+              .getSocialInformationListOfMyContacts(myContactsIds, begin, end);
           break;
 
         case RELATIONSHIP:

@@ -55,10 +55,10 @@ public class JSONServlet extends HttpServlet {
       String status = request.getParameter("status");
       // if status is empty or set with a text, update it (an empty status means no status)
       if (status != null) {
-        status = socialNetworkService.changeStatusService(status);
+        status = socialNetworkService.changeStatus(status);
       } else {
         // if status equal null don't do update status and do get Last status
-        status = Encode.forHtml(socialNetworkService.getLastStatusService());
+        status = Encode.forHtml(socialNetworkService.getLastStatus());
       }
       final String jsonStatus = status;
       PrintWriter out = response.getWriter();

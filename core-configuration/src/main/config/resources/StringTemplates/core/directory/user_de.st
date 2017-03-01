@@ -44,9 +44,9 @@
     $if(invitationSent)$
       <a href="#" rel="$invitationSent$" class="link cancel-invitation">Einladung stornieren</a>
     $elseif(invitationReceived)$
-      <a href="$context$/RMyProfil/jsp/MyInvitations" class="link view-invitation">Siehe Einladung</a>
+      <a href="#" rel="$invitationReceived$" class="link view-invitation">Siehe Einladung</a>
     $elseif(aContact)$
-      <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link delete-relation">Entfernen von meinen Kontakten</a>
+      <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$,deleteRelationCallback" class="link delete-relation">Entfernen von meinen Kontakten</a>
     $else$
       <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link invitation">Schicken Sie eine Einladung</a>
     $endif$

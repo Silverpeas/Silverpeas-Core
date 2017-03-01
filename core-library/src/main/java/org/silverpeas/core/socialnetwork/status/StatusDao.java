@@ -123,7 +123,7 @@ public class StatusDao {
       pstmt.setTimestamp(3, new Timestamp(end.getTime()));
       rs = pstmt.executeQuery();
 
-      return getSocialInformationsList(rs);
+      return getSocialInformationList(rs);
     } finally {
       DBUtil.close(rs, pstmt);
     }
@@ -139,7 +139,7 @@ public class StatusDao {
    * @return List<SocialInformationStatus>
    * @throws SQLException
    */
-  List<SocialInformation> getSocialInformationsListOfMyContacts(Connection connection,
+  List<SocialInformation> getSocialInformationListOfMyContacts(Connection connection,
       List<String> myContactsIds, Date begin, Date end) throws SQLException {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -155,13 +155,13 @@ public class StatusDao {
       pstmt.setTimestamp(2, new Timestamp(end.getTime()));
       rs = pstmt.executeQuery();
 
-      return getSocialInformationsList(rs);
+      return getSocialInformationList(rs);
     } finally {
       DBUtil.close(rs, pstmt);
     }
   }
 
-  private List<SocialInformation> getSocialInformationsList(ResultSet rs) throws SQLException {
+  private List<SocialInformation> getSocialInformationList(ResultSet rs) throws SQLException {
     List<SocialInformation> status_list = new ArrayList<SocialInformation>();
     while (rs.next()) {
       Status status = new Status();

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.socialnetwork.invitation;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -41,7 +41,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.webapi.socialnetwork.invitation.InvitationEntity.fromInvitation;
 
 /**
  * It represents a resource published in the WEB that represents an invitation emitted by a user to
@@ -62,19 +66,19 @@ public class InvitationResource extends RESTWebService {
   @Path("inbox")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public InvitationEntity[] getReceivedInvitations() {
+  public List<InvitationEntity> getReceivedInvitations() {
     List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(Integer.valueOf(
             getUserDetail().getId()));
-    return asWebEntity(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
+    return asWebEntities(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
   }
 
   @Path("outbox")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public InvitationEntity[] getSentInvitations() {
+  public List<InvitationEntity> getSentInvitations() {
     List<Invitation> invitations = invitationService.getAllMyInvitationsSent(Integer.valueOf(
             getUserDetail().getId()));
-    return asWebEntity(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
+    return asWebEntities(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
   }
 
   @Path("{id}")
@@ -97,7 +101,7 @@ public class InvitationResource extends RESTWebService {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response acceptInvitation(@PathParam("id") final Integer id) {
-    invitationService.accepteInvitation(id);
+    invitationService.acceptInvitation(id);
     return Response.ok().build();
   }
 
@@ -124,19 +128,16 @@ public class InvitationResource extends RESTWebService {
     return uri;
   }
 
-  private InvitationEntity[] asWebEntity(List<Invitation> invitations, UriBuilder baseUri) {
-    InvitationEntity[] entities = new InvitationEntity[invitations.size()];
+  private List<InvitationEntity> asWebEntities(List<Invitation> invitations, UriBuilder baseUri) {
     baseUri.path("{invitationId}");
-    for (int i = 0; i < invitations.size(); i++) {
-      Invitation invitation = invitations.get(i);
-      entities[i] = InvitationEntity.fromInvitation(invitation).withAsUri(baseUri.build(invitation.
-              getId()));
-    }
-    return entities;
+    return invitations.stream()
+        .map(invitation ->
+            fromInvitation(invitation).withAsUri(baseUri.build(invitation.getId())))
+        .collect(Collectors.toList());
   }
 
   private InvitationEntity asWebEntity(Invitation invitation, UriBuilder baseUri) {
     baseUri.path("{invitationId}");
-    return InvitationEntity.fromInvitation(invitation).withAsUri(baseUri.build(invitation.getId()));
+    return fromInvitation(invitation).withAsUri(baseUri.build(invitation.getId()));
   }
 }

@@ -44,9 +44,9 @@
     $if(invitationSent)$
       <a href="#" rel="$invitationSent$" class="link cancel-invitation">Cancel invitation</a>
     $elseif(invitationReceived)$
-      <a href="$context$/RMyProfil/jsp/MyInvitations" class="link view-invitation">View invitation</a>
+      <a href="#" rel="$invitationReceived$" class="link view-invitation">View invitation</a>
     $elseif(aContact)$
-      <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link delete-relation">Remove from my contacts</a>
+      <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$,deleteRelationCallback" class="link delete-relation">Remove from my contacts</a>
     $else$
       <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link invitation">Send an invitation</a>
     $endif$

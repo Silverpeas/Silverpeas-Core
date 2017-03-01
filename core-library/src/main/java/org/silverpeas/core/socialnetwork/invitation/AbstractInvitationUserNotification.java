@@ -8,7 +8,7 @@ import org.silverpeas.core.util.CollectionUtil;
 import java.util.Collection;
 
 /**
- * Created by Nicolas on 03/02/2017.
+ * @author Nicolas Eysseric.
  */
 public abstract class AbstractInvitationUserNotification
     extends AbstractTemplateUserNotificationBuilder<Invitation> {
@@ -74,4 +74,8 @@ public abstract class AbstractInvitationUserNotification
     return CollectionUtil.asList(String.valueOf(getResource().getSenderId()));
   }
 
+  @Override
+  protected boolean isSendImmediatly() {
+    return true;
+  }
 }

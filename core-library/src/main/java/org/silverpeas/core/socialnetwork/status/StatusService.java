@@ -24,19 +24,18 @@
 
 package org.silverpeas.core.socialnetwork.status;
 
+import org.silverpeas.core.date.Date;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.UtilException;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class StatusService {
@@ -62,7 +61,7 @@ public class StatusService {
    * @param status
    * @return String
    */
-  public String changeStatusService(Status status) {
+  public String changeStatus(Status status) {
     Connection connection = null;
     int id = -1;
     try {
@@ -72,8 +71,7 @@ public class StatusService {
         return status.getDescription();
       }
     } catch (Exception ex) {
-      SilverTrace
-          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.changeStatus", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -85,15 +83,14 @@ public class StatusService {
    * @param userid
    * @return
    */
-  public Status getLastStatusService(int userid) {
+  public Status getLastStatus(int userid) {
     Connection connection = null;
     Status status = new Status();
     try {
       connection = getConnection();
       status = statusDao.getLastStatus(connection, userid);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getLastStatus", "",
-          ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -108,14 +105,13 @@ public class StatusService {
    * @param end
    * @return List<SocialInformationStatus>
    */
-  public List<SocialInformation> getAllStatusService(int userId, Date begin, Date end) {
+  public List<SocialInformation> getAllStatus(int userId, Date begin, Date end) {
     Connection connection = null;
     try {
       connection = getConnection();
       return statusDao.getAllStatus(connection, userId, begin, end);
     } catch (Exception ex) {
-      SilverTrace
-          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getAllStatus", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }
@@ -130,15 +126,14 @@ public class StatusService {
    * @param end
    * @return List<SocialInformationStatus>
    */
-  List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
+  List<SocialInformation> getSocialInformationListOfMyContacts(List<String> myContactsIds,
       Date begin, Date end) {
     Connection connection = null;
     try {
       connection = getConnection();
-      return statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds, begin, end);
+      return statusDao.getSocialInformationListOfMyContacts(connection, myContactsIds, begin, end);
     } catch (Exception ex) {
-      SilverTrace
-          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getAllStatus", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } finally {
       DBUtil.close(connection);
     }

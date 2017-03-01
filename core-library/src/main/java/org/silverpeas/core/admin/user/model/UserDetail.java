@@ -666,8 +666,7 @@ public class UserDetail implements User {
   @Override
   public String getStatus() {
     StatusService statusService = ServiceProvider.getService(StatusService.class);
-    String status =
-        statusService.getLastStatusService(Integer.parseInt(getId())).getDescription();
+    String status = statusService.getLastStatus(Integer.parseInt(getId())).getDescription();
     if (isDefined(status)) {
       return status;
     }

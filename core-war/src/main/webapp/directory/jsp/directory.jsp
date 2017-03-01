@@ -37,6 +37,7 @@
 
 <view:setConstant var="DIRECTORY_DEFAULT" constant="org.silverpeas.web.directory.control.DirectorySessionController.DIRECTORY_DEFAULT"/>
 <view:setConstant var="DIRECTORY_DOMAIN" constant="org.silverpeas.web.directory.control.DirectorySessionController.DIRECTORY_DOMAIN"/>
+<view:setConstant var="DIRECTORY_MINE" constant="org.silverpeas.web.directory.control.DirectorySessionController.DIRECTORY_MINE"/>
 <view:setConstant var="SORT_PERTINENCE" constant="org.silverpeas.web.directory.control.DirectorySessionController.SORT_PERTINENCE"/>
 <view:setConstant var="SORT_ALPHA" constant="org.silverpeas.web.directory.control.DirectorySessionController.SORT_ALPHA"/>
 <view:setConstant var="SORT_NEWEST" constant="org.silverpeas.web.directory.control.DirectorySessionController.SORT_NEWEST"/>
@@ -128,6 +129,21 @@
       });
     }
 
+    <c:if test="${(scope == DIRECTORY_MINE)}">
+    function deleteRelationCallback(withUser) {
+      $.progressMessage();
+      var currentParams = location.href.split('?');
+      var url = '<c:url value="/Rdirectory/jsp/RemoveUserFromLists?UserId="/>' + withUser.id;
+      if (currentParams.length > 1) {
+        url += '&' + currentParams[1];
+      }
+      sp.load('#myContacts', url, true).then(function() {
+        $.closeProgressMessage();
+        activateUserZoom();
+      });
+    }
+    </c:if>
+
     $(function() {
       $("#dialog-message").dialog({
         modal : true,
@@ -199,37 +215,38 @@
         </div>
       </c:if>
     </div>
-    <c:choose>
-      <c:when test="${empty fragments}">
-        <div class="inlineMessage">
-          <fmt:message key="directory.result.none"/>
-        </div>
-        <br clear="all"/>
-      </c:when>
-      <c:otherwise>
-        <div class="ArrayNavigation" align="center">
-          <fmt:message key="directory.result.some" var="paginationCounterSuffix">
-            <fmt:param value="${fn:length(fragments)}"/>
-          </fmt:message>
-            ${paginationCounter} ${paginationCounterSuffix}
-        </div>
-        <div id="users">
-          <ol class="message_list aff_colonnes">
-            <c:forEach items="${fragments}" var="fragment">
-              <li class="intfdcolor ${fragment.type} showActionsOnMouseOver" id="user-${fragment.userId}">
-                  ${fragment.fragment}
-                <br clear="all"/>
-              </li>
-            </c:forEach>
-          </ol>
-          <div id="pagination">
-              ${pagination.printIndex('doPagination')}
+    <div id="myContacts">
+      <c:choose>
+        <c:when test="${empty fragments}">
+          <div class="inlineMessage">
+            <fmt:message key="directory.result.none"/>
           </div>
-        </div>
-      </c:otherwise>
-    </c:choose>
+          <br clear="all"/>
+        </c:when>
+        <c:otherwise>
+          <div class="ArrayNavigation" align="center">
+            <fmt:message key="directory.result.some" var="paginationCounterSuffix">
+              <fmt:param value="${fn:length(fragments)}"/>
+            </fmt:message>
+              ${paginationCounter} ${paginationCounterSuffix}
+          </div>
+          <div id="users">
+            <ol class="message_list aff_colonnes">
+              <c:forEach items="${fragments}" var="fragment">
+                <li class="intfdcolor ${fragment.type} showActionsOnMouseOver" id="user-${fragment.userId}">
+                    ${fragment.fragment}
+                  <br clear="all"/>
+                </li>
+              </c:forEach>
+            </ol>
+            <div id="pagination">
+                ${pagination.printIndex('doPagination')}
+            </div>
+          </div>
+        </c:otherwise>
+      </c:choose>
+    </div>
   </view:frame>
-
 </view:window>
 
 <view:progressMessage/>

@@ -32,8 +32,8 @@
 
   /**
    * The user messaging Silverpeas plugin built atop of JQuery.
-   * It binds the click events onto the HTML element for which it opens a popup window through which a user
-   * can send a message to another one.
+   * It binds the click events onto the HTML element for which it opens a popup window through
+   * which a user can send a message to another one.
    */
   $.fn.messageMe = function(user) {
 
@@ -163,21 +163,25 @@
   }
 })(jQuery);
 
+function activateMessageMe() {
+  jQuery(document).ready(function() {
+    jQuery('.notification').each(function(i, element) {
+      var userParams = jQuery(element).attr('rel');
+      if (userParams && userParams.length > 1) {
+        userParams = userParams.split(',');
+        if (!jQuery(element).data('messageMe')) {
+          jQuery(element).messageMe({
+            id: userParams[0],
+            fullName: userParams[1]
+          });
+        }
+      }
+    });
+  });
+}
+
 /**
  * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
  * javascript plugin.
  */
-jQuery(document).ready(function() {
-  jQuery('.notification').each(function(i, element) {
-    var userParams = jQuery(element).attr('rel');
-    if (userParams && userParams.length > 1) {
-      userParams = userParams.split(',');
-      if (!jQuery(element).data('messageMe')) {
-        jQuery(element).messageMe({
-          id: userParams[0],
-          fullName: userParams[1]
-        });
-      }
-    }
-  });
-});
+activateMessageMe();

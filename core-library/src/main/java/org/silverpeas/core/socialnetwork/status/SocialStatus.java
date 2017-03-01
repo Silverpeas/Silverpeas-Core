@@ -55,9 +55,8 @@ public class SocialStatus implements SocialStatusInterface {
    * @return List
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userid, Date begin, Date end) {
-
-    return getStatusService().getAllStatusService(Integer.parseInt(userid), begin, end);
+  public List<SocialInformation> getSocialInformationList(String userid, Date begin, Date end) {
+    return getStatusService().getAllStatus(Integer.parseInt(userid), begin, end);
   }
 
   /**
@@ -69,9 +68,8 @@ public class SocialStatus implements SocialStatusInterface {
    * @return List
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(
+  public List<SocialInformation> getSocialInformationListOfMyContacts(
       List<String> myContactsIds, Date begin, Date end) {
-
-    return getStatusService().getSocialInformationsListOfMyContacts(myContactsIds, begin, end);
+    return getStatusService().getSocialInformationListOfMyContacts(myContactsIds, begin, end);
   }
 }

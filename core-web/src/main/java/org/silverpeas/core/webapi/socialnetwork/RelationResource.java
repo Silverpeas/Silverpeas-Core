@@ -29,7 +29,6 @@ import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -39,7 +38,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * It represents a resource published in the WEB that represents the relationship of a user.
- *
+ * <p>
  * The WEB resource belongs always to the current user in the session underlying at the HTTP
  * request.
  */
@@ -53,7 +52,6 @@ public class RelationResource extends RESTWebService {
 
   @DELETE
   @Path("{userId}")
-  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response deleteRelation(@PathParam("userId") final String userId) {
     boolean removed = relationShipService
@@ -67,7 +65,7 @@ public class RelationResource extends RESTWebService {
 
   @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException("The RelationShipResource doesn't belong to any component"
-            + " instances");
+    throw new UnsupportedOperationException(
+        "The RelationShipResource doesn't belong to any component instances");
   }
 }

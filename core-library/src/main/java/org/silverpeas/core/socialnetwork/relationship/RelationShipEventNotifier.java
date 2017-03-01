@@ -40,20 +40,4 @@ public class RelationShipEventNotifier
       final RelationShip... resource) {
     return new RelationShipEvent(type, resource);
   }
-
-  /**
-   * Shortcut. Here sent relationships are not complete, only user ids are specified (missing type
-   * of relation, initator, ...)
-   * @param type
-   * @param user1Id
-   * @param user2Id
-   */
-  public void notifyEventOn(final ResourceEvent.Type type, final int user1Id, final int user2Id) {
-    RelationShip rs = new RelationShip();
-    rs.setUser1Id(user1Id);
-    rs.setUser2Id(user2Id);
-
-    notifyEventOn(type, rs);
-  }
-
 }

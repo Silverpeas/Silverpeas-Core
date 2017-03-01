@@ -24,7 +24,7 @@
 
 (function($) {
 
-  $.invitMe = {
+  $.relationShip = {
     user: null,
     invitation: null,
     currentElement: null,
@@ -56,16 +56,19 @@
   var KEY_REMOVE_MESSAGE = "myProfile.relations.dialog.delete.message";
 
   var actions = {
-    sendInvitation:function(options) {
+    sendInvitation : function(options) {
       __handleInvitation($(this), options);
     },
-    cancelInvitation:function(options) {
+    viewInvitation : function(options) {
+      __handleInvitationView($(this), options);
+    },
+    cancelInvitation : function(options) {
       __handleInvitationCancel($(this), options);
     },
-    acceptInvitation:function(options) {
+    acceptInvitation : function(options) {
       __handleInvitationAccept($(this), options);
     },
-    deleteRelation:function(options) {
+    deleteRelation : function(options) {
       __handleRelationDelete($(this), options);
     }
   };
@@ -75,27 +78,27 @@
    * It binds to the elements the click event for which it opens a popup window through which a user
    * can propose another one to make a social relationship.
    */
-  $.fn.invitMe = function(action, param) {
+  $.fn.relationShip = function(action, param) {
     var method;
     var options;
     if (actions[action]) {
       method = actions[action];
       options = param;
     } else {
-      return $.error('Method ' + action + ' does not exist on jQuery.invitMe');
+      return $.error('Method ' + action + ' does not exist on jQuery.relationShip');
     }
 
     if (!this.length)
       return this;
 
-    if (!$.invitMe.initialized) {
-      $.invitMe.initialized = true;
+    if (!$.relationShip.initialized) {
+      $.relationShip.initialized = true;
       preparePopups(options);
     }
 
     return this.each(function() {
       var $this = $(this);
-      $this.data('invitMe', true);
+      $this.data('relationShip', true);
       method.call($this, options);
     });
   };
@@ -103,8 +106,8 @@
   function __handleInvitation(target, options) {
     target.click(function() {
       var displayDialog = function(user) {
-        $.invitMe.user = user;
-        $.invitMe.currentElement = target;
+        $.relationShip.user = user;
+        $.relationShip.currentElement = target;
         $("#invitationDialog").dialog("option", "title", user.fullName);
         $("#invitationDialog").dialog("open");
       };
@@ -119,6 +122,12 @@
     });
   }
 
+  function __handleInvitationView(target, options) {
+    target.click(function() {
+      silverpeasFormSubmit(sp.formConfig(webContext + '/RMyProfil/jsp/MyInvitations'));
+    });
+  }
+
   function __handleInvitationCancel(target, options) {
     target.click(function() {
       __loadInvitation(options).then(function(invitation) {
@@ -127,8 +136,8 @@
         User.get(userId).then(function(theUser) {
           invitation._user = theUser;
           invitation._isCurrentUserSender = isCurrentUserSender;
-          $.invitMe.invitation = invitation;
-          $.invitMe.currentElement = target;
+          $.relationShip.invitation = invitation;
+          $.relationShip.currentElement = target;
           var label = isCurrentUserSender ? LABEL_CANCEL_TITLE : LABEL_IGNORE_TITLE;
           $("#invitationCancelDialog").dialog("option", "title", label);
           var messageKey = isCurrentUserSender ? KEY_CANCEL_MESSAGE : KEY_IGNORE_MESSAGE;
@@ -145,8 +154,8 @@
       __loadInvitation(options).then(function(invitation) {
         User.get(invitation.senderId).then(function(theUser) {
           invitation._user = theUser;
-          $.invitMe.invitation = invitation;
-          $.invitMe.currentElement = target;
+          $.relationShip.invitation = invitation;
+          $.relationShip.currentElement = target;
           $("#invitationAcceptDialog").dialog("option", "title", LABEL_ACCEPT_TITLE);
           $("#invitationAcceptDialog p").html(RelationshipBundle.get(KEY_ACCEPT_MESSAGE, theUser.fullName));
           $("#invitationAcceptDialog").dialog("open");
@@ -159,8 +168,8 @@
   function __handleRelationDelete(target, options) {
     target.click(function() {
       var displayDialog = function(user) {
-        $.invitMe.user = user;
-        $.invitMe.currentElement = target;
+        $.relationShip.user = user;
+        $.relationShip.currentElement = target;
         $("#relationDeleteDialog").dialog("option", "title", LABEL_REMOVE_TITLE);
         $("#relationDeleteDialog p").html(RelationshipBundle.get(KEY_REMOVE_MESSAGE, user.fullName));
         $("#relationDeleteDialog").dialog("open");
@@ -230,7 +239,7 @@
             text: LABEL_OK,
             click: function() {
               var invitation = {
-                "receiverId": $.invitMe.user.id,
+                "receiverId": $.relationShip.user.id,
                 "message": $("#invitation-message").val()
               };
 
@@ -242,10 +251,10 @@
               }).then(function(request) {
                 closeInvitationPopup();
                 try {
-                  $.invitMe.currentElement.remove();
-                  notySuccess(RelationshipBundle.get(KEY_INVITE_SUCCESS, $.invitMe.user.fullName));
+                  $.relationShip.currentElement.remove();
+                  notySuccess(RelationshipBundle.get(KEY_INVITE_SUCCESS, $.relationShip.user.fullName));
                   if (options.callback) {
-                    options.callback.call(undefined, $.invitMe.user);
+                    options.callback.call(undefined, $.relationShip.user);
                   }
                 } catch (e) {
                   //do nothing
@@ -280,12 +289,12 @@
           click: function() {
             silverpeasAjax({
               method: "DELETE",
-              url: webContext + "/services/invitations/"+$.invitMe.invitation.id,
+              url: webContext + "/services/invitations/"+$.relationShip.invitation.id,
             }).then(function(request) {
               closeInvitationCancelPopup();
               try {
-                var invitation = $.invitMe.invitation;
-                $.invitMe.currentElement.remove();
+                var invitation = $.relationShip.invitation;
+                $.relationShip.currentElement.remove();
                 var successKey = invitation._isCurrentUserSender ? KEY_CANCEL_SUCCESS : KEY_IGNORE_SUCCESS;
                 notySuccess(RelationshipBundle.get(successKey, invitation._user.fullName));
                 if (options.callback) {
@@ -323,12 +332,12 @@
           click: function() {
             silverpeasAjax({
               method: "PUT",
-              url: webContext + "/services/invitations/"+$.invitMe.invitation.id,
+              url: webContext + "/services/invitations/"+$.relationShip.invitation.id,
             }).then(function(request) {
               closeInvitationAcceptPopup();
               try {
-                var invitation = $.invitMe.invitation;
-                $.invitMe.currentElement.remove();
+                var invitation = $.relationShip.invitation;
+                $.relationShip.currentElement.remove();
                 notySuccess(RelationshipBundle.get(KEY_ACCEPT_SUCCESS, invitation._user.fullName));
                 if (options.callback) {
                   options.callback.call(undefined, invitation);
@@ -364,12 +373,21 @@
           text : LABEL_YES,
           click: function() {
             closeRelationDeletePopup();
+            var relationUser = $.relationShip.user;
             silverpeasAjax({
               method: "DELETE",
-              url: "/silverpeas/services/relations/"+$.invitMe.user.id
+              url: webContext + "/services/relations/"+relationUser.id
             }).then(function(request) {
-              $.invitMe.currentElement.remove();
-              notySuccess(RelationshipBundle.get(KEY_REMOVE_SUCCESS, $.invitMe.user.fullName));
+              try {
+                $.relationShip.currentElement.remove();
+                notySuccess(RelationshipBundle.get(KEY_REMOVE_SUCCESS, relationUser.fullName));
+                if (options.callback) {
+                  options.callback.call(undefined, relationUser);
+                }
+              } catch (e) {
+                //do nothing
+                //As fragment is externalized, class invitation can be missing
+              }
             }, function(data) {
               notyError(data.error);
             });
@@ -386,57 +404,69 @@
   }
 })(jQuery);
 
+function activateRelationShip() {
+  jQuery(document).ready(function() {
+    jQuery('.invitation, .delete-relation').each(function(i, element) {
+      var params = jQuery(element).attr('rel');
+      if (params && params.length > 1) {
+        params = params.split(',');
+        if (!jQuery(element).data('relationShip')) {
+          var options = {
+            user : {
+              id : params[0],
+              fullName : params[1]
+            }
+          };
+          if (params.length > 2) {
+            var callbackFunction = params[2];
+            if (callbackFunction && typeof window[callbackFunction] === 'function') {
+              options.callback = window[callbackFunction];
+            }
+          }
+          if (jQuery(element).hasClass('invitation')) {
+            jQuery(element).relationShip('sendInvitation', options);
+          } else {
+            jQuery(element).relationShip('deleteRelation', options);
+          }
+
+        }
+      }
+    });
+
+    jQuery('.view-invitation, .cancel-invitation, .accept-invitation').each(function(i, element) {
+      var options = {};
+      var params = jQuery(element).attr('rel');
+      if (params) {
+        var invitationId = params;
+        var callbackFunction;
+        params = params.split(',');
+        if (params.length > 1) {
+          invitationId = params[0];
+          callbackFunction = params[1];
+        }
+        options.invitation = {
+          id: invitationId
+        };
+        if (callbackFunction && typeof window[callbackFunction] === 'function') {
+          options.callback = window[callbackFunction];
+        }
+
+        if (!jQuery(element).data('relationShip')) {
+          if (jQuery(element).hasClass('view-invitation')) {
+            jQuery(element).relationShip('viewInvitation', options);
+          } else if (jQuery(element).hasClass('cancel-invitation')) {
+            jQuery(element).relationShip('cancelInvitation', options);
+          } else {
+            jQuery(element).relationShip('acceptInvitation', options);
+          }
+        }
+      }
+    });
+  });
+}
+
 /**
- * Using "jQuery" instead of "$" at this level prevents of getting conflicts with another
+ * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
  * javascript plugin.
  */
-jQuery(document).ready(function() {
-  jQuery('.invitation, .delete-relation').each(function(i, element) {
-    var userParams = jQuery(element).attr('rel');
-    if (userParams && userParams.length > 1) {
-      userParams = userParams.split(',');
-      if (!jQuery(element).data('invitMe')) {
-        var options = {
-          user : {
-            id : userParams[0],
-            fullName : userParams[1]
-          }
-        };
-        if (jQuery(element).hasClass('invitation')) {
-          jQuery(element).invitMe('sendInvitation', options);
-        } else {
-          jQuery(element).invitMe('deleteRelation', options);
-        }
-
-      }
-    }
-  });
-
-  jQuery('.cancel-invitation, .accept-invitation').each(function(i, element) {
-    var options = {};
-    var params = jQuery(element).attr('rel');
-    if (params) {
-      var invitationId = params;
-      var callbackFunction;
-      params = params.split(',');
-      if (params.length > 1) {
-        invitationId = params[0];
-        callbackFunction = params[1];
-      }
-      options.invitation = {
-        id: invitationId
-      };
-      if (callbackFunction) {
-        options.callback = window[callbackFunction];
-      }
-
-      if (!jQuery(element).data('invitMe')) {
-        if (jQuery(element).hasClass('cancel-invitation')) {
-          jQuery(element).invitMe('cancelInvitation', options);
-        } else {
-          jQuery(element).invitMe('acceptInvitation', options);
-        }
-      }
-    }
-  });
-});
+activateRelationShip();

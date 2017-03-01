@@ -67,15 +67,7 @@ import org.silverpeas.web.directory.model.UserItem;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
@@ -351,6 +343,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
 
+  }
+
+  public void removeUserFromLists(User userToRemove) {
+    if (userToRemove != null) {
+      List<DirectoryItemList> directoryUserItemLists =
+          Arrays.asList(lastAllListUsersCalled, lastListUsersCalled);
+      directoryUserItemLists.forEach(userList -> userList.removeIf(
+          directoryItem -> !(directoryItem instanceof UserItem &&
+              !((UserItem) directoryItem).getUserDetail().getId().equals(userToRemove.getId()))));
+    }
   }
 
   /**

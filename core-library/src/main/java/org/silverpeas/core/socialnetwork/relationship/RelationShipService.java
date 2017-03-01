@@ -36,6 +36,7 @@ import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -72,11 +73,17 @@ public class RelationShipService {
     boolean endAction = false;
     try {
       connection = getConnection(false);
+      RelationShip rel1to2 = relationShipDao.getRelationShip(connection, idUser1, idUser2);
+      RelationShip rel2to1 = relationShipDao.getRelationShip(connection, idUser2, idUser1);
       relationShipDao.deleteRelationShip(connection, idUser1, idUser2);
       relationShipDao.deleteRelationShip(connection, idUser2, idUser1);
       connection.commit();
       endAction = true;
-      relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.DELETION, idUser1, idUser2);
+      for (RelationShip ship : Arrays.asList(rel1to2, rel2to1)) {
+        if (ship != null) {
+          relationShipEventNotifier.notifyEventOn(ResourceEvent.Type.DELETION, ship);
+        }
+      }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       DBUtil.rollback(connection);

@@ -165,9 +165,9 @@ public class SocialNetworkService {
    * @param textStatus
    * @return String
    */
-  public String changeStatusService(String textStatus) {
+  public String changeStatus(String textStatus) {
     Status status = new Status(Integer.parseInt(myId), new Date(), textStatus);
-    return getStatusService().changeStatusService(status);
+    return getStatusService().changeStatus(status);
 
   }
 
@@ -175,8 +175,8 @@ public class SocialNetworkService {
    * get my last status
    * @return String
    */
-  public String getLastStatusService() {
-    Status status = getStatusService().getLastStatusService(Integer.parseInt(myId));
+  public String getLastStatus() {
+    Status status = getStatusService().getLastStatus(Integer.parseInt(myId));
     if (StringUtil.isDefined(status.getDescription())) {
       return status.getDescription();
     }
