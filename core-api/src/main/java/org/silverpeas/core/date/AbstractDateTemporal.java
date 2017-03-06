@@ -50,8 +50,8 @@ public abstract class AbstractDateTemporal<T extends Temporal<? super T>> extend
   }
 
   /**
-   * Create a new instance from a given date time in milliseconds.
-   * @param aDate the date time in milliseconds.
+   * Create a new instance from a given datetime in milliseconds.
+   * @param aDate the datetime in milliseconds.
    * @return the new temporal instance corresponding to the given time in milliseconds.
    */
   protected abstract T newInstanceFrom(java.util.Date aDate);

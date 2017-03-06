@@ -45,13 +45,13 @@ import net.fortuna.ical4j.model.property.*;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Attendee.PresenceStatus;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.InternalAttendee;
-import org.silverpeas.core.calendar.ical4j.Html;
+import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.calendar.ical4j.HtmlProperty;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
@@ -127,12 +127,7 @@ public class ICal4JExchange implements ICalendarExchange {
 
           // ICal4J period
           final Date startDate = iCal4JDateCodec.encode(event, event.getStartDate());
-          final Date endDate;
-          if (event.isOnAllDay() && !event.getStartDate().equals(event.getEndDate())) {
-            endDate = iCal4JDateCodec.encode(event, event.getEndDate().plus(1, ChronoUnit.DAYS));
-          } else {
-            endDate = iCal4JDateCodec.encode(event, event.getEndDate());
-          }
+          final Date endDate = iCal4JDateCodec.encode(event, event.getEndDate());
           long durationInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
           DateTime createdDate =
@@ -165,7 +160,7 @@ public class ICal4JExchange implements ICalendarExchange {
               // do nothing
             }
             iCalEvent.getProperties().add(new Description(plainText));
-            iCalEvent.getProperties().add(new Html(event.getDescription()));
+            iCalEvent.getProperties().add(new HtmlProperty(event.getDescription()));
           }
 
           // Add Classification
@@ -455,7 +450,7 @@ public class ICal4JExchange implements ICalendarExchange {
         }
 
         // Description
-        Property description = vEvent.getProperty(Html.X_ALT_DESC);
+        Property description = vEvent.getProperty(HtmlProperty.X_ALT_DESC);
         if (description == null) {
           description =
               vEvent.getDescription() != null ? vEvent.getDescription() : new Description("");

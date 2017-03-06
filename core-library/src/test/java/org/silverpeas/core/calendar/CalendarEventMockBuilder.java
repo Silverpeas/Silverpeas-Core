@@ -42,7 +42,8 @@ import static org.silverpeas.core.calendar.Attendee.PresenceStatus.REQUIRED;
  * @author Yohann Chastagnier
  */
 public class CalendarEventMockBuilder {
-  
+
+  private Period period;
   private CalendarEvent event = mock(CalendarEvent.class);
   private Set<Attendee> attendees = new HashSet<>();
   private Attributes attributes = new Attributes();
@@ -67,6 +68,7 @@ public class CalendarEventMockBuilder {
   }
 
   private CalendarEventMockBuilder withPeriod(final Period period) {
+    this.period = period;
     when(event.getStartDate()).thenReturn(period.getStartDate());
     when(event.getEndDate()).thenReturn(period.getEndDate());
     when(event.isOnAllDay()).thenReturn(period.isInDays());
@@ -124,6 +126,7 @@ public class CalendarEventMockBuilder {
   }
 
   public CalendarEventMockBuilder withRecurrence(final Recurrence recurrence) {
+    recurrence.startingAt(period.getStartDate());
     when(event.isRecurrent()).thenReturn(true);
     when(event.getRecurrence()).thenReturn(recurrence);
     return this;

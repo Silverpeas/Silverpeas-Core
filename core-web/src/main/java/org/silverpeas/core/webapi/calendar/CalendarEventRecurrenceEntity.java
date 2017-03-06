@@ -26,11 +26,12 @@ package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
-import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -42,6 +43,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -122,14 +124,14 @@ public class CalendarEventRecurrenceEntity implements Serializable {
       recurrence = event.recur(Recurrence.from(getFrequency().getModel())).getRecurrence();
     }
     if (count > 0) {
-      recurrence.upTo(count);
+      recurrence.until(count);
     } else if (isDefined(endDate)) {
       final boolean onAllDay =
           occurrencePeriod == null ? event.isOnAllDay() : occurrencePeriod.isInDays();
       if (onAllDay) {
-        recurrence.upTo(LocalDate.parse(endDate));
+        recurrence.until(LocalDate.parse(endDate));
       } else {
-        recurrence.upTo(OffsetDateTime.parse(endDate));
+        recurrence.until(OffsetDateTime.parse(endDate));
       }
     } else {
       recurrence.endless();
@@ -147,10 +149,11 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     final Recurrence recurrence = event.getRecurrence();
     frequency = FrequencyEntity.from(recurrence.getFrequency());
     count = recurrence.getRecurrenceCount();
-    Optional<OffsetDateTime> offsetDateTimeOptional = recurrence.getEndDate();
-    endDate = offsetDateTimeOptional.isPresent() ?
-        (event.isOnAllDay() ? offsetDateTimeOptional.get().toLocalDate().toString() :
-            formatDateWithOffset(event, offsetDateTimeOptional.get(), zoneId)) : null;
+    Optional<Temporal> optionalDateTime = recurrence.getEndDate();
+    endDate = null;
+    optionalDateTime.ifPresent(t ->
+        endDate = TemporalConverter.applyByType(t, LocalDate::toString,
+            dateTime -> formatDateWithOffset(event, dateTime, zoneId)));
     daysOfWeek = recurrence.getDaysOfWeek().stream().map(DayOfWeekOccurrenceEntity::from)
         .collect(Collectors.toList());
     return this;

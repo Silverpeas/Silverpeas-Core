@@ -36,6 +36,7 @@ import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.inject.Inject;
@@ -94,13 +95,11 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     Recurrence recurrence = event.getRecurrence();
     String recurrenceType = getRecurrentType(recurrence.getFrequency().getUnit());
     Recur recur;
-    final Optional<OffsetDateTime> endDate = recurrence.getEndDate();
+    final Optional<Temporal> endDate = recurrence.getEndDate();
     if (endDate.isPresent()) {
-      if (event.isOnAllDay()) {
-        recur = new Recur(recurrenceType, iCal4JDateCodec.encode(endDate.get().toLocalDate()));
-      } else {
-        recur = new Recur(recurrenceType, iCal4JDateCodec.encode(endDate.get().plusDays(1)));
-      }
+      recur = new Recur(recurrenceType,
+          TemporalConverter.applyByType(endDate.get(), iCal4JDateCodec::encode,
+              iCal4JDateCodec::encode));
     } else if (recurrence.getRecurrenceCount() != Recurrence.NO_RECURRENCE_COUNT) {
       recur = new Recur(recurrenceType, recurrence.getRecurrenceCount());
     } else {
@@ -166,11 +165,5 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
 
   private OffsetDateTime asOffsetDateTime(DateTime dateTime) {
     return dateTime.toInstant().atOffset(ZoneOffset.UTC);
-  }
-
-  private CalendarEventOccurrence occurrenceFor(final CalendarEvent event, final Temporal startDate,
-      final Temporal endDate) {
-    CalendarEventOccurrence occurrence = new CalendarEventOccurrence(event, startDate, endDate);
-    return occurrence;
   }
 }

@@ -184,7 +184,7 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
   }
 
   /**
-   * Gets the reference data of the occurrence, previous start date time and new period.
+   * Gets the reference data of the occurrence, previous start datetime and new period.
    * @return an instance of {@link CalendarEventOccurrenceReference}.
    */
   @XmlTransient

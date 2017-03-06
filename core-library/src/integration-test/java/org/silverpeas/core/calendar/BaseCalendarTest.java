@@ -34,6 +34,8 @@ import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -146,5 +148,58 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from sb_cal_components")
         .where("id = ?", id)));
+  }
+
+  protected void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
+    assertThat(actual.getStartDate(), is(expected.getStartDate()));
+    assertThat(actual.getEndDate(), is(expected.getEndDate()));
+    assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
+    assertThat(actual.getTitle(), is(expected.getTitle()));
+    assertThat(actual.getDescription(), is(expected.getDescription()));
+    assertThat(actual.getLocation(), is(expected.getLocation()));
+    assertThat(actual.getAttributes().isEmpty(), is(false));
+    assertThat(actual.getAttributes(), is(expected.getAttributes()));
+    assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
+    assertThat(actual.getAttendees(), is(expected.getAttendees()));
+    assertThat(actual.getCategories(), is(expected.getCategories()));
+    assertThat(actual.isRecurrent(), is(false));
+  }
+
+  protected void assertEventIsOnlyUpdated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.instance().isPresent(), is(false));
+    assertThat(result.created().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(true));
+  }
+
+  protected void assertAnEventIsOnlyCreated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.instance().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(false));
+    assertThat(result.created().isPresent(), is(true));
+  }
+
+  protected void assertOccurrenceIsUpdated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.created().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(false));
+    assertThat(result.instance().isPresent(), is(true));
+  }
+
+  protected void assertEventIsUpdated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.updated().isPresent(), is(true));
+  }
+
+  protected void assertAnEventIsCreated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.created().isPresent(), is(true));
+  }
+
+  protected void assertEventIsDeleted(final OperationResult result) {
+    assertThat(result.created().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(false));
+    assertThat(result.instance().isPresent(), is(false));
+    assertThat(result.isEmpty(), is(true));
   }
 }

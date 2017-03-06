@@ -29,7 +29,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 /**
- * A matcher of temporal objects between them, whatever their concrete type (a date or a date time).
+ * A matcher of temporal objects between them, whatever their concrete type (a date or a datetime).
  */
 public class TemporalMatcher extends TypeSafeMatcher<Temporal<?>> {
 

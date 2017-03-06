@@ -24,11 +24,14 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
@@ -68,6 +71,7 @@ public class Recurrence implements Cloneable {
   /**
    * A constant that defines a specific value for no recurrence end date.
    */
+  @SuppressWarnings("WeakerAccess")
   public static final OffsetDateTime NO_RECURRENCE_END_DATE = null;
 
   /**
@@ -75,6 +79,7 @@ public class Recurrence implements Cloneable {
    * recurrent object's identifier in a one to one relationship between the recurrent object and
    * its recurrence.
    */
+  @SuppressWarnings("unused")
   @Id
   private String id;
 
@@ -93,6 +98,8 @@ public class Recurrence implements Cloneable {
       @JoinColumn(name = "recurrenceId")})
   @Column(name = "recur_exceptionDate")
   private Set<OffsetDateTime> exceptionDates = new HashSet<>();
+  @Transient
+  private Temporal startDate;
 
   /**
    * Creates a new recurrence from the specified frequency.
@@ -126,73 +133,25 @@ public class Recurrence implements Cloneable {
   }
 
   /**
-   * Excludes from this recurrence rule the occurrences of the {@link Plannable} starting at the
-   * specified date and times. The time of each specified date time is set in UTC/Greenwich.
-   * If the occurrences are spanning all the day, then please use
-   * the <code>excludeEventOccurrencesStartingAt</code> method accepting {@link LocalDate}
-   * arguments
-   * instead of {@link OffsetDateTime} ones. Otherwise set the time at midnight. Nevertheless, in
-   * such a case, the time hasn't to be taken into account in the computation of the actual
-   * occurrences.
-   * @param temporals a list of date times at which start the occurrences to exclude.
+   * Excludes from this recurrence rule the occurrences originally starting at the specified date
+   * or datetime. In the case the argument is one or more {@link OffsetDateTime}, their time is set
+   * with the time of the start datetime of the calendar component concerned by this recurrence.
+   *
+   * If the calendar component from which the occurrences come is on all day, the specified
+   * temporal instance is then converted into a {@link LocalDate} instance. Otherwise, if the
+   * the temporal instance is a {@link LocalDate} it is then converted into a {@link OffsetDateTime}
+   * with the time the one of the calendar component's start datetime; you have to ensure then the
+   * {@link LocalDate} you pass comes from a value in UTC. If the temporal instance is already
+   * an {@link OffsetDateTime}, then it is converted in UTC and its time set with the one
+   * of the calendar component's start datetime.
+   * @param temporal a list of either {@link LocalDate} or {@link OffsetDateTime} at which
+   * originally start the occurrences to exclude.
    * @return itself.
    */
-  public Recurrence excludeEventOccurrencesStartingAt(
-      final java.time.temporal.Temporal... temporals) {
-    this.exceptionDates.addAll(Arrays.stream(temporals)
-        .map(this::asOffsetDateTime)
-        .collect(Collectors.toList()));
+  public Recurrence excludeEventOccurrencesStartingAt(final Temporal... temporal) {
+    this.exceptionDates.addAll(
+        Arrays.stream(temporal).map(this::normalize).sorted().collect(Collectors.toList()));
     return this;
-  }
-
-  /**
-   * Excludes from this recurrence rule the occurrences of the {@link Plannable} starting at the
-   * specified date and times. The time of each specified date time is set in UTC/Greenwich.
-   * If the occurrences are spanning all the day, then please use
-   * the <code>excludeEventOccurrencesStartingAt</code> method accepting {@link LocalDate}
-   * arguments
-   * instead of {@link OffsetDateTime} ones. Otherwise set the time at midnight. Nevertheless, in
-   * such a case, the time hasn't to be taken into account in the computation of the actual
-   * occurrences.
-   * @param dateTimes a list of date times at which start the occurrences to exclude.
-   * @return itself.
-   */
-  public Recurrence excludeEventOccurrencesStartingAt(
-      final OffsetDateTime... dateTimes) {
-    this.exceptionDates.addAll(Arrays.stream(dateTimes)
-        .map(this::asOffsetDateTime)
-        .collect(Collectors.toList()));
-    return this;
-  }
-
-  /**
-   * Excludes from this recurrence rule the occurrences of a {@link Plannable} starting at the
-   * specified dates.
-   * @param days a list of dates at which start the occurrences to exclude.
-   * @return itself.
-   */
-  public Recurrence excludeEventOccurrencesStartingAt(final LocalDate... days) {
-    this.exceptionDates.addAll(Arrays.stream(days)
-        .map(this::asOffsetDateTime)
-        .collect(Collectors.toList()));
-    return this;
-  }
-
-  private OffsetDateTime asOffsetDateTime(final Temporal temporal) {
-    if (temporal instanceof LocalDate) {
-      return asOffsetDateTime((LocalDate) temporal);
-    } else if (temporal instanceof OffsetDateTime) {
-      return asOffsetDateTime((OffsetDateTime) temporal);
-    }
-    throw new IllegalArgumentException("LocalDate or OffsetDateTime is expected");
-  }
-
-  private OffsetDateTime asOffsetDateTime(final OffsetDateTime dateTime) {
-    return dateTime.withOffsetSameInstant(ZoneOffset.UTC);
-  }
-
-  private OffsetDateTime asOffsetDateTime(final LocalDate date) {
-    return date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
   }
 
   /**
@@ -268,7 +227,7 @@ public class Recurrence implements Cloneable {
 
   /**
    * Sets that the recurrence is not linked to a specific day. So the occurrence generation will
-   * take into account only the start date time of the event.
+   * take into account only the start datetime of the event.
    * @return itself.
    */
   public Recurrence onNoSpecificDay() {
@@ -277,13 +236,13 @@ public class Recurrence implements Cloneable {
   }
 
   /**
-   * Sets a termination to this recurrence by specifying the number of time a {@link Plannable}
-   * should recur.
-   * Settings this termination unset the recurrence end date.
+   * Sets a termination to this recurrence by specifying the count of time a {@link Plannable}
+   * should occur.
+   * Settings this termination unset the recurrence end date/datetime.
    * @param recurrenceCount the number of time a {@link Plannable} should occur.
    * @return itself.
    */
-  public Recurrence upTo(int recurrenceCount) {
+  public Recurrence until(int recurrenceCount) {
     if (recurrenceCount <= 0) {
       throw new IllegalArgumentException("The number of time the event has to recur should be a"
           + " positive value");
@@ -294,69 +253,20 @@ public class Recurrence implements Cloneable {
   }
 
   /**
-   * Sets a termination to this recurrence by specifying an end date or an date and time of the
-   * recurrence.<br/>
-   * In case of date time, the time is set in UTC/Greenwich.
+   * Sets a termination to this recurrence by specifying an inclusive date or datetime.
+   *
+   * If a datetime is passed, it is set in UTC/Greenwich and then the time is overridden by the one
+   * of the start date time of the calendar component concerned by this recurrence. In the case
+   * the calendar component is on all day(s), then the specified datetime is converted into a date.
+   *
    * Settings this termination unset the number of time a {@link Plannable} should occur.
-   * @param endDate the inclusive end date and time of the recurrence.
+   * @param endDate the inclusive date or datetime at which the recurrence ends.
    * @return itself.
    */
-  public Recurrence upTo(final Temporal endDate) {
-    if (endDate instanceof LocalDate) {
-      upTo((LocalDate) endDate);
-    } else if (endDate instanceof OffsetDateTime) {
-      upTo((OffsetDateTime) endDate);
-    } else {
-      throw new IllegalArgumentException("endDate must be of type LocalDate or OffsetDateTime");
-    }
-    return this;
-  }
-
-  /**
-   * Sets a termination to this recurrence by specifying an end date and time of the recurrence.
-   * The time of the specified date time is set in UTC/Greenwich.
-   * Settings this termination unset the number of time a {@link Plannable} should occur.
-   * @param endDateTime the inclusive end date and time of the recurrence.
-   * @return itself.
-   */
-  public Recurrence upTo(final OffsetDateTime endDateTime) {
-    this.count = NO_RECURRENCE_COUNT;
-    this.endDateTime = asOffsetDateTime(endDateTime);
+  public Recurrence until(final Temporal endDate) {
+    this.endDateTime = normalize(endDate);
     clearsUnnecessaryExceptionDates();
     return this;
-  }
-
-  /**
-   * Sets a termination to this recurrence by specifying an end date of the recurrence.
-   * Settings this termination unset the number of time a {@link Plannable} should occur.
-   * @param endDate the inclusive end date of the recurrence.
-   * @return itself.
-   */
-  public Recurrence upTo(final LocalDate endDate) {
-    this.count = NO_RECURRENCE_COUNT;
-    this.endDateTime = endDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
-    clearsUnnecessaryExceptionDates();
-    return this;
-  }
-
-  /**
-   * Clears all the registered exception dates.
-   */
-  public void clearsAllExceptionDates() {
-    if (this.exceptionDates == null) {
-      return;
-    }
-    exceptionDates.clear();
-  }
-
-  /**
-   * Clears all the registered exception dates which are after the end date time of the recurrence.
-   */
-  private void clearsUnnecessaryExceptionDates() {
-    if (this.exceptionDates == null) {
-      return;
-    }
-    exceptionDates.removeIf(exceptionDate -> !this.endDateTime.isAfter(exceptionDate));
   }
 
   /**
@@ -387,6 +297,7 @@ public class Recurrence implements Cloneable {
    * Is this recurrence endless?
    * @return true if this recurrence has no upper bound defined. False otherwise.
    */
+  @SuppressWarnings("WeakerAccess")
   public boolean isEndless() {
     return !getEndDate().isPresent() && getRecurrenceCount() == NO_RECURRENCE_COUNT;
   }
@@ -413,12 +324,13 @@ public class Recurrence implements Cloneable {
    * Gets the end date of the recurrence. The end date of the recurrence can be unspecified, in that
    * case the returned end date is empty.
    * @return an optional recurrence end date. The optional is empty if the end date of the
-   * recurrence is unspecified, otherwise the recurrence termination date time can be get from the
-   * {@link Optional}. The returned date time is from UTC/Greenwich.
+   * recurrence is unspecified, otherwise the recurrence termination date or datetime can be get
+   * from the {@link Optional}. The returned datetime is from UTC/Greenwich.
    */
-  public Optional<OffsetDateTime> getEndDate() {
+  public Optional<Temporal> getEndDate() {
     if (this.endDateTime != NO_RECURRENCE_END_DATE) {
-      return Optional.of(this.endDateTime);
+      return Optional.of(
+          getStartDate() instanceof LocalDate ? this.endDateTime.toLocalDate() : this.endDateTime);
     }
     return Optional.empty();
   }
@@ -433,15 +345,15 @@ public class Recurrence implements Cloneable {
   }
 
   /**
-   * Gets the date time exceptions to this recurrence rule.
+   * Gets the datetime exceptions to this recurrence rule.
    *
-   * The returned date time are the start date time of the occurrences that are excluded
+   * The returned datetime are the start datetime of the occurrences that are excluded
    * from this recurrence rule. They are the exception in the application of the recurrence rule.
-   * @return an unmodifiable set of {@link OffsetDateTime} or an empty set of no exceptions are set
-   * to this recurrence.
+   * @return a set of either {@link LocalDate} or {@link OffsetDateTime} instances, or an empty set
+   * if there is no exception dates to this recurrence.
    */
-  public Set<OffsetDateTime> getExceptionDates() {
-    return Collections.unmodifiableSet(exceptionDates);
+  public Set<Temporal> getExceptionDates() {
+    return exceptionDates.stream().map(this::decode).collect(Collectors.toSet());
   }
 
   @Override
@@ -454,19 +366,9 @@ public class Recurrence implements Cloneable {
     }
 
     final Recurrence that = (Recurrence) o;
-    if (count != that.count) {
-      return false;
-    }
-    if (!frequency.equals(that.frequency)) {
-      return false;
-    }
-    if (endDateTime != null ? !endDateTime.equals(that.endDateTime) : that.endDateTime != null) {
-      return false;
-    }
-    if (!daysOfWeek.equals(that.daysOfWeek)) {
-      return false;
-    }
-    return exceptionDates.equals(that.exceptionDates);
+    return count == that.count && frequency.equals(that.frequency) &&
+        (endDateTime != null ? endDateTime.equals(that.endDateTime) : that.endDateTime == null) &&
+        daysOfWeek.equals(that.daysOfWeek) && exceptionDates.equals(that.exceptionDates);
 
   }
 
@@ -477,6 +379,54 @@ public class Recurrence implements Cloneable {
         .append(daysOfWeek)
         .append(exceptionDates)
         .toHashCode();
+  }
+
+  @Override
+  public Recurrence clone() {
+    Recurrence clone = null;
+    try {
+      clone = (Recurrence) super.clone();
+      clone.id = null;
+      clone.daysOfWeek = new HashSet<>(daysOfWeek);
+      clone.exceptionDates = new HashSet<>(exceptionDates);
+    } catch (CloneNotSupportedException ignore) {
+    }
+    return clone;
+  }
+
+  /**
+   * Sets the date or datetime at which this recurrence starts. The date or datetime should be the
+   * one at which the concerned recurrent component calendar is planned.
+   * <p>
+   * This method is dedicated to the recurrent component calendar to set its own start date or
+   * datetime. The start date or datetime is used to compute the correct value of both the
+   * recurrence end date or datetime (in case it is set) and the exception date or datetime (when
+   * they are set).
+   * @param date a temporal instance of either {@link LocalDate} for a date or
+   * {@link OffsetDateTime} for a datetime.
+   * @return itself.
+   */
+  Recurrence startingAt(final Temporal date) {
+    this.startDate = date;
+    if (this.endDateTime != null) {
+      this.until(this.endDateTime.toLocalDate());
+    }
+    if (!this.exceptionDates.isEmpty()) {
+      Temporal[] exceptions = this.exceptionDates.stream().toArray(Temporal[]::new);
+      this.exceptionDates.clear();
+      this.excludeEventOccurrencesStartingAt(exceptions);
+    }
+    return this;
+  }
+
+  /**
+   * Clears all the registered exception dates.
+   */
+  void clearsAllExceptionDates() {
+    if (this.exceptionDates == null) {
+      return;
+    }
+    exceptionDates.clear();
   }
 
   protected Recurrence() {
@@ -495,22 +445,41 @@ public class Recurrence implements Cloneable {
     withFrequency(frequency);
   }
 
+  /**
+   * Gets the start date of this recurrence.
+   * @return the start date of this recurrence.
+   */
+  private Temporal getStartDate() {
+    return this.startDate;
+  }
+
   private void checkRecurrenceStateForSpecificDaySetting() {
     if (getFrequency().isDaily()) {
       throw new IllegalStateException("Some specific days cannot be set for a daily recurrence");
     }
   }
 
-  @Override
-  public Recurrence clone() {
-    Recurrence clone = null;
-    try {
-      clone = (Recurrence) super.clone();
-      clone.id = null;
-      clone.daysOfWeek = new HashSet<>(daysOfWeek);
-      clone.exceptionDates = new HashSet<>(exceptionDates);
-    } catch (CloneNotSupportedException ignore) {
+  /**
+   * Clears all the registered exception dates which are after the end datetime of the recurrence.
+   */
+  private void clearsUnnecessaryExceptionDates() {
+    if (this.exceptionDates == null) {
+      return;
     }
-    return clone;
+    exceptionDates.removeIf(exceptionDate -> !this.endDateTime.isAfter(exceptionDate));
+  }
+
+  private OffsetDateTime normalize(final Temporal temporal) {
+    OffsetDateTime dateTime = Period.asOffsetDateTime(temporal);
+    if (getStartDate() != null) {
+      return TemporalConverter.applyByType(getStartDate(),
+          t -> dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC)),
+          t -> dateTime.with(t.toOffsetTime()));
+    }
+    return dateTime;
+  }
+
+  private Temporal decode(final OffsetDateTime dateTime) {
+    return getStartDate() instanceof LocalDate ? dateTime.toLocalDate() : dateTime;
   }
 }

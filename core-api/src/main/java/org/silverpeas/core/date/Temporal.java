@@ -30,9 +30,9 @@ import java.util.TimeZone;
 
 /**
  * A temporal object is an object that represents an instant in a time line in Silverpeas. This
- * instant can be a date (day in month in year), a time or a date time.
+ * instant can be a date (day in month in year), a time or a datetime.
  * <p>
- * Date, time, and date time are different types as they don't have any instances in common, but
+ * Date, time, and datetime are different types as they don't have any instances in common, but
  * they are part of the same types class. As Java doesn't support the class type concept from which
  * a polymorphic family of types can be modeled, the temporal class is here introduced by a Java
  * interface with a generic type. Temporal can be then considered as a type generator that satisfies
@@ -114,16 +114,16 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
 
   /**
    * Is this temporal supports the time unit?
-   * @return true if this temporal supports the time unit. Time and date time should return true
+   * @return true if this temporal supports the time unit. Time and datetime should return true
    * here whereas date should return false.
    */
   boolean isTimeSupported();
 
   /**
    * Gets an ISO 8601 textual representation of this temporal by taking into account of its
-   * underlying timezone. For date and time, the representation is at the accuracy to the second.
+   * underlying timezone. For datetime, the representation is at the accuracy to the second.
    * The ISO 8601 format in which the date is returned is one of the more common in the Web, that is
-   * with the date and time separators (the hyphen for dates and the double-points for times):
+   * with the datetime separators (the hyphen for dates and the double-points for times):
    * yyyy-MM-dd'T'HH:mm:ss where yyyy means the year in 4 digits, MM means the month in year in two
    * digits, dd means the day in month in two digits, HH means the hour (24-o'clock) in two digits,
    * mm means the minute in two digits, and ss the second in two digits.
@@ -133,9 +133,9 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
 
   /**
    * Gets an ISO 8601 textual representation of this temporal by taking into account of its
-   * underlying timezone. For date and time, the representation is at the accuracy to the minute.
+   * underlying timezone. For datetime, the representation is at the accuracy to the minute.
    * The ISO 8601 format in which the date is returned is one of the more common in the Web, that is
-   * with the date and time separators (the hyphen for dates and the double-points for times):
+   * with the datetime separators (the hyphen for dates and the double-points for times):
    * yyyy-MM-dd'T'HH:mm:ss where yyyy means the year in 4 digits, MM means the month in year in two
    * digits, dd means the day in month in two digits, HH means the hour (24-o'clock) in two digits,
    * and mm means the minute in two digits.
@@ -147,7 +147,7 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
    * Gets the ISO 8601 textual representation of this date as it is in the iCal specification. The
    * returned iCal date representation is in this temporal's time zone. In the iCal specification,
    * dates are represented in one of the ISO 8601 format, that is the complete format without any
-   * date and time separators (the hyphen character for dates and the double-points for times). In
+   * datetime separators (the hyphen character for dates and the double-points for times). In
    * the iCal specification, no time zone information is added to the ISO 8601 representation of the
    * date, nevertheless when the date is indicated in UTC, the 'Z' marker must be set in the date as
    * required by the ISO 8601 standard.

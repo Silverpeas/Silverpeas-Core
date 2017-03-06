@@ -30,11 +30,11 @@ import java.time.temporal.Temporal;
 
 /**
  * A plannable object is a object that can be planned in a calendar and that can be serialized
- * on a data source. A plannable object is defined in the timeline by a start date time and
- * by an end date time with split-minute accuracy. According to the type of the plannable
- * object, the end date time can be undefined. When a plannable object is created, the temporal
+ * on a data source. A plannable object is defined in the timeline by a start datetime and
+ * by an end datetime with split-minute accuracy. According to the type of the plannable
+ * object, the end datetime can be undefined. When a plannable object is created, the temporal
  * type of the event's end must be the same temporal type that the event's start, and the
- * plannable object should convert them into a date time with split-minute accuracy when
+ * plannable object should convert them into a datetime with split-minute accuracy when
  * accessing them.
  * @author mmoquillon
  */
@@ -42,36 +42,44 @@ public interface Plannable extends Serializable {
 
   /**
    * Gets the unique identifier of this plannable object.
-   * @return the unique identifier of the object.
+   * @return the unique identifier of this plannable object.
    */
   String getId();
 
   /**
-   * If this plannable object is on all days, then gets the start date.<br/>
-   * Otherwise gets the date and the time in UTC/Greenwich at which this plannable object starts
-   * on the timeline.
-   * @return a temporal instance ({@link LocalDate} if an all day plannable or
-   * {@link OffsetDateTime}) otherwise.
+   * Gets the calendar into which this plannable object is finally planned.
+   * @return the calendar into which this object is planned or null if it isn't yet planned.
+   */
+  Calendar getCalendar();
+
+  /**
+   * The start date or datetime of the plannable object. It is the inclusive lower bound of the
+   * period into which this object occurs in a calendar.
+   *
+   * If this plannable object is on all days, then gets a date. Otherwise gets a datetime in
+   * UTC/Greenwich.
+   * @return a temporal instance of {@link LocalDate} if the object is on all the day or a temporal
+   * instalce of {@link OffsetDateTime}) otherwise.
    */
   Temporal getStartDate();
 
   /**
-   * If this plannable object is on all days, then gets the end date.<br/>
-   * Otherwise gets the date and the time in UTC/Greenwich at which this plannable object ends
-   * on the timeline.
-   * Gets the date and the time in UTC/Greenwich at which this plannable object ends on the
-   * timeline.<br/>
-   * According to the type of the plannable object,
-   * the end date time can be undefined; in this case, it must be indicated as such in the
-   * implemented method's documentation.
-   * @return a temporal instance ({@link LocalDate} if an all day plannable or
-   * {@link OffsetDateTime}) otherwise.
+   * The end date or datetime of the plannable object. It is the exclusive upper bound of the period
+   * into which this object occurs in a calendar.
+   *
+   * If this plannable object is on all days, then gets a date. Otherwise gets a datetime
+   * in UTC/Greenwich.
+   *
+   * According to the type of the plannable object, the end datetime can be undefined; in this case,
+   * it must be indicated as such in the implemented method's documentation.
+   * @return a temporal instance of {@link LocalDate} if the object is on all the day or a temporal
+   * instalce of {@link OffsetDateTime}) otherwise.
    */
   Temporal getEndDate();
 
   /**
    * Does this plannable object extend over all the day(s)? In the case it is on all the day(s)
-   * from the start date to the end date, the time in the date time returned by the methods
+   * from the start date to the end date, the time in the datetime returned by the methods
    * {@link Plannable#getStartDate()} and {@link Plannable#getEndDate()} is meaningless and
    * shouldn't be taken into account.
    * @return true if this plannable object extend over all the day(s) between its start date and

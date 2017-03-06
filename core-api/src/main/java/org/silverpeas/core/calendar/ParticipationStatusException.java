@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
+import org.silverpeas.core.date.TemporalConverter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -59,13 +60,8 @@ public class ParticipationStatusException implements Cloneable {
    * @param participationStatus the status of the participation to save.
    */
   public void set(Temporal startDate, ParticipationStatus participationStatus) {
-    if (startDate instanceof LocalDate) {
-      set((LocalDate) startDate, participationStatus);
-    } else if (startDate instanceof OffsetDateTime) {
-      set((OffsetDateTime) startDate, participationStatus);
-    } else {
-      throw new IllegalArgumentException("startDate must be of type LocalDate or OffsetDateTime");
-    }
+    TemporalConverter.consumeByType(startDate, date -> set(date, participationStatus),
+        dateTime -> set(dateTime, participationStatus));
   }
 
   /**
@@ -79,7 +75,7 @@ public class ParticipationStatusException implements Cloneable {
 
   /**
    * Sets the specified occurrence participation.
-   * @param startDateTime the start date time of an occurrence of a {@link Plannable}.
+   * @param startDateTime the start datetime of an occurrence of a {@link Plannable}.
    * @param participationStatus the status of the participation to save.
    */
   public void set(OffsetDateTime startDateTime, ParticipationStatus participationStatus) {
@@ -96,7 +92,7 @@ public class ParticipationStatusException implements Cloneable {
 
   /**
    * Gets from a date the participation status if any.
-   * @param date the date or the date time key.
+   * @param date the date or the datetime key.
    * @return an optional participation status.
    */
   public Optional<ParticipationStatus> get(Temporal date) {
@@ -112,7 +108,7 @@ public class ParticipationStatusException implements Cloneable {
 
   /**
    * Clears registered occurrence participation on date.
-   * @param onDateTime the date time on which the answer must be cleared.
+   * @param onDateTime the datetime on which the answer must be cleared.
    */
   public void clearOn(Temporal onDateTime) {
     participationOn.entrySet().removeIf(e -> e.getKey().isEqual(asOffsetDateTime(onDateTime)));
@@ -120,7 +116,7 @@ public class ParticipationStatusException implements Cloneable {
 
   /**
    * Clears all registered occurrence participation from the given date.
-   * @param fromDateTime the date time from which the participation must be cleared.
+   * @param fromDateTime the datetime from which the participation must be cleared.
    */
   public void clearFrom(Temporal fromDateTime) {
     participationOn.entrySet().removeIf(
@@ -128,12 +124,7 @@ public class ParticipationStatusException implements Cloneable {
   }
 
   private OffsetDateTime asOffsetDateTime(final Temporal temporal) {
-    if (temporal instanceof LocalDate) {
-      return asOffsetDateTime((LocalDate) temporal);
-    } else if (temporal instanceof OffsetDateTime) {
-      return asOffsetDateTime((OffsetDateTime) temporal);
-    }
-    throw new IllegalArgumentException("LocalDate or OffsetDateTime is expected");
+    return TemporalConverter.applyByType(temporal, this::asOffsetDateTime, this::asOffsetDateTime);
   }
 
   private OffsetDateTime asOffsetDateTime(final OffsetDateTime dateTime) {

@@ -34,13 +34,13 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventMockBuilder;
 import org.silverpeas.core.calendar.CalendarMockBuilder;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
@@ -221,8 +221,8 @@ public class ICal4JExchangeImportTest {
         .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z")).build();
 
-    /*importAndVerifyResult("ical4j_import_to_verify_date_conversion.txt",
-        asList(event1, event2, event3, event4, event5, event6, event7), defaultAssert);*/
+    importAndVerifyResult("ical4j_import_to_verify_date_conversion.txt",
+        asList(event1, event2, event3, event4, event5, event6, event7), defaultAssert);
   }
 
   @Test
@@ -280,7 +280,7 @@ public class ICal4JExchangeImportTest {
         .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
         .withRecurrence(
-            Recurrence.every(4, TimeUnit.DAY).upTo(OffsetDateTime.parse("2016-12-31T15:27:00Z")))
+            Recurrence.every(4, TimeUnit.DAY).until(OffsetDateTime.parse("2016-12-31T15:27:00Z")))
         .build();
     CalendarEvent event4 = CalendarEventMockBuilder.from(Period.between(
             OffsetDateTime.parse("2016-12-15T18:45:00Z"),
@@ -288,7 +288,7 @@ public class ICal4JExchangeImportTest {
         .withExternalId("EVENT-UUID-4").withTitle("EVENT-TITLE-4")
         .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
-        .withRecurrence(Recurrence.every(2, TimeUnit.DAY).upTo(10)).build();
+        .withRecurrence(Recurrence.every(2, TimeUnit.DAY).until(10)).build();
     CalendarEvent event5 = CalendarEventMockBuilder.from(Period.between(
             OffsetDateTime.parse("2016-12-15T20:00:00Z"),
             OffsetDateTime.parse("2016-12-15T20:15:00Z")))
@@ -298,9 +298,9 @@ public class ICal4JExchangeImportTest {
         .withRecurrence(
             Recurrence.every(TimeUnit.DAY)
                 .excludeEventOccurrencesStartingAt(
-                    OffsetDateTime.parse("2016-12-18T20:00:00Z"),
-                    OffsetDateTime.parse("2016-12-20T20:00:00Z"),
-                    OffsetDateTime.parse("2016-12-25T20:00:00Z"))).build();
+                    LocalDate.parse("2016-12-18"),
+                    LocalDate.parse("2016-12-20"),
+                    LocalDate.parse("2016-12-25"))).build();
     CalendarEvent event6 = CalendarEventMockBuilder.from(Period.between(
             OffsetDateTime.parse("2016-12-15T20:30:00Z"),
             OffsetDateTime.parse("2016-12-15T20:45:00Z")))
@@ -358,14 +358,14 @@ public class ICal4JExchangeImportTest {
         .withExternalId("EVENT-UUID-3").withTitle("EVENT-TITLE-3")
         .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
-        .withRecurrence(Recurrence.every(4, TimeUnit.DAY).upTo(LocalDate.parse("2016-12-31")))
+        .withRecurrence(Recurrence.every(4, TimeUnit.DAY).until(LocalDate.parse("2016-12-31")))
         .build();
     CalendarEvent event4 = CalendarEventMockBuilder
         .from(Period.between(LocalDate.parse("2016-12-15"), LocalDate.parse("2016-12-15")))
         .withExternalId("EVENT-UUID-4").withTitle("EVENT-TITLE-4")
         .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))
-        .withRecurrence(Recurrence.every(2, TimeUnit.DAY).upTo(10)).build();
+        .withRecurrence(Recurrence.every(2, TimeUnit.DAY).until(10)).build();
     CalendarEvent event5 = CalendarEventMockBuilder
         .from(Period.between(LocalDate.parse("2016-12-15"), LocalDate.parse("2016-12-15")))
         .withExternalId("EVENT-UUID-5").withTitle("EVENT-TITLE-5")
@@ -448,7 +448,7 @@ public class ICal4JExchangeImportTest {
         .from(Period.between(LocalDate.parse("2016-11-30"), LocalDate.parse("2016-11-30")))
         .withExternalId("EVENT-UUID-RECURRENCE-ATTENDEES")
         .withTitle("EVENT-TITLE")
-        .withRecurrence(Recurrence.every(TimeUnit.DAY).upTo(10))
+        .withRecurrence(Recurrence.every(TimeUnit.DAY).until(10))
         .withCreator(creator)
         /*
 
@@ -481,7 +481,7 @@ public class ICal4JExchangeImportTest {
         .from(Period.between(LocalDate.parse("2016-11-30"), LocalDate.parse("2016-11-30")))
         .withExternalId("EVENT-UUID-RECURRENCE-ATTENDEES-ON-DATE-ANSWER")
         .withTitle("EVENT-TITLE")
-        .withRecurrence(Recurrence.every(TimeUnit.DAY).upTo(10))
+        .withRecurrence(Recurrence.every(TimeUnit.DAY).until(10))
         .withCreator(creator)
         /*
 

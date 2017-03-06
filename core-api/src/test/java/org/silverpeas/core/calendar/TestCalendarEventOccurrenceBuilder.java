@@ -62,7 +62,7 @@ public class TestCalendarEventOccurrenceBuilder {
         .withAttendee(aUser("0"))
         .withAttendee(aUser("2"))
         .withAttendee("titi@chez-les-duponts.fr")
-        .recur(Recurrence.every(1, TimeUnit.DAY).upTo(3));
+        .recur(Recurrence.every(1, TimeUnit.DAY).until(3));
     event.setCalendar(calendar);
     occurrences.add(new CalendarEventOccurrence(event, now, now.plusHours(2)));
     occurrences.add(

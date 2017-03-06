@@ -60,7 +60,7 @@ import static org.silverpeas.core.date.TimeUnit.MONTH;
 import static org.silverpeas.core.date.TimeUnit.WEEK;
 
 /**
- * Unit tests on the generation of event occurrences between two given date times.
+ * Unit tests on the generation of event occurrences between two given datetimes.
  * @author mmoquillon
  */
 public class CalendarEventOccurrenceGenerationTest {
@@ -103,7 +103,7 @@ public class CalendarEventOccurrenceGenerationTest {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(eventsForTest, in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
-    assertThat(occurrences.size(), is(104));
+    assertThat(occurrences.size(), is(103));
 
     // compute the occurrence count both per month and per event
     int[] occurrenceCountPerMonth = new int[12];
@@ -125,14 +125,14 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrenceCountPerMonth[SEPTEMBER.ordinal()], is(18));
     assertThat(occurrenceCountPerMonth[OCTOBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[NOVEMBER.ordinal()], is(17));
-    assertThat(occurrenceCountPerMonth[DECEMBER.ordinal()], is(13));
+    assertThat(occurrenceCountPerMonth[DECEMBER.ordinal()], is(12));
 
     // check now the count of occurrences per event is ok
     assertThat(occurrenceCountPerEvent[Integer.parseInt("1") - 1], is(1));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("2") - 1], is(1));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("3") - 1], is(42));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("4") - 1], is(1));
-    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(47));
+    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(46));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("6") - 1], is(12));
   }
 
@@ -249,7 +249,7 @@ public class CalendarEventOccurrenceGenerationTest {
             .withAttribute(ATTR_TEST_ID, "5")
             .recur(Recurrence.every(WEEK)
                 .on(MONDAY, TUESDAY, WEDNESDAY)
-                .upTo(dateTime(2016, 12, 20, 10, 0))
+                .until(dateTime(2016, 12, 20, 10, 0))
                 .excludeEventOccurrencesStartingAt(date(2016, 11, 30), date(2016, 12, 12))));
     /* event 6 at 08h00 - 09h00 every month on all Thursdays and on the third Friday
        from Thursday 2016-04-28 to Friday 2016-07-01 */
@@ -260,7 +260,7 @@ public class CalendarEventOccurrenceGenerationTest {
             .withAttribute(ATTR_TEST_ID, "6")
             .recur(Recurrence.every(MONTH)
                 .on(DayOfWeekOccurrence.all(THURSDAY), DayOfWeekOccurrence.nth(3, FRIDAY))
-                .upTo(date(2016, 6, 30))));
+                .until(date(2016, 6, 30))));
 
     Calendar calendar = new Calendar();
     calendar.setZoneId(ZoneId.of("UTC"));

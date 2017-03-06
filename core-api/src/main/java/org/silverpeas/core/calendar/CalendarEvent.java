@@ -65,7 +65,7 @@ import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
  * component that can be planned on one and only one given existing {@link Calendar};
  * we ensures an event is unique in a per-calendar basis.
  * It occurs on a {@link Period} and as a such it must be well limited in the time (id est it must
- * have a start and an end dates/date times).
+ * have a start and an end dates/datetimes).
  * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}s.
  * In order to be customized for different kinds of use, some additional information can be set
  * through its {@link Attributes} property.
@@ -212,6 +212,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * was imported.
    * @return the instance of the asked calendar event or null if it does not exist.
    */
+  @SuppressWarnings("unused")
   public static CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
     CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
     return calendarEventRepository.getByExternalId(calendar, externalId);
@@ -301,6 +302,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @return either the calendar to which this event belongs or null if this event isn't yet
    * saved into a given calendar.
    */
+  @Override
   public Calendar getCalendar() {
     return this.component.getCalendar();
   }
@@ -359,6 +361,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @param location a location: an address, a designation, a GPS coordinates, ...
    * @return itself.
    */
+  @SuppressWarnings("WeakerAccess")
   public CalendarEvent inLocation(String location) {
     setLocation(location);
     return this;
@@ -469,6 +472,21 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   /**
    * Recurs this event with the specified event recurrence.
+   *
+   * If the recurrence ends up at a given date or datetime, then this value is updated according to
+   * the period of time of this event:
+   *
+   * <ul>
+   *  <li>
+   *    The event is on all the day: the recurrence rule is updated to end at the given recurrence
+   *    ending date; the time part is removed.
+   *  </li>
+   *  <li>
+   *    The event starts and ends at a given datetime: the recurrence rule is updated to end at
+   *    a datetime with as date the given recurrence ending date and as time the time at which
+   *    this event usually starts.
+   *  </li>
+   * </ul>
    * @param recurrence the recurrence defining the recurring property of this event.
    * @return itself.
    */
@@ -477,7 +495,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     if (isOnAllDay() && recurrence.getFrequency().isHourly()) {
       throw new IllegalArgumentException("Impossible to recur hourly an event on all day!");
     }
-    this.recurrence = recurrence;
+    this.recurrence = recurrence.startingAt(this.getStartDate());
     return this;
   }
 
@@ -574,6 +592,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   public void setPeriod(final Period newPeriod) {
     this.component.setPeriod(newPeriod);
+    if (this.recurrence != null) {
+      this.recurrence = this.recurrence.startingAt(newPeriod.getStartDate());
+    }
   }
 
   /**
@@ -583,6 +604,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   public void setDay(final LocalDate newDay) {
     this.component.setPeriod(Period.between(newDay, newDay));
+    if (this.recurrence != null) {
+      this.recurrence = this.recurrence.startingAt(newDay);
+    }
   }
 
   @Override
@@ -666,7 +690,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    *
    * <ul>
    * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
-   * <li>If the occurrence is one of among any of the event, then the date time at which this
+   * <li>If the occurrence is one of among any of the event, then the datetime at which this
    * occurrence starts is added as an exception in the recurrence rule of the event.</li>
    * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
    * </ul>
@@ -688,7 +712,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    *
    * <ul>
    * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
-   * <li>If the occurrence is one of among any of the event, then the recurrence end date time is
+   * <li>If the occurrence is one of among any of the event, then the recurrence end datetime is
    * updated.</li>
    * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
    * </ul>
@@ -698,7 +722,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public EventOperationResult deleteSince(CalendarEventOccurrence occurrence) {
     return doEitherOr(occurrence, simpleDeletion, (me) -> {
       final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
-      me.getRecurrence().upTo(endDate);
+      me.getRecurrence().until(endDate);
       occurrence.deleteAllSinceMe();
       me.updateIntoPersistence();
       return new EventOperationResult().withUpdated(me);
@@ -745,7 +769,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         (me) -> {
           final CalendarEvent createdEvent = createNewEventFromMeSince(occurrence);
           final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
-          me.getRecurrence().upTo(endDate);
+          me.getRecurrence().until(endDate);
           occurrence.deleteAllSinceMe();
           me.updateIntoPersistence();
           return new EventOperationResult().withUpdated(me).withCreated(createdEvent);
@@ -817,6 +841,13 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     this.component.setCalendar(calendar);
   }
 
+  @PostLoad
+  protected void afterLoadingFromPersistenceContext() {
+    if (this.recurrence != null) {
+      this.recurrence = this.recurrence.startingAt(this.getStartDate());
+    }
+  }
+
   private void deleteFromPersistence() {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
@@ -864,7 +895,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   private OffsetDateTime endDateTimeOf(final Recurrence recurrence,
       final OffsetDateTime fromRecurrenceStart) {
-    return recurrence.getEndDate().orElseGet(() -> {
+    return Period.asOffsetDateTime(recurrence.getEndDate().orElseGet(() -> {
       RecurrencePeriod frequency = recurrence.getFrequency();
       long timeCount = frequency.getInterval() * recurrence.getRecurrenceCount();
       final OffsetDateTime result;
@@ -885,7 +916,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
           throw new SilverpeasRuntimeException("Unsupported unit: " + frequency.getUnit());
       }
       return result;
-    });
+    }));
   }
 
   /**
@@ -928,7 +959,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         result = ifManyOccurrences.apply(eventPreviousState);
       } else if (eventPreviousState.isRecurrent()) {
         OffsetDateTime recurrenceStart = Period.asOffsetDateTime(eventPreviousState.getStartDate());
-        OffsetDateTime recurrenceEnd = endDateTimeOf(eventPreviousState.getRecurrence(), recurrenceStart);
+        OffsetDateTime recurrenceEnd =
+            endDateTimeOf(eventPreviousState.getRecurrence(), recurrenceStart);
         List<CalendarEventOccurrence> occurrences = generator()
             .generateOccurrencesOf(Collections.singletonList(eventPreviousState),
                 Period.between(recurrenceStart, recurrenceEnd));

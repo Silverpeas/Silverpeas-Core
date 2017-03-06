@@ -76,10 +76,10 @@ public class MessageNotifier {
   }
 
   /**
-   * Formats the given temporal into an date time ISO FORMAT that will be interpreted by the UI
+   * Formats the given temporal into an datetime ISO FORMAT that will be interpreted by the UI
    * tools.
    * @param temporal a temporal to format.
-   * @return the date time ISO format.
+   * @return the datetime ISO format.
    */
   public static String formatDateTime(Temporal temporal) {
     return "${" + temporal.toString() + ",datetime}";

@@ -354,7 +354,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE);
     assertThat(event.isPersisted(), is(false));
 
-    event.delete();
+    OperationResult result = event.delete();
+
+    assertEventIsDeleted(result);
     assertThat(event.isPersisted(), is(false));
   }
 
@@ -364,11 +366,14 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     List<CalendarEventOccurrence> occurrences =
         calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));
+
     CalendarEventOccurrence occurrence = occurrences.get(0);
     CalendarEvent event = occurrence.getCalendarEvent();
     String eventIdBeforeDeletion = event.getId();
-    event.deleteOnly(occurrence);
 
+    OperationResult result = event.deleteOnly(occurrence);
+
+    assertEventIsDeleted(result);
     assertThat(calendar.event(eventIdBeforeDeletion).isPresent(), is(false));
     assertThat(calendar.in(YearMonth.of(2016, 1)).getEventOccurrences().isEmpty(),
         is(true));
@@ -387,8 +392,10 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     Calendar calendar = Calendar.getById("ID_3");
     CalendarEvent event = calendar.event("ID_E_1").get();
-    event.delete();
 
+    OperationResult result = event.delete();
+
+    assertEventIsDeleted(result);
     allAttributes = getAttributesTableLinesByEventId("ID_C_1");
     allAttendees = getAttendeesTableLines();
     assertThat(allAttributes, hasSize(0));
@@ -406,8 +413,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     LocalDate eventEndDate = ((OffsetDateTime) event.getEndDate()).toLocalDate();
     event.setPeriod(Period.between(LocalDate.parse("2016-01-12"), eventEndDate));
-    event.update();
+    OperationResult result = event.update();
 
+    assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getSequence(), is(1l));
@@ -426,8 +434,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     final String title = "An updated title";
     event.setTitle(title);
-    event.update();
+    OperationResult result = event.update();
 
+    assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
     assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
@@ -444,8 +453,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     final String category = "Personal";
     event.getCategories().add(category);
-    event.update();
+    OperationResult result = event.update();
 
+    assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
     assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
@@ -462,8 +472,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(event.getVisibilityLevel(), not(VisibilityLevel.CONFIDENTIAL));
 
     event.withVisibilityLevel(VisibilityLevel.CONFIDENTIAL);
-    event.update();
+    OperationResult result = event.update();
 
+    assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
     assertThat(event.getSequence(), is(1l));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
@@ -481,7 +492,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE);
     assertThat(event.isPlanned(), is(false));
 
-    event.update();
+    OperationResult result = event.update();
+
+    assertThat(result.isEmpty(), is(true));
     assertThat(event.isPlanned(), is(false));
   }
 
@@ -502,8 +515,9 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     final Period newPeriod =
         Period.between(occurrence.getStartDate(), OffsetDateTime.parse("2016-01-05T10:30:00Z"));
     occurrence.setPeriod(newPeriod);
-    event.updateOnly(occurrence);
+    OperationResult result = event.updateOnly(occurrence);
 
+    assertEventIsOnlyUpdated(result);
     occurrences = calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));
     occurrence = occurrences.get(0);
@@ -515,20 +529,5 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(updatedEvent.getEndDate(), is(OffsetDateTime.parse("2016-01-05T10:30:00Z")));
     assertThat(updatedEvent, is(event));
   }
-
-  private void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
-    assertThat(actual.getStartDate(), is(expected.getStartDate()));
-    assertThat(actual.getEndDate(), is(expected.getEndDate()));
-    assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
-    assertThat(actual.getTitle(), is(expected.getTitle()));
-    assertThat(actual.getDescription(), is(expected.getDescription()));
-    assertThat(actual.getLocation(), is(expected.getLocation()));
-    assertThat(actual.getAttributes().isEmpty(), is(false));
-    assertThat(actual.getAttributes(), is(expected.getAttributes()));
-    assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
-    assertThat(actual.getAttendees(), is(expected.getAttendees()));
-    assertThat(actual.getCategories(), is(expected.getCategories()));
-    assertThat(actual.isRecurrent(), is(false));
-  }
-
+  
 }

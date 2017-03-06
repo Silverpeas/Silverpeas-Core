@@ -44,7 +44,7 @@ import static org.silverpeas.core.calendar.Attendee.PresenceStatus.REQUIRED;
  * A view in which the occurrences of calendar events are grouped by their participants.
  * A participant is either an author or an attendee for an event.
  * The events occurrences are grouped by participant and for each participant the occurrences are
- * sorted by calendar identifier and by date time.
+ * sorted by calendar identifier and by datetime.
  * @author mmoquillon
  */
 public class CalendarEventInternalParticipationView implements CalendarEventView<String> {

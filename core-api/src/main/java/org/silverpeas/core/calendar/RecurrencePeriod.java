@@ -128,11 +128,11 @@ public class RecurrencePeriod {
   }
 
   /**
-   * Gets the end of a recurrence with this period and by taking into account the date and time
+   * Gets the end of a recurrence with this period and by taking into account the datetime
    * at which the recurrence starts and the number of times the recurrence occurs.
    * @param recurrenceStart the start of a recurrence.
    * @param count the number of times the recurrence should occur.
-   * @return the date time at which the recurrence ends.
+   * @return the datetime at which the recurrence ends.
    */
   public OffsetDateTime getRecurrenceEnd(OffsetDateTime recurrenceStart, int count) {
     OffsetDateTime endDateTime;

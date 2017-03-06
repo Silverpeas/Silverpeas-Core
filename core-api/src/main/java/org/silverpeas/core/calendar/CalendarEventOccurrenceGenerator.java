@@ -53,7 +53,7 @@ public interface CalendarEventOccurrenceGenerator {
    * This method doesn't require to be implemented.
    * @param timeWindow the time window in which the events occur.
    * @return a set of event occurrences that occur in the specified window of time sorted by the
-   * date and time at which they start.
+   * datetime at which they start.
    */
   default List<CalendarEventOccurrence> generateOccurrencesIn(CalendarTimeWindow timeWindow) {
     return generateOccurrencesOf(timeWindow.getEvents(), Period

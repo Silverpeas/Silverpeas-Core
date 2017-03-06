@@ -478,7 +478,7 @@ public class CalendarWebServiceProvider {
 
   /**
    * Gets the event occurrences associated to a calendar and contained a the time window specified
-   * by the start and end date times.<br/>
+   * by the start and end datetimes.<br/>
    * The occurrences are sorted from the lowest to the highest date.
    * @param calendar the calendar the event occurrences belong to.
    * @param startDate the start date of time window.
@@ -492,7 +492,7 @@ public class CalendarWebServiceProvider {
 
   /**
    * Gets all event occurrences associated to users and contained a the time window specified
-   * by the start and end date times.<br/>
+   * by the start and end datetimes.<br/>
    * Attendees which have answered negatively about their presence are not taken into account.
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.
    * @param currentUserAndComponentInstanceId the current user and current the component instance

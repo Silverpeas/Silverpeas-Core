@@ -36,7 +36,7 @@ import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.ical4j.Html;
+import org.silverpeas.core.calendar.ical4j.HtmlProperty;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.importexport.EncodingException;
@@ -122,7 +122,7 @@ public class ICal4JICalCodec implements ICalCodec {
           // do nothing
         }
         iCalEvent.getProperties().add(new Description(plainText));
-        iCalEvent.getProperties().add(new Html(event.getDescription()));
+        iCalEvent.getProperties().add(new HtmlProperty(event.getDescription()));
       }
 
       // Add Classification

@@ -28,9 +28,12 @@ import java.util.Optional;
 
 /**
  * Result of an operation that was performed against an object in the calendar business model like
- * a calendar event for example.
+ * a calendar event and its occurrences for example.
+ *
+ * A result is a container of {@link Plannable} objects and/or of one of its {@link Occurrence}
+ * object that have been either spawned or updated by a given business operation.
  */
-public class OperationResult<T extends Plannable, U> {
+public class OperationResult<T extends Plannable, U extends Occurrence> {
   private T updated;
   private T created;
   private U instance;
@@ -93,5 +96,14 @@ public class OperationResult<T extends Plannable, U> {
    */
   public Optional<U> instance() {
     return Optional.ofNullable(instance);
+  }
+
+  /**
+   * Is this operation result empty? A result is empty if the operation concludes in no update nor
+   * creation of a resource. This is can be for a deletion for example.
+   * @return true if there is no result, false otherwise.
+   */
+  public boolean isEmpty() {
+    return updated == null && created == null && instance == null;
   }
 }

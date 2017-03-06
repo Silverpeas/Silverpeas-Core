@@ -33,7 +33,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
- * A tag to print out a localized date and time according to the language of the user.
+ * A tag to print out a localized datetime according to the language of the user.
  */
 public class FormatDateTag extends TagSupport {
 

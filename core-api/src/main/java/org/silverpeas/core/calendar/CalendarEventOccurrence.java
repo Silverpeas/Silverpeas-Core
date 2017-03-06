@@ -48,7 +48,7 @@ import java.util.Set;
 
 /**
  * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
- * timeline of a calendar; it represents an event starting and ending at a given date or date time
+ * timeline of a calendar; it represents an event starting and ending at a given date or datetime
  * in the calendar.
  *
  * A non-recurrent event is a singleton, meaning that is has only one single instance occurring in
@@ -82,7 +82,7 @@ import java.util.Set;
             "  o.component.period.startDateTime <= :endDateTime))")})
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
-    implements IdentifiableEntity {
+    implements IdentifiableEntity, Occurrence {
 
   @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "eventId", referencedColumnName = "id")
@@ -131,7 +131,7 @@ public class CalendarEventOccurrence
    * @return a list of event occurrences or an empty list if there is no occurrences of events
    * in the specified window of time.
    */
-  public static List<CalendarEventOccurrence> getOccurrencesIn(
+  static List<CalendarEventOccurrence> getOccurrencesIn(
       final CalendarTimeWindow timeWindow) {
 
     return generator().generateOccurrencesIn(timeWindow);
@@ -152,18 +152,12 @@ public class CalendarEventOccurrence
     return this.event;
   }
 
-  /**
-   * Gets the date or date time at which this occurrence should starts.
-   * @return the start date or date time of the event occurrence.
-   */
+  @Override
   public Temporal getStartDate() {
     return this.component.getPeriod().getStartDate();
   }
 
-  /**
-   * Gets the date or date time at which this event should ends.
-   * @return the end date or date time of the event occurrence.
-   */
+  @Override
   public Temporal getEndDate() {
     return this.component.getPeriod().getEndDate();
   }

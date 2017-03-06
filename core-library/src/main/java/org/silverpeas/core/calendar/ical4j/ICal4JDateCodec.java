@@ -32,6 +32,7 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.Temporal;
+import org.silverpeas.core.date.TemporalConverter;
 
 import javax.inject.Singleton;
 import java.text.ParseException;
@@ -85,7 +86,7 @@ public class ICal4JDateCodec {
   public Date encode(final CalendarEvent event, final java.time.temporal.Temporal aTemporal)
       throws SilverpeasRuntimeException {
     final java.time.temporal.Temporal temporal = isEventDateToBeEncodedIntoUtc(event) ? aTemporal :
-        ((OffsetDateTime) aTemporal).atZoneSameInstant(event.getCalendar().getZoneId());
+        OffsetDateTime.from(aTemporal).atZoneSameInstant(event.getCalendar().getZoneId());
     return encode(temporal);
   }
 
@@ -93,18 +94,10 @@ public class ICal4JDateCodec {
    * Encodes a temporal data into an iCal4J date.
    * @param aTemporal the temporal data to encode.
    * @return an iCal4J date.
-   * @throws SilverpeasRuntimeException if the encoding fails.
+   * @throws IllegalArgumentException if the encoding fails.
    */
-  public Date encode(final java.time.temporal.Temporal aTemporal)
-      throws SilverpeasRuntimeException {
-    if (aTemporal instanceof LocalDate) {
-      return encode((LocalDate) aTemporal);
-    } else if (aTemporal instanceof OffsetDateTime) {
-      return encode((OffsetDateTime) aTemporal);
-    } else if (aTemporal instanceof ZonedDateTime) {
-      return encode((ZonedDateTime) aTemporal);
-    }
-    throw new IllegalArgumentException("the type of given temporal is not yet handled");
+  public Date encode(final java.time.temporal.Temporal aTemporal) {
+    return TemporalConverter.applyByType(aTemporal, this::encode, this::encode, this::encode);
   }
 
   /**
@@ -123,8 +116,8 @@ public class ICal4JDateCodec {
   }
 
   /**
-   * Encodes a date time into an iCal4J date set in UTC.
-   * @param dateTime the date time to encode.
+   * Encodes a datetime into an iCal4J date set in UTC.
+   * @param dateTime the datetime to encode.
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
@@ -138,9 +131,9 @@ public class ICal4JDateCodec {
   }
 
   /**
-   * Encodes a date time into an iCal4J date that takes into account the time zone of the specified
-   * date time.
-   * @param dateTime the date time with timezone to encode.
+   * Encodes a datetime into an iCal4J date that takes into account the time zone of the specified
+   * datetime.
+   * @param dateTime the datetime with timezone to encode.
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
@@ -240,7 +233,7 @@ public class ICal4JDateCodec {
 
   /**
    * Decodes a iCal4J DateTime into an OffsetDateTime set in UTC.
-   * @param dateTime the date time to decode.
+   * @param dateTime the datetime to decode.
    * @param defaultZoneId the default zone id.
    * @return an OffsetDateTime instance.
    * @throws SilverpeasRuntimeException if the decoding fails.

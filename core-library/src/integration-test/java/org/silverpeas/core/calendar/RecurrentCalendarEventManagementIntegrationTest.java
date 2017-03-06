@@ -107,8 +107,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(calendarEvent.getPriority(), is(Priority.HIGH));
     assertThat(calendarEvent.getAttributes().isEmpty(), is(true));
     assertThat(calendarEvent.isRecurrent(), is(true));
-    assertThat(calendarEvent.getRecurrence(), is(Recurrence.every(1, WEEK)
-        .upTo(8)
+    assertThat(calendarEvent.getRecurrence(), is(Recurrence.every(1, WEEK).until(8)
         .on(SATURDAY)
         .excludeEventOccurrencesStartingAt(LocalDate.parse("2016-01-16"),
             LocalDate.parse("2016-01-30"))));
@@ -255,7 +254,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   public void saveARecurringEventEndingAtGivenDate() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent expectedEvent =
-        anAllDayEvent().recur(Recurrence.every(3, WEEK).upTo(today.plusWeeks(12))).planOn(calendar);
+        anAllDayEvent().recur(Recurrence.every(3, WEEK).until(today.plusWeeks(12)))
+            .planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
     Optional<CalendarEvent> mayBeActualEvent = calendar.event(expectedEvent.getId());
@@ -267,7 +267,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   public void createARecurringEventEndingAtGivenDateTime() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent expectedEvent =
-        anAllDayEvent().recur(Recurrence.every(2, WEEK).upTo(now.plusWeeks(8))).planOn(calendar);
+        anAllDayEvent().recur(Recurrence.every(2, WEEK).until(now.plusWeeks(8))).planOn(calendar);
     assertThat(expectedEvent.isPersisted(), is(true));
 
     Optional<CalendarEvent> mayBeActualEvent = calendar.event(expectedEvent.getId());
@@ -284,16 +284,16 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(occurrences.size(), is(5));
     CalendarEventOccurrence occurrence = occurrences.get(0);
     CalendarEvent occurrenceEvent = occurrences.get(0).getCalendarEvent();
+
     OperationResult result = occurrenceEvent.deleteOnly(occurrence);
-    assertThat(result, notNullValue());
-    assertThat(result.updated().isPresent(), is(true));
-    assertThat(result.created().isPresent(), is(false));
+    assertEventIsOnlyUpdated(result);
 
     Optional<CalendarEvent> mayBeEvent = calendar.event(occurrence.getCalendarEvent().getId());
     assertThat(mayBeEvent.isPresent(), is(true));
+
     CalendarEvent event = mayBeEvent.get();
     assertThat(event.getRecurrence().getExceptionDates()
-        .contains(Period.asOffsetDateTime(occurrence.getStartDate())), is(true));
+        .contains(LocalDate.from(occurrence.getStartDate())), is(true));
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
         .getEventOccurrences();
@@ -303,7 +303,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   }
 
   @Test
-  public void deleteFromAnOccurrenceAmongSeveralOneOfARecurrentEventAddAnExceptionDate() {
+  public void deleteSinceAnOccurrenceOfARecurrentEventUpdatesItsRecurrenceEndDate() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     List<CalendarEventOccurrence> occurrences =
         calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
@@ -312,13 +312,13 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     CalendarEventOccurrence occurrence = occurrences.get(2);
     final CalendarEvent occurrenceEvent = occurrence.getCalendarEvent();
     assertThat(occurrenceEvent.getRecurrence().getExceptionDates(), hasSize(2));
+
     OperationResult result = occurrenceEvent.deleteSince(occurrence);
-    assertThat(result, notNullValue());
-    assertThat(result.updated().isPresent(), is(true));
-    assertThat(result.created().isPresent(), is(false));
+    assertEventIsOnlyUpdated(result);
 
     Optional<CalendarEvent> mayBeEvent = calendar.event(occurrenceEvent.getId());
     assertThat(mayBeEvent.isPresent(), is(true));
+
     CalendarEvent event = mayBeEvent.get();
     assertThat(event, is(occurrenceEvent));
     assertThat(event, is(result.updated().get()));
@@ -336,12 +336,11 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     List<CalendarEventOccurrence> occurrences =
         calendar.between(LocalDate.of(2016, 1, 9), LocalDate.of(2016, 3, 5)).getEventOccurrences();
     assertThat(occurrences.size(), greaterThan(4));
+
     final CalendarEventOccurrence occurrence = occurrences.get(4);
     final CalendarEvent occurrenceEvent = occurrence.getCalendarEvent();
     OperationResult result = occurrenceEvent.delete();
-    assertThat(result, notNullValue());
-    assertThat(result.updated().isPresent(), is(false));
-    assertThat(result.created().isPresent(), is(false));
+    assertEventIsDeleted(result);
 
     occurrences =
         calendar.between(LocalDate.of(2016, 1, 9), LocalDate.of(2016, 3, 5)).getEventOccurrences();
@@ -361,7 +360,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
 
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_5").get();
-    event.delete();
+    OperationResult result = event.delete();
+    assertEventIsDeleted(result);
 
     allRecurrences = getRecurrenceTableLines();
     allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
@@ -380,8 +380,9 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, WEEK)));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(8));
 
-    event.recur(Recurrence.every(1, DAY).upTo(5));
-    event.update();
+    event.recur(Recurrence.every(1, DAY).until(5));
+    OperationResult result = event.update();
+    assertEventIsOnlyUpdated(result);
 
     event = calendar.event("ID_E_5").get();
     assertThat(event.getSequence(), is(1l));
@@ -407,15 +408,11 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(occurrence.getStartDate(), is(LocalDate.parse("2016-01-23")));
     assertThat(occurrence.getEndDate(), is(LocalDate.parse("2016-01-23")));
     assertThat(occurrence.getCalendarEvent().getRecurrence().getExceptionDates(),
-        containsInAnyOrder(OffsetDateTime.parse("2016-01-30T00:00Z"),
-            OffsetDateTime.parse("2016-01-16T00:00Z")));
+        containsInAnyOrder(LocalDate.parse("2016-01-30"), LocalDate.parse("2016-01-16")));
 
     occurrence.setDay(LocalDate.of(2016, 1, 24));
-    EventOperationResult result = event.updateOnly(occurrence);
-    assertThat(result, notNullValue());
-    assertThat(result.updated().isPresent(), is(false));
-    assertThat(result.created().isPresent(), is(false));
-    assertThat(result.instance().isPresent(), is(true));
+    OperationResult result = event.updateOnly(occurrence);
+    assertOccurrenceIsUpdated(result);
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
         .getEventOccurrences();
@@ -443,7 +440,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
 
     final String newDescription = "ANOTHER DESCRIPTION FOR THIS OCCURRENCE";
     occurrence.setDescription(newDescription);
-    event.updateOnly(occurrence);
+    OperationResult result = event.updateOnly(occurrence);
+    assertOccurrenceIsUpdated(result);
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
         .getEventOccurrences();
@@ -457,7 +455,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   }
 
   @Test
-  public void updateSinceAGivenOccurrenceOfAnEvent() {
+  public void
+  updateSinceAGivenOccurrenceOfARecurringEventCreatesANewOneForTheForthcomingOccurrences() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
      List<CalendarEventOccurrence> occurrences =
         calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
@@ -472,9 +471,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
 
     event.setTitle("UPDATED TITLE");
     EventOperationResult result = event.updateSince(occurrence);
-    assertThat(result, notNullValue());
-    assertThat(result.created().isPresent(), is(true));
-    assertThat(result.updated().isPresent(), is(true));
+    assertEventIsUpdated(result);
+    assertAnEventIsCreated(result);
 
     occurrences = calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 27))
         .getEventOccurrences();
@@ -496,8 +494,9 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(updatedOccurrence.getCalendarEvent().isRecurrent(), is(true));
     assertThat(lastOccurrenceOfPreviousEvent.getCalendarEvent().getRecurrence().isEndless(),
         is(false));
-    assertThat(lastOccurrenceOfPreviousEvent.getCalendarEvent().getRecurrence().getEndDate().get(),
-        lessThan(Period.asOffsetDateTime(updatedOccurrence.getCalendarEvent().getStartDate())));
+    assertThat(LocalDate.from(
+        lastOccurrenceOfPreviousEvent.getCalendarEvent().getRecurrence().getEndDate().get()),
+        lessThan(LocalDate.from(updatedOccurrence.getCalendarEvent().getStartDate())));
   }
 
   private CalendarEvent anAllDayEvent() {
@@ -514,7 +513,8 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
         .withDescription(EVENT_DESCRIPTION);
   }
 
-  private void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
+  @Override
+  protected void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
     assertThat(actual.getStartDate(), is(expected.getStartDate()));
     assertThat(actual.getEndDate(), is(expected.getEndDate()));
     assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));

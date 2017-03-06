@@ -26,7 +26,6 @@ package org.silverpeas.core.date;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.util.DateUtil;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
@@ -34,7 +33,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * A date and time, expressed in a given timezone. If no timezone is specified explicitly, then
+ * A datetime, expressed in a given timezone. If no timezone is specified explicitly, then
  * the one of the JVM is used by default.
  */
 public class DateTime extends AbstractDateTemporal<DateTime> {
@@ -43,15 +42,15 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
   private TimeZone timeZone = TimeZone.getDefault();
 
   /**
-   * Creates a new date time set at now.
-   * @return now date time.
+   * Creates a new datetime set at now.
+   * @return now datetime.
    */
   public static DateTime now() {
     return new DateTime(new java.util.Date());
   }
 
   /**
-   * Creates a new date time from the specified parts of the time specification year month day hour
+   * Creates a new datetime from the specified parts of the time specification year month day hour
    * minute second millisecond. The hour, minute, second and millisecond parts are optional; if not
    * passed, they are set at 0. For example, the following patterns are valid:
    * <ul>
@@ -61,10 +60,10 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
    * <li>at(2011, 5, 23, 10) meaning in ISO 86601 2011-05-23T10:00:00.00</li>
    * <li>at(2011, 5, 23) meaning in ISO 86601 2011-05-23T00:00:00.00</li>
    * </ul>
-   * @param timeParts the different parts of the date time to set in the following order: year,
+   * @param timeParts the different parts of the datetime to set in the following order: year,
    * month, day, hour, minute, second, millisecond. The year, month, and day are mandatory whereas
    * other time parts are optional. If one optional part isn't passed, then it is set to 0.
-   * @return a date time matching the specified date and time specification.
+   * @return a datetime matching the specified datetime specification.
    */
   public static DateTime dateTimeAt(int... timeParts) {
     if (timeParts.length < 3) {
@@ -89,17 +88,17 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
   }
 
   /**
-   * Constructs a new date time from the specified Java date and with the host time zone as time
+   * Constructs a new datetime from the specified Java date and with the host time zone as time
    * zone.
-   * @param aDate the Java date from which a date time is built.
+   * @param aDate the Java date from which a datetime is built.
    */
   public DateTime(final java.util.Date aDate) {
     super(aDate.getTime());
   }
 
   /**
-   * Constructs a new date time from the specified Java date and in the specified time zone.
-   * @param aDate the Java date from which a date time is built.
+   * Constructs a new datetime from the specified Java date and in the specified time zone.
+   * @param aDate the Java date from which a datetime is built.
    * @param timeZone the time zone in which this date is set.
    */
   public DateTime(final java.util.Date aDate, final TimeZone timeZone) {
@@ -224,26 +223,26 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
   }
 
   /**
-   * Converts this date time to a date. The time part of this date time is lost.
-   * @return a date representation of this date time.
+   * Converts this datetime to a date. The time part of this datetime is lost.
+   * @return a date representation of this datetime.
    */
   public Date toDate() {
     return new Date(this);
   }
 
   /**
-   * Converts this date time to a {@link ZonedDateTime} instance. The time part as well its
+   * Converts this datetime to a {@link ZonedDateTime} instance. The time part as well its
    * timezone is kept.
-   * @return a zoned date time representation of this date time.
+   * @return a zoned datetime representation of this datetime.
    */
   public ZonedDateTime toZoneDateTime() {
     return ZonedDateTime.ofInstant(toInstant(), timeZone.toZoneId());
   }
 
   /**
-   * Gets the time of this date time by taking into account the offset from UTC/Greenwich in the
+   * Gets the time of this datetime by taking into account the offset from UTC/Greenwich in the
    * ISO-8601 calendar system.
-   * @return the time of this date time.
+   * @return the time of this datetime.
    */
   public OffsetTime getOffsetTime() {
     return OffsetDateTime.ofInstant(toInstant(), timeZone.toZoneId()).toOffsetTime();
