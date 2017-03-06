@@ -39,6 +39,8 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.UnitUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -211,6 +213,14 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         // in the case the document is a CAD one, process it for Actify
         ActifyDocumentProcessor.getProcessor().process(document);
       } else {
+        // In case of update and if no content has been uploaded whereas the physical file does
+        // not exist, sending HTTP error 412 because file is mandatory.
+        if (!FileUtils.getFile(document.getAttachmentPath()).exists()) {
+          String errorMessage = getBundle().getString("attachment.dialog.error.file.mandatory");
+          NotifierUtil.addError(errorMessage);
+          throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
+              .entity(errorMessage).build());
+        }
         isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
         if (document.isVersioned()) {
           isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
