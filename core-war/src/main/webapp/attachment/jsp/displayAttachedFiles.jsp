@@ -46,6 +46,7 @@
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
+<c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <view:componentParam var="publicationAlwaysVisiblePramValue" componentId="${param.ComponentId}" parameter="publicationAlwaysVisible" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <c:set var="isPublicationAlwaysVisible" value="${silfn:booleanValue(publicationAlwaysVisiblePramValue)}" />
@@ -899,6 +900,7 @@
             var $this = $(this);
             var filename = $.trim($("#file_create").val().split('\\').pop());
             if (filename === '') {
+              notyError('<fmt:message key="attachment.dialog.error.file.mandatory"/>');
               return false;
             }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
@@ -1178,6 +1180,7 @@
       $('#fileName_label').text('<fmt:message key="GML.file"/>');
       $('#file_upload_label').text('<fmt:message key="fichierJoint" />');
     }
+    $('.mandatory').hide();
   }
 
   function clearAttachment() {
@@ -1185,6 +1188,7 @@
     $('#fileTitle').val('');
     $('#fileDescription').val('');
     $('#versioned_fields_attachment-update').hide();
+    $('.mandatory').show();
   }
 
   function displayWarningOnTranslations(nbTranslations) {
@@ -1284,7 +1288,8 @@
         <span id="fileName" class="champ-ui-dialog"></span>
 
         <label id="file_upload_label" for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-        <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
+        <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" />
+          <span class="mandatory" style="display: none">&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="${mandatoryFieldUrl}" width="5" height="5"/></span></span>
 
         <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
         <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
@@ -1300,6 +1305,9 @@
           <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
           <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
         </div>
+    <div class="mandatory" style="display: none">
+      <span class="label-ui-dialog"><img src="${mandatoryFieldUrl}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/></span>
+    </div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
@@ -1313,7 +1321,8 @@
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
     <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
-    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" /></span>
+    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" />
+          <span>&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="${mandatoryFieldUrl}" width="5" height="5"/></span></span>
     <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
     <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
     <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
@@ -1325,6 +1334,9 @@
       <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
       <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
     </c:if>
+    <div>
+      <span class="label-ui-dialog"><img src="${mandatoryFieldUrl}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/></span>
+    </div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>

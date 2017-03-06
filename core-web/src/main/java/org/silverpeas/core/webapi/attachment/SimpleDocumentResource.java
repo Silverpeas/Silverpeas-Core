@@ -20,14 +20,10 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
-import org.silverpeas.core.web.attachment.WebDavTokenProducer;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
@@ -35,13 +31,18 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
-import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.core.web.http.RequestParameterDecoder;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.importexport.versioning.DocumentVersion;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
+import org.silverpeas.core.web.attachment.WebDavTokenProducer;
+import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -153,14 +154,15 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       }
 
     } catch (WebApplicationException wae) {
+      WebApplicationException finalWae = wae;
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith()) &&
           wae.getResponse().getStatus() == Response.Status.PRECONDITION_FAILED.getStatusCode()) {
 
         // In case of file upload performed by Ajax IFrame transport way,
         // the exception must also be returned into a text/html response.
-        wae = createWebApplicationExceptionWithJSonErrorInHtmlContainer(wae);
+        finalWae = createWebApplicationExceptionWithJSonErrorInHtmlContainer(wae);
       }
-      throw wae;
+      throw finalWae;
     }
   }
 
@@ -211,6 +213,14 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         // in the case the document is a CAD one, process it for Actify
         ActifyDocumentProcessor.getProcessor().process(document);
       } else {
+        // In case of update and if no content has been uploaded whereas the physical file does
+        // not exist, sending HTTP error 412 because file is mandatory.
+        if (!FileUtils.getFile(document.getAttachmentPath()).exists()) {
+          String errorMessage = getBundle().getString("attachment.dialog.error.file.mandatory");
+          WebMessager.getInstance().addError(errorMessage);
+          throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
+              .entity(errorMessage).build());
+        }
         isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
         if (document.isVersioned()) {
           isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
