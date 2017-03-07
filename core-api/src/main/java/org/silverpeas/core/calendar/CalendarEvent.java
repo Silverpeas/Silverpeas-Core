@@ -55,6 +55,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 
@@ -87,83 +89,114 @@ import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
     @NamedQuery(name = "calendarEventCount", query =
         "SELECT COUNT(e) FROM CalendarEvent e WHERE e.component.calendar = :calendar"),
     @NamedQuery(name = "calendarEvents", query =
-        "SELECT e FROM CalendarEvent e " +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventByCalendarAndExternalId", query =
         "SELECT e FROM CalendarEvent e " +
             "WHERE e.component.calendar = :calendar AND e.externalId = :externalId"),
     @NamedQuery(name = "calendarEventsByCalendar", query =
-        "SELECT e FROM CalendarEvent e WHERE e.component.calendar IN :calendars " +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "WHERE c IN :calendars " +
+            "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByParticipants", query =
-        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
-            "WHERE (e.component.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees a " +
+            "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByCalendarByParticipants", query =
-        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
-            "WHERE e.component.calendar IN :calendars " +
-            "AND (e.component.createdBy IN :participantIds OR a.attendeeId IN :participantIds)" +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees a " +
+            "WHERE c IN :calendars " +
+            "AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds)" +
+            "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByCalendarByPeriod", query =
-        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
-            "e.component.calendar IN :calendars AND (" +
-            "(e.component.period.startDateTime <= :startDateTime AND " +
-            "  e.component.period.endDateTime >= :startDateTime) OR " +
-            "(e.component.period.startDateTime >= :startDateTime AND " +
-            "  e.component.period.startDateTime <= :endDateTime) OR " +
-            "(e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN FETCH e.recurrence r " +
+            "WHERE c IN :calendars AND (" +
+            "(cmp.period.startDateTime <= :endDateTime AND " +
+            "  cmp.period.endDateTime >= :startDateTime) OR " +
+            "(cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
             "  (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))" +
-            " GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+            " ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByPeriod", query =
-        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
-            "(e.component.period.startDateTime <= :startDateTime AND " +
-            "  e.component.period.endDateTime >= :startDateTime) OR " +
-            "(e.component.period.startDateTime >= :startDateTime AND " +
-            "  e.component.period.startDateTime <= :endDateTime) OR " +
-            "(e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN FETCH e.recurrence r " +
+            "WHERE (cmp.period.startDateTime <= :endDateTime AND " +
+            "  cmp.period.endDateTime >= :startDateTime) OR " +
+            "(cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
             "  (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))"  +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+            " ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query =
-        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
-            "LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
-            "(e.component.createdBy IN :participantIds OR a.attendeeId in :participantIds) AND " +
-            "((e.component.period.startDateTime <= :startDateTime AND " +
-            "   e.component.period.endDateTime >= :startDateTime) OR " +
-            " (e.component.period.startDateTime >= :startDateTime AND " +
-            "   e.component.period.startDateTime <= :endDateTime) OR " +
-            " (e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees a " +
+            "LEFT OUTER JOIN FETCH e.recurrence r " +
+            "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId in :participantIds) AND " +
+            "((cmp.period.startDateTime <= :endDateTime AND " +
+            "   cmp.period.endDateTime >= :startDateTime) OR " +
+            " (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
             "   (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))" +
             ")" +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime"),
+            " ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByCalendarByParticipantsByPeriod", query =
-        "SELECT e FROM CalendarEvent e LEFT OUTER JOIN e.component.attendees a " +
-            "LEFT OUTER JOIN FETCH e.recurrence r WHERE " +
-            "e.component.calendar IN :calendars AND " +
-            "(e.component.createdBy IN :participantIds OR a.attendeeId IN :participantIds) AND " +
-            "((e.component.period.startDateTime <= :startDateTime AND " +
-            "   e.component.period.endDateTime >= :startDateTime) OR " +
-            " (e.component.period.startDateTime >= :startDateTime AND " +
-            "   e.component.period.startDateTime <= :endDateTime) OR " +
-            " (e.component.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees a " +
+            "LEFT OUTER JOIN FETCH e.recurrence r " +
+            "WHERE c IN :calendars AND " +
+            "(cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) AND " +
+            "((cmp.period.startDateTime <= :endDateTime AND " +
+            "   cmp.period.endDateTime >= :startDateTime) OR " +
+            " (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
             "   (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))"
             +
-            "GROUP BY e.component.calendar.componentInstanceId, e.component.calendar.id, e.id " +
-            "ORDER BY e.component.calendar.componentInstanceId, e.component.calendar.id, " +
-            "  e.component.period.startDateTime")})
+            " ORDER BY ob_1, ob_2, ob_3")})
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
@@ -962,7 +995,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         OffsetDateTime recurrenceEnd =
             endDateTimeOf(eventPreviousState.getRecurrence(), recurrenceStart);
         List<CalendarEventOccurrence> occurrences = generator()
-            .generateOccurrencesOf(Collections.singletonList(eventPreviousState),
+            .generateOccurrencesOf(Stream.of(eventPreviousState),
                 Period.between(recurrenceStart, recurrenceEnd));
         if (occurrences.size() == 1 && occurrence.equals(occurrences.get(0))) {
           setPeriod(occurrence.getPeriod());

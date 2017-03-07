@@ -45,10 +45,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
@@ -68,7 +68,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   @Override
-  public List<CalendarEventOccurrence> computeOccurrencesOf(final Collection<CalendarEvent> events,
+  public List<CalendarEventOccurrence> computeOccurrencesOf(final Stream<CalendarEvent> events,
       final Period inPeriod) {
     List<CalendarEventOccurrence> occurrences = new ArrayList<>();
     events.forEach(event -> {

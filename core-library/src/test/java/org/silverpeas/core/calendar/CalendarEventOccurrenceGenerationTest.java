@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
@@ -68,7 +69,6 @@ public class CalendarEventOccurrenceGenerationTest {
   private static final String EVENT_TITLE = "an event title";
   private static final String EVENT_DESCRIPTION = "a short event description";
   private static final String ATTR_TEST_ID = "TEST_EVENT_ID";
-  private static final List<CalendarEvent> eventsForTest = getCalendarEventsForTest();
 
   private CalendarEventOccurrenceGenerator generator =
       new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
@@ -87,21 +87,21 @@ public class CalendarEventOccurrenceGenerationTest {
   @Test
   public void nothingDoneWithAnEmptyListOfEvents() {
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(Collections.emptyList(), in(Year.of(2016)));
+        generator.generateOccurrencesOf(Stream.empty(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(true));
   }
 
   @Test
   public void noOccurrencesIfNoEventInTheGivenPeriod() {
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, 1)));
+        generator.generateOccurrencesOf(streamCalendarEventsForTest(), in(YearMonth.of(2016, 1)));
     assertThat(occurrences.isEmpty(), is(true));
   }
 
   @Test
   public void countEventOccurrencesInYear() {
     List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, in(Year.of(2016)));
+        generator.generateOccurrencesOf(streamCalendarEventsForTest(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(103));
 
@@ -138,8 +138,8 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void countEventOccurrencesInMay() {
-    List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, Month.MAY)));
+    List<CalendarEventOccurrence> occurrences = generator
+        .generateOccurrencesOf(streamCalendarEventsForTest(), in(YearMonth.of(2016, Month.MAY)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(10));
     List<String> allEventIds = occurrences.stream()
@@ -155,8 +155,8 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void countEventOccurrencesInJuly() {
-    List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, Month.JULY)));
+    List<CalendarEventOccurrence> occurrences = generator
+        .generateOccurrencesOf(streamCalendarEventsForTest(), in(YearMonth.of(2016, Month.JULY)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(4));
     List<String> allEventIds = occurrences.stream()
@@ -170,8 +170,9 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void countEventOccurrencesInAGivenPeriod() {
-    List<CalendarEventOccurrence> occurrences = generator.generateOccurrencesOf(eventsForTest,
-        Period.between(date(2016, 8, 8), date(2016, 8, 14)));
+    List<CalendarEventOccurrence> occurrences = generator
+        .generateOccurrencesOf(streamCalendarEventsForTest(),
+            Period.between(date(2016, 8, 8), date(2016, 8, 14)));
     assertThat(occurrences.isEmpty(), is(false));
     assertThat(occurrences.size(), is(2));
     List<String> allEventIds = occurrences.stream()
@@ -186,8 +187,8 @@ public class CalendarEventOccurrenceGenerationTest {
 
   @Test
   public void dateOfEventOccurrencesInJuly() {
-    List<CalendarEventOccurrence> occurrences =
-        generator.generateOccurrencesOf(eventsForTest, in(YearMonth.of(2016, Month.JULY)));
+    List<CalendarEventOccurrence> occurrences = generator
+        .generateOccurrencesOf(streamCalendarEventsForTest(), in(YearMonth.of(2016, Month.JULY)));
     assertThat(occurrences.size(), is(4));
     // first occurrence
     Iterator<CalendarEventOccurrence> iterator = occurrences.iterator();
@@ -212,7 +213,7 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 29, 9, 15)));
   }
 
-  private static List<CalendarEvent> getCalendarEventsForTest() {
+  private static Stream<CalendarEvent> streamCalendarEventsForTest() {
     List<CalendarEvent> events = new ArrayList<>();
     /* event 1 on Thursday 2016-08-11 */
     events.add(CalendarEvent.on(date(2016, 8, 11))
@@ -271,7 +272,7 @@ public class CalendarEventOccurrenceGenerationTest {
         throw new RuntimeException(e);
       }
     }
-    return events;
+    return events.stream();
   }
 
   private Period in(Year year) {

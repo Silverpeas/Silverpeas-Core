@@ -28,8 +28,8 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.ZoneOffset;
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A generator of occurrences of {@link CalendarEvent} instances that will occur in a given period
@@ -72,7 +72,7 @@ public interface CalendarEventOccurrenceGenerator {
    * @return a set of event occurrences that occur in the specified period sorted by the date and
    * time at which they start.
    */
-  default List<CalendarEventOccurrence> generateOccurrencesOf(Collection<CalendarEvent> events,
+  default List<CalendarEventOccurrence> generateOccurrencesOf(Stream<CalendarEvent> events,
       Period inPeriod) {
     List<CalendarEventOccurrence> occurrences = computeOccurrencesOf(events, inPeriod);
     List<CalendarEventOccurrence> modified = CalendarEventOccurrenceRepository.get().getAll();
@@ -96,7 +96,7 @@ public interface CalendarEventOccurrenceGenerator {
    * {@link CalendarEventOccurrenceGenerator#generateOccurrencesIn(CalendarTimeWindow)}
    * </li>
    * <li>
-   * {@link CalendarEventOccurrenceGenerator#generateOccurrencesOf(Collection, Period)}
+   * {@link CalendarEventOccurrenceGenerator#generateOccurrencesOf(Stream, Period)}
    * </li>
    * </ul>
    * @param events the events to consider.
@@ -104,6 +104,6 @@ public interface CalendarEventOccurrenceGenerator {
    * @return a set of event occurrences that occur in the specified period sorted by the date and
    * time at which they start.
    */
-  List<CalendarEventOccurrence> computeOccurrencesOf(Collection<CalendarEvent> events,
+  List<CalendarEventOccurrence> computeOccurrencesOf(Stream<CalendarEvent> events,
       Period period);
 }

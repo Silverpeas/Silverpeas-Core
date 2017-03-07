@@ -88,6 +88,14 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(getCalendarEventTableLines(), hasSize(5));
   }
 
+  @Test
+  public void getCalendarWithoutEvent() {
+    Calendar calendar = Calendar.getById("ID_CAL_WITHOUT_EVENT");
+    List<CalendarEventOccurrence> occurrences =
+        calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
+    assertThat(occurrences, empty());
+  }
+
   /**
    * We test we get well all the events ordered by the component instance, then by the calendar,
    * and finally by their start date.

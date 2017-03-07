@@ -72,7 +72,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
   @Before
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
-    assertThat(getCalendarTableLines(), hasSize(3));
+    assertThat(getCalendarTableLines(), hasSize(4));
     assertThat(Calendar.getByComponentInstanceId(INSTANCE_ID), empty());
   }
 
@@ -136,7 +136,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     // Verifying the data
     List<TableLine> persistedCalendars = getCalendarTableLines();
-    assertThat(persistedCalendars, hasSize(4));
+    assertThat(persistedCalendars, hasSize(5));
     TableLine persistedCalendar = getCalendarTableLineById(newCalendar.getId());
 
     assertThat(persistedCalendar.get("instanceId"), is(INSTANCE_ID));
@@ -173,9 +173,10 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     assertThat(beforeDeletion, notNullValue());
     assertThat(eventsBeforeDeletion, hasSize(5));
 
-    Calendar calendarToModify = Calendar.getById("ID_3");
-    calendarToModify.delete();
-    assertThat(calendarToModify.isPersisted(), is(false));
+    Calendar calendarToDelete = Calendar.getById("ID_3");
+    calendarToDelete.delete();
+    assertThat(calendarToDelete.isPersisted(), is(false));
+    assertThat(getCalendarTableLines(), hasSize(3));
 
 
     TableLine afterDeletion = getCalendarTableLineById("ID_3");
@@ -184,7 +185,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     assertThat(eventsAfterDeletion, hasSize(3));
 
     thrown.expect(IllegalStateException.class);
-    calendarToModify.event("ID_E_3");
+    calendarToDelete.event("ID_E_3");
   }
 
   @Test

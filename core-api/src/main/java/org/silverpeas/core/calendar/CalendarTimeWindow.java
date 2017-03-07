@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * This class represents a window of time within which calendar events can occur. Some constraints
@@ -88,9 +89,9 @@ public class CalendarTimeWindow {
    * this window of time will be returned.
    * @return a list of events that occur in this window of time.
    */
-  public List<CalendarEvent> getEvents() {
+  public Stream<CalendarEvent> getEvents() {
     return CalendarEventRepository.get()
-        .getAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
+        .streamAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
             endDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).minusMinutes(1).toOffsetDateTime());
   }
 }
