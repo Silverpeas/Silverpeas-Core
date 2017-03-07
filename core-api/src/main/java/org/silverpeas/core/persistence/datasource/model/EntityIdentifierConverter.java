@@ -23,10 +23,9 @@
  */
 package org.silverpeas.core.persistence.datasource.model;
 
-import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -47,23 +46,24 @@ public class EntityIdentifierConverter {
 
   /**
    * Converts the given String id into the right entity identifier.
-   * @param idAsString
-   * @return
+   * @param idAsString the String representation of the identifier.
+   * @return the entity identifier from its String representation.
    */
+  @SuppressWarnings("unchecked")
   public <T extends EntityIdentifier> T convertToEntityIdentifier(String idAsString) {
     try {
       T identifier = (T) getEntityIdentifierClass().newInstance();
       identifier.fromString(idAsString);
       return identifier;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
   /**
    * Converts the given String ids into the right entity identifiers.
-   * @param idsAsString
-   * @return
+   * @param idsAsString one or more identifier as String value(s).
+   * @return a collection of entity identifiers from their String representations.
    */
   public <T extends EntityIdentifier> Collection<T> convertToEntityIdentifiers(
       String... idsAsString) {
@@ -73,8 +73,8 @@ public class EntityIdentifierConverter {
 
   /**
    * Converts the given String ids into the right entity identifiers.
-   * @param idsAsString
-   * @return
+   * @param idsAsString a collection of identifiers as String values.
+   * @return a collection of the entity identifiers from their String representations.
    */
   public <T extends EntityIdentifier> Collection<T> convertToEntityIdentifiers(
       Collection<String> idsAsString) {
@@ -90,8 +90,9 @@ public class EntityIdentifierConverter {
 
   /**
    * Gets the identifier class of the entity managed by the repository.
-   * @return
+   * @return the class of the entity identifier.
    */
+  @SuppressWarnings("unchecked")
   private <T extends EntityIdentifier> Class<T> getEntityIdentifierClass() {
     return (Class<T>) entityIdentifierClass;
   }

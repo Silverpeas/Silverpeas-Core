@@ -38,7 +38,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     return ServiceProvider.getService(ApplicationIndexer.class);
   }
 
-  public void indexAll() throws Exception {
+  public void indexAll() {
     indexAllSpaces();
     indexPersonalComponents();
     indexPdc();
@@ -46,7 +46,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     indexUsers();
   }
 
-  public void index(String personalComponent) throws Exception {
+  public void index(String personalComponent) {
     if (personalComponent != null) {
       indexPersonalComponent(personalComponent);
     }
@@ -104,7 +104,7 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   @Override
-  public void indexComponent(String spaceId, String componentId) throws Exception {
+  public void indexComponent(String spaceId, String componentId) {
     try {
       ComponentInst compoInst = OrganizationController.get().getComponentInst(componentId);
       indexComponent(spaceId, compoInst);
@@ -114,11 +114,13 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
   }
 
-  public void indexPdc() throws Exception {
-    SilverLogger.getLogger(this).info("starting indexation of PDC");
-    PdcIndexer indexer = PdcIndexer.getInstance();
-    indexer.index();
-    SilverLogger.getLogger(this).info("ending indexation of PDC");
+  public void indexPdc() {
+    try {
+      PdcIndexer indexer = PdcIndexer.getInstance();
+      indexer.index();
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("failure while indexing PDC", e);
+    }
   }
 
   private String firstLetterToLowerCase(String str) {

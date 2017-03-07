@@ -464,7 +464,7 @@ public class DbSetupRule implements TestRule {
   }
 
   public List<TableLine> mapJdbcSqlQueryResultAsListOfMappedValues(JdbcSqlQuery jdbcSqlQuery)
-      throws Exception {
+      throws SQLException {
     final List<Pair<String, Integer>> metaData = new ArrayList<>();
     return jdbcSqlQuery.execute(row -> {
       if (metaData.isEmpty()) {

@@ -50,7 +50,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * Indexes all spelling indexes
    * @throws Exception whether an exception occurred
    */
-  public void indexAll() throws Exception {
+  public void indexAll() {
     indexAllSpaces();
     indexPersonalComponents();
     indexPdc();
@@ -63,7 +63,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * @throws Exception whether an exception occurred
    */
   @Override
-  public void indexComponent(String spaceId, String componentId) throws Exception {
+  public void indexComponent(String spaceId, String componentId) {
     try {
       String ComponentIndexPath = IndexFileManager.getAbsoluteIndexPath(componentId);
       DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);

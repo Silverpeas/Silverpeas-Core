@@ -25,6 +25,7 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.ExternalEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
@@ -144,7 +145,7 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
         this.id = newIdentifierInstance();
         this.id.fromString(id);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw new SilverpeasRuntimeException(e);
       }
     } else {
       this.id = null;
@@ -167,7 +168,7 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
     try {
       return getEntityIdentifierClass().newInstance();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

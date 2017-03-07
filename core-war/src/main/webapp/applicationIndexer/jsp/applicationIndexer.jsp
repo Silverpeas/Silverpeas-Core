@@ -142,7 +142,7 @@ if (action != null) {
   if (!isIndexationProcessRunning) {
     IndexationProcessExecutor.get().execute(new IndexationProcessExecutor.IndexationProcess() {
       @Override
-      public void perform() throws Exception {
+      public void perform() {
         ApplicationIndexer ai = ApplicationIndexer.getInstance();
         switch (action) {
           case "Index":

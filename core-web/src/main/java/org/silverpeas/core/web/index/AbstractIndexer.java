@@ -37,11 +37,11 @@ public abstract class AbstractIndexer {
 
   protected final AdminController admin = ServiceProvider.getService(AdminController.class);
 
-  public void indexAllSpaces() throws Exception {
+  public void indexAllSpaces() {
     index(null, null);
   }
 
-  public void index(String currentSpaceId, String componentId) throws Exception {
+  public void index(String currentSpaceId, String componentId) {
     if (currentSpaceId == null) {
       // index whole application
       String[] spaceIds = OrganizationControllerProvider.getOrganisationController().getAllSpaceIds();
@@ -65,9 +65,8 @@ public abstract class AbstractIndexer {
    * Indexes one space
    *
    * @param spaceId space identifier
-   * @throws Exception whether an exception occurred
    */
-  private void indexSpace(String spaceId) throws Exception {
+  private void indexSpace(String spaceId) {
     SilverLogger.getLogger(this).info("starting space indexation with id ''{0}''", spaceId);
 
     String currentSpaceId = spaceId;
@@ -106,7 +105,7 @@ public abstract class AbstractIndexer {
     indexPersonalComponent("Todo");
   }
 
-  public abstract void indexComponent(String spaceId, String componentId) throws Exception;
+  public abstract void indexComponent(String spaceId, String componentId);
 
   public abstract void indexPersonalComponent(String personalComponent);
 }

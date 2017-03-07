@@ -43,7 +43,7 @@ public abstract class CDIServerEventListener<T extends AbstractServerEvent>
 
   protected final SilverLogger logger = SilverLogger.getLogger(this);
 
-  public void onEvent(@Observes T event) throws Exception {
+  public void onEvent(@Observes T event) {
     on(event);
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.constraint;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.util.StringUtil;
@@ -63,7 +64,7 @@ public class OnlyByCreatorValidator implements ConstraintValidator<OnlyByCreator
         ownerField.setAccessible(true);
         entityOwner = (Entity) ownerField.get(entity);
       } catch (NoSuchFieldException | IllegalAccessException e) {
-        throw new RuntimeException(e.getMessage(), e);
+        throw new SilverpeasRuntimeException(e.getMessage(), e);
       }
     } else {
       entityOwner = entity;

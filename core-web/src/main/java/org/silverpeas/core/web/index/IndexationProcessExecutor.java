@@ -112,10 +112,10 @@ public class IndexationProcessExecutor {
 
   public static abstract class IndexationProcess implements Callable<Void> {
 
-    public abstract void perform() throws Exception;
+    public abstract void perform();
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
       final String threadId = String.valueOf(Thread.currentThread().getId());
       try {
         SilverLogger.getLogger(IndexationProcessExecutor.class)

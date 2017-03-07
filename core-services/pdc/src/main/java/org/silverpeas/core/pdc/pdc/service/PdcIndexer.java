@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -43,7 +44,7 @@ public class PdcIndexer {
 
   }
 
-  public void index() throws Exception {
+  public void index() throws PdcException {
     pdcManager.indexAllAxis();
   }
 
