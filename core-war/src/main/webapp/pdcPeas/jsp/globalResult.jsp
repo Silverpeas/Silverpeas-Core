@@ -121,7 +121,6 @@ boolean	expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisib
 boolean	showPertinence	= ((Boolean) request.getAttribute("PertinenceVisible")).booleanValue();
 
 String 	displayParamChoices = (String) request.getAttribute("DisplayParamChoices"); // All || Req || Res
-List<String> choiceNbResToDisplay = (List<String>) request.getAttribute("ChoiceNbResToDisplay");
 Integer nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer sortValue		= (Integer) request.getAttribute("SortValue");
 String sortOrder		= (String) request.getAttribute("SortOrder");
@@ -309,14 +308,12 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 		SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 	}
 
-	function doPagination(index)
+	function doPagination(index, nbItemsPerPage)
 	{
-		var  selectItems 	= getSelectedOjects();
-		var  notSelectItems = getNotSelectedOjects();
-
 		document.AdvancedSearch.Index.value 			= index;
-		document.AdvancedSearch.selectedIds.value 		= selectItems;
-		document.AdvancedSearch.notSelectedIds.value 	= notSelectItems;
+    document.AdvancedSearch.NbItemsPerPage.value 			= nbItemsPerPage;
+		document.AdvancedSearch.selectedIds.value 		= getSelectedOjects();
+		document.AdvancedSearch.notSelectedIds.value 	= getNotSelectedOjects();
 		document.AdvancedSearch.action					= "Pagination";
 		document.AdvancedSearch.submit();
 	}
@@ -493,25 +490,11 @@ function viewFile(target, attachmentId, versioned, componentId) {
 <% if ("All".equals(displayParamChoices) || "Res".equals(displayParamChoices)) { %>
 		<table id="globalResultParamDisplay" border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr align="center">
-          <td id="globalResultParamDisplayLabel"><%=resource.getString("pdcPeas.NbResultSearch")%></td>
-          <td align="left" id="globalResultParamDisplayOptions"><select name="nbRes" size="1" onchange="javascript:changeResDisplay()">
-            <%
-				if (choiceNbResToDisplay != null) {
-				String selected = "";
-					for (String choice : choiceNbResToDisplay) {
-						selected = "";
-						if(choice.equals(nbResToDisplay.toString())) {
-							selected = "selected=\"selected\"";
-						}
-						out.println("<option value=\""+choice+"\" "+selected+">"+choice+"</option>");
-					}
-				}
-             %>
-          </select>
-		  <span>&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
+          <td id="globalResultParamDisplayLabel"><%=resource.getString("pdcPeas.SortResultSearch")%></td>
+          <td align="left" id="globalResultParamDisplayOptions">
 		  <select name="sortRes" size="1" onchange="javascript:changeResDisplay()">
             <%
-		String selected = "";
+		    String selected = "";
 				for (int i=1; i<=7; i++) {
 					selected = "";
 					if(sortValue.intValue() == i) {
@@ -588,13 +571,11 @@ function viewFile(target, attachmentId, versioned, componentId) {
 		out.println("</td></tr>");
 		out.println("<tr class=\"intfdcolor4\"><td>&nbsp;</td></tr>");
 
-		if (nbTotalResults > resultsOnThisPage.size()) {
-			out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
-			out.println("<td align=\"center\">");
-			out.println(pagination.printIndex("doPagination"));
-			out.println("</td>");
-			out.println("</tr>");
-		}
+    out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
+    out.println("<td align=\"center\">");
+    out.println(pagination.printIndex("doPagination", true));
+    out.println("</td>");
+    out.println("</tr>");
 
 		out.println("</table>");
 	} else {
@@ -667,6 +648,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
 	<input type="hidden" name="selectedIds"/>
 	<input type="hidden" name="notSelectedIds"/>
 	<input type="hidden" name="Index"/>
+  <input type="hidden" name="NbItemsPerPage"/>
 	<input type="hidden" name="contentURL"/>
 	<input type="hidden" name="componentId"/>
 	<input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>

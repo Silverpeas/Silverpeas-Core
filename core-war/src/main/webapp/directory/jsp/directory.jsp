@@ -70,9 +70,9 @@
       location.href = index;
     }
 
-    function doPagination(page) {
+    function doPagination(page, nbItemsPerPage) {
       $.progressMessage();
-      location.href = "Pagination?Index=" + page;
+      location.href = "Pagination?Index=" + page + "&NumberElementsPerPage=" + nbItemsPerPage;
     }
 
     function isTermOK(term) {
@@ -240,7 +240,7 @@
               </c:forEach>
             </ol>
             <div id="pagination">
-                ${pagination.printIndex('doPagination')}
+                ${pagination.printIndex('doPagination', true)}
             </div>
           </div>
         </c:otherwise>

@@ -546,11 +546,6 @@ border-radius:0 0 12px 12px;
 background-color:#ECECEC;
 }
 
-
-.arrayPane {
-box-shadow:5px 5px 10px #DDDDDD;
-}
-
 #portletPages h2.portlet-title {
 	border-bottom: 0px solid #CCCCCC;
 	color:#ec8601;
@@ -746,21 +741,6 @@ padding-right:0;
 
 .ArrayCellHot {
   color: #FF6000;
-}
-
-.pageNav , .pageNav .ArrayNavigation, .pageNav .pageOff {
-background-image: none;
-}
-.pageNav {
-border-radius: 5px;
-box-shadow:0;
-padding-top:3px;
-padding-left:5px;
-padding-right:5px;
-}
-.pageNav .pageIndex {
-margin:0 10px 0 0;
-padding:3px 0 0 0;
 }
 
 .bgDegradeGris {

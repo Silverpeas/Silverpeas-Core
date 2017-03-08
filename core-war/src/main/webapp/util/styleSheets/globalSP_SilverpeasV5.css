@@ -565,12 +565,6 @@ Definition des class de style Silverpeas
 Style Utilise par le ViewGenerator
 *********************************/ /* OBJETS : ButtonWA - ButtonWA2 */
 /* AVERIFIERSUPPR*/
-.buttonStyle {
-  background-image:
-    url(../../util/viewGenerator/icons/fondButton.gif);
-  background-repeat: repeat-x;
-  font-weight: normal;
-}
 
 .buttonColorDark {
   background-color: #111111
@@ -1122,76 +1116,177 @@ Style Utilise par le ViewGenerator
   display:block;
 }
 
+
+/* pagination */
+
 .pageNav {
-  white-space: nowrap;
-  margin: 0 auto;
-  display: table;
-  color:#444;
+  color:#999;
+  background-color:#f3f3f3;
+  text-align:center;
+  border-top:1px solid #CCC;
+  clear: left;
+}
+.pageNav *{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pageNav .pageNavContent {
+  padding:0.5em;
+}
+
+
+.pageNav .pageJumper *{
+  display:inline-block;
+  height:1.2em;
 }
 
 .pageNav .pageIndex {
-  vertical-align: top;
-  text-align:center;
-  width:auto;
-  float: left;
-  padding: 2px 3px;
-  margin-right: 0.5em;
-  font-size:0.9em;
-  line-height: 1.6em;
+  padding-left:1em;
 }
 
-.pageNav .pageOff {
-  float: left;
+.pageClicToGo {
+  padding:0 1em;
+  border-spacing: 0;
+}
+.pageClicToGo .pageOff ,
+.pageClicToGo .pageOn {
+  padding:0.5em 0.75em;
+  font-size:1em;
+  background-color:#FFF;
+  border:1px solid #CCC;
+  border-left:0;
+  color:#333;
+  display:table-cell;
+}
+
+.pageClicToGo a:first-child{
+  border:1px solid  #CCC;
+  border-radius:4px 0 0 4px;
+  margin-left:1em;
+}
+
+.pageClicToGo a:last-child{
+  border-radius: 0 4px 4px 0 ;
+  margin-right:1em;
+}
+
+.pageClicToGo .pageOff:hover{
+  background-color:#ececec;
+}
+
+.pageNav .pageClicToGo .pageOn {
+  background-color:#1c94d4;
+  border-color:#1c94d4;
+  color:#FFF;
 }
 
 .pageNav .pageOff a{
-  background-color:#FFF;
-  border:1px solid #d4d4d4;
-  color:#000;
-  text-decoration: none;
-  vertical-align: top;
-  padding: 2px 5px;
-  margin-right:2px;
+  font-size:1em;
   display:block;
-  float: left;
-  height:1.3em;
-  font-weight:100;
+  padding-left:0.5em;
 }
 
-.pageNav .pageOff a:hover, .pageNav .pageOff a:focus{
-  background-color:#d4d4d4;
-  color:#FFF;
-}
-
-.pageNav .pageOn {
-  float: left;
-  background-color: #9d9d9d;
-  border:1px solid #9d9d9d;
-  font-size: 1em;
-  font-weight:100;
-  color:#FFF;
-  text-decoration: none;
-  vertical-align: top;
-  padding: 2px 5px;
-  margin-right:2px;
-  height:1.3em;
-}
-
-.pageNav .pageJumper {
-  float: left;
-  padding: 2px;
-  background-color:#444;
-  border:1px solid #444;
+.pageNav .numberPerPage a:after{
+  content:'|';
   margin-left:0.5em;
-  height:1.3em;
+  margin-right:0.5em;
 }
 
-.pageNav .pageJumper  a {
-  color:#FFF !important;
+.pageNavContent > div:after{
+  /*content:'-';*/
+  margin-left:0.5em;
+  margin-right:0.5em;
+}
+
+.pageNavContent > .pageClicToGo:after{
+  content:'';
+  margin-left:0;
+  margin-right:0;
+}
+
+.pageNav .numberPerPage {
+  padding-left:0em;
+}
+
+.pageNav .numberPerPage .selected {
+  color: #999;
+}
+
+.pageNav .numberPerPage a:after{
+  content:'|';
+  color: #333;
+  margin-left:0.3em;
+  margin-right:0.3em;
+}
+
+.pageNavContent > .numberPerPage:after{
+  content:'';
+  margin-left:0;
+  margin-right:0;
+}
+.pageNavContent > .numberPerPage:before{
+  /*content:'-';*/
+  margin-left:0.5em;
+  margin-right:0.5em;
+}
+
+.pageNav .numberPerPage a:last-child:after{
+  content:' ';
+}
+.pageNav .pageOff a:hover, .pageNav .pageOff a:focus{
+}
+
+.pageNav .pageJumper *{
+  display:inline-block;
+  height:1.1em;
+}
+
+.pageNav .pageJumper .jumper:focus{ 
+  box-shadow: inset 0px 1px 2px rgba(0,0,0,0.3);
+  border-color:#1c94d4;
 }
 
 .pageNav .pageJumper .jumper {
   visibility: hidden;
+}
+ .footerNav td{
+  position:relative;
+ }
+ 
+ .footerNav .exportlinks {
+  position:absolute;
+  right:1em;
+  top:0;
+  width:inherit;
+  padding:1.5em 0 ;
+ }
+ 
+/*- [Specific export BEGIN ] ---------------- */
+.exportlinks {
+  width: 165px;
+}
+.exportlinks div {
+  float:right;
+  font-weight:bold;
+  margin-right:8px;
+  padding-left:10px;
+  line-height:19px;
+  padding-top: 3px;
+}
+.exportlinks a:hover {
+  color:#5E9F09;
+}
+span.export {
+  padding: 0 4px 1px 20px;
+  display: inline;
+  display: inline-block;
+  cursor: pointer;
+  margin:0 10px;
+  font-weight:100;
+}
+span.csv {
+  background:transparent url(../icons/fileType/icon_csv.gif) 0px 0px no-repeat;
 }
 
 /*- [ general ] --------------------------- */
@@ -3197,33 +3292,6 @@ select.mandatoryField option.emphasis {
   margin-top: 10px;
 }
 
-/*- [Specific export BEGIN ] ---------------- */
-.exportlinks {
-  width: 165px;
-}
-.exportlinks div {
-  float:right;
-  font-weight:bold;
-  margin-right:8px;
-  padding-left:10px;
-  line-height:19px;
-  padding-top: 3px;
-}
-.exportlinks a:hover {
-  color:#5E9F09;
-}
-span.export {
-  padding: 0 4px 1px 20px;
-  display: inline;
-  display: inline-block;
-  cursor: pointer;
-  margin:0 10px;
-  font-weight:100;
-}
-span.csv {
-  background:transparent url(../icons/fileType/icon_csv.gif) 0px 0px no-repeat;
-}
-
 /*- [Generic inline messages BEGIN ] ---------------- */
 .inlineMessage,
 .inlineMessage-ok,
@@ -4024,13 +4092,13 @@ input.search:focus {
   font-weight:bold;
 }
 
-.userPanel .listing_users ul,
-.userPanel .listing_groups ul {
+.userPanel .listing_users > ul,
+.userPanel .listing_groups > ul {
   border:1px solid #d4d4d4;
 }
 
-.userPanel .listing_users li,
-.userPanel .listing_groups li {
+.userPanel .listing_users  > ul li,
+.userPanel .listing_groups  > ul li {
   position:relative;
   height:30px;
   padding:4px 45px
@@ -4091,14 +4159,6 @@ input.search:focus {
 
 .userPanel .state-deactivated .name_user {
   color:#666;
-}
-
-.pageNav_silverpeas {
-  text-align:center;
-}
-
-.pageNav_silverpeas .pageNav {
-  margin:0.5em auto;
 }
 
 #selected_userPanel .container{
@@ -4270,6 +4330,7 @@ input.search:focus {
 
 .userzoom-tooltip-interaction-action-relation span,
 .userzoom-tooltip-interaction-action-invitation span {
+
   padding-left:32px;
   display:block;
 }

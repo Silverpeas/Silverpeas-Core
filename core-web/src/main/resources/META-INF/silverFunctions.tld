@@ -253,26 +253,6 @@
     </example>
   </function>
   <function>
-    <description>Function to format a pagination.</description>
-    <name>formatPaginationFromCurrentPageIndex</name>
-    <function-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationUtil
-    </function-class>
-    <function-signature>java.lang.String formatFromCurrentPageIndex(int,int,int)</function-signature>
-    <example>
-      &lt;c:out value="${silfn:formatPagination(15,50,2)}">
-    </example>
-  </function>
-  <function>
-    <description>Function to count the total number of pages to display.</description>
-    <name>countTotalNumberOfPagesOfPagination</name>
-    <function-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationUtil
-    </function-class>
-    <function-signature>int countTotalNumberOfPages(int,int)</function-signature>
-    <example>
-      &lt;c:out value="${silfn:countTotalNumberOfPages(15,50)}">
-    </example>
-  </function>
-  <function>
     <description>Function that returns the Full URL of the application.</description>
     <name>fullApplicationURL</name>
     <function-class>org.silverpeas.core.util.URLUtil</function-class>

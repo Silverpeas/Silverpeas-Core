@@ -23,33 +23,24 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
-/**
- * @author: Yohann Chastagnier
- */
-public class PaginationUtil {
+import org.junit.Test;
 
-  /**
-   * Centralizes the formatting of a pagniation context label.
-   * @param nbItemsPerPage the number of items displayed in a page.
-   * @param totalNumberOfItems the total number of items that can be displayed.
-   * @param firstItemIndexOfCurrentPage the index in the list of items of the first item to display
-   * in the current page.
-   * @return
-   */
-  public static String formatFromFirstIndexOfItem(int nbItemsPerPage, int totalNumberOfItems,
-      int firstItemIndexOfCurrentPage) {
-    StringBuilder result = new StringBuilder();
-    if (totalNumberOfItems <= firstItemIndexOfCurrentPage || totalNumberOfItems <= nbItemsPerPage) {
-      result.append(totalNumberOfItems).append(" ");
-    } else {
-      int end = firstItemIndexOfCurrentPage + nbItemsPerPage;
-      if (end > totalNumberOfItems) {
-        end = totalNumberOfItems;
-      }
-      result.append(firstItemIndexOfCurrentPage + 1).append(" - ").append(end).append(" / ")
-          .append(totalNumberOfItems).append(" ");
-    }
-    return result.toString();
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+public class PaginationUtilTest {
+
+  @Test
+  public void formatFromFirstIndexOfItem() {
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(-1, -1, -1), is("-1 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(-1, -1, 0), is("-1 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(-1, 0, 0), is("0 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(1, 1, 0), is("1 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(15, 1, 0), is("1 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(15, 16, 0), is("1 - 15 / 16 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(15, 50, 0), is("1 - 15 / 50 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(15, 50, 1), is("2 - 16 / 50 "));
+    assertThat(PaginationUtil.formatFromFirstIndexOfItem(15, 50, 15), is("16 - 30 / 50 "));
   }
 
 }

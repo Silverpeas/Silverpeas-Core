@@ -47,8 +47,6 @@ boolean			xmlSearchVisible	= (Boolean) request.getAttribute("XmlSearchVisible");
 boolean			expertSearchVisible = (Boolean) request.getAttribute("ExpertSearchVisible");
 
 String 			displayParamChoices = (String) request.getAttribute("DisplayParamChoices"); // All || Req || Res
-List 			choiceNbResToDisplay = (List) request.getAttribute("ChoiceNbResToDisplay");
-Integer			nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer			sortValue			= (Integer) request.getAttribute("SortValue");
 String			sortOrder			= (String) request.getAttribute("SortOrder");
 
@@ -401,27 +399,8 @@ out.println(window.printBefore());
 	%>
 		<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr align="center">
-		  <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.NbResultSearch")%></td>
-		  <td align="left"><select name="nbRes" size="1">
-			<%
-				if (choiceNbResToDisplay != null)
-				{
-					Iterator it = (Iterator) choiceNbResToDisplay.iterator();
-					String choice;
-					selected = "";
-					while (it.hasNext())
-					{
-						selected = "";
-						choice = (String) it.next();
-						if(choice.equals(nbResToDisplay.toString())) {
-							selected = " selected=\"selected\"";
-						}
-						out.println("<option value=\""+choice+"\""+selected+">"+choice+"</option>");
-					}
-				}
-			 %>
-		  </select>
-		  <span class="txtlibform">&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
+		  <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.SortResultSearch")%></td>
+		  <td align="left">
 		  <select name="sortRes" size="1">
 			<%
 				for (int i=1; i<=7; i++) {
