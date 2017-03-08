@@ -102,11 +102,12 @@ import java.util.*;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
+  private final static int DEFAULT_NBRESULTS_PERPAGE = 10;
+
   // Container and Content Peas
   private SearchContext searchContext = null; // Current position
   // in PDC
-  private QueryParameters queryParameters = null; // Current parameters for
-  // plain search
+  private QueryParameters queryParameters = null; // Current parameters for plain search
   private List<String> componentList = null;
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
@@ -118,7 +119,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // pagination de la liste des resultats (search Engine)
   private int indexOfFirstResultToDisplay = 0;
   private String displayParamChoices = null; // All || Res || Req
-  private int nbResToDisplay = -1;
+  private int nbResToDisplay = DEFAULT_NBRESULTS_PERPAGE;
   private int sortValue = -1; // 1 || 2 || 3 || 4 || 5
   private String sortOrder = null; // ASC || DESC
   public static final String SORT_ORDER_ASC = "ASC";
@@ -272,20 +273,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return displayParamChoices;
   }
 
-  public List<String> getListChoiceNbResToDisplay() {
-    List<String> choiceNbResToDisplay = new ArrayList<>();
-    StringTokenizer st = new StringTokenizer(getSettings().getString("ChoiceNbResToDisplay"), ",");
-    while (st.hasMoreTokens()) {
-      String choice = st.nextToken();
-      choiceNbResToDisplay.add(choice);
-    }
-    return choiceNbResToDisplay;
-  }
-
   public int getNbResToDisplay() {
-    if (nbResToDisplay == -1) {
-      nbResToDisplay = Integer.parseInt(getListChoiceNbResToDisplay().get(0));
-    }
     return nbResToDisplay;
   }
 

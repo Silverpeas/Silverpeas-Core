@@ -71,7 +71,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       List<String> lDomainIds = processDomains(request, directorySC);
 
       DirectoryItemList users = new DirectoryItemList();
-      if (function.equalsIgnoreCase("Main")) {
+      if ("Main".equalsIgnoreCase(function)) {
 
         String groupId = request.getParameter("GroupId");
         String groupIds = request.getParameter("GroupIds");
@@ -118,7 +118,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String userId = request.getParameter("UserId");
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
-      } else if (function.equalsIgnoreCase("searchByKey")) {
+      } else if ("searchByKey".equalsIgnoreCase(function)) {
         String query = request.getParameter("key");
         boolean globalSearch = request.getParameterAsBoolean("Global");
         if (StringUtil.isDefined(query)) {
@@ -142,7 +142,12 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getUsersByIndex(function);
         destination = doPagination(request, users, directorySC);
 
-      } else if (function.equalsIgnoreCase("pagination")) {
+      } else if ("pagination".equalsIgnoreCase(function)) {
+
+        users = directorySC.getLastListOfUsersCalled();
+        destination = doPagination(request, users, directorySC);
+
+      } else if ("ChangeNumberItemsPerPage".equalsIgnoreCase(function)) {
 
         users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
@@ -166,7 +171,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
    */
   boolean isSearchByIndex(String lettre) {
     if (lettre != null && lettre.length() == 1) {
-      return Character.isLetter(lettre.charAt(0));// return true if "lettre is Letrre
+      return Character.isLetter(lettre.charAt(0));
     } else {
       return false;
     }
@@ -181,6 +186,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     int index = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
       index = Integer.parseInt(request.getParameter("Index"));
+    }
+    String nbElementsPerPage = request.getParameter("NumberElementsPerPage");
+    if (StringUtil.isInteger(nbElementsPerPage)) {
+      directorySC.setElementsByPage(Integer.parseInt(nbElementsPerPage));
     }
 
     HttpSession session = request.getSession();

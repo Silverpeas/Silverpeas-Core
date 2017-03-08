@@ -85,8 +85,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
 
     int columnsCount = getColumns().size();
 
-    if ((getLines().size() > 0) && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
-
+    if (getLines().size() > 0 && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
       Collections.sort(getLines());
     }
 
@@ -95,8 +94,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
       columnsCount = columnsCount * 2 + 1;
     }
     StringBuilder result = new StringBuilder();
-    result.append("<table width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" border=\"0\" ");
-    result.append("class=\"arrayPane\"><tr><td>\n").append("<table width=\"100%\" cellspacing=\"");
+    result.append("<div class=\"arrayPane\">\n").append("<table width=\"100%\" cellspacing=\"");
     result.append(getCellSpacing()).append("\" cellpadding=\"").append(getCellPadding());
     result.append("\" border=\"").append(getCellBorderWidth()).append("\"");
     result.append(" id=\"").append(getName()).append("\" class=\"tableArrayPane\"");
@@ -150,25 +148,18 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
 
     }
     result.append("</tbody>\n");
-    result.append("</table>\n");
 
-    boolean paginationVisible =
-        -1 != getState().getMaximumVisibleLine() && getLines().size() > getState().getMaximumVisibleLine();
+    boolean paginationVisible = -1 != getState().getMaximumVisibleLine();
 
     if (paginationVisible || getExportData()) {
-      result.append(
-          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
-      result.append("<tr class=\"intfdcolor\">\n");
+      result.append("<tfoot class=\"footerNav\">");
+      result.append("<td colspan=\"").append(columnsCount).append("\">\n");
       if (paginationVisible) {
-        result.append("<td align=\"center\">");
         result.append(pagination.printIndex(getPaginationJavaScriptCallback()));
-        result.append("</td>");
       }
       if (getExportData()) {
         // Add export data GUI
-        result.append("<td class=\"exportlinks\">");
-        result.append("<div>");
-        result.append(gef.getMultilang().getString("GEF.export.label")).append(" :");
+        result.append("<div class=\"exportlinks\">");
         result.append("<a href=\"").append(getExportUrl()).append(
             "\"><span class=\"export csv\">");
         result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
@@ -177,13 +168,14 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
         // which are displayed in the same page (use this.name instead of "arraypane")
         getSession().setAttribute("Silverpeas_arraypane_columns", getColumns());
         getSession().setAttribute("Silverpeas_arraypane_lines", getLines());
-        result.append("</td>");
+        result.append("</div>");
       }
-      result.append("</tr>\n");
-      result.append("</table>");
+      result.append("</td>\n");
+      result.append("</tfoot>");
     }
 
-    result.append("</td></tr></table>\n");
+    result.append("</table>\n");
+    result.append("</div>\n");
 
     if (isSortableLines()) {
       result.append(printSortJavascriptFunction());

@@ -406,15 +406,6 @@ button,
      color: #444444;
 }
 
-.pageNav {
-     background-color: #FFFFFF;
-}
-
-.pageNav .pageIndex {
-     background-color: transparent;
-     border-right: 1px solid #444443;
-}
-
 .skinFieldset legend {
      background-color: #FFFFFF ! important;
      border-radius: 5px;
