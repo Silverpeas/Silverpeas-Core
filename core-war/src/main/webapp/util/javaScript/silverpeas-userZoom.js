@@ -60,7 +60,7 @@
         self.currentUser = me;
         self.currentUser.hasRelationWith = function(aUser) {
           return aUser.relationships().then(function(contacts) {
-            for (var i in contacts) {
+            for (var i = 0; i < contacts.length; i++) {
               var contact = contacts[i];
               if (me.id == contact.id) {
                 return true;
@@ -147,23 +147,20 @@
     if (!user.connected) {
       disabledCss = ' disabled';
     }
-
-    var appendCommonActions = function() {
-      interactionBox.append(interactionActions);
-      interactionBox.append($('<a>', {
-        href: user.webPage
-      }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
-      append($('<a>', {
-        href: '#'
-      }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user)).
-      append($('<a>', {
-        href: '#'
-      }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append(window.i18n.prop('tchat'))).click(function() {
-        if (user.connected)
-          tchatWith(user);
-      })).
-      append($('<div>').addClass('userzoom-tooltip-arrow'));
-    };
+    interactionBox.append(interactionActions);
+    interactionBox.append($('<a>', {
+      href: user.webPage
+    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
+    append($('<a>', {
+      href: '#'
+    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user)).
+    append($('<a>', {
+      href: '#'
+    }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append(window.i18n.prop('tchat'))).click(function() {
+      if (user.connected)
+        tchatWith(user);
+    })).
+    append($('<div>').addClass('userzoom-tooltip-arrow'));
 
     var appendRelationActions = function(contact) {
       if (contact) {
@@ -173,7 +170,6 @@
             'deleteRelation', {user : contact});
         interactionActions.append($link);
       }
-      appendCommonActions();
     };
 
     var appendInvitationActions = function(invitation) {
@@ -194,7 +190,6 @@
         }
       }
       interactionActions.append($link);
-      appendCommonActions();
     };
 
     $.userZoom.currentUser.hasRelationWith(user).then(function(isRelation) {

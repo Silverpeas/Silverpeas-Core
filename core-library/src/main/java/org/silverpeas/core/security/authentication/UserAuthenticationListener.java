@@ -20,7 +20,7 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.initialization.Initialization;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +34,17 @@ import java.util.EventListener;
  * class, that implements it, is called one time at server start.<br/>
  * (See QuickInfoUserAuthenticationListener for example)
  */
-public interface UserAuthenticationListener extends EventListener {
+public interface UserAuthenticationListener extends EventListener, Initialization {
+
+  @Override
+  default void init() throws Exception {
+    UserAuthenticationListenerRegistration.register(this);
+  }
+
+  @Override
+  default void release() throws Exception {
+    UserAuthenticationListenerRegistration.unregister(this);
+  }
 
   /**
    * This method is called just before redirecting the user to the home page, after a successful
@@ -45,6 +55,6 @@ public interface UserAuthenticationListener extends EventListener {
    * @param finalURL the initial URL of user redirection, just after a successful authentication.
    * @return the overridden url redirection, or null if no override.
    */
-  String firstHomepageAccessAfterAuthentication(HttpServletRequest request, UserDetail user,
+  String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,
       String finalURL);
 }

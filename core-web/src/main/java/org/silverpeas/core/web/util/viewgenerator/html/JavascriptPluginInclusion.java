@@ -383,7 +383,7 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeUserZoom(final ElementContainer xhtml,
       final String language) {
     xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
+    includeMessageMe(xhtml);
     includeRelationship(xhtml, language);
     xhtml.addElement(script(javascriptPath + SILVERPEAS_USERZOOM));
     return xhtml;
