@@ -51,7 +51,6 @@ import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.RightRecover;
@@ -77,8 +76,12 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -319,6 +322,11 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
+    addClasses(ContentManager.class);
+    addClasses(JoinStatement.class);
+    addClasses(ContentManagerProvider.class);
+    addClasses(ContentPeas.class);
+    addClasses(SilverContentVisibility.class);
     return this;
   }
 
@@ -640,6 +648,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addCommonUserBeans();
       addOrganisationFeatures();
       addSchedulerFeatures();
+      addSilverpeasContentFeatures();
     }
     return this;
   }
