@@ -51,7 +51,7 @@ public interface QuestionContainerService {
    * @param userId the user identifier
    * @param reply
    */
-  public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
+  void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
       String userId, Map<String, List<String>> reply);
 
   /**
@@ -61,14 +61,14 @@ public interface QuestionContainerService {
    * @param comment
    * @param isAnonymousComment
    */
-  public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
+  void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
       String userId, Map<String, List<String>> reply, String comment, boolean isAnonymousComment);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK);
+  Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK);
 
   /**
    * Return the suggestion of the user, for the question and the answer
@@ -77,20 +77,13 @@ public interface QuestionContainerService {
    * @param answerPK
    * @return QuestionResult
    */
-  public QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK);
-
-  /**
-   * @param questionContainerPK the question container identifier
-   * @return
-   */
-  public Collection<QuestionContainerHeader> getQuestionContainers(
-      QuestionContainerPK questionContainerPK);
+  QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK);
 
   /**
    * @param pks A collection of QuestionContainer id
    * @return
    */
-  public Collection<QuestionContainerHeader> getQuestionContainerHeaders(
+  Collection<QuestionContainerHeader> getQuestionContainerHeaders(
       List<QuestionContainerPK> pks);
 
   /**
@@ -98,7 +91,7 @@ public interface QuestionContainerService {
    * @param userId the user identifier
    * @return
    */
-  public QuestionContainerDetail getQuestionContainer(QuestionContainerPK questionContainerPK,
+  QuestionContainerDetail getQuestionContainer(QuestionContainerPK questionContainerPK,
       String userId);
 
   /**
@@ -107,52 +100,52 @@ public interface QuestionContainerService {
    * @param participationId
    * @return
    */
-  public QuestionContainerDetail getQuestionContainerByParticipationId(
+  QuestionContainerDetail getQuestionContainerByParticipationId(
       QuestionContainerPK questionContainerPK, String userId, int participationId);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<QuestionContainerHeader> getNotClosedQuestionContainers(
+  Collection<QuestionContainerHeader> getNotClosedQuestionContainers(
       QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<QuestionContainerHeader> getOpenedQuestionContainers(
+  Collection<QuestionContainerHeader> getOpenedQuestionContainers(
       QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<QuestionContainerHeader> getClosedQuestionContainers(
+  Collection<QuestionContainerHeader> getClosedQuestionContainers(
       QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<QuestionContainerHeader> getInWaitQuestionContainers(
+  Collection<QuestionContainerHeader> getInWaitQuestionContainers(
       QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    */
-  public void closeQuestionContainer(QuestionContainerPK questionContainerPK);
+  void closeQuestionContainer(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    */
-  public void openQuestionContainer(QuestionContainerPK questionContainerPK);
+  void openQuestionContainer(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public int getNbVotersByQuestionContainer(QuestionContainerPK questionContainerPK);
+  int getNbVotersByQuestionContainer(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
@@ -160,47 +153,47 @@ public interface QuestionContainerService {
    * @param userId the user identifier
    * @return
    */
-  public QuestionContainerPK createQuestionContainer(QuestionContainerPK questionContainerPK,
+  QuestionContainerPK createQuestionContainer(QuestionContainerPK questionContainerPK,
       QuestionContainerDetail questionContainerDetail, String userId);
 
   /**
    * @param questionContainerPK the question container identifier
    */
-  public void deleteQuestionContainer(QuestionContainerPK questionContainerPK);
+  void deleteQuestionContainer(QuestionContainerPK questionContainerPK);
 
-  public void deleteVotes(QuestionContainerPK questionContainerPK);
+  void deleteVotes(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerHeader
    */
-  public void updateQuestionContainerHeader(QuestionContainerHeader questionContainerHeader);
+  void updateQuestionContainerHeader(QuestionContainerHeader questionContainerHeader);
 
   /**
    * @param questionContainerPK the question container identifier
    * @param questions
    */
-  public void updateQuestions(QuestionContainerPK questionContainerPK,
+  void updateQuestions(QuestionContainerPK questionContainerPK,
       Collection<Question> questions);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public float getAveragePoints(QuestionContainerPK questionContainerPK);
+  float getAveragePoints(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @param userId the user identifier
    * @return
    */
-  public Collection<QuestionContainerHeader> getOpenedQuestionContainersAndUserScores(
+  Collection<QuestionContainerHeader> getOpenedQuestionContainersAndUserScores(
       QuestionContainerPK questionContainerPK, String userId);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<QuestionContainerHeader> getQuestionContainersWithScores(
+  Collection<QuestionContainerHeader> getQuestionContainersWithScores(
       QuestionContainerPK questionContainerPK);
 
   /**
@@ -208,7 +201,7 @@ public interface QuestionContainerService {
    * @param userId
    * @return
    */
-  public Collection<QuestionContainerHeader> getQuestionContainersWithUserScores(
+  Collection<QuestionContainerHeader> getQuestionContainersWithUserScores(
       QuestionContainerPK questionContainerPK, String userId);
 
   /**
@@ -216,7 +209,7 @@ public interface QuestionContainerService {
    * @param userId the user identifier
    * @return
    */
-  public Collection<ScoreDetail> getUserScoresByFatherId(QuestionContainerPK questionContainerPK,
+  Collection<ScoreDetail> getUserScoresByFatherId(QuestionContainerPK questionContainerPK,
       String userId);
 
   /**
@@ -224,27 +217,27 @@ public interface QuestionContainerService {
    * @param nbBestScores
    * @return
    */
-  public Collection<ScoreDetail> getBestScoresByFatherId(QuestionContainerPK questionContainerPK,
+  Collection<ScoreDetail> getBestScoresByFatherId(QuestionContainerPK questionContainerPK,
       int nbBestScores);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK);
+  float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @return
    */
-  public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK);
+  Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK);
 
   /**
    * @param questionContainerPK the question container identifier
    * @param userId the user identifier
    * @return
    */
-  public int getUserNbParticipationsByFatherId(QuestionContainerPK questionContainerPK,
+  int getUserNbParticipationsByFatherId(QuestionContainerPK questionContainerPK,
       String userId);
 
   /**
@@ -253,25 +246,25 @@ public interface QuestionContainerService {
    * @param participationId
    * @return
    */
-  public ScoreDetail getUserScoreByFatherIdAndParticipationId(
+  ScoreDetail getUserScoreByFatherIdAndParticipationId(
       QuestionContainerPK questionContainerPK, String userId, int participationId);
 
   /**
    * @param questionContainerPK the question container identifier
    * @param scoreDetail
    */
-  public void updateScore(QuestionContainerPK questionContainerPK, ScoreDetail scoreDetail);
+  void updateScore(QuestionContainerPK questionContainerPK, ScoreDetail scoreDetail);
 
   /**
    * @param pk
    */
-  public void deleteIndex(QuestionContainerPK pk);
+  void deleteIndex(QuestionContainerPK pk);
 
-  public int getSilverObjectId(QuestionContainerPK pk);
+  int getSilverObjectId(QuestionContainerPK pk);
 
-  public String getHTMLQuestionPath(QuestionContainerDetail questionDetail);
+  String getHTMLQuestionPath(QuestionContainerDetail questionDetail);
 
-  public QuestionContainerHeader getQuestionContainerHeader(
+  QuestionContainerHeader getQuestionContainerHeader(
       QuestionContainerPK questionContainerPK);
 
   /**
@@ -280,8 +273,8 @@ public interface QuestionContainerService {
    * @param addScore : boolean
    * @return export file name : String
    */
-  public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore);
+  String exportCSV(QuestionContainerDetail questionContainer, boolean addScore);
 
-  public Collection<ScoreDetail> getWorstScoresByFatherId(QuestionContainerPK questionContainerPK,
+  Collection<ScoreDetail> getWorstScoresByFatherId(QuestionContainerPK questionContainerPK,
       int nbScores);
 }

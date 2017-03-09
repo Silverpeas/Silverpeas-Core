@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.JoinStatement;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -96,6 +96,27 @@ public class ContentManager implements Serializable {
           .error("contentManager", "ContentManager.initStatic", "root.EX_CLASS_NOT_INITIALIZED",
               "assoComponentIdInstanceId initialization failed !", e);
     }
+  }
+
+  /**
+   * return a list of identifiers of the resources matching the specified identifiers of
+   * {@link SilverContent} objects.
+   * @param contentIds a list of identifiers of
+   * {@link org.silverpeas.core.contribution.contentcontainer.content.SilverContent} objects.
+   * @return a list of resource identifiers.
+   */
+  public List<String> getResourcesMatchingContents(final List<Integer> contentIds) {
+    List<String> pks = new ArrayList<>();
+    // for each id of SilverContent, we get the identifier of the matching resource.
+    for (Integer contentId : contentIds) {
+      try {
+        String id = ContentManagerProvider.getContentManager().getInternalContentId(contentId);
+        pks.add(id);
+      } catch (ClassCastException | ContentManagerException ignored) {
+        // ignore unknown item
+      }
+    }
+    return pks;
   }
 
   /**
@@ -893,5 +914,9 @@ public class ContentManager implements Serializable {
       closeConnection(connection);
     }
     return scv;
+  }
+
+  private ContentManager() {
+
   }
 }

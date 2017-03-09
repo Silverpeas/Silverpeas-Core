@@ -20,18 +20,18 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.Collection;
 import java.util.Date;
@@ -52,15 +52,15 @@ public interface PublicationService {
   /**
    * get details on the publication specified by the primary key given in pubPK parameter
    */
-  public PublicationDetail getDetail(PublicationPK pubPK);
+  PublicationDetail getDetail(PublicationPK pubPK);
 
   /**
    * Create a new publication A new line will be added in publication table. The "id" in "detail" is
    * not used (a new one will be computed). The "ed" is used to know the table name.
    */
-  public PublicationPK createPublication(PublicationDetail detail);
+  PublicationPK createPublication(PublicationDetail detail);
 
-  public void movePublication(PublicationPK pubPK, NodePK nodePK, boolean indexIt);
+  void movePublication(PublicationPK pubPK, NodePK nodePK, boolean indexIt);
 
   /**
    * Change order of the given publication identified by pubPK in the given nodePK. direction less
@@ -71,58 +71,58 @@ public interface PublicationService {
    * @param direction must be different to 0
    * @
    */
-  public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction);
+  void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction);
 
   /**
    * remove the publication designed by pubPK parameter.
    */
-  public void removePublication(PublicationPK pubPK);
+  void removePublication(PublicationPK pubPK);
 
   /**
    * update the publication content.
    */
-  public void setDetail(PublicationDetail detaile);
+  void setDetail(PublicationDetail detaile);
 
-  public void setDetail(PublicationDetail detaile, boolean forceUpdateDate);
+  void setDetail(PublicationDetail detaile, boolean forceUpdateDate);
 
   /**
    * add a new father (designed by "fatherPK") to a publication ("pubPK") The publication will be
    * visible from its new father node.
    */
-  public void addFather(PublicationPK pubPK, NodePK fatherPK);
+  void addFather(PublicationPK pubPK, NodePK fatherPK);
 
   /**
    * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
    * visible from its old father node.
    */
-  public void removeFather(PublicationPK pubPK, NodePK fatherPK);
+  void removeFather(PublicationPK pubPK, NodePK fatherPK);
 
   /**
    * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
    * visible from its old father node.
    */
-  public void removeFather(NodePK fatherPK);
+  void removeFather(NodePK fatherPK);
 
   /**
    * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
    * visible from its old father node.
    */
-  public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds);
+  void removeFathers(PublicationPK pubPK, Collection<String> fatherIds);
 
   /**
    * remove all father from a publication ("pubPK") The publication won't be visible.
    */
-  public void removeAllFather(PublicationPK pubPK);
+  void removeAllFather(PublicationPK pubPK);
 
   /**
    * return the Detail of publication which are not linked to a father
    */
-  public Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK);
+  Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK);
 
   /**
    * return the Detail of publication which are linked to at least one father
    */
-  public Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK);
+  Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK);
 
   /**
    * Method declaration
@@ -132,63 +132,63 @@ public interface PublicationService {
    * @
    * @see
    */
-  public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId);
+  void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId);
 
   /**
    * return the publications : - which take place in the basket - which are out of the visibility
    * period
    */
-  public Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
+  Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
       PublicationPK pubPK, String publisherId, String nodeId);
 
   /**
    * return a collection, containing all node primary key from where the publication is visible
    */
-  public Collection<NodePK> getAllFatherPK(PublicationPK pubPK);
+  Collection<NodePK> getAllFatherPK(PublicationPK pubPK);
 
   /**
    * return the publication's collection of Alias
    */
-  public Collection<Alias> getAlias(PublicationPK pubPK);
+  Collection<Alias> getAlias(PublicationPK pubPK);
 
-  public List<Alias> setAlias(PublicationPK pubPK, List<Alias> alias);
+  List<Alias> setAlias(PublicationPK pubPK, List<Alias> alias);
 
-  public void addAlias(PublicationPK pubPK, List<Alias> alias);
+  void addAlias(PublicationPK pubPK, List<Alias> alias);
 
-  public void removeAlias(PublicationPK pubPK, List<Alias> alias);
+  void removeAlias(PublicationPK pubPK, List<Alias> alias);
 
   /**
    * return a PublicationDetail collection of all publication visible from the node identified by
    * "fatherPK" parameter
    */
-  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK);
+  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK);
 
-  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting);
+  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting);
 
-  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
+  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
       boolean filterOnVisibilityPeriod);
 
-  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
+  Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
       boolean filterOnVisibilityPeriod, String userId);
 
   /**
    * return a PublicationDetail collection of all publications not in the node identified by
    * "fatherPK" parameter
    */
-  public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK);
+  Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK);
 
-  public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting);
+  Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting);
 
   /**
    * return a PublicationDetail collection of x last publications
    */
-  public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatus(PublicationPK pk,
+  Collection<PublicationDetail> getDetailsByBeginDateDescAndStatus(PublicationPK pk,
       String status, int nbPubs);
 
   /**
    * return a PublicationDetail collection of x last publications
    */
-  public Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs);
+  Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs);
 
   /**
    * Method declaration
@@ -201,24 +201,24 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
+  Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       PublicationPK pk, String status, int nbPubs, String fatherId);
 
-  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links);
+  void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links);
 
   /**
    * @param pubPK
    * @return
    * @
    */
-  public CompletePublication getCompletePublication(PublicationPK pubPK);
+  CompletePublication getCompletePublication(PublicationPK pubPK);
 
   /**
    * @param publicationPKs
    * @return
    * @
    */
-  public Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs);
+  Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs);
 
   /**
    * Method declaration
@@ -229,9 +229,9 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK);
+  Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK);
 
-  public Collection<PublicationPK> getPublicationPKsByStatus(String status,
+  Collection<PublicationPK> getPublicationPKsByStatus(String status,
       List<String> componentIds);
 
   /**
@@ -245,10 +245,10 @@ public interface PublicationService {
    * @return a list of publications with the specified maxSize or none if 0 or less is specified.
    * @
    */
-  public Collection<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
+  Collection<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
       int maxSize, List<String> componentIds);
 
-  public Collection<PublicationDetail> getPublicationsByStatus(String status,
+  Collection<PublicationDetail> getPublicationsByStatus(String status,
       List<String> componentIds);
 
   /**
@@ -260,7 +260,7 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK);
+  Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK);
 
   /**
    * Method declaration
@@ -270,7 +270,7 @@ public interface PublicationService {
    * @
    * @see
    */
-  public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
+  int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
 
   /**
    * Method declaration
@@ -281,7 +281,7 @@ public interface PublicationService {
    * @
    * @see
    */
-  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
+  int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
 
   /**
    * * Return the tree of nodes with the number of publication per node.
@@ -292,7 +292,7 @@ public interface PublicationService {
    * @return the tree of nodes with the number of publication per node
    * @
    */
-  public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
+  Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility);
 
   /**
@@ -304,22 +304,22 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
+  Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK);
 
-  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
+  Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK, boolean filterOnVisibilityPeriod);
 
-  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
+  Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK, String sorting);
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(List<String> fatherIds,
+  Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(List<String> fatherIds,
       PublicationPK pubPK, String sorting, String status);
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
+  Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
       PublicationPK pubPK, String sorting, List<String> status);
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
+  Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
       PublicationPK pubPK, String sorting, List<String> status, boolean filterOnVisibilityPeriod);
 
   /**
@@ -330,7 +330,7 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs);
+  Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs);
 
   /**
    * Method declaration
@@ -340,7 +340,7 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK);
+  Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK);
 
   /**
    * Method declaration
@@ -349,9 +349,9 @@ public interface PublicationService {
    * @
    * @see
    */
-  public void createIndex(PublicationPK pubPK);
+  void createIndex(PublicationPK pubPK);
 
-  public void createIndex(PublicationDetail pubDetail);
+  void createIndex(PublicationDetail pubDetail);
 
   /**
    * Method declaration
@@ -360,7 +360,7 @@ public interface PublicationService {
    * @
    * @see
    */
-  public void deleteIndex(PublicationPK pubPK);
+  void deleteIndex(PublicationPK pubPK);
 
   /**
    * Method declaration
@@ -370,9 +370,9 @@ public interface PublicationService {
    * @
    * @see
    */
-  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK);
+  Collection<PublicationDetail> getAllPublications(PublicationPK pubPK);
 
-  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting);
+  Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting);
 
   /**
    * Looking for, in the instance identified by pubPK, a publication named pubName.
@@ -382,9 +382,9 @@ public interface PublicationService {
    * @return the pubId if a publication already exists in this component's instance. null otherwise.
    * @
    */
-  public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName);
+  PublicationDetail getDetailByName(PublicationPK pubPK, String pubName);
 
-  public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK, String pubName, int nodeId);
+  PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK, String pubName, int nodeId);
 
   /**
    * A wysiwyg's content has been added or modified to a publication. Its content must be added to
@@ -393,7 +393,7 @@ public interface PublicationService {
    * @param pubPK the identifier of the publication associated to the wysiwyg
    * @
    */
-  public void processWysiwyg(PublicationPK pubPK);
+  void processWysiwyg(PublicationPK pubPK);
 
   /**
    * @param beginDate
@@ -402,21 +402,21 @@ public interface PublicationService {
    * @return Collection of PublicationDetail.
    * @
    */
-  public Collection<PublicationDetail> getDetailBetweenDate(String beginDate, String endDate,
+  Collection<PublicationDetail> getDetailBetweenDate(String beginDate, String endDate,
       String instanceId);
 
-  public List<ValidationStep> getValidationSteps(PublicationPK pubPK);
+  List<ValidationStep> getValidationSteps(PublicationPK pubPK);
 
-  public ValidationStep getValidationStepByUser(PublicationPK pubPK,
+  ValidationStep getValidationStepByUser(PublicationPK pubPK,
       String userId);
 
-  public void addValidationStep(ValidationStep step);
+  void addValidationStep(ValidationStep step);
 
-  public void removeValidationSteps(PublicationPK pubPK);
+  void removeValidationSteps(PublicationPK pubPK);
 
-  public void changePublicationsOrder(List<String> ids, NodePK nodePK);
+  void changePublicationsOrder(List<String> ids, NodePK nodePK);
 
-  public Collection<Coordinate> getCoordinates(String pubId, String componentId);
+  Collection<Coordinate> getCoordinates(String pubId, String componentId);
 
   /**
    * Updates the publication links
@@ -425,9 +425,9 @@ public interface PublicationService {
    * @param links list of publication to link with current.
    * @
    */
-  public void addLinks(PublicationPK pubPK, List<ForeignPK> links);
+  void addLinks(PublicationPK pubPK, List<ForeignPK> links);
 
-  public List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId,
+  List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId,
       Date begin, Date end);
 
   /**
@@ -441,10 +441,10 @@ public interface PublicationService {
    * @param end
    * @return
    */
-  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+  List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       List<String> myContactsIds, List<String> options, Date begin, Date end);
 
-  public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone);
+  Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone);
 
   /**
    * get all publications of given user in state 'Draft'. It returns simple publications in state
@@ -459,5 +459,5 @@ public interface PublicationService {
    * @param userId id of the user to remove
    * @return a List of PublicationPK on which userId have been removed to.
    */
-  public List<PublicationDetail> removeUserFromTargetValidators(String userId);
+  List<PublicationDetail> removeUserFromTargetValidators(String userId);
 }

@@ -21,6 +21,10 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ClassifyEngineException;
 import org.silverpeas.core.pdc.classification.Criteria;
@@ -29,14 +33,11 @@ import org.silverpeas.core.pdc.classification.PertinentAxis;
 import org.silverpeas.core.pdc.classification.PertinentValue;
 import org.silverpeas.core.pdc.classification.Position;
 import org.silverpeas.core.pdc.classification.Value;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -384,7 +385,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
-      ContentManager contentManager = new ContentManager();
+      ContentManager contentManager = ContentManagerProvider.getContentManager();
       List<Integer> contentIds = contentManager.getSilverContentIdByInstanceId(componentInstanceId);
       for (Integer contentId : contentIds) {
         classifyEngine.unclassifySilverObject(connection, contentId);

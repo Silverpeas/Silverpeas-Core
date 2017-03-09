@@ -454,19 +454,6 @@ public class MainSessionController implements Clipboard, SessionCloseable {
     return newInfos;
   }
 
-  // ------------------- ContentManager Functions -----------------------------
-  public ContentManager getContentManager() {
-    try {
-      if (contentManager == null) {
-        contentManager = new ContentManager();
-      }
-    } catch (Exception e) {
-      SilverTrace.error("peasCore", "MainSessionController.getContentManager",
-          "peasCore.EX_UNABLE_TO_GET_CONTENTMANAGER", e);
-    }
-    return contentManager;
-  }
-
   public void initServerProps(String sName, String sPort) {
     serverName = sName;
     serverPort = sPort;

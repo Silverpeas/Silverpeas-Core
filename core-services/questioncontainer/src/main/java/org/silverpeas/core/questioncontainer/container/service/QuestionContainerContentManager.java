@@ -24,16 +24,16 @@
 
 package org.silverpeas.core.questioncontainer.container.service;
 
-import java.sql.Connection;
-
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
+import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+
+import java.sql.Connection;
 
 public class QuestionContainerContentManager {
 
@@ -107,17 +107,7 @@ public class QuestionContainerContentManager {
   }
 
   private static ContentManager getContentManager() {
-    if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace
-            .fatal("questionContainer", "QuestionContainerContentManager.getContentManager()",
-                "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
-    }
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 
-  private static ContentManager contentManager = null;
 }

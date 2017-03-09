@@ -4,6 +4,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
@@ -87,7 +88,7 @@ public class PdcSearchProcessor implements SearchQueryProcessor {
       return silverContents;
     }
 
-    ContentManager contentManager = new ContentManager();
+    ContentManager contentManager = ContentManagerProvider.getContentManager();
     List<String> instanceIds = contentManager.getInstanceId(silverContentIds);
 
     for (String instanceId : instanceIds) {

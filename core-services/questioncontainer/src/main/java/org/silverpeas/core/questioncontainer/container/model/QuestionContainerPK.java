@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.questioncontainer.container.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.WAPrimaryKey;
+
+import java.io.Serializable;
 
 /**
  * It's the QuestionContainer PrimaryKey object It identify a QuestionContainer

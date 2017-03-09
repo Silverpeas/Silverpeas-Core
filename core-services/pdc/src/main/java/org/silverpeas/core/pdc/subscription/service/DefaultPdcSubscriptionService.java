@@ -25,6 +25,7 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
@@ -245,7 +246,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
         .getOrganisationController();
 
     try(Connection conn = DBUtil.openConnection()) {
-      ContentManager contentManager = new ContentManager();
+      ContentManager contentManager = ContentManagerProvider.getContentManager();
       SilverContentVisibility scv = contentManager.getSilverContentVisibility(silverObjectid);
       boolean contentObjectIsVisible = (scv.isVisible() == 1);
 
@@ -300,7 +301,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     List<SilverContentInterface> silverContents;
     SilverContentInterface silverContent = null;
     try {
-      ContentManager contentManager = new ContentManager();
+      ContentManager contentManager = ContentManagerProvider.getContentManager();
       ContentPeas contentPeas = contentManager.getContentPeas(componentId);
       ContentInterface contentInterface = contentPeas.getContentInterface();
       silverContents = contentInterface.getSilverContentById(silverobjectIds, componentId, userId);

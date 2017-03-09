@@ -25,6 +25,8 @@
 package org.silverpeas.core.questioncontainer.container.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.questioncontainer.container.dao.QuestionContainerDAO;
 import org.silverpeas.core.questioncontainer.container.model.Comment;
@@ -95,23 +97,6 @@ public class DefaultQuestionContainerService
     questionResultService = QuestionResultService.get();
     answerService = AnswerService.get();
     scoreService = ScoreService.get();
-  }
-
-  @Override
-  public Collection<QuestionContainerHeader> getQuestionContainers(
-      QuestionContainerPK questionContainerPK) {
-
-    try (Connection con = getConnection()) {
-      Collection<QuestionContainerHeader> questionContainerHeaders =
-          QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
-      return this.setNbMaxPoints(questionContainerHeaders);
-    } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainers()",
-          SilverpeasRuntimeException.ERROR,
-
-          "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
-    }
   }
 
   @Override

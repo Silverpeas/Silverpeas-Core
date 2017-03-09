@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.content.form.displayers.AbstractFieldDis
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
@@ -61,15 +62,6 @@ import java.util.Map;
 public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   private PdcManager pdcManager = null;
-  private ContentManager contentManager = null;
-
-  /**
-   * Constructor uses for test purpose only
-   */
-  public PdcPositionsFieldDisplayer(PdcManager pdcManager, ContentManager contentManager) {
-    this.pdcManager = pdcManager;
-    this.contentManager = contentManager;
-  }
 
   /**
    * Constructeur
@@ -156,11 +148,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
   }
 
   private ContentManager getContentManager() throws ContentManagerException {
-    if (contentManager == null) {
-      contentManager = new ContentManager();
-    }
-
-    return contentManager;
+    return ContentManagerProvider.getContentManager();
   }
 
   @Override

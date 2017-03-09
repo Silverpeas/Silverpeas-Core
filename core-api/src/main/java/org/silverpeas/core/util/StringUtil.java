@@ -374,6 +374,27 @@ public class StringUtil extends StringUtils {
     return Arrays.asList(StringUtils.split(str, separatorChar));
   }
 
+  /**
+   * Doubles the anti-slash character in a path value.
+   * @param path the String representing a path.
+   * @return the path corrected with the anti-slash doubled.
+   */
+  public static String doubleAntiSlash(String path) {
+    StringBuilder res = new StringBuilder(path);
+    int k = 0;
+    for (int i = 0, j = 1; i < path.length(); i++, j++) {
+      if (path.charAt(i) == '\\') {
+        boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
+        boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
+        if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
+          res.insert(k+i, '\\');
+          k++;
+        }
+      }
+    }
+    return res.toString();
+  }
+
   private StringUtil() {
   }
 }

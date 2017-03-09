@@ -233,7 +233,7 @@ public class WysiwygManager {
    * @return the path for the nodes.
    */
   String finNode2(String path, String componentId) {
-    String finNode = doubleAntiSlash(path);
+    String finNode = StringUtil.doubleAntiSlash(path);
     finNode = finNode(finNode, componentId);
     int index = finNode.indexOf('\\');
     if (index < 0) {
@@ -310,22 +310,7 @@ public class WysiwygManager {
     return path;
   }
 
-  /* doubleAntiSlash */
-  String doubleAntiSlash(String path) {
-    StringBuilder res = new StringBuilder(path);
-    int k = 0;
-    for (int i = 0, j = 1; i < path.length(); i++, j++) {
-      if (path.charAt(i) == '\\') {
-        boolean hasNotAntiSlashAfter = j < path.length() && path.charAt(j) != '\\';
-        boolean hasNotAntiSlashBefore = i > 0 && path.charAt(i - 1) != '\\';
-        if (hasNotAntiSlashAfter && hasNotAntiSlashBefore) {
-          res.insert(k+i, '\\');
-          k++;
-        }
-      }
-    }
-    return res.toString();
-  }
+
 
   /**
    * Build the name of the file to be attached.

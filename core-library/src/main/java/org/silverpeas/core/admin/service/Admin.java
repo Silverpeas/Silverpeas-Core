@@ -164,6 +164,8 @@ class Admin implements Administration {
   private SpaceProfileInstManager spaceProfileManager;
   @Inject
   private SpaceEventNotifier spaceEventNotifier;
+  @Inject
+  private ContentManager contentManager;
 
   private void setup() {
     // Load silverpeas admin resources
@@ -1044,9 +1046,6 @@ class Admin implements Administration {
           .ifPresent(c -> c.postConstruct(componentId));
 
       if (isContentManagedComponent(componentName)) {
-        // Create the manager objects
-        ContentManager contentManager = new ContentManager();
-
         // Call the register functions
         contentManager.registerNewContentInstance(connectionProd, componentId, "containerPDC",
             componentName);
@@ -1175,9 +1174,6 @@ class Admin implements Administration {
         }
 
         if (isContentManagedComponent(componentName)) {
-          // Create the manager objects
-          ContentManager contentManager = new ContentManager();
-
           // Call the unregister functions
           contentManager.unregisterNewContentInstance(connectionProd, componentId, "containerPDC",
               componentName);
