@@ -47,7 +47,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +55,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 
@@ -733,7 +731,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return doEitherOr(occurrence, simpleDeletion, (me) -> {
       me.getRecurrence()
           .excludeEventOccurrencesStartingAt(occurrence.getOriginalStartDate());
-      occurrence.delete();
+      occurrence.deleteFromPersistence();
       me.updateIntoPersistence();
       return new EventOperationResult().withUpdated(me);
     });
@@ -756,7 +754,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return doEitherOr(occurrence, simpleDeletion, (me) -> {
       final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
       me.getRecurrence().until(endDate);
-      occurrence.deleteAllSinceMe();
+      occurrence.deleteAllSinceMeFromThePersistence();
       me.updateIntoPersistence();
       return new EventOperationResult().withUpdated(me);
     });
@@ -786,6 +784,23 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   /**
+   * Updates this event from the data of the given occurrence. The modifications to this event are
+   * saved for all its occurrences. Its sequence number is incremented by one.
+   * TODO CALENDAR this method has just been written and it is not yet tested in integration tests...
+   */
+  public EventOperationResult updateFrom(CalendarEventOccurrence occurrence) {
+    this.component.setTitle(occurrence.getTitle());
+    this.component.setDescription(occurrence.getDescription());
+    this.component.setPeriod(occurrence.getPeriod());
+    this.component.setLocation(occurrence.getLocation());
+    this.component.setPriority(occurrence.getPriority());
+    this.component.getAttributes().setAllFrom(occurrence.getAttributes());
+    this.component.getAttendees().clear();
+    occurrence.getAttendees().forEach(a -> a.cloneFor(this.component));
+    return update();
+  }
+
+  /**
    * Updates all the occurrences of this event since and including the specified occurrence with
    * the modifications to this event. The modifications to this event are saved for all the
    * occurrences since and including the specified occurrence. The occurrences occurring before the
@@ -803,7 +818,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
           final CalendarEvent createdEvent = createNewEventFromMeSince(occurrence);
           final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
           me.getRecurrence().until(endDate);
-          occurrence.deleteAllSinceMe();
+          occurrence.deleteAllSinceMeFromThePersistence();
           me.updateIntoPersistence();
           return new EventOperationResult().withUpdated(me).withCreated(createdEvent);
         });
@@ -828,7 +843,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
                   !occurrence.getOriginalStartDate().equals(occurrence.getStartDate()))) {
             occurrence.getAttendees().forEach(Attendee::resetParticipation);
           }
-          occurrence.save();
+          occurrence.saveIntoPersistence();
           return new EventOperationResult().withInstance(occurrence);
     });
   }

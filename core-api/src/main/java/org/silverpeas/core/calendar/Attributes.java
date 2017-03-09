@@ -116,6 +116,15 @@ public class Attributes implements Cloneable {
     this.attributes.putAll(attributes.attributes);
   }
 
+  /**
+   * Sets to this attributes all those from the specified ones.
+   * @param attributes the attributes to add.
+   */
+  public void setAllFrom(final Attributes attributes) {
+    this.attributes.clear();
+    addAllFrom(attributes);
+  }
+
   @Override
   public Attributes clone() {
     Attributes clone = null;

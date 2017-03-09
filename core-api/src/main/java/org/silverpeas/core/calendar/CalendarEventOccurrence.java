@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
@@ -61,8 +62,8 @@ import java.util.Set;
  * non-recurrent event is deleted, then the related event is deleted. If an occurrence of a
  * recurrent event is deleted, then an exception is added into the recurrence rule of the event.
  * This operation is done with one of the following methods:
- * {@link CalendarEvent#delete(CalendarEventOccurrenceReference)},
- * {@link CalendarEvent#deleteSince(CalendarEventOccurrenceReference)}.
+ * {@link #delete()},
+ * {@link #deleteSince()}.
  * If an occurrence of a non-recurrent event is modified, then the modification is directly
  * applied to the event itself (as it is a singleton). If an occurrence of a recurrent event is
  * modified, then the modification is applied to the occurrence only and this occurrence is
@@ -325,6 +326,69 @@ public class CalendarEventOccurrence
   }
 
   /**
+   * Updates all the occurrences of the event it belongs to since and including this
+   * occurrence with the modifications. The modifications are saved for
+   * all the occurrences since and including this occurrence. The occurrences occurring
+   * before the specified occurrence won't be updated.
+   * <p>
+   * If the specified occurrence is in fact the single one of the event it belongs to, then the
+   * event is itself updated (this is equivalent to the {@link CalendarEvent#update()} method.
+   * Otherwise a new event is created from the modifications to this occurrence.
+   */
+  public EventOperationResult updateSince() {
+    return getCalendarEvent().updateSince(this);
+  }
+
+  /**
+   * Updates only this occurrence among the occurrences of the event it belongs to. If the given
+   * occurrence is the single one of the event then the event is itself updated. Otherwise the
+   * changes in the occurrence are persisted and its sequence number is incremented by one,
+   * diverging then from the sequence number of the event it comes from.
+   * <p>
+   * In the case the date at which the occurrence starts is modified, the participation status
+   * of all the attendees in this occurrence is cleared.
+   */
+  public EventOperationResult update() {
+    return getCalendarEvent().updateOnly(this);
+  }
+
+  /**
+   * Updates the event and all its occurrences from the data of this occurrence.
+   */
+  public EventOperationResult updateEvent() {
+    return getCalendarEvent().updateFrom(this);
+  }
+
+  /**
+   * Deletes from the event it belongs to all the occurrences since the occurrence referred by this
+   * occurrence.
+   * <p>
+   * <ul>
+   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
+   * <li>If the occurrence is one of among any of the event, then the recurrence end datetime is
+   * updated.</li>
+   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
+   * </ul>
+   */
+  public EventOperationResult deleteSince() {
+    return getCalendarEvent().deleteSince(this);
+  }
+
+  /**
+   * Deletes from this event it belongs to the occurrence referred by this occurrence.
+   * <p>
+   * <ul>
+   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
+   * <li>If the occurrence is one of among any of the event, then the datetime at which this
+   * occurrence starts is added as an exception in the recurrence rule of the event.</li>
+   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
+   * </ul>
+   */
+  public EventOperationResult delete() {
+    return getCalendarEvent().deleteOnly(this);
+  }
+
+  /**
    * Saves this occurrence of a calendar event into a data source so that it can be get later.
    * <p>
    * Saving an event occurrence is done when this occurrence has changed from the event or from
@@ -333,7 +397,7 @@ public class CalendarEventOccurrence
    * event itself.
    * @return the persisted event occurrence.
    */
-  CalendarEventOccurrence save() {
+  CalendarEventOccurrence saveIntoPersistence() {
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       this.component.incrementSequence();
@@ -345,7 +409,7 @@ public class CalendarEventOccurrence
    * Deletes this occurrence of a calendar event in the data source. If this occurrences wasn't
    * persisted, then nothing is done.
    */
-  void delete() {
+  void deleteFromPersistence() {
     Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       repository.delete(this);
@@ -358,7 +422,7 @@ public class CalendarEventOccurrence
    * and that are after this one.
    * @return the count of actually occurrences removed from the data source.
    */
-  long deleteAllSinceMe() {
+  long deleteAllSinceMeFromThePersistence() {
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       return repository.deleteSince(this);
