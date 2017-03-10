@@ -30,8 +30,6 @@ import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.jms.Destination;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
 import javax.jms.Topic;
 
 /**
@@ -39,16 +37,11 @@ import javax.jms.Topic;
  * or a topic by annotation can only be done with either Web or EJB components)
  * @author mmoquillon
  */
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/topic/resource",
-        interfaceName = "javax.jms.Topic",
-        destinationName = "ResourceEvent")})
 @Stateless
 public class JMSTopicTestResourceEventNotifier
     extends JMSResourceEventNotifier<TestResource, TestResourceEvent> {
 
-  @Resource(lookup = "java:/topic/resource")
+  @Resource(lookup = "java:/jms/topic/resource")
   private Topic topic;
 
   @Override

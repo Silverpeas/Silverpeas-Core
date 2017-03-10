@@ -24,15 +24,13 @@
 
 package org.silverpeas.core.silverstatistics.volume.service;
 
+import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
@@ -41,14 +39,9 @@ import javax.naming.NamingException;
 /**
  * @author
  */
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/queue/statisticsQueue",
-        interfaceName = "javax.jms.Queue",
-        destinationName = "queue/statisticsQueue")})
 public final class SilverStatisticsSender {
 
-  @Resource(lookup = "java:/queue/statisticsQueue")
+  @Resource(lookup = "java:/jms/queue/statisticsQueue")
   private Queue queue;
 
   public static SilverStatisticsSender get() {

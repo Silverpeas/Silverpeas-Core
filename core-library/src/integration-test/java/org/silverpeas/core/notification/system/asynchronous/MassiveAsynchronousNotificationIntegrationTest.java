@@ -84,6 +84,7 @@ public class MassiveAsynchronousNotificationIntegrationTest {
               JMSQueueTestResourceEventListener.class, JMSTopicTestResourceEventNotifier.class,
               JMSTopicTestResourceEventListener.class, JMSTopicTestResourceEventListener2.class,
               UserSubscriptionNotificationSendingHandler.class);
+          warBuilder.addAsWebInfResource("test-jms.xml", "test-jms.xml");
         }).build();
   }
 

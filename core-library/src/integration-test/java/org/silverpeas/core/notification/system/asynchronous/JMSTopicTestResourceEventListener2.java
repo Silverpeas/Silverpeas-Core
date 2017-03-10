@@ -35,7 +35,7 @@ import javax.inject.Inject;
  * @author mmoquillon
  */
 @MessageDriven(name = "ResourceEventListener2", activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/resource"),
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/topic/resource"),
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
     @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 @Singleton

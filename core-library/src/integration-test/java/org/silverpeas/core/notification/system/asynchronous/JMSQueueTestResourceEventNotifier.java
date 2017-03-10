@@ -30,8 +30,6 @@ import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.jms.Destination;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
 import javax.jms.Queue;
 
 /**
@@ -39,16 +37,11 @@ import javax.jms.Queue;
  * or a topic by annotation can only be done with either Web or EJB components)
  * @author mmoquillon
  */
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/queue/notification",
-        interfaceName = "javax.jms.Queue",
-        destinationName = "EventNotification")})
 @Stateless
 public class JMSQueueTestResourceEventNotifier
     extends JMSResourceEventNotifier<TestResource, TestResourceEvent> {
 
-  @Resource(lookup = "java:/queue/notification")
+  @Resource(lookup = "java:/jms/queue/notification")
   private Queue queue;
 
   @Override

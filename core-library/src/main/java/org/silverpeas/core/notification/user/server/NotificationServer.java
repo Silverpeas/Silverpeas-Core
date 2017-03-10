@@ -24,14 +24,12 @@
 
 package org.silverpeas.core.notification.user.server;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.notification.system.JMSOperation;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.notification.system.JMSOperation;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
@@ -39,16 +37,11 @@ import javax.naming.NamingException;
 import java.util.HashMap;
 import java.util.Map;
 
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/queue/notificationsQueue",
-        interfaceName = "javax.jms.Queue",
-        destinationName = "queue/notificationsQueue")})
 public class NotificationServer {
 
   private static final String JMS_HEADER_CHANNEL = "CHANNEL";
 
-  @Resource(lookup = "java:/queue/notificationsQueue")
+  @Resource(lookup = "java:/jms/queue/notificationsQueue")
   private Queue queue;
 
   private Map<String, String> mJmsHeaders = new HashMap<>();

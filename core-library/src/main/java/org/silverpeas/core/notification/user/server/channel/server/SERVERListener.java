@@ -35,10 +35,10 @@ import java.util.Map;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
     @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SERVER'"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue =
-        "java:/queue/notificationsQueue")},
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue =
+        "jms/queue/notificationsQueue")},
     description = "Message driven bean to silverpeas notification")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SERVERListener extends AbstractListener implements MessageListener {

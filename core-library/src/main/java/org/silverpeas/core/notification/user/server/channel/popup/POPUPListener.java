@@ -20,27 +20,27 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.Date;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import java.util.Date;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
     @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='POPUP'"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue =
-        "java:/queue/notificationsQueue")}, description = "Message driven bean for Pop UP " +
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue =
+        "jms/queue/notificationsQueue")}, description = "Message driven bean for Pop UP " +
     "notifications")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class POPUPListener extends AbstractListener implements MessageListener {

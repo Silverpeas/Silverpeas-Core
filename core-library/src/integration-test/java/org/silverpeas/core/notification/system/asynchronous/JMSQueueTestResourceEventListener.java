@@ -35,7 +35,7 @@ import javax.inject.Inject;
  * @author mmoquillon
  */
 @MessageDriven(name="EventNotificationListener", activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/notification"),
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/queue/notification"),
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
     @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 @Singleton

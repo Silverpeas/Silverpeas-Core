@@ -41,9 +41,9 @@ import static org.silverpeas.core.silverstatistics.volume.model.SilverStatistics
  */
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
-  @ActivationConfigProperty(propertyName = "destination", propertyValue =
-      "java:/queue/statisticsQueue")}, description = "Message driven bean for statistics insertion")
+  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+  @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue =
+      "jms/queue/statisticsQueue")}, description = "Message driven bean for statistics insertion")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SilverStatisticsMessageDriven implements MessageListener {
 

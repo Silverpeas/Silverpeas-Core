@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messaging-deployment xmlns="urn:jboss:messaging-activemq-deployment:1.0">
+  <server name="default">
+    <jms-destinations>
+      <!-- JMS destinations used in tests -->
+      <jms-queue name="EventNotification">
+        <entry name="jms/queue/notification"/>
+      </jms-queue>
+      <jms-topic name="ResourceEvent">
+        <entry name="jms/topic/resource"/>
+      </jms-topic>
+      <!-- JMS destinations used in Silverpeas -->
+      <jms-queue name="notifications">
+        <entry name="jms/queue/notificationsQueue"/>
+      </jms-queue>
+      <jms-queue name="statistics">
+        <entry name="jms/queue/statisticsQueue"/>
+      </jms-queue>
+    </jms-destinations>
+  </server>
+</messaging-deployment>
