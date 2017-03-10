@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -91,11 +92,23 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param context the instance to unregister.
    */
   static void unregisterAsyncContext(SilverpeasAsyncContext context) {
+    unregisterAsyncContext(context, false);
+  }
+
+  /**
+   * Unregister an {@link SilverpeasAsyncContext} instance.
+   * @param context the instance to unregister.
+   */
+  static void unregisterAsyncContext(SilverpeasAsyncContext context, boolean sendSessionClose) {
     synchronized (contexts) {
       if (contexts.remove(context)) {
         SilverLogger.getLogger(ServerEventDispatcherTask.class).debug(
             () -> format("Unregistering {0}, handling now {1} async context(s)", context.toString(),
                 contexts.size()));
+        if (sendSessionClose) {
+          ServerEvent event = new UserSessionExpiredServerEvent();
+          push(new AimedServerEventDispatchRequest(event, context));
+        }
       }
     }
   }
@@ -107,11 +120,10 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   public static void unregisterBySessionId(String sessionId) {
     List<SilverpeasAsyncContext> contextsToRemove;
     synchronized (contexts) {
-      contextsToRemove = contexts.stream()
-          .filter(c -> sessionId.equals(c.getSessionId()))
+      contextsToRemove = contexts.stream().filter(c -> sessionId.equals(c.getSessionId()))
           .collect(Collectors.toList());
     }
-    contextsToRemove.forEach(ServerEventDispatcherTask::unregisterAsyncContext);
+    contextsToRemove.forEach(c -> unregisterAsyncContext(c, true));
   }
 
   /**
@@ -134,13 +146,14 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param request the request linked to the given response.
    * @param response the response on which the server events must be sent.
    * @param lastServerEventId the last identifier performed by the client.
-   * @param receiver the receiver.
+   * @param receiverSessionInfoId the identifier of the receiver session.
+   * @param receiver the receiver instance.
    * @return the last server event identifier sent or the given one if nothing has been sent.
    * @throws IOException
    */
   public static long sendLastServerEventsFromId(final HttpServletRequest request,
-      HttpServletResponse response, long lastServerEventId, final User receiver)
-      throws IOException {
+      HttpServletResponse response, long lastServerEventId, final String receiverSessionInfoId,
+      final User receiver) throws IOException {
     List<ServerEvent> serverEventsToSendAgain = serverEventStore.getFromId(lastServerEventId);
     if (serverEventsToSendAgain.isEmpty()) {
       return lastServerEventId;
@@ -148,7 +161,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     for (ServerEvent serverEventToSendAgain : serverEventsToSendAgain) {
       SilverLogger.getLogger(ServerEventDispatcherTask.class)
           .debug(() -> format("Sending not consumed {0}", serverEventToSendAgain.toString()));
-      serverEventToSendAgain.send(request, response, receiver);
+      serverEventToSendAgain.send(request, response, receiverSessionInfoId, receiver);
     }
     return serverEventsToSendAgain.get(serverEventsToSendAgain.size() - 1).getId();
   }
@@ -158,10 +171,13 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param serverEventToDispatch the server event to dispatch.
    */
   public static void dispatch(ServerEvent serverEventToDispatch) {
-    ServerEventDispatchRequest serverEventDispatchRequest =
-        new ServerEventDispatchRequest(serverEventToDispatch);
+    ServerEventDispatchRequest request = new ServerEventDispatchRequest(serverEventToDispatch);
+    push(request);
+  }
+
+  private static void push(Request request) {
     synchronized (requestList) {
-      requestList.add(serverEventDispatchRequest);
+      requestList.add(request);
       startIfNotAlreadyDone();
     }
   }
@@ -174,6 +190,27 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   @Override
   protected void taskIsEnding() {
     running = false;
+  }
+
+  private static void push(final ServerEvent serverEventToDispatch,
+      final SilverpeasAsyncContext asyncContext) {
+    try {
+      HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
+      HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
+      final Long lastServerEventId = asyncContext.getLastServerEventId();
+      final Long serverEventId = serverEventToDispatch.getId();
+      if (lastServerEventId != null && serverEventId != null &&
+          lastServerEventId < (serverEventId - 1)) {
+        sendLastServerEventsFromId(request, response, lastServerEventId,
+            asyncContext.getSessionId(), asyncContext.getUser());
+        asyncContext.setLastServerEventId(null);
+      }
+      serverEventToDispatch
+          .send(request, response, asyncContext.getSessionId(), asyncContext.getUser());
+    } catch (IOException e) {
+      SilverLogger.getLogger(ServerEventDispatcherTask.class).error("Can not send SSE", e);
+      unregisterAsyncContext(asyncContext);
+    }
   }
 
   /**
@@ -191,31 +228,40 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
     @Override
     public void process(Object context) throws InterruptedException {
-      SilverLogger.getLogger(this)
-          .debug(() -> format("Sending {0}", serverEventToDispatch.toString()));
+      SilverLogger.getLogger(this).debug(() -> format("Sending {0}", serverEventToDispatch.toString()));
+      getSafeContexts().forEach(asyncContext -> push(this.serverEventToDispatch, asyncContext));
+      serverEventStore.add(serverEventToDispatch);
+    }
+
+    /**
+     * Gets the context safely, so a list on which the caller can work without concurrency problems.
+     * @return the list of context.
+     */
+    List<SilverpeasAsyncContext> getSafeContexts() {
       final List<SilverpeasAsyncContext> safeContexts;
       synchronized (contexts) {
         safeContexts = contexts.stream().collect(Collectors.toList());
       }
-      safeContexts.forEach(asyncContext -> {
-        try {
-          HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
-          HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
-          final Long lastServerEventId = asyncContext.getLastServerEventId();
-          final Long serverEventId = serverEventToDispatch.getId();
-          if (lastServerEventId != null && serverEventId != null &&
-              lastServerEventId < (serverEventId - 1)) {
-            sendLastServerEventsFromId(request, response, lastServerEventId,
-                asyncContext.getUser());
-            asyncContext.setLastServerEventId(null);
-          }
-          serverEventToDispatch.send(request, response, asyncContext.getUser());
-        } catch (IOException e) {
-          SilverLogger.getLogger(ServerEventDispatchRequest.this).error("Can not send SSE", e);
-          unregisterAsyncContext(asyncContext);
-        }
-      });
-      serverEventStore.add(serverEventToDispatch);
+      return safeContexts;
+    }
+  }
+
+  private static class AimedServerEventDispatchRequest extends ServerEventDispatchRequest {
+    private final SilverpeasAsyncContext silverpeasAsyncContext;
+
+    /**
+     * @param serverEventToDispatch the server event to dispatch.
+     * @param silverpeasAsyncContext
+     */
+    AimedServerEventDispatchRequest(final ServerEvent serverEventToDispatch,
+        final SilverpeasAsyncContext silverpeasAsyncContext) {
+      super(serverEventToDispatch);
+      this.silverpeasAsyncContext = silverpeasAsyncContext;
+    }
+
+    @Override
+    List<SilverpeasAsyncContext> getSafeContexts() {
+      return Collections.singletonList(silverpeasAsyncContext);
     }
   }
 

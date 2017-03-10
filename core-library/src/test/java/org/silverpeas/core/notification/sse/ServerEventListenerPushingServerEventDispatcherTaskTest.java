@@ -76,7 +76,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     pause();
     assertThat(getStoredServerEvents(), contains(serverEventA));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
-    assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\n\n"));
+    assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: \n\n"));
     assertThat(bucket.getServerEvents(), contains(serverEventA, serverEventA));
   }
 
@@ -108,8 +108,9 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     assertThat(getStoredServerEvents(), contains(serverEventA, serverEventA, serverEventC));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream,
-        is("retry: 5000\nid: 0\nevent: EVENT_A\n\nretry: 5000\nid: 0\nevent: EVENT_A\n\nretry: " +
-            "5000\nid: 2\nevent: EVENT_D\n\nretry: 5000\nid: 2\nevent: EVENT_D\n\n"));
+        is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: \n\nretry: 5000\nid: 0\nevent: " +
+            "EVENT_A\ndata: \n\nretry: 5000\nid: 2\nevent: EVENT_D\ndata: \n\nretry: 5000\nid: " +
+            "2\nevent: EVENT_D\ndata: \n\n"));
     assertThat(bucket.getServerEvents(),
         contains(serverEventA, serverEventA, serverEventA, serverEventA, serverEventB, serverEventB,
             serverEventC, serverEventC, serverEventC, serverEventC, serverEventD, serverEventD,

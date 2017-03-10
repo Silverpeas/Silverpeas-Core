@@ -22,7 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function setConnectedUsers(nb) {
-  //alert("setConnectedUsers = "+nb);
   try {
     var label = getConnectedUsersLabel(nb);
 
@@ -41,18 +40,27 @@ function setConnectedUsers(nb) {
 }
 
 function openConnectedUsers() {
-  chemin = getContext() + "/RcommunicationUser/jsp/Main";
+  var chemin = getContext() + "/RcommunicationUser/jsp/Main";
   SP_openWindow(chemin, "users_pop", 400, 400, "scrollbars=yes,resizable=yes");
 }
 
 (function() {
   whenSilverpeasReady(function() {
-    spServerEventSource.addEventListener('USER_SESSION', refreshData, 'connectedUserListener');
-    function refreshData(serverEvent) {
+    spServerEventSource.addEventListener('USER_SESSION_EXPIRED', function(serverEvent) {
+      var data = extendsObject({redirectUrl : location.href}, JSON.parse(serverEvent.data));
+      silverpeasFormSubmit(sp.formConfig(data.redirectUrl));
+    }, 'expiredUserSessionListener');
+    document.querySelector("#logout").addEventListener('click', function() {
+      spServerEventSource.removeEventListener('USER_SESSION_EXPIRED', 'expiredUserSessionListener');
+    });
+
+    spServerEventSource.addEventListener('USER_SESSION', function(serverEvent) {
       var data = extendsObject({
-        nbConnectedUsers : 0, isOpening : false, isClosing : false
+        nbConnectedUsers : 0,
+        isOpening : false,
+        isClosing : false
       }, JSON.parse(serverEvent.data));
       setConnectedUsers(data.nbConnectedUsers);
-    }
+    }, 'connectedUserListener');
   });
 })();

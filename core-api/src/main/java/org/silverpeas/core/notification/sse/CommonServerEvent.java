@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.notification.sse;
 
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonList;

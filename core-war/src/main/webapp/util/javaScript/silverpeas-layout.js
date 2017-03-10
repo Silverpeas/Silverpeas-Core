@@ -390,16 +390,28 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
     };
     window.spServerEventSource = new function() {
       var serverEventSource = new EventSource(webContext + '/sse/common');
-      var listeners = [];
+      var listeners = {};
       this.addEventListener = function(serverEventName, listener, listenerId) {
         if (listenerId) {
-          var oldListener = listeners[listenerId];
-          if (oldListener) {
-            serverEventSource.removeEventListener(serverEventName, oldListener);
-          }
+          this.removeEventListener(serverEventName, listenerId);
           listeners[listenerId] = listener;
+        } else {
+          this.removeEventListener(serverEventName, listener);
         }
         serverEventSource.addEventListener(serverEventName, listener);
+      };
+      this.removeEventListener = function(serverEventName, listenerOrListenerId) {
+        var oldListener;
+        var listenerType = typeof listenerOrListenerId;
+        if (listenerType === 'function') {
+          oldListener = listenerOrListenerId;
+        } else if (listenerType === 'string') {
+          oldListener = listeners[listenerOrListenerId];
+          delete listeners[listenerOrListenerId];
+        }
+        if (oldListener) {
+          serverEventSource.removeEventListener(serverEventName, oldListener);
+        }
       };
     };
     window.spLayout = new SilverpeasLayout(partSelectors);

@@ -35,19 +35,19 @@ class InitializationServerEvent extends AbstractServerEvent implements IgnoreSto
 
   private static ServerEventName EVENT_NAME = () -> "OPEN_EVENT_SOURCE";
 
-  private final User emitter;
+  private final String emitterSessionId;
 
   /**
    * Hidden constructor.
-   * @param emitter the emitter of the event.
+   * @param emitterSessionId the emitter session id of the event.
    */
-  private InitializationServerEvent(final User emitter) {
-    this.emitter = emitter;
+  private InitializationServerEvent(final String emitterSessionId) {
+    this.emitterSessionId = emitterSessionId;
     withData("Initializing a new server event source.");
   }
 
-  static InitializationServerEvent createFor(final User emitter) {
-    return new InitializationServerEvent(emitter);
+  static InitializationServerEvent createFor(final String emitterSessionId) {
+    return new InitializationServerEvent(emitterSessionId);
   }
 
   @Override
@@ -56,7 +56,7 @@ class InitializationServerEvent extends AbstractServerEvent implements IgnoreSto
   }
 
   @Override
-  public boolean isConcerned(final User receiver) {
-    return emitter.equals(receiver);
+  public boolean isConcerned(final String receiverSessionId, final User receiver) {
+    return emitterSessionId.equals(receiverSessionId);
   }
 }
