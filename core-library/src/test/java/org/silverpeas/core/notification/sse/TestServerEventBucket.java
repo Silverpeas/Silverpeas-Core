@@ -46,7 +46,7 @@ public class TestServerEventBucket {
   public void listened(String fromListener, final ServerEvent event) {
     SilverLogger.getLogger(this)
         .info("{0} - receive event with name ''{1}'' and data ''{2}''", fromListener,
-            event.getName().asString(), event.getData(new UserDetail()));
+            event.getName().asString(), event.getData("RECEIVER_SESSION_KEY", new UserDetail()));
     events.add(new Entry(fromListener, event));
   }
 

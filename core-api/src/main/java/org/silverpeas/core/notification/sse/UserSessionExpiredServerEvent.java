@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,49 +22,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.notification.sse;
+package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.AbstractServerEvent;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
+import org.silverpeas.core.util.JSONCodec;
+
+import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
 
 /**
- * @author Yohann Chastagnier
+ * This server event is sent on successful user session opening and on user session ending.
+ * @author Yohann Chastagnier.
  */
-class RetryServerEvent extends AbstractServerEvent implements IgnoreStoring {
+public class UserSessionExpiredServerEvent extends CommonServerEvent implements IgnoreStoring {
 
-  private static ServerEventName EVENT_NAME = () -> "RETRY_EVENT_SOURCE";
-
-  private final String emitterSessionId;
-  private final Long lastServerEventId;
+  private static final ServerEventName EVENT_NAME = () -> "USER_SESSION_EXPIRED";
 
   /**
    * Hidden constructor.
-   * @param emitterSessionId the emitter session id of the event.
-   * @param lastServerEventId the server event identifier the WEB client has performed.
    */
-  private RetryServerEvent(final String emitterSessionId, final Long lastServerEventId) {
-    this.emitterSessionId = emitterSessionId;
-    this.lastServerEventId = lastServerEventId;
-    withData("Event source retry a new connection successfully.");
-  }
-
-  static RetryServerEvent createFor(final String emitterSessionId, final Long lastServerEventId) {
-    return new RetryServerEvent(emitterSessionId, lastServerEventId);
-  }
-
-  @Override
-  public Long getId() {
-    return lastServerEventId;
+  UserSessionExpiredServerEvent() {
+    final String appURL = getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
+    final String sessionTimeoutUrl = getGeneralSettingBundle().getString("sessionTimeout");
+    withData(JSONCodec
+        .encodeObject(jsonObject -> jsonObject.put("redirectUrl", appURL + sessionTimeoutUrl)));
   }
 
   @Override
   public ServerEventName getName() {
     return EVENT_NAME;
-  }
-
-  @Override
-  public boolean isConcerned(final String receiverSessionId, final User receiver) {
-    return emitterSessionId.equals(receiverSessionId);
   }
 }

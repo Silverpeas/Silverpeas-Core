@@ -242,8 +242,12 @@ public class SilverpeasSessionOpener {
     String alternativeURL = null;
     for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
         .getListeners()) {
-      alternativeURL = listener.firstHomepageAccessAfterAuthentication(request,
-          controller.getCurrentUserDetail(), absoluteUrl.toString());
+      String url = listener
+          .firstHomepageAccessAfterAuthentication(request, controller.getCurrentUserDetail(),
+              absoluteUrl.toString());
+      if (StringUtil.isDefined(url)) {
+        alternativeURL = url;
+      }
     }
     if (StringUtil.isDefined(alternativeURL)) {
       return absoluteBaseURL + alternativeURL;

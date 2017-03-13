@@ -39,7 +39,7 @@
 <view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle" var="portlets" />
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" />
 
-<view:includePlugin name="messageme"/>
+<view:includePlugin name="userZoom"/>
 
 <c:set var="context" value="${pageContext.request.contextPath}"/>
 <c:set var="contactsConnected" value="${requestScope.ContactsConnected}" />

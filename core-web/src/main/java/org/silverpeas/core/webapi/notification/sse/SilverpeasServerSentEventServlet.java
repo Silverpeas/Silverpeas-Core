@@ -26,7 +26,9 @@ package org.silverpeas.core.webapi.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.SilverpeasAsyncContext;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.ServletException;
@@ -40,6 +42,7 @@ import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.reg
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask
     .sendLastServerEventsFromId;
 import static org.silverpeas.core.notification.sse.SilverpeasAsyncContext.wrap;
+import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
  * This abstraction defines the behavior the Servlets in charge of responding to EventSource
@@ -55,7 +58,11 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
       throws ServletException, IOException {
 
     final String requestURI = request.getRequestURI();
-    final User sessionUser = getMainSessionController(request).getCurrentUserDetail();
+    final MainSessionController mainSessionController = getMainSessionController(request);
+    final SessionInfo sessionInfo =
+        getSessionManagement().getSessionInfo(mainSessionController.getSessionId());
+    final String userSessionId = sessionInfo.getSessionId();
+    final User sessionUser = mainSessionController.getCurrentUserDetail();
 
     if (!"text/event-stream".equals(request.getHeader("Accept"))) {
       final String errorMessage =
@@ -65,8 +72,8 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
     }
 
     SilverLogger.getLogger(this)
-        .debug("Asking for SSE communication (sessionUser={0}) on URI {1}", sessionUser.getId(),
-            requestURI);
+        .debug("Asking for SSE communication (sessionUser={0}) on URI {1} (SessionId={2})",
+            sessionUser.getId(), requestURI, userSessionId);
 
     // An initial response
     Long lastServerEventId = null;
@@ -78,16 +85,19 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
       SilverLogger.getLogger(this).debug(
           () -> format("Sending emitted events since disconnection for sessionId {0} on URI {1}",
               request.getSession(false).getId(), requestURI));
-      RetryServerEvent.createFor(sessionUser, lastServerEventId)
-          .send(request, response, sessionUser);
+      RetryServerEvent.createFor(userSessionId, lastServerEventId)
+          .send(request, response, userSessionId, sessionUser);
       lastServerEventId =
-          sendLastServerEventsFromId(request, response, lastServerEventId, sessionUser);
+          sendLastServerEventsFromId(request, response, lastServerEventId, userSessionId,
+              sessionUser);
     } else {
-      InitializationServerEvent.createFor(sessionUser).send(request, response, sessionUser);
+      InitializationServerEvent.createFor(userSessionId)
+          .send(request, response, userSessionId, sessionUser);
     }
 
     // Start Async processing
-    final SilverpeasAsyncContext asyncContext = wrap(request.startAsync(), sessionUser);
+    final SilverpeasAsyncContext asyncContext =
+        wrap(request.startAsync(), userSessionId, sessionUser);
     final int timeout = min((request.getSession(false).getMaxInactiveInterval() * 1000), 180000);
     asyncContext.setTimeout(timeout);
     asyncContext.setLastServerEventId(lastServerEventId);

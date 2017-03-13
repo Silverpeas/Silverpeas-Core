@@ -21,8 +21,6 @@
 package org.silverpeas.core.web.authentication;
 
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -70,13 +68,10 @@ public class AuthenticationServlet extends HttpServlet {
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
   private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
-  private static final String CHAT_ATTRIBUTE = "Silverpeas.Chat";
   private static final String LOGIN_ERROR_PAGE = "/Login.jsp?ErrorCode=";
   private static final String COOKIE_PASSWORD = "svpPassword";
   private static int COOKIE_TIMELIFE = 31536000;
 
-  @Inject
-  private ChatUsersRegistration chatUsersRegistration;
   @Inject
   private AuthenticationService authService;
   @Inject
@@ -173,19 +168,6 @@ public class AuthenticationServlet extends HttpServlet {
     session.
         setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
     writeSessionCookie(response, session, authenticationParameters.isSecuredAccess());
-
-    User currentUser = User.getCurrentRequester();
-    if (chatUsersRegistration.isChatServiceEnabled()) {
-      try {
-        chatUsersRegistration.registerUser(currentUser);
-        session.setAttribute(CHAT_ATTRIBUTE, true);
-      } catch (Exception e) {
-        logger.error(e.getMessage());
-        session.setAttribute(CHAT_ATTRIBUTE, false);
-      }
-    } else {
-      session.setAttribute(CHAT_ATTRIBUTE, false);
-    }
 
     response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
   }

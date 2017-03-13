@@ -232,7 +232,7 @@ public class SessionManager implements SessionManagement {
       userNotificationSessions.remove(si.getSessionId());
       si.onClosed();
 
-      defaultServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si.getUserDetail()));
+      defaultServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
@@ -510,7 +510,7 @@ public class SessionManager implements SessionManagement {
       si = new HTTPSessionInfo(session, anIP, user);
       openSession(si);
       userDataSessions.put(si.getSessionId(), si);
-      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(si.getUserDetail()));
+      defaultServerEventNotifier.notify(UserSessionServerEvent.anOpeningOneFor(si));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }

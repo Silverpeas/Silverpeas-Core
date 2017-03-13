@@ -25,9 +25,9 @@
 package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysStoring;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.JSONCodec;
@@ -38,32 +38,31 @@ import org.silverpeas.core.util.JSONCodec;
  */
 public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysStoring {
 
-  private static ServerEventName EVENT_NAME = () -> "USER_SESSION";
+  private static final String IS_OPENING_ATTR_NAME = "isOpening";
+  private static final String IS_CLOSING_ATTR_NAME = "isClosing";
+  private static final String NB_CONNECTED_USERS_ATTR_NAME = "nbConnectedUsers";
 
-  private final User emitter;
+  private static final ServerEventName EVENT_NAME = () -> "USER_SESSION";
+
+  private final SessionInfo emitterSession;
+  private final boolean opening;
 
   /**
    * Hidden constructor.
    * @param opening true if it concerns an opening, false for a closing.
-   * @param emitter the user behind the event send.
+   * @param emitterSession the user behind the event send.
    */
-  private UserSessionServerEvent(final boolean opening, final User emitter) {
-    this.emitter = emitter;
-    withData(receiver -> {
-      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-      int nbConnectedUsers = sessionManagement.getNbConnectedUsersList(receiver) - 1;
-      return JSONCodec.encodeObject(
-          jsonObject -> jsonObject.put("isOpening", opening).put("isClosing", !opening)
-              .put("nbConnectedUsers", nbConnectedUsers));
-    });
+  private UserSessionServerEvent(final boolean opening, final SessionInfo emitterSession) {
+    this.emitterSession = emitterSession;
+    this.opening = opening;
   }
 
-  public static UserSessionServerEvent anOpeningOneFor(final UserDetail sessionUser) {
-    return new UserSessionServerEvent(true, sessionUser);
+  static UserSessionServerEvent anOpeningOneFor(final SessionInfo sessionInfo) {
+    return new UserSessionServerEvent(true, sessionInfo).initializeData();
   }
 
-  public static UserSessionServerEvent aClosingOneFor(final UserDetail sessionUser) {
-    return new UserSessionServerEvent(false, sessionUser);
+  static UserSessionServerEvent aClosingOneFor(final SessionInfo sessionInfo) {
+    return new UserSessionServerEvent(false, sessionInfo).initializeData();
   }
 
   @Override
@@ -72,8 +71,25 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
   }
 
   @Override
-  public boolean isConcerned(final User receiver) {
-    return !emitter.equals(receiver) &&
-        (!emitter.isDomainRestricted() || emitter.getDomainId().equals(receiver.getId()));
+  public boolean isConcerned(final String receiverSessionId, final User receiver) {
+    User emitter = emitterSession.getUserDetail();
+    return (!this.opening || !emitterSession.getSessionId().equals(receiverSessionId)) &&
+        (!emitter.isDomainRestricted() || emitter.getDomainId().equals(receiver.getDomainId()));
+  }
+
+  /**
+   * Initializing the data providing.
+   * @return itself.
+   */
+  private UserSessionServerEvent initializeData() {
+    withData((receiverSessionId, receiver) -> {
+      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
+      final int nbConnectedUsers = sessionManagement.getNbConnectedUsersList(receiver) - 1;
+      return JSONCodec.encodeObject(jsonObject -> jsonObject
+          .put(IS_OPENING_ATTR_NAME, this.opening)
+          .put(IS_CLOSING_ATTR_NAME, !this.opening)
+          .put(NB_CONNECTED_USERS_ATTR_NAME, nbConnectedUsers));
+    });
+    return this;
   }
 }

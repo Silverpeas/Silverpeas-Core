@@ -65,15 +65,15 @@ public class SilverpeasAsyncContext implements AsyncContext {
   /**
    * Wraps the given instance. Nothing is wrapped if the given instance is a wrapped one.
    * @param asyncContext the instance to wrap.
+   * @param userSessionId the identifier or the user session.
    * @param user the identifier of th user linked to the async request.
    * @return the wrapped given instance.
    */
-  public static SilverpeasAsyncContext wrap(AsyncContext asyncContext, User user) {
+  public static SilverpeasAsyncContext wrap(AsyncContext asyncContext, final String userSessionId,
+      User user) {
     if (asyncContext instanceof SilverpeasAsyncContext) {
       return (SilverpeasAsyncContext) asyncContext;
     }
-    final String userSessionId =
-        ((HttpServletRequest) asyncContext.getRequest()).getSession(false).getId();
     final SilverpeasAsyncContext context =
         new SilverpeasAsyncContext(asyncContext, userSessionId, user);
     context.addListener(new AsyncListener() {
@@ -177,7 +177,6 @@ public class SilverpeasAsyncContext implements AsyncContext {
   @Override
   public void complete() {
     wrappedInstance.complete();
-
   }
 
   @Override

@@ -76,7 +76,7 @@ class AbstractServerEventDispatcherTaskTest {
   ServerEvent newMockedServerEvent(String name, String data) throws Exception {
     ServerEvent mock = spy(AbstractServerEvent.class);
     when(mock.getName()).thenReturn(() -> name);
-    when(mock.getData(any(User.class))).thenReturn(data);
+    when(mock.getData(anyString(), any(User.class))).thenReturn(data);
     return mock;
   }
 

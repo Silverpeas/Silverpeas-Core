@@ -30,8 +30,6 @@ import org.silverpeas.core.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.function.Function;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -40,18 +38,18 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  * Silverpeas. This event is called {@code Server Event}.<br/>
  * Three elements compose a server event:
  * <ul>
- *   <li>{@code id}, an identifier that identifies the event</li>
- *   <li>{@code name}, the name of the event. It can be taken like the name of a bus. This name
- *   is used by client to add listeners. For example, il the name of an event is {@code
- *   USER_SESSION} the client (in JavaScript) can listen to by coding
- *   <pre>
+ * <li>{@code id}, an identifier that identifies the event</li>
+ * <li>{@code name}, the name of the event. It can be taken like the name of a bus. This name
+ * is used by client to add listeners. For example, il the name of an event is {@code
+ * USER_SESSION} the client (in JavaScript) can listen to by coding
+ * <pre>
  *     new EventSource(...).addEventListener('USER_SESSION', function(serverEvent){
  *       ...
  *     })
  *   </pre>
- *   </li>
- *   <li>{@code data}, textual data (but it is not forbidden to render JSON structure as string)
- *   </li>
+ * </li>
+ * <li>{@code data}, textual data (but it is not forbidden to render JSON structure as string)
+ * </li>
  * </ul>
  * @author Yohann Chastagnier
  */
@@ -75,33 +73,36 @@ public interface ServerEvent {
 
   /**
    * The data to send.
+   * @param receiverSessionId the identifier of the receiver session.
+   * @param receiver
    * @return the data as string.
-   * @param receiver the receiver eventually used by dynamic data producers (see
-   * {@link AbstractServerEvent#withData(Function)}).
    */
-  String getData(final User receiver);
+  String getData(final String receiverSessionId, final User receiver);
 
   /**
-   * Indicates if the given receiver is concerned by the event. If not, the event is not sent.
-   * @param receiver a potential receiver.
+   * Indicates if the given receiver (behind the session) is concerned by the event.
+   * If not, the event is not sent.
+   * @param receiverSessionId the identifier of the receiver session.
+   * @param receiver
    * @return true if given receiver is concerned, false otherwise.
    */
-  default boolean isConcerned(User receiver) {
+  default boolean isConcerned(final String receiverSessionId, final User receiver) {
     return true;
   }
 
   /**
-   * Sends the event by using the given response and taking into account the receiver linked to
-   * .<br/>
-   * If {@link #isConcerned(User)} indicates that the given receiver is not concerned, nothing is
+   * Sends the event by using the given response and taking into account the receiver linked to.
+   * <br/>
+   * If {@link #isConcerned(String, User)} indicates that the given receiver is not concerned, nothing is
    * sent.
-   * @param request
+   * @param request the request from which the communication has been opened.
    * @param response the response on which the event will be pushed.
-   * @param receiver the user concerned. The {@link User} instance is given to the
- * {@link #getData(User)} method in order to produce dynamic data according to the receiver.
+   * @param receiverSessionId the identifier of the receiver session.
+   * @param receiver the receiver instance.
    */
-  default void send(final HttpServletRequest request, HttpServletResponse response, final User receiver) throws IOException {
-    if (!isConcerned(receiver)) {
+  default void send(final HttpServletRequest request, HttpServletResponse response,
+      final String receiverSessionId, final User receiver) throws IOException {
+    if (!isConcerned(receiverSessionId, receiver)) {
       return;
     }
 
@@ -112,7 +113,7 @@ public interface ServerEvent {
     response.setCharacterEncoding("UTF-8");
 
     final String eventName = defaultStringIfNotDefined(getName().asString());
-    final String eventData = defaultStringIfNotDefined(getData(receiver));
+    final String eventData = defaultStringIfNotDefined(getData(receiverSessionId, receiver));
     final int capacity = 100 + eventName.length() + eventData.length();
     StringBuilder sb = new StringBuilder(capacity);
     sb.append("retry: ").append(CLIENT_RETRY);
@@ -120,8 +121,8 @@ public interface ServerEvent {
     if (StringUtil.isDefined(eventName)) {
       sb.append("\nevent: ").append(eventName);
     }
+    sb.append("\ndata: ");
     if (StringUtil.isDefined(eventData)) {
-      sb.append("\ndata: ");
       for (int i = 0; i < eventData.length(); i++) {
         char currentChar = eventData.charAt(i);
         switch (currentChar) {

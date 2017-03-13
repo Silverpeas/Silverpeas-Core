@@ -59,7 +59,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     pause();
     assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
-    assertThat(eventStream, is("retry: 5000\nid: 0\n\n"));
+    assertThat(eventStream, is("retry: 5000\nid: 0\ndata: \n\n"));
   }
 
   @Test
@@ -71,7 +71,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     pause();
     assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
-    assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_NAME\n\n"));
+    assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_NAME\ndata: \n\n"));
   }
 
   @Test
@@ -83,7 +83,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     pause();
     assertThat(getStoredServerEvents(), contains(mockedServerEvent));
     String eventStream = getSentServerEventStream(mockedAsyncContext);
-    assertThat(eventStream, is("retry: 5000\nid: 0\n\n"));
+    assertThat(eventStream, is("retry: 5000\nid: 0\ndata: \n\n"));
   }
 
   @Test
@@ -101,6 +101,7 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     assertThat(asyncContextMap.size(), is(1));
     ServerEventDispatcherTask.unregisterBySessionId("OTHER_SESSION_ID");
     assertThat(asyncContextMap.size(), is(0));
+    pause();
   }
 
   @Test

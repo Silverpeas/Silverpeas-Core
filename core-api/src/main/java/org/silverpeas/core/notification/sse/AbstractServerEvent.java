@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
@@ -50,7 +50,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
   private static long idCounter = 0;
   private long id = -1;
   private String data = StringUtil.EMPTY;
-  private Function<User, String> dynamicData = null;
+  private BiFunction<String, User, String> dynamicData = null;
 
   /**
    * Gets the Event Source URI on which the event is handled.<br/>
@@ -70,44 +70,13 @@ public abstract class AbstractServerEvent implements ServerEvent {
   }
 
   @Override
-  public String getData(final User receiver) {
-    return dynamicData == null ? data : dynamicData.apply(receiver);
-  }
-
-  /**
-   * Sets the specified data.<br/>
-   * Given data are ignored if {@link #withData(Function)} has been called with non null functional
-   * interface.
-   * @param data the data the event must return to WEB client.
-   * @return the instance itself.
-   */
-  @SuppressWarnings("unchecked")
-  public <T extends AbstractServerEvent> T withData(String data) {
-    this.data = data;
-    return (T) this;
-  }
-
-  /**
-   * Sets a functional interface which will produced the data as string by taking into account a
-   * given {@link User} which is the current user for which the server event will be send. @param
-   * dynamicData functional interface which will be played at each call of {@link
-   * ServerEvent#send(HttpServletRequest, HttpServletResponse, User)} method. The functional
-   * interface provides one
-   * parameter: {@link User}, the user for which the server event will be sent. It produces the
-   * data to send.<br/>
-   * If a functional interface is given, data eventually set by {@link #withData(String)} are
-   * ignored.
-   * @return the instance itself.
-   */
-  @SuppressWarnings("unchecked")
-  public <T extends AbstractServerEvent> T withData(Function<User, String> dynamicData) {
-    this.dynamicData = dynamicData;
-    return (T) this;
+  public String getData(final String receiverSessionId, final User receiver) {
+    return dynamicData == null ? data : dynamicData.apply(receiverSessionId, receiver);
   }
 
   @Override
   public void send(final HttpServletRequest request, final HttpServletResponse response,
-      final User receiver) throws IOException {
+      final String receiverSessionId, final User receiver) throws IOException {
     List<String> eventSourceURIs = getEventSourceURIs();
     boolean aimedEventSource = eventSourceURIs.isEmpty();
     if (!aimedEventSource) {
@@ -119,7 +88,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
       }
     }
     if (aimedEventSource) {
-      ServerEvent.super.send(request, response, receiver);
+      ServerEvent.super.send(request, response, receiverSessionId, receiver);
     }
   }
 
@@ -129,5 +98,39 @@ public abstract class AbstractServerEvent implements ServerEvent {
     tsb.append("id", getId());
     tsb.append("name", getName().asString());
     return tsb.toString();
+  }
+
+  /**
+   * Sets the specified data.<br/>
+   * Given data are ignored if {@link #withData(BiFunction)} has been called with non null
+   * functional
+   * interface.
+   * @param data the data the event must return to WEB client.
+   * @return the instance itself.
+   */
+  @SuppressWarnings("unchecked")
+  protected <T extends AbstractServerEvent> T withData(String data) {
+    this.data = data;
+    return (T) this;
+  }
+
+  /**
+   * Sets a functional interface which will produced the data as string by taking into account a
+   * given {@link User} which is the current user for which the server event will be send. @param
+   * dynamicData functional interface which will be played at each call of {@link
+   * ServerEvent#send(HttpServletRequest, HttpServletResponse, String, User)} method. The functional
+   * interface provides one
+   * parameter: {@link User}, the user for which the server event will be sent. It produces the
+   * data to send.<br/>
+   * If a functional interface is given, data eventually set by {@link #withData(String)} are
+   * ignored.
+   * @param dynamicData
+   * @return the instance itself.
+   */
+  @SuppressWarnings("unchecked")
+  protected <T extends AbstractServerEvent> T withData(
+      BiFunction<String, User, String> dynamicData) {
+    this.dynamicData = dynamicData;
+    return (T) this;
   }
 }
