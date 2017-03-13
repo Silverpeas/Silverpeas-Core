@@ -99,7 +99,7 @@ public class LoggerConfigurationManager {
           configs.put(loggerConfiguration.getNamespace(), loggerConfiguration);
         } catch (IOException e) {
           java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
-              .log(java.util.logging.Level.WARNING, e.getMessage());
+              .log(java.util.logging.Level.WARNING, e.getMessage(), e);
         }
       }
     } else {
@@ -146,7 +146,7 @@ public class LoggerConfigurationManager {
         properties.store(new FileOutputStream(configuration.getConfigurationFile()), null);
       } catch (IOException e) {
         java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
-            .log(java.util.logging.Level.WARNING, e.getMessage());
+            .log(java.util.logging.Level.WARNING, e.getMessage(), e);
       }
     }
   }

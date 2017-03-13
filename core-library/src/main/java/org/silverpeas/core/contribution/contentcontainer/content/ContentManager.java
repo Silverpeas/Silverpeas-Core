@@ -26,8 +26,8 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.JoinStatement;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -53,50 +53,14 @@ import java.util.TreeSet;
 @Named("contentManager")
 public class ContentManager implements Serializable {
 
-  private final static List<ContentPeas> s_acContentPeas = new ArrayList<>();
+  private static final String INSTANCE_TABLE = "SB_ContentManager_Instance";
+  private static final String SILVER_CONTENT_TABLE = "SB_ContentManager_Content";
 
-  static {
-    // -------------------------------------------------
-    // We don't have enough time to do the parsing !!!
-    // We hard coded for this time !!!!
-    // -------------------------------------------------
-
-    // Put all the existing contents in the array of contents
-    s_acContentPeas.add(new ContentPeas("whitePages"));
-    s_acContentPeas.add(new ContentPeas("questionReply"));
-    s_acContentPeas.add(new ContentPeas("kmelia"));
-    s_acContentPeas.add(new ContentPeas("survey"));
-    s_acContentPeas.add(new ContentPeas("toolbox"));
-    s_acContentPeas.add(new ContentPeas("quickinfo"));
-    s_acContentPeas.add(new ContentPeas("almanach"));
-    s_acContentPeas.add(new ContentPeas("quizz"));
-    s_acContentPeas.add(new ContentPeas("forums"));
-    s_acContentPeas.add(new ContentPeas("pollingStation"));
-    s_acContentPeas.add(new ContentPeas("bookmark"));
-    s_acContentPeas.add(new ContentPeas("infoLetter"));
-    s_acContentPeas.add(new ContentPeas("webSites"));
-    s_acContentPeas.add(new ContentPeas("gallery"));
-    s_acContentPeas.add(new ContentPeas("blog"));
-  }
-
+  private final List<ContentPeas> s_acContentPeas = new ArrayList<>();
   // Container peas
-  private static Map<String, String> assoComponentIdInstanceId = null;
+  private Map<String, String> mapBetweenComponentIdAndInstanceId = null;
   // Association SilverContentId (the key) internalContentId (the value) (cache)
-  private static HashMap<String, String> assoSilverContentIdInternalComponentId =
-      new HashMap<>(1000);
-  private static String m_sInstanceTable = "SB_ContentManager_Instance";
-  private static final long serialVersionUID = 7069917496138130066L;
-  private static String m_sSilverContentTable = "SB_ContentManager_Content";
-
-  static {
-    try {
-      assoComponentIdInstanceId = new HashMap<>(loadAsso(null));
-    } catch (ContentManagerException e) {
-      SilverTrace
-          .error("contentManager", "ContentManager.initStatic", "root.EX_CLASS_NOT_INITIALIZED",
-              "assoComponentIdInstanceId initialization failed !", e);
-    }
-  }
+  private HashMap<String, String> mapBetweenSilverContentIdAndInternalComponentId = new HashMap<>();
 
   /**
    * return a list of identifiers of the resources matching the specified identifiers of
@@ -112,7 +76,7 @@ public class ContentManager implements Serializable {
       try {
         String id = ContentManagerProvider.getContentManager().getInternalContentId(contentId);
         pks.add(id);
-      } catch (ClassCastException | ContentManagerException ignored) {
+      } catch (ContentManagerException ignored) {
         // ignore unknown item
       }
     }
@@ -136,25 +100,26 @@ public class ContentManager implements Serializable {
     // Check the minimum required
     this.checkParameters(sComponentId, sContainerType, sContentType);
     PreparedStatement prepStmt = null;
+    Connection theConnection = connection;
     try {
-      if (connection == null) {
-        connection = DBUtil.openConnection();
+      if (theConnection == null) {
+        theConnection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
       // Compute the next instanceId
-      int newInstanceId = DBUtil.getNextId(m_sInstanceTable, "instanceId");
+      int newInstanceId = DBUtil.getNextId(INSTANCE_TABLE, "instanceId");
       // Insert the association container - content
-      String sSQLStatement = "INSERT INTO " + m_sInstanceTable +
+      String sSQLStatement = "INSERT INTO " + INSTANCE_TABLE +
           "(instanceId, componentId, containerType, contentType) ";
       sSQLStatement +=
           "VALUES (" + newInstanceId + ",'" + sComponentId + "','" + sContainerType + "','" +
               sContentType + "')";
       // Execute the insertion
 
-      prepStmt = connection.prepareStatement(sSQLStatement);
+      prepStmt = theConnection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
-      addAsso(sComponentId, newInstanceId);
+      addMapping(sComponentId, newInstanceId);
       return newInstanceId;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.registerNewContentInstance",
@@ -163,7 +128,7 @@ public class ContentManager implements Serializable {
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
-        closeConnection(connection);
+        closeConnection(theConnection);
       }
     }
   }
@@ -174,58 +139,53 @@ public class ContentManager implements Serializable {
         con.close();
       }
     } catch (Exception e) {
-      SilverTrace.error("contentManager", "ContentManager.closeConnection",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
   /**
-   * When a generic component is uninstanciate, this function is called to unregister the
-   * association between container and content
-   * @param connection
-   * @param sComponentId
-   * @param sContainerType
-   * @param sContentType
-   * @throws ContentManagerException
+   * When a generic component instance is finalized, this function is called to unregister the
+   * association between the container and its contents.
+   * @param connection a connection to the database in which is stored the mapping.
+   * @param sComponentId the unique identifier of the component instance.
+   * @param sContainerType the type of the content container.
+   * @param sContentType the type of the contents in the content container.
+   * @throws ContentManagerException if an error occurs while unregister the content instance.
    */
   public void unregisterNewContentInstance(Connection connection, String sComponentId,
       String sContainerType, String sContentType) throws ContentManagerException {
     boolean bCloseConnection = false;
     this.checkParameters(sComponentId, sContainerType, sContentType);
+    Connection theConnection = connection;
     try {
-      if (connection == null) {
-        connection = DBUtil.openConnection();
+      if (theConnection == null) {
+        theConnection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
-      final String contentDeletion = "DELETE FROM " + m_sSilverContentTable + " WHERE " +
-          "contentInstanceId IN (SELECT instanceId from " + m_sInstanceTable + " WHERE componentId = ? AND " +
+      final String contentDeletion = "DELETE FROM " + SILVER_CONTENT_TABLE + " WHERE " +
+          "contentInstanceId IN (SELECT instanceId from " + INSTANCE_TABLE +
+          " WHERE componentId = ? AND " +
           "containerType = ? AND contentType = ?)";
 
-      final String instanceDeletion = "DELETE FROM " + m_sInstanceTable + " WHERE componentId = ?" +
+      final String instanceDeletion = "DELETE FROM " + INSTANCE_TABLE + " WHERE componentId = ?" +
           " AND containerType = ? AND contentType = ?";
 
-      try(PreparedStatement deletion = connection.prepareStatement(contentDeletion)) {
-        deletion.setString(1, sComponentId);
-        deletion.setString(2, sContainerType);
-        deletion.setString(3, sContentType);
-        deletion.execute();
+      try (PreparedStatement deletion = theConnection.prepareStatement(contentDeletion)) {
+        deleteMappingInDS(deletion, sComponentId, sContainerType, sContentType);
       }
-      try(PreparedStatement deletion = connection.prepareStatement(instanceDeletion)) {
-        deletion.setString(1, sComponentId);
-        deletion.setString(2, sContainerType);
-        deletion.setString(3, sContentType);
-        deletion.execute();
+      try (PreparedStatement deletion = theConnection.prepareStatement(instanceDeletion)) {
+        deleteMappingInDS(deletion, sComponentId, sContainerType, sContentType);
       }
 
-      removeAsso(sComponentId);
+      removeMapping(sComponentId);
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.unregisterNewContentInstance",
           SilverpeasException.ERROR, "contentManager.EX_CANT_UNREGISTER_CONTENT_INSTANCE",
           "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
     } finally {
       if (bCloseConnection) {
-        closeConnection(connection);
+        closeConnection(theConnection);
       }
     }
   }
@@ -253,89 +213,6 @@ public class ContentManager implements Serializable {
     return null;
   }
 
-  // Return the Content type corresponding to the given componentId
-  private String getContentType(String componentId) throws ContentManagerException {
-    // Build the SQL statement
-    String sSQLStatement =
-        "SELECT contentType FROM " + m_sInstanceTable + " WHERE (componentId = '" + componentId +
-            "')";
-    // Get the contentType from the DB Query
-    String sContentType = this.getFirstStringValue(sSQLStatement);
-    return sContentType;
-  }
-
-  private void checkParameters(String sComponentId, String sContainerType, String sContentType)
-      throws ContentManagerException {
-    // Check if the given componentId is not null
-    if (sComponentId == null) {
-      throw new ContentManagerException("ContentManager.checkParameters", SilverpeasException.ERROR,
-          "contentManager.EX_COMPONENTID_NULL");
-    }
-
-    // Check if the given componentId is not empty
-    if (sComponentId.length() == 0) {
-      throw new ContentManagerException("ContentManager.checkParameters", SilverpeasException.ERROR,
-          "contentManager.EX_COMPONENTID_EMPTY");
-    }
-
-    // Check if the given containerType is not null
-    if (sContainerType == null) {
-      throw new ContentManagerException("ContentManager.checkParameters", SilverpeasException.ERROR,
-          "contentManager.EX_CONTAINERTYPE_NULL");
-    }
-
-    // Check if the given containerType is not empty
-    if (sContainerType.length() == 0) {
-      throw new ContentManagerException("ContentManager.checkParameters", SilverpeasException.ERROR,
-          "contentManager.EX_CONTAINERTYPE_EMPTY");
-    }
-
-    // Check if the given contentType is not null
-    if (sContentType == null) {
-      throw new ContentManagerException("ContentManager.checkParameters", SilverpeasException.ERROR,
-          "contentManager.EX_CONTENTTYPE_NULL");
-    }
-
-    // Check if the given contentType is not empty
-    if (sContentType.length() == 0) {
-      throw new ContentManagerException("ContentManager.checkParameters", SilverpeasException.ERROR,
-          "contentManager.EX_CONTENTTYPE_EMPTY");
-    }
-  }
-
-  private String getFirstStringValue(String sSQLStatement) throws ContentManagerException {
-    Connection connection = null;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
-    try {
-      String sValue = null;
-
-      // Open connection
-      connection = DBUtil.openConnection();
-
-      // Execute the query
-      SilverTrace
-          .info("contentManager", "ContentManager.getFirstStringValue", "root.MSG_GEN_PARAM_VALUE",
-              "sSQLStatement= " + sSQLStatement);
-      prepStmt = connection.prepareStatement(sSQLStatement);
-      resSet = prepStmt.executeQuery();
-
-      // Fetch the result
-      while (resSet.next() && sValue == null) {
-        sValue = resSet.getString(1);
-      }
-
-      return sValue;
-    } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getFirstStringValue",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
-          "sSQLStatement: " + sSQLStatement, e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      closeConnection(connection);
-    }
-  }
-
   /**
    * Add a silver content Called when a content add a document and register it to get its
    * SilverContentId in return
@@ -354,56 +231,45 @@ public class ContentManager implements Serializable {
     //
     // creation d'un objet java.sql.Date qui represente la date systeme.
     //
-    Date date = new Date(); // recupere la date de ce jour
-    long time = date.getTime(); // recupere les millisecondes de la date de ce jour
+    Date date = new Date();
+    long time = date.getTime();
     java.sql.Date systemDate = new java.sql.Date(time);
 
     boolean bCloseConnection = false;
 
-    if (scv == null) {
-      scv = new SilverContentVisibility();
+    SilverContentVisibility visibility = scv;
+    if (visibility == null) {
+      visibility = new SilverContentVisibility();
     }
 
     PreparedStatement prepStmt = null;
+    Connection conn = connection;
     try {
-      if (connection == null) {
+      if (conn == null) {
         // Open connection
-        connection = DBUtil.openConnection();
+        conn = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
       // Get the contentInstanceId corresponding to the given componentId
       int nContentInstanceId = this.getContentInstanceId(sComponentId);
 
-      SilverTrace
-          .info("contentManager", "ContentManager.addSilverContent", "root.MSG_GEN_PARAM_VALUE",
-              "nContentInstanceId= " + nContentInstanceId);
-
       // Compute the next silverContentId
-      int newSilverContentId = DBUtil.getNextId(m_sSilverContentTable, "silverContentId");
-
-      SilverTrace
-          .info("contentManager", "ContentManager.addSilverContent", "root.MSG_GEN_PARAM_VALUE",
-              "newSilverContentId= " + newSilverContentId);
+      int newSilverContentId = DBUtil.getNextId(SILVER_CONTENT_TABLE, "silverContentId");
 
       // Insert the silverContent
-      String sSQLStatement = "INSERT INTO " +
-          m_sSilverContentTable +
+      String sSQLStatement = "INSERT INTO " + SILVER_CONTENT_TABLE +
           "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, " +
           "beginDate, endDate, isVisible) ";
       sSQLStatement +=
           "VALUES (" + newSilverContentId + ",'" + sInternalContentId + "'," + nContentInstanceId +
               "," + Integer.parseInt(sAuthorId) + ",?, ? , ? , ? )";
 
-      // Execute the insertion
-      SilverTrace
-          .info("contentManager", "ContentManager.addSilverContent", "root.MSG_GEN_PARAM_VALUE",
-              "sSQLStatement= " + sSQLStatement);
-      prepStmt = connection.prepareStatement(sSQLStatement);
+      prepStmt = conn.prepareStatement(sSQLStatement);
       prepStmt.setDate(1, systemDate);
-      prepStmt.setString(2, scv.getBeginDate());
-      prepStmt.setString(3, scv.getEndDate());
-      prepStmt.setInt(4, scv.isVisible());
+      prepStmt.setString(2, visibility.getBeginDate());
+      prepStmt.setString(3, visibility.getEndDate());
+      prepStmt.setInt(4, visibility.isVisible());
       prepStmt.executeUpdate();
 
       return newSilverContentId;
@@ -414,7 +280,7 @@ public class ContentManager implements Serializable {
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
-        closeConnection(connection);
+        closeConnection(conn);
       }
     }
   }
@@ -428,13 +294,10 @@ public class ContentManager implements Serializable {
     try {
       // delete the silverContent
       String sSQLStatement =
-          "DELETE FROM " + m_sSilverContentTable + " WHERE (silverContentId = " + nSilverContentId +
+          "DELETE FROM " + SILVER_CONTENT_TABLE + " WHERE (silverContentId = " + nSilverContentId +
               ")";
 
       // Execute the delete
-      SilverTrace
-          .info("contentManager", "ContentManager.removeSilverContent", "root.MSG_GEN_PARAM_VALUE",
-              "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
     } catch (Exception e) {
@@ -449,35 +312,30 @@ public class ContentManager implements Serializable {
   private int getSilverContentId(Statement stmt, String sInternalContentId, String sComponentId,
       boolean isGlobalSearch) throws ContentManagerException {
     ResultSet resSet = null;
-    StringBuffer sSQLStatement = new StringBuffer();
     int nSilverContentId = -1;
 
     try {
       // Get the SilverContentId
-      sSQLStatement.append("SELECT silverContentId FROM ").append(m_sSilverContentTable);
-      sSQLStatement.append(" WHERE (internalContentId = '").append(sInternalContentId)
-          .append("') AND (contentInstanceId = ");
+      String sSQLStatement =
+          "SELECT silverContentId FROM " + SILVER_CONTENT_TABLE + " WHERE (internalContentId = '" +
+              sInternalContentId + "') AND (contentInstanceId = ";
       if (isGlobalSearch) {
-        sSQLStatement.append(" (select instanceId from ").append(m_sInstanceTable).
-            append(" where componentId='").append(sComponentId).append("') ) ");
+        sSQLStatement +=
+            " (select instanceId from " + INSTANCE_TABLE + " where componentId='" + sComponentId +
+                "') ) ";
       } else {
-        sSQLStatement.append(this.getContentInstanceId(sComponentId)).append(") ");
+        sSQLStatement += this.getContentInstanceId(sComponentId) + ") ";
       }
 
       // Execute the search
-      SilverTrace
-          .info("contentManager", "ContentManager.getSilverContentId", "root.MSG_GEN_PARAM_VALUE",
-              "sSQLStatement= " + sSQLStatement);
-      resSet = stmt.executeQuery(sSQLStatement.toString());
+      resSet = stmt.executeQuery(sSQLStatement);
       // Fetch the result
 
       if (resSet.next()) {
         nSilverContentId = resSet.getInt(1);
       }
-    } catch (SQLException excep_select) {
-      SilverTrace
-          .warn("contentManager", "ContentManager.getSilverContentId", "root.MSG_GEN_PARAM_VALUE",
-              "sSQLStatement= " + sSQLStatement);
+    } catch (SQLException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     } finally {
       DBUtil.close(resSet);
     }
@@ -555,18 +413,17 @@ public class ContentManager implements Serializable {
           connection.close();
         }
       } catch (Exception e) {
-        SilverTrace.error("contentManager", "ContentManager.getSilverContentId",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }
 
   private String getInternalContentIdFromCache(String sSilverContentId) {
-    return assoSilverContentIdInternalComponentId.get(sSilverContentId);
+    return mapBetweenSilverContentIdAndInternalComponentId.get(sSilverContentId);
   }
 
   private void putInternalContentIdIntoCache(String sSilverContentId, String sInternalContentId) {
-    assoSilverContentIdInternalComponentId.put(sSilverContentId, sInternalContentId);
+    mapBetweenSilverContentIdAndInternalComponentId.put(sSilverContentId, sInternalContentId);
   }
 
   /**
@@ -585,7 +442,7 @@ public class ContentManager implements Serializable {
         connection = DBUtil.openConnection();
 
         // Get the InternalContentId
-        String sSQLStatement = "SELECT internalContentId FROM " + m_sSilverContentTable +
+        String sSQLStatement = "SELECT internalContentId FROM " + SILVER_CONTENT_TABLE +
             " WHERE (silverContentId = " + nSilverContentId + ")";
 
         // Execute the search
@@ -631,80 +488,6 @@ public class ContentManager implements Serializable {
     return contentInstanceId;
   }
 
-  private String extractComponentNameFromInstanceId(String instanceId) {
-    char character;
-    for (int i = 0; i < instanceId.length(); i++) {
-      character = instanceId.charAt(i);
-      if (character == '0' || character == '1' || character == '2' || character == '3' ||
-          character == '4' || character == '5' || character == '6' || character == '7' ||
-          character == '8' || character == '9') {
-
-        return instanceId.substring(0, i);
-      }
-    }
-    return instanceId;
-  }
-
-  private Map<String, String> getAsso() {
-    return assoComponentIdInstanceId;
-  }
-
-  private String getInstanceId(String componentId) {
-    return getAsso().get(componentId);
-  }
-
-  private void addAsso(String componentId, int instanceId) {
-    getAsso().put(componentId, java.lang.Integer.toString(instanceId));
-  }
-
-  private void removeAsso(String componentId) {
-    getAsso().remove(componentId);
-  }
-
-  // Load the cache instanceId-componentId
-  private static Map<String, String> loadAsso(Connection connection)
-      throws ContentManagerException {
-    boolean bCloseConnection = false;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
-    Map<String, String> tempAsso = new HashMap<>();
-    try {
-      if (connection == null) {
-        // Open connection
-        connection = DBUtil.openConnection();
-        bCloseConnection = true;
-      }
-
-      // Get the instanceId
-      String sSQLStatement = "SELECT instanceId, componentId FROM " + m_sInstanceTable;
-
-      // Execute the insertion
-
-      prepStmt = connection.prepareStatement(sSQLStatement);
-      resSet = prepStmt.executeQuery();
-
-      // Fetch the results
-      while (resSet.next()) {
-        tempAsso.put(resSet.getString(2), String.valueOf(resSet.getInt(1)));
-      }
-    } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.loadAsso", SilverpeasException.ERROR,
-          "contentManager.EX_CANT_LOAD_ASSO_CACHE", "", e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      try {
-        if (bCloseConnection && connection != null) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace
-            .error("contentManager", "ContentManager.loadAsso", "root.EX_CONNECTION_CLOSE_FAILED",
-                "", e);
-      }
-    }
-    return tempAsso;
-  }
-
   public JoinStatement getPositionsByGenericSearch(String authorId, String afterDate,
       String beforeDate) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
@@ -712,14 +495,14 @@ public class ContentManager implements Serializable {
     JoinStatement joinStatement = new JoinStatement();
     List<String> alGivenTables = new ArrayList<>();
     List<String> alGivenKeys = new ArrayList<>();
-    alGivenTables.add(m_sSilverContentTable);
+    alGivenTables.add(SILVER_CONTENT_TABLE);
     alGivenKeys.add("silverContentId");
 
     joinStatement.setTables(alGivenTables);
     joinStatement.setJoinKeys(alGivenKeys);
 
     // works on the author
-    if (authorId != null && !authorId.equals("")) {
+    if (authorId != null && !"".equals(authorId)) {
       sSQLStatement.append(" CMC.authorId = ").append(authorId);
     }
 
@@ -752,7 +535,6 @@ public class ContentManager implements Serializable {
   public List<String> getInstanceId(List<Integer> alSilverContentId)
       throws ContentManagerException {
     Connection connection = null;
-    StringBuffer sSQLStatement = new StringBuffer();
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     List<String> alInstanceIds = new ArrayList<>();
@@ -760,21 +542,17 @@ public class ContentManager implements Serializable {
       // Open connection
       connection = DBUtil.openConnection();
 
-      sSQLStatement.append("select I.componentId from ").append(m_sInstanceTable).append(" I, ").
-          append(m_sSilverContentTable).append(" C ");
-      sSQLStatement.append(" where I.instanceId = C.contentInstanceId ");
-      sSQLStatement.append(" and C.silverContentId = ?");
+      String sSQLStatement =
+          "select I.componentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE + " C " +
+              " where I.instanceId = C.contentInstanceId " + " and C.silverContentId = ?";
 
       // Execute the search
-      prepStmt = connection.prepareStatement(sSQLStatement.toString());
+      prepStmt = connection.prepareStatement(sSQLStatement);
 
       // Loop on the alSilverContentId
       String instanceId = "";
       for (Integer oneSilverContentId : alSilverContentId) {
         prepStmt.setInt(1, oneSilverContentId);
-        SilverTrace
-            .info("contentManager", "ContentManager.getInstanceId", "root.MSG_GEN_PARAM_VALUE",
-                "sSQLStatement= " + sSQLStatement + " silverContentId=" + oneSilverContentId);
         resSet = prepStmt.executeQuery();
         if (resSet.next()) {
           instanceId = resSet.getString(1);
@@ -814,7 +592,7 @@ public class ContentManager implements Serializable {
       con = DBUtil.openConnection();
 
       String sSQLStatement =
-          "select C.silverContentId from " + m_sInstanceTable + " I, " + m_sSilverContentTable +
+          "select C.silverContentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE +
               " C ";
       sSQLStatement += " where I.instanceId = C.contentInstanceId ";
       sSQLStatement += " and I.componentId like ? ";
@@ -841,7 +619,7 @@ public class ContentManager implements Serializable {
   }
 
   public void updateSilverContentVisibilityAttributes(SilverContentVisibility scv,
-      String instanceId, int silverObjectId) throws ContentManagerException {
+      int silverObjectId) throws ContentManagerException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     try {
@@ -850,14 +628,12 @@ public class ContentManager implements Serializable {
         con = DBUtil.openConnection();
 
         // update the silverContent
-        StringBuffer sSQLStatement = new StringBuffer();
-        sSQLStatement.append("UPDATE ").append(m_sSilverContentTable);
-        sSQLStatement.append(" SET beginDate = ? , endDate = ? , isVisible = ? ");
-        sSQLStatement.append(" WHERE silverContentId = ").append(silverObjectId);
+        String sSQLStatement =
+            "UPDATE " + SILVER_CONTENT_TABLE + " SET beginDate = ? , endDate = ? , isVisible = ? " +
+                " WHERE silverContentId = " + silverObjectId;
 
         // Execute the update
-
-        prepStmt = con.prepareStatement(sSQLStatement.toString());
+        prepStmt = con.prepareStatement(sSQLStatement);
 
         prepStmt.setString(1, scv.getBeginDate());
         prepStmt.setString(2, scv.getEndDate());
@@ -876,22 +652,18 @@ public class ContentManager implements Serializable {
   public SilverContentVisibility getSilverContentVisibility(int silverObjectId)
       throws ContentManagerException {
     Connection connection = null;
-    StringBuffer sSQLStatement = new StringBuffer();
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     SilverContentVisibility scv = null;
 
+    // Get the SilverContentVisibility
+    String sSQLStatement = "SELECT beginDate, endDate, isVisible FROM " + SILVER_CONTENT_TABLE +
+        " WHERE silverContentId = '" + silverObjectId + "'";
     try {
       // Open connection
       connection = DBUtil.openConnection();
 
-      // Get the SilverContentVisibility
-      sSQLStatement.append("SELECT beginDate, endDate, isVisible FROM ")
-          .append(m_sSilverContentTable);
-      sSQLStatement.append(" WHERE silverContentId = '").append(silverObjectId).append("'");
-
-
-      prepStmt = connection.prepareStatement(sSQLStatement.toString());
+      prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
       // Fetch the result
@@ -917,6 +689,192 @@ public class ContentManager implements Serializable {
   }
 
   private ContentManager() {
+    // -------------------------------------------------
+    // We don't have enough time to do the parsing !!!
+    // We hard coded for this time !!!!
+    // -------------------------------------------------
 
+    // Put all the existing contents in the array of contents
+    s_acContentPeas.add(new ContentPeas("whitePages"));
+    s_acContentPeas.add(new ContentPeas("questionReply"));
+    s_acContentPeas.add(new ContentPeas("kmelia"));
+    s_acContentPeas.add(new ContentPeas("survey"));
+    s_acContentPeas.add(new ContentPeas("toolbox"));
+    s_acContentPeas.add(new ContentPeas("quickinfo"));
+    s_acContentPeas.add(new ContentPeas("almanach"));
+    s_acContentPeas.add(new ContentPeas("quizz"));
+    s_acContentPeas.add(new ContentPeas("forums"));
+    s_acContentPeas.add(new ContentPeas("pollingStation"));
+    s_acContentPeas.add(new ContentPeas("bookmark"));
+    s_acContentPeas.add(new ContentPeas("infoLetter"));
+    s_acContentPeas.add(new ContentPeas("webSites"));
+    s_acContentPeas.add(new ContentPeas("gallery"));
+    s_acContentPeas.add(new ContentPeas("blog"));
+
+    try {
+      mapBetweenComponentIdAndInstanceId = new HashMap<>(loadMapping(null));
+    } catch (ContentManagerException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
+  private String extractComponentNameFromInstanceId(String instanceId) {
+    char character;
+    for (int i = 0; i < instanceId.length(); i++) {
+      character = instanceId.charAt(i);
+      if (character == '0' || character == '1' || character == '2' || character == '3' ||
+          character == '4' || character == '5' || character == '6' || character == '7' ||
+          character == '8' || character == '9') {
+
+        return instanceId.substring(0, i);
+      }
+    }
+    return instanceId;
+  }
+
+  private Map<String, String> getMapping() {
+    return mapBetweenComponentIdAndInstanceId;
+  }
+
+  private String getInstanceId(String componentId) {
+    return getMapping().get(componentId);
+  }
+
+  private void addMapping(String componentId, int instanceId) {
+    getMapping().put(componentId, java.lang.Integer.toString(instanceId));
+  }
+
+  private void removeMapping(String componentId) {
+    getMapping().remove(componentId);
+  }
+
+  // Load the cache instanceId-componentId
+  private Map<String, String> loadMapping(Connection connection) throws ContentManagerException {
+    boolean bCloseConnection = false;
+    PreparedStatement prepStmt = null;
+    ResultSet resSet = null;
+    Map<String, String> tempAsso = new HashMap<>();
+    Connection conn = connection;
+    try {
+      if (conn == null) {
+        // Open connection
+        conn = DBUtil.openConnection();
+        bCloseConnection = true;
+      }
+
+      // Get the instanceId
+      String sSQLStatement = "SELECT instanceId, componentId FROM " + INSTANCE_TABLE;
+
+      // Execute the insertion
+
+      prepStmt = conn.prepareStatement(sSQLStatement);
+      resSet = prepStmt.executeQuery();
+
+      // Fetch the results
+      while (resSet.next()) {
+        tempAsso.put(resSet.getString(2), String.valueOf(resSet.getInt(1)));
+      }
+    } catch (Exception e) {
+      throw new ContentManagerException("ContentManager.loadMapping", SilverpeasException.ERROR,
+          "contentManager.EX_CANT_LOAD_ASSO_CACHE", "", e);
+    } finally {
+      DBUtil.close(resSet, prepStmt);
+      try {
+        if (bCloseConnection && conn != null) {
+          conn.close();
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+    }
+    return tempAsso;
+  }
+
+  private void deleteMappingInDS(PreparedStatement deletion, String... parameters)
+      throws SQLException {
+    for (int i = 0; i < parameters.length; i++) {
+      deletion.setString(i+1, parameters[i]);
+    }
+    deletion.execute();
+  }
+
+  // Return the Content type corresponding to the given componentId
+  private String getContentType(String componentId) throws ContentManagerException {
+    // Build the SQL statement
+    String sSQLStatement =
+        "SELECT contentType FROM " + INSTANCE_TABLE + " WHERE (componentId = '" + componentId +
+            "')";
+    // Get the contentType from the DB Query
+    return this.getFirstStringValue(sSQLStatement);
+  }
+
+  private void checkParameters(String sComponentId, String sContainerType, String sContentType)
+      throws ContentManagerException {
+    // Check if the given componentId is not null
+    final String module = "ContentManager.checkParameters";
+    if (sComponentId == null) {
+      throw new ContentManagerException(module, SilverpeasException.ERROR,
+          "contentManager.EX_COMPONENTID_NULL");
+    }
+
+    // Check if the given componentId is not empty
+    if (sComponentId.length() == 0) {
+      throw new ContentManagerException(module, SilverpeasException.ERROR,
+          "contentManager.EX_COMPONENTID_EMPTY");
+    }
+
+    // Check if the given containerType is not null
+    if (sContainerType == null) {
+      throw new ContentManagerException(module, SilverpeasException.ERROR,
+          "contentManager.EX_CONTAINERTYPE_NULL");
+    }
+
+    // Check if the given containerType is not empty
+    if (sContainerType.length() == 0) {
+      throw new ContentManagerException(module, SilverpeasException.ERROR,
+          "contentManager.EX_CONTAINERTYPE_EMPTY");
+    }
+
+    // Check if the given contentType is not null
+    if (sContentType == null) {
+      throw new ContentManagerException(module, SilverpeasException.ERROR,
+          "contentManager.EX_CONTENTTYPE_NULL");
+    }
+
+    // Check if the given contentType is not empty
+    if (sContentType.length() == 0) {
+      throw new ContentManagerException(module, SilverpeasException.ERROR,
+          "contentManager.EX_CONTENTTYPE_EMPTY");
+    }
+  }
+
+  private String getFirstStringValue(String sSQLStatement) throws ContentManagerException {
+    Connection connection = null;
+    PreparedStatement prepStmt = null;
+    ResultSet resSet = null;
+    try {
+      String sValue = null;
+
+      // Open connection
+      connection = DBUtil.openConnection();
+
+      // Execute the query
+      prepStmt = connection.prepareStatement(sSQLStatement);
+      resSet = prepStmt.executeQuery();
+
+      // Fetch the result
+      while (resSet.next() && sValue == null) {
+        sValue = resSet.getString(1);
+      }
+
+      return sValue;
+    } catch (Exception e) {
+      throw new ContentManagerException("ContentManager.getFirstStringValue",
+          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
+          "sSQLStatement: " + sSQLStatement, e);
+    } finally {
+      DBUtil.close(resSet, prepStmt);
+      closeConnection(connection);
+    }
   }
 }

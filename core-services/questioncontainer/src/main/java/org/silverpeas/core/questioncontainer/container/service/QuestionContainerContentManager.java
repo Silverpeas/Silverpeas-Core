@@ -78,8 +78,7 @@ public class QuestionContainerContentManager {
       SilverContentVisibility scv = new SilverContentVisibility(isVisible);
       setDateAttributes(scv, qC.getBeginDate(), qC.getEndDate());
       getContentManager()
-          .updateSilverContentVisibilityAttributes(scv, qC.getPK().getComponentName(),
-              silverContentId);
+          .updateSilverContentVisibilityAttributes(scv, silverContentId);
       ClassifyEngine.clearCache();
     } else {
       createSilverContent(null, qC, qC.getCreatorId(), isVisible);
