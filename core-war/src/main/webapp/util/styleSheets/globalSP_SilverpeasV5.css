@@ -645,6 +645,10 @@ Style Utilise par le ViewGenerator
   display: none;
 }
 
+.sp-layout-part-on-foreground {
+  z-index:3000;
+}
+
 /****************************************/
 /****************TopBar ****************/
 /****************************************/

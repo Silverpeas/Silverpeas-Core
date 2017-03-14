@@ -255,11 +255,17 @@
       $window.MyMain.location.href = url;
       return promise;
     },
+    forceOnBackground : function() {
+      this.getContainer().style.zIndex = -1;
+    },
+    unforceOnBackground : function() {
+      this.getContainer().style.zIndex = '';
+    },
     setOnForeground : function() {
-      this.getContainer().style.zIndex = 3000;
+      this.getContainer().classList.add('sp-layout-part-on-foreground');
     },
     setOnBackground : function() {
-      this.getContainer().style.zIndex = '';
+      this.getContainer().classList.remove('sp-layout-part-on-foreground');
     }
   });
 

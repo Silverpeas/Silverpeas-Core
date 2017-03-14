@@ -104,7 +104,7 @@
 
       // Please take a look to the Silverpeas Popup Plugin
       if ($window.spLayout) {
-        spLayout.getBody().getContent().setOnBackground();
+        spLayout.getBody().getContent().forceOnBackground();
       }
 
       var popup = $window.jQuery(__getContainer());
@@ -119,6 +119,10 @@
         close : function() {
           // Clean up
           popup.dialog('destroy');
+          // Please take a look to the Silverpeas Popup Plugin
+          if ($window.spLayout) {
+            spLayout.getBody().getContent().unforceOnBackground();
+          }
         },
         open : function(event, ui) {
           $window.jQuery(".ui-dialog-titlebar-close", popup).hide();

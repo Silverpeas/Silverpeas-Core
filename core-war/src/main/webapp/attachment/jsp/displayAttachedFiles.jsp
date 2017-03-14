@@ -977,8 +977,8 @@
           },
           <c:if test="${_isI18nHandled && not isVersionActive}">
           '<fmt:message key="attachment.dialog.delete.lang"/>' : function() {
-            if (confirm('<fmt:message key="attachment.suppressionConfirmation" />')) {
-              var $this = $(this);
+            var $this = $(this);
+            jQuery.popup.confirm('<fmt:message key="attachment.suppressionConfirmation" />', function() {
               $.progressMessage();
               $.ajax({
                 url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
@@ -993,7 +993,7 @@
                 }
               });
               $this.dialog("close");
-            }
+            });
           },
           </c:if>
           '<fmt:message key="GML.cancel"/>' : function() {
