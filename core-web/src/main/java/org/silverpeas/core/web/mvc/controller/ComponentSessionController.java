@@ -95,7 +95,11 @@ public interface ComponentSessionController {
    */
   SilverpeasRole getHighestSilverpeasUserRole();
 
-  /** Return the name of the user's roles */
+  /**
+   * The names of user roles.
+   * @return array of user role name.
+   * @deprecated use instead {@link #getSilverpeasUserRoles()}.
+   */
   @Deprecated
   String[] getUserRoles();
 

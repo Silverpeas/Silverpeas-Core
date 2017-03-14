@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import javax.inject.Inject;
@@ -40,7 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * Servlet that verifies especially the user is authenticated. User: Yohann Chastagnier Date:
@@ -73,17 +74,13 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
       } else {
 
         // Verify that the user can login
-        try {
-          AuthenticationUserVerifierFactory
-              .getUserCanLoginVerifier(mainSessionCtrl.getCurrentUserDetail()).verify();
-        } catch (AuthenticationException e) {
-          throwUserSessionExpiration();
-        }
+        verifyUserAuthentication(mainSessionCtrl);
 
         // Perform the request
         super.service(request, response);
       }
     } catch (UserSessionExpirationException uste) {
+      SilverLogger.getLogger(this).debug(uste.getMessage(), uste);
 
       /*
        The session doesn't contains an authenticated user :
@@ -92,14 +89,27 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
        */
       // Logging
       if (session != null) {
-        SilverTrace.warn("peasCore", "SilverpeasAuthenticatedHttpServlet.service",
-            "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
+        SilverLogger.getLogger(this).warn("NewSessionId={0}", session.getId());
         // Thoroughly clean the session
         silverpeasSessionOpener.closeSession(session);
       }
       // Redirecting the user
       redirectOrForwardService(request, response,
           ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+    }
+  }
+
+  /**
+   * Verifies the user authnetication rules.
+   * @param mainSessionCtrl the main session controller.
+   */
+  private void verifyUserAuthentication(final MainSessionController mainSessionCtrl) {
+    try {
+      AuthenticationUserVerifierFactory
+          .getUserCanLoginVerifier(mainSessionCtrl.getCurrentUserDetail()).verify();
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
+      throwUserSessionExpiration();
     }
   }
 

@@ -181,7 +181,7 @@ public class SilverpeasSessionOpener {
    * @return the URL of an error page.
    */
   protected String getErrorPageUrl(HttpRequest request, String authKey) {
-    SilverLogger.getLogger(this).error("Not user found with the authentication key {0}", authKey);
+    SilverLogger.getLogger(this).error("No user found with the authentication key {0}", authKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
     if (absoluteUrl.charAt(absoluteUrl.length() - 1) != '/') {
       absoluteUrl.append('/');
@@ -239,20 +239,7 @@ public class SilverpeasSessionOpener {
     }
 
     // checks authentication hooks
-    String alternativeURL = null;
-    for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
-        .getListeners()) {
-      String url = listener
-          .firstHomepageAccessAfterAuthentication(request, controller.getCurrentUserDetail(),
-              absoluteUrl.toString());
-      if (StringUtil.isDefined(url)) {
-        alternativeURL = url;
-      }
-    }
-    if (StringUtil.isDefined(alternativeURL)) {
-      return absoluteBaseURL + alternativeURL;
-    }
-    return absoluteUrl.toString();
+    return performUserAuthenticationListener(request, controller, absoluteBaseURL, absoluteUrl);
   }
 
   /**
@@ -306,6 +293,34 @@ public class SilverpeasSessionOpener {
     notifMetaData.setSender(fromUserId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
     sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+  }
+
+  /**
+   * Performs all the registered {@link UserAuthenticationListener} instances which some could
+   * compute and return an alternative URL.
+   * @param request the current request.
+   * @param controller the main controller instance.
+   * @param absoluteBaseURL the absolute base URL of the request.
+   * @param absoluteUrl the url computed from absoluteBaseURL.
+   * @return the given absoluteUrl or an alternative one.
+   */
+  private String performUserAuthenticationListener(final HttpRequest request,
+      final MainSessionController controller, final String absoluteBaseURL,
+      final StringBuilder absoluteUrl) {
+    String alternativeURL = null;
+    for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
+        .getListeners()) {
+      String url = listener
+          .firstHomepageAccessAfterAuthentication(request, controller.getCurrentUserDetail(),
+              absoluteUrl.toString());
+      if (StringUtil.isDefined(url)) {
+        alternativeURL = url;
+      }
+    }
+    if (StringUtil.isDefined(alternativeURL)) {
+      return absoluteBaseURL + alternativeURL;
+    }
+    return absoluteUrl.toString();
   }
 
   public static SilverpeasSessionOpener getInstance() {
