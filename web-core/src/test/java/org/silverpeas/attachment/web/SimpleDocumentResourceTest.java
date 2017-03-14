@@ -197,7 +197,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
   }
 
   @Test
-  public void testUpdateDocumentWithContent() {
+  public void testUpdateDocumentWithContentOnNewLanguage() {
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
         "18", 10, false, new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
@@ -228,7 +228,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
   }
 
   @Test
-  public void testUpdateDocumentWithoutContent() {
+  public void testUpdateDocumentWithoutContentOnNewLanguage() {
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
         "18", 10, false, new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
@@ -242,14 +242,15 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.field("fileTitle", "Upload test");
     form.field("fileDescription", "This test is trying to simulate the update of a content");
     WebResource webResource = resource();
-    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
-        .header(HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(
-        MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
-    assertThat(result, is(notNullValue()));
-    assertThat(result.getTitle(), is("Upload test"));
-    assertThat(result.getDescription(),
-        is("This test is trying to simulate the update of a content"));
-    assertThat(result.getLang(), is("en"));
+    try {
+      webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
+          .header(HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE)
+          .type(MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
+    } catch (final UniformInterfaceException ex) {
+      final int receivedStatus = ex.getResponse().getStatus();
+      final int preconditionFailed = Status.PRECONDITION_FAILED.getStatusCode();
+      assertThat(receivedStatus, is(preconditionFailed));
+    }
   }
 
   @Test
