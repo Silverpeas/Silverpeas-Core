@@ -61,7 +61,7 @@ public class ChatUserAuthenticationListener implements UserAuthenticationListene
         try {
           chatUsersRegistration.registerUser(currentUser);
         } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage());
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
           chatServiceEnabled = false;
         }
       }

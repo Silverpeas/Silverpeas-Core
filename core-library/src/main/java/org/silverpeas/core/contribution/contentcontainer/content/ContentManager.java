@@ -56,7 +56,7 @@ public class ContentManager implements Serializable {
   private static final String INSTANCE_TABLE = "SB_ContentManager_Instance";
   private static final String SILVER_CONTENT_TABLE = "SB_ContentManager_Content";
 
-  private final List<ContentPeas> s_acContentPeas = new ArrayList<>();
+  private final List<ContentPeas> acContentPeas = new ArrayList<>();
   // Container peas
   private Map<String, String> mapBetweenComponentIdAndInstanceId = null;
   // Association SilverContentId (the key) internalContentId (the value) (cache)
@@ -202,7 +202,7 @@ public class ContentManager implements Serializable {
 
 
     // Get the ContentPeas from the ContentType
-    for (ContentPeas s_acContentPea : s_acContentPeas) {
+    for (ContentPeas s_acContentPea : acContentPeas) {
 
       if (s_acContentPea.getType().equals(sContentType)) {
 
@@ -695,21 +695,21 @@ public class ContentManager implements Serializable {
     // -------------------------------------------------
 
     // Put all the existing contents in the array of contents
-    s_acContentPeas.add(new ContentPeas("whitePages"));
-    s_acContentPeas.add(new ContentPeas("questionReply"));
-    s_acContentPeas.add(new ContentPeas("kmelia"));
-    s_acContentPeas.add(new ContentPeas("survey"));
-    s_acContentPeas.add(new ContentPeas("toolbox"));
-    s_acContentPeas.add(new ContentPeas("quickinfo"));
-    s_acContentPeas.add(new ContentPeas("almanach"));
-    s_acContentPeas.add(new ContentPeas("quizz"));
-    s_acContentPeas.add(new ContentPeas("forums"));
-    s_acContentPeas.add(new ContentPeas("pollingStation"));
-    s_acContentPeas.add(new ContentPeas("bookmark"));
-    s_acContentPeas.add(new ContentPeas("infoLetter"));
-    s_acContentPeas.add(new ContentPeas("webSites"));
-    s_acContentPeas.add(new ContentPeas("gallery"));
-    s_acContentPeas.add(new ContentPeas("blog"));
+    acContentPeas.add(new ContentPeas("whitePages"));
+    acContentPeas.add(new ContentPeas("questionReply"));
+    acContentPeas.add(new ContentPeas("kmelia"));
+    acContentPeas.add(new ContentPeas("survey"));
+    acContentPeas.add(new ContentPeas("toolbox"));
+    acContentPeas.add(new ContentPeas("quickinfo"));
+    acContentPeas.add(new ContentPeas("almanach"));
+    acContentPeas.add(new ContentPeas("quizz"));
+    acContentPeas.add(new ContentPeas("forums"));
+    acContentPeas.add(new ContentPeas("pollingStation"));
+    acContentPeas.add(new ContentPeas("bookmark"));
+    acContentPeas.add(new ContentPeas("infoLetter"));
+    acContentPeas.add(new ContentPeas("webSites"));
+    acContentPeas.add(new ContentPeas("gallery"));
+    acContentPeas.add(new ContentPeas("blog"));
 
     try {
       mapBetweenComponentIdAndInstanceId = new HashMap<>(loadMapping(null));

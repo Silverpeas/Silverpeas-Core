@@ -20,12 +20,6 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -38,14 +32,19 @@ import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.service.Clipboard;
 import org.silverpeas.core.clipboard.service.MainClipboard;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcSettings;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
@@ -53,8 +52,10 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
 /*
@@ -75,10 +76,9 @@ public class MainSessionController implements Clipboard, SessionCloseable {
   private String userId = null;
   private OrganizationController organizationController = null;
   private String userLanguage = null;
-  private ContentManager contentManager = null;
   private Selection selection = null;
   private String userSpace = null;
-  private AlertUser m_alertUser = null;
+  private AlertUser alertUser = null;
   private String serverName = null;
   private String serverPort = null;
   private SubscriptionContext subscriptionContext = null;
@@ -101,22 +101,20 @@ public class MainSessionController implements Clipboard, SessionCloseable {
   }
 
   public boolean isSpaceInMaintenance(String spaceId) {
-    spaceId = checkSpaceId(spaceId);
-    boolean inMaintenance = spacesInMaintenance.contains(spaceId);
-
-    return inMaintenance;
+    String checkedSpaceId = checkSpaceId(spaceId);
+    return spacesInMaintenance.contains(checkedSpaceId);
   }
 
   public void setSpaceModeMaintenance(String spaceId, boolean mode) {
-    spaceId = checkSpaceId(spaceId);
+    String checkedSpaceId = checkSpaceId(spaceId);
 
     if (mode) {
-      if (!spacesInMaintenance.contains(spaceId)) {
-        spacesInMaintenance.add(spaceId);
+      if (!spacesInMaintenance.contains(checkedSpaceId)) {
+        spacesInMaintenance.add(checkedSpaceId);
       }
     } else {
-      if (spacesInMaintenance.contains(spaceId)) {
-        spacesInMaintenance.remove(spacesInMaintenance.indexOf(spaceId));
+      if (spacesInMaintenance.contains(checkedSpaceId)) {
+        spacesInMaintenance.remove(spacesInMaintenance.indexOf(checkedSpaceId));
       }
     }
   }
@@ -140,15 +138,14 @@ public class MainSessionController implements Clipboard, SessionCloseable {
   }
 
   /**
-   * Creates new MainSessionController
+   * Creates a new instance of {@link MainSessionController} related to the user which has just
+   * connected to Silverpeas.
+   * @param authenticationKey the authentication key of the user.
+   * @param httpSession the http session.
+   * @throws PeasCoreException if the user session is not open.
    */
-  /**
-   * Return an exception if the user is not openSession
-   */
-  /**
-   * parameter authenticationKey replaced by sUserId
-   */
-  public MainSessionController(String authenticationKey, HttpSession httpSession) throws Exception {
+  public MainSessionController(String authenticationKey, HttpSession httpSession)
+      throws PeasCoreException {
     try {
       this.httpSession = httpSession;
       this.sessionId = httpSession.getId();
@@ -201,10 +198,10 @@ public class MainSessionController implements Clipboard, SessionCloseable {
 
   // ------------------- AlertUser Functions -----------------------------
   public AlertUser getAlertUser() {
-    if (m_alertUser == null) {
-      m_alertUser = new AlertUser();
+    if (alertUser == null) {
+      alertUser = new AlertUser();
     }
-    return m_alertUser;
+    return alertUser;
   }
 
   /**
@@ -297,9 +294,7 @@ public class MainSessionController implements Clipboard, SessionCloseable {
     try {
       return getAdminService().getUserDetail(this.getUserId());
     } catch (Exception e) {
-      SilverTrace.error("peasCore",
-          "MainSessionController.getCurrentUserDetail",
-          "peasCore.EX_CANT_GET_USER_DETAIL", "userId=" + getUserId(), e);
+      SilverLogger.getLogger(this).error(failureOnGetting("user", getUserId()), e);
       return null;
     }
   }
@@ -332,10 +327,8 @@ public class MainSessionController implements Clipboard, SessionCloseable {
     try {
       return getAdminService().getAvailCompoIds(getUserId());
     } catch (Exception e) {
-      SilverTrace.error("peasCore",
-          "MainSessionController.getUserAvailComponentIds",
-          "admin.MSG_ERR_GET_SPACE", e);
-      return null;
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new String[0];
     }
   }
 
@@ -347,10 +340,8 @@ public class MainSessionController implements Clipboard, SessionCloseable {
     try {
       return getAdminService().getClientSpaceIds(getAdminService().getUserSpaceIds(userId));
     } catch (Exception e) {
-      SilverTrace.error("peasCore",
-          "MainSessionController.getUserAvailSpaceIds",
-          "admin.MSG_ERR_GET_SPACE", e);
-      return null;
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new String[0];
     }
   }
 
@@ -360,17 +351,15 @@ public class MainSessionController implements Clipboard, SessionCloseable {
   public String[] getUserManageableSpaceIds() {
     try {
       UserDetail user = getAdminService().getUserDetail(userId);
-      if (user.isAccessAdmin() || userId.equals("0")) {
+      if (user.isAccessAdmin() || "0".equals(userId)) {
         return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
         return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(
             userId));
       }
     } catch (Exception e) {
-      SilverTrace.error("peasCore",
-          "MainSessionController.getUserManageableSpaceIds",
-          "admin.MSG_ERR_GET_SPACE", e);
-      return null;
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new String[0];
     }
   }
 
@@ -389,8 +378,7 @@ public class MainSessionController implements Clipboard, SessionCloseable {
       // First, check if user is directly manager of a part of PDC
       return getPdcManager().isUserManager(userId);
     } catch (PdcException e) {
-      SilverTrace.error("peasCore", "MainSessionController.isPDCBackOfficeVisible",
-          "admin.MSG_ERR_GET_PDC_VISIBILITY", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
 
     return false;
@@ -408,10 +396,8 @@ public class MainSessionController implements Clipboard, SessionCloseable {
     try {
       return getAdminService().getUserManageableGroupIds(userId);
     } catch (Exception e) {
-      SilverTrace.error("peasCore",
-          "MainSessionController.getUserManageableGroupIds",
-          "admin.MSG_ERR_GET_GROUP", e);
-      return null;
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return Collections.emptyList();
     }
   }
 
@@ -436,8 +422,6 @@ public class MainSessionController implements Clipboard, SessionCloseable {
         String sCurCompoLabel;
         ComponentInst componentInst = getAdminService().getComponentInst(sComponent);
 
-        // if (componentInst.getLabel() != null &&
-        // componentInst.getLabel().length() != 0)
         sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
         newInfos.setCurrentComponentId(sComponent);
         newInfos.setCurrentComponentName(componentInst.getName());
@@ -446,10 +430,9 @@ public class MainSessionController implements Clipboard, SessionCloseable {
             componentInst));
       }
     } catch (Exception e) {
-      SilverTrace.error("peasCore",
-          "MainSessionController.createComponentContext",
-          "peasCore.EX_CANT_CREATE_COMPONENT_CONTEXT", "sSpaceId=" + sSpaceId
-          + " | sComponent=" + sComponent, e);
+      SilverLogger.getLogger(this)
+          .error("can not create component context with spaceId={0} and componentId={1}",
+              new String[]{sSpaceId, sComponent}, e);
     }
     return newInfos;
   }
@@ -500,56 +483,47 @@ public class MainSessionController implements Clipboard, SessionCloseable {
 
   @Override
   public void add(ClipboardSelection clipObject) throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.add(clipObject);
+    getClipboard().add(clipObject);
   }
 
   @Override
   public ClipboardSelection getObject() {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getObject();
+    return getClipboard().getObject();
   }
 
   @Override
   public void PasteDone() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.PasteDone();
+    getClipboard().PasteDone();
   }
 
   @Override
   public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getSelectedObjects();
+    return getClipboard().getSelectedObjects();
   }
 
   @Override
   public Collection<ClipboardSelection> getObjects() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getObjects();
+    return getClipboard().getObjects();
   }
 
   @Override
   public int size() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.size();
+    return getClipboard().size();
   }
 
   @Override
   public ClipboardSelection getObject(int index) throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getObject(index);
+    return getClipboard().getObject(index);
   }
 
   @Override
   public void setSelected(int index, boolean setIt) throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.setSelected(index, setIt);
+    getClipboard().setSelected(index, setIt);
   }
 
   @Override
   public void removeObject(int index) throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.removeObject(index);
+    getClipboard().removeObject(index);
   }
 
   @Override
@@ -559,43 +533,36 @@ public class MainSessionController implements Clipboard, SessionCloseable {
 
   @Override
   public void clear() {
-    Clipboard clipboard = getClipboard();
-      clipboard.clear();
+    getClipboard().clear();
   }
 
   @Override
   public void setMultiClipboard() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.setMultiClipboard();
+    getClipboard().setMultiClipboard();
   }
 
   @Override
   public void setSingleClipboard() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.setSingleClipboard();
+    getClipboard().setSingleClipboard();
   }
 
   @Override
   public int getCount() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getCount();
+    return getClipboard().getCount();
   }
 
   @Override
   public String getMessageError() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getMessageError();
+    return getClipboard().getMessageError();
   }
 
   @Override
   public Exception getExceptionError() throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      return clipboard.getExceptionError();
+    return getClipboard().getExceptionError();
   }
 
   @Override
   public void setMessageError(String messageID, Exception e) throws ClipboardException {
-    Clipboard clipboard = getClipboard();
-      clipboard.setMessageError(messageID, e);
+    getClipboard().setMessageError(messageID, e);
   }
 }
