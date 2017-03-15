@@ -226,14 +226,10 @@ public class GenericRecordSet implements RecordSet, Serializable {
       WysiwygFCKFieldDisplayer.removeContents(foreignPK, getWYSIWYGFieldNames(record), language);
 
       // remove form documents registered into record but stored into JCR
-      List<String> attachmentIds = getFileFieldsValues(record);
-      for (String attachmentId : attachmentIds) {
-        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-            .searchDocumentById(new SimpleDocumentPK(attachmentId, recordTemplate.getInstanceId()),
-                null);
-        if (doc != null) {
-          AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc, false);
-        }
+      List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.form, language);
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc, false);
       }
 
       // remove data in database
@@ -288,26 +284,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
     return wysiwygFieldNames;
   }
-
-  private List<String> getFileFieldsValues(DataRecord data) {
-    List<String> fileFieldsValues = new ArrayList<String>();
-    if (data != null) {
-      String[] fieldNames = data.getFieldNames();
-      for (String fieldName : fieldNames) {
-        try {
-          Field field = data.getField(fieldName);
-          if (field != null && "file".equals(field.getTypeName())) {
-            fileFieldsValues.add(field.getStringValue());
-          }
-        } catch (FormException fe) {
-          SilverTrace
-              .error("form", "GenericRecordSet.getFileFieldsValues", "form.EXP_UNKNOWN_FIELD", fe);
-        }
-      }
-    }
-    return fileFieldsValues;
-  }
-
+  
   @Override
   public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
       throws FormException {
