@@ -57,4 +57,18 @@ public interface UserAuthenticationListener extends EventListener, Initializatio
    */
   String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,
       String finalURL);
+
+  /**
+   * This method is called just before redirecting the user to the home page, from the login
+   * access with an user session already opened.<br/>
+   * If it is necessary, the redirection can be overridden...
+   * @param request the current user request.
+   * @param user the current user.
+   * @param finalURL the initial URL of user redirection, just after a successful authentication.
+   * @return the overridden url redirection, or null if no override.
+   */
+  default String homepageAccessFromLoginWhenUserSessionAlreadyOpened(HttpServletRequest request,
+      User user, String finalURL) {
+    return null;
+  }
 }

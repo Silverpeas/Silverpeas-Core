@@ -20,32 +20,32 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
 import org.silverpeas.core.security.authentication.UserAuthenticationListenerRegistration;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
@@ -63,7 +63,7 @@ public class SilverpeasSessionOpener {
 
   private static final int HTTP_DEFAULT_PORT = 80;
 
-  protected SilverpeasSessionOpener() {
+  SilverpeasSessionOpener() {
   }
 
   /**
@@ -135,7 +135,7 @@ public class SilverpeasSessionOpener {
             StringUtil.getBooleanValue(allowPasswordChange));
       }
       // Put the main session controller in the session
-      return getHomePageUrl(request, redirectURL);
+      return getHomePageUrl(request, redirectURL, true);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Session opening failure!", e);
     }
@@ -180,13 +180,13 @@ public class SilverpeasSessionOpener {
    * unique to the user.
    * @return the URL of an error page.
    */
-  protected String getErrorPageUrl(HttpRequest request, String authKey) {
+  String getErrorPageUrl(HttpRequest request, String authKey) {
     SilverLogger.getLogger(this).error("No user found with the authentication key {0}", authKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
     if (absoluteUrl.charAt(absoluteUrl.length() - 1) != '/') {
       absoluteUrl.append('/');
     }
-    absoluteUrl.append("Login.jsp");
+    absoluteUrl.append("Login");
     return absoluteUrl.toString();
   }
 
@@ -196,9 +196,11 @@ public class SilverpeasSessionOpener {
    *
    * @param request the HTTP request asking a session opening.
    * @param redirectURL a redirection URL.
+   * @param isFirstSessionAccess
    * @return the URL of the user home page in Silverpeas.
    */
-  protected String getHomePageUrl(HttpRequest request, String redirectURL) {
+  String getHomePageUrl(HttpRequest request, String redirectURL,
+      final boolean isFirstSessionAccess) {
     String absoluteBaseURL = getAbsoluteUrl(request);
     StringBuilder absoluteUrl = new StringBuilder(absoluteBaseURL);
 
@@ -238,8 +240,8 @@ public class SilverpeasSessionOpener {
       absoluteUrl.append("/Main/").append(favoriteFrame);
     }
 
-    // checks authentication hooks
-    return performUserAuthenticationListener(request, controller, absoluteBaseURL, absoluteUrl);
+    return performUserAuthenticationListener(request, controller, absoluteUrl.toString(),
+        isFirstSessionAccess);
   }
 
   /**
@@ -248,7 +250,7 @@ public class SilverpeasSessionOpener {
    * @param request the HTTP request asking for a session opening.
    * @return an absolute URL from which the user home page will be computed.
    */
-  protected String getAbsoluteUrl(HttpRequest request) {
+  String getAbsoluteUrl(HttpRequest request) {
     StringBuilder absoluteUrl = new StringBuilder(256);
     if (request.isSecure()) {
       absoluteUrl.append("https://");
@@ -300,27 +302,33 @@ public class SilverpeasSessionOpener {
    * compute and return an alternative URL.
    * @param request the current request.
    * @param controller the main controller instance.
-   * @param absoluteBaseURL the absolute base URL of the request.
-   * @param absoluteUrl the url computed from absoluteBaseURL.
-   * @return the given absoluteUrl or an alternative one.
+   * @param homePageUrl the home page url.
+   * @param isFirstSessionAccess
+   * @return the given homePageUrl or an alternative one.
    */
   private String performUserAuthenticationListener(final HttpRequest request,
-      final MainSessionController controller, final String absoluteBaseURL,
-      final StringBuilder absoluteUrl) {
+      final MainSessionController controller, final String homePageUrl,
+      final boolean isFirstSessionAccess) {
     String alternativeURL = null;
     for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
         .getListeners()) {
-      String url = listener
-          .firstHomepageAccessAfterAuthentication(request, controller.getCurrentUserDetail(),
-              absoluteUrl.toString());
+      final String url;
+      if (isFirstSessionAccess) {
+        url = listener
+            .firstHomepageAccessAfterAuthentication(request, controller.getCurrentUserDetail(),
+                homePageUrl);
+      } else {
+        url = listener.homepageAccessFromLoginWhenUserSessionAlreadyOpened(request,
+            controller.getCurrentUserDetail(), homePageUrl);
+      }
       if (StringUtil.isDefined(url)) {
         alternativeURL = url;
       }
     }
     if (StringUtil.isDefined(alternativeURL)) {
-      return absoluteBaseURL + alternativeURL;
+      return getAbsoluteUrl(request) + alternativeURL;
     }
-    return absoluteUrl.toString();
+    return homePageUrl;
   }
 
   public static SilverpeasSessionOpener getInstance() {

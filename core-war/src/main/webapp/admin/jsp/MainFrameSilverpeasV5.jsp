@@ -59,7 +59,7 @@
   if (m_MainSessionCtrl == null) {
 %>
 <script type="text/javascript">
-  top.location = "../../Login.jsp";
+  top.location = '<c:url value="/Login"/>';
 </script>
 <%
 } else {

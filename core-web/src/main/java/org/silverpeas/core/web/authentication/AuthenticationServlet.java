@@ -39,12 +39,12 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -61,14 +61,14 @@ import java.util.Map;
  * behind the authentication ask is redirected to its user home page. Otherwise, he's redirected to
  * an authentication failure page (that can the login page enriched with an error message).
  */
-public class AuthenticationServlet extends HttpServlet {
+public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = -8695946617361150513L;
   private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
   private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
-  private static final String LOGIN_ERROR_PAGE = "/Login.jsp?ErrorCode=";
+  private static final String LOGIN_ERROR_PAGE = "/Login?ErrorCode=";
   private static final String COOKIE_PASSWORD = "svpPassword";
   private static int COOKIE_TIMELIFE = 31536000;
 
@@ -94,13 +94,20 @@ public class AuthenticationServlet extends HttpServlet {
   public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
       throws IOException, ServletException {
     HttpRequest request = HttpRequest.decorate(servletRequest);
+
+    final boolean existOpenedUserSession = existOpenedUserSession(servletRequest);
+    if (existOpenedUserSession) {
+      final HttpSession session = servletRequest.getSession(false);
+      silverpeasSessionOpener.closeSession(session);
+    }
+
     // get an existing session or creates a new one.
     HttpSession session = request.getSession();
 
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding(CharEncoding.UTF_8);
     }
-    if (request.isWithinAnonymousUserSession()) {
+    if (!existOpenedUserSession && request.isWithinAnonymousUserSession()) {
       session.invalidate();
     }
 
@@ -150,7 +157,7 @@ public class AuthenticationServlet extends HttpServlet {
       try {
         verifier.verify();
       } catch (AuthenticationUserMustAcceptTermsOfService authenticationUserMustAcceptTermsOfService) {
-        logger.error(authenticationUserMustAcceptTermsOfService.getMessage(),
+        logger.warn(authenticationUserMustAcceptTermsOfService.getMessage(),
             authenticationUserMustAcceptTermsOfService);
         forward(request, response, verifier.getDestination(request));
         return;
@@ -202,7 +209,7 @@ public class AuthenticationServlet extends HttpServlet {
                 .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN);
           }
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
-          logger.error(e.getMessage());
+          logger.error(e.getMessage(), e);
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
       } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(errorCode) ||
@@ -378,7 +385,7 @@ public class AuthenticationServlet extends HttpServlet {
     try {
       cookieValue = URLEncoder.encode(value, CharEncoding.UTF_8);
     } catch (UnsupportedEncodingException ex) {
-      logger.error(ex.getMessage());
+      logger.error(ex.getMessage(), ex);
       cookieValue = value;
     }
     Cookie cookie = new Cookie(name, cookieValue);

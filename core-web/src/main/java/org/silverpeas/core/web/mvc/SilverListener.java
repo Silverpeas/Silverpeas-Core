@@ -33,6 +33,7 @@ import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.session.HTTPSessionInfo;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -52,6 +53,7 @@ public class SilverListener
   // HttpSessionListener methods
   @Override
   public void sessionCreated(HttpSessionEvent event) {
+    // Nothing to do
   }
 
   @Override
@@ -62,10 +64,12 @@ public class SilverListener
   // ServletContextListener methods
   @Override
   public void contextDestroyed(ServletContextEvent event) {
+    // Nothing to do
   }
 
   @Override
   public void contextInitialized(ServletContextEvent event) {
+    // Nothing to do
   }
 
   @Override
@@ -88,6 +92,9 @@ public class SilverListener
       if (httpSession != null) {
         SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(httpSession.getId());
+        if (sessionInfo instanceof HTTPSessionInfo) {
+          ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
+        }
         if (sessionInfo.isDefined()) {
           ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
               .setCurrentSessionCache(sessionInfo.getCache());

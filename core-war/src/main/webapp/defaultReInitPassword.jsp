@@ -102,7 +102,7 @@
 
       <div class="submit">
         <p>
-          <a href="#" class="submit" onclick="location.href='<%=request.getContextPath()%>/Login.jsp'"><span><span>OK</span></span></a>
+          <a href="#" class="submit" onclick="location.href='<%=request.getContextPath()%>/Login'"><span><span>OK</span></span></a>
         </p>
       </div>
     </div>

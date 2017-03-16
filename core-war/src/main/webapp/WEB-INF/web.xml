@@ -205,6 +205,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </listener>
 
   <servlet>
+    <servlet-name>LoginDispatcher</servlet-name>
+    <servlet-class>org.silverpeas.core.web.authentication.LoginServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>
     <servlet-class>org.silverpeas.core.web.authentication.AuthenticationServlet</servlet-class>
   </servlet>
@@ -647,6 +651,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
 
   <servlet-mapping>
+    <servlet-name>LoginDispatcher</servlet-name>
+    <url-pattern>/Login</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
     <url-pattern>/AuthenticationServlet</url-pattern>
   </servlet-mapping>
@@ -1063,15 +1071,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
   <error-page>
     <exception-type>org.silverpeas.spnego.SpnegoGSSException</exception-type>
-    <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
+    <location>/Login?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>
     <exception-type>org.silverpeas.spnego.SpnegoUnsupportedOperationException</exception-type>
-    <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
+    <location>/Login?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>
     <exception-type>org.silverpeas.spnego.SpnegoUnauthenticatedException</exception-type>
-    <location>/Login.jsp?ErrorCode=Error_SsoNotAllowed</location>
+    <location>/Login?ErrorCode=Error_SsoNotAllowed</location>
   </error-page>
   <error-page>
     <error-code>401</error-code>

@@ -59,7 +59,6 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
-    // Gets the main session controller
     HttpSession session = request.getSession(false);
     try {
       // Gets the main session controller

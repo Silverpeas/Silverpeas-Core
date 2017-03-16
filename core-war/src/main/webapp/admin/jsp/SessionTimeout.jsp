@@ -34,7 +34,7 @@
 function gotoLogin()
 {
 	var errorCode = 3;
-  window.top.location.replace('<c:url value="/Login.jsp"/>?ErrorCode='+errorCode);
+  window.top.location.replace('<c:url value="/Login"/>?ErrorCode='+errorCode);
 }
 </script>
 </head>

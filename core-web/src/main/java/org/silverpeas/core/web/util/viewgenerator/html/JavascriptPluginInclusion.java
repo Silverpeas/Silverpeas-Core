@@ -486,6 +486,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includePassword(final ElementContainer xhtml) {
+    includePopup(xhtml);
     xhtml.addElement(link(stylesheetPath + STYLESHEET_PASSWORD));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PASSWORD));
     return xhtml;

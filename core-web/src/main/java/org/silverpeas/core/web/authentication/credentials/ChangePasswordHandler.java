@@ -26,8 +26,8 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,10 +53,9 @@ public class ChangePasswordHandler extends FunctionHandler {
       return "/AuthenticationServlet?Login=" + login + "&Password=" + password
           + "&DomainId=" + domainId;
     } catch (Exception e) {
-      // Error : go back to login page
-      SilverTrace.error("peasCore", "changePasswordHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "login=" + login);
-      return "/Login.jsp";
+      SilverLogger.getLogger(this)
+          .error("change password error with login {0}", new String[]{login}, e);
+      return "/Login";
     }
   }
 }
