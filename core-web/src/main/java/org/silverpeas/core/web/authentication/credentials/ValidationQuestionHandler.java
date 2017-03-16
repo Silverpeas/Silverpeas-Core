@@ -20,15 +20,15 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
+import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.core.security.encryption.cipher.CryptMD5;
-import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * Navigation case : user has validated login question form.
@@ -64,10 +64,8 @@ public class ValidationQuestionHandler extends FunctionHandler {
       }
       return sessionOpenener.openSession((HttpRequest) request, key);
     } catch (AdminException e) {
-      // Error : go back to login page
-      SilverTrace.error("peasCore", "validationQuestionHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", e);
-      return "/Login.jsp";
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return "/Login?ErrorCode=2";
     }
   }
 }

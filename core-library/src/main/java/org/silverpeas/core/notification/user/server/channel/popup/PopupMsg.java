@@ -22,22 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.notification.user.server.channel.server;
+package org.silverpeas.core.notification.user.server.channel.popup;
 
 /**
- * @author neysseri
+ * @author dblot
  */
-public class SilverMessage {
+public class PopupMsg {
 
   private String mWhat = null;
   private String mContent = null;
   private String mID = null;
+  private String mSenderId = null;
+  private String mSenderName = null;
+  private boolean mAnswerAllowed = false;
 
   /**
    * --------------------------------------------------------------------------
    * constructor
    */
-  public SilverMessage(String what, String content) {
+  public PopupMsg(String what, String content) {
     this.mWhat = what;
     this.mContent = content;
   }
@@ -46,17 +49,18 @@ public class SilverMessage {
    * --------------------------------------------------------------------------
    * constructor
    */
-  public SilverMessage(String what) {
+  public PopupMsg(String what) {
     this.mWhat = what;
     this.mContent = "";
   }
 
   /**
-   * -------------------------------------------------------------------------- getWhat return what
+   * getWhat
+   * @return what
    */
   public String getWhat() {
     return mWhat;
-  };
+  }
 
   /**
    * -------------------------------------------------------------------------- getContent return
@@ -64,7 +68,7 @@ public class SilverMessage {
    */
   public String getContent() {
     return mContent;
-  };
+  }
 
   /**
    * -------------------------------------------------------------------------- setContent set the
@@ -72,15 +76,15 @@ public class SilverMessage {
    */
   public void setContent(String content) {
     mContent = content;
-  };
+  }
 
   /**
    * -------------------------------------------------------------------------- setContent set the
    * ID
    */
-  public void setID(String ID) {
-    mID = ID;
-  };
+  public void setID(String id) {
+    mID = id;
+  }
 
   /**
    * -------------------------------------------------------------------------- setContent get the
@@ -88,6 +92,37 @@ public class SilverMessage {
    */
   public String getID() {
     return mID;
-  };
+  }
 
+  public String getSenderId() {
+    return mSenderId;
+  }
+
+  public void setSenderId(String senderId) {
+    mSenderId = senderId;
+  }
+
+  public String getSenderName() {
+    return mSenderName;
+  }
+
+  public void setSenderName(String senderName) {
+    mSenderName = senderName;
+  }
+
+  public boolean isAnswerAllowed() {
+    return mAnswerAllowed;
+  }
+
+  public void setAnswerAllowed(boolean answerAllowed) {
+    mAnswerAllowed = answerAllowed;
+  }
+
+  public void setDate(String date) {
+    // Nothing to do
+  }
+
+  public void setTime(String time) {
+    // Nothing to do
+  }
 }

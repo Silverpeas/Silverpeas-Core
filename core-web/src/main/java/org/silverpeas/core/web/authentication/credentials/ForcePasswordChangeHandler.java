@@ -24,9 +24,10 @@
 
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -46,10 +47,9 @@ public class ForcePasswordChangeHandler extends FunctionHandler {
       request.setAttribute("userDetail", ud);
       return getGeneral().getString("userLoginForcePasswordChangePage");
     } catch (AdminException e) {
-      // Error : go back to login page
-      SilverTrace.error("peasCore", "forcePasswordChangeHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
-      return "/Login.jsp";
+      SilverLogger.getLogger(this)
+          .error("force change password error with key {0}", new String[]{key}, e);
+      return "/Login?ErrorCode=2";
     }
   }
 }

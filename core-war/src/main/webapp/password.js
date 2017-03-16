@@ -46,22 +46,32 @@ function handlePasswordForm(params) {
   var $pwdInput = $('#' + settings.passwordInputId);
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
-    var errorMsg = "";
-    if ($pwdInput.val() === $('#oldPassword').val()) {
-      errorMsg += "- " + window.i18n.prop('authentication.password.newMustBeDifferentToOld') + "\n";
-    }
-    $pwdInput.password('verify', {onError: function() {
-        errorMsg += "- " + window.i18n.prop('authentication.password.error') + "\n";
-      }});
-    if ($pwdInput.val() !== $('#confirmPassword').val()) {
-      errorMsg += "- " + window.i18n.prop('authentication.password.different') + "\n";
-    }
-    if (errorMsg) {
-      jQuery.popup.error(errorMsg);
-      return false;
-    }
-    this.action = settings.passwordFormAction;
-    return true;
+    var errorMsg = [];
+    var _self = this;
+    var nonAjaxValidation = function() {
+      if ($pwdInput.val() === $('#oldPassword').val()) {
+        errorMsg.push(window.i18n.prop('authentication.password.newMustBeDifferentToOld'));
+      }
+      if ($pwdInput.val() !== $('#confirmPassword').val()) {
+        errorMsg.push(window.i18n.prop('authentication.password.different'));
+      }
+      if (errorMsg.length) {
+        jQuery.popup.error(errorMsg.join("\n"));
+      } else {
+        _self.action = settings.passwordFormAction;
+        _self.submit();
+      }
+    };
+    $pwdInput.password('verify', {
+      onSuccess: function() {
+        nonAjaxValidation();
+      },
+      onError: function() {
+        errorMsg.push(window.i18n.prop('authentication.password.error'));
+        nonAjaxValidation();
+      }
+    });
+    return false;
   });
 
   return true;

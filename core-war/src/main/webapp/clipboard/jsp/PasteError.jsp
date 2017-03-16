@@ -96,7 +96,7 @@ Frame cachee, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipbo
 	<a href="javascript:onClick=test()">test...</a>
 	</PRE>
 <%if (clipboardSC != null) {
-  out.println (clipboardSC.getHF_HTMLForm(request));
+  out.println (clipboardSC.getHTMLFormForHiddenFrame(request));
   }
 %>
 </body>

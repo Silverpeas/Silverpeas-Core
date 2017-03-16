@@ -23,17 +23,19 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationUserAccountBlockedException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 
 /**
@@ -60,15 +62,13 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
    * @return
    */
   public String getErrorDestination() {
-    String errorDest = "/Login.jsp?ErrorCode=";
+    String errorDest = "/Login?ErrorCode=";
 
     Domain[] tabDomains = null;
     try {
       tabDomains = Administration.get().getAllDomains();
     } catch (AdminException e) {
-      SilverTrace.error("authentication", "UserCanLoginVerifier.getErrorDestination()",
-          "authentication.EX_VERIFY_USER_CAN_LOGIN",
-          e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
 
     if (getUser() == null || StringUtil.isNotDefined(getUser().getId())) {

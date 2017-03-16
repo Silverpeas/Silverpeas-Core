@@ -27,7 +27,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
@@ -35,7 +34,8 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
+import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
+import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -84,8 +84,6 @@ public class SessionManager implements SessionManagement {
   private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
   // Local constants
   private static final String SESSION_MANAGER_JOB_NAME = "SessionManagerScheduler";
-  // Singleton implementation
-  //private static SessionManager myInstance = null;
   // Max session duration in ms
   private long userSessionTimeout = 600000; // 10mn
   private long adminSessionTimeout = 1200000; // 20mn
@@ -97,7 +95,6 @@ public class SessionManager implements SessionManagement {
   private final Map<String, SessionInfo> userDataSessions = new HashMap<>(100);
   // Contains the session when notified
   private final List<String> userNotificationSessions = new ArrayList<>(100);
-  private LocalizationBundle messages = null;
   @Inject
   private SilverStatisticsManager myStatisticsManager = null;
   @Inject
@@ -108,7 +105,7 @@ public class SessionManager implements SessionManagement {
   /**
    * Prevent the class from being instantiate (private)
    */
-  private SessionManager() {
+  protected SessionManager() {
   }
 
   /**
@@ -126,13 +123,7 @@ public class SessionManager implements SessionManagement {
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
-      String language = settings.getString("language", "");
-      if (!StringUtil.isDefined(language)) {
-        language = I18NHelper.defaultLanguage;
-      }
-      messages =
-          ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
-              language);
+
       scheduledSessionManagementTimeStamp = convertMinuteInMilliseconds(
           settings.getLong("scheduledSessionManagementTimeStamp"));
       userSessionTimeout = convertMinuteInMilliseconds(settings.getLong("userSessionTimeout"));
@@ -259,11 +250,10 @@ public class SessionManager implements SessionManagement {
    */
   private void removeInQueueMessages(String userId, String sessionId) {
     if (StringUtil.isDefined(sessionId)) {
-      SilverMessageFactory
-          .delAll(userId, sessionId);
+      ServerMessageService.get().deleteAll(userId, sessionId);
     }
     // Remove "end of session" messages
-    org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory.delAll(userId);
+    PopupMessageService.get().deleteAll(userId);
   }
 
   /**
@@ -348,42 +338,53 @@ public class SessionManager implements SessionManagement {
       Collection<SessionInfo> allSI = userDataSessions.values();
       for (SessionInfo si : allSI) {
         UserDetail userDetail = si.getUserDetail();
-        long userSessionTimeoutMillis = (userDetail.isAccessAdmin()) ? adminSessionTimeout
+        long userSessionTimeoutMillis = userDetail.isAccessAdmin() ? adminSessionTimeout
             : userSessionTimeout;
         // Has the session expired (timeout)
         if (currentTime - si.getLastAccessTimestamp() >= userSessionTimeoutMillis) {
           if (si instanceof HTTPSessionInfo) {
-            // the session was opened by a servlet (it is a servlet HTTPSession)
-            long duration = si.getLastIdleDuration();
-            // Has the user been notified (only for living client)
-            if ((duration < maxRefreshInterval)
-                && !userNotificationSessions.contains(si.getSessionId())) {
-              try {
-                notifyEndOfSession(userDetail.getId(), currentTime
-                    + scheduledSessionManagementTimeStamp, si.getSessionId());
-              } catch (NotificationManagerException ex) {
-                SilverLogger.getLogger(this)
-                    .error("Unable to notify on the session expiration for user {0}",
-                        new String[]{log(si)}, ex);
-              } finally {
-                // Add to the notifications
-                userNotificationSessions.add(si.getSessionId());
-              }
-            } else {
-              // Remove dead session or timeout with a notification
-              expiredSessions.add(si);
-            }
+            performUserSessionExpiration(si, currentTime, expiredSessions);
           } else {
             // the session isn't a Servlet API one (session opened directly by a web service for example).
             expiredSessions.add(si);
           }
-        } // if (hasSessionExpired )
+        }
       }
       for (SessionInfo expiredSession : expiredSessions) {
         removeSession(expiredSession);
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+    }
+  }
+
+  /**
+   * Performs the user session expiration.
+   * @param si the session info
+   * @param currentTime the current time
+   * @param expiredSessions the expired sessions to fill
+   */
+  private void performUserSessionExpiration(final SessionInfo si, final long currentTime,
+      final List<SessionInfo> expiredSessions) {
+    // the session was opened by a servlet (it is a servlet HTTPSession)
+    long duration = si.getLastIdleDuration();
+    // Has the user been notified (only for living client)
+    if ((duration < maxRefreshInterval)
+        && !userNotificationSessions.contains(si.getSessionId())) {
+      try {
+        notifyEndOfSession(si.getUserDetail().getId(), currentTime
+            + scheduledSessionManagementTimeStamp, si.getSessionId());
+      } catch (NotificationManagerException ex) {
+        SilverLogger.getLogger(this)
+            .error("Unable to notify on the session expiration for user {0}",
+                new String[]{log(si)}, ex);
+      } finally {
+        // Add to the notifications
+        userNotificationSessions.add(si.getSessionId());
+      }
+    } else {
+      // Remove dead session or timeout with a notification
+      expiredSessions.add(si);
     }
   }
 
@@ -502,6 +503,7 @@ public class SessionManager implements SessionManagement {
       anIP = InetAddress.getByName(defaultStringIfNotDefined(xForwardedFor, requestRemoteHost))
           .getHostAddress();
     } catch (Exception ex) {
+      SilverLogger.getLogger(this).debug(ex.getMessage(), ex);
       // In case of error, simply taking the value from the servlet request
       anIP = requestRemoteHost;
     }
@@ -535,10 +537,6 @@ public class SessionManager implements SessionManagement {
    * @param sessionInfo information about the session to open.
    */
   private void openSession(SessionInfo sessionInfo) {
-    // TODO: remove the commented lines below. A session must be opened and therefore shouldn't be
-    // existed before, so we shouldn't remove it in the case it is already opened!
-    //removeInQueueMessages(sessionInfo.getUserDetail().getId(), sessionInfo.getSessionId());
-    //removeSession(sessionInfo.getSessionId());
     userDataSessions.put(sessionInfo.getSessionId(), sessionInfo);
   }
 

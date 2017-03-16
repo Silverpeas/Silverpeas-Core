@@ -44,6 +44,7 @@ import java.util.Map;
 public class SERVERListener extends AbstractListener implements MessageListener {
 
   public SERVERListener() {
+    // Nothing to initialize
   }
 
   @Override
@@ -63,7 +64,7 @@ public class SERVERListener extends AbstractListener implements MessageListener 
   public void send(NotificationData notification) throws NotificationServerException {
     Map<String, Object> params = notification.getTargetParam();
     String sessionId = (String) params.get("SESSIONID");
-    SilverMessageFactory
+    ServerMessageService.get()
         .push(notification.getTargetReceipt(), notification.getMessage(), sessionId);
   }
 }

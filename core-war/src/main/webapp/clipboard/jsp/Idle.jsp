@@ -34,7 +34,7 @@
 %>
 
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory" %>
+<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
 
@@ -48,7 +48,7 @@
   String javascripTask = "";
   if (clipboardSC != null) {
     clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
-    javascripTask = clipboardSC.getHF_JavaScriptTask(request);
+    javascripTask = clipboardSC.getJavaScriptTaskForHiddenFrame(request);
   }
 
 %>
@@ -113,7 +113,7 @@
        String messageId = (String) request.getAttribute("MessageID");
 
        if(messageId != null) {
-         SilverMessageFactory.del(messageId);
+         PopupMessageService.get().deleteById(messageId);
        }
       %>
     }
@@ -150,7 +150,7 @@ Frame cachee, Time = <%if (clipboardSC != null) {out.print(String.valueOf(clipbo
 	<a href="javascript:onClick=test()">test...</a>
 	</pre>
 <%if (clipboardSC != null) {
-  out.println(clipboardSC.getHF_HTMLForm(request));
+  out.println(clipboardSC.getHTMLFormForHiddenFrame(request));
 }
 %>
 <!-- SessionId pour securisation pages Web -->

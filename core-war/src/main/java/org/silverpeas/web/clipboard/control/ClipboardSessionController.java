@@ -30,14 +30,16 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessage;
-import org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
+import org.silverpeas.core.notification.user.server.channel.popup.PopupMsg;
+import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
+import org.silverpeas.core.notification.user.server.channel.server.ServerMsg;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -49,22 +51,24 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+
 /**
- * A servlet ClipboardSessionControler acts as a proxy for a ClipboardBm EJB.
+ * A servlet ClipboardSessionController acts as a proxy for a Clipboard Service.
  */
 public class ClipboardSessionController extends AbstractComponentSessionController {
 
   /*
-   * The Web'Activ context
+   * The context
    */
-  private int m_counter = 0;
+  private int counter = 0;
 
   /*
    * Attributes from the caller component (paste operation)
    */
-  private String m_CallerRooterName;
-  private String m_CallerJSPPage;
-  private String m_CallerTargetFrame;
+  private String callerRooterName;
+  private String callerJSPPage;
+  private String callerTargetFrame;
   private String sessionId = null;
 
   /**
@@ -85,7 +89,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @see
    */
   public int getCounter() {
-    return m_counter;
+    return counter;
   }
 
   /**
@@ -94,7 +98,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @see
    */
   public void incCounter(int inc) {
-    m_counter += inc;
+    counter += inc;
   }
 
   /**
@@ -112,95 +116,86 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return
    * @see
    */
-  public String getHF_JavaScriptTask(HttpServletRequest request) {
+  public String getJavaScriptTaskForHiddenFrame(HttpServletRequest request) {
     String message = Encode.forHtml(request.getParameter("message"));
     StringBuilder str = new StringBuilder();
 
-    if (message != null) {
-      if (message.equals("SHOWCLIPBOARD")) {
-        // portage netscape
-        str
-            .append(
-            "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
-        str.append("top.ClipboardWindow.focus();");
-      } else if (message.equals("REFRESHCLIPBOARD")) {
-        // portage netscape
-        str.append("if(top.ClipboardWindow!=null){");
-        str.append("if (!top.ClipboardWindow.closed) {");
-        str
-            .append(
-            "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp','Clipboard','width=350,height=300,alwaysRaised');");
-        str.append("}");
-        str.append("}");
+    if ("SHOWCLIPBOARD".equals(message)) {
+      // portage netscape
+      str.append(
+          "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard'," +
+              "'width=500,height=350,alwaysRaised');");
+      str.append("top.ClipboardWindow.focus();");
+    } else if ("REFRESHCLIPBOARD".equals(message)) {
+      // portage netscape
+      str.append("if(top.ClipboardWindow!=null){");
+      str.append("if (!top.ClipboardWindow.closed) {");
+      str.append(
+          "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp'," +
+              "'Clipboard','width=350,height=300,alwaysRaised');");
+      str.append("}");
+      str.append("}");
 
-      } else if (message.equals("REFRESH")) {
-        // parameters for refresh mecanisme
-        String Space = request.getParameter("SpaceFrom");
-        String Component = request.getParameter("ComponentFrom");
-        String TargetFrame = request.getParameter("TargetFrame");
-        String JSPPage = request.getParameter("JSPPage");
+    } else if ("REFRESH".equals(message)) {
+      // parameters for refresh mecanisme
+      String space = request.getParameter("SpaceFrom");
+      String component = request.getParameter("ComponentFrom");
+      String targetFrame = request.getParameter("TargetFrame");
+      String jspPage = request.getParameter("JSPPage");
 
-        str.append("document.refreshform.action = '../..").
-            append(URLUtil.getURL(null, Space, Component)).append(JSPPage).append("';");
-        str.append("document.refreshform.Space.value = '").append(Space).append("';");
-        str.append("document.refreshform.Component.value = '").append(Component).append("';");
-        str.append("document.refreshform.target = '").append(TargetFrame).append("';");
-        str.append("document.refreshform.submit();");
-      } else if (message.equals("IDLE")) {
-        SilverMessage serverMessage =
-            SilverMessageFactory.read(
-            getUserId(), sessionId);
+      str.append("document.refreshform.action = '../..").
+          append(URLUtil.getURL(null, space, component)).append(jspPage).append("';");
+      str.append("document.refreshform.Space.value = '").append(space).append("';");
+      str.append("document.refreshform.Component.value = '").append(component).append("';");
+      str.append("document.refreshform.target = '").append(targetFrame).append("';");
+      str.append("document.refreshform.submit();");
+    } else if ("IDLE".equals(message)) {
+      ServerMsg serverMsg = ServerMessageService.get().read(getUserId(), sessionId);
 
-        if (serverMessage != null) {
-          if (serverMessage.getWhat().equals("ALERT")) {
-            str.append("alert ('");
-            str.append(WebEncodeHelper.javaStringToJsString(serverMessage.getContent()));
-            str.append("');");
-            str
-                .append(
-                    "self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID=")
-                .
-                append(serverMessage.getID()).append("';");
-          } else if (serverMessage.getWhat().equals("JAVASCRIPT")) {
-            str.append(WebEncodeHelper.javaStringToJsString(serverMessage.getContent()));
-          }
-        } else {
-          org.silverpeas.core.notification.user.server.channel.popup.SilverMessage popupMessage =
-              org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory
-              .read(getUserId());
+      if (serverMsg != null) {
+        if ("ALERT".equals(serverMsg.getWhat())) {
+          str.append("alert ('");
+          str.append(WebEncodeHelper.javaStringToJsString(serverMsg.getContent()));
+          str.append("');");
+          str.append(
+              "self.location.href = '../../Rclipboard/jsp/Idle" +
+                  ".jsp?message=DELMSG&messageTYPE=SERVER&messageID=")
+              .
+                  append(serverMsg.getID()).append("';");
+        } else if ("JAVASCRIPT".equals(serverMsg.getWhat())) {
+          str.append(WebEncodeHelper.javaStringToJsString(serverMsg.getContent()));
+        }
+      } else {
+        PopupMsg popupMessage = PopupMessageService.get().read(getUserId());
 
-          if (popupMessage != null) {
-            if (popupMessage.getWhat().equals("ALERT")) {
-              str.append("msgPopup = SP_openWindow('../..").
-                  append(URLUtil.getURL(URLUtil.CMP_POPUP)).
-                  append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
-                  append("','popupmsg").
-                  append(new Long(new Date().getTime()).toString()).append(
-                  "',500,260,'scrollbars=yes');");
-            } else if (popupMessage.getWhat().equals("JAVASCRIPT")) {
-              str.append(WebEncodeHelper.javaStringToJsString(popupMessage.getContent()));
-            } else if (popupMessage.getWhat().equals("COMMUNICATION")) {
-              request.setAttribute("MessageID", popupMessage.getID());
-              str.append("OpenDiscussion('../..").
-                  append(URLUtil.getURL(URLUtil.CMP_COMMUNICATIONUSER)).
-                  append("OpenDiscussion?userId=").append(popupMessage.getSenderId()).
-                  append("&MessageID=").append(popupMessage.getID()).append("','popupDiscussion").
-                  append(popupMessage.getSenderId()).append(
-                  "',650,400,'menubar=no,scrollbars=no,statusbar=no');");
-            }
+        if (popupMessage != null) {
+          if ("ALERT".equals(popupMessage.getWhat())) {
+            str.append("msgPopup = SP_openWindow('../..").
+                append(URLUtil.getURL(URLUtil.CMP_POPUP)).
+                append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
+                append("','popupmsg").
+                append(Long.toString(new Date().getTime())).append("',500,260,'scrollbars=yes');");
+          } else if ("JAVASCRIPT".equals(popupMessage.getWhat())) {
+            str.append(WebEncodeHelper.javaStringToJsString(popupMessage.getContent()));
+          } else if ("COMMUNICATION".equals(popupMessage.getWhat())) {
+            request.setAttribute("MessageID", popupMessage.getID());
+            str.append("OpenDiscussion('../..").
+                append(URLUtil.getURL(URLUtil.CMP_COMMUNICATIONUSER)).
+                append("OpenDiscussion?userId=").append(popupMessage.getSenderId()).
+                append("&MessageID=").append(popupMessage.getID()).append("','popupDiscussion").
+                append(popupMessage.getSenderId())
+                .append("',650,400,'menubar=no,scrollbars=no,statusbar=no');");
           }
         }
-      } else if ("DELMSG".equals(message)) {
-        String messageId = request.getParameter("messageID");
-        String messageType = request.getParameter("messageTYPE");
-        if (StringUtil.isDefined(messageId)) {
-          if ("SERVER".equals(messageType)) {
-            org.silverpeas.core.notification.user.server.channel.server.SilverMessageFactory
-                .del(messageId);
-          } else if ("POPUP".equals(messageType)) {
-            org.silverpeas.core.notification.user.server.channel.popup.SilverMessageFactory
-                .del(messageId);
-          }
+      }
+    } else if ("DELMSG".equals(message)) {
+      String messageId = request.getParameter("messageID");
+      String messageType = request.getParameter("messageTYPE");
+      if (StringUtil.isDefined(messageId)) {
+        if ("SERVER".equals(messageType)) {
+          ServerMessageService.get().deleteById(messageId);
+        } else if ("POPUP".equals(messageType)) {
+          PopupMessageService.get().deleteById(messageId);
         }
       }
     }
@@ -213,7 +208,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return
    * @see
    */
-  public String getHF_HTMLForm(HttpServletRequest request) {
+  public String getHTMLFormForHiddenFrame(HttpServletRequest request) {
     String message = Encode.forHtml(request.getParameter("message"));
     StringBuilder str = new StringBuilder("");
     if ("REFRESH".equals(message)) {
@@ -237,9 +232,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("clipboardPeas",
-          "ClipboardSessionController.getMessageError()",
-          "clipboardPeas.EX_CANT_GET_MESSAGE", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return errorMessage;
   }
@@ -260,8 +253,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
           indexEntry = (IndexEntry) clipObject.getTransferData(ClipboardSelection.IndexFlavor);
           result.add(indexEntry);
         } catch (Exception e) {
-          SilverTrace.error("clipboardPeas", "ClipboardSessionController.getIndexEntryObjects()",
-              "root.EX_CLIPBOARD_PASTE_FAILED", "", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
     }
@@ -312,8 +304,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
       }
       return componentInst.getName();
     }
-    SilverTrace.error("clipboardPeas", "ClipboardSessionController.getComponentLabel()",
-        "clipboardPeas.EX_CANT_GET_COMPO_LABEL");
+    SilverLogger.getLogger(this).error(failureOnGetting("component instance", componentId));
     return componentId;
   }
 
@@ -321,7 +312,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @param rooterName
    */
   public void setComponentRooterName(String rooterName) {
-    m_CallerRooterName = rooterName;
+    callerRooterName = rooterName;
   }
 
   /**
@@ -339,38 +330,38 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param JSPPage
+   * @param jspPage
    */
-  public void setJSPPage(String JSPPage) {
-    m_CallerJSPPage = JSPPage;
+  public void setJSPPage(String jspPage) {
+    callerJSPPage = jspPage;
   }
 
   /**
-   * @param TargetFrame
+   * @param targetFrame
    */
-  public void setTargetFrame(String TargetFrame) {
-    m_CallerTargetFrame = TargetFrame;
+  public void setTargetFrame(String targetFrame) {
+    callerTargetFrame = targetFrame;
   }
 
   /**
    * @return
    */
   public String getComponentRooterName() {
-    return m_CallerRooterName;
+    return callerRooterName;
   }
 
   /**
    * @return
    */
   public String getJSPPage() {
-    return m_CallerJSPPage;
+    return callerJSPPage;
   }
 
   /**
    * @return
    */
   public String getTargetFrame() {
-    return m_CallerTargetFrame;
+    return callerTargetFrame;
   }
 
   /**
