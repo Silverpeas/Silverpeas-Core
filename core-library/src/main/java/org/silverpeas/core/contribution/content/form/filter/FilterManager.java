@@ -36,7 +36,8 @@ import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,29 @@ import java.util.Set;
  * FilterManager
  */
 public class FilterManager {
+
+  /**
+   * The template of the filtered records.
+   */
+  private final RecordTemplate template;
+
+  /**
+   * The template of the criteria records.
+   */
+  private GenericRecordTemplate criteriaTemplate;
+
+  /**
+   * The Form which can be used to fill the criteria.
+   */
+  private Form criteriaForm;
+
+  /**
+   * The lang used to display the several label.
+   */
+  private String lang;
+
+  private Map<String, FieldTemplate> fieldsParameter = Collections.synchronizedMap(new HashMap<>());
+
   /**
    * Builds a FilterManager for records built on the given template.
    */
@@ -82,41 +106,13 @@ public class FilterManager {
 
         switch (filteredType) {
           case "text":
-            criteriumField = new GenericFieldTemplate(filteredName + "__like", "text");
-            criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
-
-            if (fieldsParameter.containsKey(filteredName)) {
-              FieldTemplate field = fieldsParameter.get(filteredName);
-              criteriumField.setDisplayerName("listbox");
-
-              Map<String, String> parameters = field.getParameters(lang);
-              Set<String> keys = parameters.keySet();
-              for (String key : keys) {
-                criteriumField.addParameter(key, parameters.get(key));
-              }
-            }
+            criteriumField = processText(filteredName, filteredLabel);
             break;
           case "jdbc":
-            criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
-            criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
-
-            if (fieldsParameter.containsKey(filteredName)) {
-              FieldTemplate field = fieldsParameter.get(filteredName);
-              Map<String, String> parameters = field.getParameters(lang);
-              Set<String> keys = parameters.keySet();
-              for (String key : keys) {
-                criteriumField.addParameter(key, parameters.get(key));
-              }
-              criteriumField.addParameter("displayer", "listbox");
-            }
+            criteriumField = processJDBC(filteredType, filteredName, filteredLabel);
             break;
           case "date":
-            criteriumField = new GenericFieldTemplate(filteredName + "__lt", "date");
-            criteriumField.addLabel(filteredLabel + " " + Util.getString("le", lang), lang);
-            criteriaTemplate.addFieldTemplate(criteriumField);
-
-            criteriumField = new GenericFieldTemplate(filteredName + "__gt", "date");
-            criteriumField.addLabel(filteredLabel + " " + Util.getString("ge", lang), lang);
+            criteriumField = processDate(filteredName, filteredLabel);
             break;
           default:
             criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
@@ -128,6 +124,54 @@ public class FilterManager {
     }
 
     return criteriaTemplate;
+  }
+
+  private GenericFieldTemplate processDate(final String filteredName, final String filteredLabel)
+      throws FormException {
+    GenericFieldTemplate criteriumField = new GenericFieldTemplate(filteredName + "__lt", "date");
+    criteriumField.addLabel(filteredLabel + " " + Util.getString("le", lang), lang);
+    criteriaTemplate.addFieldTemplate(criteriumField);
+
+    criteriumField = new GenericFieldTemplate(filteredName + "__gt", "date");
+    criteriumField.addLabel(filteredLabel + " " + Util.getString("ge", lang), lang);
+    return criteriumField;
+  }
+
+  private GenericFieldTemplate processJDBC(final String filteredType, final String filteredName,
+      final String filteredLabel) throws FormException {
+    final GenericFieldTemplate criteriumField;
+    criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
+    criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
+
+    if (fieldsParameter.containsKey(filteredName)) {
+      FieldTemplate field = fieldsParameter.get(filteredName);
+      Map<String, String> parameters = field.getParameters(lang);
+      Set<String> keys = parameters.keySet();
+      for (String key : keys) {
+        criteriumField.addParameter(key, parameters.get(key));
+      }
+      criteriumField.addParameter("displayer", "listbox");
+    }
+    return criteriumField;
+  }
+
+  private GenericFieldTemplate processText(final String filteredName, final String filteredLabel)
+      throws FormException {
+    final GenericFieldTemplate criteriumField;
+    criteriumField = new GenericFieldTemplate(filteredName + "__like", "text");
+    criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
+
+    if (fieldsParameter.containsKey(filteredName)) {
+      FieldTemplate field = fieldsParameter.get(filteredName);
+      criteriumField.setDisplayerName("listbox");
+
+      Map<String, String> parameters = field.getParameters(lang);
+      Set<String> keys = parameters.keySet();
+      for (String key : keys) {
+        criteriumField.addParameter(key, parameters.get(key));
+      }
+    }
+    return criteriumField;
   }
 
   /**
@@ -157,11 +201,14 @@ public class FilterManager {
     return result;
   }
 
+  public void addFieldParameter(String fieldName, FieldTemplate field) {
+    fieldsParameter.put(fieldName, field);
+  }
+
   /**
    * Builds a RecordFilter from the criteria record (which must be built with the criteriaRecord)
    */
-  public RecordFilter buildRecordFilter(DataRecord criteriaRecord)
-      throws FormException {
+  private RecordFilter buildRecordFilter(DataRecord criteriaRecord) throws FormException {
     SimpleRecordFilter filter = new SimpleRecordFilter();
     FieldFilter fieldFilter;
 
@@ -202,10 +249,6 @@ public class FilterManager {
     return filter;
   }
 
-  public void addFieldParameter(String fieldName, FieldTemplate field) {
-    fieldsParameter.put(fieldName, field);
-  }
-
   private String getFilteredName(String criteriaName) {
     int sep = criteriaName.lastIndexOf("__");
     if (sep == -1) {
@@ -223,26 +266,4 @@ public class FilterManager {
       return criteriaName.substring(sep + 2);
     }
   }
-
-  /**
-   * The template of the filtered records.
-   */
-  private final RecordTemplate template;
-
-  /**
-   * The template of the criteria records.
-   */
-  private GenericRecordTemplate criteriaTemplate;
-
-  /**
-   * The Form which can be used to fill the criteria.
-   */
-  private Form criteriaForm;
-
-  /**
-   * The lang used to display the several label.
-   */
-  private String lang;
-
-  private Hashtable<String, FieldTemplate> fieldsParameter = new Hashtable<>();
 }

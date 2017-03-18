@@ -90,18 +90,6 @@ public class PrefixedNotationExpressionEngine<R> {
   private final Pattern operandPattern;
 
   /**
-   * Initializes the instance.
-   * @param operationFunctions instances of {@link OperatorFunction<R>} where each one represents
-   * an operator and its behavior.
-   * @return the initialized instance.
-   */
-  @SuppressWarnings("unchecked")
-  public static <R> PrefixedNotationExpressionEngine<R> from(Function<String, R> converter,
-      OperatorFunction<R>... operationFunctions) {
-    return new PrefixedNotationExpressionEngine<>(converter, operationFunctions);
-  }
-
-  /**
    * Hidden constructor.
    */
   @SuppressWarnings("unchecked")
@@ -120,6 +108,18 @@ public class PrefixedNotationExpressionEngine<R> {
       }
     }
     operandPattern = Pattern.compile("(?i)^\\s*(" + operators.toString() + ")?\\s*(.+)\\s*$");
+  }
+
+  /**
+   * Initializes the instance.
+   * @param operationFunctions instances of {@link OperatorFunction<R>} where each one represents
+   * an operator and its behavior.
+   * @return the initialized instance.
+   */
+  @SuppressWarnings("unchecked")
+  public static <R> PrefixedNotationExpressionEngine<R> from(Function<String, R> converter,
+      OperatorFunction<R>... operationFunctions) {
+    return new PrefixedNotationExpressionEngine<>(converter, operationFunctions);
   }
 
   /**
@@ -190,53 +190,27 @@ public class PrefixedNotationExpressionEngine<R> {
     List<String> operands = new ArrayList<>();
     StringBuilder operand = new StringBuilder();
     int nbOpening = 0;
-    for (int i = 0; i < operation.length(); i++) {
+    int i = 0;
+    while (i < operation.length()) {
       char currentChar = operation.charAt(i);
-      if (currentChar == '\\' && (i + 1) < operation.length()) {
-        char nextChar = operation.charAt((i + 1));
-        if ('(' == nextChar || ')' == nextChar) {
-          if (nbOpening > 0) {
-            operand.append('\\');
-          }
-          operand.append(nextChar);
-          i++;
-          continue;
-        }
+      if (subexpression(operation, operand, nbOpening, i, currentChar)) {
+        i += 2;
+        continue;
       }
       switch (currentChar) {
         case '(':
           nbOpening++;
-          if (nbOpening == 1) {
-            if (operand.length() > 0) {
-              throw new IllegalArgumentException("expression.operation.malformed");
-            }
-          } else {
-            operand.append(currentChar);
-          }
+          processStartExpression(operand, nbOpening, currentChar);
           break;
         case ')':
-          if (nbOpening == 0) {
-            throw new IllegalArgumentException(
-                "expression.operation.operand.parentheses.missing.open");
-          } else if (nbOpening == 1) {
-            operands.add(operand.toString());
-            operand.setLength(0);
-          } else {
-            operand.append(currentChar);
-          }
+          processEndExpression(operands, operand, nbOpening, currentChar);
           nbOpening--;
           break;
-        case ' ':
-          if (nbOpening == 0 && operand.length() == 0) {
-            break;
-          }
         default:
-          if (nbOpening == 0 && !operands.isEmpty()) {
-            throw new IllegalArgumentException(
-                "expression.operation.operand.parentheses.missing.open");
-          }
-          operand.append(currentChar);
+          processOperand(operands, operand, nbOpening, currentChar);
+          break;
       }
+      i++;
     }
 
     if (nbOpening > 0) {
@@ -244,6 +218,57 @@ public class PrefixedNotationExpressionEngine<R> {
     }
 
     return operands;
+  }
+
+  private boolean subexpression(String operation, final StringBuilder operand, final int nbOpening,
+      final int index, final char currentChar) {
+    if (currentChar == '\\' && (index + 1) < operation.length()) {
+      char nextChar = operation.charAt(index + 1);
+      if ('(' == nextChar || ')' == nextChar) {
+        if (nbOpening > 0) {
+          operand.append('\\');
+        }
+        operand.append(nextChar);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void processOperand(final List<String> operands, final StringBuilder operand,
+      final int nbOpening, final char currentChar) {
+    if (currentChar == ' ' && nbOpening == 0 && operand.length() == 0) {
+      return;
+    }
+    if (nbOpening == 0 && !operands.isEmpty()) {
+      throw new IllegalArgumentException(
+          "expression.operation.operand.parentheses.missing.open");
+    }
+    operand.append(currentChar);
+  }
+
+  private void processEndExpression(final List<String> operands, final StringBuilder operand,
+      final int nbOpening, final char currentChar) {
+    if (nbOpening == 0) {
+      throw new IllegalArgumentException(
+          "expression.operation.operand.parentheses.missing.open");
+    } else if (nbOpening == 1) {
+      operands.add(operand.toString());
+      operand.setLength(0);
+    } else {
+      operand.append(currentChar);
+    }
+  }
+
+  private void processStartExpression(final StringBuilder operand, final int nbOpening,
+      final char currentChar) {
+    if (nbOpening == 1) {
+      if (operand.length() > 0) {
+        throw new IllegalArgumentException("expression.operation.malformed");
+      }
+    } else {
+      operand.append(currentChar);
+    }
   }
 
   /**
@@ -256,7 +281,7 @@ public class PrefixedNotationExpressionEngine<R> {
     for (int i = 0; i < expression.length(); i++) {
       char currentChar = expression.charAt(i);
       if (currentChar == '\\' && (i + 1) < expression.length()) {
-        char nextChar = expression.charAt((i + 1));
+        char nextChar = expression.charAt(i + 1);
         if ('(' == nextChar || ')' == nextChar) {
           continue;
         }
