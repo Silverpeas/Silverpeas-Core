@@ -24,7 +24,9 @@
 package org.silverpeas.core.util.logging;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Singleton;
@@ -45,16 +47,16 @@ import static org.silverpeas.core.util.file.ReversedFileLineReader.readLastLines
 @Singleton
 public class LogsAccessor {
 
-  public static LogsAccessor get() {
-    return ServiceProvider.getService(LogsAccessor.class);
-  }
-
   /**
    * The system property referring the directory in which are stored all the Silverpeas logs.
    */
   private static final String SILVERPEAS_LOG_DIR = "SILVERPEAS_LOG";
 
   protected LogsAccessor() {
+  }
+
+  public static LogsAccessor get() {
+    return ServiceProvider.getService(LogsAccessor.class);
   }
 
   /**
@@ -77,12 +79,13 @@ public class LogsAccessor {
    * @param recordCount the number of records to get. O or a negative value means all the records.
    * @return an array of the last log records in the log at the time it was accessed.
    * @throws IOException if either the specified log doesn't exist or an error occurred wile
-   * getting the log records.
+   * @throws RelativeFileAccessException if the log name contains relative path.
    */
-  public String[] getLastLogRecords(String log, int recordCount) throws IOException {
+  public List<String> getLastLogRecords(String log, int recordCount)
+      throws IOException, RelativeFileAccessException {
+    FileUtil.checkPathNotRelative(log);
     String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
     Path logFile = Paths.get(logPath, log);
-    List<String> records = readLastLines(logFile, recordCount);
-    return records.toArray(new String[records.size()]);
+    return readLastLines(logFile, recordCount);
   }
 }
