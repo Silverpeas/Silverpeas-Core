@@ -33,29 +33,31 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.attachment.WebDavTokenProducer;
+import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -313,20 +315,16 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(@PathParam("lang") final String language) {
     SimpleDocument document = getSimpleDocument(language);
-    StreamingOutput stream = new StreamingOutput() {
-      @Override
-      public void write(OutputStream output) throws WebApplicationException {
-        try {
-          AttachmentServiceProvider.getAttachmentService().getBinaryContent(output,
-              new SimpleDocumentPK(getSimpleDocumentId()), language);
-        } catch (Exception e) {
-          throw new WebApplicationException(e);
-        }
-      }
-    };
-    return Response.ok(stream).type(document.getContentType()).header(HttpHeaders.CONTENT_LENGTH,
-        document.getSize()).header("content-disposition", "attachment;filename=" + document.
-            getFilename()).build();
+    SilverpeasFile file = SilverpeasFileProvider.getFile(document.getAttachmentPath());
+    Response.ResponseBuilder responseBuilder = EmbedMediaPlayerDispatcher
+        .from((HttpServletRequest) getHttpRequest().getRequest(), getHttpServletResponse())
+        .seeOtherWithSilverpeasFile(file);
+    if (responseBuilder == null) {
+      responseBuilder = FileResponse.fromRest(getHttpRequest(), getHttpServletResponse())
+                                    .forceMimeType(document.getContentType())
+                                    .silverpeasFile(file);
+    }
+    return responseBuilder.build();
   }
 
   /**

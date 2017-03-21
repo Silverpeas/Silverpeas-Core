@@ -24,6 +24,7 @@
 package org.silverpeas.core.util.logging;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
@@ -52,7 +53,7 @@ public class LogsAccessor {
    */
   private static final String SILVERPEAS_LOG_DIR = "SILVERPEAS_LOG";
 
-  protected LogsAccessor() {
+  LogsAccessor() {
   }
 
   public static LogsAccessor get() {
@@ -78,14 +79,18 @@ public class LogsAccessor {
    * @param log the log to access.
    * @param recordCount the number of records to get. O or a negative value means all the records.
    * @return an array of the last log records in the log at the time it was accessed.
-   * @throws IOException if either the specified log doesn't exist or an error occurred wile
-   * @throws RelativeFileAccessException if the log name contains relative path.
+   * @throws SilverpeasException if either the specified log doesn't exist or an error occurred
+   * wile or if the log name contains relative path.
    */
   public List<String> getLastLogRecords(String log, int recordCount)
-      throws IOException, RelativeFileAccessException {
-    FileUtil.checkPathNotRelative(log);
-    String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
-    Path logFile = Paths.get(logPath, log);
-    return readLastLines(logFile, recordCount);
+      throws SilverpeasException {
+    try {
+      FileUtil.checkPathNotRelative(log);
+      String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
+      Path logFile = Paths.get(logPath, log);
+      return readLastLines(logFile, recordCount);
+    } catch (RelativeFileAccessException | IOException e) {
+      throw new SilverpeasException(e);
+    }
   }
 }

@@ -231,12 +231,13 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    */
   private void initVideoPlayer(final VideoPlayer videoPlayer, String videoURL,
       Map<String, String> parameters) {
-    String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH)
-        : DEFAULT_WIDTH) + "px";
-    String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT)
-        : DEFAULT_HEIGHT) + "px";
-    boolean autoplay = (parameters.containsKey(PARAMETER_AUTOPLAY)
-        ? Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false);
+    int width = Integer.valueOf(
+        parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH) : DEFAULT_WIDTH);
+    int height = Integer.valueOf(
+        parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT) :
+            DEFAULT_HEIGHT);
+    boolean autoplay = parameters.containsKey(PARAMETER_AUTOPLAY) ?
+        Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false;
     videoPlayer.setVideoURL(videoURL);
     videoPlayer.setAutoplay(autoplay);
     videoPlayer.setWidth(width);

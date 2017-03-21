@@ -23,15 +23,20 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.apache.ecs.ElementContainer;
+import org.silverpeas.core.html.SupportedWebPlugins;
+import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import java.io.IOException;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-import org.apache.ecs.ElementContainer;
+import java.io.IOException;
 
+import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 /**
@@ -47,117 +52,20 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   }
 
   public void setName(String plugin) {
-    this.plugin = plugin;
+    this.plugin = plugin.toUpperCase();
   }
 
   @Override
   public void doTag() throws JspException, IOException {
     ElementContainer xhtml = new ElementContainer();
     try {
-      SupportedJavaScriptPlugins jsPlugin = SupportedJavaScriptPlugins.valueOf(getName());
-      switch (jsPlugin) {
-        case embedPlayer:
-          includeEmbedPlayer(xhtml);
-          break;
-        case mediaPlayer:
-          includeMediaPlayer(xhtml);
-          break;
-        case qtip:
-          includeQTip(xhtml);
-          break;
-        case datepicker:
-          includeDatePicker(xhtml, getLanguage());
-          break;
-        case pagination:
-          includePagination(xhtml);
-          break;
-        case breadcrumb:
-          includeBreadCrumb(xhtml);
-          break;
-        case userZoom:
-          includeUserZoom(xhtml, getLanguage());
-          break;
-        case relationship:
-          includeRelationship(xhtml, getLanguage());
-          break;
-        case messageme:
-          includeMessageMe(xhtml);
-          break;
-        case wysiwyg:
-          includeWysiwygEditor(xhtml);
-          break;
-        case responsibles:
-          includeResponsibles(xhtml, getLanguage());
-          break;
-        case popup:
-          includePopup(xhtml);
-          break;
-        case calendar:
-          includeCalendar(xhtml);
-          break;
-        case iframeajaxtransport:
-          includeIFrameAjaxTransport(xhtml);
-          break;
-        case preview:
-          includePreview(xhtml);
-          break;
-        case notifier:
-          includeNotifier(xhtml);
-          break;
-        case password:
-          includePassword(xhtml);
-          break;
-        case gauge:
-          includeGauge(xhtml);
-          break;
-        case jquery:
-          includeJQuery(xhtml);
-          break;
-        case tags:
-          includeTags(xhtml);
-          break;
-        case pdc:
-          includePdc(xhtml);
-          break;
-        case tkn:
-          includeSecurityTokenizing(xhtml);
-          break;
-        case rating:
-          includeRating(xhtml);
-          break;
-        case toggle:
-          includeToggle(xhtml);
-          break;
-        case lightslideshow:
-          includeLightweightSlideshow(xhtml);
-          break;
-        case lang:
-          includeLang(xhtml);
-          break;
-        case ticker:
-          includeTicker(xhtml, getLanguage());
-          break;
-        case subscription:
-          includeDynamicallySubscription(xhtml, null);
-          break;
-        case dragAndDropUpload:
-          includeDragAndDropUpload(xhtml, getLanguage());
-          break;
-        case chart:
-          includeChart(xhtml, getLanguage());
-          break;
-        case chat:
-          includeChat(xhtml);
-          break;
-        case listOfUsersAndGroups:
-          includeListOfUsersAndGroups(xhtml, getLanguage());
-          break;
-        case layout:
-          includeLayout(xhtml, getLookHelper());
-          break;
+      SupportedWebPlugins jsPlugin = SupportedWebPlugins.valueOf(getName());
+      xhtml = WebPlugin.get().getHtml(jsPlugin, getLanguage());
+      if (LAYOUT == jsPlugin) {
+        includeLayout(xhtml, getLookHelper());
       }
     } catch (IllegalArgumentException ex) {
-      //ignore
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     xhtml.output(getJspContext().getOut());
   }

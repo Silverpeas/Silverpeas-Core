@@ -113,7 +113,7 @@ public class FileServer extends AbstractFileSender {
       }
     }
     SilverpeasFile file = SilverpeasFileProvider.getFile(descriptor);
-    sendFile(res, file);
+    sendFile(req, res, file);
 
     if (StringUtil.isDefined(archiveIt)) {
       String nodeId = req.getParameter(NODE_ID_PARAMETER);
@@ -132,7 +132,8 @@ public class FileServer extends AbstractFileSender {
   // check if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller, String componentId) {
     boolean isAllowed;
-    if (componentId == null) { // Personal space
+    if (componentId == null) {
+      // Personal space
       isAllowed = true;
     } else {
       if ("yes"

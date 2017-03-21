@@ -24,10 +24,10 @@
 package org.silverpeas.core.webapi.util.logging;
 
 import org.apache.ecs.xhtml.span;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.RelativeFileAccessException;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -44,7 +44,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,20 +84,14 @@ public class LogResource extends RESTWebService {
 
   private List<String> getLastLogRecords(int count) {
     try {
-      FileUtil.checkPathNotRelative(logName);
-    } catch (RelativeFileAccessException e) {
-      throw new WebApplicationException(e, Response.Status.FORBIDDEN);
-    }
-    try {
       return logsAccessor.getLastLogRecords(logName, count);
-    } catch (RelativeFileAccessException ex) {
+    } catch (SilverpeasException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    } catch (FileNotFoundException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    } catch (IOException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      if (ex.getCause() instanceof FileNotFoundException) {
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+      } else if (ex.getCause() instanceof RelativeFileAccessException) {
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
   }

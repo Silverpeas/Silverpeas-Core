@@ -105,12 +105,16 @@
     $embed.attr('allowfullscreen', 'true');
     $container.append($embed);
     setTimeout(function() {
-      if (config.playerParameters) {
-        for (var paramName in config.playerParameters) {
-          if (paramName) {
-            config.url += config.url.indexOf('?') ? '&' : '?';
-            config.url += paramName + '=' + encodeURIComponent(config.playerParameters[paramName]);
-          }
+      var playerParameters = jQuery.extend(config.playerParameters, {
+        'embedPlayer' : true,
+        'width' : config.width,
+        'height' : config.height,
+        '_' : new Date().getTime()
+      });
+      for (var paramName in playerParameters) {
+        if (paramName) {
+          config.url += (config.url.indexOf('?') > 0) ? '&' : '?';
+          config.url += paramName + '=' + encodeURIComponent(playerParameters[paramName]);
         }
       }
       $embed.attr('src', config.url);

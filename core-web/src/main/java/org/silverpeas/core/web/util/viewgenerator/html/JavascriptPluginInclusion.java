@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
@@ -45,7 +46,7 @@ import java.text.MessageFormat;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
-import static org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScriptPlugins.ticker;
+import static org.silverpeas.core.html.SupportedWebPlugins.TICKER;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -56,16 +57,17 @@ import static org.silverpeas.core.web.util.viewgenerator.html.SupportedJavaScrip
  */
 public class JavascriptPluginInclusion {
 
-  private static final String javascriptPath = URLUtil.getApplicationURL() + "/util/javaScript/";
-  private static final String flashPath = URLUtil.getApplicationURL() + "/util/flash/";
-  private static final String stylesheetPath =
+  private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
+  private static final String JAVASCRIPT_PATH = URLUtil.getApplicationURL() + "/util/javaScript/";
+  private static final String FLASH_PATH = URLUtil.getApplicationURL() + "/util/flash/";
+  private static final String STYLESHEET_PATH =
       URLUtil.getApplicationURL() + "/util/styleSheets/";
-  private static final String jqueryPath = javascriptPath + "jquery/";
-  private static final String jqueryCssPath = stylesheetPath + "jquery/";
-  private static final String angularjsPath = javascriptPath + "angularjs/";
-  private static final String angularjsI18nPath = angularjsPath + "i18n/";
-  private static final String angularjsServicesPath = angularjsPath + "services/";
-  private static final String angularjsDirectivesPath = angularjsPath + "directives/";
+  private static final String JQUERY_PATH = JAVASCRIPT_PATH + "jquery/";
+  private static final String JQUERY_CSS_PATH = STYLESHEET_PATH + "jquery/";
+  private static final String ANGULARJS_PATH = JAVASCRIPT_PATH + "angularjs/";
+  private static final String ANGULARJS_I18N_PATH = ANGULARJS_PATH + "i18n/";
+  private static final String ANGULARJS_SERVICES_PATH = ANGULARJS_PATH + "services/";
+  private static final String ANGULARJS_DIRECTIVES_PATH = ANGULARJS_PATH + "directives/";
   private static final String ANGULAR_JS = "angular.min.js";
   private static final String ANGULAR_LOCALE_JS = "angular-locale_{0}.js";
   private static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
@@ -74,10 +76,10 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
   private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
   private static final String SILVERPEAS_MEDIA_PLAYER = "silverpeas-media-player.js";
-  private static final String FLOWPLAYER_CSS = "flowplayer-6.0.5/skin/playful.css";
-  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-6.0.5.min.js";
-  private static final String FLOWPLAYER_SWF = "flowplayer/flowplayer-6.0.5.swf";
-  private static final String FLOWPLAYER_SWF_HLS = "flowplayer/flowplayerhls-6.0.5.swf";
+  private static final String FLOWPLAYER_CSS = "flowplayer-7.0.2/skin/skin.css";
+  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-7.0.2.min.js";
+  private static final String FLOWPLAYER_SWF = "flowplayer/flowplayer-7.0.2.swf";
+  private static final String FLOWPLAYER_SWF_HLS = "flowplayer/flowplayerhls-7.0.2.swf";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String SILVERPEAS_TIP = "silverpeas-tip.js";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
@@ -106,9 +108,9 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PDC_WIDGET = "silverpeas-pdc-widgets.js";
   private static final String SILVERPEAS_PDC = "silverpeas-pdc.js";
   private static final String SILVERPEAS_SUBSCRIPTION = "silverpeas-subscription.js";
-  private static final String flexPaperPath = javascriptPath + "flexpaper/";
+  private static final String FLEX_PAPER_PATH = JAVASCRIPT_PATH + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
-  private static final String jqueryNotifierPath = jqueryPath + "noty/";
+  private static final String JQUERY_NOTIFIER_PATH = JQUERY_PATH + "noty/";
   private static final String JQUERY_NOTIFIER_BASE = "jquery.noty.js";
   private static final String JQUERY_NOTIFIER_TOP = "layouts/top.js";
   private static final String JQUERY_NOTIFIER_TOPCENTER = "layouts/topCenter.js";
@@ -119,7 +121,7 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_TAGS = "tagit/tagit-stylish-yellow.css";
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
-  private static final String wysiwygPath = URLUtil.getApplicationURL() + "/wysiwyg/jsp/";
+  private static final String WYSIWYG_PATH = URLUtil.getApplicationURL() + "/wysiwyg/jsp/";
   private static String JAVASCRIPT_CKEDITOR;
   private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -161,6 +163,12 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Hidden constructor.
+   */
+  private JavascriptPluginInclusion() {
+  }
+
+  /**
    * Centralization of script instantiation.
    * @param src
    * @return
@@ -182,7 +190,7 @@ public class JavascriptPluginInclusion {
    * and the reject calls).
    * @return the promise as string.
    */
-  private static String generatePromise(SupportedJavaScriptPlugins plugin, String promiseContent) {
+  private static String generatePromise(SupportedWebPlugins plugin, String promiseContent) {
     String promise = "window." + plugin.name() + "Promise";
     promise += "=new Promise(function(resolve, reject){";
     promise += promiseContent;
@@ -240,7 +248,8 @@ public class JavascriptPluginInclusion {
    * @return
    */
   private static Element scriptContent(String content) {
-    String key = "$jsPlugin$scriptContent$" + StringUtil.truncate(content, 150);
+    String key =
+        "$jsPlugin$scriptContent$" + StringUtil.truncate(content, SCRIPT_CONTENT_KEY_LENGTH);
     SimpleCache cache = getRequestCacheService().getCache();
     if (cache.get(key) == null) {
       cache.put(key, true);
@@ -267,74 +276,73 @@ public class JavascriptPluginInclusion {
     }
   }
 
-  public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml,
-      String language) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
+  public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml) {
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_IDENTITYCARD));
     return xhtml;
   }
 
   public static ElementContainer includeAngular(final ElementContainer xhtml, String language) {
-    xhtml.addElement(script(angularjsPath + ANGULAR_JS));
-    xhtml.addElement(script(angularjsI18nPath + MessageFormat.format(ANGULAR_LOCALE_JS, language)));
-    xhtml.addElement(script(angularjsPath + ANGULAR_SANITIZE_JS));
-    xhtml.addElement(script(angularjsPath + SILVERPEAS_ANGULAR_JS));
-    xhtml.addElement(script(angularjsPath + SILVERPEAS_ADAPTERS_ANGULAR_JS));
-    xhtml.addElement(script(angularjsDirectivesPath + SILVERPEAS_BUTTON_ANGULAR_JS));
+    xhtml.addElement(script(ANGULARJS_PATH + ANGULAR_JS));
+    xhtml.addElement(script(ANGULARJS_I18N_PATH + MessageFormat.format(ANGULAR_LOCALE_JS, language)));
+    xhtml.addElement(script(ANGULARJS_PATH + ANGULAR_SANITIZE_JS));
+    xhtml.addElement(script(ANGULARJS_PATH + SILVERPEAS_ANGULAR_JS));
+    xhtml.addElement(script(ANGULARJS_PATH + SILVERPEAS_ADAPTERS_ANGULAR_JS));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + SILVERPEAS_BUTTON_ANGULAR_JS));
     return xhtml;
   }
 
   public static ElementContainer includeEmbedPlayer(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_EMBED_PLAYER));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_EMBED_PLAYER));
     return xhtml;
   }
 
   public static ElementContainer includeMediaPlayer(final ElementContainer xhtml) {
     xhtml.addElement(scriptContent(JavascriptSettingProducer
         .settingVariableName("MediaPlayerSettings")
-        .add("media.player.flowplayer.swf", flashPath + FLOWPLAYER_SWF)
-        .add("media.player.flowplayer.swf.hls", flashPath + FLOWPLAYER_SWF_HLS)
+        .add("media.player.flowplayer.swf", FLASH_PATH + FLOWPLAYER_SWF)
+        .add("media.player.flowplayer.swf.hls", FLASH_PATH + FLOWPLAYER_SWF_HLS)
         .produce()));
-    xhtml.addElement(link(stylesheetPath + FLOWPLAYER_CSS));
-    xhtml.addElement(script(javascriptPath + FLOWPLAYER_JS));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_MEDIA_PLAYER));
+    xhtml.addElement(link(STYLESHEET_PATH + FLOWPLAYER_CSS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + FLOWPLAYER_JS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_MEDIA_PLAYER));
     return xhtml;
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".min.css"));
-    xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_TIP));
+    xhtml.addElement(link(JQUERY_CSS_PATH + JQUERY_QTIP + ".min.css"));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_QTIP + ".min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_TIP));
     return xhtml;
   }
 
   public static ElementContainer includePdc(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC));
     return xhtml;
   }
 
   public static ElementContainer includeRating(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryPath + RATEIT_CSS));
-    xhtml.addElement(script(jqueryPath + RATEIT_JS));
-    xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-rating.js"));
-    xhtml.addElement(script(angularjsServicesPath + "silverpeas-rating.js"));
+    xhtml.addElement(link(JQUERY_PATH + RATEIT_CSS));
+    xhtml.addElement(script(JQUERY_PATH + RATEIT_JS));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "silverpeas-rating.js"));
+    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + "silverpeas-rating.js"));
     return xhtml;
   }
 
   public static ElementContainer includeToggle(final ElementContainer xhtml) {
-    xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-toggle.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "silverpeas-toggle.js"));
     return xhtml;
   }
 
   public static ElementContainer includeLightweightSlideshow(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryPath + LIGHTSLIDESHOW_CSS));
-    xhtml.addElement(script(jqueryPath + LIGHTSLIDESHOW_JS));
+    xhtml.addElement(link(JQUERY_PATH + LIGHTSLIDESHOW_CSS));
+    xhtml.addElement(script(JQUERY_PATH + LIGHTSLIDESHOW_JS));
     return xhtml;
   }
 
   public static ElementContainer includeTicker(final ElementContainer xhtml,
       final String language) {
-    xhtml.addElement(link(jqueryPath + TICKER_CSS));
+    xhtml.addElement(link(JQUERY_PATH + TICKER_CSS));
     xhtml.addElement(scriptContent(JavascriptBundleProducer
         .bundleVariableName("TickerBundle")
         .add(ResourceLocator
@@ -344,48 +352,48 @@ public class JavascriptPluginInclusion {
             "lookSilverpeasV5.ticker.date.daysAgo",
             "lookSilverpeasV5.ticker.notifications.permission.request")
         .produce()));
-    xhtml.addElement(scriptContent(generatePromise(ticker,
-        generateDynamicPluginLoading(jqueryPath + TICKER_JS, "tickerPlugin", "resolve();", null))));
+    xhtml.addElement(scriptContent(generatePromise(TICKER,
+        generateDynamicPluginLoading(JQUERY_PATH + TICKER_JS, "tickerPlugin", "resolve();", null))));
     return xhtml;
   }
 
   public static ElementContainer includeIFrameAjaxTransport(final ElementContainer xhtml) {
     script iframeAjaxTransport = new script().setType(JAVASCRIPT_TYPE)
-        .setSrc(jqueryPath + JQUERY_IFRAME_AJAX_TRANSPORT + ".js");
+        .setSrc(JQUERY_PATH + JQUERY_IFRAME_AJAX_TRANSPORT + ".js");
     xhtml.addElement(iframeAjaxTransport);
     script iframeAjaxTransportHelper = new script().setType(JAVASCRIPT_TYPE)
-        .setSrc(jqueryPath + JQUERY_IFRAME_AJAX_TRANSPORT + "-helper.js");
+        .setSrc(JQUERY_PATH + JQUERY_IFRAME_AJAX_TRANSPORT + "-helper.js");
     xhtml.addElement(iframeAjaxTransportHelper);
     return xhtml;
   }
 
   public static ElementContainer includeDatePicker(final ElementContainer xhtml, String language) {
-    xhtml.addElement(script(jqueryPath + MessageFormat.format(JQUERY_DATEPICKER, language)));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_DATEPICKER));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_DATE_UTILS));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_DATECHECKER));
+    xhtml.addElement(script(JQUERY_PATH + MessageFormat.format(JQUERY_DATEPICKER, language)));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DATEPICKER));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DATE_UTILS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DATECHECKER));
     xhtml.addElement(scriptContent("jQuery.datechecker.settings.language = '" + language + "';"));
     return xhtml;
   }
 
   public static ElementContainer includePagination(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + PAGINATION_TOOL + ".css"));
-    xhtml.addElement(script((jqueryPath + PAGINATION_TOOL + ".js")));
-    xhtml.addElement(script((angularjsDirectivesPath + SILVERPEAS_PAGINATOR)));
+    xhtml.addElement(link(JQUERY_CSS_PATH + PAGINATION_TOOL + ".css"));
+    xhtml.addElement(script(JQUERY_PATH + PAGINATION_TOOL + ".js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + SILVERPEAS_PAGINATOR));
     return xhtml;
   }
 
   public static ElementContainer includeBreadCrumb(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_BREADCRUMB));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_BREADCRUMB));
     return xhtml;
   }
 
   public static ElementContainer includeUserZoom(final ElementContainer xhtml,
       final String language) {
-    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
     includeMessageMe(xhtml);
     includeRelationship(xhtml, language);
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_USERZOOM));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_USERZOOM));
     return xhtml;
   }
 
@@ -415,26 +423,26 @@ public class JavascriptPluginInclusion {
             "myProfile.relations.dialog.delete.title",
             "myProfile.relations.dialog.delete.message")
         .produce()));
-    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_INVITME));
+    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_INVITME));
     return xhtml;
   }
 
   public static ElementContainer includeMessageMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(angularjsServicesPath + SILVERPEAS_PROFILE));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_MESSAGEME));
+    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_MESSAGEME));
     return xhtml;
   }
 
   public static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
-    xhtml.addElement(script(wysiwygPath + JAVASCRIPT_CKEDITOR));
-    xhtml.addElement(script(wysiwygPath + SILVERPEAS_WYSIWYG_TOOLBAR));
+    xhtml.addElement(script(WYSIWYG_PATH + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(WYSIWYG_PATH + SILVERPEAS_WYSIWYG_TOOLBAR));
     return xhtml;
   }
 
   public static ElementContainer includeResponsibles(final ElementContainer xhtml,
       String language) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_RESPONSIBLES));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_RESPONSIBLES));
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("jQuery.responsibles.labels.platformResponsible = '").append(
         ResourceLocator.getGeneralLocalizationBundle(language)
@@ -449,32 +457,32 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePopup(final ElementContainer xhtml) {
     xhtml.addElement(scriptContent(
         "var popupViewGeneratorIconPath='" + GraphicElementFactory.getIconsPath() + "';"));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_POPUP));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_POPUP));
     return xhtml;
   }
 
   public static String getDynamicPopupJavascriptLoadContent(final String jsCallback) {
-    return generateDynamicPluginLoading(javascriptPath + SILVERPEAS_POPUP, "popup",
+    return generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_POPUP, "popup",
         "window.popupViewGeneratorIconPath='" + GraphicElementFactory.getIconsPath() + "';",
         jsCallback);
   }
 
   public static ElementContainer includePreview(final ElementContainer xhtml) {
     includePopup(xhtml);
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PREVIEW));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_VIEW));
-    xhtml.addElement(script(flexPaperPath + FLEXPAPER_FLASH));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PREVIEW));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_VIEW));
+    xhtml.addElement(script(FLEX_PAPER_PATH + FLEXPAPER_FLASH));
     return xhtml;
   }
 
   public static ElementContainer includeNotifier(final ElementContainer xhtml) {
-    xhtml.addElement(script(jqueryPath + JQUERY_NOTIFIER_BASE));
-    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOP));
-    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOPCENTER));
-    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER));
-    xhtml.addElement(script(jqueryNotifierPath + "layouts/centerLeft.js"));
-    xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_THEME));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_NOTIFIER));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_NOTIFIER_BASE));
+    xhtml.addElement(script(JQUERY_NOTIFIER_PATH + JQUERY_NOTIFIER_TOP));
+    xhtml.addElement(script(JQUERY_NOTIFIER_PATH + JQUERY_NOTIFIER_TOPCENTER));
+    xhtml.addElement(script(JQUERY_NOTIFIER_PATH + JQUERY_NOTIFIER_CENTER));
+    xhtml.addElement(script(JQUERY_NOTIFIER_PATH + "layouts/centerLeft.js"));
+    xhtml.addElement(script(JQUERY_NOTIFIER_PATH + JQUERY_NOTIFIER_THEME));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_NOTIFIER));
     StringBuilder script = new StringBuilder();
     script.append("notySetupAjaxMessages();");
     String registredKeyOfMessages = MessageManager.getRegistredKey();
@@ -487,44 +495,44 @@ public class JavascriptPluginInclusion {
 
   public static ElementContainer includePassword(final ElementContainer xhtml) {
     includePopup(xhtml);
-    xhtml.addElement(link(stylesheetPath + STYLESHEET_PASSWORD));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_PASSWORD));
+    xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_PASSWORD));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PASSWORD));
     return xhtml;
   }
 
   public static ElementContainer includeCalendar(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + STYLESHEET_JQUERY_CALENDAR));
-    xhtml.addElement(link(stylesheetPath + STYLESHEET_SILVERPEAS_CALENDAR));
-    xhtml.addElement(script(jqueryPath + JQUERY_CALENDAR));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_CALENDAR));
+    xhtml.addElement(link(JQUERY_CSS_PATH + STYLESHEET_JQUERY_CALENDAR));
+    xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_SILVERPEAS_CALENDAR));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_CALENDAR));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_CALENDAR));
     return xhtml;
   }
 
   public static ElementContainer includeGauge(final ElementContainer xhtml) {
-    xhtml.addElement(script(jqueryPath + JQUERY_SVG));
-    xhtml.addElement(script(jqueryPath + JQUERY_GAUGE));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_GAUGE));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_SVG));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_GAUGE));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_GAUGE));
     return xhtml;
   }
 
   public static ElementContainer includeComment(final ElementContainer xhtml) {
-    xhtml.addElement(script(jqueryPath + JQUERY_AUTORESIZE));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_COMMENT));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_AUTORESIZE));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_COMMENT));
     return xhtml;
   }
 
   public static ElementContainer includeJQuery(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + GraphicElementFactory.JQUERYUI_CSS));
-    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERY_JS));
-    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYUI_JS));
-    xhtml.addElement(script(jqueryPath + GraphicElementFactory.JQUERYJSON_JS));
-    xhtml.addElement(script(javascriptPath + GraphicElementFactory.I18N_JS));
+    xhtml.addElement(link(JQUERY_CSS_PATH + GraphicElementFactory.JQUERYUI_CSS));
+    xhtml.addElement(script(JQUERY_PATH + GraphicElementFactory.JQUERY_JS));
+    xhtml.addElement(script(JQUERY_PATH + GraphicElementFactory.JQUERYUI_JS));
+    xhtml.addElement(script(JQUERY_PATH + GraphicElementFactory.JQUERYJSON_JS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + GraphicElementFactory.I18N_JS));
     return xhtml;
   }
 
   public static ElementContainer includeTags(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryPath + STYLESHEET_TAGS));
-    xhtml.addElement(script(jqueryPath + JQUERY_TAGS));
+    xhtml.addElement(link(JQUERY_PATH + STYLESHEET_TAGS));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_TAGS));
     return xhtml;
   }
 
@@ -541,7 +549,7 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
       xhtml.addElement(new script().setType(JAVASCRIPT_TYPE)
-          .setSrc(javascriptPath + SILVERPEAS_TOKENIZING + "?_=" + System.currentTimeMillis()));
+          .setSrc(JAVASCRIPT_PATH + SILVERPEAS_TOKENIZING + "?_=" + System.currentTimeMillis()));
     }
     StringBuilder sb = new StringBuilder();
     String setTokensCondition = "if(typeof setTokens === 'function')";
@@ -555,18 +563,18 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeMylinks(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_MYLINKS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_MYLINKS));
     return xhtml;
   }
 
   public static ElementContainer includeLang(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LANG));
     return xhtml;
   }
 
   public static ElementContainer includeHtml2CanvasAndDownload(final ElementContainer xhtml) {
-    xhtml.addElement(script(javascriptPath + HTML2CANVAS_JS));
-    xhtml.addElement(script(javascriptPath + DOWNLOAD_JS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + HTML2CANVAS_JS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + DOWNLOAD_JS));
     return xhtml;
   }
 
@@ -574,18 +582,18 @@ public class JavascriptPluginInclusion {
     includeHtml2CanvasAndDownload(xhtml);
     includeDatePicker(xhtml, language);
     includeQTip(xhtml);
-    xhtml.addElement(script(jqueryPath + CHART_JS));
-    xhtml.addElement(script(jqueryPath + CHART_PIE_JS));
-    xhtml.addElement(script(jqueryPath + CHART_TIME_JS));
-    xhtml.addElement(script(jqueryPath + CHART_CATEGORIES_JS));
-    xhtml.addElement(script(jqueryPath + CHART_AXISLABEL_JS));
-    xhtml.addElement(script(jqueryPath + CHART_TOOLTIP_JS));
+    xhtml.addElement(script(JQUERY_PATH + CHART_JS));
+    xhtml.addElement(script(JQUERY_PATH + CHART_PIE_JS));
+    xhtml.addElement(script(JQUERY_PATH + CHART_TIME_JS));
+    xhtml.addElement(script(JQUERY_PATH + CHART_CATEGORIES_JS));
+    xhtml.addElement(script(JQUERY_PATH + CHART_AXISLABEL_JS));
+    xhtml.addElement(script(JQUERY_PATH + CHART_TOOLTIP_JS));
     xhtml.addElement(scriptContent("var defaultChartColors = " + getDefaultPieChartColorsAsJson() +
         "; var chartPieCombinationThreshold = " + getThresholdOfPieCombination() +
         ";"));
     xhtml.addElement(scriptContent(
         JavascriptBundleProducer.fromCoreTemplate("chart", SILVERPEAS_CHART_I18N_ST, language)));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_CHART_JS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_CHART_JS));
     return xhtml;
   }
 
@@ -632,7 +640,7 @@ public class JavascriptPluginInclusion {
    */
   public static String getDynamicSubscriptionJavascriptLoadContent(final String jsCallback) {
     String subscriptionLoad =
-        generateDynamicPluginLoading(javascriptPath + SILVERPEAS_SUBSCRIPTION, "subscription",
+        generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_SUBSCRIPTION, "subscription",
             "jQuery.subscription.parameters.confirmNotificationSendingOnUpdateEnabled = " +
                 NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled() + ";",
             jsCallback);
@@ -649,7 +657,7 @@ public class JavascriptPluginInclusion {
     includeQTip(xhtml);
     xhtml.addElement(scriptContent(JavascriptBundleProducer
         .fromCoreTemplate("ddUpload", SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST, language)));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
     return xhtml;
   }
 
@@ -672,7 +680,7 @@ public class JavascriptPluginInclusion {
             .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
             .produce()));
-      xhtml.addElement(script(javascriptPath + SILVERPEAS_LAYOUT));
+      xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LAYOUT));
     }
     return xhtml;
   }
@@ -698,7 +706,7 @@ public class JavascriptPluginInclusion {
             "GML.action.select",
             "GML.list.changed.message")
         .produce()));
-    xhtml.addElement(script(javascriptPath + SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS));
     return xhtml;
   }
 

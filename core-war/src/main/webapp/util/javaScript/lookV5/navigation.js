@@ -267,16 +267,17 @@ function openComponent(componentId, componentLevel, componentURL) {
 
   //Envoi de la requete pour afficher le plan de classement du composant
   ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
-          'GetPDC=' + displayPDC(), 'ComponentId=' + currentComponentId);
+          'GetPDC=' + displayPDC(), 'ComponentId=' + currentComponentId).then(function() {
 
-  refreshPDCFrame();
-  refreshTopFrame();
+    refreshPDCFrame();
+    refreshTopFrame();
 
-  try {
-    openSpecificLookComponent(componentId, componentLevel);
-  } catch (e) {
-    //all looks don't need this callback function
-  }
+    try {
+      openSpecificLookComponent(componentId, componentLevel);
+    } catch (e) {
+      //all looks don't need this callback function
+    }
+  });
 }
 
 function closeCurrentComponent() {

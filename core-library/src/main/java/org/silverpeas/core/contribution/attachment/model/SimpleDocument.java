@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -46,8 +47,10 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -175,6 +178,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public SimpleDocument() {
+    // Nothing to do
   }
 
   public SimpleDocument(SimpleDocument simpleDocument) {
@@ -555,7 +559,7 @@ public class SimpleDocument implements Serializable {
         try {
           setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
         } catch (SQLException e) {
-          throw new RuntimeException(e.getMessage(), e);
+          throw new SilverpeasRuntimeException(e.getMessage(), e);
         }
       }
       setNodeName(DOCUMENT_PREFIX + getOldSilverpeasId());
@@ -686,8 +690,13 @@ public class SimpleDocument implements Serializable {
    * @return the attachment URL.
    */
   public String getAttachmentURL() {
-    return FileServerUtils
-        .getAttachmentURL(getPk().getInstanceId(), getFilename(), getPk().getId(), getLanguage());
+    Date date = getUpdated() != null ? getUpdated() : getCreated();
+    if (date == null) {
+      date = Date.from(Instant.now());
+    }
+    return UriBuilder.fromPath(FileServerUtils
+        .getAttachmentURL(getPk().getInstanceId(), getFilename(), getPk().getId(), getLanguage()))
+        .queryParam("t_", date.getTime()).build().toString();
   }
 
   public String getUniversalURL() {

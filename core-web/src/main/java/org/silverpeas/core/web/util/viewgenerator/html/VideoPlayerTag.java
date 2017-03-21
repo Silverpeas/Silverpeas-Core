@@ -40,9 +40,9 @@ public class VideoPlayerTag extends TagSupport {
 
   private String url;
 
-  private Integer width = DEFAULT_WIDTH;
+  private int width = DEFAULT_WIDTH;
 
-  private Integer height = DEFAULT_HEIGHT;
+  private int height = DEFAULT_HEIGHT;
 
   private boolean autostart = false;
 
@@ -52,8 +52,8 @@ public class VideoPlayerTag extends TagSupport {
     try {
       ElementContainer xhtmlContainer = new ElementContainer();
       VideoPlayer videoPlayer = new VideoPlayer(getUrl(), isAutostart());
-      videoPlayer.setHeight(String.valueOf(getHeight()) + "px");
-      videoPlayer.setWidth(String.valueOf(getWidth()) + "px");
+      videoPlayer.setHeight(getHeight());
+      videoPlayer.setWidth(getWidth());
       videoPlayer.init(xhtmlContainer);
       videoPlayer.renderIn(xhtmlContainer);
       xhtmlContainer.output(pageContext.getOut());
@@ -71,20 +71,20 @@ public class VideoPlayerTag extends TagSupport {
     this.url = url;
   }
 
-  public Integer getWidth() {
+  public int getWidth() {
     return width;
   }
 
   public void setWidth(Integer width) {
-    this.width = (width == null ? DEFAULT_WIDTH : width);
+    this.width = width == null ? DEFAULT_WIDTH : width;
   }
 
-  public Integer getHeight() {
+  public int getHeight() {
     return height;
   }
 
   public void setHeight(Integer height) {
-    this.height = (height == null ? DEFAULT_HEIGHT : height);
+    this.height = height == null ? DEFAULT_HEIGHT : height;
   }
 
   public Boolean isAutostart() {
