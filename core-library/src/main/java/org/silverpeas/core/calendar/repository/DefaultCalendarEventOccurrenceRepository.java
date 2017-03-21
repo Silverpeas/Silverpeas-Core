@@ -31,6 +31,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,10 +45,13 @@ public class DefaultCalendarEventOccurrenceRepository
   @Override
   public List<CalendarEventOccurrence> getAll(final Collection<CalendarEvent> events,
       final Period period) {
+    if (events.isEmpty()) {
+      return Collections.emptyList();
+    }
     NamedParameters parameters = newNamedParameters().add("events", events)
         .add("startDateTime", Period.asOffsetDateTime(period.getStartDate()))
         .add("endDateTime", Period.asOffsetDateTime(period.getEndDate()));
-    return findByNamedQuery("byEventAndByPeriod", parameters);
+    return findByNamedQuery("byEventsAndByPeriod", parameters);
   }
 
   @Override
@@ -55,7 +59,15 @@ public class DefaultCalendarEventOccurrenceRepository
     NamedParameters parameters = newNamedParameters().add("event", occurrence.getCalendarEvent())
         .add("date", Period.asOffsetDateTime(occurrence.getStartDate()));
     List<CalendarEventOccurrence> occurrences = findByNamedQuery("byEventSince", parameters);
-    delete(occurrences);
+    occurrences.forEach(o -> getEntityManager().remove(o));
+    return occurrences.size();
+  }
+
+  @Override
+  public long deleteAllByEvent(final CalendarEvent event) {
+    NamedParameters parameters = newNamedParameters().add("event", event);
+    List<CalendarEventOccurrence> occurrences = findByNamedQuery("byEvent", parameters);
+    occurrences.forEach(o -> getEntityManager().remove(o));
     return occurrences.size();
   }
 }

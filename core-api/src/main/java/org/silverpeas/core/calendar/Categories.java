@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -47,6 +49,13 @@ public class Categories implements Cloneable {
   @CollectionTable(name = "sb_cal_categories", joinColumns = {@JoinColumn(name = "id")})
   @Column(name = "category")
   private Set<String> categories = new HashSet<>();
+
+  /**
+   * Constructs an empty cateogries container. It is dedicated to the persistence engine.
+   */
+  public Categories() {
+    // empty for JPA.
+  }
 
   /**
    * Adds a category to a {@link Plannable}. The category is specified by its unique
@@ -164,10 +173,6 @@ public class Categories implements Cloneable {
     return categories.hashCode();
   }
 
-  public Categories() {
-
-  }
-
   /**
    * Adds to this categories all those from the specified ones.
    * @param categories the categories to add.
@@ -182,7 +187,8 @@ public class Categories implements Cloneable {
     try {
       clone = (Categories) super.clone();
       clone.categories = new HashSet<>(categories);
-    } catch (CloneNotSupportedException ignore) {
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return clone;
   }

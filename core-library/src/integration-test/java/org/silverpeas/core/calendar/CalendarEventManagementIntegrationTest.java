@@ -212,7 +212,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertThat(calendarEvent.getCalendar().getId(), is("ID_1"));
     assertThat(calendarEvent.isOnAllDay(), is(true));
     assertThat(calendarEvent.getStartDate(), is(LocalDate.parse("2016-01-09")));
-    assertThat(calendarEvent.getEndDate(), is(LocalDate.parse("2016-01-09")));
+    assertThat(calendarEvent.getEndDate(), is(LocalDate.parse("2016-01-10")));
     assertThat(calendarEvent.getTitle(), is("title E"));
     assertThat(calendarEvent.getDescription(), is("description E"));
     assertThat(calendarEvent.getVisibilityLevel(), is(VisibilityLevel.PUBLIC));
@@ -417,7 +417,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
     assertThat(event.isOnAllDay(), is(false));
-    assertThat(event.getSequence(), is(0l));
+    assertThat(event.getSequence(), is(0L));
 
     LocalDate eventEndDate = ((OffsetDateTime) event.getEndDate()).toLocalDate();
     event.setPeriod(Period.between(LocalDate.parse("2016-01-12"), eventEndDate));
@@ -426,7 +426,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
-    assertThat(event.getSequence(), is(1l));
+    assertThat(event.getSequence(), is(1L));
     assertThat(event.isOnAllDay(), is(true));
     assertThat(event.getStartDate(), is(LocalDate.parse("2016-01-12")));
     assertThat(event.getEndDate(), is(eventEndDate));
@@ -438,7 +438,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEvent event = calendar.event("ID_E_3").get();
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
-    assertThat(event.getSequence(), is(0l));
+    assertThat(event.getSequence(), is(0L));
 
     final String title = "An updated title";
     event.setTitle(title);
@@ -446,7 +446,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
-    assertThat(event.getSequence(), is(1l));
+    assertThat(event.getSequence(), is(1L));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getTitle(), is(title));
   }
@@ -457,7 +457,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     CalendarEvent event = calendar.event("ID_E_3").get();
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.isPlanned(), is(true));
-    assertThat(event.getSequence(), is(0l));
+    assertThat(event.getSequence(), is(0L));
 
     final String category = "Personal";
     event.getCategories().add(category);
@@ -465,7 +465,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
-    assertThat(event.getSequence(), is(1l));
+    assertThat(event.getSequence(), is(1L));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getCategories().contains(category), is(true));
   }
@@ -475,7 +475,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_3").get();
     Date lastUpdateDate = event.getLastUpdateDate();
-    assertThat(event.getSequence(), is(0l));
+    assertThat(event.getSequence(), is(0L));
     assertThat(event.isPlanned(), is(true));
     assertThat(event.getVisibilityLevel(), not(VisibilityLevel.CONFIDENTIAL));
 
@@ -484,12 +484,12 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
 
     assertEventIsOnlyUpdated(result);
     event = calendar.event("ID_E_3").get();
-    assertThat(event.getSequence(), is(1l));
+    assertThat(event.getSequence(), is(1L));
     assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
     assertThat(event.getVisibilityLevel(), is(VisibilityLevel.CONFIDENTIAL));
   }
 
-  @Test
+  @Test(expected = IllegalStateException.class)
   public void updateANonPlannedEventDoesNothing() {
     LocalDate today = LocalDate.now();
     LocalDate dayAfterTomorrow = today.plusDays(2);
@@ -500,10 +500,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .withAttribute(AN_ATTRIBUTE_NAME, AN_ATTRIBUTE_VALUE);
     assertThat(event.isPlanned(), is(false));
 
-    OperationResult result = event.update();
-
-    assertThat(result.isEmpty(), is(true));
-    assertThat(event.isPlanned(), is(false));
+    event.update();
   }
 
   @Test
@@ -513,8 +510,8 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));
     CalendarEventOccurrence occurrence = occurrences.get(0);
-    assertThat(occurrence.getSequence(), is(0l));
-    assertThat(occurrence.getCalendarEvent().getSequence(), is(0l));
+    assertThat(occurrence.getSequence(), is(0L));
+    assertThat(occurrence.getCalendarEvent().getSequence(), is(0L));
     assertThat(occurrence.getCalendarEvent().getRecurrence(), nullValue());
     assertThat(occurrence.getStartDate(), is(OffsetDateTime.parse("2016-01-05T08:00:00Z")));
     assertThat(occurrence.getEndDate(), is(OffsetDateTime.parse("2016-01-21T16:50:00Z")));
@@ -529,10 +526,10 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     occurrences = calendar.in(YearMonth.of(2016, 1)).getEventOccurrences();
     assertThat(occurrences.size(), is(1));
     occurrence = occurrences.get(0);
-    assertThat(occurrence.getSequence(), is(1l));
+    assertThat(occurrence.getSequence(), is(1L));
 
     CalendarEvent updatedEvent = occurrence.getCalendarEvent();
-    assertThat(updatedEvent.getSequence(), is(1l));
+    assertThat(updatedEvent.getSequence(), is(1L));
     assertThat(updatedEvent.getStartDate(), is(OffsetDateTime.parse("2016-01-05T08:00:00Z")));
     assertThat(updatedEvent.getEndDate(), is(OffsetDateTime.parse("2016-01-05T10:30:00Z")));
     assertThat(updatedEvent, is(event));

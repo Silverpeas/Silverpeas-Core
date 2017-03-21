@@ -34,6 +34,8 @@ import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import javax.persistence.*;
 import java.time.temporal.Temporal;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * An attendee is a user that participates in a calendar component that can be an event or anything
@@ -69,7 +71,11 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Transient
   private Attendee beforeUpdate = null;
 
+  /**
+   * Constructs an empty attendee. This constructor is dedicated to the persistence engine.
+   */
   protected Attendee() {
+    // empty for JPA.
   }
 
   /**
@@ -78,9 +84,18 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * user in Silverpeas, or anything from which we can notify him.
    * @param component a calendar component in which the attendee participates.
    */
-  public Attendee(String id, CalendarComponent component) {
+  protected Attendee(String id, CalendarComponent component) {
     this.attendeeId = id;
     this.component = component;
+  }
+
+  public void ifMatches(final Predicate<Attendee> filter, final Consumer<Attendee> then,
+      final Consumer<Attendee> otherwise) {
+    if (filter.test(this)) {
+      then.accept(this);
+    } else {
+      otherwise.accept(this);
+    }
   }
 
   /**
@@ -88,6 +103,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * user in Silverpeas, or whatever that can be used to notify the attendee.
    * @return the unique identifier of the attendee.
    */
+  @Override
   public String getId() {
     return this.attendeeId;
   }
@@ -97,7 +113,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * the actual full name of the user or its email address.
    * @return the attendee full name (either its first and last name or its email address)
    */
-  abstract public String getFullName();
+  public abstract String getFullName();
 
   /**
    * Gets the calendar component for which this attendee participates.
@@ -113,6 +129,15 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public ParticipationStatus getParticipationStatus() {
     return this.participationStatus;
+  }
+
+  /**
+   * Is this attendee participates in the specified calendar component?
+   * @param component a calendar component.
+   * @return true if he participates in the given calendar component, false otherwise.
+   */
+  public boolean isAttendeeIn(final CalendarComponent component) {
+    return component.getAttendees().contains(this);
   }
 
   /**
@@ -197,45 +222,55 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
 
   /**
    * Resets the attendance on the specified date.
+   * @param temporal a date
    * @deprecated
    * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
+  @Deprecated
   void resetParticipationOn(Temporal temporal) {
     this.participationOn.clearOn(temporal);
   }
 
   /**
    * Resets the attendance from the specified date.
+   * @param temporal a date
    * @deprecated
    * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
+  @Deprecated
   void resetParticipationFrom(Temporal temporal) {
     this.participationOn.clearFrom(temporal);
   }
 
   /**
    * Accepts the attendance on specified date only.
+   * @param date a date
    * @deprecated
    * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
+  @Deprecated
   public void acceptOn(Temporal date) {
     this.participationOn.set(date, ParticipationStatus.ACCEPTED);
   }
 
   /**
    * Declines the attendance on specified date only.
+   * @param date a date
    * @deprecated
    * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
+  @Deprecated
   public void declineOn(Temporal date) {
     this.participationOn.set(date, ParticipationStatus.DECLINED);
   }
 
   /**
    * Tentatively accepts the attendance on specified date only.
+   * @param date a date
    * @deprecated
    * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
    */
+  @Deprecated
   public void tentativelyAcceptOn(Temporal date) {
     this.participationOn.set(date, ParticipationStatus.TENTATIVE);
   }
@@ -281,19 +316,13 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     if (!(o instanceof Attendee)) {
       return false;
     }
-    if (!super.equals(o)) {
-      return false;
+    if (super.equals(o)) {
+      return true;
     }
 
     final Attendee attendee = (Attendee) o;
 
-    if (!attendeeId.equals(attendee.attendeeId)) {
-      return false;
-    }
-    if (!component.equals(attendee.component)) {
-      return false;
-    }
-    return true;
+    return attendeeId.equals(attendee.attendeeId) && component.equals(attendee.component);
   }
 
   /**
@@ -312,7 +341,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * @param calendarComponent a calendar component for which this attendee is cloned.
    * @return the clone of this attendee but for the specified calendar component.
    */
-  public Attendee cloneFor(CalendarComponent calendarComponent) {
+  Attendee cloneFor(CalendarComponent calendarComponent) {
     Attendee clone = clone();
     clone.component = calendarComponent;
     clone.participationOn = participationOn.clone();
@@ -320,12 +349,26 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     return clone;
   }
 
-  protected abstract Attendee getFromPersistenceContext();
+  /**
+   * Changes the calendar component in which this attendee participates.
+   * @param calendarComponent a component in a calendar.
+   */
+  void setCalendarComponent(final CalendarComponent calendarComponent) {
+    this.component = calendarComponent;
+  }
+
+  /**
+   * Reloads this attendee from the persistence context and returns it. If this attendee is
+   * modified and the modification is not yet saved, then the reloaded attendee state will differ
+   * from this instance.
+   * @return this attendee reloaded from the persistence context.
+   */
+  abstract Attendee reload();
 
   @Override
   protected void performBeforeUpdate() {
     super.performBeforeUpdate();
-    this.beforeUpdate = getFromPersistenceContext();
+    this.beforeUpdate = reload();
   }
 
   @PostPersist
@@ -378,7 +421,27 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     /**
      * The attendee has delegated its attendance to another attendee.
      */
-    DELEGATED
+    DELEGATED;
+
+    public boolean isAwaiting() {
+      return this == AWAITING;
+    }
+
+    public boolean isAccepted() {
+      return this == ACCEPTED;
+    }
+
+    public boolean isDeclined() {
+      return this == DECLINED;
+    }
+
+    public boolean isTentative() {
+      return this == TENTATIVE;
+    }
+
+    public boolean isDelegated() {
+      return this == DELEGATED;
+    }
   }
 
   /**
@@ -398,14 +461,26 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     /**
      * The attendee is just referred for information purpose only. He has not to be available.
      */
-    INFORMATIVE
+    INFORMATIVE;
+
+    public boolean isRequired() {
+      return this == REQUIRED;
+    }
+
+    public boolean isOptional() {
+      return this == OPTIONAL;
+    }
+
+    public boolean isInformative() {
+      return this == INFORMATIVE;
+    }
   }
 
   /**
    * A supplier of an instance of a concrete implementation of {@link Attendee}
    */
   @FunctionalInterface
-  public interface AttendeeSupplier {
+  interface AttendeeSupplier {
 
     /**
      * Supplies an instance of an {@link Attendee} to the specified calendar component.

@@ -297,7 +297,7 @@ public class RecurrentCalendarEventCreationTest {
   private void assertEventTimePeriodOf(CalendarEvent event) {
     if (event.isOnAllDay()) {
       assertThat(event.getStartDate(), is(today));
-      assertThat(event.getEndDate(), is(today));
+      assertThat(event.getEndDate(), is(today.plusDays(1)));
     } else {
       assertThat(event.getStartDate(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
       assertThat(event.getEndDate(), is(after2Hours.withOffsetSameInstant(ZoneOffset.UTC)));

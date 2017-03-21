@@ -39,28 +39,46 @@ import javax.persistence.EntityManager;
 @DiscriminatorValue("0")
 public class InternalAttendee extends Attendee {
 
+  /**
+   * Constructs an empty internal attendee. It is dedicated to the persistence engine.
+   */
+  protected InternalAttendee() {
+    // empty constructor for JPA
+  }
+
   private InternalAttendee(final User user, final CalendarComponent calendarComponent) {
     super(user.getId(), calendarComponent);
   }
 
-  protected InternalAttendee() {
+  /**
+   * Gets a supplier of an internal attendee representing the specified user in Silverpeas.
+   * @param user a user in Silverpeas.
+   * @return a supplier of an internal attendee.
+   */
+  static AttendeeSupplier fromUser(final User user) {
+    return p -> new InternalAttendee(user, p);
   }
 
+  /**
+   * Gets the full name of this attendee. The full name is made up of its first name followed of
+   * its last name.
+   * @return the attendee full name.
+   */
   @Override
   public String getFullName() {
     return getUser().getDisplayedName();
   }
 
-  public static AttendeeSupplier fromUser(final User user) {
-    return p -> new InternalAttendee(user, p);
-  }
-
+  /**
+   * Gets the user in Silverpeas that is behind this attendee.
+   * @return the user corresponding to this internal attendee.
+   */
   public User getUser() {
     return User.getById(getId());
   }
 
   @Override
-  protected Attendee getFromPersistenceContext() {
+  protected Attendee reload() {
     return Transaction.performInNew(() -> {
       EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
       return entityManager.find(InternalAttendee.class, getNativeId());

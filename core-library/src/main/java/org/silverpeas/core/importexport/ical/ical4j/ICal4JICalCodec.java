@@ -150,13 +150,13 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }
       // Add attendees
-      for (org.silverpeas.core.calendar.Attendee attendee : event.getAttendees()) {
+      event.getAttendees().forEach(a -> {
         try {
-          iCalEvent.getProperties().add(new Attendee(attendee.getId()));
+          iCalEvent.getProperties().add(new Attendee(a.getId()));
         } catch (URISyntaxException ex) {
-          throw new EncodingException("Malformed attendee URI: " + attendee, ex);
+          throw new EncodingException("Malformed attendee URI: " + a, ex);
         }
-      }
+      });
 
       iCalEvents.add(iCalEvent);
     }

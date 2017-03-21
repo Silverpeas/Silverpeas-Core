@@ -32,6 +32,7 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -148,6 +149,17 @@ public abstract class BaseCalendarTest extends DataSetTest {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from sb_cal_components")
         .where("id = ?", id)));
+  }
+
+  protected TableLine getCalendarOccurrenceTableLineById(String id) throws SQLException {
+    return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from sb_cal_occurrences").where("id = ?", id)));
+  }
+
+  protected List<TableLine> getCalendarOccurrencesTableLineByEventId(String eventId)
+      throws SQLException {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from sb_cal_occurrences").where("eventId = ?", eventId));
   }
 
   protected void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {

@@ -60,6 +60,21 @@ public class DayOfWeekOccurrence {
   @NotNull
   private DayOfWeek dayOfWeek;
 
+  protected DayOfWeekOccurrence() {
+  }
+
+  private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {
+    if (nth < LAST_DAY) {
+      throw new IllegalArgumentException(
+          "The nth occurrence must be an integer greater than or equal to LAST_DAY constant value");
+    }
+    if (dayOfWeek == null) {
+      throw new IllegalArgumentException("The day of week must be indicated!");
+    }
+    this.nth = nth;
+    this.dayOfWeek = dayOfWeek;
+  }
+
   /**
    * Creates an instance of DayOfWeekOccurrence representing the nth occurrence of the specified day
    * of week in a month or in a year.
@@ -122,18 +137,4 @@ public class DayOfWeekOccurrence {
     return new HashCodeBuilder().append(nth).append(dayOfWeek).toHashCode();
   }
 
-  protected DayOfWeekOccurrence() {
-  }
-
-  private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {
-    if (nth < LAST_DAY) {
-      throw new IllegalArgumentException(
-          "The nth occurrence must be an integer greater than or equal to LAST_DAY constant value");
-    }
-    if (dayOfWeek == null) {
-      throw new IllegalArgumentException("The day of week must be indicated!");
-    }
-    this.nth = nth;
-    this.dayOfWeek = dayOfWeek;
-  }
 }

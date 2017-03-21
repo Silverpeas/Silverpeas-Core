@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -51,6 +53,13 @@ public class Attributes implements Cloneable {
   @MapKeyColumn(name = "name")
   @Column(name = "value")
   private Map<String, String> attributes = new HashMap<>();
+
+  /**
+   * Constructs an empty attribute container. It is dedicated to the persistence engine.
+   */
+  public Attributes() {
+    // empty for JPA.
+  }
 
   /**
    * Sets the specified attributes.
@@ -104,10 +113,6 @@ public class Attributes implements Cloneable {
     return attributes.hashCode();
   }
 
-  public Attributes() {
-
-  }
-
   /**
    * Adds to this attributes all those from the specified ones.
    * @param attributes the attributes to add.
@@ -131,7 +136,8 @@ public class Attributes implements Cloneable {
     try {
       clone = (Attributes) super.clone();
       clone.attributes = new HashMap<>(attributes);
-    } catch (CloneNotSupportedException ignore) {
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return clone;
   }

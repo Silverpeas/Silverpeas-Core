@@ -29,6 +29,7 @@ import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Uid;
@@ -48,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
@@ -68,7 +68,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   @Override
-  public List<CalendarEventOccurrence> computeOccurrencesOf(final Stream<CalendarEvent> events,
+  public List<CalendarEventOccurrence> generateOccurrencesOf(final List<CalendarEvent> events,
       final Period inPeriod) {
     List<CalendarEventOccurrence> occurrences = new ArrayList<>();
     events.forEach(event -> {
@@ -89,6 +89,30 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     });
     occurrences.sort(Comparator.comparing(o -> Period.asOffsetDateTime(o.getStartDate())));
     return occurrences;
+  }
+
+  @Override
+  public long countOccurrencesOf(final CalendarEvent event, final Period inPeriod) {
+    if (!event.isPlanned()) {
+      return -1;
+    } else if (!event.isRecurrent()) {
+      return 1;
+    } else if (event.getRecurrence().isEndless()) {
+      return Long.MAX_VALUE;
+    }
+    RRule recurrenceRule = generateRecurrenceRule(event);
+    Date firstOccurrenceStartDate =
+        TemporalConverter.applyByType(event.getStartDate(), iCal4JDateCodec::encode,
+            iCal4JDateCodec::encode);
+    Date periodStartDate = TemporalConverter.applyByType(
+        inPeriod == null ? event.getStartDate() : inPeriod.getStartDate(), iCal4JDateCodec::encode,
+        iCal4JDateCodec::encode);
+    Date periodEndDate = TemporalConverter.applyByType(
+        inPeriod == null ? event.getRecurrence().getActualEndDate().get() : inPeriod.getStartDate(),
+        iCal4JDateCodec::encode, iCal4JDateCodec::encode);
+    return recurrenceRule.getRecur()
+        .getDates(firstOccurrenceStartDate, periodStartDate, periodEndDate,
+            firstOccurrenceStartDate instanceof DateTime ? Value.DATE_TIME : Value.DATE).size();
   }
 
   private RRule generateRecurrenceRule(final CalendarEvent event) {

@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
@@ -100,6 +101,21 @@ public class Recurrence implements Cloneable {
   private Set<OffsetDateTime> exceptionDates = new HashSet<>();
   @Transient
   private Temporal startDate;
+
+  /**
+   * Constructs an empty recurrence for the persistence engine.
+   */
+  protected Recurrence() {
+    // empty for JPA
+  }
+
+  /**
+   * Constructs a new recurrence instance from the specified recurrence period.
+   * @param frequency the frequency of the recurrence.
+   */
+  private Recurrence(final RecurrencePeriod frequency) {
+    withFrequency(frequency);
+  }
 
   /**
    * Creates a new recurrence from the specified frequency.
@@ -249,6 +265,7 @@ public class Recurrence implements Cloneable {
     }
     this.endDateTime = NO_RECURRENCE_END_DATE;
     this.count = recurrenceCount;
+    clearsUnnecessaryExceptionDates();
     return this;
   }
 
@@ -265,6 +282,7 @@ public class Recurrence implements Cloneable {
    */
   public Recurrence until(final Temporal endDate) {
     this.endDateTime = normalize(endDate);
+    this.count = NO_RECURRENCE_COUNT;
     clearsUnnecessaryExceptionDates();
     return this;
   }
@@ -336,6 +354,20 @@ public class Recurrence implements Cloneable {
   }
 
   /**
+   * Gets the actual end date of the recurrence by taking into account either the number of time
+   * the recurrent {@link Plannable} occurs or the end date of its recurrence.
+   * @return an optional recurrence actual end date. The optional is empty if the recurrence is
+   * endless.
+   */
+  public Optional<Temporal> getActualEndDate() {
+    if (!isEndless()) {
+      return Optional.of(getEndDate().orElse(
+          getFrequency().getRecurrenceEnd(this.getStartDate(), this.getRecurrenceCount())));
+    }
+    return Optional.empty();
+  }
+
+  /**
    * Gets the days of week on which the {@link Plannable} should recur each time.
    * @return an unmodifiable set of days of week or an empty set if no days of week are set to this
    * recurrence.
@@ -366,10 +398,17 @@ public class Recurrence implements Cloneable {
     }
 
     final Recurrence that = (Recurrence) o;
-    return count == that.count && frequency.equals(that.frequency) &&
-        (endDateTime != null ? endDateTime.equals(that.endDateTime) : that.endDateTime == null) &&
-        daysOfWeek.equals(that.daysOfWeek) && exceptionDates.equals(that.exceptionDates);
-
+    if (this.count != that.count || !frequency.equals(that.frequency)) {
+      return false;
+    }
+    if (this.endDateTime != null) {
+      if (!this.endDateTime.equals(that.endDateTime)) {
+        return false;
+      }
+    } else if (that.endDateTime != null) {
+      return false;
+    }
+    return daysOfWeek.equals(that.daysOfWeek) && exceptionDates.equals(that.exceptionDates);
   }
 
   @Override
@@ -383,15 +422,37 @@ public class Recurrence implements Cloneable {
 
   @Override
   public Recurrence clone() {
-    Recurrence clone = null;
     try {
-      clone = (Recurrence) super.clone();
+      Recurrence clone = (Recurrence) super.clone();
       clone.id = null;
       clone.daysOfWeek = new HashSet<>(daysOfWeek);
       clone.exceptionDates = new HashSet<>(exceptionDates);
-    } catch (CloneNotSupportedException ignore) {
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      throw new SilverpeasRuntimeException(e);
     }
-    return clone;
+  }
+
+  /**
+   * Is this recurrence identical in value than the specified one.
+   * @param recurrence the recurrence with which this recurrence is compared to.
+   * @return true if this recurrence is same as the given one, false otherwise.
+   */
+  boolean sameAs(final Recurrence recurrence) {
+    if (this.equals(recurrence)) {
+      return true;
+    }
+    if (recurrence == null) {
+      return false;
+    }
+    if (recurrence.count != this.count || !recurrence.daysOfWeek.equals(this.daysOfWeek) ||
+        !recurrence.startDate.equals(this.startDate)) {
+      return false;
+    }
+    return (recurrence.endDateTime == NO_RECURRENCE_END_DATE &&
+        this.endDateTime == NO_RECURRENCE_END_DATE) ||
+        (recurrence.endDateTime != NO_RECURRENCE_END_DATE &&
+            recurrence.endDateTime.equals(this.endDateTime));
   }
 
   /**
@@ -423,26 +484,12 @@ public class Recurrence implements Cloneable {
    * Clears all the registered exception dates.
    */
   void clearsAllExceptionDates() {
-    if (this.exceptionDates == null) {
-      return;
-    }
     exceptionDates.clear();
-  }
-
-  protected Recurrence() {
   }
 
   @PrePersist
   protected void generateId() {
     this.id = UUID.randomUUID().toString();
-  }
-
-  /**
-   * Constructs a new recurrence instance from the specified recurrence period.
-   * @param frequency the frequency of the recurrence.
-   */
-  private Recurrence(final RecurrencePeriod frequency) {
-    withFrequency(frequency);
   }
 
   /**
@@ -463,10 +510,10 @@ public class Recurrence implements Cloneable {
    * Clears all the registered exception dates which are after the end datetime of the recurrence.
    */
   private void clearsUnnecessaryExceptionDates() {
-    if (this.exceptionDates == null) {
-      return;
+    if (!this.exceptionDates.isEmpty()) {
+      getActualEndDate().ifPresent(e -> exceptionDates.removeIf(
+          exceptionDate -> !Period.asOffsetDateTime(e).isAfter(exceptionDate)));
     }
-    exceptionDates.removeIf(exceptionDate -> !this.endDateTime.isAfter(exceptionDate));
   }
 
   private OffsetDateTime normalize(final Temporal temporal) {

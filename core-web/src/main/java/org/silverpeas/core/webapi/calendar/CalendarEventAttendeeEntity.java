@@ -31,8 +31,6 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Attendee.PresenceStatus;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.ExternalAttendee;
-import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.WebEntity;
 
@@ -135,13 +133,13 @@ public class CalendarEventAttendeeEntity implements WebEntity {
     if (attendee == null) {
       // Attendee has not been found from the existing set
       if (StringUtil.isLong(getId())) {
-        attendee = InternalAttendee.fromUser(User.getById(getId())).to(event.asCalendarComponent());
+        attendee = event.getAttendees().add(User.getById(getId()))
+            .withPresenceStatus(getPresenceStatus());
       } else {
-        attendee = ExternalAttendee.withEmail(getId()).to(event.asCalendarComponent());
+        attendee = event.getAttendees().add(getId())
+            .withPresenceStatus(getPresenceStatus());
       }
-      event.getAttendees().add(attendee);
     }
-    attendee.setPresenceStatus(getPresenceStatus());
     return attendee;
   }
 

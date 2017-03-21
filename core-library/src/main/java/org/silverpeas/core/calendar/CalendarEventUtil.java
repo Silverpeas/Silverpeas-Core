@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.admin.user.model.User;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.Temporal;
@@ -32,6 +34,10 @@ import java.time.temporal.Temporal;
  * @author Yohann Chastagnier
  */
 public class CalendarEventUtil {
+
+  private CalendarEventUtil() {
+
+  }
 
   /**
    * Centralizes the format treatment of title display, according the given parameters, which
@@ -81,5 +87,15 @@ public class CalendarEventUtil {
   public static String formatDateWithOffset(final CalendarEvent event, final Temporal temporal,
       final ZoneId zoneId) {
     return getDateWithOffset(event, temporal, zoneId).toString();
+  }
+
+  /**
+   * Makes the specified user in Silverpeas an attendee in the given calendar component.
+   * @param user a user in Silverpeas.
+   * @param component the calendar component in which the user attends.
+   * @return an attendee in the specified calendar component.
+   */
+  public static Attendee asAttendee(final User user, final CalendarComponent component) {
+    return InternalAttendee.fromUser(user).to(component);
   }
 }

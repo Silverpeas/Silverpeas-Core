@@ -74,7 +74,7 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
   @Test
   public void getNoOccurrencesWithGivenParticipantsInAnEmptyPeriod() {
     List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.now(), LocalDate.now().plusWeeks(1))
+        Calendar.getTimeWindowBetween(LocalDate.now(), LocalDate.now().plusDays(1).plusWeeks(1))
             .filter(f -> f.onParticipants(User.getById("0"), User.getById("1"), User.getById("2")))
             .getEventOccurrences();
     assertThat(occurrences.isEmpty(), is(true));
@@ -90,7 +90,7 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
   @Test
   public void getNoOccurrencesWithNotMatchingParticipants() {
     List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 8), LocalDate.of(2016, 2, 27))
+        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 8), LocalDate.of(2016, 2, 28))
             .filter(f -> f.onParticipants(User.getById("2")))
             .getEventOccurrences();
     assertThat(occurrences.isEmpty(), is(true));
@@ -106,7 +106,7 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
   @Test
   public void getOccurrencesForAGivenAuthor() {
     List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 8))
+        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 9))
             .filter(f -> f.onParticipants(User.getById("0")))
             .getEventOccurrences();
 
@@ -126,7 +126,7 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
   @Test
   public void getOccurrencesForAGivenAttendee() {
     List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 8))
+        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 9))
             .filter(f -> f.onParticipants(User.getById("1")))
             .getEventOccurrences();
 
@@ -145,7 +145,7 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
   @Test
   public void getOccurrencesFromRecurrentEventsWithGivenParticipants() {
     List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 9), LocalDate.of(2016, 1, 23))
+        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 9), LocalDate.of(2016, 1, 24))
             .filter(f -> f.onParticipants(User.getById("0")))
             .getEventOccurrences();
 
@@ -168,7 +168,7 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
   @Test
   public void getOccurrencesFromSeveralCalendars() {
     List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 8))
+        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 9))
             .filter(f -> f.onCalendar(Calendar.getById("ID_3"), Calendar.getById("ID_2")))
             .getEventOccurrences();
 

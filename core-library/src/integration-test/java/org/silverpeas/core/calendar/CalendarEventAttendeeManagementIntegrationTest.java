@@ -31,13 +31,15 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -54,6 +56,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
 
   private static final String CALENDAR_ID = "ID_3";
   private static final String EVENT_WITH_ATTENDEE = "ID_E_1";
+  private static final String RECURRENT_EVENT = "ID_E_5";
   private static final String EVENT_WITH_ATTENDEE_AND_DATE_PART = "ID_E_5";
   private static final String EVENT_WITHOUT_ATTENDEE = "ID_E_4";
 
@@ -205,21 +208,156 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
         is(Attendee.ParticipationStatus.DELEGATED));
   }
 
+  @Test
+  public void addANewAttendeeJustForOneOccurrence() {
+    CalendarEvent event = CalendarEvent.getById(RECURRENT_EVENT);
+    List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
+    Attendee newAttendee = occurrences.get(3).getAttendees().add("toto@chez-les-papoos.com");
+    occurrences.get(3).update();
+
+    occurrences = allOccurrencesOf(event);
+    assertThat(occurrences.get(3).getAttendees().contains(newAttendee), is(true));
+  }
+
+  @Test
+  public void deleteAnAttendeeJustForOneOccurrence() {
+    CalendarEvent event = CalendarEvent.getById(RECURRENT_EVENT);
+    event.getAttendees().add("john.doe@silverpeas.org");
+    event.update();
+
+    List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
+    occurrences.get(3).getAttendees().removeIf(a -> a.getId().equals("john.doe@silverpeas.org"));
+
+    occurrences.get(3).update();
+
+    occurrences = allOccurrencesOf(event);
+    for (int i = 0; i < occurrences.size(); i++) {
+      if (i == 3) {
+        assertThat(occurrences.get(i).getAttendees().get("john.doe@silverpeas.org").isPresent(),
+            is(false));
+      } else {
+        assertThat(occurrences.get(i).getAttendees().get("john.doe@silverpeas.org").isPresent(),
+            is(true));
+      }
+    }
+  }
+
+  @Test
+  public void addANewAttendeeSinceAGivenOccurrence() {
+    CalendarEvent event = CalendarEvent.getById(RECURRENT_EVENT);
+    List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
+    Attendee newAttendee = occurrences.get(3).getAttendees().add("toto@chez-les-papoos.com");
+    event.updateSince(occurrences.get(3));
+
+    occurrences = allOccurrencesOf(event);
+    for (int i = 0; i < occurrences.size(); i++) {
+      if (i >= 3) {
+        assertThat(occurrences.get(i).getAttendees().contains(newAttendee), is(true));
+      } else {
+        assertThat(occurrences.get(i).getAttendees().contains(newAttendee), is(false));
+      }
+    }
+  }
+
+  @Test
+  public void deleteAnAttendeeSinceAGivenOccurrence() {
+    CalendarEvent event = CalendarEvent.getById(RECURRENT_EVENT);
+    event.getAttendees().add("john.doe@silverpeas.org");
+    event.update();
+
+    List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
+    occurrences.get(3).getAttendees().removeIf(a -> a.getId().equals("john.doe@silverpeas.org"));
+
+    occurrences.get(3).updateSince();
+
+    occurrences = allOccurrencesOf(event);
+    for (int i = 0; i < occurrences.size(); i++) {
+      if (i >= 3) {
+        assertThat(occurrences.get(i).getAttendees().get("john.doe@silverpeas.org").isPresent(),
+            is(false));
+      } else {
+        assertThat(occurrences.get(i).getAttendees().get("john.doe@silverpeas.org").isPresent(),
+            is(true));
+      }
+    }
+  }
+
+  @Test
+  public void changeTheParticipationStatusForJustOneOccurrence() {
+    CalendarEvent event = CalendarEvent.getById(RECURRENT_EVENT);
+    event.getAttendees().add("john.doe@silverpeas.org").tentativelyAccept();
+    event.update();
+
+    List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
+    Optional<Attendee> john = occurrences.get(3).getAttendees().get("john.doe@silverpeas.org");
+    assertThat(john.isPresent(), is(true));
+    assertThat(john.get().getParticipationStatus().isTentative(), is(true));
+    john.get().accept();
+
+    occurrences.get(3).update();
+
+    occurrences = allOccurrencesOf(event);
+    for (int i = 0; i < occurrences.size(); i++) {
+      john = occurrences.get(i).getAttendees().get("john.doe@silverpeas.org");
+      assertThat(john.isPresent(), is(true));
+      if (i == 3) {
+        assertThat(john.get().getParticipationStatus().isAccepted(), is(true));
+      } else {
+        assertThat(john.get().getParticipationStatus().isTentative(), is(true));
+      }
+    }
+  }
+
+  @Test
+  public void changeTheParticipationStatusSinceAGivenOccurrence() {
+    CalendarEvent event = CalendarEvent.getById(RECURRENT_EVENT);
+    event.getAttendees().add("john.doe@silverpeas.org").tentativelyAccept();;
+    event.update();
+
+    List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
+    Optional<Attendee> john = occurrences.get(3).getAttendees().get("john.doe@silverpeas.org");
+    assertThat(john.isPresent(), is(true));
+    assertThat(john.get().getParticipationStatus().isTentative(), is(true));
+    john.get().accept();
+
+    occurrences.get(3).updateSince();
+
+    occurrences = allOccurrencesOf(event);
+    for (int i = 0; i < occurrences.size(); i++) {
+      john = occurrences.get(i).getAttendees().get("john.doe@silverpeas.org");
+      assertThat(john.isPresent(), is(true));
+      if (i >= 3) {
+        assertThat(john.get().getParticipationStatus().isAccepted(), is(true));
+      } else {
+        assertThat(john.get().getParticipationStatus().isTentative(), is(true));
+      }
+    }
+  }
+
   private User expectedUser() {
     User user = mock(User.class);
     when(user.getId()).thenReturn("1");
     return user;
   }
 
-  public static AttendeeFinder in(final Set<Attendee> attendees) {
+  private List<CalendarEventOccurrence> allOccurrencesOf(final CalendarEvent event) {
+    return event.getCalendar()
+        .between(LocalDate.parse("2016-01-01"), LocalDate.parse("2017-01-01"))
+        .getEventOccurrences()
+        .stream()
+        .filter(o -> o.getCalendarEvent().equals(event))
+        .collect(Collectors.toList());
+  }
+
+  public static AttendeeFinder in(final Attendees attendees) {
     return new AttendeeFinder(attendees);
   }
 
   private static class AttendeeFinder {
 
-    private final Set<Attendee> attendees;
+    private final Attendees attendees;
 
-    public AttendeeFinder(final Set<Attendee> attendees) {
+    public AttendeeFinder(final Attendees attendees) {
       this.attendees = attendees;
     }
 

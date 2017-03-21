@@ -30,6 +30,7 @@ import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.calendar.Attendees;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -605,7 +606,7 @@ public class CalendarResource extends AbstractCalendarResource {
    */
   @SuppressWarnings("unchecked")
   public <T extends CalendarEventAttendeeEntity> List<T> asAttendeeWebEntities(
-      Collection<Attendee> attendees) {
+      final Attendees attendees) {
     return attendees.stream()
         .map(attendee -> (T) asAttendeeWebEntity(attendee))
         .collect(Collectors.toList());

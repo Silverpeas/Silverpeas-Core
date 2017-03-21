@@ -48,11 +48,11 @@ INSERT INTO SB_Cal_Recurrence_Exception (recurrenceId, recur_exceptionDate) VALU
 INSERT INTO sb_cal_components
   (id, calendarId, startDate, endDate, inDays, title, description, priority, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
 VALUES
-  ('ID_C_1', 'ID_3', '2016-01-08T00:00:00Z', '2016-01-20T23:59:00Z', TRUE, 'title A', 'description A', 0, '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
+  ('ID_C_1', 'ID_3', '2016-01-08T00:00:00Z', '2016-01-21T00:00:00Z', TRUE, 'title A', 'description A', 0, '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
   ('ID_C_2', 'ID_2', '2016-01-05T08:00:00Z', '2016-01-21T16:50:00Z', FALSE,'title B', 'description B', 0, '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
   ('ID_C_3', 'ID_1', '2016-01-08T18:30:00Z', '2016-01-22T13:38:00Z', FALSE,'title C', 'description C', 1, '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
   ('ID_C_4', 'ID_3', '2016-01-01T00:00:00Z', '2016-01-23T00:00:00Z', FALSE,'title D', 'description D', 0, '2016-07-29T16:50:00Z', '1', '2016-07-29T16:50:00Z', '1', 0),
-  ('ID_C_5', 'ID_1', '2016-01-09T00:00:00Z', '2016-01-09T23:59:00Z', TRUE, 'title E', 'description E', 1, '2016-07-29T16:50:00Z', '0', '2016-07-29T16:55:00Z', '1', 1);
+  ('ID_C_5', 'ID_1', '2016-01-09T00:00:00Z', '2016-01-10T00:00:00Z', TRUE, 'title E', 'description E', 1, '2016-07-29T16:50:00Z', '0', '2016-07-29T16:55:00Z', '1', 1);
 
 INSERT INTO sb_cal_event
   (id, componentId, visibility, recurrenceId)

@@ -44,7 +44,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -72,15 +71,17 @@ import java.util.Set;
 @Entity
 @Table(name = "sb_cal_occurrences")
 @NamedQueries({
-    @NamedQuery(name = "byEventSince", query =
-        "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event AND " +
-            "o.component.period.startDateTime >= :date"),
     @NamedQuery(name = "byEventsAndByPeriod", query =
         "SELECT o FROM CalendarEventOccurrence o WHERE o.event in :events AND " +
             "((o.component.period.startDateTime <= :startDateTime AND " +
-            "  o.component.period.endDateTime >= :startDateTime) OR " +
+            "  o.component.period.endDateTime > :startDateTime) OR " +
             "(o.component.period.startDateTime >= :startDateTime AND " +
-            "  o.component.period.startDateTime <= :endDateTime))")})
+            "  o.component.period.startDateTime < :endDateTime))"),
+    @NamedQuery(name = "byEventSince", query =
+        "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event AND " +
+            "o.component.period.startDateTime >= :date"),
+    @NamedQuery(name = "byEvent", query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event " +
+        "= :event")})
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
     implements IdentifiableEntity, Occurrence {
@@ -89,16 +90,10 @@ public class CalendarEventOccurrence
   @JoinColumn(name = "eventId", referencedColumnName = "id")
   private CalendarEvent event;
 
-  @OneToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @OneToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval =
+      true)
   @JoinColumn(name = "componentId", referencedColumnName = "id", unique = true)
   private CalendarComponent component;
-
-  static CalendarEventOccurrence getById(final String id) {
-    return Transaction.performInOne(() -> {
-      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.getById(id);
-    });
-  }
 
   /**
    * Constructor for only persistence context.
@@ -122,6 +117,13 @@ public class CalendarEventOccurrence
     this.component.setPeriod(Period.between(startDate, endDate));
   }
 
+  static CalendarEventOccurrence getById(final String id) {
+    return Transaction.performInOne(() -> {
+      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+      return repository.getById(id);
+    });
+  }
+
   private static CalendarEventOccurrenceGenerator generator() {
     return CalendarEventOccurrenceGenerator.get();
   }
@@ -134,8 +136,14 @@ public class CalendarEventOccurrence
    */
   static List<CalendarEventOccurrence> getOccurrencesIn(
       final CalendarTimeWindow timeWindow) {
-
-    return generator().generateOccurrencesIn(timeWindow);
+    List<CalendarEventOccurrence> occurrences = generator().generateOccurrencesIn(timeWindow);
+    List<CalendarEventOccurrence> modified = CalendarEventOccurrenceRepository.get()
+        .getAll(timeWindow.getEvents(), timeWindow.getPeriod());
+    modified.forEach(o -> {
+      int idx = occurrences.indexOf(o);
+      occurrences.set(idx, o);
+    });
+    return occurrences;
   }
 
   /**
@@ -161,11 +169,6 @@ public class CalendarEventOccurrence
   @Override
   public Temporal getEndDate() {
     return this.component.getPeriod().getEndDate();
-  }
-
-  @Override
-  public boolean isPersisted() {
-    return false;
   }
 
   /**
@@ -224,7 +227,7 @@ public class CalendarEventOccurrence
     this.component.setTitle(title);
   }
 
-  public Set<Attendee> getAttendees() {
+  public Attendees getAttendees() {
     return this.component.getAttendees();
   }
 
@@ -322,74 +325,138 @@ public class CalendarEventOccurrence
    * @see CalendarComponent#getSequence()
    */
   public long getSequence() {
-    return (this.component.isPersisted() ? this.component.getSequence() : this.event.getSequence());
+    return this.component.isPersisted() ? this.component.getSequence() : this.event.getSequence();
   }
 
   /**
-   * Updates all the occurrences of the event it belongs to since and including this
-   * occurrence with the modifications. The modifications are saved for
-   * all the occurrences since and including this occurrence. The occurrences occurring
-   * before the specified occurrence won't be updated.
-   * <p>
-   * If the specified occurrence is in fact the single one of the event it belongs to, then the
-   * event is itself updated (this is equivalent to the {@link CalendarEvent#update()} method.
-   * Otherwise a new event is created from the modifications to this occurrence.
+   * Gets the {@link CalendarComponent} representation of this occurrence. Any change to the
+   * returned calendar component will change also the related occurrence.
+   * @return a {@link CalendarComponent} instance representing this event occurrence (without the
+   * specific properties related to an event occurrence).
+   */
+  public CalendarComponent asCalendarComponent() {
+    return this.component;
+  }
+
+  /**
+   * Updates this occurrence and all of the forthcoming occurrences of the same event with the
+   * changes in this occurrence.
+   *
+   * If the event is non recurrent, then the event is itself updated. Otherwise a new event is
+   * created for this occurrence and all of the forthcoming occurrences and with the modifications
+   * carried by this occurrences. The recurrence of the original event is updated to end up at this
+   * occurrence minus one day (the recurrence end date is inclusive).
+   *
+   * In the case the temporal period of the occurrences is modified, the participation status of
+   * all the attendees in the occurrences is cleared.
+   *
+   * This is equivalent to
+   * <pre>{@code EventOperationResult result = event.updateSince(this)}</pre>
+   *
+   * @see CalendarEvent#updateSince(CalendarEventOccurrence)
+   *
+   * @return the result of the update.
    */
   public EventOperationResult updateSince() {
     return getCalendarEvent().updateSince(this);
   }
 
   /**
-   * Updates only this occurrence among the occurrences of the event it belongs to. If the given
-   * occurrence is the single one of the event then the event is itself updated. Otherwise the
-   * changes in the occurrence are persisted and its sequence number is incremented by one,
-   * diverging then from the sequence number of the event it comes from.
+   * Updates only this occurrence among the occurrences of the event it comes from.
+   *
+   * If the event is non recurrent, then the event is itself updated. Otherwise the changes in
+   * this occurrence are persisted and its sequence number is incremented by one, diverging then
+   * from the sequence number of the event it comes from.
    * <p>
-   * In the case the date at which the occurrence starts is modified, the participation status
+   * In the case the temporal period of the occurrence is modified, the participation status
    * of all the attendees in this occurrence is cleared.
+   *
+   *  This is equivalent to
+   * <pre>{@code EventOperationResult result = event.updateOnly(this)}</pre>
+   *
+   * @see CalendarEvent#updateOnly(CalendarEventOccurrence)
+   *
+   * @return the result of the update.
    */
   public EventOperationResult update() {
     return getCalendarEvent().updateOnly(this);
   }
 
   /**
-   * Updates the event and all its occurrences from the data of this occurrence.
-   */
-  public EventOperationResult updateEvent() {
-    return getCalendarEvent().updateFrom(this);
-  }
-
-  /**
-   * Deletes from the event it belongs to all the occurrences since the occurrence referred by this
-   * occurrence.
-   * <p>
-   * <ul>
-   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
-   * <li>If the occurrence is one of among any of the event, then the recurrence end datetime is
-   * updated.</li>
-   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
-   * </ul>
+   * Deletes this occurrence and all of the forthcoming occurrences of the same event.
+   *
+   * If the event is non recurrent, then the event is itself deleted. Otherwise the
+   * original starting date of this occurrence and of all of the forthcoming occurrences are added
+   * in the exception dates of the event's recurrence rule. If some of the occurrences were
+   * persisted, then they are all removed from the persistence context.
+   *
+   *  This is equivalent to
+   * <pre>{@code EventOperationResult result = event.deleteSince(this)}</pre>
+   *
+   * @see CalendarEvent#deleteSince(CalendarEventOccurrence)
+   *
+   * @return the result of the deletion.
    */
   public EventOperationResult deleteSince() {
     return getCalendarEvent().deleteSince(this);
   }
 
   /**
-   * Deletes from this event it belongs to the occurrence referred by this occurrence.
-   * <p>
-   * <ul>
-   * <li>If the occurrence is the single one of the event, then the event is deleted.</li>
-   * <li>If the occurrence is one of among any of the event, then the datetime at which this
-   * occurrence starts is added as an exception in the recurrence rule of the event.</li>
-   * <li>If the occurrence is the last one of the event, then the event is deleted.</li>
-   * </ul>
+   * Deletes only this occurrence among the occurrences of the event it comes from.
+   *
+   * If the event is non recurrent, then the event is itself deleted. Otherwise the
+   * original starting date of this occurrence is added in the exception dates of the event's
+   * recurrence rule. If the occurrence was previously persisted, then it is removed from the
+   * persistence context.
+   *
+   * This is equivalent to
+   * <pre>{@code EventOperationResult result = event.deleteOnly(this)}</pre>
+   *
+   * @see CalendarEvent#deleteOnly(CalendarEventOccurrence)
+   *
+   * @return the result of the deletion.
    */
   public EventOperationResult delete() {
     return getCalendarEvent().deleteOnly(this);
   }
 
   /**
+   * Converts this occurrence of a calendar event into an unplanned non-recurrent
+   * {@link CalendarEvent} instance. This method is dedicated to the {@link CalendarEvent} class.
+   * @return a new {@link CalendarEvent} instance from this occurrence.
+   * @see CalendarEvent#from(CalendarEventOccurrence)
+   */
+  CalendarEvent toCalendarEvent() {
+    return CalendarEvent.from(this);
+  }
+
+  /**
+   * Converts this occurrence of a calendar event into an unplanned recurrent {@link CalendarEvent}
+   * instance. This method is dedicated to the {@link CalendarEvent} class.
+   * <p>
+   * If the occurrence comes from a non-recurrent event, then the returned event won't be
+   * neither recurrent. Otherwise the recurrence of the new event will start at the start date of
+   * this occurrence and will end up at the actual end date of the recurrence of the event of this
+   * occurrence.
+   * @return a new possibly recurrent {@link CalendarEvent} instance from this occurrence.
+   * @see CalendarEvent#from(CalendarEventOccurrence)
+   */
+  CalendarEvent toRecurrentCalendarEvent() {
+    CalendarEvent newEvent = toCalendarEvent();
+    if (this.getCalendarEvent().isRecurrent()) {
+      Recurrence recurrence = this.getCalendarEvent().getRecurrence().clone();
+      recurrence.clearsAllExceptionDates();
+      if (!this.getCalendarEvent().getRecurrence().isEndless()) {
+        recurrence.until(this.getCalendarEvent().getRecurrence().getActualEndDate().get());
+      }
+      newEvent.recur(recurrence);
+    }
+    return newEvent;
+  }
+
+  /**
    * Saves this occurrence of a calendar event into a data source so that it can be get later.
+   * This method is dedicated to the {@link CalendarEvent} class.
    * <p>
    * Saving an event occurrence is done when this occurrence has changed from the event or from
    * its original planning in the timeline of a calendar. This is only done with occurrences of
@@ -408,6 +475,7 @@ public class CalendarEventOccurrence
   /**
    * Deletes this occurrence of a calendar event in the data source. If this occurrences wasn't
    * persisted, then nothing is done.
+   * This method is dedicated to the {@link CalendarEvent} class.
    */
   void deleteFromPersistence() {
     Transaction.performInOne(() -> {
@@ -419,7 +487,7 @@ public class CalendarEventOccurrence
 
   /**
    * Deletes this occurrence and all the occurrences belonging to the same event of this occurrence
-   * and that are after this one.
+   * and that are after this one. This method is dedicated to the {@link CalendarEvent} class.
    * @return the count of actually occurrences removed from the data source.
    */
   long deleteAllSinceMeFromThePersistence() {
@@ -427,6 +495,16 @@ public class CalendarEventOccurrence
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       return repository.deleteSince(this);
     });
+  }
+
+  /**
+   * Is the date on which this occurrence is planned has changed from its previous state.
+   * @return true if the date of this occurrence has just modified. False otherwise.
+   */
+  boolean isDateChanged() {
+    CalendarEventOccurrence previous = CalendarEventOccurrence.getById(this.getId());
+    return (previous != null && !previous.getPeriod().equals(this.getPeriod())) ||
+        (previous == null && !this.getOriginalStartDate().equals(this.getStartDate()));
   }
 
   private String generateId(CalendarEvent event, Temporal occurrenceStartDate) {

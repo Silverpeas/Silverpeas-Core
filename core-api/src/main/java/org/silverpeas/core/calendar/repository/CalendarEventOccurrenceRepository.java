@@ -63,7 +63,15 @@ public interface CalendarEventOccurrenceRepository
    * the given occurrence comes from.
    * @param occurrence the occurrence since which all the others occurrences, including the given
    * one, have to be deleted.
+   * @return the number of actually deleted occurrences.
    */
   long deleteSince(final CalendarEventOccurrence occurrence);
+
+  /**
+   * Deletes all the occurrences of the specified calendar event.
+   * @param event the calendar event for which all the persisted occurrences have to be deleted.
+   * @return the number of actually deleted occurrences.
+   */
+  long deleteAllByEvent(final CalendarEvent event);
 }
   

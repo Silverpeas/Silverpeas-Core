@@ -39,24 +39,37 @@ import javax.persistence.EntityManager;
 @DiscriminatorValue("1")
 public class ExternalAttendee extends Attendee {
 
+  /**
+   * Constructs an empty external attendee. It is dedicated to the persistence engine.
+   */
+  protected ExternalAttendee() {
+    // empty constructor for JPA
+  }
+
   private ExternalAttendee(final String email, final CalendarComponent calendarComponent) {
     super(email, calendarComponent);
   }
 
+  /**
+   * Gets a supplier of an external attendee having the specified email address.
+   * @param email the email address of the attendee to supply later.
+   * @return a supplier of an external attendee.
+   */
+  static AttendeeSupplier withEmail(final String email) {
+    return p -> new ExternalAttendee(email, p);
+  }
+
+  /**
+   * Gets the email address of this attendee.
+   * @return the attendee's email address.
+   */
   @Override
   public String getFullName() {
     return this.getId();
   }
 
-  protected ExternalAttendee() {
-  }
-
-  public static AttendeeSupplier withEmail(final String email) {
-    return p -> new ExternalAttendee(email, p);
-  }
-
   @Override
-  protected Attendee getFromPersistenceContext() {
+  protected Attendee reload() {
     return Transaction.performInNew(() -> {
       EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
       return entityManager.find(ExternalAttendee.class, getNativeId());

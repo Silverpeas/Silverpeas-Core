@@ -33,6 +33,7 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceReference;
+import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
@@ -269,7 +270,10 @@ public class CalendarWebServiceProvider {
           optionalPersistedEvent = eventImport.getCalendar().event(event.getExternalId());
         }
         if (optionalPersistedEvent.isPresent()) {
-          event.getAttendees().addAll(optionalPersistedEvent.get().getAttendees());
+          optionalPersistedEvent.get().getAttendees().forEach(a -> a.ifMatches(
+              a1 -> a1 instanceof InternalAttendee,
+              a1 -> event.getAttendees().add(((InternalAttendee)a1).getUser()),
+              a1 -> event.getAttendees().add(a1.getId())));
           optionalPersistedEvent.get().merge(event);
         } else {
           event.planOn(eventImport.getCalendar());

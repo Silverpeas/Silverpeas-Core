@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.persistence.datasource.repository.Parameters;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -99,20 +99,22 @@ public class NamedParameters implements Parameters {
       namedParameters.put(name,
           new DateCollectionNamedParameter(name, CollectionUtil.asSet((Date[]) value),
               temporalType));
-    } else if (value instanceof Collection && ((Collection) value).iterator().next() instanceof Date
-        && temporalType != null) {
+    } else if (value instanceof Collection && !((Collection) value).isEmpty() &&
+        ((Collection) value).iterator().next() instanceof Date && temporalType != null) {
       namedParameters.put(name,
           new DateCollectionNamedParameter(name, new HashSet<Date>((Collection) value),
               temporalType)
       );
     } else if (value instanceof Date && temporalType != null) {
       namedParameters.put(name, new DateNamedParameter(name, (Date) value, temporalType));
-    } else if (value instanceof Object[] && ((Object[]) value)[0] instanceof Enum) {
+    } else if (value instanceof Object[] && ((Object[]) value).length > 0 &&
+        ((Object[]) value)[0] instanceof Enum) {
       namedParameters
           .put(name, new EnumCollectionNamedParameter(name, CollectionUtil.asSet((Enum[]) value)));
-    } else if (value instanceof Collection && ((Collection) value).iterator().next() instanceof Enum) {
-      namedParameters
-          .put(name, new EnumCollectionNamedParameter(name, new HashSet<Enum>((Collection) value)));
+    } else if (value instanceof Collection && !((Collection) value).isEmpty() &&
+        ((Collection) value).iterator().next() instanceof Enum) {
+      namedParameters.put(name,
+          new EnumCollectionNamedParameter(name, new HashSet<>((Collection) value)));
     } else if (value instanceof Enum) {
       namedParameters.put(name, new EnumNamedParameter(name, (Enum) value));
     } else {

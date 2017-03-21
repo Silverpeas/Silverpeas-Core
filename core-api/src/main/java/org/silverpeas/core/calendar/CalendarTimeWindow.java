@@ -24,12 +24,12 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
+import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * This class represents a window of time within which calendar events can occur. Some constraints
@@ -40,6 +40,7 @@ public class CalendarTimeWindow {
 
   private CalendarEventFilter filter = new CalendarEventFilter();
   private final LocalDate startDate, endDate;
+  private List<CalendarEvent> events;
 
   CalendarTimeWindow(final LocalDate startDate, final LocalDate endDate) {
     this.startDate = startDate;
@@ -67,10 +68,18 @@ public class CalendarTimeWindow {
 
   /**
    * Gets the date at which this window of time ends.
-   * @return the inclusive end date of this window of time.
+   * @return the exclusive end date of this window of time.
    */
   public LocalDate getEndDate() {
     return endDate;
+  }
+
+  /**
+   * Gets the temporal period covered by this window of time.
+   * @return the period covered by this window of time.
+   */
+  public Period getPeriod() {
+    return Period.between(getStartDate(), getEndDate());
   }
 
   /**
@@ -89,9 +98,12 @@ public class CalendarTimeWindow {
    * this window of time will be returned.
    * @return a list of events that occur in this window of time.
    */
-  public Stream<CalendarEvent> getEvents() {
-    return CalendarEventRepository.get()
-        .streamAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
-            endDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).minusMinutes(1).toOffsetDateTime());
+  public List<CalendarEvent> getEvents() {
+    if (events == null) {
+      events = CalendarEventRepository.get()
+          .getAllBetween(filter, startDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
+              endDate.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime());
+    }
+    return events;
   }
 }

@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Event (
 );
 
 CREATE TABLE IF NOT EXISTS SB_Cal_Occurrences (
-  id             VARCHAR(40)   NOT NULL,
+  id             VARCHAR(60)   NOT NULL,
   eventId        VARCHAR(40)   NOT NULL,
   componentId    VARCHAR(40)   NOT NULL,
   CONSTRAINT PK_Occurrence           PRIMARY KEY (id),

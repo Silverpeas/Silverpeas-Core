@@ -53,7 +53,7 @@ public class CalendarEventCreationTest {
     CalendarEvent event =
         CalendarEvent.on(today).withTitle(EVENT_TITLE).withDescription(EVENT_DESCRIPTION);
     assertThat(event.getStartDate(), is(today));
-    assertThat(event.getEndDate(), is(today));
+    assertThat(event.getEndDate(), is(today.plusDays(1)));
     assertTitleAndDescriptionOf(event);
     assertDefaultValuesOf(event);
   }

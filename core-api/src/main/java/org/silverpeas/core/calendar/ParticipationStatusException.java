@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -161,17 +162,14 @@ public class ParticipationStatusException implements Cloneable {
     return participationOn.hashCode();
   }
 
-  public ParticipationStatusException() {
-
-  }
-
   @Override
   public ParticipationStatusException clone() {
     ParticipationStatusException clone = null;
     try {
       clone = (ParticipationStatusException) super.clone();
       clone.participationOn = new HashMap<>(participationOn);
-    } catch (CloneNotSupportedException ignore) {
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return clone;
   }

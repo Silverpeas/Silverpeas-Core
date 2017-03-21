@@ -23,13 +23,10 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * A generator of occurrences of {@link CalendarEvent} instances that will occur in a given period
@@ -48,7 +45,10 @@ public interface CalendarEventOccurrenceGenerator {
 
   /**
    * Generates the actual occurrences of the calendar events that occur in the specified window of
-   * time. The occurrences that were modified and hence persisted are taken in charge.
+   * time.
+   *
+   * The occurrences are computed from specified window of time that implies a set of events planned
+   * in this period.
    *
    * This method doesn't require to be implemented.
    * @param timeWindow the time window in which the events occur.
@@ -56,54 +56,35 @@ public interface CalendarEventOccurrenceGenerator {
    * datetime at which they start.
    */
   default List<CalendarEventOccurrence> generateOccurrencesIn(CalendarTimeWindow timeWindow) {
-    return generateOccurrencesOf(timeWindow.getEvents(), Period
-        .between(timeWindow.getStartDate().atStartOfDay().atOffset(ZoneOffset.UTC),
-            timeWindow.getEndDate().plusDays(1).atStartOfDay().minusMinutes(1)
-                .atOffset(ZoneOffset.UTC)));
+    return generateOccurrencesOf(timeWindow.getEvents(), timeWindow.getPeriod());
   }
 
   /**
    * Generates the actual occurrences of the specified events and that occur in the period of time.
-   * The occurrences that were modified and hence persisted are taken in charge.
    *
-   * This method doesn't require to be implemented.
+   * The occurrences are computed from the recurrence rule of the specified events, from the date
+   * and times at which the events start, and for the specified period of time.
+   *
+   * This method require to be implemented.
    * @param events the events.
    * @param inPeriod the period of time the instances of the events occur.
    * @return a set of event occurrences that occur in the specified period sorted by the date and
    * time at which they start.
    */
-  default List<CalendarEventOccurrence> generateOccurrencesOf(Stream<CalendarEvent> events,
-      Period inPeriod) {
-    List<CalendarEventOccurrence> occurrences = computeOccurrencesOf(events, inPeriod);
-    List<CalendarEventOccurrence> modified = CalendarEventOccurrenceRepository.get().getAll();
-    modified.forEach(o -> {
-      int idx = occurrences.indexOf(o);
-      occurrences.set(idx, o);
-    });
-    return occurrences;
-  }
+  List<CalendarEventOccurrence> generateOccurrencesOf(List<CalendarEvent> events, Period inPeriod);
 
   /**
-   * Computes the occurrences of the specified events from their recurrence rule, their date and
-   * times, and for the specified period of time. This method is used by the generation methods.
-   * <p>
-   * The computation doesn't take into account the occurrences that were modified; to consider an
-   * actual set of occurrences of the specified events in the given period, you have to consider
-   * one of the following methods:
-   * <p>
-   * <ul>
-   * <li>
-   * {@link CalendarEventOccurrenceGenerator#generateOccurrencesIn(CalendarTimeWindow)}
-   * </li>
-   * <li>
-   * {@link CalendarEventOccurrenceGenerator#generateOccurrencesOf(Stream, Period)}
-   * </li>
-   * </ul>
-   * @param events the events to consider.
-   * @param period the period of time the instances of the events occur.
-   * @return a set of event occurrences that occur in the specified period sorted by the date and
-   * time at which they start.
+   * Counts the number of occurrences of the specified event in the given period. If the period is
+   * null, then the period over which the event recurs is taken into account.
+   *
+   * This method is a faster way to compute the occurrence count of an event by considering only
+   * its recurrence rule and by not generating any occurrences.
+   * @param event an event.
+   * @param inPeriod the period of time the instances of the events occur. It can be null, in this
+   * case the recurrence period is taken in the computation.
+   * @return the number of occurrences of the event occurring in the specified period or -1 if
+   * the event isn't yet planned or {@link Long#MAX_VALUE} if there an unlimited number of
+   * occurrences (endless recurrence).
    */
-  List<CalendarEventOccurrence> computeOccurrencesOf(Stream<CalendarEvent> events,
-      Period period);
+  long countOccurrencesOf(final CalendarEvent event, Period inPeriod);
 }

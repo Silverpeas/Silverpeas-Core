@@ -1,0 +1,212 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.core.calendar;
+
+import org.silverpeas.core.admin.user.model.User;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+/**
+ * The attendees in this calendar component.
+ */
+@Embeddable
+public class Attendees implements Iterable<Attendee> {
+
+  @Transient
+  private CalendarComponent component;
+
+  @OneToMany(mappedBy = "component", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
+      FetchType.EAGER)
+  private Set<Attendee> attendees = new HashSet<>();
+
+  Attendees(final CalendarComponent component) {
+    this.component = component;
+  }
+
+  protected Attendees() {
+  }
+
+  @Override
+  public Iterator<Attendee> iterator() {
+    return attendees.iterator();
+  }
+
+  /**
+   * Performs the given action for each attendee in this calendar component until all of them
+   * have been processed or the action throws an exception. Exceptions thrown by the action are
+   * relayed to the caller.
+   * @param action the action to be performed for each attendee.
+   */
+  public void forEach(final Consumer<? super Attendee> action) {
+    attendees.forEach(action);
+  }
+
+  @Override
+  public Spliterator<Attendee> spliterator() {
+    return attendees.spliterator();
+  }
+
+  /**
+   * Streams the attendees in this calendar component.
+   * @return a {@link Stream} with the attendees in this calendar component.
+   */
+  public Stream<Attendee> stream() {
+    return attendees.stream();
+  }
+
+  /**
+   * Gets the attendee with the specified identifier in this calendar component. The identifier can
+   * be either the identifier of an external attendee (like an email address) or the unique
+   * identifier of a user in Silverpeas.
+   * @param id the identifier of the attendee to get: either the identifier of a user in Silverpeas
+   * or an identifier referring an external attendee (like an email address).
+   * @return optionally the attendee matching the given identifier. If no such attendee participates
+   * in this calendar component, then the optional value is empty, otherwise it contains the
+   * expected attendee.
+   */
+  public Optional<Attendee> get(String id) {
+    return this.attendees.stream().filter(a -> a.getId().equals(id)).findFirst();
+  }
+
+  /**
+   * Adds an external attendee in this calendar component. The attendee is identified by the
+   * specified email address.
+   * @param email the email address of the external attendee.
+   * @return the added attendee.
+   */
+  public Attendee add(final String email) {
+    Attendee attendee = ExternalAttendee.withEmail(email).to(component);
+    attendees.add(attendee);
+    return attendee;
+  }
+
+  /**
+   * Adds an internal attendee in this calendar component. The attendee represents the
+   * specified Silverpeas user.
+   * @param user a user in Silverpeas.
+   * @return the added attendee.
+   */
+  public Attendee add(final User user) {
+    Attendee attendee = InternalAttendee.fromUser(user).to(component);
+    attendees.add(attendee);
+    return attendee;
+  }
+
+  /**
+   * Removes from the attendees in this calendar component the specified one.
+   * @param attendee the attendee to remove.
+   * @return the updated attendees in this calendar component.
+   */
+  public Attendees remove(final Attendee attendee) {
+    attendees.remove(attendee);
+    return this;
+  }
+
+  /**
+   * Removes all of the attendees that match the specified filter.
+   * @param filter the predicate against which each attendee is filtered.
+   * @return the updated attendees in this calendar component.
+   */
+  public Attendees removeIf(final Predicate<Attendee> filter) {
+    attendees.removeIf(filter);
+    return this;
+  }
+
+  /**
+   * Clears this calendar component from all its attendees.
+   * @return an empty collection of attendees in this calendar component.
+   */
+  public Attendees clear() {
+    attendees.clear();
+    return this;
+  }
+
+  /**
+   * Is there any attendees in this calendar component?
+   * @return true if there is no attendees in this calendar component, false otherwise.
+   */
+  public boolean isEmpty() {
+    return attendees.isEmpty();
+  }
+
+  /**
+   * Is the specified attendee participates in this calendar component?
+   * @param attendee an attendee.
+   * @return true if the specified attendee is in the attendees in this calendar component, false
+   * otherwise.
+   */
+  public boolean contains(final Attendee attendee) {
+    return attendees.contains(attendee);
+  }
+
+  /**
+   * Gets the size in attendees in this calendar component.
+   * @return the number of attendees in this calendar component.
+   */
+  public int size() {
+    return attendees.size();
+  }
+
+  @Override
+  public int hashCode() {
+    return attendees.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return obj == this ||
+        obj != null && obj instanceof Attendees && attendees.equals(((Attendees) obj).attendees);
+  }
+
+  /**
+   * Add the specified attendee in the attendees in this calendar component. If the attendee
+   * participates in another calendar component, then its participation changes as now he will
+   * participate in the underlying calendar component.
+   * @param attendee the attendee to add.
+   * @return the updated attendees in this calendar component.
+   */
+  Attendees add(final Attendee attendee) {
+    attendee.setCalendarComponent(this.component);
+    attendees.add(attendee);
+    return this;
+  }
+
+  Attendees withCalendarComponent(final CalendarComponent component) {
+    this.component = component;
+    return this;
+  }
+}
+  

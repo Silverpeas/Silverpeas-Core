@@ -75,7 +75,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
   }
 
   @Override
-  public Stream<CalendarEvent> streamAllBetween(final CalendarEventFilter filter,
+  public List<CalendarEvent> getAllBetween(final CalendarEventFilter filter,
       final OffsetDateTime startDateTime, final OffsetDateTime endDateTime) {
     String namedQuery = "calendarEvents";
     NamedParameters parameters = newNamedParameters();
@@ -92,7 +92,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     namedQuery += "ByPeriod";
     parameters.add("startDateTime", startDateTime).add("endDateTime", endDateTime);
     return streamByNamedQuery(namedQuery, parameters, Object[].class)
-        .map(o -> (CalendarEvent) o[0]);
+        .map(o -> (CalendarEvent) o[0]).collect(Collectors.toList());
   }
 
   @Override

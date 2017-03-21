@@ -115,7 +115,8 @@ public class ICal4JExchangeImportTest {
     assertThat(reason + "getRecurrence",
         actual.getRecurrence(), is(expected.getRecurrence()));
     assertThat(reason + "getAttendees",
-        actual.getAttendees(), is(expected.getAttendees()));
+        actual.getAttendees().stream().collect(Collectors.toSet()),
+        is(expected.getAttendees().stream().collect(Collectors.toSet())));
     assertThat(reason + "getCategories",
         actual.getCategories(), is(expected.getCategories()));
     assertThat(reason + "getAttributes",

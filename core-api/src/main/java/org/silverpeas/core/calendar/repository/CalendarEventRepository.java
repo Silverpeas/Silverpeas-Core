@@ -24,12 +24,13 @@
 package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -90,7 +91,7 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
    * @return a list of events filtering by the given filter and that occur between the two date
    * times or an empty list if there is no events matching the specified arguments.
    */
-  Stream<CalendarEvent> streamAllBetween(CalendarEventFilter filter, OffsetDateTime startDateTime,
+  List<CalendarEvent> getAllBetween(CalendarEventFilter filter, OffsetDateTime startDateTime,
       OffsetDateTime endDateTime);
 
 }

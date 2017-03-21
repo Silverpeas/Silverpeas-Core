@@ -370,7 +370,7 @@ public class ICal4JExchangeExportTest {
   public void severalOnAllDaysAndDailyRecurrence() throws ICalendarException {
     CalendarEvent event1 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-1")
         .withExternalId("EXT-EVENT-UUID-1")
@@ -381,7 +381,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event2 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-2")
         .withTitle("EVENT-TITLE-2")
@@ -391,7 +391,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event3 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-3")
         .withTitle("EVENT-TITLE-3")
@@ -402,7 +402,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event4 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-4")
         .withTitle("EVENT-TITLE-4")
@@ -413,7 +413,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event5 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-5")
         .withTitle("EVENT-TITLE-5")
@@ -427,7 +427,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event6 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-6")
         .withTitle("EVENT-TITLE-6")
@@ -439,7 +439,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event7 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-7")
         .withTitle("EVENT-TITLE-7")
@@ -451,7 +451,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event8 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-8")
         .withTitle("EVENT-TITLE-8")
@@ -461,7 +461,7 @@ public class ICal4JExchangeExportTest {
         .build();
     CalendarEvent event9 = CalendarEventMockBuilder.from(Period
         .between(LocalDate.parse("2016-12-15"),
-                 LocalDate.parse("2016-12-15")))
+                 LocalDate.parse("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-9")
         .withTitle("EVENT-TITLE-9")

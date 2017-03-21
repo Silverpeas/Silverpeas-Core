@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.date;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.time.LocalDate;
@@ -93,7 +96,7 @@ public class Period implements Cloneable {
     period.startDateTime = startDay.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
     period.endDateTime = endDay.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime();
     if (startDay.isEqual(endDay)) {
-      period.endDateTime.plusDays(1);
+      period.endDateTime = period.endDateTime.plusDays(1);
     }
     period.inDays = true;
     return period;
@@ -199,8 +202,31 @@ public class Period implements Cloneable {
     Period period = null;
     try {
       period = (Period) super.clone();
-    } catch (CloneNotSupportedException ignore) {
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return period;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Period)) {
+      return false;
+    }
+
+    final Period period = (Period) o;
+    return inDays == period.inDays && startDateTime.equals(period.startDateTime) &&
+        endDateTime.equals(period.endDateTime);
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(startDateTime)
+        .append(endDateTime)
+        .append(inDays)
+        .toHashCode();
   }
 }

@@ -29,8 +29,6 @@ import org.silverpeas.core.date.Period;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.mock;
@@ -44,11 +42,12 @@ import static org.silverpeas.core.calendar.Attendee.PresenceStatus.REQUIRED;
 public class CalendarEventMockBuilder {
 
   private Period period;
+  private CalendarComponent component = mock(CalendarComponent.class);
   private CalendarEvent event = mock(CalendarEvent.class);
-  private Set<Attendee> attendees = new HashSet<>();
+  private Attendees attendees = new Attendees(component);
   private Attributes attributes = new Attributes();
   private Categories categories = new Categories();
-  
+
   private CalendarEventMockBuilder() {
     when(event.getVisibilityLevel()).thenReturn(VisibilityLevel.PUBLIC);
     when(event.getPriority()).thenReturn(Priority.NORMAL);
@@ -147,6 +146,7 @@ public class CalendarEventMockBuilder {
     InternalAttendee mockedAttendee = mock(InternalAttendee.class);
     final String userId = user.getId();
     final String userDisplayedName = user.getDisplayedName();
+    when(mockedAttendee.getCalendarComponent()).thenReturn(component);
     when(mockedAttendee.getId()).thenReturn(userId);
     when(mockedAttendee.getUser()).thenReturn(user);
     when(mockedAttendee.getFullName()).thenReturn(userDisplayedName);
@@ -161,6 +161,7 @@ public class CalendarEventMockBuilder {
   public CalendarEventMockBuilder withAttendee(final String email,
       Consumer<ExternalAttendee> mockedAttendeeConfigurer) {
     ExternalAttendee mockedAttendee = mock(ExternalAttendee.class);
+    when(mockedAttendee.getCalendarComponent()).thenReturn(component);
     when(mockedAttendee.getId()).thenReturn(email);
     when(mockedAttendee.getFullName()).thenReturn(email);
     when(mockedAttendee.getPresenceStatus()).thenReturn(REQUIRED);

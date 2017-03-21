@@ -27,24 +27,20 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
- * A calendar component is a set of properties that express a common semantic for all objects in a
- * calendar. Those objects can be an event, a to-do, and so one and they share a common set of
- * properties that are defined in this class.
+ * A calendar component is a set of properties that express a common semantic for all objects
+ * planned in a calendar. Those objects can be an event, a to-do, and so one and they share a
+ * common set of properties that are defined in this class.
  *
  * This class is dedicated to be used into an implementation composition by the more concrete
  * representations of a calendar component (like for example {@link CalendarEvent}). We recommend
@@ -82,12 +78,11 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   @Embedded
   private Attributes attributes = new Attributes();
 
-  @OneToMany(mappedBy = "component", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
-      FetchType.EAGER)
-  private Set<Attendee> attendees = new HashSet<>();
-
   @Column(nullable = false)
-  private long sequence = 0l;
+  private long sequence = 0L;
+
+  @Embedded
+  private Attendees attendees = new Attendees(this);
 
   /**
    * Constructs an empty calendar component. This method is dedicated to the persistence engine
@@ -103,7 +98,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * calendar components like the {@link CalendarEvent} class for example.
    * @param period the period of time in which this calendar component occurs.
    */
-  public CalendarComponent(final Period period) {
+  CalendarComponent(final Period period) {
     this.period = period;
   }
 
@@ -191,7 +186,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * @return the location where this component takes place.
    */
   public String getLocation() {
-    return (this.location == null ? "" : this.location);
+    return this.location == null ? "" : this.location;
   }
 
   /**
@@ -236,10 +231,10 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * and hence he's not present among the attendees of in the component. If his participation has to
    * be explicit, then he should be added as a participant in the attendees in the calendar
    * component.
-   * @return a set with the attendees in this calendar component.
+   * @return the attendees in this calendar component.
    */
-  public Set<Attendee> getAttendees() {
-    return this.attendees;
+  public Attendees getAttendees() {
+    return attendees.withCalendarComponent(this);
   }
 
   /**
@@ -263,25 +258,50 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     return this.sequence;
   }
 
+  /**
+   * Clones this calendar component. Only the state of this calendar component is cloned to a new
+   * calendar component. The returned calendar component is not planned in any calendar.
+   * @see CalendarComponent#copyTo(CalendarComponent)
+   * @see SilverpeasJpaEntity#clone()
+   * @return an unplanned clone of this calendar component.
+   */
   @Override
   public CalendarComponent clone() {
     CalendarComponent clone = super.clone();
-    clone.period = period.clone();
-    clone.priority = priority;
-    clone.attributes = attributes.clone();
-    clone.location = this.location;
-    clone.attendees = new HashSet<>();
-    attendees.forEach(a -> a.cloneFor(clone));
-    return clone;
+    return copyTo(clone);
   }
-  
+
+  /**
+   * Copies the state of this calendar component to the specified other calendar component. The
+   * unique identifier, the calendar to which this component is planned and the sequence number
+   * aren't copied. Those are particular properties to each calendar component as they form both
+   * the identify of a calendar component.
+   * @param anotherComponent another calendar component.
+   * @return the calendar component valued with the state of this component.
+   */
+  public CalendarComponent copyTo(final CalendarComponent anotherComponent) {
+    anotherComponent.title = title;
+    anotherComponent.description = description;
+    anotherComponent.location = location;
+    anotherComponent.period = period.clone();
+    anotherComponent.priority = priority;
+    anotherComponent.attributes = attributes.clone();
+    anotherComponent.attendees = new Attendees(anotherComponent);
+    attendees.forEach(a -> a.cloneFor(anotherComponent));
+    return anotherComponent;
+  }
+
+  /**
+   * Increments the current sequence number of this calendar component by one.
+   */
   void incrementSequence() {
     this.sequence += 1;
   }
 
   @Override
   protected void performBeforeUpdate() {
-    this.sequence += 1l;
+    this.sequence += 1L;
     super.performBeforeUpdate();
   }
+
 }
