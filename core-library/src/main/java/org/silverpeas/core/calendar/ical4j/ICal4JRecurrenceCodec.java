@@ -107,7 +107,7 @@ public class ICal4JRecurrenceCodec {
    * @return the encoded iCal4J recurrence.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Recur encode(final CalendarEvent event) throws SilverpeasRuntimeException {
+  public Recur encode(final CalendarEvent event) {
     Recurrence eventRecurrence = event.getRecurrence();
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
@@ -119,8 +119,8 @@ public class ICal4JRecurrenceCodec {
       }
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
-      } else if (eventRecurrence.getEndDate().isPresent()) {
-        final Temporal endDate = eventRecurrence.getEndDate().get();
+      } else if (eventRecurrence.getRecurrenceEndDate().isPresent()) {
+        final Temporal endDate = eventRecurrence.getRecurrenceEndDate().get();
         TemporalConverter.consumeByType(endDate,
             date -> recur.setUntil(iCal4JDateCodec.encode(date)),
             dateTime -> recur.setUntil(iCal4JDateCodec.encode(dateTime)));
@@ -133,42 +133,6 @@ public class ICal4JRecurrenceCodec {
     } catch (ParseException ex) {
       throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
-  }
-
-  private String asICal4JFrequency(final RecurrencePeriod period) {
-    String freq = ICAL_FREQ;
-    switch (period.getUnit()) {
-      case SECOND:
-        freq += Recur.SECONDLY;
-        break;
-      case MINUTE:
-        freq += Recur.MINUTELY;
-        break;
-      case HOUR:
-        freq += Recur.HOURLY;
-        break;
-      case DAY:
-        freq += Recur.DAILY;
-        break;
-      case WEEK:
-        freq += Recur.WEEKLY;
-        break;
-      case MONTH:
-        freq += Recur.MONTHLY;
-        break;
-      case YEAR:
-        freq += Recur.YEARLY;
-        break;
-    }
-    return freq;
-  }
-
-  private WeekDay encode(final DayOfWeekOccurrence dayOfWeekOccurrence) {
-    WeekDay weekday = encode(dayOfWeekOccurrence.dayOfWeek());
-    if (dayOfWeekOccurrence.nth() != ALL_OCCURRENCES) {
-      weekday = new WeekDay(weekday, dayOfWeekOccurrence.nth());
-    }
-    return weekday;
   }
 
   public WeekDay encode(final DayOfWeek dayOfWeek) {
@@ -207,8 +171,7 @@ public class ICal4JRecurrenceCodec {
    * @return the decoded Silverpeas event recurrence.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Recurrence decode(final VEvent vEvent, final ZoneId defaultZoneId)
-      throws SilverpeasRuntimeException {
+  public Recurrence decode(final VEvent vEvent, final ZoneId defaultZoneId) {
     final boolean isOnAllDay = !(vEvent.getStartDate().getDate() instanceof DateTime);
     Recur recur = ((RRule) vEvent.getProperty(Property.RRULE)).getRecur();
     if (recur == null) {
@@ -225,7 +188,7 @@ public class ICal4JRecurrenceCodec {
       }
       recurrence.until(temporalUntil);
     }
-    if (recur.getDayList() != null && recur.getDayList().size() > 0) {
+    if (recur.getDayList() != null && !recur.getDayList().isEmpty()) {
       recurrence.on(recur.getDayList().stream().map(this::decode).collect(Collectors.toList()));
     }
     if (vEvent.getProperty(ExDate.EXDATE) != null) {
@@ -256,6 +219,42 @@ public class ICal4JRecurrenceCodec {
       });
     }
     return recurrence;
+  }
+
+  private String asICal4JFrequency(final RecurrencePeriod period) {
+    String freq = ICAL_FREQ;
+    switch (period.getUnit()) {
+      case SECOND:
+        freq += Recur.SECONDLY;
+        break;
+      case MINUTE:
+        freq += Recur.MINUTELY;
+        break;
+      case HOUR:
+        freq += Recur.HOURLY;
+        break;
+      case DAY:
+        freq += Recur.DAILY;
+        break;
+      case WEEK:
+        freq += Recur.WEEKLY;
+        break;
+      case MONTH:
+        freq += Recur.MONTHLY;
+        break;
+      case YEAR:
+        freq += Recur.YEARLY;
+        break;
+    }
+    return freq;
+  }
+
+  private WeekDay encode(final DayOfWeekOccurrence dayOfWeekOccurrence) {
+    WeekDay weekday = encode(dayOfWeekOccurrence.dayOfWeek());
+    if (dayOfWeekOccurrence.nth() != ALL_OCCURRENCES) {
+      weekday = new WeekDay(weekday, dayOfWeekOccurrence.nth());
+    }
+    return weekday;
   }
 
   private RecurrencePeriod decodeRecurrencePeriod(final Recur recur) {

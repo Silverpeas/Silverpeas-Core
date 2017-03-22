@@ -45,7 +45,7 @@ import java.util.Optional;
  * @author mmoquillon
  */
 @Embeddable
-public class Attributes implements Cloneable {
+public class AttributeSet implements Cloneable {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapsId
@@ -57,7 +57,7 @@ public class Attributes implements Cloneable {
   /**
    * Constructs an empty attribute container. It is dedicated to the persistence engine.
    */
-  public Attributes() {
+  public AttributeSet() {
     // empty for JPA.
   }
 
@@ -100,11 +100,11 @@ public class Attributes implements Cloneable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Attributes)) {
+    if (!(o instanceof AttributeSet)) {
       return false;
     }
 
-    final Attributes that = (Attributes) o;
+    final AttributeSet that = (AttributeSet) o;
     return attributes.equals(that.attributes);
   }
 
@@ -117,7 +117,7 @@ public class Attributes implements Cloneable {
    * Adds to this attributes all those from the specified ones.
    * @param attributes the attributes to add.
    */
-  public void addAllFrom(final Attributes attributes) {
+  public void addAllFrom(final AttributeSet attributes) {
     this.attributes.putAll(attributes.attributes);
   }
 
@@ -125,16 +125,16 @@ public class Attributes implements Cloneable {
    * Sets to this attributes all those from the specified ones.
    * @param attributes the attributes to add.
    */
-  public void setAllFrom(final Attributes attributes) {
+  public void setAllFrom(final AttributeSet attributes) {
     this.attributes.clear();
     addAllFrom(attributes);
   }
 
   @Override
-  public Attributes clone() {
-    Attributes clone = null;
+  public AttributeSet clone() {
+    AttributeSet clone = null;
     try {
-      clone = (Attributes) super.clone();
+      clone = (AttributeSet) super.clone();
       clone.attributes = new HashMap<>(attributes);
     } catch (CloneNotSupportedException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);

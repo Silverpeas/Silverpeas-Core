@@ -40,10 +40,10 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * The attendees in this calendar component.
+ * A set of attendees in a given calendar component.
  */
 @Embeddable
-public class Attendees implements Iterable<Attendee> {
+public class AttendeeSet implements Iterable<Attendee> {
 
   @Transient
   private CalendarComponent component;
@@ -52,11 +52,19 @@ public class Attendees implements Iterable<Attendee> {
       FetchType.EAGER)
   private Set<Attendee> attendees = new HashSet<>();
 
-  Attendees(final CalendarComponent component) {
+  /**
+   * Constructs a new set of attendees for the specified calendar component.
+   * @param component a calendar component (an event, a journal, a to-do, ...)
+   */
+  AttendeeSet(final CalendarComponent component) {
     this.component = component;
   }
 
-  protected Attendees() {
+  /**
+   * Constructs an empty set of attendees for the persistence engine.
+   */
+  protected AttendeeSet() {
+    // it is dedicated to JPA.
   }
 
   @Override
@@ -130,7 +138,7 @@ public class Attendees implements Iterable<Attendee> {
    * @param attendee the attendee to remove.
    * @return the updated attendees in this calendar component.
    */
-  public Attendees remove(final Attendee attendee) {
+  public AttendeeSet remove(final Attendee attendee) {
     attendees.remove(attendee);
     return this;
   }
@@ -140,7 +148,7 @@ public class Attendees implements Iterable<Attendee> {
    * @param filter the predicate against which each attendee is filtered.
    * @return the updated attendees in this calendar component.
    */
-  public Attendees removeIf(final Predicate<Attendee> filter) {
+  public AttendeeSet removeIf(final Predicate<Attendee> filter) {
     attendees.removeIf(filter);
     return this;
   }
@@ -149,7 +157,7 @@ public class Attendees implements Iterable<Attendee> {
    * Clears this calendar component from all its attendees.
    * @return an empty collection of attendees in this calendar component.
    */
-  public Attendees clear() {
+  public AttendeeSet clear() {
     attendees.clear();
     return this;
   }
@@ -188,7 +196,7 @@ public class Attendees implements Iterable<Attendee> {
   @Override
   public boolean equals(final Object obj) {
     return obj == this ||
-        obj != null && obj instanceof Attendees && attendees.equals(((Attendees) obj).attendees);
+        obj != null && obj instanceof AttendeeSet && attendees.equals(((AttendeeSet) obj).attendees);
   }
 
   /**
@@ -198,13 +206,13 @@ public class Attendees implements Iterable<Attendee> {
    * @param attendee the attendee to add.
    * @return the updated attendees in this calendar component.
    */
-  Attendees add(final Attendee attendee) {
+  AttendeeSet add(final Attendee attendee) {
     attendee.setCalendarComponent(this.component);
     attendees.add(attendee);
     return this;
   }
 
-  Attendees withCalendarComponent(final CalendarComponent component) {
+  AttendeeSet withCalendarComponent(final CalendarComponent component) {
     this.component = component;
     return this;
   }

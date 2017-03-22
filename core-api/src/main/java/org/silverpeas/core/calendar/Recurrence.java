@@ -33,8 +33,12 @@ import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Month;
+import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -317,7 +321,7 @@ public class Recurrence implements Cloneable {
    */
   @SuppressWarnings("WeakerAccess")
   public boolean isEndless() {
-    return !getEndDate().isPresent() && getRecurrenceCount() == NO_RECURRENCE_COUNT;
+    return !getRecurrenceEndDate().isPresent() && getRecurrenceCount() == NO_RECURRENCE_COUNT;
   }
 
   /**
@@ -345,7 +349,7 @@ public class Recurrence implements Cloneable {
    * recurrence is unspecified, otherwise the recurrence termination date or datetime can be get
    * from the {@link Optional}. The returned datetime is from UTC/Greenwich.
    */
-  public Optional<Temporal> getEndDate() {
+  public Optional<Temporal> getRecurrenceEndDate() {
     if (this.endDateTime != NO_RECURRENCE_END_DATE) {
       return Optional.of(
           getStartDate() instanceof LocalDate ? this.endDateTime.toLocalDate() : this.endDateTime);
@@ -354,17 +358,39 @@ public class Recurrence implements Cloneable {
   }
 
   /**
-   * Gets the actual end date of the recurrence by taking into account either the number of time
-   * the recurrent {@link Plannable} occurs or the end date of its recurrence.
+   * Gets the end date of the period over which this recurrence is played by taking into account
+   * either the number of time he recurrent {@link Plannable} occurs or the end date of its
+   * recurrence. The computed date can match the date of the last occurrence of the recurrent
+   * {@link Plannable} for a finite recurrence without an end date explicitly set. It can be also
+   * a date after the last occurrence. The exception dates in the recurrence rule aren't taken
+   * into account.
+   *
+   * If this recurrence isn't yet applied to any recurrence calendar component, then an
+   * {@link IllegalStateException} exception is thrown.
    * @return an optional recurrence actual end date. The optional is empty if the recurrence is
    * endless.
    */
-  public Optional<Temporal> getActualEndDate() {
+  public Optional<Temporal> getEndDate() {
     if (!isEndless()) {
-      return Optional.of(getEndDate().orElse(
-          getFrequency().getRecurrenceEnd(this.getStartDate(), this.getRecurrenceCount())));
+      return Optional.of(getRecurrenceEndDate().orElse(computeEndDate()));
     }
     return Optional.empty();
+  }
+
+  /**
+   * Gets the start date of the period over which this recurrence is played. It is the date of the
+   * first occurrence of the recurrent {@link Plannable} on which this recurrence is applied.
+   * <p>
+   * If this recurrence isn't yet applied to any recurrence calendar component, then an
+   * {@link IllegalStateException} exception is thrown.
+   * @return the start date of this recurrence.
+   */
+  public Temporal getStartDate() {
+    if (this.startDate == null) {
+      throw new IllegalStateException(
+          "The recurrence isn't applied to any recurrent calendar component!");
+    }
+    return this.startDate;
   }
 
   /**
@@ -492,14 +518,6 @@ public class Recurrence implements Cloneable {
     this.id = UUID.randomUUID().toString();
   }
 
-  /**
-   * Gets the start date of this recurrence.
-   * @return the start date of this recurrence.
-   */
-  private Temporal getStartDate() {
-    return this.startDate;
-  }
-
   private void checkRecurrenceStateForSpecificDaySetting() {
     if (getFrequency().isDaily()) {
       throw new IllegalStateException("Some specific days cannot be set for a daily recurrence");
@@ -511,15 +529,15 @@ public class Recurrence implements Cloneable {
    */
   private void clearsUnnecessaryExceptionDates() {
     if (!this.exceptionDates.isEmpty()) {
-      getActualEndDate().ifPresent(e -> exceptionDates.removeIf(
+      getEndDate().ifPresent(e -> exceptionDates.removeIf(
           exceptionDate -> !Period.asOffsetDateTime(e).isAfter(exceptionDate)));
     }
   }
 
   private OffsetDateTime normalize(final Temporal temporal) {
     OffsetDateTime dateTime = Period.asOffsetDateTime(temporal);
-    if (getStartDate() != null) {
-      return TemporalConverter.applyByType(getStartDate(),
+    if (this.startDate != null) {
+      return TemporalConverter.applyByType(this.startDate,
           t -> dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC)),
           t -> dateTime.with(t.toOffsetTime()));
     }
@@ -528,5 +546,59 @@ public class Recurrence implements Cloneable {
 
   private Temporal decode(final OffsetDateTime dateTime) {
     return getStartDate() instanceof LocalDate ? dateTime.toLocalDate() : dateTime;
+  }
+
+  private Temporal computeDateForMonthlyFrequencyFrom(final Temporal source,
+      DayOfWeekOccurrence dayOfWeek) {
+    Temporal current = source;
+    if (dayOfWeek.nth() > 1) {
+      current = current.with(ChronoField.ALIGNED_WEEK_OF_MONTH, dayOfWeek.nth());
+    } else if (dayOfWeek.nth() < 0) {
+      current = current.with(ChronoField.DAY_OF_MONTH, 1)
+          .plus(1, ChronoUnit.MONTHS)
+          .minus(1, ChronoUnit.DAYS)
+          .plus(dayOfWeek.nth(), ChronoUnit.WEEKS)
+          .with(dayOfWeek.dayOfWeek());
+    }
+    return current;
+  }
+
+  private Temporal computeDateForYearlyFrequencyFrom(final Temporal source,
+      DayOfWeekOccurrence dayOfWeek) {
+    final int lastDayOfYear = 31;
+    Temporal current = source;
+    if (dayOfWeek.nth() > 1) {
+      current = current.with(ChronoField.ALIGNED_WEEK_OF_YEAR, dayOfWeek.nth());
+    } else if (dayOfWeek.nth() < 0) {
+      current = current.with(MonthDay.of(Month.DECEMBER, lastDayOfYear))
+          .plus(dayOfWeek.nth(), ChronoUnit.WEEKS)
+          .with(dayOfWeek.dayOfWeek());
+    }
+    return current;
+  }
+
+  private Temporal computeEndDate() {
+    Temporal date = this.getStartDate();
+    if (getRecurrenceCount() == 1) {
+      return date;
+    }
+    final long interval = getRecurrenceCount() *
+        (getFrequency().getInterval() >= 1 ? getFrequency().getInterval() : 1);
+    date = date.plus(interval, getFrequency().getUnit().toChronoUnit());
+    boolean firstDayOfWeekSet = false;
+    for (DayOfWeekOccurrence dayOfWeek : daysOfWeek) {
+      Temporal current = date.with(dayOfWeek.dayOfWeek());
+      if (getFrequency().isMonthly()) {
+        current = computeDateForMonthlyFrequencyFrom(current, dayOfWeek);
+      } else if (getFrequency().isYearly()) {
+        current = computeDateForYearlyFrequencyFrom(current, dayOfWeek);
+      }
+
+      if (!firstDayOfWeekSet || LocalDate.from(current).isAfter(LocalDate.from(date))) {
+        date = current;
+        firstDayOfWeekSet = true;
+      }
+    }
+    return date;
   }
 }

@@ -31,8 +31,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 
 /**
  * A period of a recurrence. It defines the recurrence of a {@link Plannable} object in a calendar
@@ -138,35 +136,6 @@ public class RecurrencePeriod {
    */
   public boolean isYearly() {
     return timeUnit == TimeUnit.YEAR;
-  }
-
-  /**
-   * Gets the end of a recurrence with this period and by taking into account the datetime
-   * at which the recurrence starts and the number of times the recurrence occurs.
-   * @param recurrenceStart the start of a recurrence.
-   * @param count the number of times the recurrence should occur.
-   * @return the datetime at which the recurrence ends.
-   */
-  public <T extends Temporal> T getRecurrenceEnd(T recurrenceStart, int count) {
-    Temporal endDate;
-    int timeCount = count * getInterval();
-    switch (getUnit()) {
-      case DAY:
-        endDate = recurrenceStart.plus(timeCount, ChronoUnit.DAYS);
-        break;
-      case WEEK:
-        endDate = recurrenceStart.plus(timeCount, ChronoUnit.WEEKS);
-        break;
-      case MONTH:
-        endDate = recurrenceStart.plus(timeCount, ChronoUnit.MONTHS);
-        break;
-      case YEAR:
-        endDate = recurrenceStart.plus(timeCount, ChronoUnit.YEARS);
-        break;
-      default:
-        throw new IllegalStateException("Recurrence unit not supported: " + getUnit().name());
-    }
-    return (T) endDate;
   }
 
   @Override

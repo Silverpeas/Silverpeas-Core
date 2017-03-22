@@ -27,7 +27,6 @@ import net.fortuna.ical4j.model.Escapable;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyFactoryImpl;
-import net.fortuna.ical4j.validate.ValidationException;
 
 public class HtmlProperty extends Property implements Escapable {
 
@@ -65,12 +64,15 @@ public class HtmlProperty extends Property implements Escapable {
   /**
    * {@inheritDoc}
    */
-  public final void validate() throws ValidationException {
+  @Override
+  public final void validate() {
+    // no validation here
   }
 
   /**
    * {@inheritDoc}
    */
+  @Override
   public final String getValue() {
     return value;
   }
@@ -78,6 +80,7 @@ public class HtmlProperty extends Property implements Escapable {
   /**
    * {@inheritDoc}
    */
+  @Override
   public final void setValue(final String aValue) {
     this.value = aValue;
   }

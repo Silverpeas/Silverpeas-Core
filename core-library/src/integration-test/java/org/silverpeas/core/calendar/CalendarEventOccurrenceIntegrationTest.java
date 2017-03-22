@@ -293,7 +293,7 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
     final String newLocation = "Belledonne Room";
 
     List<CalendarEventOccurrence> occurrences = allOccurrencesOf(recurrentEvent);
-    final Temporal recurrenceEndDate = recurrentEvent.getRecurrence().getActualEndDate().get();
+    final Temporal recurrenceEndDate = recurrentEvent.getRecurrence().getEndDate().get();
     CalendarEventOccurrence anOccurrence = occurrences.get(7);
     anOccurrence.setLocation(newLocation);
     anOccurrence.getAttendees().add(NEW_ATTENDEE);
@@ -304,11 +304,11 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
     assertThat(result.created().get().getStartDate(), is(anOccurrence.getStartDate()));
     assertThat(result.created().get().isRecurrent(), is(true));
     assertThat(result.created().get().getRecurrence().isEndless(), is(false));
-    assertThat(result.created().get().getRecurrence().getEndDate().get(), is(recurrenceEndDate));
+    assertThat(result.created().get().getRecurrence().getRecurrenceEndDate().get(), is(recurrenceEndDate));
     // the original event is updated: its recurrence ends at the previous occurrence of the one
     // since which the occurrences were all modified.
     assertThat(result.updated().isPresent(), is(true));
-    assertThat(result.updated().get().getRecurrence().getEndDate().get(),
+    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
         is(anOccurrence.getStartDate().minus(1, ChronoUnit.DAYS)));
 
     // the previous event has now 7 occurrences
@@ -336,24 +336,24 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
   @Test
   public void changeTheDateOffAllOccurrencesSinceAGivenOccurrenceShouldPersistAllOfThem() {
     List<CalendarEventOccurrence> occurrences = allOccurrencesOf(recurrentEvent);
-    final Temporal recurrenceEndDate = recurrentEvent.getRecurrence().getActualEndDate().get();
+    final Temporal recurrenceEndDate = recurrentEvent.getRecurrence().getEndDate().get();
     CalendarEventOccurrence firstOccurrence = occurrences.get(0);
     CalendarEventOccurrence anOccurrence = occurrences.get(7);
     Period newPeriod = Period.between(LocalDate.from(anOccurrence.getStartDate()).plusDays(1),
         LocalDate.from(anOccurrence.getEndDate()).plusDays(1));
     anOccurrence.setPeriod(newPeriod);
 
-    EventOperationResult result = anOccurrence.updateSince();
+    EventOperationResult result = anOccurrence.updateSinceMe();
     // a new event is created for all the modified occurrences since the one above.
     assertThat(result.created().isPresent(), is(true));
     assertThat(result.created().get().getStartDate(), is(anOccurrence.getStartDate()));
     assertThat(result.created().get().isRecurrent(), is(true));
     assertThat(result.created().get().getRecurrence().isEndless(), is(false));
-    assertThat(result.created().get().getRecurrence().getEndDate().get(), is(recurrenceEndDate));
+    assertThat(result.created().get().getRecurrence().getRecurrenceEndDate().get(), is(recurrenceEndDate));
     // the original event is updated: its recurrence ends at the previous occurrence of the one
     // since which the occurrences were all modified.
     assertThat(result.updated().isPresent(), is(true));
-    assertThat(result.updated().get().getRecurrence().getEndDate().get(),
+    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
         is(anOccurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS)));
 
     // the previous event has now 7 occurrences
@@ -485,7 +485,7 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
     assertThat(occurrences.size(), is(1));
     CalendarEventOccurrence occurrence = modify(occurrences.get(0));
 
-    EventOperationResult result = occurrence.deleteSince();
+    EventOperationResult result = occurrence.deleteSinceMe();
     assertThat(result.isEmpty(), is(true));
 
     assertThat(getCalendarEventTableLineById(event.getId()), nullValue());
@@ -503,7 +503,7 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
 
     occurrences = allOccurrencesOf(recurrentEvent);
     assertThat(occurrences.size(), is(OCCURRENCE_COUNT - 8));
-    assertThat(result.updated().get().getRecurrence().getEndDate().get(),
+    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
         is(occurrence.getStartDate().minus(1, ChronoUnit.DAYS)));
   }
 
@@ -520,7 +520,7 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
 
     occurrences = allOccurrencesOf(recurrentEvent);
     assertThat(occurrences.size(), is(OCCURRENCE_COUNT - 8));
-    assertThat(result.updated().get().getRecurrence().getEndDate().get(),
+    assertThat(result.updated().get().getRecurrence().getRecurrenceEndDate().get(),
         is(modifiedOccurrences.get(0).getOriginalStartDate().minus(1, ChronoUnit.DAYS)));
     for(CalendarEventOccurrence modifiedOccurrence: modifiedOccurrences) {
       assertThat(getCalendarOccurrenceTableLineById(modifiedOccurrence.getId()), nullValue());

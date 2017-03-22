@@ -44,9 +44,9 @@ public class CalendarEventMockBuilder {
   private Period period;
   private CalendarComponent component = mock(CalendarComponent.class);
   private CalendarEvent event = mock(CalendarEvent.class);
-  private Attendees attendees = new Attendees(component);
-  private Attributes attributes = new Attributes();
-  private Categories categories = new Categories();
+  private AttendeeSet attendees = new AttendeeSet(component);
+  private AttributeSet attributes = new AttributeSet();
+  private CategorySet categories = new CategorySet();
 
   private CalendarEventMockBuilder() {
     when(event.getVisibilityLevel()).thenReturn(VisibilityLevel.PUBLIC);

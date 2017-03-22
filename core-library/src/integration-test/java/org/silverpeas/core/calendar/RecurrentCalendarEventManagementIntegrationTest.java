@@ -495,7 +495,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     assertThat(lastOccurrenceOfPreviousEvent.getCalendarEvent().getRecurrence().isEndless(),
         is(false));
     assertThat(LocalDate.from(
-        lastOccurrenceOfPreviousEvent.getCalendarEvent().getRecurrence().getEndDate().get()),
+        lastOccurrenceOfPreviousEvent.getCalendarEvent().getRecurrence().getRecurrenceEndDate().get()),
         lessThan(LocalDate.from(updatedOccurrence.getCalendarEvent().getStartDate())));
   }
 

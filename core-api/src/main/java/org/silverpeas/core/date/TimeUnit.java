@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.date;
 
+import java.time.temporal.ChronoUnit;
+
 /**
  * An enumeration of time units to be used to express a well known defined unit in the timeline.
  */
@@ -60,5 +62,30 @@ public enum TimeUnit {
   /**
    * Time unit representing one year.
    */
-  YEAR
+  YEAR;
+
+  /**
+   * Converts this time unit into a {@link ChronoUnit} value.
+   * @return a {@link ChronoUnit} instance matching this time unit.
+   */
+  public ChronoUnit toChronoUnit() {
+    switch (this) {
+      case SECOND:
+        return ChronoUnit.SECONDS;
+      case MINUTE:
+        return ChronoUnit.MINUTES;
+      case HOUR:
+        return ChronoUnit.HOURS;
+      case DAY:
+        return ChronoUnit.DAYS;
+      case WEEK:
+        return ChronoUnit.WEEKS;
+      case MONTH:
+        return ChronoUnit.MONTHS;
+      case YEAR:
+        return ChronoUnit.YEARS;
+      default:
+        return null;
+    }
+  }
 }

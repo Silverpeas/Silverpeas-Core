@@ -268,7 +268,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     List<CalendarEventOccurrence> occurrences = allOccurrencesOf(event);
     occurrences.get(3).getAttendees().removeIf(a -> a.getId().equals("john.doe@silverpeas.org"));
 
-    occurrences.get(3).updateSince();
+    occurrences.get(3).updateSinceMe();
 
     occurrences = allOccurrencesOf(event);
     for (int i = 0; i < occurrences.size(); i++) {
@@ -320,7 +320,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     assertThat(john.get().getParticipationStatus().isTentative(), is(true));
     john.get().accept();
 
-    occurrences.get(3).updateSince();
+    occurrences.get(3).updateSinceMe();
 
     occurrences = allOccurrencesOf(event);
     for (int i = 0; i < occurrences.size(); i++) {
@@ -349,15 +349,15 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
         .collect(Collectors.toList());
   }
 
-  public static AttendeeFinder in(final Attendees attendees) {
+  public static AttendeeFinder in(final AttendeeSet attendees) {
     return new AttendeeFinder(attendees);
   }
 
   private static class AttendeeFinder {
 
-    private final Attendees attendees;
+    private final AttendeeSet attendees;
 
-    public AttendeeFinder(final Attendees attendees) {
+    public AttendeeFinder(final AttendeeSet attendees) {
       this.attendees = attendees;
     }
 

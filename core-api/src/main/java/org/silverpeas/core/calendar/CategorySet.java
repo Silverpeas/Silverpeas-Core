@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * are expected to be managed by the {@link Plannable} itself.
  */
 @Embeddable
-public class Categories implements Cloneable {
+public class CategorySet implements Cloneable {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "sb_cal_categories", joinColumns = {@JoinColumn(name = "id")})
@@ -53,7 +53,7 @@ public class Categories implements Cloneable {
   /**
    * Constructs an empty cateogries container. It is dedicated to the persistence engine.
    */
-  public Categories() {
+  public CategorySet() {
     // empty for JPA.
   }
 
@@ -160,11 +160,11 @@ public class Categories implements Cloneable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Categories)) {
+    if (!(o instanceof CategorySet)) {
       return false;
     }
 
-    final Categories that = (Categories) o;
+    final CategorySet that = (CategorySet) o;
     return categories.equals(that.categories);
   }
 
@@ -177,15 +177,15 @@ public class Categories implements Cloneable {
    * Adds to this categories all those from the specified ones.
    * @param categories the categories to add.
    */
-  public void addAllFrom(final Categories categories) {
+  public void addAllFrom(final CategorySet categories) {
     this.categories.addAll(categories.categories);
   }
 
   @Override
-  public Categories clone() {
-    Categories clone = null;
+  public CategorySet clone() {
+    CategorySet clone = null;
     try {
-      clone = (Categories) super.clone();
+      clone = (CategorySet) super.clone();
       clone.categories = new HashSet<>(categories);
     } catch (CloneNotSupportedException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);

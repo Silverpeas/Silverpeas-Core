@@ -62,7 +62,7 @@ import java.util.List;
  * recurrent event is deleted, then an exception is added into the recurrence rule of the event.
  * This operation is done with one of the following methods:
  * {@link #delete()},
- * {@link #deleteSince()}.
+ * {@link #deleteSinceMe()}.
  * If an occurrence of a non-recurrent event is modified, then the modification is directly
  * applied to the event itself (as it is a singleton). If an occurrence of a recurrent event is
  * modified, then the modification is applied to the occurrence only and this occurrence is
@@ -227,7 +227,7 @@ public class CalendarEventOccurrence
     this.component.setTitle(title);
   }
 
-  public Attendees getAttendees() {
+  public AttendeeSet getAttendees() {
     return this.component.getAttendees();
   }
 
@@ -270,7 +270,7 @@ public class CalendarEventOccurrence
    * to the event or those that were modified for this occurrence.
    * @return the extra attributes of the event occurrence.
    */
-  public Attributes getAttributes() {
+  public AttributeSet getAttributes() {
     return this.component.getAttributes();
   }
 
@@ -295,7 +295,7 @@ public class CalendarEventOccurrence
    * event.
    * @return the categories of the event occurrence.
    */
-  public Categories getCategories() {
+  public CategorySet getCategories() {
     return this.event.getCategories();
   }
 
@@ -357,7 +357,7 @@ public class CalendarEventOccurrence
    *
    * @return the result of the update.
    */
-  public EventOperationResult updateSince() {
+  public EventOperationResult updateSinceMe() {
     return getCalendarEvent().updateSince(this);
   }
 
@@ -397,7 +397,7 @@ public class CalendarEventOccurrence
    *
    * @return the result of the deletion.
    */
-  public EventOperationResult deleteSince() {
+  public EventOperationResult deleteSinceMe() {
     return getCalendarEvent().deleteSince(this);
   }
 
@@ -447,7 +447,7 @@ public class CalendarEventOccurrence
       Recurrence recurrence = this.getCalendarEvent().getRecurrence().clone();
       recurrence.clearsAllExceptionDates();
       if (!this.getCalendarEvent().getRecurrence().isEndless()) {
-        recurrence.until(this.getCalendarEvent().getRecurrence().getActualEndDate().get());
+        recurrence.until(this.getCalendarEvent().getRecurrence().getEndDate().get());
       }
       newEvent.recur(recurrence);
     }

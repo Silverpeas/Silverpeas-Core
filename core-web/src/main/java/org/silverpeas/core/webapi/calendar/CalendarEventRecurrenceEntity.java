@@ -149,7 +149,7 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     final Recurrence recurrence = event.getRecurrence();
     frequency = FrequencyEntity.from(recurrence.getFrequency());
     count = recurrence.getRecurrenceCount();
-    Optional<Temporal> optionalDateTime = recurrence.getEndDate();
+    Optional<Temporal> optionalDateTime = recurrence.getRecurrenceEndDate();
     endDate = null;
     optionalDateTime.ifPresent(t ->
         endDate = TemporalConverter.applyByType(t, LocalDate::toString,

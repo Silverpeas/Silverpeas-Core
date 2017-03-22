@@ -32,35 +32,39 @@ package org.silverpeas.core.calendar.notification;
  * component instance by specifying their own template with the same name.
  * @author mmoquillon
  */
-public interface CalendarSilverpeasTemplateNames {
+public class CalendarSilverpeasTemplateNames {
 
   /**
    * Template of the message that will be sent to notify about the adding of one or more attendees
    * to a given calendar event.
    */
-  String TEMPLATE_ATTENDEE_ADDING = "attendeeAdded";
+  public static final String TEMPLATE_ATTENDEE_ADDING = "attendeeAdded";
 
   /**
    * Template of the message that will be sent to notify about the removing of one or more
    * attendees from a given calendar event.
    */
-  String TEMPLATE_ATTENDEE_REMOVING = "attendeeRemoved";
+  public static final String TEMPLATE_ATTENDEE_REMOVING = "attendeeRemoved";
 
   /**
    * Template of the message that will be sent to notify about the update of the participation of
    * an attendee to a given calendar event.
    */
-  String TEMPLATE_ATTENDEE_PARTICIPATION = "attendeeParticipationUpdated";
+  public static final String TEMPLATE_ATTENDEE_PARTICIPATION = "attendeeParticipationUpdated";
 
   /**
    * Template of the message that will be sent to notify about the update of the presence status
    * of an attendee to a given calendar event.
    */
-  String TEMPLATE_ATTENDEE_PRESENCE = "attendeePresenceUpdated";
+  public static final String TEMPLATE_ATTENDEE_PRESENCE = "attendeePresenceUpdated";
 
   /**
    * Template of the message that will be sent to notify about the update of the properties of a
    * given calendar event (other than its attendees).
    */
-  String TEMPLATE_EVENT_UPDATED = "calendarEventUpdated";
+  public static final String TEMPLATE_EVENT_UPDATED = "calendarEventUpdated";
+
+  private CalendarSilverpeasTemplateNames() {
+
+  }
 }

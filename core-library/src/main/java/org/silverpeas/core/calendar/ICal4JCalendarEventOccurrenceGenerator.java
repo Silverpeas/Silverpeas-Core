@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -108,8 +109,10 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
         inPeriod == null ? event.getStartDate() : inPeriod.getStartDate(), iCal4JDateCodec::encode,
         iCal4JDateCodec::encode);
     Date periodEndDate = TemporalConverter.applyByType(
-        inPeriod == null ? event.getRecurrence().getActualEndDate().get() : inPeriod.getStartDate(),
+        inPeriod == null ? event.getRecurrence().getEndDate().get().plus(1, ChronoUnit.DAYS) :
+            inPeriod.getEndDate(),
         iCal4JDateCodec::encode, iCal4JDateCodec::encode);
+
     return recurrenceRule.getRecur()
         .getDates(firstOccurrenceStartDate, periodStartDate, periodEndDate,
             firstOccurrenceStartDate instanceof DateTime ? Value.DATE_TIME : Value.DATE).size();
@@ -119,7 +122,7 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     Recurrence recurrence = event.getRecurrence();
     String recurrenceType = getRecurrentType(recurrence.getFrequency().getUnit());
     Recur recur;
-    final Optional<Temporal> endDate = recurrence.getEndDate();
+    final Optional<Temporal> endDate = recurrence.getRecurrenceEndDate();
     if (endDate.isPresent()) {
       recur = new Recur(recurrenceType,
           TemporalConverter.applyByType(endDate.get(), iCal4JDateCodec::encode,

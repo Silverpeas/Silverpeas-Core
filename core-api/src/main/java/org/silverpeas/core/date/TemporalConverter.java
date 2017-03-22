@@ -37,6 +37,10 @@ import java.util.function.Function;
  */
 public class TemporalConverter {
 
+  private TemporalConverter() {
+
+  }
+
   /**
    * Performs one of the specified functions according to the type of the specified temporal object.
    * The given temporal object is converted before passing it to one of the specified function.

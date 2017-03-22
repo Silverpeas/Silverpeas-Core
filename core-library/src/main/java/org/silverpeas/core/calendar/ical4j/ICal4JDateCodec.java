@@ -72,7 +72,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Date encode(final Temporal<?> aDate) throws SilverpeasRuntimeException {
+  public Date encode(final Temporal<?> aDate) {
     return encode(aDate, false);
   }
 
@@ -83,8 +83,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Date encode(final CalendarEvent event, final java.time.temporal.Temporal aTemporal)
-      throws SilverpeasRuntimeException {
+  public Date encode(final CalendarEvent event, final java.time.temporal.Temporal aTemporal) {
     final java.time.temporal.Temporal temporal = isEventDateToBeEncodedIntoUtc(event) ? aTemporal :
         OffsetDateTime.from(aTemporal).atZoneSameInstant(event.getCalendar().getZoneId());
     return encode(temporal);
@@ -106,8 +105,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public DateList encode(final Collection<? extends java.time.temporal.Temporal> temporals)
-      throws SilverpeasRuntimeException {
+  public DateList encode(final Collection<? extends java.time.temporal.Temporal> temporals) {
     return temporals.stream().map(this::encode).sorted().collect(Collectors.toCollection(() -> {
       final DateList list = new DateList();
       list.setUtc(true);
@@ -121,7 +119,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public DateTime encode(final OffsetDateTime dateTime) throws SilverpeasRuntimeException {
+  public DateTime encode(final OffsetDateTime dateTime) {
     try {
       return new DateTime(DateTimeFormatter.ofPattern(ICAL_UTC_PATTERN)
           .format(dateTime.withOffsetSameInstant(ZoneOffset.UTC)));
@@ -137,7 +135,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public DateTime encode(final ZonedDateTime dateTime) throws SilverpeasRuntimeException {
+  public DateTime encode(final ZonedDateTime dateTime) {
     try {
       return new DateTime(
           DateTimeFormatter.ofPattern(ICAL_LOCAL_PATTERN).format(dateTime), getTimeZone(dateTime));
@@ -152,7 +150,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Date encode(final LocalDate date) throws SilverpeasRuntimeException {
+  public Date encode(final LocalDate date) {
     try {
       return new Date(
           DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).format(date));
@@ -167,7 +165,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Date encodeInUTC(final Temporal<?> aDate) throws SilverpeasRuntimeException {
+  public Date encodeInUTC(final Temporal<?> aDate) {
     return encode(aDate, true);
   }
 
@@ -181,7 +179,7 @@ public class ICal4JDateCodec {
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Date encode(final Temporal<?> aDate, boolean inUTC) throws SilverpeasRuntimeException {
+  public Date encode(final Temporal<?> aDate, boolean inUTC) {
     Date iCal4JDate = null;
     try {
       if (aDate.isTimeSupported()) {
@@ -222,8 +220,7 @@ public class ICal4JDateCodec {
    * @return a temporal instance.
    * @throws SilverpeasRuntimeException if the decoding fails.
    */
-  public final java.time.temporal.Temporal decode(final Date aDate, final ZoneId defaultZoneId)
-      throws SilverpeasRuntimeException {
+  public final java.time.temporal.Temporal decode(final Date aDate, final ZoneId defaultZoneId) {
     if (aDate instanceof DateTime) {
       return decode((DateTime) aDate, defaultZoneId);
     } else {
@@ -238,8 +235,7 @@ public class ICal4JDateCodec {
    * @return an OffsetDateTime instance.
    * @throws SilverpeasRuntimeException if the decoding fails.
    */
-  public OffsetDateTime decode(final DateTime dateTime, final ZoneId defaultZoneId)
-      throws SilverpeasRuntimeException {
+  public OffsetDateTime decode(final DateTime dateTime, final ZoneId defaultZoneId) {
     boolean isUtc = dateTime.isUtc();
     TemporalAccessor temporalAccessor =
         DateTimeFormatter.ofPattern(isUtc ? ICAL_UTC_PATTERN : ICAL_LOCAL_PATTERN)
@@ -260,7 +256,7 @@ public class ICal4JDateCodec {
    * @return a LocalDate instance.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public LocalDate decode(final Date date) throws SilverpeasRuntimeException {
+  public LocalDate decode(final Date date) {
     TemporalAccessor temporalAccessor =
         DateTimeFormatter.ofPattern(ICAL_DATE_PATTERN).parse(date.toString());
     return LocalDate.from(temporalAccessor);

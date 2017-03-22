@@ -76,13 +76,13 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   private Priority priority = Priority.NORMAL;
 
   @Embedded
-  private Attributes attributes = new Attributes();
+  private AttributeSet attributes = new AttributeSet();
 
   @Column(nullable = false)
   private long sequence = 0L;
 
   @Embedded
-  private Attendees attendees = new Attendees(this);
+  private AttendeeSet attendees = new AttendeeSet(this);
 
   /**
    * Constructs an empty calendar component. This method is dedicated to the persistence engine
@@ -217,10 +217,10 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
 
   /**
    * Gets the additional and custom attributes of this calendar component. The attributes can be
-   * directly managed through the returned {@link Attributes} instance.
+   * directly managed through the returned {@link AttributeSet} instance.
    * @return the additional attributes of this calendar component.
    */
-  public Attributes getAttributes() {
+  public AttributeSet getAttributes() {
     return this.attributes;
   }
 
@@ -233,7 +233,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
    * component.
    * @return the attendees in this calendar component.
    */
-  public Attendees getAttendees() {
+  public AttendeeSet getAttendees() {
     return attendees.withCalendarComponent(this);
   }
 
@@ -286,7 +286,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     anotherComponent.period = period.clone();
     anotherComponent.priority = priority;
     anotherComponent.attributes = attributes.clone();
-    anotherComponent.attendees = new Attendees(anotherComponent);
+    anotherComponent.attendees = new AttendeeSet(anotherComponent);
     attendees.forEach(a -> a.cloneFor(anotherComponent));
     return anotherComponent;
   }

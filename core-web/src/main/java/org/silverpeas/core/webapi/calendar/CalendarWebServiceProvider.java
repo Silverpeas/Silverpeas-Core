@@ -333,7 +333,7 @@ public class CalendarWebServiceProvider {
         } else {
           bundleKey = "calendar.message.event.occurrence.updated.from";
           //noinspection OptionalGetWithoutIsPresent
-          endDate = e.getRecurrence().getEndDate().get();
+          endDate = e.getRecurrence().getRecurrenceEndDate().get();
         }
         successMessage(bundleKey, e.getTitle(),
             getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
@@ -394,7 +394,7 @@ public class CalendarWebServiceProvider {
       } else {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
         //noinspection OptionalGetWithoutIsPresent
-        endDate = updatedEvent.get().getRecurrence().getEndDate().get();
+        endDate = updatedEvent.get().getRecurrence().getRecurrenceEndDate().get();
       }
       successMessage(bundleKey, event.getTitle(),
           getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));

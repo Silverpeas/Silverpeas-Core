@@ -62,7 +62,7 @@ import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
  * have a start and an end dates/datetimes).
  * It can also be {@link Prioritized}, {@link Categorized}, and it can have some {@link Attendee}s.
  * In order to be customized for different kinds of use, some additional information can be set
- * through its {@link Attributes} property.
+ * through its {@link AttributeSet} property.
  *
  * An event in a calendar in Silverpeas can be originated from an external calendar. This comes
  * from an export process of the events planned in an external calendar (for example from a calendar
@@ -182,7 +182,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
 
   @Embedded
-  private Categories categories = new Categories();
+  private CategorySet categories = new CategorySet();
 
   @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
   @JoinColumn(name = "recurrenceId", referencedColumnName = "id", unique = true)
@@ -415,7 +415,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @return the categories of this event.
    */
   @Override
-  public Categories getCategories() {
+  public CategorySet getCategories() {
     return this.categories;
   }
 
@@ -457,7 +457,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Gets the different additional attributes set to this event.
    * @return the additional attributes of this event.
    */
-  public Attributes getAttributes() {
+  public AttributeSet getAttributes() {
     return this.component.getAttributes();
   }
 
@@ -655,7 +655,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * requirements.
    * @return a stream of attendees to this event.
    */
-  public Attendees getAttendees() {
+  public AttendeeSet getAttendees() {
     return this.component.getAttendees();
   }
 

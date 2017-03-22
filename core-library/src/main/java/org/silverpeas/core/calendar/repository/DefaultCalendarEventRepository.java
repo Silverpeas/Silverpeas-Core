@@ -44,10 +44,13 @@ import java.util.stream.Stream;
 public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<CalendarEvent>
     implements CalendarEventRepository {
 
+  private static final String CALENDARS_PARAMETER = "calendars";
+  private static final String CALENDAR_PARAMETER = "calendar";
+
   @Override
   public CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
     NamedParameters params =
-        newNamedParameters().add("calendar", calendar).add("externalId", externalId);
+        newNamedParameters().add(CALENDAR_PARAMETER, calendar).add("externalId", externalId);
     return getFromNamedQuery("calendarEventByCalendarAndExternalId", params);
   }
 
@@ -56,7 +59,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     String namedQuery = "calendarEvents";
     NamedParameters parameters = newNamedParameters();
     if (!filter.getCalendars().isEmpty()) {
-      parameters.add("calendars", filter.getCalendars());
+      parameters.add(CALENDARS_PARAMETER, filter.getCalendars());
       namedQuery += "ByCalendar";
     }
     if (!filter.getParticipants().isEmpty()) {
@@ -80,7 +83,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     String namedQuery = "calendarEvents";
     NamedParameters parameters = newNamedParameters();
     if (!filter.getCalendars().isEmpty()) {
-      parameters.add("calendars", filter.getCalendars());
+      parameters.add(CALENDARS_PARAMETER, filter.getCalendars());
       namedQuery += "ByCalendar";
     }
     if (!filter.getParticipants().isEmpty()) {
@@ -97,7 +100,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
 
   @Override
   public void deleteAll(final Calendar calendar) {
-    NamedParameters params = newNamedParameters().add("calendar", calendar);
+    NamedParameters params = newNamedParameters().add(CALENDAR_PARAMETER, calendar);
     String idQuery =
         "select e.id.id from CalendarEvent e where e.component.calendar = :calendar";
     String eventBatchQuery = "select e from CalendarEvent e where e.id.id in :eventIds";

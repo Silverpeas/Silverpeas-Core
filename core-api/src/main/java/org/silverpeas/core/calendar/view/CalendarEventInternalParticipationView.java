@@ -78,14 +78,12 @@ public class CalendarEventInternalParticipationView implements CalendarEventView
           .filter(a -> REQUIRED == a.getPresenceStatus() || DECLINED != a.getParticipationStatus())
           .forEach(a -> add(view, a.getId(), occurrence));
     }
-    view.values().forEach(userOccurrences -> {
-      userOccurrences.sort((o1, o2) -> {
-        int c = o1.getCalendarEvent().getCalendar().getId()
-            .compareTo(o2.getCalendarEvent().getCalendar().getId());
-        return c == 0 ? Period.asOffsetDateTime(o1.getStartDate())
-            .compareTo(Period.asOffsetDateTime(o2.getStartDate())) : c;
-      });
-    });
+    view.values().forEach(userOccurrences -> userOccurrences.sort((o1, o2) -> {
+      int c = o1.getCalendarEvent().getCalendar().getId()
+          .compareTo(o2.getCalendarEvent().getCalendar().getId());
+      return c == 0 ? Period.asOffsetDateTime(o1.getStartDate())
+          .compareTo(Period.asOffsetDateTime(o2.getStartDate())) : c;
+    }));
     return view;
   }
 
