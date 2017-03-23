@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * Information on the HTTP session opened by a Silverpeas user to access the Silverpeas Web pages.
  *
@@ -41,19 +43,23 @@ import java.util.List;
  */
 public class HTTPSessionInfo extends org.silverpeas.core.security.session.SessionInfo {
 
-  private final HttpSession httpSession;
+  private HttpSession httpSession;
 
   /**
    * Prevent the class from being instantiate (private)
    *
    * @param session the HTTP session to wrap.
-   * @param IP the remote user host address IP.
+   * @param ip the remote user host address IP.
    * @param ud the detail about the connected user.
    */
-  public HTTPSessionInfo(HttpSession session, String IP, UserDetail ud) {
+  HTTPSessionInfo(HttpSession session, String ip, UserDetail ud) {
     super(session.getId(), ud);
     httpSession = session;
-    setIPAddress(IP);
+    setIPAddress(ip);
+  }
+
+  public void setHttpSession(final HttpSession httpSession) {
+    this.httpSession = httpSession;
   }
 
   @Override
@@ -73,11 +79,10 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
   private void cleanSession(final HttpSession httpSession) {
     try {
       Enumeration<String> attributeNames = httpSession.getAttributeNames();
-      List<Object> controllers = new ArrayList<Object>();
+      List<Object> controllers = new ArrayList<>();
       while (attributeNames.hasMoreElements()) {
-        String spName = attributeNames.nextElement();
-        if ((spName != null) && ((spName.startsWith("Silverpeas_")) || (spName.
-            startsWith("WYSIWYG_")))) {
+        String spName = defaultStringIfNotDefined(attributeNames.nextElement());
+        if (spName.startsWith("Silverpeas_") || spName.startsWith("WYSIWYG_")) {
           controllers.add(httpSession.getAttribute(spName));
         }
         if (!spName.startsWith("Redirect") && !"gotoNew".equals(spName)
@@ -86,30 +91,28 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
           httpSession.removeAttribute(spName);
         }
       }
-      for (Object element : controllers) {
-        try {
-          if (element instanceof SessionCloseable) {
-            ((SessionCloseable) element).close();
-          }
-        } catch (Exception ex) {
-          SilverLogger.getLogger(this)
-              .error(
-                  "Error while cleaning the HTTP session in " + element.getClass().getSimpleName(),
-                  ex);
-        }
-      }
+      cleanSessionControllers(controllers);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Error while cleaning the HTTP session", e);
     }
   }
 
   /**
-   * Gets the HTTP session backed by this session information.
-   *
-   * @return the backed HTTP session.
+   * Cleans from the session each controller contained into the given list.
+   * @param controllers the controllers to clean.
    */
-  public HttpSession getHttpSession() {
-    return httpSession;
+  private void cleanSessionControllers(final List<Object> controllers) {
+    for (Object element : controllers) {
+      try {
+        if (element instanceof SessionCloseable) {
+          ((SessionCloseable) element).close();
+        }
+      } catch (Exception ex) {
+        SilverLogger.getLogger(this)
+            .error("Error while cleaning the HTTP session in " + element.getClass().getSimpleName(),
+                ex);
+      }
+    }
   }
 
   @Override
@@ -122,6 +125,7 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
     httpSession.removeAttribute(name);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> T getAttribute(String name) {
     return (T) httpSession.getAttribute(name);

@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Navigation case : user accepts terms of service.
@@ -73,8 +74,8 @@ public class TermsOfServiceResponseHandler extends FunctionHandler {
         try {
           getAdminService().userAcceptsTermsOfService(verifier.getUser().getId());
         } catch (AdminException e) {
-          SilverTrace.error("peasCore", "TermsOfServiceResponseHandler.doAction()",
-              "peasCore.EX_USER_KEY_NOT_FOUND", "login=" + verifier.getUser().getLogin());
+          SilverLogger.getLogger(this).error("terms of service error with login {0}",
+              new String[]{verifier.getUser().getLogin()}, e);
           return getErrorDestination("2");
         }
 
@@ -104,6 +105,6 @@ public class TermsOfServiceResponseHandler extends FunctionHandler {
    * @return
    */
   private String getErrorDestination(String errorCode) {
-    return "/Login.jsp?ErrorCode=" + errorCode;
+    return "/Login?ErrorCode=" + errorCode;
   }
 }

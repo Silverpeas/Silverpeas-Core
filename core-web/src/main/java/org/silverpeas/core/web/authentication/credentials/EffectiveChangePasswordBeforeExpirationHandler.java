@@ -20,8 +20,6 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -29,6 +27,8 @@ import org.silverpeas.core.security.authentication.AuthenticationServiceProvider
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +46,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
         (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (controller == null) {
-      return "/Login.jsp";
+      return "/Login";
     }
 
     SettingBundle settings = ResourceLocator.getSettingBundle(
@@ -72,8 +72,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
 
       return "/Main/" + favoriteFrame;
     } catch (AuthenticationException e) {
-      SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return performUrlChangePasswordError(request, passwordChangeURL, ud);
     }
   }

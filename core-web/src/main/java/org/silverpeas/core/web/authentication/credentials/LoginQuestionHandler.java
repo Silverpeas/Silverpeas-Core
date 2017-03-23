@@ -26,8 +26,8 @@ package org.silverpeas.core.web.authentication.credentials;
 
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,13 +49,12 @@ public class LoginQuestionHandler extends FunctionHandler {
         return getGeneral().getString("userLoginQuestionPage");
       } else {
         // page d'erreur : veuillez contacter votre admin
-        return "/Login.jsp";
+        return "/Login?ErrorCode=2";
       }
     } catch (AdminException e) {
-      // Error : go back to login page
-      SilverTrace.error("peasCore", "loginQuestionHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "login=" + login);
-      return "/Login.jsp";
+      SilverLogger.getLogger(this)
+          .error("login question error with login {0}", new String[]{login}, e);
+      return "/Login?ErrorCode=2";
     }
   }
 }

@@ -46,6 +46,7 @@ import java.util.Date;
 public class POPUPListener extends AbstractListener implements MessageListener {
 
   public POPUPListener() {
+    // Nothing to initialize
   }
 
   /**
@@ -78,7 +79,7 @@ public class POPUPListener extends AbstractListener implements MessageListener {
             .append("\n");
       }
       content.append(message.getMessage());
-      SilverMessageFactory.push(message.getTargetReceipt(), message);
+      PopupMessageService.get().push(message.getTargetReceipt(), message);
 
     } catch (Exception e) {
       throw new NotificationServerException("POPUPListener.send()", SilverpeasException.ERROR,

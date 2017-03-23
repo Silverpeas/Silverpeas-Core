@@ -50,7 +50,10 @@
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
-  <script src="<%=m_context%>/password.js" type="text/javascript"></script>
+  <view:includePlugin name="popup"/>
+  <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/password.js"/>
+  <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadScriptPromise"/>
   <c:if test="${isEmailAddress}">
     <view:includePlugin name="qtip"/>
   </c:if>
@@ -69,55 +72,6 @@
     }
   </style>
   <![endif]-->
-  <script type="text/javascript">
-    var webContext = '<%=m_context%>';
-    $(document).ready(function() {
-      handlePasswordForm({
-        passwordFormId : 'changePwdForm',
-        passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
-        passwordInputId : 'newPassword'
-      });
-      <c:if test="${isEmailAddress}">
-      $('#changePwdForm').on("submit", function() {
-        if (!$.trim($('#emailAddress').val())) {
-          alert("- <fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>\n");
-          return false;
-        }
-        return true;
-      });
-      var $emailMessage = $('#emailAddressMessage');
-      if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
-        var $emailAddress = $('#emailAddress');
-        $emailAddress.qtip({
-          content : $emailMessage,
-          style : {
-            width : "auto",
-            tip : true,
-            classes : "qtip-shadow qtip-cream"
-          },
-          position : {
-            adjust : {
-              method : "flip flip"
-            },
-            viewport : $(window),
-            at : "bottom left",
-            my : "top right"
-          },
-          show : {
-            delay : 0,
-            event : "displayQTip"
-          },
-          hide : {
-            fixed : true,
-            event : "hideQTip"
-          }
-        });
-        $emailAddress.trigger("displayQTip");
-      }
-      </c:if>
-    });
-  </script>
-  <script src="<%=m_context%>/util/javaScript/silverpeas-password.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -183,5 +137,53 @@
   <div id="emailAddressMessage" style="display: none; max-width: 400px; text-align: left;">
     <view:applyTemplate locationBase="${templateLocationBase}" name="${titleTemplate}"/></div>
 </c:if>
+<script type="text/javascript">
+  var webContext = '<%=m_context%>';
+  loadScriptPromise.then(function() {
+    handlePasswordForm({
+      passwordFormId : 'changePwdForm',
+      passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
+      passwordInputId : 'newPassword'
+    });
+    <c:if test="${isEmailAddress}">
+    $('#changePwdForm').on("submit", function() {
+      if (!$.trim($('#emailAddress').val())) {
+        alert("- <fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>\n");
+        return false;
+      }
+      return true;
+    });
+    var $emailMessage = $('#emailAddressMessage');
+    if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
+      var $emailAddress = $('#emailAddress');
+      $emailAddress.qtip({
+        content : $emailMessage,
+        style : {
+          width : "auto",
+          tip : true,
+          classes : "qtip-shadow qtip-cream"
+        },
+        position : {
+          adjust : {
+            method : "flip flip"
+          },
+          viewport : $(window),
+          at : "bottom left",
+          my : "top right"
+        },
+        show : {
+          delay : 0,
+          event : "displayQTip"
+        },
+        hide : {
+          fixed : true,
+          event : "hideQTip"
+        }
+      });
+      $emailAddress.trigger("displayQTip");
+    }
+    </c:if>
+  });
+</script>
 </body>
 </html>

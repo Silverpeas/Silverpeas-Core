@@ -23,12 +23,22 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * This servlet is the parent one of Silverpeas application.
@@ -48,16 +58,36 @@ public class SilverpeasHttpServlet extends HttpServlet {
       super.service(request, response);
 
     } catch (HttpError httpError) {
+      SilverLogger.getLogger(this).debug("http error " + httpError.errorCode, httpError);
       httpError.performResponse(response);
     }
   }
 
   /**
-   * Handle the sendRedirect or the forward.
-   * @throws ServletException
-   * @throws IOException
+   * Indicates if it exists an opened user session.
+   * @param request the current request.
+   * @return true if it exists an opened user session, false otherwise.
    */
-  void redirectOrForwardService(HttpServletRequest request, HttpServletResponse response,
+  protected boolean existOpenedUserSession(final HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+    MainSessionController mainSessionCtrl = null;
+    if (session != null) {
+      mainSessionCtrl = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+      if (mainSessionCtrl != null) {
+        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
+        SessionInfo sessionInfo = sessionManagement.getSessionInfo(mainSessionCtrl.getSessionId());
+        return sessionInfo.isDefined() && sessionInfo != SessionInfo.AnonymousSession;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Handle the sendRedirect or the forward.
+   * @throws ServletException on redirect or forward error.
+   * @throws IOException on redirect error.
+   */
+  protected void redirectOrForwardService(HttpServletRequest request, HttpServletResponse response,
       String destination) throws ServletException, IOException {
     if (destination.startsWith("http") || destination.startsWith("ftp")) {
       response.sendRedirect(response.encodeRedirectURL(destination));

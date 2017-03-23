@@ -50,7 +50,10 @@
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
-  <script src="<%=m_context%>/password.js" type="text/javascript"></script>
+  <view:includePlugin name="popup"/>
+  <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/password.js"/>
+  <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadScriptPromise"/>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -66,18 +69,6 @@
     }
   </style>
   <![endif]-->
-  <script type="text/javascript">
-    var webContext = '<%=m_context%>';
-    $(document).ready(function() {
-      $('#oldPassword').focus();
-      handlePasswordForm({
-        passwordFormId : 'changePwdForm',
-        passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordBeforeExpiration"/>',
-        passwordInputId : 'newPassword'
-      });
-    });
-  </script>
-  <script src="<%=m_context%>/util/javaScript/silverpeas-password.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -135,5 +126,16 @@
     </div>
   </div>
 </form>
+<script type="text/javascript">
+  var webContext = '<%=m_context%>';
+  loadScriptPromise.then(function() {
+    $('#oldPassword').focus();
+    handlePasswordForm({
+      passwordFormId : 'changePwdForm',
+      passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordBeforeExpiration"/>',
+      passwordInputId : 'newPassword'
+    });
+  });
+</script>
 </body>
 </html>

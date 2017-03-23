@@ -23,22 +23,23 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.apache.commons.lang3.time.DateUtils;
-import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -88,8 +89,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
                 .scheduleJob(new CacheCleanerJob(), JobTrigger.triggerEvery(10, TimeUnit.MINUTE));
             isCacheCleanerInitialized = true;
           } catch (SchedulerException e) {
-            SilverTrace.error("authentication", "UserCanTryAgainToLoginVerifier()",
-                "root.MSG_ERR_CACHE_CLEANER_INITIALIZATION");
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
         }
       }
@@ -147,7 +147,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * @return
    */
   public String getErrorDestination() {
-    return "/Login.jsp?ErrorCode=" + UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+    return "/Login?ErrorCode=" + UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
   }
 
   /**

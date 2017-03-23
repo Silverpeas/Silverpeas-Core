@@ -23,9 +23,6 @@
   --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -34,28 +31,6 @@
 %>
 
 <%
-
-  SettingBundle general =
-      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-
-  String loginPage;
-  String errorCode = request.getParameter("ErrorCode");
-  if (general.getBoolean("login.sso.enabled", false) && StringUtil.isNotDefined(errorCode)) {
-    loginPage = request.getContextPath() + "/sso";
-  } else {
-    loginPage = general.getString("loginPage");
-
-    String domainId = null;
-    if (StringUtil.isInteger(request.getParameter("DomainId"))) {
-      domainId = request.getParameter("DomainId");
-    }
-    if (!StringUtil.isDefined(loginPage)) {
-      loginPage = request.getContextPath() + "/defaultLogin.jsp";
-    } else if (!loginPage.startsWith(request.getContextPath())){
-      loginPage = request.getContextPath() + "/" + loginPage;
-    }
-    loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
-        request.getParameter("logout");
-  }
-  response.sendRedirect(response.encodeRedirectURL(loginPage));
+  RequestDispatcher requestDispatcher = request.getRequestDispatcher("/Login");
+  requestDispatcher.forward(request, response);
 %>
