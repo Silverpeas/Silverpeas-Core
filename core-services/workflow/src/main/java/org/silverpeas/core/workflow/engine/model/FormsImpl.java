@@ -33,12 +33,20 @@ import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Forms;
 import org.silverpeas.core.exception.SilverpeasException;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;forms&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "forms")
+@XmlAccessorType(XmlAccessType.NONE)
 public class FormsImpl implements Serializable, Forms {
 
   private static final long serialVersionUID = -4621417980509658490L;
+  @XmlElement(name = "form", type = FormImpl.class)
   private List<Form> formList;
 
   /**

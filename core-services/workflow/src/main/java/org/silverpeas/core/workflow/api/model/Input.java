@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 /**
  * Interface describing a representation of the &lt;input&gt; element of a Process Model.
  */
@@ -84,7 +82,7 @@ public interface Input extends Column {
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
+   * @param language label's language
    * @param role role for which the label is
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
@@ -92,20 +90,4 @@ public interface Input extends Column {
    * string.
    */
   public String getLabel(String role, String language);
-
-  /**
-   * Iterate through the Labels
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateLabel();
-
-  /**
-   * Add a label Method needed primarily by Castor
-   */
-  public void addLabel(ContextualDesignation label);
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   */
-  public ContextualDesignation createDesignation();
 }

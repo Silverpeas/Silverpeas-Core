@@ -23,42 +23,47 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import org.silverpeas.core.workflow.api.model.QualifiedUsers;
-import org.silverpeas.core.workflow.api.model.Triggers;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Consequence;
+import org.silverpeas.core.workflow.api.model.QualifiedUsers;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.StateSetter;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+import org.silverpeas.core.workflow.api.model.Triggers;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class implementing the representation of the &lt;consequence&gt; element of a Process Model.
  */
-public class ConsequenceImpl extends AbstractReferrableObject implements Consequence,
-    AbstractDescriptor, Serializable {
+@XmlRootElement(name = "consequence")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ConsequenceImpl implements Consequence, Serializable {
 
   private static final long serialVersionUID = -905677587105320693L;
+  @XmlAttribute
   private String item;
+  @XmlAttribute
   private String operator;
+  @XmlAttribute
   private String value;
+  @XmlElement
   private boolean kill;
-  private Vector<StateSetter> targetStateList;
-  private Vector<StateSetter> unsetStateList;
+  @XmlElement(name = "set", type = StateRef.class)
+  private List<StateSetter> targetStateList;
+  @XmlElement(name = "unset", type = StateRef.class)
+  private List<StateSetter> unsetStateList;
+  @XmlElement(name = "notify", type = QualifiedUsersImpl.class)
   private List<QualifiedUsers> notifiedUsersList;
-  private int step;
+  @XmlElement(type = TriggersImpl.class)
   private Triggers triggers;
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
 
   /**
    * Constructor
@@ -76,13 +81,15 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    * String)
    */
   public State getTargetState(String strStateName) {
-    for (int i = 0; i < targetStateList.size(); i++) {
-      if (targetStateList.get(i).getState().getName().equals(
-          strStateName)) {
-        return targetStateList.get(i).getState();
+    return getState(strStateName, targetStateList);
+  }
+
+  private State getState(String stateName, List<StateSetter> states) {
+    for (StateSetter state : states) {
+      if (state.getState().getName().equals(stateName)) {
+        return state.getState();
       }
     }
-
     return null;
   }
 
@@ -91,13 +98,17 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    * @return the target states as a Vector
    */
   public State[] getTargetStates() {
-    if (targetStateList == null) {
-      return null;
+    return getStates(targetStateList);
+  }
+
+  private State[] getStates(List<StateSetter> stateSetters) {
+    if (stateSetters == null) {
+      return new State[0];
     }
 
-    State[] states = new StateImpl[targetStateList.size()];
-    for (int i = 0; i < targetStateList.size(); i++) {
-      StateRef ref = (StateRef) targetStateList.get(i);
+    State[] states = new StateImpl[stateSetters.size()];
+    for (int i = 0; i < stateSetters.size(); i++) {
+      StateRef ref = (StateRef) stateSetters.get(i);
       states[i] = ref.getState();
     }
 
@@ -113,39 +124,11 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   }
 
   /*
-   * (non-Javadoc) @see Consequence#createStateSetter()
-   */
-  public StateSetter createStateSetter() {
-    return new StateRef();
-  }
-
-  /*
-   * (non-Javadoc) @see Consequence#iterateTargetState()
-   */
-  public Iterator<StateSetter> iterateTargetState() {
-    return targetStateList.iterator();
-  }
-
-  /*
-   * (non-Javadoc) @see Consequence#iterateTargetState()
-   */
-  public Iterator<QualifiedUsers> iterateNotifiedUsers() {
-    return notifiedUsersList.iterator();
-  }
-
-  /*
    * (non-Javadoc) @see Consequence#getUnsetState(java.lang.String
    * )
    */
   public State getUnsetState(String strStateName) {
-    for (int i = 0; i < unsetStateList.size(); i++) {
-      if (unsetStateList.get(i).getState().getName().equals(
-          strStateName)) {
-        return unsetStateList.get(i).getState();
-      }
-    }
-
-    return null;
+    return getState(strStateName, unsetStateList);
   }
 
   /**
@@ -153,17 +136,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    * @return the states to unset as a Vector
    */
   public State[] getUnsetStates() {
-    if (unsetStateList == null) {
-      return null;
-    }
-
-    State[] states = new StateImpl[unsetStateList.size()];
-    for (int i = 0; i < unsetStateList.size(); i++) {
-      StateRef ref = (StateRef) unsetStateList.get(i);
-      states[i] = ref.getState();
-    }
-
-    return states;
+    return getStates(unsetStateList);
   }
 
   /*
@@ -172,13 +145,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    */
   public void addUnsetState(StateSetter stateSetter) {
     unsetStateList.add(stateSetter);
-  }
-
-  /*
-   * (non-Javadoc) @see Consequence#iterateUnsetState()
-   */
-  public Iterator<StateSetter> iterateUnsetState() {
-    return unsetStateList.iterator();
   }
 
   /**
@@ -207,19 +173,12 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Set all the users that have to be notified
-   * @param QualifiedUsers object containing notified users
+   * @param notifiedUsersList object containing notified users
    */
   public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList) {
     this.notifiedUsersList = notifiedUsersList;
   }
-
-  /**
-   * Create and return an object implementing QalifiedUsers
-   */
-  public QualifiedUsers createQualifiedUsers() {
-    return new QualifiedUsersImpl();
-  }
-
+  
   /*
    * (non-Javadoc) @see Consequence#getItem()
    */
@@ -354,91 +313,12 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
     value = string;
   }
 
-  public void setStep(int id) {
-    step = id;
-  }
-
-  public int getStep() {
-    return step;
-  }
-
-  public Triggers createTriggers() {
-    return new TriggersImpl();
-  }
-
   public Triggers getTriggers() {
     return triggers;
   }
 
   public void setTriggers(Triggers triggers) {
     this.triggers = triggers;
-  }
-
-  /**
-   * *********** Implemented methods ****************************************
-   */
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  /*
-   * (non-Javadoc) @see AbstractDescriptor#setId(int)
-   */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc) @see AbstractDescriptor#getId()
-   */
-  @Override
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc) @see
-   * AbstractDescriptor#setParent(com.silverpeas
-   * .workflow.api.model.AbstractDescriptor)
-   */
-  @Override
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc) @see AbstractDescriptor#getParent()
-   */
-  @Override
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc) @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
-  }
-
-  /*
-   * (non-Javadoc) @see AbstractReferrableObject#getKey()
-   */
-  @Override
-  public String getKey() {
-    StringBuilder sb = new StringBuilder();
-
-    if (item != null) {
-      sb.append(item);
-    }
-    sb.append('|');
-    if (operator != null) {
-      sb.append(operator);
-    }
-    sb.append('|');
-    if (value != null) {
-      sb.append(value);
-    }
-    return sb.toString();
   }
 
   @Override

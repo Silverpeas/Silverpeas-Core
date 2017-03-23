@@ -24,30 +24,32 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Role;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;role&gt; element of a Process Model.
  **/
-public class RoleImpl extends AbstractReferrableObject implements AbstractDescriptor, Role,
-    Serializable {
+@XmlRootElement(name = "role")
+@XmlAccessorType(XmlAccessType.NONE)
+public class RoleImpl implements Role, Serializable {
   private static final long serialVersionUID = 1005254939500303606L;
+  @XmlAttribute
   private String name;
-  private ContextualDesignations labels; // collection of labels
-  private ContextualDesignations descriptions; // collection of descriptions
-
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
+  @XmlElement(name = "label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
+  @XmlElement(name = "description", type = SpecificLabel.class)
+  private List<ContextualDesignation> descriptions;
 
   /**
    * Constructor
@@ -56,21 +58,13 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
     reset();
   }
 
-  /**
-   * Constructor
-   * @param name role nama
-   */
-  public RoleImpl(String name) {
-    this();
-    this.name = name;
-  }
 
   /**
    * reset attributes
    */
   private void reset() {
-    labels = new SpecificLabelListHelper();
-    descriptions = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
+    descriptions = new ArrayList<>();
   }
 
   /**
@@ -89,16 +83,12 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
     this.name = name;
   }
 
-  // //////////////////
-  // labels
-  // //////////////////
-
   /*
    * (non-Javadoc)
    * @see Role#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
+    return new SpecificLabelListHelper(labels);
   }
 
   /*
@@ -106,7 +96,7 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
    * @see Role#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
+    return getLabels().getLabel(role, language);
   }
 
   /*
@@ -115,27 +105,15 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
    * .api.model.ContextualDesignation)
    */
   public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
+    labels.add(label);
   }
-
-  /*
-   * (non-Javadoc)
-   * @see Role#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
-  }
-
-  // //////////////////
-  // descriptions
-  // //////////////////
 
   /*
    * (non-Javadoc)
    * @see Role#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
-    return descriptions;
+    return new SpecificLabelListHelper(descriptions);
   }
 
   /*
@@ -143,84 +121,7 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
    * @see Role#getDescription(java.lang.String, java.lang.String)
    */
   public String getDescription(String role, String language) {
-    return descriptions.getLabel(role, language);
+    return getDescriptions().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Role#addDescription(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addDescription(ContextualDesignation description) {
-    descriptions.addContextualDesignation(description);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Role#iterateDescription()
-   */
-  public Iterator<ContextualDesignation> iterateDescription() {
-    return descriptions.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Role#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
-  }
-
-  /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  public String getKey() {
-    return name;
-  }
-
-  /************* Implemented methods *****************************************/
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setId(int)
-   */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getId()
-   */
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setParent(com.silverpeas
-   * .workflow.api.model.AbstractDescriptor)
-   */
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getParent()
-   */
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
-  }
 }

@@ -24,9 +24,9 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.AllowedActions;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
@@ -35,33 +35,53 @@ import org.silverpeas.core.workflow.api.model.QualifiedUsers;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.TimeOutAction;
 import org.silverpeas.core.workflow.api.model.TimeOutActions;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;state&gt; element of a Process Model.
  **/
-public class StateImpl extends AbstractReferrableObject implements State, AbstractDescriptor,
-    Serializable {
+@XmlRootElement(name = "state")
+@XmlAccessorType(XmlAccessType.NONE)
+public class StateImpl implements State, Serializable {
   private static final long serialVersionUID = -3019436287850255663L;
+
+  @XmlAttribute
+  @XmlID
   private String name;
-  private ContextualDesignations labels; // collection of labels
-  private ContextualDesignations descriptions; // collection of descriptions
-  private ContextualDesignations activities; // collection of activities
+
+  // collection of labels
+  @XmlElement(name = "label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
+  // collection of descriptions
+  @XmlElement(name = "description", type = SpecificLabel.class)
+  private List<ContextualDesignation> descriptions;
+  // collection of activities
+  @XmlElement(name = "activity", type = SpecificLabel.class)
+  private List<ContextualDesignation> activities;
+  @XmlElement(type = QualifiedUsersImpl.class)
   private QualifiedUsers workingUsers;
+  @XmlElement(type = QualifiedUsersImpl.class)
   private QualifiedUsers interestedUsers;
+  @XmlElement(type = ActionRefs.class)
   private AllowedActions allowedActions;
   private AllowedActions filteredActions;
+  @XmlElement(type = TimeOutActionsImpl.class)
   private TimeOutActions timeOutActions;
-  private Action timeOutAction;
+  @XmlIDREF
+  @XmlAttribute
+  private ActionImpl timeOutAction;
+  @XmlAttribute
   private int timeoutInterval;
+  @XmlAttribute
   private boolean timeoutNotifyAdmin;
 
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
 
   /**
    * Constructor
@@ -83,9 +103,9 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * reset attributes
    */
   private void reset() {
-    labels = new SpecificLabelListHelper();
-    descriptions = new SpecificLabelListHelper();
-    activities = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
+    descriptions = new ArrayList<>();
+    activities = new ArrayList<>();
     timeOutAction = null;
     timeoutInterval = -1;
     timeoutNotifyAdmin = true;
@@ -100,7 +120,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
+    return new SpecificLabelListHelper(labels);
   }
 
   /*
@@ -108,24 +128,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @seecom.silverpeas.workflow.api.model.State#addLabel(com.silverpeas.workflow.api.model.
-   * ContextualDesignation)
-   */
-  public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see State#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
+    return getLabels().getLabel(role, language);
   }
 
   // //////////////////
@@ -137,7 +140,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getActivities()
    */
   public ContextualDesignations getActivities() {
-    return activities;
+    return new SpecificLabelListHelper(activities);
   }
 
   /*
@@ -145,24 +148,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getActivity(java.lang.String, java.lang.String)
    */
   public String getActivity(String role, String language) {
-    return activities.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @seecom.silverpeas.workflow.api.model.State#addActivity(com.silverpeas.workflow.api.model.
-   * ContextualDesignation)
-   */
-  public void addActivity(ContextualDesignation label) {
-    activities.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see State#iterateActivity()
-   */
-  public Iterator<ContextualDesignation> iterateActivity() {
-    return activities.iterateContextualDesignation();
+    return getActivities().getLabel(role, language);
   }
 
   // //////////////////
@@ -174,7 +160,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
-    return descriptions;
+    return new SpecificLabelListHelper(descriptions);
   }
 
   /*
@@ -182,32 +168,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getDescription(java.lang.String, java.lang.String)
    */
   public String getDescription(String role, String language) {
-    return descriptions.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @seecom.silverpeas.workflow.api.model.State#addDescription(com.silverpeas.workflow.api.model.
-   * ContextualDesignation)
-   */
-  public void addDescription(ContextualDesignation description) {
-    descriptions.addContextualDesignation(description);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see State#iterateDescription()
-   */
-  public Iterator<ContextualDesignation> iterateDescription() {
-    return descriptions.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see State#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
+    return getDescriptions().getLabel(role, language);
   }
 
   // //////////////////
@@ -220,9 +181,9 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    */
   public Action[] getAllowedActions() {
     // check for allowedActions attribute
-    if (allowedActions == null)
-      return null;
-
+    if (allowedActions == null) {
+      return new Action[0];
+    }
     return allowedActions.getAllowedActions();
   }
 
@@ -231,14 +192,11 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @return timeout actions
    */
   public TimeOutAction[] getTimeOutActions() {
-    if (timeOutActions == null)
-      return null;
+    if (timeOutActions == null) {
+      return new TimeOutAction[0];
+    }
 
     return timeOutActions.getTimeOutActions();
-  }
-
-  public TimeOutActions getTimeOutActionsEx() {
-    return timeOutActions;
   }
 
   /*
@@ -253,13 +211,10 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     return new ActionRefs();
   }
 
-  public TimeOutActions createTimeOutActions() {
-    return new TimeOutActionsImpl();
-  }
-
   public Action[] getFilteredActions() {
-    if (filteredActions == null)
-      return null;
+    if (filteredActions == null) {
+      return new Action[0];
+    }
 
     return filteredActions.getAllowedActions();
   }
@@ -274,10 +229,11 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @see State#getInterestedUsers()
    */
   public QualifiedUsers getInterestedUsers() {
-    if (interestedUsers == null)
+    if (interestedUsers == null) {
       return new QualifiedUsersImpl();
-    else
+    } else {
       return this.interestedUsers;
+    }
   }
 
   /*
@@ -296,23 +252,16 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     return this.name;
   }
 
-  /**
-   * Get the pre-conditions to enter this state
-   * @return state's Preconditions object containing re-conditions
-   */
-  /*
-   * public Preconditions getPreconditions() { return this.preconditions; }
-   */
-
   /*
    * (non-Javadoc)
    * @see State#getWorkingUsers()
    */
   public QualifiedUsers getWorkingUsers() {
-    if (workingUsers == null)
+    if (workingUsers == null) {
       return new QualifiedUsersImpl();
-    else
+    } else {
       return this.workingUsers;
+    }
   }
 
   /*
@@ -321,13 +270,6 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    */
   public QualifiedUsers getWorkingUsersEx() {
     return workingUsers;
-  }
-
-  /**
-   *
-   */
-  public void setTimeOutActions(TimeOutActions timeOutActions) {
-    this.timeOutActions = timeOutActions;
   }
 
   /*
@@ -340,17 +282,9 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     this.allowedActions = allowedActions;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see State#createQualifiedUsers()
-   */
-  public QualifiedUsers createQualifiedUsers() {
-    return new QualifiedUsersImpl();
-  }
-
   /**
    * Set all the users interested by this state
-   * @param QualifiedUsers object containing interested users
+   * @param interestedUsers object containing interested users
    */
   public void setInterestedUsers(QualifiedUsers interestedUsers) {
     this.interestedUsers = interestedUsers;
@@ -365,17 +299,8 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
   }
 
   /**
-   * Set the pre-conditions to enter this state
-   * @param state's Preconditions object containing re-conditions
-   */
-  /*
-   * public void setPreconditions(Preconditions preconditions) { this.preconditions = preconditions;
-   * }
-   */
-
-  /**
    * Set all the users who can act in this state
-   * @param QualifiedUsers object containing these users
+   * @param workingUsers object containing these users
    */
   public void setWorkingUsers(QualifiedUsers workingUsers) {
     this.workingUsers = workingUsers;
@@ -398,29 +323,6 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
   }
 
   /**
-   * Get the timeout interval of this state
-   * @return timeoutInterval interval in hours (as a String)
-   */
-  public String castor_getTimeoutInterval() {
-    if (timeoutInterval != -1)
-      return String.valueOf(timeoutInterval);
-    else
-      return null;
-  }
-
-  /**
-   * Set the timeout interval of this state
-   * @param timeoutInterval interval in hours
-   */
-  public void castor_setTimeoutInterval(String timeoutInterval) {
-    try {
-      this.timeoutInterval = (Integer.valueOf(timeoutInterval)).intValue();
-    } catch (NumberFormatException e) {
-      this.timeoutInterval = -1;
-    }
-  }
-
-  /**
    * Get the timeout action of this state Action that will played if timeout is triggered
    * @return timeout action
    */
@@ -435,7 +337,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * Action)
    */
   public void setTimeoutAction(Action timeoutAction) {
-    this.timeOutAction = timeoutAction;
+    this.timeOutAction = (ActionImpl) timeoutAction;
   }
 
   /**
@@ -453,59 +355,5 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    */
   public void setTimeoutNotifyAdmin(boolean timeoutAction) {
     this.timeoutNotifyAdmin = timeoutAction;
-  }
-
-  /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  public String getKey() {
-    return (this.name);
-  }
-
-  /************* Implemented methods *****************************************/
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setId(int)
-   */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getId()
-   */
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see
-   * AbstractDescriptor#setParent(com.silverpeas.workflow.api.
-   * model.AbstractDescriptor)
-   */
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getParent()
-   */
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
   }
 }

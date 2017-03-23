@@ -28,13 +28,21 @@ import java.io.Serializable;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.StateSetter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+
 /**
  * Class implementing the representation of the &lt;set&gt; and &lt;unset&gt; elements of a Process
  * Model.
  **/
+@XmlAccessorType(XmlAccessType.NONE)
 public class StateRef implements Serializable, StateSetter {
   private static final long serialVersionUID = -168934988707118638L;
-  private State state;
+  @XmlIDREF
+  @XmlAttribute
+  private StateImpl state;
 
   /**
    * Get the referred state
@@ -48,6 +56,6 @@ public class StateRef implements Serializable, StateSetter {
    * @param state state to refer
    */
   public void setState(State state) {
-    this.state = state;
+    this.state = (StateImpl) state;
   }
 }

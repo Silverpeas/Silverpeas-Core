@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
@@ -84,23 +82,6 @@ public interface ProcessModel {
   ContextualDesignations getLabels();
 
   /**
-   * Iterate through the Labels
-   *
-   * @return an iterator
-   */
-  Iterator<ContextualDesignation> iterateLabel();
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   */
-  ContextualDesignation createDesignation();
-
-  /**
-   * Add a label Method needed primarily by Castor
-   */
-  void addLabel(ContextualDesignation label);
-
-  /**
    * Get description in specific language for the given role
    *
    * @param role role for which the description is
@@ -117,18 +98,6 @@ public interface ProcessModel {
    * @return an object containing the collection of the descriptions
    */
   ContextualDesignations getDescriptions();
-
-  /**
-   * Iterate through the descriptions
-   *
-   * @return an iterator
-   */
-  Iterator<ContextualDesignation> iterateDescription();
-
-  /**
-   * Add a description Method needed primarily by Castor
-   */
-  void addDescription(ContextualDesignation description);
 
   /**
    * Get the presentation configuration
@@ -289,7 +258,7 @@ public interface ProcessModel {
   /**
    * Set the data folder for this process model
    *
-   * @param data folder for this process model. it contains all the items declarations
+   * @param dataFolder folder for this process model. it contains all the items declarations
    * @return
    */
   void setDataFolder(DataFolder dataFolder);

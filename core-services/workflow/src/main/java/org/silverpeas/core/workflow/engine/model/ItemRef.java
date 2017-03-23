@@ -24,35 +24,46 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Input;
 import org.silverpeas.core.workflow.api.model.Item;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;input&gt; element of a Process Model.
  **/
-public class ItemRef extends AbstractReferrableObject implements Input, AbstractDescriptor,
-    Serializable {
+@XmlRootElement(name = "input")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ItemRef implements Input, Serializable {
   private static final long serialVersionUID = 4356623937044121281L;
-
-  private Item item;
-  private boolean readonly = false; // only used in forms construction
-  private boolean mandatory = false; // only used in forms construction
-  private String displayerName = null; // only used in forms construction
-  private String value = null; // default value
-  private ContextualDesignations labels; // collection of labels
-
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
+  @XmlIDREF
+  @XmlAttribute
+  private ItemImpl item;
+  // only used in forms construction
+  @XmlAttribute
+  private boolean readonly = false;
+  // only used in forms construction
+  @XmlAttribute
+  private boolean mandatory = false;
+  // only used in forms construction
+  @XmlAttribute
+  private String displayerName = null;
+  // default value
+  @XmlAttribute
+  private String value = null;
+  // collection of labels
+  @XmlElement(name="label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
 
   /**
    * Constructor
@@ -65,7 +76,7 @@ public class ItemRef extends AbstractReferrableObject implements Input, Abstract
    * reset attributes
    */
   private void reset() {
-    labels = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
   }
 
   /**
@@ -112,7 +123,7 @@ public class ItemRef extends AbstractReferrableObject implements Input, Abstract
    * @param item Item to refer
    */
   public void setItem(Item item) {
-    this.item = item;
+    this.item = (ItemImpl) item;
   }
 
   /**
@@ -151,7 +162,7 @@ public class ItemRef extends AbstractReferrableObject implements Input, Abstract
    * @see Input#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
+    return new SpecificLabelListHelper(labels);
   }
 
   /*
@@ -159,94 +170,7 @@ public class ItemRef extends AbstractReferrableObject implements Input, Abstract
    * @see Input#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
+    return getLabels().getLabel(role, language);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see Input#addLabel(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Input#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Input#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractReferrableObject#getKey()
-   */
-  public String getKey() {
-    StringBuffer sb = new StringBuffer();
-
-    if (item != null)
-      sb.append(item.getName());
-
-    sb.append("|");
-
-    if (value != null)
-      sb.append(value);
-
-    return sb.toString();
-  }
-
-  /************* Implemented methods *****************************************/
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setId(int)
-   */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getId()
-   */
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setParent(com.silverpeas
-   * .workflow.api.model.AbstractDescriptor)
-   */
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getParent()
-   */
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
-  }
 }

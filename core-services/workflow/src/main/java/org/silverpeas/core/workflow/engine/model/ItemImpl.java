@@ -24,36 +24,52 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Parameter;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;item&gt; element of a Process Model.
  */
-public class ItemImpl extends AbstractReferrableObject
-    implements AbstractDescriptor, Item, Serializable {
-  private static final long serialVersionUID = -888974957146029109L;
+@XmlRootElement(name = "item")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ItemImpl implements Item, Serializable {
+
+  @XmlID
+  @XmlAttribute
   private String name;
+  @XmlAttribute
   private boolean computed = false;
-  private ContextualDesignations labels;
-  private ContextualDesignations descriptions;
-  private List<Parameter> parameters;
+  @XmlElement(name = "label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
+  @XmlElement(name = "description", type = SpecificLabel.class)
+  private List<ContextualDesignation> descriptions;
+  @XmlElement
   private String type;
+  @XmlElement
   private boolean readonly;
+  @XmlElement
   private String formula;
+  @XmlAttribute
   private String mapTo;
+  @XmlElement(name = "param", type = ParameterImpl.class)
+  private List<Parameter> parameters;
 
   /**
    * Constructor
@@ -66,8 +82,8 @@ public class ItemImpl extends AbstractReferrableObject
    * reset attributes
    */
   private void reset() {
-    labels = new SpecificLabelListHelper();
-    descriptions = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
+    descriptions = new ArrayList<>();
     parameters = new ArrayList<>();
   }
 
@@ -184,7 +200,7 @@ public class ItemImpl extends AbstractReferrableObject
    * found again, return empty string.
    */
   public String getDescription(String role, String language) {
-    return descriptions.getLabel(role, language);
+    return getDescriptions().getLabel(role, language);
   }
 
   /*
@@ -192,32 +208,7 @@ public class ItemImpl extends AbstractReferrableObject
    * @see Item#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
-    return descriptions;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#addDescription(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addDescription(ContextualDesignation description) {
-    descriptions.addContextualDesignation(description);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#iterateDescription()
-   */
-  public Iterator<ContextualDesignation> iterateDescription() {
-    return descriptions.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
+    return new SpecificLabelListHelper(descriptions);
   }
 
   /**
@@ -230,24 +221,7 @@ public class ItemImpl extends AbstractReferrableObject
    * string.
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#addLabel(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
+    return getLabels().getLabel(role, language);
   }
 
   /*
@@ -255,7 +229,7 @@ public class ItemImpl extends AbstractReferrableObject
    * @see Item#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
+    return new SpecificLabelListHelper(labels);
   }
 
   /*
@@ -322,18 +296,10 @@ public class ItemImpl extends AbstractReferrableObject
     }
   }
 
-  /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  public String getKey() {
-    return (this.name);
-  }
+  public Map<String, String> getKeyValuePairs() {
+    Map<String, String> keyValuePairs = new HashMap<>();
 
-  public Hashtable<String, String> getKeyValuePairs() {
-    Hashtable<String, String> keyValuePairs = new Hashtable<>();
-
-    if (parameters != null && parameters.size() > 0) {
+    if (parameters != null && !parameters.isEmpty()) {
       String keys = null;
       String values = null;
 
@@ -371,35 +337,22 @@ public class ItemImpl extends AbstractReferrableObject
     return keyValuePairs;
   }
 
-  /**
-   * ********** Implemented methods ****************************************
-   */
-  // ~ Instance fields ////////////////////////////////////////////////////////
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ItemImpl)) {
+      return false;
+    }
 
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
+    final ItemImpl item = (ItemImpl) o;
 
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
+    return name.equals(item.name);
   }
 
-  public int getId() {
-    return id;
-  }
-
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  public boolean hasId() {
-    return hasId;
+  @Override
+  public int hashCode() {
+    return name.hashCode();
   }
 }

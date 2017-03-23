@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 /**
  * Interface describing a representation of the &lt;trigger&gt; element of a Process Model.
  */
@@ -37,7 +35,7 @@ public interface Trigger {
 
   /**
    * Set the name of the Trigger
-   * @param parameter 's name
+   * @param name parameter's name
    */
   public void setName(String name);
 
@@ -61,17 +59,7 @@ public interface Trigger {
   public Parameter getParameter(String strName);
 
   /**
-   * Create an object implementing Parameter
-   */
-  public Parameter createParameter();
-
-  /**
    * Add a Parameter to the collection
    */
   public void addParameter(Parameter parameter);
-
-  /**
-   * Return an Iterator over the parameters collection
-   */
-  public Iterator<Parameter> iterateParameter();
 }

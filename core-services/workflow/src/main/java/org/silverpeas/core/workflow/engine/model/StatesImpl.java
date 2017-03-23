@@ -32,12 +32,20 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.model.States;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;states&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "states")
+@XmlAccessorType(XmlAccessType.NONE)
 public class StatesImpl implements Serializable, States {
 
   private static final long serialVersionUID = -2580715672830095678L;
+  @XmlElement(name = "state", type = StateImpl.class)
   private List<State> stateList;
 
   /**
@@ -86,7 +94,7 @@ public class StatesImpl implements Serializable, States {
   @Override
   public State[] getStates() {
     if (stateList == null) {
-      return null;
+      return new State[0];
     }
     return stateList.toArray(new State[stateList.size()]);
   }

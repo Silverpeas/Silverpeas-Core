@@ -24,19 +24,25 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 import org.silverpeas.core.workflow.api.model.TimeOutAction;
 import org.silverpeas.core.workflow.api.model.TimeOutActions;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;timeoutActions&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "timeOutActions")
+@XmlAccessorType(XmlAccessType.NONE)
 public class TimeOutActionsImpl implements Serializable, TimeOutActions {
   private static final long serialVersionUID = 7973279591384251532L;
+  @XmlElement(name = "timeOutAction", type = TimeOutActionImpl.class)
   private List<TimeOutAction> timeoutActionList;
 
   /**
@@ -48,37 +54,13 @@ public class TimeOutActionsImpl implements Serializable, TimeOutActions {
 
   /*
    * (non-Javadoc)
-   * @see AllowedActions#createAllowedAction()
-   */
-  public TimeOutAction createTimeoutAction() {
-    return new TimeOutActionImpl();
-  }
-
-  /*
-   * (non-Javadoc)
    * @see AllowedActions#getAllowedActions()
    */
   public TimeOutAction[] getTimeOutActions() {
-
     if (timeoutActionList == null) {
-      return null;
+      return new TimeOutAction[0];
     }
     return timeoutActionList.toArray(new TimeOutAction[timeoutActionList.size()]);
-  }
-
-  @Override
-  public void addTimeOutAction(TimeOutAction timeOutAction) {
-    timeoutActionList.add(timeOutAction);
-  }
-
-  @Override
-  public TimeOutAction createTimeOutAction() {
-    return new TimeOutActionImpl();
-  }
-
-  @Override
-  public Iterator<TimeOutAction> iterateTimeOutAction() {
-    return timeoutActionList.iterator();
   }
 
 }

@@ -24,22 +24,36 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Participant;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;participant&gt; element of a Process Model.
  **/
-public class ParticipantImpl extends AbstractReferrableObject implements Participant, Serializable {
+@XmlRootElement(name = "participant")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ParticipantImpl implements Participant, Serializable {
   private static final long serialVersionUID = -6272061474366848845L;
+  @XmlID
+  @XmlAttribute
   private String name;
+  @XmlAttribute(name = "state")
   private String resolvedState;
-  private ContextualDesignations labels;
-  private ContextualDesignations descriptions;
+  @XmlElement(name = "label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
+  @XmlElement(name = "description", type = SpecificLabel.class)
+  private List<ContextualDesignation> descriptions;
 
   /**
    * Constructor
@@ -49,25 +63,16 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
   }
 
   /**
-   * Constructor
-   * @param name participant name
-   */
-  public ParticipantImpl(String name) {
-    this();
-    this.name = name;
-  }
-
-  /**
    * reset attributes
    */
   private void reset() {
-    labels = new SpecificLabelListHelper();
-    descriptions = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
+    descriptions = new ArrayList<>();
   }
 
   /**
    * Get description in specific language for the given role
-   * @param lang description's language
+   * @param language description's language
    * @param role role for which the description is
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
@@ -75,7 +80,7 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
    * found again, return empty string.
    */
   public String getDescription(String role, String language) {
-    return descriptions.getLabel(role, language);
+    return getDescriptions().getLabel(role, language);
   }
 
   /*
@@ -83,37 +88,12 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
    * @see Participant#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
-    return descriptions;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Participant#addDescription(com.silverpeas
-   * .workflow.api.model.ContextualDesignation)
-   */
-  public void addDescription(ContextualDesignation description) {
-    descriptions.addContextualDesignation(description);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Participant#iterateDescription()
-   */
-  public Iterator<ContextualDesignation> iterateDescription() {
-    return descriptions.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Participant#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
+    return new SpecificLabelListHelper(descriptions);
   }
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
+   * @param language label's language
    * @param role role for which the label is
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
@@ -121,7 +101,7 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
    * string.
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
+    return getLabels().getLabel(role, language);
   }
 
   /*
@@ -129,24 +109,7 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
    * @see Participant#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Participant#addLabel(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Participant#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
+    return new SpecificLabelListHelper(labels);
   }
 
   /**
@@ -181,11 +144,4 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
     this.resolvedState = resolvedState;
   }
 
-  /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  public String getKey() {
-    return (this.name);
-  }
 }

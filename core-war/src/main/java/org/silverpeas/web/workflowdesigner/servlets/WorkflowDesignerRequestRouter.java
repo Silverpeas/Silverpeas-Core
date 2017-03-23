@@ -27,6 +27,8 @@ import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.engine.model.ProcessModelImpl;
+import org.silverpeas.core.workflow.engine.model.SpecificLabel;
+import org.silverpeas.core.workflow.engine.model.StateRef;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -901,14 +903,12 @@ public class WorkflowDesignerRequestRouter extends
         // Set / Unset States
         //
         while (iterState.hasNext()) {
-          StateSetter stateSetter;
-
-          state = (State) iterState.next();
+          state = iterState.next();
 
           strSetUnset = request.getParameter("setUnset_" + state.getName());
 
           if (StringUtil.isDefined(strSetUnset)) {
-            stateSetter = consequence.createStateSetter();
+            StateSetter stateSetter = new StateRef();
             stateSetter.setState(state);
 
             if ("set".equals(strSetUnset)) {
@@ -1349,8 +1349,7 @@ public class WorkflowDesignerRequestRouter extends
         String strLanguage = request.getParameter("lang_original"), strRole =
             request.getParameter("role_original"), strContext = request.getParameter("context"),
             strParentScreen = request.getParameter("parentScreen");
-        ContextualDesignation designation =
-            workflowDesignerSC.getProcessModel().createDesignation();
+        ContextualDesignation designation = new SpecificLabel();
 
         designation.setLanguage(request.getParameter("lang"));
         designation.setRole(request.getParameter("role"));
@@ -1367,8 +1366,7 @@ public class WorkflowDesignerRequestRouter extends
    */
   private static FunctionHandler hndlRemoveContextualDesignation =
       (function, workflowDesignerSC, request) -> {
-        ContextualDesignation contextualDesignation =
-            workflowDesignerSC.getProcessModel().createDesignation();
+        ContextualDesignation contextualDesignation = new SpecificLabel();
         String strContext = request.getParameter("context"), strParentScreen =
             request.getParameter("parentScreen");
 

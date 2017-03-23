@@ -91,12 +91,6 @@ public interface QualifiedUsers {
   public Iterator<RelatedUser> iterateRelatedUser();
 
   /**
-   * Create a new RelatedUser
-   * @return an object implementing RelatedUser
-   */
-  public RelatedUser createRelatedUser();
-
-  /**
    * Add a RelatedUser to the collection
    * @param user to be added
    */
@@ -114,38 +108,6 @@ public interface QualifiedUsers {
    * @return the related groups as an array
    */
   public RelatedGroup[] getRelatedGroups();
-
-  /**
-   * Get the related group equivalent to the one specified
-   * @param relatedGroup the reference to look for
-   * @return the related groups as referenced or <code>null</code>
-   */
-  public RelatedGroup getRelatedGroup(RelatedGroup relatedGroup);
-
-  /**
-   * Iterate through the RelatedGroup objects
-   * @return an iterator
-   */
-  public Iterator<RelatedGroup> iterateRelatedGroup();
-
-  /**
-   * Create a new RelatedGroup
-   * @return an object implementing RelatedGroup
-   */
-  public RelatedGroup createRelatedGroup();
-
-  /**
-   * Add a RelatedGroup to the collection
-   * @param group to be added
-   */
-  void addRelatedGroup(RelatedGroup group);
-
-  /**
-   * Remove a RelatedGroup from the collection
-   * @param reference the reference of the RelatedGroup to be removed
-   * @throws WorkflowException when something goes wrong
-   */
-  void removeRelatedGroup(RelatedGroup reference) throws WorkflowException;
 
   /**
    * Get the role to which the related groups will be affected by default
