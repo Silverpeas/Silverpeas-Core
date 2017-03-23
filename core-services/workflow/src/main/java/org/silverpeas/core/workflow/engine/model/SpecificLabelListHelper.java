@@ -32,12 +32,17 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class managing a collection of ContextualDesigantion objects.
  */
+@XmlRootElement
 public class SpecificLabelListHelper implements ContextualDesignations, Serializable {
   private static final long serialVersionUID = -4580671511307866063L;
-  List<ContextualDesignation> labels = null; // a reference to the list we are going to manage
+  @XmlElement(type = SpecificLabel.class)
+  List<ContextualDesignation> labels = null;
 
   /**
    * Constructor
@@ -72,7 +77,8 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
     if (label != null) {
       return label.getContent();
     }
-    label = getSpecificLabel("default", "default"); //$NON-NLS-1$ //$NON-NLS-2$
+    //$NON-NLS-1$ //$NON-NLS-2$
+    label = getSpecificLabel("default", "default");
     if (label != null) {
       return label.getContent();
     }
@@ -136,9 +142,11 @@ public class SpecificLabelListHelper implements ContextualDesignations, Serializ
     if (labels == null) {
       return;
     }
-    if (!labels.remove(contextualDesignation))
-      throw new WorkflowException("SpecificLabelListHelper.removeContextualDesignation()", //$NON-NLS-1$
+    if (!labels.remove(contextualDesignation)) {
+      throw new WorkflowException("SpecificLabelListHelper.removeContextualDesignation()",
+          //$NON-NLS-1$
           "workflowEngine.EX_DESIGNATION_NOT_FOUND", // $NON-NLS-1$
           contextualDesignation == null ? "<null>" : contextualDesignation.getContent());
+    }
   }
 }

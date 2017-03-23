@@ -30,15 +30,26 @@ import java.util.List;
 
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Columns;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;columns&gt; element of a Process Model.
  **/
-public class ColumnsImpl extends AbstractReferrableObject implements Serializable, Columns {
+@XmlRootElement(name = "columns")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ColumnsImpl implements Serializable, Columns {
   private static final long serialVersionUID = -179308759997989687L;
-  private List<Column> columnList; // a list of columns ( Column objects )
-  private String roleName = "default"; // the name of the role.
+
+  @XmlElement(name = "column", type = ColumnImpl.class)
+  private List<Column> columnList;
+
+  @XmlAttribute(name = "role")
+  private String roleName = "default";
 
   /**
    * Constructor
@@ -75,15 +86,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
     return columnList.get(i);
   }
 
-  /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  @Override
-  public String getKey() {
-    return (this.roleName);
-  }
-
   @Override
   public void addColumn(Column column) {
     columnList.add(column);
@@ -100,7 +102,21 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
   }
 
   @Override
-  public void removeAllColumns() {
-    columnList.clear();
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final ColumnsImpl columns = (ColumnsImpl) o;
+
+    return roleName != null ? roleName.equals(columns.roleName) : columns.roleName == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return roleName != null ? roleName.hashCode() : 0;
   }
 }

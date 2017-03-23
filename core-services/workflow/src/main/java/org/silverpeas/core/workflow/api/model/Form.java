@@ -26,7 +26,6 @@ package org.silverpeas.core.workflow.api.model;
 import java.util.Iterator;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
@@ -70,7 +69,7 @@ public interface Form {
    * display the form
    * @return form's name
    */
-  public void setHTMLFileName(String HTMLFileName);
+  public void setHTMLFileName(String htmlFileName);
 
   /**
    * Get the inputs
@@ -122,7 +121,7 @@ public interface Form {
 
   /**
    * Get title in specific language for the given role
-   * @param lang title's language
+   * @param language title's language
    * @param role role for which the title is
    * @return wanted title as a String object. If title is not found, search title with given role
    * and default language, if not found again, return the default title in given language, if not
@@ -132,27 +131,11 @@ public interface Form {
   public String getTitle(String role, String language);
 
   /**
-   * Iterate through the titles
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateTitle();
-
-  /**
-   * Add a title Method needed primarily by Castor
-   */
-  public void addTitle(ContextualDesignation description);
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   */
-  public ContextualDesignation createDesignation();
-
-  /**
    * Converts this object in a DataRecord object
    * @return the resulting DataRecord object with the default values set
    */
   public DataRecord getDefaultRecord(String role, String lang, DataRecord data)
-      throws FormException, WorkflowException;
+      throws WorkflowException;
 
   /**
    * Converts this object in a RecordTemplate object

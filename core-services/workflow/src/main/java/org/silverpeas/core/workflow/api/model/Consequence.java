@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public interface Consequence {
 
   /**
    * Set the item on which the comparison will be processed
-   * @param the item
+   * @param strName the item
    */
   public void setItem(String strName);
 
@@ -50,7 +49,7 @@ public interface Consequence {
 
   /**
    * Set the operator used to compare item and value
-   * @param the operator (ie : =, >, >=, <, <=, !=)
+   * @param strOperator the operator (ie : =, >, >=, <, <=, !=)
    */
   public void setOperator(String strOperator);
 
@@ -62,7 +61,7 @@ public interface Consequence {
 
   /**
    * Set the value to compare with item
-   * @param the value
+   * @param strValue the value
    */
   public void setValue(String strValue);
 
@@ -86,18 +85,6 @@ public interface Consequence {
   public State getTargetState(String strStateName);
 
   /**
-   * Iterate through Target States.
-   * @return an Iterator
-   */
-  public Iterator<StateSetter> iterateTargetState();
-
-  /**
-   * Create a new state Setter object
-   * @return a StateSetter object
-   */
-  public StateSetter createStateSetter();
-
-  /**
    * Add a new Target State to the collection
    * @param stateSetter object to be added
    */
@@ -117,12 +104,6 @@ public interface Consequence {
   public State[] getUnsetStates();
 
   /**
-   * Iterate through Unset States.
-   * @return an Iterator
-   */
-  public Iterator<StateSetter> iterateUnsetState();
-
-  /**
    * Add a new Unset State to the collection
    * @param stateSetter object to be added
    */
@@ -130,7 +111,7 @@ public interface Consequence {
 
   /**
    * Add a new notifiedUser to the collection
-   * @param stateSetter object to be added
+   * @param notifyUsers object to be added
    */
   public void addNotifiedUsers(QualifiedUsers notifyUsers);
 
@@ -155,11 +136,9 @@ public interface Consequence {
 
   /**
    * Set all the users that have to be notified
-   * @param QualifiedUsers object containing notified users
+   * @param notifiedUsersList object containing notified users
    */
   public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList);
-
-  public Triggers createTriggers();
 
   public Triggers getTriggers();
 }

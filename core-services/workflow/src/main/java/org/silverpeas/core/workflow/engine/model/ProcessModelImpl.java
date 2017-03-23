@@ -26,7 +26,6 @@ package org.silverpeas.core.workflow.engine.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -42,6 +41,7 @@ import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.IdentifiedRecordTemplate;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.Form;
@@ -52,7 +52,6 @@ import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRecordTempl
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowTemplate;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Actions;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.DataFolder;
@@ -67,38 +66,53 @@ import org.silverpeas.core.workflow.api.model.Roles;
 import org.silverpeas.core.workflow.api.model.UserInRole;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the main &lt;processModel&gt; element of a Process
  * Model.
  */
-public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Serializable {
+@XmlRootElement(name = "processModel")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ProcessModelImpl implements ProcessModel, Serializable {
   private static final long serialVersionUID = -4576686557632464607L;
   private String modelId;
+  @XmlAttribute
   private String name;
-  private ContextualDesignations labels;
-  private ContextualDesignations descriptions;
+  @XmlElement(name = "label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
+  @XmlElement(name = "description", type = SpecificLabel.class)
+  private List<ContextualDesignation> descriptions;
+  @XmlElement(type = RolesImpl.class)
   private Roles roles;
+  @XmlElement(type = PresentationImpl.class)
   private Presentation presentation;
+  @XmlElement(type = ParticipantsImpl.class)
   private Participants participants;
+  @XmlElement(type = StatesImpl.class)
   private States states;
+  @XmlElement(type = ActionsImpl.class)
   private Actions actions;
+  @XmlElement(type = DataFolderImpl.class)
   private DataFolder dataFolder;
+  @XmlElement(type = DataFolderImpl.class)
   private DataFolder userInfos;
+  @XmlElement(type = FormsImpl.class)
   private Forms forms;
 
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
+  private HashMap<String, RecordTemplate> instanceDataTemplates = new HashMap<>();
+  private HashMap<String, RecordTemplate> rowTemplates = new HashMap<>();
 
   /**
    * Constructor
    */
   public ProcessModelImpl() {
-    labels = new SpecificLabelListHelper();
-    descriptions = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
+    descriptions = new ArrayList<>();
     presentation = createPresentation();
   }
 
@@ -143,19 +157,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   }
 
   /**
-   * Get the presentation configuration for Castor
-   * @return presentation configuration if not empty, otherwise <code>null</code>
-   */
-  public Presentation getPresentationForCastor() {
-    if (presentation.iterateColumns().hasNext() ||
-        presentation.getTitles().iterateContextualDesignation().hasNext()) {
-      return presentation;
-    } else {
-      return null;
-    }
-  }
-
-  /**
    * Set the presentation's configuration
    * @param presentation presentation's configuration
    */
@@ -177,7 +178,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public Participant[] getParticipants() {
     if (participants == null) {
-      return null;
+      return new Participant[0];
     }
     return participants.getParticipants();
   }
@@ -212,7 +213,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public Role[] getRoles() {
     if (roles == null) {
-      return null;
+      return new Role[0];
     }
     return roles.getRoles();
   }
@@ -259,7 +260,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public State[] getStates() {
     if (states == null) {
-      return null;
+      return new State[0];
     }
     return states.getStates();
   }
@@ -306,7 +307,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public Action[] getActions() {
     if (actions == null) {
-      return null;
+      return new Action[0];
     }
     return actions.getActions();
   }
@@ -434,24 +435,12 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return new FormsImpl();
   }
 
-  // //////////////////
-  // labels
-  // //////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
-  }
-
   /*
    * (non-Javadoc)
    * @see ProcessModel#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
+    return new SpecificLabelListHelper(labels);
   }
 
   /**
@@ -464,36 +453,15 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * string.
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
+    return getLabels().getLabel(role, language);
   }
-
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#addLabel(com.silverpeas.
-   * workflow.api.model.ContextualDesignation)
-   */
-  public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
-  }
-
-  // //////////////////
-  // descriptions
-  // //////////////////
 
   /*
    * (non-Javadoc)
    * @see ProcessModel#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
-    return descriptions;
+    return new SpecificLabelListHelper(descriptions);
   }
 
   /**
@@ -506,24 +474,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * found again, return empty string.
    */
   public String getDescription(String role, String language) {
-    return descriptions.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#addDescription(com.silverpeas
-   * .workflow.api.model.ContextualDesignation)
-   */
-  public void addDescription(ContextualDesignation description) {
-    descriptions.addContextualDesignation(description);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see ProcessModel#iterateDescription()
-   */
-  public Iterator<ContextualDesignation> iterateDescription() {
-    return descriptions.iterateContextualDesignation();
+    return getDescriptions().getLabel(role, language);
   }
 
   /*
@@ -561,12 +512,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * Returns the record set where are saved all the folder of the instance built from this model.
    */
   public RecordSet getFolderRecordSet() throws WorkflowException {
-    /*
-     * try { return GenericRecordSetManager.getRecordSet( getFolderRecordSetName()); } catch
-     * (FormException e) { throw new WorkflowException( "ProcessModel", "EXP_UNKNOWN_RECORD_SET",
-     * getFolderRecordSetName(), e); }
-     */
-
     // Now, the folder is read from xml file and no more in database
     // This permit to add items to the folder
     IdentifiedRecordTemplate idTemplate;
@@ -654,10 +599,10 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * create
    */
   public Action getCreateAction(String role) throws WorkflowException {
-    Action[] actions = getActions();
+    Action[] someActions = getActions();
 
-    for (Action action : actions) {
-      if (action.getKind().equals("create")) {
+    for (Action action : someActions) {
+      if ("create".equals(action.getKind())) {
         // Retrieve roles allowed to do this action
         QualifiedUsers creators = action.getAllowedUsers();
         UserInRole[] usersInRoles = creators.getUserInRoles();
@@ -697,10 +642,11 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     Action action = null;
     Form form = null;
 
-    if (!name.equalsIgnoreCase("presentationForm")) {
+    if (!"presentationForm".equalsIgnoreCase(name)) {
       try {
         action = getAction(name);
       } catch (WorkflowException ignoredAtThisStep) {
+        SilverLogger.getLogger(this).error("This is ignored", ignoredAtThisStep);
       }
     }
 
@@ -750,12 +696,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     if (action == null || action.getForm() == null) {
       return null;
     }
-    try {
-      return action.getForm().getDefaultRecord(roleName, lang, data);
-    } catch (FormException e) {
-      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
-          action.getForm().getName(), e);
-    }
+    return action.getForm().getDefaultRecord(roleName, lang, data);
   }
 
   /**
@@ -776,25 +717,25 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public String[] getCreationRoles() throws WorkflowException {
     try {
-      List<String> roles = new ArrayList<>();
+      List<String> someRoles = new ArrayList<>();
 
       // Search for actions of kind create
-      Action[] actions = getActions();
-      for (Action action : actions) {
-        if (action.getKind().equals("create")) {
+      Action[] someActions = getActions();
+      for (Action action : someActions) {
+        if ("create".equals(action.getKind())) {
           // Retrieve roles allowed to do this action
           QualifiedUsers creators = action.getAllowedUsers();
           UserInRole[] usersInRoles = creators.getUserInRoles();
 
           for (UserInRole usersInRole : usersInRoles) {
-            if (!roles.contains(usersInRole.getRoleName())) {
-              roles.add(usersInRole.getRoleName());
+            if (!someRoles.contains(usersInRole.getRoleName())) {
+              someRoles.add(usersInRole.getRoleName());
             }
           }
         }
       }
 
-      return roles.toArray(new String[roles.size()]);
+      return someRoles.toArray(new String[someRoles.size()]);
     } catch (Exception e) {
       throw new WorkflowException("ProcessModel", "workflowEngine.EXP_FAIL_GET_CREATION_ROLES",
           this.name, e);
@@ -817,9 +758,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return template;
   }
 
-  private HashMap<String, RecordTemplate> instanceDataTemplates =
-      new HashMap<>();
-
   /**
    * Returns the recordTemplate which describes the data record used to show process instance as a
    * row in list.
@@ -834,53 +772,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       rowTemplates.put(role + "\n" + lang, template);
     }
     return template;
-  }
-
-  private HashMap<String, RecordTemplate> rowTemplates = new HashMap<>();
-
-  /************* Implemented methods *****************************************/
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setId(int)
-   */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getId()
-   */
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setParent(com.silverpeas
-   * .workflow.api.model.AbstractDescriptor)
-   */
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getParent()
-   */
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
   }
 
   /**

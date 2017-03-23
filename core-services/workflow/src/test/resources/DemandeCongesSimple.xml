@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
     Copyright (C) 2000 - 2017 Silverpeas
@@ -24,24 +24,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<!-- PROCÃ‰DURE : DEMANDE DE CONGES -->
-
-<processModel name="DemandeConges"
+<!-- PROCEDURE : DEMANDE DE CONGES SIMPLIFIEE -->
+<processModel name="DemandeCongesSimple"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				  xsi:noNamespaceSchemaLocation="processModel.xsd">
 
-	<label>Demande de congÃ©s</label>
+	<label>Demande de conges simplifiee</label>
 
 	<!-- DESCRIPTION DES ROLES -->
 	<roles>
 		<role name="Employe">
-			<label>Demandeur</label>
+			<label lang="fr">Demandeur</label>
+      <label lang="en">Requester</label>
 		</role>
 		<role name="Responsable">
 			<label>Responsable</label>
-		</role>
-		<role name="Secretaire">
-			<label>SecrÃ©taire</label>
 		</role>
 		<role name="supervisor">
 			<label>Superviseur</label>
@@ -50,15 +47,7 @@
 
 	<!-- DEFINITION DES DONNEES UTILISATEUR -->
 	<userInfos>
-		<item name="departement" mapTo="position">
-			<label>departement</label>
-			<type>text</type>
-		</item>
-		<item name="secretaire">
-			<label>SecrÃ©taire</label>
-			<type>user</type>
-		</item>
-		<item name="old_responsable">
+		<item name="responsable">
 			<label>Responsable</label>
 			<type>user</type>
 		</item>
@@ -67,54 +56,56 @@
 	<!-- DEFINITION DU DOSSIER -->
 	<dataFolder>
 		<item name="nature">
-			<label>Nature des congÃ©s</label>
+			<label>Type de congés</label>
+			<type>text</type>
+			<param name="keys" value="Congés payés##RTT##Congés sans solde##Récupération##Autre"/>
+		</item>
+		<item name="natureAutre">
+			<label>Autre type de congés</label>
 			<type>text</type>
 		</item>
 		<item name="duree">
-			<label>durÃ©e (nombre de jours ouvrÃ©s)</label>
+			<label>Nombre de jours</label>
 			<type>text</type>
 		</item>
 		<item name="dateDebut">
-			<label>DÃ©part</label>
+			<label>Date de début</label>
 			<type>date</type>
 		</item>
 		<item name="dateFin">
-			<label>Retour</label>
+			<label>Date de fin (inclus)</label>
 			<type>date</type>
+		</item>
+		<item name="debutJourneeOuDemi">
+			<label>Début (Journée/Matinée/Après-midi)</label>
+			<type>text</type>
+			<param name="keys" value="Journée##Matinée##Après-midi"/>
+			<param name="cols" value="3"/>
+		</item>
+		<item name="finJourneeOuDemi">
+			<label>Fin (Journée/Matinée/Après-midi)</label>
+			<type>text</type>
+			<param name="keys" value="Journée##Matinée##Après-midi"/>
+			<param name="cols" value="3"/>
+		</item>
+		<item name="motifRefus">
+			<label>Motif du refus</label>
+			<type>text</type>
 		</item>
 		<item name="commentaires">
 			<label>Commentaires</label>
 			<type>text</type>
 		</item>
-		<item name="responsable">
-			<label>Responsable</label>
-			<type>user</type>
-		</item>
-		<!--<item name="fichier">
-			<label>Fichier</label>
-			<type>file</type>
-		</item>-->
 	</dataFolder>
 
 	<!-- PRESENTATION DES PROCEDURES EN COURS-->
 	<presentation>
-		<title role="Employe">
-		    CongÃ©s du ${instance.dateDebut} au ${instance.dateFin}
-		</title>
+		<title role="Employe">Congés du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})</title>
 		<title role="Responsable">Demande de ${action.Creation.actor}</title>
 		<title role="supervisor">Demande de ${action.Creation.actor}</title>
-		<title role="Secretaire">Demande de ${action.Creation.actor}</title>
-		<columns role="Employe">
-			<column item="dateDebut"/>
-			<column item="dateFin"/>
-		</columns>
-		<columns role="Responsable">
-			<column item="dateDebut"/>
-			<column item="dateFin"/>
-		</columns>
-		<columns role="Secretaire">
-			<column item="dateDebut"/>
-			<column item="dateFin"/>
+		<columns>
+			<column item="nature"/>
+			<column item="duree"/>
 		</columns>
 	</presentation>
 
@@ -125,12 +116,12 @@
 		</participant>
 	</participants>
 
-	<!-- DESCRIPTION DES Ã‰TATS -->
+	<!-- DESCRIPTION DES ETATS -->
 	<states>
 		<state name="AttenteValidation">
-			<label>En attente de validation</label>
+			<label>En attente d'acceptation par responsable</label>
 			<workingUsers role="Responsable">
-				<relatedUser folderItem="responsable"/>
+				<relatedUser participant="Demandeur" relation="responsable"/>
 			</workingUsers>
 			<interestedUsers>
 				<relatedUser participant="Demandeur" role="Employe"/>
@@ -141,37 +132,33 @@
 			</allowedActions>
 		</state>
 
-		<state name="Acceptee" timeoutAction="Supprimer" timeoutInterval="1">
-			<label>AcceptÃ©e</label>
-			<workingUsers role="Secretaire">
-				<relatedUser participant="Demandeur" relation="secretaire"/>
+		<state name="Acceptee">
+			<label>Acceptée</label>
+			<workingUsers role="Employe">
+				<relatedUser participant="Demandeur"/>
 			</workingUsers>
 			<interestedUsers>
 				<relatedUser participant="Demandeur" role="Employe"/>
+				<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
 			</interestedUsers>
-			<allowedActions>
+			<!--<allowedActions>
 				<allow action="Valider"/>
-			</allowedActions>
-		</state>
-
-		<state name="Traitee">
-			<label>AcceptÃ©e et validÃ©e</label>
-			<workingUsers role="Employe">
-				<relatedUser participant="Demandeur"/>
-			</workingUsers>
-			<allowedActions>
-				<allow action="Supprimer"/>
-			</allowedActions>
+				<allow action="Refuser"/>
+			</allowedActions>-->
 		</state>
 
 		<state name="Refusee">
-			<label>RefusÃ©e</label>
+			<label>Refusée</label>
 			<workingUsers role="Employe">
 				<relatedUser participant="Demandeur"/>
 			</workingUsers>
-			<allowedActions>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Employe"/>
+				<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
+			</interestedUsers>
+			<!--<allowedActions>
 				<allow action="Supprimer"/>
-			</allowedActions>
+			</allowedActions>-->
 		</state>
 
 	</states>
@@ -179,14 +166,17 @@
 	<!-- DESCRIPTION DES ACTIONS -->
 	<actions>
 		<action name="Creation" form="creation" kind="create">
-			<label>CrÃ©ation</label>
-			<description>CrÃ©ation d'une nouvelle demande.</description>
+			<label>Création</label>
+			<description>Création d'une nouvelle demande.</description>
 			<allowedUsers>
 				<userInRole name="Employe"/>
 			</allowedUsers>
 			<consequences>
 				<consequence>
 					<set state="AttenteValidation"/>
+					<notify message="Merci de valider les congés de ${action.Creation.actor} du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})">
+						<relatedUser participant="Demandeur" relation="responsable"/>
+					</notify>
 				</consequence>
 			</consequences>
 		</action>
@@ -199,7 +189,7 @@
 			<consequences>
 				<consequence>
 					<set state="Acceptee"/>
-					<notify message="Votre demande de congÃ©s a Ã©tÃ© acceptÃ©. Cependant, elle doit encore Ãªtre validÃ©e !">
+					<notify message="Merci de valider les congés de ${action.Creation.actor} du ${folder.dateDebut} au ${folder.dateFin}">
 						<relatedUser participant="Demandeur"/>
 					</notify>
 				</consequence>
@@ -214,106 +204,65 @@
 			<consequences>
 				<consequence>
 					<set state="Refusee"/>
+					<notify message="Votre demande de congés du ${folder.dateDebut} au ${folder.dateFin} a été refusée pour le motif suivant : ${folder.motifRefus}">
+						<relatedUser participant="Demandeur"/>
+					</notify>
 				</consequence>
 			</consequences>
 		</action>
-
-		<action name="Valider" form="validation">
-			<label>Valider</label>
-			<allowedUsers>
-				<userInRole name="Secretaire"/>
-			</allowedUsers>
-			<consequences>
-				<consequence>
-					<set state="Traitee"/>
-				</consequence>
-			</consequences>
-		</action>
-
-		<action name="Supprimer" kind="delete">
-			<label>Supprimer</label>
-			<allowedUsers>
-				<relatedUser participant="Demandeur"/>
-			</allowedUsers>
-			<consequences>
-				<consequence>
-					<kill>true</kill>
-				</consequence>
-			</consequences>
-		</action>
-
 	</actions>
 
 	<!-- DEFINITION DES FORMULAIRES -->
 	<forms>
 		<form name="presentationForm">
-			<title>Demande de congÃ©s</title>
-		   <input value="${action.Creation.actor}">
+			<title>Demande de congés</title>
+		   <input value="${action.Creation.actor}" displayerName="simpletext">
 			   <label>Demandeur</label>
 			</input>
-		   <input item="nature"/>
-			<input item="dateDebut" />
-			<input item="dateFin" />
-			<input item="commentaires" displayerName="textarea"/>
-		   <input value="${action.Creation.date}">
-			   <label>Demande faite le</label>
+			<input value="${action.Creation.date}" displayerName="simpletext">
+			   <label>Date de la demande</label>
 			</input>
-		   <input value="${instance.state}"/>
-		   <input value="${action.Accepter.date}">
-			   <label>CongÃ©s validÃ©s le</label>
+			<input item="nature" displayerName="simpletext"/>
+			<input item="natureAutre" displayerName="simpletext"/>
+			<input item="dateDebut" displayerName="simpletext"/>
+			<input item="debutJourneeOuDemi" displayerName="radio"/>
+			<input item="dateFin" displayerName="simpletext"/>
+			<input item="finJourneeOuDemi" displayerName="radio"/>
+			<input item="duree" displayerName="simpletext"/>
+		   <input value="${action.Accepter.date}" displayerName="simpletext">
+			   <label>Congés acceptés le</label>
 			</input>
-		   <input value="${action.Accepter.actor}">
-			   <label>Responsable</label>
+			<input value="${action.Refuser.date}" displayerName="simpletext">
+			   <label>Congés refusés le</label>
 			</input>
+		   <input item="motifRefus" displayerName="simpletext"/>
 		</form>
 
 		<form name="printForm" HTMLFileName="/weblib/processManager/DemandeConges/DemandeConges.html">
 		</form>
 
-		<!-- Formulaire de crÃ©ation -->
+		<!-- Formulaire de création -->
 		<form name="creation">
-			<title>Demande de congÃ©s</title>
-			<input item="nature" mandatory="true"/>
-			<input item="duree" />
+			<title>Demande de congés</title>
+			<input item="nature" displayerName="listbox" mandatory="true"/>
+			<input item="natureAutre"/>
 			<input item="dateDebut" mandatory="true"/>
+			<input item="debutJourneeOuDemi" displayerName="radio" mandatory="true" />
 			<input item="dateFin" mandatory="true"/>
-			<input item="commentaires" displayerName="textarea"/>
-			<input item="responsable" mandatory="true"/>
-			<!--<input item="fichier" mandatory="true"/>-->
+			<input item="finJourneeOuDemi" displayerName="radio" mandatory="true" />
+			<input item="duree" mandatory="true"/>
 		</form>
 
 		<!-- Formulaire de validation du responsable -->
 		<form name="acceptation">
-			<title>Validation de la demande</title>
-		   <input displayerName="textarea"
-			       value="des congÃ©s du ${folder.dateDebut} au ${folder.dateFin} demandÃ©s par ${action.Creation.actor} (service : ${action.Creation.actor.departement})">
-			   <label>Acceptation</label>
-			</input>
+			<title>Acceptation de la demande</title>
 			<input item="commentaires" displayerName="textarea"/>
 		</form>
 
 		<!-- Formulaire de refus du responsable -->
 		<form name="refus">
 			<title>Refus de la demande</title>
-		   <input displayerName="textarea"
-			       value="des congÃ©s du ${folder.dateDebut} au ${folder.dateFin} demandÃ©s par ${action.Creation.actor}">
-			   <label>Refus</label>
-			</input>
-			<input item="commentaires" displayerName="textarea"/>
+			<input item="motifRefus" displayerName="textarea"/>
 		</form>
-
-		<!-- Formulaire permettant a la secretaire de completer la demande -->
-		<form name="validation">
-			<title>Validation de la demande</title>
-		   <input displayerName="textarea"
-			       value="du ${folder.dateDebut} au ${folder.dateFin} demandÃ©s par ${action.Creation.actor}">
-			   <label>CongÃ©s</label>
-			</input>
-			<input item="nature" mandatory="true"/>
-			<input item="duree" />
-			<input item="commentaires" displayerName="textarea"/>
-		</form>
-
-
 	</forms>
 </processModel>

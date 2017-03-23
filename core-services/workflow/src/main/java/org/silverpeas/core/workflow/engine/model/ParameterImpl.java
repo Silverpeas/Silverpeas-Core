@@ -26,14 +26,22 @@ package org.silverpeas.core.workflow.engine.model;
 import java.io.Serializable;
 
 import org.silverpeas.core.workflow.api.model.Parameter;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;parameter&gt; element of a Process Model.
  **/
-public class ParameterImpl extends AbstractReferrableObject implements Parameter, Serializable {
+@XmlRootElement(name = "param")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ParameterImpl implements Parameter, Serializable {
   private static final long serialVersionUID = -4800175503456654951L;
+  @XmlAttribute
   private String name;
+  @XmlAttribute
   private String value;
 
   /**
@@ -62,7 +70,7 @@ public class ParameterImpl extends AbstractReferrableObject implements Parameter
 
   /**
    * Set the name of the Parameter
-   * @param parameter 's name
+   * @param name parameter's name
    */
   public void setName(String name) {
     this.name = name;
@@ -78,20 +86,28 @@ public class ParameterImpl extends AbstractReferrableObject implements Parameter
 
   /**
    * Set the value of the Parameter
-   * @param parameter 's value
+   * @param value parameter's value
    */
   public void setValue(String value) {
     this.value = value;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractReferrableObject#getKey()
-   */
-  public String getKey() {
-    if (name == null)
-      return "";
-    else
-      return name;
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ParameterImpl)) {
+      return false;
+    }
+
+    final ParameterImpl parameter = (ParameterImpl) o;
+
+    return name != null ? name.equals(parameter.name) : parameter.name == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return name != null ? name.hashCode() : 0;
   }
 }

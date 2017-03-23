@@ -23,13 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import org.apache.commons.io.FileUtils;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
@@ -41,25 +34,28 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.DataFolder;
 import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Forms;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
-import org.xml.sax.InputSource;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -71,7 +67,7 @@ import java.util.Map;
 @Singleton
 public class ProcessModelManagerImpl implements ProcessModelManager {
 
-  private static final String selectQuery =
+  private static final String SELECT_QUERY =
       "select distinct modelId from SB_Workflow_ProcessInstance";
 
   /**
@@ -84,11 +80,15 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * The map (modelId -> cached process model).
    */
   private final Map<String, ProcessModel> models = new HashMap<>();
+  private JAXBContext jaxbContext = null;
 
-  /**
-   * Default constructor
-   */
-  public ProcessModelManagerImpl() {
+  @PostConstruct
+  private void setup() {
+    try {
+      jaxbContext = JAXBContext.newInstance(ProcessModelImpl.class);
+    } catch (JAXBException e) {
+      SilverLogger.getLogger(this).error("Cannot initialize jaxbContext", e);
+    }
   }
 
   /**
@@ -110,11 +110,9 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * Recursive method to retrieve all process models in and below the given directory
    * @param strProcessModelDir the directory to start with
    * @return a list of strings containing the relative path and file name of the model
-   * @throws UtilException
    * @throws IOException
    */
-  private List<String> findProcessModels(String strProcessModelDir)
-      throws UtilException, IOException {
+  private List<String> findProcessModels(String strProcessModelDir) throws IOException {
     Iterator<File> subFoldersIterator =
         FileFolderManager.getAllSubFolder(strProcessModelDir).iterator();
     Iterator<String> subFolderModelsIterator;
@@ -171,13 +169,13 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     }
 
     // load the process model from its xml descriptor
-    ProcessModelImpl model = (ProcessModelImpl) this.loadProcessModel(fileName, false);
+    ProcessModelImpl model = (ProcessModelImpl) this.loadProcessModel(fileName);
 
     // set the peas id
     model.setModelId(modelId);
 
     // cache the model.
-    cacheProcessModel(modelId, model, fileName);
+    cacheProcessModel(modelId, model);
 
     // return the process model
     return model;
@@ -209,7 +207,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
     try {
       // Load abstract process model
-      model = this.loadProcessModel(processFileName, false);
+      model = this.loadProcessModel(processFileName);
       model.setModelId(peasId);
 
       // Creates datafolder in database
@@ -300,63 +298,31 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * load a process model definition from xml file to java objects
    * @param processFileName the xml file name that contains process model definition
-   * @param absolutePath true if xml file name contains the full path, else concat with the
-   * directory defined in castorSettings.properties
    * @return a ProcessModel object
    */
   @Override
-  public ProcessModel loadProcessModel(String processFileName, boolean absolutePath)
+  public ProcessModel loadProcessModel(String processFileName)
       throws WorkflowException {
-    Mapping mapping = new Mapping();
-
-    // get configuration files url
-    String mappingFileName = settings.getString("CastorXMLMappingFileURL");
     boolean debugMode = settings.getBoolean("DebugMode", false);
-    String processPath = processFileName;
+    String processPath = getProcessPath(processFileName);
     try {
-      // Format these url
-      if (!FileUtil.isWindows()) {
-        mappingFileName = mappingFileName.replace('\\', '/');
-      } else {
-        mappingFileName = "file:///" + mappingFileName.replace('\\', '/');
-      }
-      if (!absolutePath) {
-        processPath = getProcessPath(processFileName);
-      }
-
-      // Load mapping and instantiate a Marshaller
-      mapping.loadMapping(mappingFileName);
-      Unmarshaller unmar = new Unmarshaller(mapping);
-      unmar.setValidation(false);
-      unmar.setDebug(debugMode);
-      // Unmarshall the process model
-      ProcessModelImpl process =
-          (ProcessModelImpl) unmar.unmarshal(new InputSource(new FileInputStream(processPath)));
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+      ProcessModelImpl process = (ProcessModelImpl) unmarshaller.unmarshal(new File(processPath));
 
       if (debugMode) {
         // Marshall for debugging purpose
-        String debugFile = getProcessPath("debug.xml");
-        Marshaller mar = new Marshaller(new FileWriter(debugFile));
-        mar.setMapping(mapping);
-        mar.marshal(process);
+
+        String debugFile = getProcessPath("debug."+ new Date().getTime()+".xml");
+        Marshaller mar = jaxbContext.createMarshaller();
+        mar.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        mar.marshal(process, new File(debugFile));
       }
       return process;
-    } catch (MappingException me) {
+    } catch (JAXBException e) {
       throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
           "workflowEngine.EX_ERR_CASTOR_LOAD_XML_MAPPING",
-          "Mapping file name : " + (mappingFileName == null ? "<null>" : mappingFileName), me);
-    } catch (MarshalException me) {
-      throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_UNMARSHALL_PROCESSMODEL",
-          "Process File Name : " + (processFileName == null ? "<null>" : processFileName), me);
-    } catch (ValidationException ve) {
-      throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_INVALID_XML_PROCESSMODEL",
-          "Process File Name : " + (processFileName == null ? "<null>" : processFileName), ve);
-    } catch (IOException ioe) {
-      throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_LOAD_PROCESSMODEL",
-          "Process File Name : " + (processFileName == null ? "<null>" : processFileName), ioe);
+          "Process path : " + processPath, e);
     }
   }
 
@@ -369,48 +335,22 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   @Override
   public void saveProcessModel(ProcessModel process, String processFileName)
       throws WorkflowException {
-    Mapping mapping = new Mapping();
     // get configuration files url
-    String mappingFileName = settings.getString("CastorXMLMappingFileURL", null);
-    String schemaFileName = settings.getString("ProcessModesSchemaFileURL", null);
-    String strProcessModelFileEncoding = settings.getString("ProcessModelFileEncoding");
-    boolean runOnUnix = !FileUtil.isWindows();
+    String schemaFileName = settings.getString("ProcessModelSchemaFileURL", null);
+
     String processPath = getProcessPath(processFileName);
     try {
-      if (runOnUnix) {
-        mappingFileName = mappingFileName.replace('\\', '/');
-      } else {
-        mappingFileName = "file:///" + mappingFileName.replace('\\', '/');
-      }
-      mapping.loadMapping(mappingFileName);
-      File file = new File(processPath);
-      OutputStreamWriter writer = new OutputStreamWriter(FileUtils.openOutputStream(file),
-          strProcessModelFileEncoding);
-      Marshaller mar = new Marshaller(writer);
-      mar.setMapping(mapping);
-      mar.setNoNamespaceSchemaLocation(schemaFileName);
-      mar.setSuppressXSIType(true);
-      mar.setValidation(false);
-      mar.setEncoding(strProcessModelFileEncoding);
-      mar.marshal(process);
-      writer.close();
+      Marshaller marshaller = jaxbContext.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      marshaller.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION, schemaFileName);
+      marshaller.marshal(process, new File(processPath));
+
       clearProcessModelCache();
-    } catch (MappingException me) {
+    } catch (JAXBException e) {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
           "workflowEngine.EX_ERR_CASTOR_LOAD_XML_MAPPING",
-          "Mapping file name : " + (mappingFileName == null ? "<null>" : mappingFileName), me);
-    } catch (MarshalException me) {
-      throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_MARSHALL_PROCESSMODEL",
-          "Process file name : " + (processPath == null ? "<null>" : processPath), me);
-    } catch (ValidationException ve) {
-      throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_INVALID_XML_PROCESSMODEL",
-          "Process file name : " + (processPath == null ? "<null>" : processPath), ve);
-    } catch (IOException ioe) {
-      throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_SAVE_PROCESSMODEL",
-          "Process file name : " + (processPath == null ? "<null>" : processPath), ioe);
+          "Process path = " + processPath, e);
     }
   }
 
@@ -437,7 +377,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     try {
       List<String> peasIds = new ArrayList<>();
       con = this.getConnection();
-      prepStmt = con.prepareStatement(selectQuery);
+      prepStmt = con.prepareStatement(SELECT_QUERY);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         peasIds.add(rs.getString(1));
@@ -446,7 +386,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     } catch (SQLException se) {
       throw new WorkflowException("ProcessModelManagerImpl.getAllPeasId",
           "workflowEngine.EX_ERR_GET_ALL_PEAS_IDS",
-          "sql query : " + selectQuery == null ? "<null>" : selectQuery, se);
+          "sql query : " + SELECT_QUERY == null ? "<null>" : SELECT_QUERY, se);
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
@@ -464,14 +404,13 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * Search the cache for the required process model.
    */
   private ProcessModel getCachedProcessModel(String modelId) {
-    ProcessModel model = models.get(modelId);
-    return model;
+    return models.get(modelId);
   }
 
   /**
    * Put the given process model in the the cache.
    */
-  private void cacheProcessModel(String modelId, ProcessModel model, String filename) {
+  private void cacheProcessModel(String modelId, ProcessModel model) {
     synchronized (models) {
       models.put(modelId, model);
     }

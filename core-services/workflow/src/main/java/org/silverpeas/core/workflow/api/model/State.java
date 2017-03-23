@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 /**
  * Interface describing a representation of the &lt;state&gt; element of a Process Model.
  */
@@ -37,13 +35,13 @@ public interface State {
 
   /**
    * Set the name of this state
-   * @param state 's name
+   * @param name state's name
    */
   public void setName(String name);
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
+   * @param language label's language
    * @param role role for which the label is
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
@@ -59,52 +57,14 @@ public interface State {
   public ContextualDesignations getLabels();
 
   /**
-   * Iterate through the Labels
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateLabel();
-
-  /**
-   * Add a label Method needed primarily by Castor
-   */
-  public void addLabel(ContextualDesignation label);
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   */
-  public ContextualDesignation createDesignation();
-
-  /**
-   * Get activity in specific language for the given role
-   * @param lang activity's language
-   * @param role role for which the activity is
-   * @return wanted activity as a String object. If activity is not found, search activity with
-   * given role and default language, if not found again, return the default activity in given
-   * language, if not found again, return the default activity in default language, if not found
-   * again, return empty string.
-   */
-  public String getActivity(String role, String language);
-
-  /**
    * Get all the activities
    * @return an object containing the collection of the activities
    */
   public ContextualDesignations getActivities();
 
   /**
-   * Iterate through the activities
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateActivity();
-
-  /**
-   * Add an activity Method needed primarily by Castor
-   */
-  public void addActivity(ContextualDesignation description);
-
-  /**
    * Get description in specific language for the given role
-   * @param lang description's language
+   * @param language description's language
    * @param role role for which the description is
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
@@ -120,25 +80,9 @@ public interface State {
   public ContextualDesignations getDescriptions();
 
   /**
-   * Iterate through the descriptions
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateDescription();
-
-  /**
-   * Add a description Method needed primarily by Castor
-   */
-  public void addDescription(ContextualDesignation description);
-
-  /**
    * Create and return an object implementing AllowedActions
    */
   public AllowedActions createAllowedActions();
-
-  /**
-   * Create and return an object implementing TimeOutActions
-   */
-  public TimeOutActions createTimeOutActions();
 
   /**
    * Get timeout actions for this state
@@ -155,17 +99,6 @@ public interface State {
   public Action[] getFilteredActions();
 
   /**
-   * Get all the timeout actions
-   * @return an object containing the collection of the timeout actions
-   */
-  public TimeOutActions getTimeOutActionsEx();
-
-  /**
-   * Set the timeout actions
-   */
-  public void setTimeOutActions(TimeOutActions timeOutActions);
-
-  /**
    * Get all the allowed actions
    * @return an object containing the collection of the allowed actions
    */
@@ -177,11 +110,6 @@ public interface State {
   public void setAllowedActions(AllowedActions allowedActions);
 
   public void setFilteredActions(AllowedActions allowedActions);
-
-  /**
-   * Create and return an object implementing QalifiedUsers
-   */
-  public QualifiedUsers createQualifiedUsers();
 
   /**
    * Get all the users interested by this state
@@ -254,14 +182,8 @@ public interface State {
   /**
    * Set flag for admin notification if true, the timeout manager will send a notification to all
    * supervisors
-   * @param admin notification flag
+   * @param timeoutAction notification flag
    */
   public void setTimeoutNotifyAdmin(boolean timeoutAction);
-
-  /**
-   * Get the pre-conditions to enter this state
-   * @return state's Preconditions object containing re-conditions
-   */
-  // public Preconditions getPreconditions()
 
 }

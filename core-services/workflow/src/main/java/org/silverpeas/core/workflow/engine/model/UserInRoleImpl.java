@@ -26,13 +26,20 @@ package org.silverpeas.core.workflow.engine.model;
 import java.io.Serializable;
 
 import org.silverpeas.core.workflow.api.model.UserInRole;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;userInRole&gt; element of a Process Model.
  **/
-public class UserInRoleImpl extends AbstractReferrableObject implements UserInRole, Serializable {
+@XmlRootElement(name = "userInRole")
+@XmlAccessorType(XmlAccessType.NONE)
+public class UserInRoleImpl implements UserInRole, Serializable {
   private static final long serialVersionUID = -6419166381111612814L;
+  @XmlAttribute(name = "name")
   private String roleName;
 
   /**
@@ -57,14 +64,22 @@ public class UserInRoleImpl extends AbstractReferrableObject implements UserInRo
     this.roleName = roleName;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractReferrableObject#getKey()
-   */
-  public String getKey() {
-    if (roleName != null)
-      return roleName;
-    else
-      return "";
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final UserInRoleImpl that = (UserInRoleImpl) o;
+
+    return roleName != null ? roleName.equals(that.roleName) : that.roleName == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return roleName != null ? roleName.hashCode() : 0;
   }
 }

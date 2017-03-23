@@ -24,7 +24,9 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -34,20 +36,29 @@ import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Presentation;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;presentation&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "presentation")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PresentationImpl implements Presentation, Serializable {
 
   private static final long serialVersionUID = 8175832964614235239L;
-  private ContextualDesignations titles; // object storing the titles
-  private Vector<Columns> columnsList; // a vector of columns ( Columns objects )
+  @XmlElement(name = "title", type = SpecificLabel.class)
+  private List<ContextualDesignation> titles;
+  @XmlElement(name = "columns", type = ColumnsImpl.class)
+  private List<Columns> columnsList;
 
   /**
    * Constructor
    */
   public PresentationImpl() {
-    titles = new SpecificLabelListHelper();
+    titles = new ArrayList<>();
     columnsList = new Vector<>();
   }
 
@@ -60,7 +71,7 @@ public class PresentationImpl implements Presentation, Serializable {
    * @see Presentation#getTitles()
    */
   public ContextualDesignations getTitles() {
-    return titles;
+    return new SpecificLabelListHelper(titles);
   }
 
   /*
@@ -69,53 +80,21 @@ public class PresentationImpl implements Presentation, Serializable {
    * java.lang.String)
    */
   public String getTitle(String role, String language) {
-    return titles.getLabel(role, language);
+    return getTitles().getLabel(role, language);
   }
-
-  /*
-   * (non-Javadoc)
-   * @see Presentation#addTitle(com.silverpeas.
-   * workflow.api.model.ContextualDesignation)
-   */
-  public void addTitle(ContextualDesignation title) {
-    titles.addContextualDesignation(title);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Presentation#iterateTitle()
-   */
-  public Iterator<ContextualDesignation> iterateTitle() {
-    return titles.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Presentation#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return titles.createContextualDesignation();
-  }
-
-  // //////////////////
-  // itemRefs
-  // //////////////////
 
   /**
    * Get the contents of the Columns object with the given role name, or of the 'Columns' for the
    * default role if nothing for the specified role can be found.
-   * @param the name of the role
+   * @param strRoleName the name of the role
    * @return the contents of 'Columns' as an array of 'Column'
    */
   public Column[] getColumns(String strRoleName) {
-    Columns columns = null;
-
-    columns = getColumnsByRole(strRoleName);
-
-    if (columns == null)
-      return null;
-    else
-      return columns.getColumnList().toArray(new ColumnImpl[0]);
+    Columns columns = getColumnsByRole(strRoleName);
+    if (columns == null) {
+      return new Column[0];
+    }
+    return columns.getColumnList().toArray(new Column[0]);
   }
 
   /*
@@ -126,8 +105,9 @@ public class PresentationImpl implements Presentation, Serializable {
     Columns search;
     int index, indexDefault;
 
-    if (columnsList == null)
+    if (columnsList == null) {
       return null;
+    }
 
     search = createColumns();
     search.setRoleName(strRoleName);
@@ -137,12 +117,14 @@ public class PresentationImpl implements Presentation, Serializable {
       search.setRoleName("default");
       indexDefault = columnsList.indexOf(search);
 
-      if (indexDefault == -1)
+      if (indexDefault == -1) {
         return null;
+      }
 
       return columnsList.get(indexDefault);
-    } else
+    } else {
       return columnsList.get(index);
+    }
   }
 
   /*
@@ -159,7 +141,7 @@ public class PresentationImpl implements Presentation, Serializable {
    * .workflow.api.model.Columns)
    */
   public void addColumns(Columns columns) {
-    columnsList.addElement(columns);
+    columnsList.add(columns);
   }
 
   /*
@@ -178,9 +160,10 @@ public class PresentationImpl implements Presentation, Serializable {
     Columns search = createColumns();
 
     search.setRoleName(strRoleName);
-    if (!columnsList.remove(search))
+    if (!columnsList.remove(search)) {
       throw new WorkflowException("PresentationImpl.deleteColumns",
-          "workflowEngine.EX_COLUMNS_NOT_FOUND", "Columns role name="
-          + strRoleName == null ? "<null>" : strRoleName);
+          "workflowEngine.EX_COLUMNS_NOT_FOUND",
+          "Columns role name=" + strRoleName == null ? "<null>" : strRoleName);
+    }
   }
 }

@@ -25,8 +25,6 @@ package org.silverpeas.core.workflow.api.model;
 
 import java.util.Iterator;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-
 /**
  * Interface describing a representation of the &lt;allowedActions&gt; element of a Process Model.
  */
@@ -62,10 +60,4 @@ public interface AllowedActions {
    */
   public AllowedAction getAllowedAction(String strActionName);
 
-  /**
-   * Remove an allowedAction from the collection
-   * @param strAllowedActionName the name of the allowedAction to be removed.
-   * @throws WorkflowException
-   */
-  public void removeAllowedAction(String strAllowedActionName) throws WorkflowException;
 }

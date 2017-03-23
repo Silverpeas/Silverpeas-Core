@@ -33,7 +33,7 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 public interface Presentation {
   /**
    * Get title in specific language for the given role
-   * @param lang title's language
+   * @param language title's language
    * @param role role for which the title is
    * @return wanted title as a String object. If title is not found, search title with given role
    * and default language, if not found again, return the default title in given language, if not
@@ -49,25 +49,9 @@ public interface Presentation {
   public ContextualDesignations getTitles();
 
   /**
-   * Iterate through the titles
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateTitle();
-
-  /**
-   * Add a title Method needed primarily by Castor
-   */
-  public void addTitle(ContextualDesignation description);
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   */
-  public ContextualDesignation createDesignation();
-
-  /**
    * Get the contents of the Columns object with the given role name, or of the 'Columns' for the
    * default role if nothing for the specified role can be found.
-   * @param the name of the role
+   * @param roleName the name of the role
    * @return the contents of 'Columns' as an array of 'Column'
    */
   public Column[] getColumns(String roleName);
@@ -87,7 +71,7 @@ public interface Presentation {
 
   /**
    * Add an column to the collection
-   * @param column to be added
+   * @param columns to be added
    */
   public void addColumns(Columns columns);
 
