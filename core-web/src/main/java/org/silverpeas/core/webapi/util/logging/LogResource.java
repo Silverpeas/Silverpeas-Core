@@ -23,25 +23,30 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A Web resource representing a given log used by Silverpeas. It is a REST-based Web service.
@@ -60,10 +65,35 @@ public class LogResource extends RESTWebService {
   private String logName;
 
   @GET
-  @Consumes(MediaType.APPLICATION_JSON)
-  public String[] getLastLogRecords(@QueryParam("count")int count) {
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<String> getLastLogRecordsAsJson(@QueryParam("count") int count) {
+    return getLastLogRecords(count);
+  }
+
+  @GET
+  @Produces(MediaType.TEXT_HTML)
+  public String getLastLogRecordsAsHtml(@QueryParam("count") int count) {
+    return getLastLogRecords(count).stream().collect(Collectors.joining("<br/>"))
+        .replace("\t", new span("&#160;&#160;&#160;&#160;").toString());
+  }
+
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public String getLastLogRecordsAsText(@QueryParam("count") int count) {
+    return getLastLogRecords(count).stream().collect(Collectors.joining("\n"));
+  }
+
+  private List<String> getLastLogRecords(int count) {
+    try {
+      FileUtil.checkPathNotRelative(logName);
+    } catch (RelativeFileAccessException e) {
+      throw new WebApplicationException(e, Response.Status.FORBIDDEN);
+    }
     try {
       return logsAccessor.getLastLogRecords(logName, count);
+    } catch (RelativeFileAccessException ex) {
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     } catch (FileNotFoundException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -74,8 +104,7 @@ public class LogResource extends RESTWebService {
   }
 
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
-      WebApplicationException {
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (!getUserDetail().isAccessAdmin()) {
       throw new WebApplicationException("Only administrators can play with logger configurations!",
           Response.Status.FORBIDDEN);

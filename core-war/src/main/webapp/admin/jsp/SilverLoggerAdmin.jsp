@@ -57,6 +57,7 @@
 <view:setBundle basename="org.silverpeas.util.logging.multilang.loggingAdmin"/>
 <fmt:message key="GML.update" var="validate"/>
 <fmt:message key="logging.admin.PrintLogContent" var="display"/>
+<fmt:message key="logging.admin.PrintLogContentInNewWindow" var="displayInNewWindow"/>
 
 <!DOCTYPE html>
 <html>
@@ -134,6 +135,12 @@
         }
       });
     }
+
+    function fetchLastLogRecordsInNewWindow() {
+      var log = $('#log').val();
+      var count = $('#record-count').val();
+      window.open(webContext + '/services/logging/logs/' + log + '?count=' + count, log);
+    }
   </script>
 </head>
 <body>
@@ -206,6 +213,7 @@
           </li>
           <li class="field"  id="btn-show-log-content">
             <view:button label="${display}" action="javascript:fetchLastLogRecords();"/>
+            <view:button label="${displayInNewWindow}" action="javascript:fetchLastLogRecordsInNewWindow();"/>
           </li>
         </ul>
         <div id="champs"><textarea id="log-content" readonly="readonly" rows="10"></textarea></div>

@@ -26,13 +26,16 @@ package org.silverpeas.core.util.logging;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -67,41 +70,42 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void readAllLogRecords() throws IOException {
-    String[] content = logsAccessor.getLastLogRecords(LOG_FILE, 0);
-    assertThat(content.length, is(LOG_FILE_LINE_COUNT));
-    assertThat(content[0], is("========================================================================="));
-    assertThat(content[content.length - 1], is("\u001B[0m"));
+  public void readAllLogRecords() throws IOException, RelativeFileAccessException {
+    List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, 0);
+    assertThat(content, hasSize(LOG_FILE_LINE_COUNT));
+    assertThat(content.get(0), is("========================================================================="));
+    assertThat(content.get(content.size() - 1), is("\u001B[0m"));
 
     content = logsAccessor.getLastLogRecords(LOG_FILE, -38);
-    assertThat(content.length, is(LOG_FILE_LINE_COUNT));
-    assertThat(content[0], is("========================================================================="));
-    assertThat(content[content.length - 1], is("\u001B[0m"));
+    assertThat(content, hasSize(LOG_FILE_LINE_COUNT));
+    assertThat(content.get(0), is("========================================================================="));
+    assertThat(content.get(content.size() - 1), is("\u001B[0m"));
   }
 
   @Test
-  public void readThe1LastLogRecord() throws IOException {
+  public void readThe1LastLogRecord() throws IOException, RelativeFileAccessException {
     final int COUNT = 1;
-    String[] content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
-    assertThat(content.length, is(COUNT));
-    assertThat(content[0], is("\u001B[0m"));
+    List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
+    assertThat(content, hasSize(COUNT));
+    assertThat(content.get(0), is("\u001B[0m"));
   }
 
   @Test
-  public void readThe100LastLogRecords() throws IOException {
+  public void readThe100LastLogRecords() throws IOException, RelativeFileAccessException {
     final int COUNT = 100;
-    String[] content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
-    assertThat(content.length, is(COUNT));
-    assertThat(content[0], is("\tat org.quartz.core.JobRunShell.run(JobRunShell.java:207)"));
-    assertThat(content[content.length - 1], is("\u001B[0m"));
+    List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
+    assertThat(content, hasSize(COUNT));
+    assertThat(content.get(0), is("\tat org.quartz.core.JobRunShell.run(JobRunShell.java:207)"));
+    assertThat(content.get(content.size() - 1), is("\u001B[0m"));
   }
 
   @Test
-  public void askForMuchMoreLogRecordsThatThereIsInLog() throws IOException {
+  public void askForMuchMoreLogRecordsThatThereIsInLog()
+      throws IOException, RelativeFileAccessException {
     final int COUNT = 2000;
-    String[] content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
-    assertThat(content.length, is(LOG_FILE_LINE_COUNT));
-    assertThat(content[0], is("========================================================================="));
-    assertThat(content[content.length - 1], is("\u001B[0m"));
+    List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
+    assertThat(content, hasSize(LOG_FILE_LINE_COUNT));
+    assertThat(content.get(0), is("========================================================================="));
+    assertThat(content.get(content.size()- 1), is("\u001B[0m"));
   }
 }
