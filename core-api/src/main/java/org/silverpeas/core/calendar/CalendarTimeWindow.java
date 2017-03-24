@@ -28,55 +28,39 @@ import org.silverpeas.core.calendar.event.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 
 import java.time.LocalDate;
-import java.time.Year;
-import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.util.List;
-
-import static java.time.Month.DECEMBER;
+import java.util.function.Consumer;
 
 /**
- * This class represents a window of time of a calendar within which events can occur.
+ * This class represents a window of time within which calendar events can occur. Some constraints
+ * can be done to filter the events in the window of time by one or several properties.
  * @author Yohann Chastagnier
  */
 public class CalendarTimeWindow {
 
-  private final Calendar calendar;
+  private CalendarEventFilter filter = new CalendarEventFilter();
   private final LocalDate startDate, endDate;
-  private final List<CalendarEvent> events;
 
-  CalendarTimeWindow(final Calendar calendar, final Year year) {
-    this(calendar, year.atDay(1), year.atMonth(DECEMBER).atEndOfMonth());
-  }
-
-  CalendarTimeWindow(final Calendar calendar, final YearMonth yearMonth) {
-    this(calendar, yearMonth.atDay(1), yearMonth.atEndOfMonth());
-  }
-
-  CalendarTimeWindow(final Calendar calendar, final LocalDate day) {
-    this(calendar, day, day);
-  }
-
-  CalendarTimeWindow(final Calendar calendar, final LocalDate startDate, final LocalDate endDate) {
-    this.calendar = calendar;
+  CalendarTimeWindow(final LocalDate startDate, final LocalDate endDate) {
     this.startDate = startDate;
     this.endDate = endDate;
-    this.events = CalendarEventRepository.get()
-        .getAllBetween(this.calendar, startDate.atStartOfDay().atOffset(ZoneOffset.UTC),
-            endDate.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC));
   }
 
   /**
-   * Gets the calendar on which this window of time is opened.
-   * @return the calendar concerned by this window of time.
+   * Filters the calendar events occurring in this window of time.
+   * @param filterConsumer a function accepting a {@link CalendarEventFilter} instance to set
+   * the different filtering criteria.
+   * @return itself.
    */
-  public Calendar getCalendar() {
-    return calendar;
+  public CalendarTimeWindow filter(Consumer<CalendarEventFilter> filterConsumer) {
+    filterConsumer.accept(this.filter);
+    return this;
   }
 
   /**
    * Gets the date at which this window of time starts.
-   * @return the start date of this window of time.
+   * @return the inclusive start date of this window of time.
    */
   public LocalDate getStartDate() {
     return startDate;
@@ -84,14 +68,16 @@ public class CalendarTimeWindow {
 
   /**
    * Gets the date at which this window of time ends.
-   * @return the end date of this window of time.
+   * @return the inclusive end date of this window of time.
    */
   public LocalDate getEndDate() {
     return endDate;
   }
 
   /**
-   * Gets the list of occurrences of events that occur in this window of time.
+   * Gets the list of occurrences of events that occur in this window of time, once the filtering
+   * applied. If no filters were previously defined, then the occurrences of all the events
+   * occurring in this window of time will be returned.
    * @return a list of event occurrences.
    */
   public List<CalendarEventOccurrence> getEventOccurrences() {
@@ -99,10 +85,14 @@ public class CalendarTimeWindow {
   }
 
   /**
-   * Gets all the events that have at least one occurrence in this window of time.
+   * Gets all the events that have at least one occurrence in this window of time, once the
+   * filtering applied. If no filters were previously defined, then all the events that occur in
+   * this window of time will be returned.
    * @return a list of events that occur in this window of time.
    */
   public List<CalendarEvent> getEvents() {
-    return events;
+    return CalendarEventRepository.get()
+        .getAllBetween(filter, startDate.atStartOfDay().atOffset(ZoneOffset.UTC),
+            endDate.plusDays(1).atStartOfDay().minusMinutes(1).atOffset(ZoneOffset.UTC));
   }
 }
