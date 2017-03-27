@@ -96,15 +96,7 @@ class WebCommonLookAndFeel {
       String spaceId, String componentId) {
 
     String language = controller.getFavoriteLanguage();
-    String userLookName = controller.getFavoriteLook();
-
-    SettingBundle lookSettings = GraphicElementFactory.getLookSettings(userLookName);
-    if (StringUtil.isDefined(spaceId)) {
-      String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
-      if (StringUtil.isDefined(spaceLook)) {
-        lookSettings = GraphicElementFactory.getLookSettings(spaceLook);
-      }
-    }
+    SettingBundle lookSettings = getLookSettings(controller, spaceId);
 
     String silverpeasUrl = URLUtil.getFullApplicationURL(request);
     String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
@@ -220,7 +212,7 @@ class WebCommonLookAndFeel {
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includePopup(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeUserZoom(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
-    code.append(includeCkeditorAddOns(new ElementContainer(), language).toString()).append(
+    code.append(includeCkeditorAddOns(new ElementContainer()).toString()).append(
         STR_NEW_LINE);
 
     if (StringUtil.isDefined(specificJS)) {
@@ -236,6 +228,25 @@ class WebCommonLookAndFeel {
 
 
     return code.toString();
+  }
+
+  /**
+   * Gets look settings accoring to the context.
+   * @param controller the main controller.
+   * @param spaceId the identifier of the current space.
+   * @return the right settings.
+   */
+  private SettingBundle getLookSettings(final MainSessionController controller,
+      final String spaceId) {
+    String userLookName = controller.getFavoriteLook();
+    SettingBundle lookSettings = GraphicElementFactory.getLookSettings(userLookName);
+    if (StringUtil.isDefined(spaceId)) {
+      String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
+      if (StringUtil.isDefined(spaceLook)) {
+        lookSettings = GraphicElementFactory.getLookSettings(spaceLook);
+      }
+    }
+    return lookSettings;
   }
 
   private String getCSSLinkTag(String href) {

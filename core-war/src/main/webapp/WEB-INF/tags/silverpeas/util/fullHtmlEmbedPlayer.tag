@@ -83,7 +83,7 @@
     html, body, #audioBeforeContainer {
       margin: 0;
       padding: 0;
-      background-color: '${backgroundColor}';
+      background-color: ${backgroundColor};
       text-align: center;
       vertical-align: middle;
       display: table-cell;

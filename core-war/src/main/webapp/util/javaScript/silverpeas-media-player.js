@@ -110,6 +110,7 @@
     configureContainer : function() {
       this._super();
       var $container = this.getContainer();
+      $container.classList.add("fp-mute");
       $container.addEventListener('closePlayer', function() {
         this.getExternalPlayer().shutdown();
       });
@@ -138,6 +139,7 @@
     },
     getTranslatedConfig : function() {
       var translatedConfig = {
+        share : false,
         debug : false,
         embed : false,
         tooltip : false,

@@ -48,7 +48,7 @@
         }
 
         if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_AUTOPLAY)) {
-          autoplay = (Boolean.valueOf(parameters.get(VideoFieldDisplayer.PARAMETER_AUTOPLAY))).booleanValue();
+          autoplay = Boolean.valueOf(parameters.get(VideoFieldDisplayer.PARAMETER_AUTOPLAY));
         } else {
           autoplay = false;
         }

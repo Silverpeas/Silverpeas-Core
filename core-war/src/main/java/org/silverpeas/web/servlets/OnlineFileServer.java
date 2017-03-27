@@ -93,7 +93,7 @@ public class OnlineFileServer extends AbstractFileSender {
     }
 
     SilverpeasFile onlineFile = SilverpeasFileProvider.getFile(ref);
-    sendFile(response, onlineFile);
+    sendFile(req, response, onlineFile);
   }
 
 

@@ -24,11 +24,14 @@
 
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ConcreteElement;
+import org.apache.ecs.ElementAttributes;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.a;
+import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.html.SupportedWebPlugins;
+import org.silverpeas.core.html.WebPlugin;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import java.text.MessageFormat;
 import java.util.Random;
@@ -39,22 +42,30 @@ import java.util.Random;
  */
 public class VideoPlayer {
 
-  private static final String webContext = URLUtil.getApplicationURL();
-  private static final String playerUrl =
-      webContext + "/util/flash/flowplayer/flowplayer-3.2.7.swf";
-  private static final Random randomGenerator = new Random();
-  private static final String flowPlayerJS = webContext
-      + "/util/javaScript/flowplayer/flowplayer-3.2.6.min.js";
-  private static final String flowPlayerCSS = webContext + "/util/styleSheets/flowplayer.css";
-  private static final String playerStyle = "<link type='text/css' href='" + flowPlayerCSS
-      + "' rel='stylesheet' />";
-  private static final String templateScript =
-      "flowplayer(''{0}'', ''{1}'', '{'wmode: ''opaque'', "
-      + "clip: '{' autoBuffering: {2}, autoPlay: {3} '}' '}')";
+  private static final int DEFAULT_WIDTH = 425;
+  private static final int DEFAULT_HEIGHT = 300;
+  private static final Random RANDOM_GENERATOR = new Random();
+  private static final String TEMPLATE_SCRIPT =
+      "jQuery(document).ready(function() '{'" +
+        "jQuery(''{0}'').embedPlayer('{'" +
+          "url : ''{1}''," +
+          "width : {2}, " +
+          "height : {3}," +
+          "playerParameters : '{'" +
+            "posterUrl : ''{4}''," +
+            "mimeType : ''{5}''," +
+            "autoPlay : {6}," +
+            "backgroundColor : ''{7}'' " +
+          "'}' " +
+        "'}');" +
+      "'}')";
   private String videoURL = "";
-  private boolean autoplay;
-  private String width = "425px";
-  private String height = "300px";
+  private String posterURL = "";
+  private String mimeType = "";
+  private boolean autoplay = false;
+  private int width = DEFAULT_WIDTH;
+  private int height = DEFAULT_HEIGHT;
+  private String backgroundColor = "";
 
   /**
    * Creates a new displayer of a video player that will play the video at the specified URL. By
@@ -72,6 +83,7 @@ public class VideoPlayer {
    * set at false, the width at 425 pixels and the height at 300 pixels.
    */
   public VideoPlayer() {
+    // Nothing to do.
   }
 
   /**
@@ -103,43 +115,91 @@ public class VideoPlayer {
    * @param videoURL the URL of the video to play.
    */
   public void setVideoURL(String videoURL) {
-    this.videoURL = (videoURL == null ? "" : videoURL);
+    this.videoURL = videoURL == null ? "" : videoURL;
   }
 
   /**
-   * Gets the height of the video player (in CSS instruction, by default 425px).
+   * Gets the mime-type of the video.
+   * @return the mime-type.
+   */
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  /**
+   * Sets the mime-type of the video.
+   * @param mimeType the mime-type.
+   */
+  public void setMimeType(final String mimeType) {
+    this.mimeType = mimeType;
+  }
+
+  /**
+   * Gets the URL of the poster to display before the video starts.
+   * @return the poster URL.
+   */
+  public String getPosterURL() {
+    return posterURL;
+  }
+
+  /**
+   * Sets the URL of the poster to display before the video starts.
+   * @param posterURL the URL of the poster.
+   */
+  public void setPosterURL(final String posterURL) {
+    this.posterURL = posterURL;
+  }
+
+  /**
+   * Gets the height of the video player (300 by default).
    * @return the video height.
    */
-  public String getHeight() {
+  public int getHeight() {
     return height;
   }
 
   /**
-   * Sets the height of the video player in CSS (for example: 425px for 425 pixels).
+   * Sets the height of the video player(in pixels).
    * @param height the video height.
    */
-  public void setHeight(String height) {
+  public void setHeight(int height) {
     this.height = height;
   }
 
   /**
-   * Gets the width of the video player (in CSS instruction, by default 425px).
+   * Gets the width of the video player (425 by default).
    * @return the video width.
    */
-  public String getWidth() {
+  public int getWidth() {
     return width;
   }
 
   /**
-   * Sets the width of the video player in CSS (for example: 425px for 425 pixels).
+   * Sets the width of the video player (in pixels).
    * @param width the video width.
    */
-  public void setWidth(String width) {
+  public void setWidth(int width) {
     this.width = width;
   }
 
+  /**
+   * Gets the background color (CSS RGB) of the player.
+   * @return the background color.
+   */
+  public String getBackgroundColor() {
+    return backgroundColor;
+  }
+
+  /**
+   * Sets the background color of the player.
+   * @param backgroundColor the background color.
+   */
+  public void setBackgroundColor(final String backgroundColor) {
+    this.backgroundColor = backgroundColor;
+  }
+
   private String generateId() {
-    return "player" + randomGenerator.nextInt();
+    return "video-player" + RANDOM_GENERATOR.nextInt();
   }
 
   /**
@@ -148,17 +208,8 @@ public class VideoPlayer {
    * @param element an XHTML element into which the resources declaration will be rendered.
    */
   public void init(final ConcreteElement element) {
-    script cssLoading = new script("$(document.head).append(\"" + playerStyle + "\")").setType(
-        "text/javascript");
-    script jsInclusion = new script().setType("text/javascript").setSrc(flowPlayerJS);
-    if (element instanceof ElementContainer) {
-      ElementContainer container = (ElementContainer) element;
-      container.addElement(cssLoading).
-          addElement(jsInclusion);
-    } else {
-      element.addElementToRegistry(cssLoading).
-          addElementToRegistry(jsInclusion);
-    }
+    include(element, WebPlugin.get()
+        .getHtml(SupportedWebPlugins.EMBEDPLAYER, DisplayI18NHelper.getDefaultLanguage()));
   }
 
   /**
@@ -168,22 +219,22 @@ public class VideoPlayer {
   public void renderIn(final ConcreteElement element) {
     String videoId = generateId();
     if (!getVideoURL().isEmpty()) {
-      a video = new a().setHref(getVideoURL());
-      video.setStyle("display:block;width:" + getWidth() + ";height:" + getHeight() + ";");
+      div video = new div();
       video.setID(videoId);
-      if (element instanceof ElementContainer) {
-        ((ElementContainer) element).addElement(video);
-      } else {
-        element.addElementToRegistry(video);
-      }
+      include(element, video);
     }
-    script player = new script(MessageFormat.format(templateScript, videoId, playerUrl,
-        !isAutoplay(),
-        isAutoplay())).setType("text/javascript");
-    if (element instanceof ElementContainer) {
-      ((ElementContainer) element).addElement(player);
+    script player = new script(MessageFormat
+        .format(TEMPLATE_SCRIPT, '#' + videoId, getVideoURL(), String.valueOf(getWidth()),
+            String.valueOf(getHeight()), getPosterURL(), getMimeType(), isAutoplay(),
+            getBackgroundColor())).setType("text/javascript");
+    include(element, player);
+  }
+
+  private void include(final ConcreteElement xhtml, final ElementAttributes inclusion) {
+    if (xhtml instanceof ElementContainer) {
+      ((ElementContainer) xhtml).addElement(inclusion);
     } else {
-      element.addElementToRegistry(player);
+      xhtml.addElementToRegistry(inclusion);
     }
   }
 }

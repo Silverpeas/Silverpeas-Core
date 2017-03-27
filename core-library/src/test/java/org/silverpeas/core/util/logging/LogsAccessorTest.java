@@ -26,7 +26,7 @@ package org.silverpeas.core.util.logging;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
@@ -70,7 +70,7 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void readAllLogRecords() throws IOException, RelativeFileAccessException {
+  public void readAllLogRecords() throws SilverpeasException {
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, 0);
     assertThat(content, hasSize(LOG_FILE_LINE_COUNT));
     assertThat(content.get(0), is("========================================================================="));
@@ -83,7 +83,7 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void readThe1LastLogRecord() throws IOException, RelativeFileAccessException {
+  public void readThe1LastLogRecord() throws SilverpeasException {
     final int COUNT = 1;
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
     assertThat(content, hasSize(COUNT));
@@ -91,7 +91,7 @@ public class LogsAccessorTest {
   }
 
   @Test
-  public void readThe100LastLogRecords() throws IOException, RelativeFileAccessException {
+  public void readThe100LastLogRecords() throws SilverpeasException {
     final int COUNT = 100;
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
     assertThat(content, hasSize(COUNT));
@@ -101,7 +101,7 @@ public class LogsAccessorTest {
 
   @Test
   public void askForMuchMoreLogRecordsThatThereIsInLog()
-      throws IOException, RelativeFileAccessException {
+      throws SilverpeasException {
     final int COUNT = 2000;
     List<String> content = logsAccessor.getLastLogRecords(LOG_FILE, COUNT);
     assertThat(content, hasSize(LOG_FILE_LINE_COUNT));

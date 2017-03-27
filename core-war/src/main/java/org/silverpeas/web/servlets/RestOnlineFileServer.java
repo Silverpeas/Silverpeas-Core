@@ -80,7 +80,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     try {
       Optional<SilverpeasFile> file = getWantedFile(restRequest);
       if (file.isPresent()) {
-        sendFile(res, file.get());
+        sendFile(req, res, file.get());
       } else {
         displayWarningHtmlCode(res);
       }
@@ -97,7 +97,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
     }
   }
 
-  private Optional<SilverpeasFile> getWantedFile(RestRequest restRequest) throws Exception {
+  private Optional<SilverpeasFile> getWantedFile(RestRequest restRequest)
+      throws IllegalAccessException, FileNotFoundException {
     SilverpeasFile file = getWantedAttachment(restRequest);
     if (file == SilverpeasFile.NO_FILE) {
       file = getWantedVersionnedDocument(restRequest);
@@ -108,7 +109,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return Optional.ofNullable(file);
   }
 
-  private SilverpeasFile getWantedAttachment(RestRequest restRequest) throws Exception {
+  private SilverpeasFile getWantedAttachment(RestRequest restRequest)
+      throws IllegalAccessException {
     String componentId = restRequest.getElementValue("componentId");
     String attachmentId = restRequest.getElementValue("attachmentId");
     String language = restRequest.getElementValue("lang");
@@ -132,7 +134,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return file;
   }
 
-  private SilverpeasFile getWantedVersionnedDocument(RestRequest restRequest) throws Exception {
+  private SilverpeasFile getWantedVersionnedDocument(RestRequest restRequest)
+      throws IllegalAccessException {
     String componentId = restRequest.getElementValue("componentId");
     String documentId = restRequest.getElementValue("documentId");
     String fileName = restRequest.getElementValue("name");
@@ -166,8 +169,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     return SilverpeasFileProvider.getFile(descriptor);
   }
 
-  private boolean isUserAuthorized(RestRequest request, String componentId, Object object)
-      throws Exception {
+  private boolean isUserAuthorized(RestRequest request, String componentId, Object object) {
     MainSessionController controller =
         silverpeasWebUtil.getMainSessionController(request.getWebRequest());
     if (controller != null) {

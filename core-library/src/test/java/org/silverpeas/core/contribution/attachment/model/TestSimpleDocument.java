@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.hamcrest.Matchers;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -308,14 +309,14 @@ public class TestSimpleDocument {
     SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
     instance.setPK(pk);
     String expResult =
-        "/attached_file/componentId/kmelia36/attachmentId/" + id + "/lang/fr/name/myFile.odt";
+        "/attached_file/componentId/kmelia36/attachmentId/" + id + "/lang/fr/name/myFile.odt?t_=";
     String result = instance.getAttachmentURL();
-    assertThat(result, is(expResult));
+    assertThat(result, Matchers.startsWith(expResult));
     instance.setLanguage("en");
     expResult =
-        "/attached_file/componentId/kmelia36/attachmentId/" + id + "/lang/en/name/myFile.odt";
+        "/attached_file/componentId/kmelia36/attachmentId/" + id + "/lang/en/name/myFile.odt?t_=";
     result = instance.getAttachmentURL();
-    assertThat(result, is(expResult));
+    assertThat(result, Matchers.startsWith(expResult));
   }
 
   /**

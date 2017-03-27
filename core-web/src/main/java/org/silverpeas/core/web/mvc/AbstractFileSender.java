@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.web.mvc;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.FileResponse;
+import org.silverpeas.core.webapi.media.EmbedMediaPlayerDispatcher;
 
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,13 +45,14 @@ import java.io.StringReader;
 public abstract class AbstractFileSender extends HttpServlet {
 
 
-  protected void sendFile(HttpServletResponse response, SilverpeasFile file) throws IOException {
+  protected void sendFile(final HttpServletRequest request, HttpServletResponse response,
+      SilverpeasFile file) throws IOException {
     if (file != null && file.exists() && file.isFileSecure()) {
-      response.setContentType(file.getMimeType());
-      response.setHeader("Content-Length", String.valueOf(file.length()));
       try {
-        FileUtils.copyFile(file, response.getOutputStream());
-        response.getOutputStream().flush();
+        if (!EmbedMediaPlayerDispatcher.from(request, response).dispatchWithSilverpeasFile(file)) {
+          FileResponse.fromServlet(request, response).sendSilverpeasFile(file);
+          response.getOutputStream().flush();
+        }
       } catch (IOException e) {
         SilverLogger.getLogger(this).error("file: " + file.getAbsolutePath(), e);
         displayWarningHtmlCode(response);
