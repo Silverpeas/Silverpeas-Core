@@ -180,7 +180,7 @@ public abstract class AbstractPagination implements Pagination {
     if (nbPagesAround == -1) {
       nbPagesAround =
           Integer.parseInt(GraphicElementFactory.getSettings().getString(
-          "Pagination.NumberOfPagesAround", "10"));
+          "Pagination.NumberOfPagesAround", "3"));
     }
     return nbPagesAround;
   }
@@ -199,8 +199,12 @@ public abstract class AbstractPagination implements Pagination {
     return multilang;
   }
 
-  public String getString(String key) {
+  protected String getString(String key) {
     return getMultilang().getString(key);
+  }
+
+  protected String getStringWithParam(String key, String... params) {
+    return getMultilang().getStringWithParams(key, params);
   }
 
   public String getString(String key, String defaultValue) {

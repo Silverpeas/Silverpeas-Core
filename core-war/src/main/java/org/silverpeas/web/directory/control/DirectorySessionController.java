@@ -128,6 +128,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return elementsByPage;
   }
 
+  public void setElementsByPage(int nb) {
+    elementsByPage = nb;
+  }
+
   /**
    * get All Users
    * @see

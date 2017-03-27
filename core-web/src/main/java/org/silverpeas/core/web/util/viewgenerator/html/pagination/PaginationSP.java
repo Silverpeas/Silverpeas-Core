@@ -24,18 +24,20 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
+import org.apache.ecs.html.IMG;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
 
 public class PaginationSP extends AbstractPagination {
+
+  private static final int INDEX_THRESHOLD = 5;
+  private static final int NUMBERPERPAGE_THRESHOLD = 25;
+  private static final int NUMBERPERPAGE_ALL = 100000;
+  private static final int JUMPER_THRESHOLD = 12;
+
   public PaginationSP() {
     super();
-  }
-
-  @Override
-  public void init(int nbItems, int nbItemsPerPage, int firstItemIndex) {
-    super.init(nbItems, nbItemsPerPage, firstItemIndex);
   }
 
   @Override
@@ -46,176 +48,254 @@ public class PaginationSP extends AbstractPagination {
 
   @Override
   public String printIndex() {
-    return printIndex(null);
+    return printIndex(null, true);
   }
 
   @Override
   public String printIndex(String javascriptFunc) {
+    return printIndex(javascriptFunc, StringUtil.isNotDefined(javascriptFunc));
+  }
+
+  @Override
+  public String printIndex(String javascriptFunc, boolean nbItemsPerPage) {
     StringBuilder result = new StringBuilder();
 
-    if (getNbItems() > 0 && getNbItems() > getNbItemsPerPage()) {
+    if (getNbItems() > INDEX_THRESHOLD) {
       result.append("<div class=\"pageNav\">");
       result.append("<div class=\"pageNavContent\">");
 
-      int nbPage = getNbPage();
-      int currentPage = getCurrentPage();
-
-      if (displayTotalNumberOfPages() && nbPage > getNumberOfPagesAround()) {
-        result.append("<div class=\"pageIndex\">");
-        result.append(getString("GEF.pagination.page")).append(" ").append(currentPage).append(
-            getString("GEF.pagination.pageOn")).append(nbPage);
-        result.append("</div>");
-      }
-
-      // display previous link (or nothing if current page is first one)
-      if (getFirstItemIndex() >= getNbItemsPerPage()) {
-
-        if (currentPage - getNumberOfPagesAround() > 1) {
-          // display first page link
-          result.append("<div class=\"pageOff\">");
-          result.append(getLink(javascriptFunc, 0, getString("GEF.pagination.firstPage")));
-          result.append("<img src=\"").append(getIconsPath()).append(
-              "/arrows/arrowDoubleLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-              .append(getString("GEF.pagination.firstPage")).append("\"/></a>");
-          result.append("</div>");
-        }
-
-        // display previous page link
-        result.append("<div class=\"pageOff\">");
-        int index = getIndexForPreviousPage();
-        result.append(getLink(javascriptFunc, index, getString("GEF.pagination.previousPage")));
-        result.append("<img src=\"").append(getIconsPath()).append(
-            "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-            .append(getString("GEF.pagination.previousPage")).append("\"/></a>");
-        result.append("</div>");
-
-      }
-
-      // display all pages
-      for (int i = 1; i <= nbPage; i++) {
-        if (i == currentPage) {
-          result.append("<div class=\"pageOn\">");
-          result.append(i).append("</div>");
-        } else {
-          int nbDisplayPages = getNumberOfPagesAround();
-          // display 10 pages (or less) before current page
-          // display 10 pages (or less) after current page
-          if (currentPage - nbDisplayPages <= i && i <= currentPage + nbDisplayPages) {
-            int index = getIndexForDirectPage(i);
-            result.append("<div class=\"pageOff\">");
-            result.append(getLink(javascriptFunc, index, getString("GEF.pagination.gotoPage") + i));
-            result.append(i).append("</a>");
-            result.append("</div>");
-          }
-        }
-      }
-
-      // display next link (or nothing if current page is last one)
-      if (!isLastPage()) {
-        // display next page link
-        int index = getIndexForNextPage();
-        result.append("<div class=\"pageOff\">");
-        result.append(getLink(javascriptFunc, index, getString("GEF.pagination.nextPage")));
-        result.append("<img src=\"").append(getIconsPath()).append(
-            "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-            .append(getString("GEF.pagination.nextPage")).append("\"/></a>");
-        result.append("</div>");
-
-        if (currentPage + getNumberOfPagesAround() < nbPage) {
-          // display last page link
-          result.append("<div class=\"pageOff\">");
-          result.append(getLink(javascriptFunc, getIndexForLastPage(),
-              getString("GEF.pagination.lastPage")));
-          result.append("<img src=\"").append(getIconsPath()).append(
-              "/arrows/arrowDoubleRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-              .append(getString("GEF.pagination.lastPage")).append("\"/></a> ");
-          result.append("</div>");
-        }
-      }
-
-      long timeStamp = new Date().getTime();
-      String jumperName = "jumper" + timeStamp;
-
-      boolean displayJumper = nbPage > getNumberOfPagesAround();
-      if (displayJumper) {
-        // display page jumper
-        result.append("<div class=\"pageJumper\">");
-        result.append("<a href=\"javascript:display").append(jumperName).append(
-            "()\" onfocus=\"this.blur()\" title=\"").append(getString("GEF.pagination.jumptoPage"))
-            .append("\">").append(
-            getString("GEF.pagination.jumper")).append(" </a>");
-        result
-            .append("<input type=\"text\" class=\"jumper\" id=\"").append(jumperName).append(
-            "\" size=\"3\" onkeydown=\"check").append(jumperName).append("Submit(event)\"/>");
-        result.append("</div>");
-      }
-
-      result.append("</div>");
+      // display current area (1-25/143)
+      int maxCurrentIndex = Math.min(getFirstItemIndex() + getNbItemsPerPage(), getNbItems());
+      result.append("<div class=\"itemIndex\">");
+      result.append(getFirstItemIndex() + 1).append("-").append(maxCurrentIndex);
+      result.append("/").append(getNbItems());
       result.append("</div>");
 
-      if (displayJumper) {
-        // display page jumper script
-        result.append("<script type=\"text/javascript\">");
-        result.append("function display").append(jumperName).append("() {");
-        result.append("var ").append(jumperName).append(" = document.getElementById(\"").append(
-            jumperName).append("\");");
-        result.append("if (").append(jumperName).append(".style.visibility != \"visible\") {");
-        result.append("").append(jumperName).append(".style.visibility = \"visible\";");
-        result.append("").append(jumperName).append(".focus();");
-        result.append("} else {");
-        result.append("").append(jumperName).append(".style.visibility = \"hidden\";");
-        result.append("}");
-        result.append("}");
+      // display current page
+      result.append(getPageIndexFragment());
 
-        result.append("function check").append(jumperName).append("Submit(ev) {");
-        result.append("var touche = ev.keyCode;");
-        result.append("if (touche == 13) {");
-        result.append("var index = parseInt(document.getElementById(\"").append(jumperName).append(
-            "\").value);");
-        result.append("if (isNaN(index) || index < 0) { index = 0; }");
-        result.append("if (index > ").append(nbPage).append(") { index = ").append(nbPage).append(
-            "; }");
-        result.append("index = (index-1)*").append(getNbItemsPerPage()).append(";");
-        if (StringUtil.isDefined(javascriptFunc)) {
-          result.append(javascriptFunc).append("(index);");
-        } else {
-          if (getBaseURL() != null) {
-            result.append("location.href=\"").append(getBaseURL()).append("\"+index;");
-          } else {
-            String action = "Pagination" + getActionSuffix();
-            result.append("location.href=\"").append(action).append("?Index=").append("\"+index;");
-          }
-        }
-        result.append("}");
-        result.append("}");
-        result.append("</script>");
-      }
+      result.append(getPageBrowsingFragment(javascriptFunc));
+
+      result.append(getNbItemsPerPageFragment(nbItemsPerPage, javascriptFunc));
+
+      result.append(getJumperFragment("</div></div>", javascriptFunc));
     }
     return result.toString();
+  }
+
+  private String getPageBrowsingFragment(String javascriptFunc) {
+    StringBuilder result = new StringBuilder();
+    result.append("<div class=\"pageClicToGo\">");
+
+    // display previous link (or nothing if current page is first one)
+    if (getFirstItemIndex() >= getNbItemsPerPage()) {
+      if (getCurrentPage() - getNumberOfPagesAround() > 1) {
+        // display first page link
+        result.append("<a class=\"pageOff\"");
+        result.append(getLink(javascriptFunc, 0, getString("GEF.pagination.firstPage")));
+        result.append(getImg("/arrows/arrowDoubleLeft.png", "GEF.pagination.firstPage"));
+        result.append("</a>");
+      }
+
+      // display previous page link
+      result.append("<a class=\"pageOff\"");
+      int index = getIndexForPreviousPage();
+      result.append(getLink(javascriptFunc, index, getString("GEF.pagination.previousPage")));
+      result.append(getImg("/arrows/arrowLeft.png", "GEF.pagination.previousPage"));
+      result.append("</a>");
+    }
+
+    // display all pages
+    if (getNbPage() > 1) {
+      for (int i = 1; i <= getNbPage(); i++) {
+        if (i == getCurrentPage()) {
+          result.append("<a class=\"pageOn\">");
+          result.append(i).append("</a>");
+        } else {
+          int nbDisplayPages = getNumberOfPagesAround();
+          // display 3 pages (or less) before current page
+          // display 3 pages (or less) after current page
+          if (getCurrentPage() - nbDisplayPages <= i && i <= getCurrentPage() + nbDisplayPages) {
+            int index = getIndexForDirectPage(i);
+            result.append("<a class=\"pageOff\"");
+            result.append(getLink(javascriptFunc, index,
+                getStringWithParam("GEF.pagination.gotoPage", String.valueOf(i))));
+            result.append(i).append("</a>");
+          }
+        }
+      }
+    }
+
+    // display next link (or nothing if current page is last one)
+    if (!isLastPage()) {
+      // display next page link
+      int index = getIndexForNextPage();
+      result.append("<a class=\"pageOff\"");
+      result.append(getLink(javascriptFunc, index, getString("GEF.pagination.nextPage")));
+      result.append(getImg("/arrows/arrowRight.png", "GEF.pagination.nextPage"));
+      result.append("</a>");
+
+      if (getCurrentPage() + getNumberOfPagesAround() < getNbPage()) {
+        // display last page link
+        result.append("<a class=\"pageOff\"");
+        result.append(getLink(javascriptFunc, getIndexForLastPage(),
+            getString("GEF.pagination.lastPage")));
+        result.append(getImg("/arrows/arrowDoubleRight.png", "GEF.pagination.lastPage"));
+        result.append("</a>");
+      }
+    }
+    result.append("</div>");
+    return result.toString();
+  }
+
+  private String getPageIndexFragment() {
+    StringBuilder fragment = new StringBuilder();
+    if (displayTotalNumberOfPages() && getNbPage() > getNumberOfPagesAround()) {
+      fragment.append("<div class=\"pageIndex\">");
+      fragment.append(getStringWithParam("GEF.pagination.pageOn", String.valueOf(getCurrentPage()),
+          String.valueOf(getNbPage())));
+      fragment.append("</div>");
+    }
+    return fragment.toString();
+  }
+
+  private String getJumperFragment(String beforeScript, String javascriptFunc) {
+    StringBuilder fragment = new StringBuilder();
+    boolean displayJumper = getNbPage() > JUMPER_THRESHOLD;
+    long timeStamp = new Date().getTime();
+    String jumperName = "jumper" + timeStamp;
+    if (displayJumper) {
+      // display page jumper
+      fragment.append("<div class=\"pageJumper\">");
+      fragment.append("<a href=\"javascript:display").append(jumperName).append(
+          "()\" onfocus=\"this.blur()\" title=\"").append(getString("GEF.pagination.jumptoPage"))
+          .append("\">").append(
+          getString("GEF.pagination.jumper")).append(" </a>");
+      fragment
+          .append("<input type=\"text\" class=\"jumper\" id=\"").append(jumperName).append(
+          "\" size=\"3\" onkeydown=\"check").append(jumperName).append("Submit(event)\"/>");
+      fragment.append("</div>\n");
+    }
+
+    fragment.append(beforeScript);
+
+    if (displayJumper) {
+      fragment.append(getJumperScript(jumperName, javascriptFunc));
+    }
+
+    return fragment.toString();
+  }
+
+  private String getNbItemsPerPageFragment(boolean nbItemsPerPage, String javascriptFunc) {
+    StringBuilder fragment = new StringBuilder();
+    if (nbItemsPerPage && getNbItems() > NUMBERPERPAGE_THRESHOLD) {
+      fragment.append("<div class=\"pageIndex numberPerPage\">");
+      int[] values = new int[]{25, 50, 100};
+      for (int i=0; i<values.length; i++) {
+        int value = values[i];
+        if (getNbItems() > value || (i != 0 && getNbItems() > values[i-1])) {
+          if (getNbItemsPerPage() == value) {
+            fragment.append("<a class=\"selected\">").append(value).append("</a>");
+          } else {
+            fragment.append("<a href=\"").append(getNbItemsPerPageLink(javascriptFunc, value))
+                .append("\" title=\"")
+                .append(getStringWithParam("GEF.pagination.perPage", String.valueOf(value))).append("\">")
+                .append(value).append("</a>");
+          }
+        }
+      }
+      // add special feature : All
+      int specialValue = NUMBERPERPAGE_ALL;
+      if (getNbItemsPerPage() == specialValue) {
+        fragment.append("<a class=\"selected\">").append(getString("GEF.pagination.all")).append("</a>");
+      } else {
+        fragment.append("<a href=\"").append(getNbItemsPerPageLink(javascriptFunc, specialValue))
+            .append("\" title=\"").append(getString("GEF.pagination.all.title")).append("\">")
+            .append(getString("GEF.pagination.all")).append("</a>");
+      }
+      fragment.append("</div>");
+    }
+    return fragment.toString();
+  }
+
+  // formatage du lien de la source de la balise href
+  private String getNbItemsPerPageLink(String javascriptFunc, int nbItems) {
+    StringBuilder link = new StringBuilder();
+    if (StringUtil.isNotDefined(javascriptFunc)) {
+      if (getBaseURL() != null) {
+        link.append(getBaseURL()).append("0").append("&ItemsPerPage=").append(nbItems);
+      }
+    } else {
+      link.append("javascript:onclick=").append(javascriptFunc).append("(0, ").append(nbItems).append(")");
+    }
+    return link.toString();
   }
 
   // formatage du lien de la source de la balise href
   private String getLink(String javascriptFunc, int index, String title) {
     StringBuilder link = new StringBuilder();
+    link.append(" title=\"").append(title).append("\"").append(" href=\"");
     String action = "Pagination" + getActionSuffix();
-    if (javascriptFunc == null) {
+    if (StringUtil.isNotDefined(javascriptFunc)) {
       if (getBaseURL() != null) {
-        link.append(" <a class=\"ArrayNavigation\"").append(" title=\"").append(title).append("\"")
-            .append(" href=\"").append(
-            getBaseURL()).append(index);
+        link.append(getBaseURL()).append(index);
       } else {
         // action pagination
-        link.append(" <a class=\"ArrayNavigation\"").append(" title=\"").append(title).append("\"")
-            .append(" href=\"").append(action)
-            .append("?Index=").append(index);
+        link.append(action).append("?Index=").append(index);
       }
-    } else
-      link.append(" <a class=\"ArrayNavigation\"").append(" title=\"").append(title).append("\"")
-          .append(" href=\"").append(
-          "javascript:onClick=").append(javascriptFunc).append("(").append(
-          index).append(")");
+    } else {
+      link.append("javascript:onClick=").append(javascriptFunc).append("(").append(index).append(")");
+    }
     link.append("\">");
     return link.toString();
+  }
+
+  private String getImg(String imgSrc, String altKey) {
+    IMG img = new IMG(getIconsPath()+imgSrc);
+    img.setBorder(0);
+    img.setAlign("absmiddle");
+    img.setAlt(getString(altKey));
+    return img.toString();
+  }
+
+  private String getJumperScript(String jumperName, String javascriptFunc) {
+    StringBuilder result = new StringBuilder();
+    // display page jumper script
+    result.append("<script type=\"text/javascript\">");
+    result.append("function display").append(jumperName).append("() {");
+    result.append("var ").append(jumperName).append(" = document.getElementById(\"").append(
+        jumperName).append("\");");
+    result.append("if (").append(jumperName).append(".style.visibility != \"visible\") {");
+    result.append("").append(jumperName).append(".style.visibility = \"visible\";");
+    result.append("").append(jumperName).append(".focus();");
+    result.append("} else {");
+    result.append("").append(jumperName).append(".style.visibility = \"hidden\";");
+    result.append("}");
+    result.append("}");
+
+    result.append("function check").append(jumperName).append("Submit(ev) {");
+    result.append("var touche = ev.keyCode;");
+    result.append("if (touche == 13) {");
+    result.append("var index = parseInt(document.getElementById(\"").append(jumperName).append(
+        "\").value);");
+    result.append("if (isNaN(index) || index < 0) { index = 0; }");
+    result.append("if (index > ").append(getNbPage()).append(") { index = ").append(getNbPage())
+        .append("; }");
+    result.append("index = (index-1)*").append(getNbItemsPerPage()).append(";");
+    if (StringUtil.isDefined(javascriptFunc)) {
+      result.append(javascriptFunc).append("(index);");
+    } else {
+      if (getBaseURL() != null) {
+        result.append("location.href=\"").append(getBaseURL()).append("\"+index;");
+      } else {
+        String action = "Pagination" + getActionSuffix();
+        result.append("location.href=\"").append(action).append("?Index=").append("\"+index;");
+      }
+    }
+    result.append("}");
+    result.append("}");
+    result.append("</script>\n");
+    return result.toString();
   }
 
   @Override

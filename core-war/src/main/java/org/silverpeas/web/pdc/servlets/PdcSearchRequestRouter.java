@@ -130,6 +130,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         String index = request.getParameter("Index");
         pdcSC.setIndexOfFirstResultToDisplay(index);
+
+        String nbItemsPerPage = request.getParameter("NbItemsPerPage");
+        if (StringUtil.isInteger(nbItemsPerPage)) {
+          pdcSC.setNbResToDisplay(Integer.parseInt(nbItemsPerPage));
+        }
+
         setDefaultDataToNavigation(request, pdcSC);
 
         destination = getDestinationForResults(pdcSC);
@@ -561,7 +567,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("PertinenceVisible", Boolean.valueOf(pdcSC.isPertinenceVisible()));
 
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
-    request.setAttribute("ChoiceNbResToDisplay", pdcSC.getListChoiceNbResToDisplay());
     request.setAttribute("NbResToDisplay", Integer.valueOf(pdcSC.getNbResToDisplay()));
     request.setAttribute("SortValue", Integer.valueOf(pdcSC.getSortValue()));
     request.setAttribute("SortOrder", pdcSC.getSortOrder());

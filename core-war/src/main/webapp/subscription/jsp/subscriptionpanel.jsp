@@ -507,13 +507,13 @@
               datacontainer : $('[id$="_list"]', $bloc).attr('id'),
               dataelement : 'li',
               next : $('<img>',
-                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowRight.gif"/>'}),
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowRight.png"/>'}),
               prev : $('<img>',
-                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowLeft.gif"/>'}),
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowLeft.png"/>'}),
               first : $('<img>',
-                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleLeft.gif"/>'}),
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleLeft.png"/>'}),
               last : $('<img>',
-                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleRight.gif"/>'}),
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleRight.png"/>'}),
               theme : 'pageNav'
             });
           } else {
