@@ -31,6 +31,9 @@ import java.util.Date;
 
 public class PaginationSP extends AbstractPagination {
 
+  private static final int NB_ITEMS_PER_PAGE_2 = 50;
+  private static final int NB_ITEMS_PER_PAGE_1 = 25;
+  private static final int NB_ITEMS_PER_PAGE_3 = 100;
   private static final int INDEX_THRESHOLD = 5;
   private static final int NUMBERPERPAGE_THRESHOLD = 25;
   private static final int NUMBERPERPAGE_ALL = 100000;
@@ -190,7 +193,7 @@ public class PaginationSP extends AbstractPagination {
     StringBuilder fragment = new StringBuilder();
     if (nbItemsPerPage && getNbItems() > NUMBERPERPAGE_THRESHOLD) {
       fragment.append("<div class=\"pageIndex numberPerPage\">");
-      int[] values = new int[]{25, 50, 100};
+      int[] values = new int[]{NB_ITEMS_PER_PAGE_1, NB_ITEMS_PER_PAGE_2, NB_ITEMS_PER_PAGE_3};
       for (int i=0; i<values.length; i++) {
         int value = values[i];
         if (getNbItems() > value || (i != 0 && getNbItems() > values[i-1])) {
@@ -278,7 +281,7 @@ public class PaginationSP extends AbstractPagination {
     result.append("if (touche == 13) {");
     result.append("var index = parseInt(document.getElementById(\"").append(jumperName).append(
         "\").value);");
-    result.append("if (isNaN(index) || index < 0) { index = 0; }");
+    result.append("if (isNaN(index) || index <= 0) { index = 1; }");
     result.append("if (index > ").append(getNbPage()).append(") { index = ").append(getNbPage())
         .append("; }");
     result.append("index = (index-1)*").append(getNbItemsPerPage()).append(";");

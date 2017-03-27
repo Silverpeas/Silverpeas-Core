@@ -20,8 +20,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletRequest;
@@ -30,6 +30,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class AbstractArrayPane implements ArrayPane {
 
@@ -88,41 +90,51 @@ public class AbstractArrayPane implements ArrayPane {
     this.session = session;
     this.request = request;
 
-    state = (ArrayPaneStatusBean) session.getAttribute(getName());
-    if (state == null) {
-      state = new ArrayPaneStatusBean();
-      session.setAttribute(getName(), state);
-    }
+    state = initState();
 
-    String target = request.getParameter(TARGET_PARAMETER_NAME);
-
-    if (target != null && target.equals(name)) {
+    String target = defaultStringIfNotDefined(request.getParameter(TARGET_PARAMETER_NAME));
+    if (target.equals(name)) {
       String action = request.getParameter(ACTION_PARAMETER_NAME);
-
       if ("Sort".equals(action)) {
-        String newState = request.getParameter(COLUMN_PARAMETER_NAME);
-        if (newState != null) {
-          int ns = Integer.parseInt(newState);
-          if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
-            state.setSortColumn(-state.getSortColumn());
-          } else {
-            state.setSortColumn(ns);
-          }
-        }
+        initColumnSorting();
       } else if ("ChangePage".equals(action)) {
-        String nbLines = request.getParameter("ItemsPerPage");
-        if (StringUtil.isDefined(nbLines)) {
-          state.setMaximumVisibleLine(Integer.valueOf(nbLines), true);
-        }
-        String index = request.getParameter(INDEX_PARAMETER_NAME);
-        state.setFirstVisibleLine(Integer.parseInt(index));
+        initNbLinesPerPage();
       }
     }
 
     if (state.getSortColumn() >= 1) {
       setColumnToSort(state.getSortColumn());
     }
+  }
 
+  private ArrayPaneStatusBean initState() {
+    ArrayPaneStatusBean sessionState = (ArrayPaneStatusBean) session.getAttribute(getName());
+    if (sessionState == null) {
+      sessionState = new ArrayPaneStatusBean();
+      session.setAttribute(getName(), sessionState);
+    }
+    return sessionState;
+  }
+
+  private void initColumnSorting() {
+    String newState = request.getParameter(COLUMN_PARAMETER_NAME);
+    if (newState != null) {
+      int ns = Integer.parseInt(newState);
+      if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
+        state.setSortColumn(-state.getSortColumn());
+      } else {
+        state.setSortColumn(ns);
+      }
+    }
+  }
+
+  private void initNbLinesPerPage() {
+    String nbLines = request.getParameter("ItemsPerPage");
+    if (StringUtil.isDefined(nbLines)) {
+      state.setMaximumVisibleLine(Integer.valueOf(nbLines), true);
+    }
+    String index = request.getParameter(INDEX_PARAMETER_NAME);
+    state.setFirstVisibleLine(Integer.parseInt(index));
   }
 
   public ArrayPaneStatusBean getState() {
