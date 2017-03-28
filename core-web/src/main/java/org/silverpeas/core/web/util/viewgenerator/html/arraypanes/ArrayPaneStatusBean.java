@@ -31,6 +31,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 public class ArrayPaneStatusBean {
   private int firstVisibleLine = 0;
   private int maximumVisibleLine = 10;
+  private boolean maximumSetByPerPage = false;
   private int sortColumn = 0; // no column is sorted by default
 
   /**
@@ -56,8 +57,13 @@ public class ArrayPaneStatusBean {
    * @param maximumVisibleLine
    * @see
    */
-  public void setMaximumVisibleLine(int maximumVisibleLine) {
-    this.maximumVisibleLine = maximumVisibleLine;
+  public void setMaximumVisibleLine(int maximumVisibleLine, boolean fromItemsPerPageAction) {
+    if (fromItemsPerPageAction || !maximumSetByPerPage) {
+      this.maximumVisibleLine = maximumVisibleLine;
+    }
+    if (fromItemsPerPageAction) {
+      maximumSetByPerPage = fromItemsPerPageAction;
+    }
   }
 
   /**

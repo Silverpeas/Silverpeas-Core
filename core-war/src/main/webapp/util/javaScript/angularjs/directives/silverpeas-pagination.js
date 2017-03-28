@@ -59,10 +59,10 @@
               totalrecords: scope.itemsSize,
               recordsperpage: scope.pageSize,
               length: 6,
-              next: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowRight.gif'}),
-              prev: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowLeft.gif'}),
-              first: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleLeft.gif'}),
-              last: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleRight.gif'}),
+              next: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowRight.png'}),
+              prev: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowLeft.png'}),
+              first: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleLeft.png'}),
+              last: $('<img>', {src: webContext + '/util/viewGenerator/icons/arrows/arrowDoubleRight.png'}),
               theme: 'pageNav',
               onchange: function(pageNb) {
                 if (scope.onPage) {

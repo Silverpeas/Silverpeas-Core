@@ -20,8 +20,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletRequest;
@@ -31,7 +31,12 @@ import javax.servlet.jsp.PageContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+
 public class AbstractArrayPane implements ArrayPane {
+
+  private static final int DEFAULT_SPACING = 2;
+  private static final int DEFAULT_PADDING = 2;
 
   private List<ArrayColumn> columns;
   private List<ArrayLine> lines;
@@ -44,19 +49,19 @@ public class AbstractArrayPane implements ArrayPane {
   private String updateSortJavascriptCallback = null;
   private ServletRequest request = null;
   private HttpSession session = null;
-  private int m_SortMode = 0;
+  private int mSortMode = 0;
   /**
    * configurable values for cells spacing and padding (of the internal table).
    */
-  private int m_CellsSpacing = 2;
-  private int m_CellsPadding = 2;
-  private int m_CellsBorderWidth = 0;
+  private int mCellsSpacing = DEFAULT_SPACING;
+  private int mCellsPadding = DEFAULT_PADDING;
+  private int mCellsBorderWidth = 0;
   /**
    * In some cases, it may be preferable to specify the routing address
    *
    * @see ArrayColumn#setRoutingAddress(String)
    */
-  private String m_RoutingAddress = null;
+  private String mRoutingAddress = null;
   private String paginationJavaScriptCallback = null;
   /**
    * Parameter attribute to enable/disable ArrayPane export feature
@@ -85,37 +90,51 @@ public class AbstractArrayPane implements ArrayPane {
     this.session = session;
     this.request = request;
 
-    state = (ArrayPaneStatusBean) session.getAttribute(getName());
-    if (state == null) {
-      state = new ArrayPaneStatusBean();
-      session.setAttribute(getName(), state);
-    }
+    state = initState();
 
-    String target = request.getParameter(TARGET_PARAMETER_NAME);
-
-    if (target != null && target.equals(name)) {
+    String target = defaultStringIfNotDefined(request.getParameter(TARGET_PARAMETER_NAME));
+    if (target.equals(name)) {
       String action = request.getParameter(ACTION_PARAMETER_NAME);
-
       if ("Sort".equals(action)) {
-        String newState = request.getParameter(COLUMN_PARAMETER_NAME);
-        if (newState != null) {
-          int ns = Integer.parseInt(newState);
-          if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
-            state.setSortColumn(-state.getSortColumn());
-          } else {
-            state.setSortColumn(ns);
-          }
-        }
+        initColumnSorting();
       } else if ("ChangePage".equals(action)) {
-        String index = request.getParameter(INDEX_PARAMETER_NAME);
-        state.setFirstVisibleLine(Integer.parseInt(index));
+        initNbLinesPerPage();
       }
     }
 
     if (state.getSortColumn() >= 1) {
       setColumnToSort(state.getSortColumn());
     }
+  }
 
+  private ArrayPaneStatusBean initState() {
+    ArrayPaneStatusBean sessionState = (ArrayPaneStatusBean) session.getAttribute(getName());
+    if (sessionState == null) {
+      sessionState = new ArrayPaneStatusBean();
+      session.setAttribute(getName(), sessionState);
+    }
+    return sessionState;
+  }
+
+  private void initColumnSorting() {
+    String newState = request.getParameter(COLUMN_PARAMETER_NAME);
+    if (newState != null) {
+      int ns = Integer.parseInt(newState);
+      if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
+        state.setSortColumn(-state.getSortColumn());
+      } else {
+        state.setSortColumn(ns);
+      }
+    }
+  }
+
+  private void initNbLinesPerPage() {
+    String nbLines = request.getParameter("ItemsPerPage");
+    if (StringUtil.isDefined(nbLines)) {
+      state.setMaximumVisibleLine(Integer.valueOf(nbLines), true);
+    }
+    String index = request.getParameter(INDEX_PARAMETER_NAME);
+    state.setFirstVisibleLine(Integer.parseInt(index));
   }
 
   public ArrayPaneStatusBean getState() {
@@ -132,7 +151,7 @@ public class AbstractArrayPane implements ArrayPane {
   public ArrayColumn addArrayColumn(String title) {
     ArrayColumn col = new ArrayColumn(title, columns.size() + 1, this);
     columns.add(col);
-    col.setRoutingAddress(m_RoutingAddress);
+    col.setRoutingAddress(mRoutingAddress);
     return col;
   }
 
@@ -160,7 +179,7 @@ public class AbstractArrayPane implements ArrayPane {
 
   @Override
   public void setVisibleLineNumber(int maximum) {
-    state.setMaximumVisibleLine(maximum);
+    state.setMaximumVisibleLine(maximum, false);
   }
 
   @Override
@@ -210,7 +229,7 @@ public class AbstractArrayPane implements ArrayPane {
    */
   @Override
   public void setRoutingAddress(String address) {
-    m_RoutingAddress = address;
+    mRoutingAddress = address;
   }
 
   /**
@@ -229,7 +248,7 @@ public class AbstractArrayPane implements ArrayPane {
 
   @Override
   public boolean getSortable() {
-    return (getSortMode() == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
+    return getSortMode() == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
   }
 
   /**
@@ -238,12 +257,12 @@ public class AbstractArrayPane implements ArrayPane {
    */
   @Override
   public void setSortMode(int mode) {
-    m_SortMode = mode;
+    mSortMode = mode;
   }
 
   @Override
   public int getSortMode() {
-    return m_SortMode;
+    return mSortMode;
   }
 
   /**
@@ -257,26 +276,26 @@ public class AbstractArrayPane implements ArrayPane {
   @Override
   public void setCellsConfiguration(int spacing, int padding, int borderWidth) {
     if (spacing >= 0) {
-      m_CellsSpacing = spacing;
+      mCellsSpacing = spacing;
     }
     if (padding >= 0) {
-      m_CellsPadding = padding;
+      mCellsPadding = padding;
     }
     if (borderWidth >= 0) {
-      m_CellsBorderWidth = borderWidth;
+      mCellsBorderWidth = borderWidth;
     }
   }
 
   public int getCellSpacing() {
-    return m_CellsSpacing;
+    return mCellsSpacing;
   }
 
   public int getCellPadding() {
-    return m_CellsPadding;
+    return mCellsPadding;
   }
 
   public int getCellBorderWidth() {
-    return m_CellsBorderWidth;
+    return mCellsBorderWidth;
   }
 
   @Override
@@ -355,7 +374,7 @@ public class AbstractArrayPane implements ArrayPane {
   public String getUrl() {
     // routing address computation. By default, route to the short name for the
     // calling page
-    if (m_RoutingAddress == null) {
+    if (mRoutingAddress == null) {
       String address = ((HttpServletRequest) getRequest()).getRequestURI();
       // only get a relative http address
       address = address.substring(address.lastIndexOf('/') + 1, address.length());
@@ -365,7 +384,7 @@ public class AbstractArrayPane implements ArrayPane {
       }
       return address;
     } else {
-      return m_RoutingAddress;
+      return mRoutingAddress;
     }
   }
 
@@ -390,7 +409,7 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   protected String printSortJavascriptFunction() {
-    StringBuilder sb = new StringBuilder(50);
+    StringBuilder sb = new StringBuilder();
     sb.append("<script type=\"text/javascript\">");
 
     sb.append("var fixArrayPaneWidthHelper = function(e, ui) {");
@@ -411,14 +430,6 @@ public class AbstractArrayPane implements ArrayPane {
     sb.append("}).disableSelection();");
     sb.append("</script>");
     return sb.toString();
-  }
-
-  /**
-   * standard method that returns the CVS-managed version string
-   * @deprecated
-   */
-  public static String getVersion() {
-    return "Deprecated";
   }
 
   public String getUpdateSortJavascriptCallback() {

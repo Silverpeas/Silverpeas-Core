@@ -60,6 +60,8 @@ public interface Pagination extends SimpleGraphicElement {
 
   public String printIndex(String text);
 
+  public String printIndex(String text, boolean nbItemsPerPage);
+
   public int getFirstItemIndex();
 
   public int getLastItemIndex();
