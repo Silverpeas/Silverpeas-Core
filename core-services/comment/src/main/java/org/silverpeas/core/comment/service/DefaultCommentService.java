@@ -368,7 +368,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
       indexEntry.setTitle(commentTitle);
       indexEntry.setPreView(commentMessage);
       indexEntry.setCreationDate(cmt.getCreationDate());
-      indexEntry.setCreationUser(cmt.getOwner());
+      indexEntry.setCreationUser(String.valueOf(cmt.getOwnerId()));
       indexEntry.addTextContent(commentMessage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {

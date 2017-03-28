@@ -92,6 +92,9 @@
             var url = uriOfUsedPdc(settings);
             loadPdC(url, function(loadedPdC) {
               updatedAxis = loadedPdC.axis;
+              if (typeof settings.onAxisChanged === 'function') {
+                settings.onAxisChanged.call(this, updatedAxis);
+              }
             }, function(pdc, error) {
               notyError(error.message);
             }, true);

@@ -170,7 +170,7 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 <head>
 <title><%=resource.getString("GML.popupTitle")%><c:out value="${anotherUserId}"></c:out></title>
 <view:looknfeel />
-<% if (resultsDisplayMode == PdcSearchSessionController.SHOWRESULTS_OnlyPDC) { %>
+<% if (resultsDisplayMode == PdcSearchSessionController.SHOWRESULTS_ONLY_PDC) { %>
 	<style>
 		#globalResultTab {
 			display: none;

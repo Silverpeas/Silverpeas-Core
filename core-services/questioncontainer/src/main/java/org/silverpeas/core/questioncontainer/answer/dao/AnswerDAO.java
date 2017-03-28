@@ -24,12 +24,11 @@
 
 package org.silverpeas.core.questioncontainer.answer.dao;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,6 +62,12 @@ public class AnswerDAO {
           "SB_Question_Question WHERE instanceId = ?)";
 
   /**
+   * Hidden constructor.
+   */
+  private AnswerDAO() {
+  }
+
+  /**
    * Build an Answer objet with data containing in the Resulset
    * @param rs the Resultset which contains data from database
    * @param answerPK an AnswerPK to know context (spaceId, componentId)
@@ -89,11 +94,9 @@ public class AnswerDAO {
     }
     String image = rs.getString(9);
     String questionLink = rs.getString(10);
-    Answer result =
-        new Answer(new AnswerPK(id, answerPK), new ForeignPK(questionId, answerPK), label, nbPoints,
-            isSolution, comment, nbVoters, isOpened, image, questionLink);
 
-    return result;
+    return new Answer(new AnswerPK(id, answerPK), new ForeignPK(questionId, answerPK), label, nbPoints,
+        isSolution, comment, nbVoters, isOpened, image, questionLink);
   }
 
   /**
@@ -193,8 +196,7 @@ public class AnswerDAO {
     try {
       newId = DBUtil.getNextId(answerPK.getTableName(), "answerId");
     } catch (Exception e) {
-      throw new AnswerRuntimeException("AnswerDAO.addAnswerToAQuestion()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
+      throw new AnswerRuntimeException(e);
     }
     PreparedStatement prepStmt = null;
     try {

@@ -85,7 +85,7 @@ public class LogsAccessor {
   public List<String> getLastLogRecords(String log, int recordCount)
       throws SilverpeasException {
     try {
-      FileUtil.checkPathNotRelative(log);
+      FileUtil.assertPathNotRelative(log);
       String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
       Path logFile = Paths.get(logPath, log);
       return readLastLines(logFile, recordCount);

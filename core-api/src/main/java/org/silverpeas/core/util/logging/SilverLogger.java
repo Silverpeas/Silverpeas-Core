@@ -155,6 +155,14 @@ public interface SilverLogger {
 
   /**
    * Logs an error message with the specified parameters.
+   * @param error the cause of the error.
+   */
+  default void error(Throwable error) {
+    log(Level.ERROR, error.getMessage(), new String[0], error);
+  }
+
+  /**
+   * Logs an error message with the specified parameters.
    * @param message the message to log.
    * @param error the cause of the error.
    */
@@ -173,12 +181,21 @@ public interface SilverLogger {
   }
 
   /**
-   * Logs an error message with the specified parameters.
+   * Logs a warning message with the specified parameters.
    * @param message the message to log.
    * @param parameters zero, one or more parameters to set to the message
    */
   default void warn(String message, Object... parameters) {
     log(Level.WARNING, message, parameters);
+  }
+
+  /**
+   * Logs a warning message with the specified parameters.
+   * <p> Only the message of the error will be logged.
+   * @param error the cause of the error.
+   */
+  default void warn(Throwable error) {
+    log(Level.WARNING, error.getMessage());
   }
 
   /**

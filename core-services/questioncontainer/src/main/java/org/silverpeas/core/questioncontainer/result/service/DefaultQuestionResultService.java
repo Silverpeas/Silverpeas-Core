@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.questioncontainer.result.service;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResultRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -46,7 +44,7 @@ import java.util.Collection;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultQuestionResultService implements QuestionResultService {
 
-  public DefaultQuestionResultService() {
+  protected DefaultQuestionResultService() {
   }
 
   @Override
@@ -57,9 +55,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
     try {
       QuestionResultDAO.setQuestionResultToUser(con, result);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.getAnswersByQuestionPK()", SilverpeasRuntimeException.ERROR,
-          "questionResult.RECORDING_RESPONSE_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -72,10 +68,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
     try {
       return QuestionResultDAO.getQuestionResultToQuestion(con, questionPK);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.getQuestionResultToQuestion()",
-          SilverpeasRuntimeException.ERROR, "questionResult.GETTING_RESPONSES_TO_QUESTION_FAILED",
-          e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -84,17 +77,11 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   public Collection<QuestionResult> getUserQuestionResultsToQuestion(String userId,
       ForeignPK questionPK) {
-    SilverTrace
-        .info("questionResult", "DefaultQuestionResultService.getUserQuestionResultsToQuestion()",
-            "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", questionPK =" + questionPK);
     Connection con = getConnection();
     try {
       return QuestionResultDAO.getUserQuestionResultsToQuestion(con, userId, questionPK);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.getUserQuestionResultsToQuestion()",
-          SilverpeasRuntimeException.ERROR,
-          "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -106,9 +93,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
     try {
       return QuestionResultDAO.getUsersByAnswer(con, answerId);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException("DefaultQuestionResultService.getUsersByAnswer()",
-          SilverpeasRuntimeException.ERROR,
-          "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -117,17 +102,11 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteQuestionResultsToQuestion(ForeignPK questionPK) {
-    SilverTrace
-        .info("questionResult", "DefaultQuestionResultService.deleteQuestionResultsToQuestion()",
-            "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
     Connection con = getConnection();
     try {
       QuestionResultDAO.deleteQuestionResultToQuestion(con, questionPK);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.deleteQuestionResultsToQuestion()",
-          SilverpeasRuntimeException.ERROR, "questionResult.DELETING_RESPONSES_TO_QUESTION_FAILED",
-          e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -141,10 +120,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
       return QuestionResultDAO
           .getQuestionResultToQuestionByParticipation(con, questionPK, participationId);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.getQuestionResultToQuestionByParticipation()",
-          SilverpeasRuntimeException.ERROR,
-          "questionResult.GETTING_RESPONSES_TO_QUESTION_AND_PARTICIPATION_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -159,10 +135,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
           .getUserQuestionResultsToQuestionByParticipation(con, userId, questionPK,
               participationId);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.getUserQuestionResultsToQuestionByParticipation()",
-          SilverpeasRuntimeException.ERROR,
-          "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_AND_PARTICIPATION_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -186,10 +159,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
     try {
       return QuestionResultDAO.getUserAnswerToQuestion(con, userId, questionPK, answerPK);
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException(
-          "DefaultQuestionResultService.getUserAnswerToQuestion()",
-          SilverpeasRuntimeException.ERROR,
-          "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -199,8 +169,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new QuestionResultRuntimeException("DefaultQuestionResultService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new QuestionResultRuntimeException(e);
     }
   }
 }

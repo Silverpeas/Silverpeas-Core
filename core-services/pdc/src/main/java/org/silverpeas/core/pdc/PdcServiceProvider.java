@@ -24,9 +24,8 @@
 
 package org.silverpeas.core.pdc;
 
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
-import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -34,6 +33,9 @@ import org.silverpeas.core.util.ServiceProvider;
  * to get the service instances that are managed by the IoC container.
  */
 public class PdcServiceProvider {
+
+  private PdcServiceProvider() {
+  }
 
   /**
    * Gets an instance of a manager of the classification plan (PdC).
@@ -49,17 +51,5 @@ public class PdcServiceProvider {
    */
   public static ThesaurusManager getThesaurusManager() {
     return ServiceProvider.getService(ThesaurusManager.class);
-  }
-
-  /**
-   * Gets an instance of the service dedicated to the classification of contents on the PdC.
-   * @return a PdcClassificationService object.
-   */
-  public static PdcClassificationService getPdcClassificationService() {
-    return ServiceProvider.getService(PdcClassificationService.class);
-  }
-
-  private PdcServiceProvider() {
-
   }
 }

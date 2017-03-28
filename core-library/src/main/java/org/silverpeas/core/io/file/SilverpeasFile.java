@@ -1,8 +1,8 @@
 package org.silverpeas.core.io.file;
 
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -29,10 +29,6 @@ public class SilverpeasFile extends File {
 
   private final String instanceId;
   private String mimeType;
-  /**
-   * Path to instance identified by instanceId used for security purpose
-   */
-  private String instancePath;
 
   /**
    * Creates a new Silverpeas file beloging to the specified component instance and located at the
@@ -45,7 +41,7 @@ public class SilverpeasFile extends File {
   }
 
   /**
-   * Creates a new Silverpeas file beloging to the specified component instance and located at the
+   * Creates a new Silverpeas file belonging to the specified component instance and located at the
    * specified path in the Silverpeas filesystem. The exact MIME type of the file is also
    * specified.
    * @param componentId the unique identifier of the component instance.
@@ -55,11 +51,10 @@ public class SilverpeasFile extends File {
   protected SilverpeasFile(String componentId, String path, String mimeType) {
     super(path);
     this.instanceId = componentId;
-    this.instancePath = path.substring(0, path.indexOf(componentId) + componentId.length());
-    if (StringUtil.isDefined((mimeType))) {
+    if (StringUtil.isDefined(mimeType)) {
       this.mimeType = mimeType;
     } else {
-      this.mimeType = (path.isEmpty() ? "":FileUtil.getMimeType(path));
+      this.mimeType = path.isEmpty() ? "":FileUtil.getMimeType(path);
     }
   }
 
@@ -114,10 +109,8 @@ public class SilverpeasFile extends File {
    */
   public void writeFrom(final InputStream stream) throws IOException {
     File parentFile = getParentFile();
-    if (parentFile != null) {
-      if (!parentFile.mkdirs() && !parentFile.isDirectory()) {
-        throw new IOException("The '" + parentFile + "' directory cannot be created!");
-      }
+    if (parentFile != null && !parentFile.mkdirs() && !parentFile.isDirectory()) {
+      throw new IOException("The '" + parentFile + "' directory cannot be created!");
     }
     if (!exists()) {
       this.createNewFile();
@@ -220,9 +213,5 @@ public class SilverpeasFile extends File {
    */
   public boolean isOpenOfficeCompatible() {
     return FileUtil.isOpenOfficeCompatible(getPath());
-  }
-
-  public boolean isFileSecure() {
-    return FileUtil.isFileSecure(getPath(), this.instancePath);
   }
 }

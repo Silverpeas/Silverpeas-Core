@@ -105,12 +105,6 @@ public class PdcClassificationServiceMockWrapper implements PdcClassificationSer
   }
 
   @Override
-  public void classifyContent(SilverpeasContent content, PdcClassification withClassification)
-      throws PdcRuntimeException {
-    mock.classifyContent(content, withClassification);
-  }
-
-  @Override
   public void axisValuesDeleted(List<PdcAxisValue> deletedValues) {
     mock.axisValuesDeleted(deletedValues);
   }

@@ -24,14 +24,12 @@
 
 package org.silverpeas.core.questioncontainer.result.dao;
 
-import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
-import org.silverpeas.core.questioncontainer.result.model.QuestionResultRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
-import org.silverpeas.core.questioncontainer.result.model.QuestionResultPK;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
+import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
+import org.silverpeas.core.questioncontainer.result.model.QuestionResultPK;
+import org.silverpeas.core.questioncontainer.result.model.QuestionResultRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,6 +54,12 @@ public class QuestionResultDAO {
       "DELETE FROM SB_Question_QuestionResult  WHERE questionId in (SELECT questionId FROM " +
           "SB_Question_Question WHERE instanceId = ?)";
 
+  /**
+   * Hidden constructor.
+   */
+  private QuestionResultDAO() {
+  }
+
   private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
       throws SQLException {
 
@@ -68,11 +72,10 @@ public class QuestionResultDAO {
     String pollDate = rs.getString(7);
     int elapsedTime = rs.getInt(8);
     int participationId = rs.getInt(9);
-    QuestionResult result = new QuestionResult(new QuestionResultPK(id, questionPK),
+
+    return new QuestionResult(new QuestionResultPK(id, questionPK),
         new ForeignPK(questionId, questionPK), new AnswerPK(answerId, questionPK), userId,
         openAnswer, nbPoints, pollDate, elapsedTime, participationId);
-
-    return result;
   }
 
   public static Collection<QuestionResult> getUserQuestionResultsToQuestion(Connection con,
@@ -188,10 +191,6 @@ public class QuestionResultDAO {
 
   public static Collection<QuestionResult> getQuestionResultToQuestionByParticipation(
       Connection con, ForeignPK questionPK, int participationId) throws SQLException {
-    SilverTrace
-        .info("questionResult", "QuestionResultDAO.getQuestionResultToQuestionByParticipation()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "questionPK =" + questionPK + ", participationId = " + participationId);
     ResultSet rs = null;
     QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
@@ -240,8 +239,7 @@ public class QuestionResultDAO {
       // get new identifier
       newId = DBUtil.getNextId("sb_question_questionresult", "qrId");
     } catch (SQLException ue) {
-      throw new QuestionResultRuntimeException("QuestionResultDAO.setQuestionResultToUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ue);
+      throw new QuestionResultRuntimeException(ue);
     }
 
     String selectStatement =

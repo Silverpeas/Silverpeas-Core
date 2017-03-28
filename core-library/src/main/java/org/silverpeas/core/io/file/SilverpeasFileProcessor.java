@@ -8,6 +8,11 @@ package org.silverpeas.core.io.file;
  */
 public interface SilverpeasFileProcessor extends Comparable<SilverpeasFileProcessor> {
 
+  /**
+   * The value of the maximum priority
+   */
+  int MAX_PRIORITY = 100;
+
   enum ProcessingContext {
     /**
      * The processing is about the getting of a file.
