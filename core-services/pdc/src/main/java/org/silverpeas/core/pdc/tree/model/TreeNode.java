@@ -32,6 +32,11 @@ import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.WAPrimaryKey;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +44,8 @@ import java.util.Map;
  * Class declaration
  * @author
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.Serializable {
 
   private static final long serialVersionUID = 4644891370102942728L;
@@ -48,6 +55,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   private String treeId;
   private String creationDate;
   private String creatorId;
+  @XmlAttribute(name = "pdcValuePath")
   private String path;
   private int levelNumber;
   private int orderNumber;
@@ -86,33 +94,6 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
     this.levelNumber = levelNumber;
     this.fatherId = fatherId;
     this.orderNumber = orderNumber;
-  }
-
-  /**
-   * Constructor declaration
-   * @param pk
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param creatorId
-   * @param path
-   * @param levelNumber
-   * @param fatherId
-   * @see
-   */
-  public TreeNode(TreeNodePK pk, String treeId, String name,
-      String description, String creationDate, String creatorId, String path,
-      int levelNumber, int orderNumber, String fatherId) {
-    setPK(pk);
-    this.treeId = treeId;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.levelNumber = levelNumber;
-    this.orderNumber = orderNumber;
-    this.fatherId = fatherId;
   }
 
   /**

@@ -23,41 +23,38 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * @author dlesimple
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class CoordinatesPositionsType {
 
+  @XmlElement(name = "coordinatePosition")
   private List coordinatesPositions;
+  @XmlAttribute
   private boolean createEnable = false;
 
-  /**
-   * @return List of CoordinatesPositions
-   */
+  public CoordinatesPositionsType() {
+  }
+
   public List getCoordinatesPositions() {
     return coordinatesPositions;
   }
 
-  /**
-   * @param listCoordinatesPositions
-   */
   public void setCoordinatesPositions(List coordinatesPositions) {
     this.coordinatesPositions = coordinatesPositions;
   }
 
-  /**
-   * @return Create mode enabled
-   */
   public boolean getCreateEnable() {
     return createEnable;
   }
 
-  /**
-   * @param listCoordinatesPositions
-   */
-  public void setCreateEnable(boolean createEnable) {
-    this.createEnable = createEnable;
-  }
 }

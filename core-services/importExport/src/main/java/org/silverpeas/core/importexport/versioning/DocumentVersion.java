@@ -27,39 +27,44 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.importexport.attachment.AttachmentDetail;
-import org.silverpeas.core.persistence.jcr.JcrDataConverter;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
+import org.silverpeas.core.xml.DateAdapter;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
 import java.util.Date;
 
-public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTypes {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
+public class DocumentVersion implements java.io.Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
-  public final static int STATUS_VALIDATION_NOT_REQ = 0;
-  public final static int STATUS_VALIDATION_REQUIRED = 1;
-  public final static int STATUS_VERSION_VALIDATED = 2;
-  public final static int STATUS_VERSION_REFUSED = 3;
-  public final static int TYPE_DEFAULT_VERSION = 1;
-  public final static int TYPE_PUBLIC_VERSION = 0;
-  public final static String CONTEXT = "Versioning";
-  public final static String CONTEXT_VERSIONING = CONTEXT + File.separator;
+  public static final int STATUS_VALIDATION_NOT_REQ = 0;
+  public static final int TYPE_DEFAULT_VERSION = 1;
+  public static final int TYPE_PUBLIC_VERSION = 0;
+  private static final String CONTEXT = "Versioning";
   private DocumentVersionPK pk;
-  private DocumentPK documentPK;
+  @XmlElement(name = "majorNumber")
   private int majorNumber;
+  @XmlElement(name = "minorNumber")
   private int minorNumber;
-  private int authorId;
+  @XmlElement(name = "creatorId", defaultValue = "-1")
+  private int authorId = -1;
+  @XmlElement(name = "creationDate")
+  @XmlJavaTypeAdapter(DateAdapter.class)
   private Date creationDate;
+  @XmlElement(name = "description")
   private String comments;
+  @XmlElement(name = "versionType")
   private int type = TYPE_DEFAULT_VERSION;
-  private int status = STATUS_VALIDATION_NOT_REQ;
+  @XmlAttribute(name = "path")
   private String physicalName;
   private String logicalName;
   private String mimeType;
@@ -67,41 +72,15 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   private String instanceId;
   private String xmlForm = null;
   // following attributes are used by import/export XML
+  @XmlElement(name = "creatorName")
   private String creatorName;
+  @XmlElement(name = "xmlModel")
   private XMLModelContentType xmlModelContentType = null;
+  @XmlAttribute
   private boolean removeAfterImport = false;
   private String originalPath;
 
   public DocumentVersion() {
-  }
-
-  public DocumentVersion(DocumentVersionPK pk, DocumentPK documentPK,
-      int majorNumber, int minorNumber, int authorId, Date creationDate,
-      String comments, int type, int status, String physicalName,
-      String logicalName, String mimeType, long size, String instanceId) {
-    this.pk = pk;
-    this.documentPK = documentPK;
-    this.majorNumber = majorNumber;
-    this.minorNumber = minorNumber;
-    this.authorId = authorId;
-    this.creationDate = creationDate;
-    this.comments = comments;
-    this.type = type;
-    this.status = status;
-    this.physicalName = physicalName;
-    this.logicalName = logicalName;
-    this.mimeType = mimeType;
-    this.size = size;
-    this.instanceId = instanceId;
-  }
-
-  public DocumentVersion(AttachmentDetail attachment) {
-    this.creationDate = attachment.getCreationDate();
-    this.physicalName = attachment.getPhysicalName();
-    this.logicalName = attachment.getLogicalName();
-    this.mimeType = attachment.getType();
-    this.size = attachment.getSize();
-    this.instanceId = attachment.getPK().getInstanceId();
   }
 
   public DocumentVersionPK getPk() {
@@ -110,14 +89,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   public void setPk(DocumentVersionPK pk) {
     this.pk = pk;
-  }
-
-  public DocumentPK getDocumentPK() {
-    return documentPK;
-  }
-
-  public void setDocumentPK(DocumentPK documentPK) {
-    this.documentPK = documentPK;
   }
 
   public int getMajorNumber() {
@@ -171,14 +142,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     this.type = type;
   }
 
-  public int getStatus() {
-    return status;
-  }
-
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
   public String getPhysicalName() {
     return physicalName;
   }
@@ -207,10 +170,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     return size;
   }
 
-  public String getDisplaySize() {
-    return FileRepositoryManager.formatFileSize(getSize());
-  }
-
   public void setSize(long size) {
     this.size = size;
   }
@@ -224,92 +183,17 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   }
 
   /**
-   * Return if a document is an Office file
-   *
-   * @return true or false
-   * @deprecated Use isOpenOfficeCompatibleDocument instead as Ms office is no longer a special
-   * case.
-   */
-  @Deprecated
-  public boolean isOfficeDocument() {
-    return isOpenOfficeCompatibleDocument();
-  }
-
-  public String getJcrPath() {
-    StringBuilder jcrPath = new StringBuilder(500);
-    jcrPath.append(getInstanceId()).append('/');
-    jcrPath.append(CONTEXT).append('/');
-    if (getDocumentPK().getId() != null) {
-      jcrPath.append(getDocumentPK().getId()).append('/');
-    }
-    jcrPath.append(majorNumber).append(".").append(minorNumber).append('/');
-    jcrPath.append(JcrDataConverter.escapeIllegalJcrChars(getLogicalName()));
-    return jcrPath.toString();
-  }
-
-  public String getWebdavUrl() {
-    StringBuilder url = new StringBuilder(500);
-    SettingBundle messages = ResourceLocator.getGeneralSettingBundle();
-    String webAppContext = messages.getString("ApplicationURL");
-    if (!webAppContext.endsWith("/")) {
-      webAppContext += '/';
-    }
-    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(
-        messages.
-        getString("webdav.workspace")).append('/').append(getJcrPath());
-    return url.toString();
-  }
-
-  /**
-   * If 3d document
-   *
-   * @return true or false
-   */
-  public boolean isSpinfireDocument() {
-    return SPINFIRE_MIME_TYPE.equals(getMimeType());
-  }
-
-  /**
-   * If 3d document
-   *
-   * @return true or false
-   */
-  public boolean isOpenOfficeCompatibleDocument() {
-    boolean isOpenOfficeCompatibleDocument = false;
-    if (getLogicalName() != null) {
-      isOpenOfficeCompatibleDocument = FileUtil.isOpenOfficeCompatible(getLogicalName());
-    }
-    return isOpenOfficeCompatibleDocument;
-  }
-
-  /**
    * Overriden toString method for debug/trace purposes
    *
    * @return the String representation of this document.
    */
   @Override
   public String toString() {
-    return "DocumentVersion object : [  pk = " + pk + ", documentPK = "
-        + documentPK + ", majorNumber = " + majorNumber + ", minorNumber = "
-        + minorNumber + ", authorId = " + authorId + ", creationDate = "
+    return "DocumentVersion object : [  pk = " + pk + ", majorNumber = " + majorNumber
+        + ", minorNumber = " + minorNumber + ", authorId = " + authorId + ", creationDate = "
         + creationDate + ", comments = " + comments + ", type = " + type
-        + ", status = " + status + ", physicalName = " + physicalName
-        + ", logicalName = " + logicalName + ", mimeType = " + mimeType
-        + ", size = " + size + " ];";
-  }
-
-  /**
-   * Support Cloneable Interface
-   *
-   * @return the clone
-   */
-  @Override
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
-    }
+        + ", physicalName = " + physicalName + ", logicalName = " + logicalName
+        + ", mimeType = " + mimeType + ", size = " + size + " ];";
   }
 
   /**
@@ -357,17 +241,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
     this.xmlModelContentType = xmlModelContentType;
-  }
-
-  public String getDocumentIcon() {
-    String icon = "";
-    if (getPhysicalName().lastIndexOf('.') >= 0) {
-      String fileType = FileRepositoryManager.getFileExtension(getPhysicalName());
-      icon = FileRepositoryManager.getFileIcon(fileType);
-    } else {
-      icon = FileRepositoryManager.getFileIcon("");
-    }
-    return icon;
   }
 
   public boolean isRemoveAfterImport() {

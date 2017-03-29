@@ -33,6 +33,11 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -41,11 +46,14 @@ import java.util.Set;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     implements Cloneable, SilverpeasSharedComponentInstance {
 
   private static final long serialVersionUID = 1L;
   public static final String STATUS_REMOVED = "R";
+  @XmlAttribute
   private String id;
   private String name;
   private String domainFatherId;

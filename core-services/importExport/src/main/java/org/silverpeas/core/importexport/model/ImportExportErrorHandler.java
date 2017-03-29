@@ -23,32 +23,27 @@
  */
 package org.silverpeas.core.importexport.model;
 
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.silverpeas.core.SilverpeasRuntimeException;
+
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 
 /**
  * @author neysseri
  */
-public class ImportExportErrorHandler implements ErrorHandler {
+public class ImportExportErrorHandler implements ValidationEventHandler {
+
+  private String getMessage(ValidationEvent event) {
+    return "Line : " + event.getLocator().getLineNumber() + "\n"
+        + "Column : " + event.getLocator().getColumnNumber() + "\n"
+        + "Message : " + event.getMessage().replace('"', '\'');
+  }
 
   @Override
-  public void warning(SAXParseException e) throws SAXException {
-    // you can choose not to handle it
-    throw new SAXException(getMessage("Warning", e));
-  }
-
-  public void error(SAXParseException e) throws SAXException {
-    throw new SAXException(getMessage("Error", e));
-  }
-
-  public void fatalError(SAXParseException e) throws SAXException {
-    throw new SAXException(getMessage("Fatal Error", e));
-  }
-
-  private String getMessage(String level, SAXParseException e) {
-    return ("Parsing " + level + "\n"
-        + "Line : " + e.getLineNumber() + "\n"
-        + "Message : " + e.getMessage().replace('"', '\''));
+  public boolean handleEvent(final ValidationEvent event) {
+    if (event.getSeverity() >= ValidationEvent.ERROR) {
+      throw new SilverpeasRuntimeException(getMessage(event), event.getLinkedException());
+    }
+    return true;
   }
 }

@@ -27,7 +27,6 @@ import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.node.importexport.NodeTreeType;
-import org.silverpeas.core.node.importexport.NodeTreesType;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -53,17 +52,15 @@ public class NodeTreesTypeManager {
    * </p>
    *
    * @param userDetail contient les informations sur l'utilisateur du moteur d'importExport
-   * @param nodeTreesType objet mappé par castor contenant toutes les informations de création des
-   * noeuds
+   * @param listNodeTreeType informations de création des noeuds
    * @param targetComponentId ID du composant par défaut dans lequel creer les noeuds.
    */
-  public void processImport(UserDetail userDetail, NodeTreesType nodeTreesType,
+  public void processImport(UserDetail userDetail, List<NodeTreeType> listNodeTreeType,
       String targetComponentId, ImportReportManager reportManager) {
     int nbTopicTree = 1;
     int nbTopic = 1;
     GEDImportExport gedIE =
         ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
-    List<NodeTreeType> listNodeTreeType = nodeTreesType.getListNodeTreeType();
     if (!listNodeTreeType.isEmpty()) {
       // On parcours les objets NodeTreeType
       for (NodeTreeType nodeTreeType : listNodeTreeType) {

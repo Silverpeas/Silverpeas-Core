@@ -25,15 +25,24 @@ package org.silverpeas.core.importexport.form;
 
 import org.silverpeas.core.contribution.content.form.XMLField;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author neysseri
  */
+@XmlRootElement(name = "xmlModel")
+@XmlAccessorType(XmlAccessType.NONE)
 public class XMLModelContentType {
 
+  @XmlAttribute
   private String name;
+  @XmlElement(name = "xmlField")
   private List<XMLField> fields;
 
   public XMLModelContentType() {

@@ -29,18 +29,28 @@
  */
 package org.silverpeas.core.pdc.pdc.importexport;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-/**
- * Classe utilisee pour le mapping castor
- * @author sdevolder
- */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class AxisType {
 
+  @XmlAttribute
   private int id;
+  @XmlAttribute(name = "pdcValuePath")
   private String path;
+  @XmlElement(name = "pdcValue")
   private List<PdcValueType> listPdcValueType;
+  @XmlElement(name = "name")
   private String name;
+
+  public AxisType() {
+  }
 
   /**
    * @return

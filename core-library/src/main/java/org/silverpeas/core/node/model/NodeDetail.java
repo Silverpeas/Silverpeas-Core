@@ -32,6 +32,11 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -40,6 +45,8 @@ import java.util.Collection;
  * @author Nicolas Eysseric
  * @version 1.0
  */
+@XmlRootElement(name = "xmlField")
+@XmlAccessorType(XmlAccessType.NONE)
 public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable {
 
   private static final long serialVersionUID = -1401884517616404337L;
@@ -56,14 +63,15 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   private String modelId = null;
   private String status = null;
   private NodePK fatherPK;
-  // a NodeDetail collection
+  @XmlElement(name = "topic")
   private Collection<NodeDetail> childrenDetails;
   private String type = DEFAULT_TYPE;
   private int order = 0;
   private int rightsDependsOn = -1;
-  private int nbObjects = -1; // No persistence - usefull to store nb objects
-  // contained by this node
-  private String userRole = null; // No persistence - usefull to store user role
+  // No persistence - useful to store nb objects contained by this node
+  private int nbObjects = -1;
+  // No persistence - useful to store user role
+  private String userRole = null;
   private boolean useId = false;
 
 
@@ -261,10 +269,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     this.nodePK = nodePK;
   }
 
-  /**
-   * Méthode nécéssaire au marshalling castor
-   * @return
-   */
+  @XmlAttribute
   public int getId() {
     return Integer.parseInt(getNodePK().getId());
   }

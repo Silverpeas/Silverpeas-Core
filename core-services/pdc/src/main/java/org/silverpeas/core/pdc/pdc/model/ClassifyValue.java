@@ -23,16 +23,20 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.List;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Nicolas EYSSERIC
  */
+@XmlAccessorType(XmlAccessType.NONE)
 public class ClassifyValue extends org.silverpeas.core.pdc.classification.Value implements
         java.io.Serializable {
 
   private static final long serialVersionUID = 4641811783387127570L;
+
   private List<Value> fullPath = null;
 
   private String axisName = null;

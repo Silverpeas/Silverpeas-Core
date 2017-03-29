@@ -25,7 +25,6 @@ package org.silverpeas.core.importexport.report;
 
 import org.silverpeas.core.importexport.control.ImportExport;
 import org.silverpeas.core.node.importexport.NodeTreeType;
-import org.silverpeas.core.node.importexport.NodeTreesType;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.apache.ecs.ElementContainer;
@@ -206,7 +205,7 @@ public class HtmlExportGenerator {
     return sb.toString();
   }
 
-  public String indexToHTML(String fileName, Set<String> topicIds, NodeTreesType nodeTreesType,
+  public String indexToHTML(String fileName, Set<String> topicIds, List<NodeTreeType> nodeTrees,
       String rootId) {
     StringBuilder sb = new StringBuilder();
     String htmlFileExportDir = encode(fileName);
@@ -218,7 +217,6 @@ public class HtmlExportGenerator {
     sb.append("<div id=\"treeview\">\n");
     sb.append("<script language=\"JavaScript\" type=\"text/javascript\">\n");
     sb.append("var elements_treeview = new TreeViewElements();\n");
-    List<NodeTreeType> nodeTrees = nodeTreesType.getListNodeTreeType();
     sb.append(nodeTreeToHTML(nodeTrees, topicIds, rootId));
     // CONTROLE TREEVIEW
     sb.append("var treeview = new TreeView(\"treeview\");\n");
@@ -401,8 +399,8 @@ public class HtmlExportGenerator {
     sb.append("positionPath += \"-\";\n");
     sb.append("}\n");
     sb.append("fileHtml += positionPath + \".html\";\n");
-    sb.append(ImportExport.iframePublication).append(".location.href = \"empty.html\";\n");
-    sb.append(ImportExport.iframeIndexPublications).append(".location.href = fileHtml;\n");
+    sb.append(ImportExport.IFRAME_PUBLICATION).append(".location.href = \"empty.html\";\n");
+    sb.append(ImportExport.IFRAME_INDEX_PUBLICATIONS).append(".location.href = fileHtml;\n");
     sb.append("}\n");
     sb.append("</script>\n");
     sb.append("</head>\n");

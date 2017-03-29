@@ -59,39 +59,22 @@ import java.util.List;
 /**
  * @author neysseri
  */
-public class VersioningImportExport {
+public class VersioningImport {
 
   private UserDetail user;
   private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
 
-  public VersioningImportExport(UserDetail user) {
+  public VersioningImport(UserDetail user) {
     this.user = user;
   }
 
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
-      boolean indexIt) throws RemoteException, IOException {
-    return importDocuments(objectId, componentId, attachments, DocumentVersion.TYPE_PUBLIC_VERSION,
-        indexIt, null);
-  }
+      boolean indexIt) throws IOException {
 
-  /**
-   * @param objectId
-   * @param componentId
-   * @param attachments
-   * @param versionType
-   * @param indexIt
-   * @param topicId
-   * @return
-   * @throws RemoteException
-   * @throws IOException
-   */
-  public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
-      int versionType, boolean indexIt, String topicId) throws RemoteException, IOException {
-
+    int versionType = DocumentVersion.TYPE_PUBLIC_VERSION;
     int nbFilesProcessed = 0;
-    AttachmentImportExport attachmentImportExport =
-        new AttachmentImportExport(user);
+    AttachmentImportExport attachmentImportExport = new AttachmentImportExport(user);
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object
@@ -117,10 +100,10 @@ public class VersioningImportExport {
         }
         HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null, componentId),
             objectId, -1, attachment.getAuthor(), new SimpleAttachment(attachment.getLogicalName(),
-            attachment.getLanguage(), attachment.getTitle(), attachment.getInfo(), attachment.
+            null, attachment.getTitle(), attachment.getDescription(), attachment.
             getSize(), attachment.getType(), "" + user.getId(), attachment.getCreationDate(),
             attachment.getXmlForm()));
-        version.setPublicDocument((versionType == DocumentVersion.TYPE_PUBLIC_VERSION));
+        version.setPublicDocument(versionType == DocumentVersion.TYPE_PUBLIC_VERSION);
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
         AttachmentServiceProvider.getAttachmentService().createAttachment(version,
             content, indexIt);
@@ -130,7 +113,7 @@ public class VersioningImportExport {
         boolean removed = FileUtils.deleteQuietly(attachmentImportExport.getAttachmentFile(
             attachment));
         if (!removed) {
-          SilverTrace.error("versioning", "VersioningImportExport.importDocuments()",
+          SilverTrace.error("versioning", "VersioningImport.importDocuments()",
               "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachmentImportExport
               .getAttachmentFile(attachment));
         }
@@ -157,7 +140,6 @@ public class VersioningImportExport {
       int userId, boolean indexIt) throws RemoteException, FileNotFoundException {
 
     boolean launchCallback = false;
-    int userIdCallback = -1;
 
     List<SimpleDocument> importedDocs = new ArrayList<SimpleDocument>(documents.size());
 
@@ -183,7 +165,7 @@ public class VersioningImportExport {
       ResourceEvent.Type type = ResourceEvent.Type.CREATION;
       if (existingDocument != null && existingDocument.isVersioned()) {
         type = ResourceEvent.Type.UPDATE;
-        List<DocumentVersion> versions = document.getVersionsType().getListVersions();
+        List<DocumentVersion> versions = document.getVersionsType();
         for (DocumentVersion version : versions) {
           version.setInstanceId(objectPK.getInstanceId());
           existingDocument = addVersion(version, existingDocument, userId, indexIt);
@@ -200,14 +182,14 @@ public class VersioningImportExport {
                   Integer.toString(version.getAuthorId()));
             }
           } catch (Exception e) {
-            SilverTrace.error("versioning", "VersioningImportExport.importDocuments()",
+            SilverTrace.error("versioning", "VersioningImport.importDocuments()",
                 "root.MSG_GEN_PARAM_VALUE", e);
           }
         }
       } else {
         // Il n'y a pas de document portant le même nom
         // On crée un nouveau document
-        List<DocumentVersion> versions = document.getVersionsType().getListVersions();
+        List<DocumentVersion> versions = document.getVersionsType();
         existingDocument = null;
         for (DocumentVersion version : versions) {
           if (existingDocument == null) {
@@ -234,13 +216,13 @@ public class VersioningImportExport {
             boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
             if (isPublic) {
               launchCallback = true;
-              userIdCallback = version.getAuthorId();
             }
             existingDocument.setPublicDocument(isPublic);
             InputStream content = getVersionContent(version);
             existingDocument.setContentType(version.getMimeType());
             existingDocument.setSize(version.getSize());
             existingDocument.setFilename(version.getLogicalName());
+            existingDocument.setComment(version.getComments());
             existingDocument = AttachmentServiceProvider.getAttachmentService()
                 .createAttachment(existingDocument, content, indexIt);
             IOUtils.closeQuietly(content);
@@ -260,7 +242,7 @@ public class VersioningImportExport {
                   toString(version.getAuthorId()));
             }
           } catch (Exception e) {
-            SilverTrace.error("versioning", "VersioningImportExport.importDocuments()",
+            SilverTrace.error("versioning", "VersioningImport.importDocuments()",
                 "root.MSG_GEN_PARAM_VALUE", e);
           }
         }
@@ -285,14 +267,19 @@ public class VersioningImportExport {
     return null;
   }
 
-  protected SimpleDocument addVersion(DocumentVersion version, SimpleDocument existingDocument,
+  private SimpleDocument addVersion(DocumentVersion version, SimpleDocument existingDocument,
       int userId, boolean indexIt) throws FileNotFoundException {
-    boolean isPublic = (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION);
-    boolean launchCallback = (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION);
+    InputStream content = getVersionContent(version);
+    boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
+    boolean launchCallback = isPublic;
     existingDocument.setPublicDocument(isPublic);
     existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
     existingDocument.setUpdated(new Date());
     existingDocument.setUpdatedBy("" + userId);
+    existingDocument.setContentType(version.getMimeType());
+    existingDocument.setSize(version.getSize());
+    existingDocument.setFilename(version.getLogicalName());
+    existingDocument.setComment(version.getComments());
     XMLModelContentType xmlContent = version.getXMLModelContentType();
     if (xmlContent != null) {
       existingDocument.setXmlFormId(xmlContent.getName());
@@ -300,15 +287,18 @@ public class VersioningImportExport {
     AttachmentServiceProvider.getAttachmentService().
         lock(existingDocument.getId(), "" + userId, existingDocument.getLanguage());
     AttachmentServiceProvider.getAttachmentService().updateAttachment(existingDocument,
-        getVersionContent(version), indexIt, launchCallback);
+        content, indexIt, launchCallback);
     AttachmentServiceProvider.getAttachmentService().
         unlock(new UnlockContext(existingDocument.getId(), "" + userId, existingDocument.
         getLanguage()));
+
+    IOUtils.closeQuietly(content);
+
     return AttachmentServiceProvider.getAttachmentService().searchDocumentById(existingDocument.
         getPk(), existingDocument.getLanguage());
   }
 
-  InputStream getVersionContent(DocumentVersion version) throws FileNotFoundException {
+  private InputStream getVersionContent(DocumentVersion version) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(version.getDocumentPath()));
     if (file == null || !file.exists() || !file.isFile()) {
       String baseDir = settings.getString("importRepository", "");
