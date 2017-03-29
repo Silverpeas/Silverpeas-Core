@@ -21,29 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.importexport.versioning;
 
-import java.util.List;
+package org.silverpeas.core.xml;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * Classe utilisee pour le (un)marshalling Castor
- * @author neysseri
+ * The FieldHandler for the Date class
  */
-public class DocumentsType {
+public class DateAdapter extends XmlAdapter<String, Date> {
 
-  private List<Document> listDocuments; // Document
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-  /**
-   * @return
-   */
-  public List<Document> getListDocuments() {
-    return listDocuments;
+  @Override
+  public String marshal(Date v) throws Exception {
+    synchronized (dateFormat) {
+      return dateFormat.format(v);
+    }
   }
 
-  /**
-   * @param list
-   */
-  public void setListDocuments(List<Document> list) {
-    listDocuments = list;
+  @Override
+  public Date unmarshal(String v) throws Exception {
+    synchronized (dateFormat) {
+      return dateFormat.parse(v);
+    }
   }
+
 }

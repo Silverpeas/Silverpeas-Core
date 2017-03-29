@@ -79,13 +79,11 @@ public class FormTemplateImportExport {
       if (field != null) {
         FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
         if (fieldTemplate != null) {
-          FieldDisplayer<Field> fieldDisplayer = TypeManager.getInstance().
+          FieldDisplayer fieldDisplayer = TypeManager.getInstance().
               getDisplayer(field.getTypeName(), fieldTemplate.getDisplayerName());
-          String fieldValue;
+          String fieldValue = xmlFieldValue;
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
-            fieldValue = manageFileField(pk, userId, xmlFieldValue, fieldTemplate);
-          } else {
-            fieldValue = xmlFieldValue;
+            fieldValue = manageFileField(pk, userId, xmlFieldValue);
           }
           fieldDisplayer.update(fieldValue, field, fieldTemplate, new PagesContext());
         }
@@ -94,16 +92,10 @@ public class FormTemplateImportExport {
     set.save(data);
   }
 
-  public String manageFileField(ForeignPK pk, String userId, String xmlFieldValue,
-      FieldTemplate fieldTemplate) throws IOException {
-    String fieldValue;
-    DocumentType type;
-    if ("image".equals(fieldTemplate.getDisplayerName())) {
-      type = DocumentType.attachment;
-    }
-    else {
-      type = DocumentType.form;
-    }
+  public String manageFileField(ForeignPK pk, String userId, String xmlFieldValue)
+      throws IOException {
+    String fieldValue = null;
+    DocumentType type = DocumentType.form;
     File image = new File(xmlFieldValue);
     if (image.length() > 0L) {
       String fileName = FileUtil.getFilename(xmlFieldValue);
@@ -113,9 +105,6 @@ public class FormTemplateImportExport {
       document.setDocumentType(type);
       fieldValue = AttachmentServiceProvider.getAttachmentService().createAttachment(document, image,
           true).getId();
-    }
-    else {
-      fieldValue = null;
     }
     return fieldValue;
   }

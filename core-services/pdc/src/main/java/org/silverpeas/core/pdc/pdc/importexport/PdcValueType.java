@@ -33,13 +33,22 @@ import java.util.List;
 
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * @author tleroi To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi
+ *
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class PdcValueType extends TreeNode {
 
   private static final long serialVersionUID = -581591562816027206L;
+
+  @XmlElement(name = "pdcValue")
   private List<PdcValueType> listPdcValueType;// liste de PdcValueType
 
   /**

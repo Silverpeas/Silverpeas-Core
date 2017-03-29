@@ -23,109 +23,100 @@
  */
 package org.silverpeas.core.importexport.model;
 
-import org.silverpeas.core.importexport.attachment.AttachmentsType;
-import org.silverpeas.core.importexport.versioning.DocumentsType;
-
-import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
-import org.silverpeas.core.node.importexport.NodePositionsType;
-import org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType;
-import org.silverpeas.core.importexport.publication.PublicationContentType;
-
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.importexport.attachment.AttachmentDetail;
+import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
+import org.silverpeas.core.importexport.publication.PublicationContentType;
+import org.silverpeas.core.importexport.versioning.Document;
+import org.silverpeas.core.node.importexport.NodePositionType;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+
+@XmlRootElement(namespace = "http://www.silverpeas.org/exchange")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PublicationType {
 
+  @XmlAttribute
   private int id = -1;
+  @XmlAttribute
   private String componentId;
+  @XmlElement(name = "publicationHeader")
   private PublicationDetail publicationDetail;
+  @XmlElement(name = "publicationContent")
   private PublicationContentType publicationContentType;
-  private AttachmentsType attachmentsType;
-  private NodePositionsType nodePositionsType;
-  private PdcPositionsType pdcPositionsType;
+  @XmlElementWrapper(name = "attachments")
+  @XmlElement(name = "attachment", namespace = "http://www.silverpeas.org/exchange")
+  private List<AttachmentDetail> attachmentsType;
+  @XmlElementWrapper(name = "documents")
+  @XmlElement(name = "document", namespace = "http://www.silverpeas.org/exchange")
+  private List<Document> documentsType;
+  @XmlElementWrapper(name = "topicPositions")
+  @XmlElement(name = "topicPosition", namespace = "http://www.silverpeas.org/exchange")
+  private List<NodePositionType> nodePositionsType;
+  @XmlElementWrapper(name = "pdcPositions")
+  @XmlElement(name = "pdcPosition", namespace = "http://www.silverpeas.org/exchange")
+  private List<ClassifyPosition> pdcPositionsType;
+  @XmlElement(name = "coordinatesPositions", namespace = "http://www.silverpeas.org/exchange")
   private CoordinatesPositionsType coordinatesPositionsType;
-  private DocumentsType documentsType;
 
-  /**
-   * @return
-   */
+  public PublicationType() {
+  }
+
   public String getComponentId() {
     return componentId;
   }
 
-  /**
-   * @return
-   */
   public int getId() {
     return id;
   }
 
-  /**
-   * @return
-   */
   public PublicationDetail getPublicationDetail() {
     return publicationDetail;
   }
 
-  /**
-   * @param string
-   */
   public void setComponentId(String string) {
     componentId = string;
   }
 
-  /**
-   * @param i
-   */
   public void setId(int i) {
     id = i;
   }
 
-  /**
-   * @param detail
-   */
   public void setPublicationDetail(PublicationDetail detail) {
     publicationDetail = detail;
   }
 
-  /**
-   * @return
-   */
-  public AttachmentsType getAttachmentsType() {
+  public List<AttachmentDetail> getAttachmentsType() {
     return attachmentsType;
   }
 
-  /**
-   * @param type
-   */
-  public void setAttachmentsType(AttachmentsType type) {
+  public void setAttachmentsType(List<AttachmentDetail> type) {
     attachmentsType = type;
   }
 
-  /**
-   * @return
-   */
-  public NodePositionsType getNodePositionsType() {
+  public List<NodePositionType> getNodePositionsType() {
     return nodePositionsType;
   }
 
-  /**
-   * @param type
-   */
-  public void setNodePositionsType(NodePositionsType type) {
+  public void setNodePositionsType(List<NodePositionType> type) {
     nodePositionsType = type;
   }
 
-  public PdcPositionsType getPdcPositionsType() {
+  public List<ClassifyPosition> getPdcPositionsType() {
     return pdcPositionsType;
   }
 
-  public void setPdcPositionsType(PdcPositionsType pdcPositionsType) {
+  public void setPdcPositionsType(List<ClassifyPosition> pdcPositionsType) {
     this.pdcPositionsType = pdcPositionsType;
   }
 
-  /**
-   * @return Returns the publicationContentType.
-   */
   public PublicationContentType getPublicationContentType() {
     return publicationContentType;
   }
@@ -151,11 +142,11 @@ public class PublicationType {
     this.coordinatesPositionsType = coordinatesPositionsType;
   }
 
-  public DocumentsType getDocumentsType() {
+  public List<Document> getDocumentsType() {
     return documentsType;
   }
 
-  public void setDocumentsType(DocumentsType documentsType) {
+  public void setDocumentsType(List<Document> documentsType) {
     this.documentsType = documentsType;
   }
 }

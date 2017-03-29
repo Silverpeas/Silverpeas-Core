@@ -46,8 +46,8 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.model.PublicationType;
-import org.silverpeas.core.importexport.publication.XMLModelContentType;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
@@ -81,7 +81,7 @@ public class HtmlExportPublicationGenerator {
     }
     this.nbThemes = nbThemes + 2;
     if (publicationType.getAttachmentsType() != null) {
-      this.listAttDetail = publicationType.getAttachmentsType().getListAttachmentDetail();
+      this.listAttDetail = publicationType.getAttachmentsType();
     }
     this.wysiwygText = wysiwygText;
     this.urlPub = StringEscapeUtils.escapeHtml4(urlPub).replaceAll("#", "%23");
@@ -134,7 +134,7 @@ public class HtmlExportPublicationGenerator {
   /**
    * @return
    */
-  String toHtmlEnTetePublication() {
+  private String toHtmlEnTetePublication() {
     String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
@@ -152,7 +152,7 @@ public class HtmlExportPublicationGenerator {
     return xhtmlcontainer.toString();
   }
 
-  public String xmlFormToHTML() {
+  private String xmlFormToHTML() {
     PublicationTemplateImpl template;
     try {
       template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
@@ -245,7 +245,7 @@ public class HtmlExportPublicationGenerator {
    * @param attDetail
    * @return
    */
-  public static String toHtmlAttachmentInfos(AttachmentDetail attDetail) {
+  private static String toHtmlAttachmentInfos(AttachmentDetail attDetail) {
     ElementContainer xhtmlcontainer = new ElementContainer();
     String htmlLogicalName = attDetail.getLogicalName();
     String htmlFormatedFileSize =
@@ -264,16 +264,16 @@ public class HtmlExportPublicationGenerator {
       i.addElement(" ");
       i.addElement(attDetail.getTitle());
       li.addElement(i);
-      if (StringUtil.isDefined(attDetail.getInfo())) {
+      if (StringUtil.isDefined(attDetail.getDescription())) {
         li.addElement(" - ");
         i info = new i();
-        info.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
+        info.addElement(HtmlExportGenerator.encode(attDetail.getDescription()));
         li.addElement(info);
       }
-    } else if (attDetail.getInfo() != null) {
+    } else if (attDetail.getDescription() != null) {
       i i = new i();
       li.addElement(" - ");
-      i.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
+      i.addElement(HtmlExportGenerator.encode(attDetail.getDescription()));
       li.addElement(i);
     }
     xhtmlcontainer.addElement(li);
@@ -317,7 +317,7 @@ public class HtmlExportPublicationGenerator {
     return newHtmlText.toString();
   }
 
-  public static String replaceFilesPathForExport(String htmlText) {
+  private static String replaceFilesPathForExport(String htmlText) {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
     int debutPath;

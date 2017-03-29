@@ -24,17 +24,26 @@
 /*
  * Created on 1 mars 2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.silverpeas.core.importexport.wysiwyg;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author sdevolder
  */
+@XmlRootElement(name = "wysiwyg")
+@XmlAccessorType(XmlAccessType.NONE)
 public class WysiwygContentType {
 
+  @XmlAttribute
   private String path;
+
+  public WysiwygContentType() {
+  }
 
   /**
    * @return Returns the path.

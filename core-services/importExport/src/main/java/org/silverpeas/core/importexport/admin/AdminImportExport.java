@@ -39,19 +39,16 @@ public class AdminImportExport {
   /**
    * Méthode récupérant la liste des componentInsts des composants impliqués dans une exportation
    * donnée et destinées au marshalling.
-   * @param listComponentId = liste des id des composants impliqués dans l'esxport en cours
+   * @param listComponentId  liste des id des composants impliqués dans l'esxport en cours
    * @return l'objet ComponentsType complété, null si la liste passée en paramètre est vide
    */
-  public ComponentsType getComponents(List<String> listComponentId) {
-    ComponentsType componentsType = new ComponentsType();
+  public List<ComponentInst> getComponents(List<String> listComponentId) {
     List<ComponentInst> listComponentInst = new ArrayList<ComponentInst>();
     for (String componentId : listComponentId) {
-      ComponentInst componentInst = getAdminController().getComponentInst(
-          componentId);
+      ComponentInst componentInst = getAdminController().getComponentInst(componentId);
       listComponentInst.add(componentInst);
     }
-    componentsType.setListComponentInst(listComponentInst);
-    return componentsType;
+    return listComponentInst;
   }
 
   /**
