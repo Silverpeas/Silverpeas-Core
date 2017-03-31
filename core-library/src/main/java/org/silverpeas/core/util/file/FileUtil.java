@@ -30,16 +30,17 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.OsEnum;
-import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.mail.extractor.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
@@ -65,6 +66,9 @@ public class FileUtil implements MimeTypes {
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final String MIME_TYPE_CACHE_KEY_PREFIX = "FileUtil.getMimeType$$";
+
+  private FileUtil() {
+  }
 
   /**
    * Detects the mime-type of the specified file.
@@ -93,18 +97,15 @@ public class FileUtil implements MimeTypes {
       } catch (Exception ex) {
         SilverLogger.getLogger(FileUtil.class)
             .warn("File exists ({0}), but mime-type has been detected: {1}", file.getName(),
-                ex.getMessage());
+                ex.getMessage(), ex);
       }
     }
-    if (!StringUtil.isDefined(mimeType)) {
+    if (!StringUtil.isDefined(mimeType) && MIME_TYPES_EXTENSIONS != null &&
+        !fileExtension.isEmpty()) {
       try {
-        if (MIME_TYPES_EXTENSIONS != null) {
-          if (!fileExtension.isEmpty()) {
-            mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
-          }
-        }
+        mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
       } catch (final MissingResourceException e) {
-        SilverLogger.getLogger(FileUtil.class).warn("Unknown mime-type: {0}", e.getMessage());
+        SilverLogger.getLogger(FileUtil.class).warn("Unknown mime-type: {0}", e.getMessage(), e);
       }
     }
     if (!StringUtil.isDefined(mimeType)) {
@@ -287,15 +288,16 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Checking that the path doesn't contain relative navigation between pathes.
+   * Asserts that the path doesn't contain relative navigation between pathes.
    *
    * @param path the path to check
-   * @throws RelativeFileAccessException
+   * @throws RelativeFileAccessException when a relative path is detected.
    */
-  public static void checkPathNotRelative(String path) throws RelativeFileAccessException {
+  public static void assertPathNotRelative(String path) throws RelativeFileAccessException {
     String unixPath = FilenameUtils.separatorsToUnix(path);
     if (unixPath != null && (unixPath.contains("../") || unixPath.contains("/.."))) {
-      throw new RelativeFileAccessException();
+      throw new RelativeFileAccessException(
+          SilverpeasExceptionMessages.failureOnGetting("path with relative parts", path));
     }
   }
 
@@ -318,8 +320,8 @@ public class FileUtil implements MimeTypes {
       }
       filter = new SuffixFileFilter(suffixes, IOCase.INSENSITIVE);
     }
-    return FileUtils.listFiles(directory, filter, (recursive ? TrueFileFilter.INSTANCE
-        : FalseFileFilter.INSTANCE));
+    return FileUtils.listFiles(directory, filter,
+        recursive ? TrueFileFilter.INSTANCE : FalseFileFilter.INSTANCE);
   }
 
   /**
@@ -381,9 +383,6 @@ public class FileUtil implements MimeTypes {
       return "";
     }
     return FilenameUtils.getName(fileName);
-  }
-
-  private FileUtil() {
   }
 
   /**
@@ -495,16 +494,4 @@ public class FileUtil implements MimeTypes {
       throw new IllegalStateException("File is outside extraction target directory (security)");
     }
   }
-
-  public static boolean isFileSecure(String fileName, String intendedDir) {
-    boolean result = false;
-    try {
-      validateFilename(fileName, intendedDir);
-      result = true;
-    } catch (Exception e) {
-      SilverLogger.getLogger(FileUtil.class).warn("Security alert on " + fileName);
-    }
-    return result;
-  }
-
 }

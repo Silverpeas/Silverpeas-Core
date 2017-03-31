@@ -23,18 +23,16 @@
  */
 package org.silverpeas.core.questioncontainer.question.service;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.answer.service.AnswerService;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
+import org.silverpeas.core.questioncontainer.answer.service.AnswerService;
 import org.silverpeas.core.questioncontainer.question.dao.QuestionDAO;
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
 import org.silverpeas.core.questioncontainer.question.model.QuestionRuntimeException;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,6 +41,8 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 /**
  * Question Business Manager See QuestionBmBusinessSkeleton for methods documentation
@@ -53,12 +53,17 @@ import java.util.List;
 @Transactional(Transactional.TxType.REQUIRED)
 public class DefaultQuestionService implements QuestionService {
 
+  private static final String QUESTION_EX_MSG = "question";
+
   @Inject
   private AnswerService currentAnswerService;
   @Inject
   private QuestionResultService currentQuestionResultService;
 
-  public DefaultQuestionService() {
+  /**
+   * Hidden constructor.
+   */
+  protected DefaultQuestionService() {
   }
 
   @Override
@@ -73,27 +78,19 @@ public class DefaultQuestionService implements QuestionService {
       question.setAnswers(answers);
       return question;
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.getQuestion()",
-          SilverpeasRuntimeException.ERROR, "question.GETTING_QUESTION_FAILED", e);
+      throw new QuestionRuntimeException(failureOnGetting(QUESTION_EX_MSG, questionPK.toString()), e);
     } finally {
       DBUtil.close(con);
     }
   }
 
   private Collection<Answer> getAnswersByQuestionPK(QuestionPK questionPK) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.getAnswersByQuestionPK()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK);
-    Collection<Answer> answers = currentAnswerService.getAnswersByQuestionPK(new ForeignPK(questionPK));
-    return answers;
+    return currentAnswerService.getAnswersByQuestionPK(new ForeignPK(questionPK));
   }
 
   @Override
   @Transactional(Transactional.TxType.SUPPORTS)
   public Collection<Question> getQuestionsByFatherPK(QuestionPK questionPK, String fatherId) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.getQuestionsByFatherPK()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK + ", fatherId = " + fatherId);
     Connection con = getConnection();
     try {
       Collection<Question> questions =
@@ -107,8 +104,7 @@ public class DefaultQuestionService implements QuestionService {
       }
       return result;
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.getQuestionsByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "question.GETTING_QUESTIONS_FAILED", e);
+      throw new QuestionRuntimeException(failureOnGetting(QUESTION_EX_MSG, questionPK), e);
     } finally {
       DBUtil.close(con);
     }
@@ -116,15 +112,14 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public QuestionPK createQuestion(Question question) {
-
     Connection con = getConnection();
     try {
       QuestionPK questionPK = QuestionDAO.createQuestion(con, question);
       currentAnswerService.addAnswersToAQuestion(question.getAnswers(), new ForeignPK(questionPK));
       return questionPK;
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.createQuestion()",
-          SilverpeasRuntimeException.ERROR, "question.CREATING_QUESTION_FAILED", e);
+      throw new QuestionRuntimeException(
+          failureOnAdding("question on father", question.getFatherId()), e);
     } finally {
       DBUtil.close(con);
     }
@@ -144,9 +139,6 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void deleteQuestionsByFatherPK(QuestionPK questionPK, String fatherId) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.deleteQuestionsByFatherPK()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK + ", fatherId = " + fatherId);
     Connection con = getConnection();
     AnswerService answerService = currentAnswerService;
     QuestionResultService questionResultService = currentQuestionResultService;
@@ -163,8 +155,7 @@ public class DefaultQuestionService implements QuestionService {
       // delete all questions
       QuestionDAO.deleteQuestionsByFatherPK(con, questionPK, fatherId);
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.deleteQuestionsByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "question.DELETING_QUESTIONS_FAILED", e);
+      throw new QuestionRuntimeException(failureOnDeleting(QUESTION_EX_MSG, questionPK), e);
     } finally {
       DBUtil.close(con);
     }
@@ -181,8 +172,7 @@ public class DefaultQuestionService implements QuestionService {
       // delete question
       QuestionDAO.deleteQuestion(con, questionPK);
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.deleteQuestion()",
-          SilverpeasRuntimeException.ERROR, "question.DELETING_QUESTION_FAILED", e);
+      throw new QuestionRuntimeException(failureOnDeleting(QUESTION_EX_MSG, questionPK), e);
     } finally {
       DBUtil.close(con);
     }
@@ -197,15 +187,11 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void updateQuestionHeader(Question questionDetail) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.updateQuestionHeader()", "root.MSG_GEN_ENTER_METHOD",
-            "questionDetail = " + questionDetail);
     Connection con = getConnection();
     try {
       QuestionDAO.updateQuestion(con, questionDetail);
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.updateQuestion()",
-          SilverpeasRuntimeException.ERROR, "question.UPDATING_QUESTION_FAILED", e);
+      throw new QuestionRuntimeException(failureOnUpdate(QUESTION_EX_MSG, questionDetail.getPK()), e);
     } finally {
       DBUtil.close(con);
     }
@@ -213,26 +199,17 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void updateAnswersToAQuestion(Question questionDetail) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.updateAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "questionDetail = " + questionDetail);
     deleteAnswersToAQuestion(questionDetail.getPK());
     createAnswersToAQuestion(questionDetail);
   }
 
   @Override
   public void updateAnswerToAQuestion(Answer answerDetail) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.updateAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "answerDetail = " + answerDetail);
     currentAnswerService.updateAnswerToAQuestion(answerDetail.getQuestionPK(), answerDetail);
   }
 
   @Override
   public void deleteAnswersToAQuestion(QuestionPK questionPK) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.deleteAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK);
     Collection<Answer> answers = getAnswersByQuestionPK(questionPK);
     for (final Answer answer : answers) {
       AnswerPK answerPKToDelete = answer.getPK();
@@ -242,17 +219,11 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void deleteAnswerToAQuestion(AnswerPK answerPK, QuestionPK questionPK) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.deleteAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK + ", answerPK = " + answerPK);
     currentAnswerService.deleteAnswerToAQuestion(new ForeignPK(questionPK), answerPK.getId());
   }
 
   @Override
   public void createAnswersToAQuestion(Question questionDetail) {
-    SilverTrace
-        .info("question", "DefaultQuestionService.createAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "questionDetail = " + questionDetail);
     Collection<Answer> answers = questionDetail.getAnswers();
     for (Answer answer : answers) {
       createAnswerToAQuestion(answer, questionDetail.getPK());
@@ -269,8 +240,7 @@ public class DefaultQuestionService implements QuestionService {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new QuestionRuntimeException("DefaultQuestionService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new QuestionRuntimeException(e);
     }
   }
 }

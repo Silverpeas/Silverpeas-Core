@@ -321,8 +321,8 @@ public class PdcSearchRequestRouterHelper {
     if (StringUtil.isDefined(index)) {
       pdcSC.setIndexOfFirstItemToDisplay(index);
     }
-    request.setAttribute("NbItemsPerPage", Integer.valueOf(pdcSC.getNbItemsPerPage()));
-    request.setAttribute("FirstItemIndex", Integer.valueOf(pdcSC.getIndexOfFirstItemToDisplay()));
+    request.setAttribute("NbItemsPerPage", pdcSC.getNbItemsPerPage());
+    request.setAttribute("FirstItemIndex", pdcSC.getIndexOfFirstItemToDisplay());
 
     Value value = pdcSC.getCurrentValue();
     request.setAttribute("SelectedValue", value);

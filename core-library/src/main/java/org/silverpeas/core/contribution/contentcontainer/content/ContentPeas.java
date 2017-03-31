@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -68,7 +69,7 @@ public class ContentPeas {
     } else if ("bookmark".equals(sContentDescriptorPath)) {
       this.init("bookmark", "org.silverpeas.components.websites.WebSitesContentManager");
     } else if ("infoLetter".equals(sContentDescriptorPath)) {
-      this.init("infoLetter", "org.silverpeas.components.infoLetter.InfoLetterContentManager");
+      this.init("infoLetter", "org.silverpeas.components.infoletter.InfoLetterContentManager");
     } else if ("webSites".equals(sContentDescriptorPath)) {
       this.init("webSites", "org.silverpeas.components.websites.WebSitesContentManager");
     } else if ("gallery".equals(sContentDescriptorPath)) {
@@ -92,11 +93,15 @@ public class ContentPeas {
   }
 
   @SuppressWarnings("unchecked")
-  public ContentInterface getContentInterface() throws Exception {
+  public ContentInterface getContentInterface() throws SilverpeasException {
     if (contentInterface == null) {
-      Class<ContentInterface> contentInterfaceClass =
-          (Class<ContentInterface>) Class.forName(this.getContentInterfaceClass());
-      this.contentInterface = ServiceProvider.getService(contentInterfaceClass);
+      try {
+        Class<ContentInterface> contentInterfaceClass =
+            (Class<ContentInterface>) Class.forName(this.getContentInterfaceClass());
+        this.contentInterface = ServiceProvider.getService(contentInterfaceClass);
+      } catch (ClassNotFoundException e) {
+        throw new SilverpeasException(e);
+      }
     }
 
     return contentInterface;

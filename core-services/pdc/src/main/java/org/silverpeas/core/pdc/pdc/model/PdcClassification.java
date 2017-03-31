@@ -20,10 +20,12 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -85,6 +87,13 @@ public class PdcClassification
   private String instanceId = "";
   private String contentId = null;
   private String nodeId = null;
+
+  /**
+   * Creates an empty classification on the PdC, ready to be completed for a given content published
+   * in a given component instance. By default, a classification of a content is modifiable.
+   */
+  protected PdcClassification() {
+  }
 
   /**
    * Creates an empty predefined classification for the contents that will published in the
@@ -163,7 +172,7 @@ public class PdcClassification
     return this;
   }
 
-  public PdcClassification ofContent(String contentId) {
+  private PdcClassification ofContent(String contentId) {
     if (isDefined(contentId)) {
       this.contentId = contentId;
       this.nodeId = null;
@@ -278,13 +287,6 @@ public class PdcClassification
   }
 
   /**
-   * Creates an empty classification on the PdC, ready to be completed for a given content published
-   * in a given component instance. By default, a classification of a content is modifiable.
-   */
-  protected PdcClassification() {
-  }
-
-  /**
    * Sets the positions on the PdC for this classification.
    *
    * @param thePositions the position to set in this classification.
@@ -343,6 +345,33 @@ public class PdcClassification
           SilverpeasException.ERROR, "root.EX_NO_MESSAGES", ex);
     }
     return classifyPositions;
+  }
+
+  /**
+   * Classifies the specified content on the PdC with this classification. If the content
+   * is already classified, then the given classification replaces the existing one. The content
+   * must exist in Silverpeas before being classified. If an error occurs while classifying the
+   * content, a runtime exception PdcRuntimeException is thrown.
+   * Subscribers are notified if at least one of their subscription matches given classification.
+   * @param content the Silverpeas content to classify.
+   */
+  public void classifyContent(final SilverpeasContent content) {
+    classifyContent(content, true);
+  }
+
+  /**
+   * Classifies the specified content on the PdC with this classification. If the content
+   * is already classified, then the given classification replaces the existing one. The content
+   * must exist in Silverpeas before being classified. If an error occurs while classifying the
+   * content, a runtime exception PdcRuntimeException is thrown.
+   * @param content the Silverpeas content to classify.
+   * @param alertSubscribers indicates if subscribers must be notified or not
+   */
+  public void classifyContent(final SilverpeasContent content, boolean alertSubscribers) {
+    if (!isEmpty()) {
+      PdcClassificationService service = PdcClassificationService.get();
+      service.classifyContent(content, this, alertSubscribers);
+    }
   }
 
   private boolean alreadyExists(final PdcPosition pdcPosition) {

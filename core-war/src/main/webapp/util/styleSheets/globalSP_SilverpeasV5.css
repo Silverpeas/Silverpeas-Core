@@ -6061,6 +6061,12 @@ ul.sm-map {
   margin: 2px 0;
 }
 
+#pdcFrame .pdcFrameGroup .sp_button.disabled:hover {
+  color: #B9B9B9;
+  background-color: #EAEAEA;
+  cursor: default;
+}
+
 #pdcFrame .pdcFrameGroup #razButton {
   margin: 2px 0;
   margin-left: 5px;

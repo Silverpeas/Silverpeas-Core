@@ -125,7 +125,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         ThesaurusHelper.setJargonInfoInRequest(pdcSC, request);
 
         destination = getDestinationDuringSearch(pdcSC, request);
-      } else if (function.equals("Pagination")) {
+      } else if ("Pagination".equals(function)) {
         processSelection(pdcSC, request);
 
         String index = request.getParameter("Index");
@@ -199,37 +199,38 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         // Optional. Managing direct search on one axis.
         String axisId = request.getParameter("AxisId");
-        String valueId = request.getParameter("ValueId"); // looks like /0/2/
+        // looks like /0/2/
+        String valueId = request.getParameter("ValueId");
         if (StringUtil.isDefined(axisId) && StringUtil.isDefined(valueId)) {
           SearchCriteria criteria = new SearchCriteria(Integer.parseInt(axisId), valueId);
           pdcSC.getSearchContext().addCriteria(criteria);
         }
 
-        pdcSC.search(axisValues);
+        pdcSC.search(axisValues, isOnlyInPdcSearch(request));
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
-            && !pdcSC.getResultPage().equals("globalResult")) {
+            && !"globalResult".equals(pdcSC.getResultPage())) {
           PdcSearchRequestRouterHelper.processItemsPagination(pdcSC, request);
         } else {
           setDefaultDataToNavigation(request, pdcSC);
         }
         destination = getDestinationForResults(pdcSC);
-      } else if (function.equals("LastResults")) {
+      } else if ("LastResults".equals(function)) {
 
         setDefaultDataToNavigation(request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
-      } else if (function.equals("XMLSearchViewTemplate")) {
+      } else if ("XMLSearchViewTemplate".equals(function)) {
         String templateFileName = request.getParameter("xmlSearchSelectedForm");
 
         pdcSC.setXmlTemplate(templateFileName);
 
         destination = doGlobalView(pdcSC, request);
-      } else if (function.equals("XMLRestrictSearch")) {
+      } else if ("XMLRestrictSearch".equals(function)) {
         PdcSearchRequestRouterHelper.saveUserChoices(pdcSC, request);
 
         destination = doGlobalView(pdcSC, request);
-      } else if (function.equals("XMLSearch")) {
+      } else if ("XMLSearch".equals(function)) {
         pdcSC.getQueryParameters().clearXmlQuery();
 
         List<FileItem> items = getRequestItems(request);
@@ -267,21 +268,23 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         }
 
         // launch the search
-        pdcSC.search(null);
+        pdcSC.search(null, isOnlyInPdcSearch(request));
 
         pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
 
         setDefaultDataToNavigation(request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
-      } else if (function.startsWith("ToUserPanel")) {// utilisation de userPanel et userPanelPeas
+      } else if (function.startsWith("ToUserPanel")) {
+        // utilisation de userPanel et userPanelPeas
         try {
           destination = pdcSC.initUserPanel();
         } catch (Exception e) {
           SilverTrace.warn("pdcPeas", "PdcPeasRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-      } else if (function.startsWith("FromUserPanel")) {// récupération des valeurs de userPanel
+      } else if (function.startsWith("FromUserPanel")) {
+        // récupération des valeurs de userPanel
         // par userPanelPeas
         Selection sel = pdcSC.getSelection();
         // Get user selected in User Panel
@@ -367,7 +370,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         searchParameters.setSpaceIdAndInstanceId(curSpaceId, strComponentIds);
         pdcSC.buildCustomComponentListWhereToSearch(curSpaceId, componentIds);
 
-        pdcSC.search();
+        pdcSC.search(isOnlyInPdcSearch(request));
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")) {
@@ -393,6 +396,15 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  /**
+   * Indicates if the search has to be done only into PDC.
+   * @param request the current request.
+   * @return true if the search context concerns only PDC, false otherwise.
+   */
+  private boolean isOnlyInPdcSearch(final HttpServletRequest request) {
+    return StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"));
   }
 
   /**
@@ -493,7 +505,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_EXPERT) {
       HttpSession session = request.getSession(true);
       LookHelper helper = LookHelper.getLookHelper(session);
-      if (!StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
+      if (!isOnlyInPdcSearch(request)) {
         // Context is different of PDC frame, always process PDC axis
         initializePdcAxis(pdcSC, request);
       } else {
@@ -572,7 +584,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
 
     // spelling words
-    request.setAttribute("spellingWords", pdcSC.getSpellingwords());
+    request.setAttribute("spellingWords", pdcSC.getSpellingWords());
 
     request.setAttribute("ResultsDisplay", Integer.valueOf(pdcSC.getCurrentResultsDisplay()));
     request.setAttribute("ResultPageId", pdcSC.getResultPageId());
@@ -683,7 +695,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
       }
 
-      if (StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
+      if (isOnlyInPdcSearch(request)) {
         // Exclusive case to display pertinent classification axis in PDC frame
         // Advanced search items are useless in this case
         setAdvancedSearchItems = false;

@@ -24,14 +24,12 @@
 
 package org.silverpeas.core.questioncontainer.container.dao;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.container.model.Comment;
 import org.silverpeas.core.questioncontainer.container.model.CommentPK;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -81,9 +79,15 @@ public class QuestionContainerDAO {
   private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   // if beginDate is null, it will be replace in database with it
-  private static final String nullBeginDate = "0000/00/00";
+  private static final String NULL_BEGIN_DATE = "0000/00/00";
   // if endDate is null, it will be replace in database with it
-  private static final String nullEndDate = "9999/99/99";
+  private static final String NULL_END_DATE = "9999/99/99";
+
+  /**
+   * Hidden constructor.
+   */
+  private QuestionContainerDAO() {
+  }
 
   /**
    * Transform a ResultSet into a QuestionContainerHeader object
@@ -102,12 +106,12 @@ public class QuestionContainerDAO {
     String creationDate = rs.getString(6);
     String beginDate = rs.getString(7);
 
-    if (beginDate.equals(nullBeginDate)) {
+    if (beginDate.equals(NULL_BEGIN_DATE)) {
       beginDate = null;
     }
     String endDate = rs.getString(8);
 
-    if (endDate.equals(nullEndDate)) {
+    if (endDate.equals(NULL_END_DATE)) {
       endDate = null;
     }
     int isClosed = rs.getInt(9);
@@ -122,18 +126,16 @@ public class QuestionContainerDAO {
     int nbParticipationsBeforeSolution = rs.getInt(13);
     int maxTime = rs.getInt(14);
     String instanceId = rs.getString(15);
-    boolean anonymous = (rs.getInt(16) == 1);
+    boolean anonymous = rs.getInt(16) == 1;
     int resultMode = rs.getInt(17);
     int resultView = rs.getInt(18);
 
     questionContainerPK.setComponentName(instanceId);
 
-    QuestionContainerHeader result =
-        new QuestionContainerHeader(new QuestionContainerPK(id, questionContainerPK), title,
-            description, comment, creatorId, creationDate, beginDate, endDate, closed, nbVoters,
-            nbQuestionsPage, nbMaxParticipations, nbParticipationsBeforeSolution, maxTime,
-            anonymous, resultMode, resultView);
-    return result;
+    return new QuestionContainerHeader(new QuestionContainerPK(id, questionContainerPK), title,
+        description, comment, creatorId, creationDate, beginDate, endDate, closed, nbVoters,
+        nbQuestionsPage, nbMaxParticipations, nbParticipationsBeforeSolution, maxTime,
+        anonymous, resultMode, resultView);
   }
 
   /**
@@ -433,9 +435,7 @@ public class QuestionContainerDAO {
       /* Retrieve next sequence identifier */
       newId = DBUtil.getNextId(questionContainerHeader.getPK().getTableName(), "qcId");
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "QuestionContainerDAO.createQuestionContainerHeader()", SilverpeasRuntimeException.ERROR,
-          "root.EX_GET_NEXTID_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
 
     QuestionContainerPK questionContainerPK = questionContainerHeader.getPK();
@@ -453,13 +453,13 @@ public class QuestionContainerDAO {
       prepStmt.setString(5, questionContainerHeader.getCreatorId());
       prepStmt.setString(6, formatter.format(new java.util.Date()));
       if (questionContainerHeader.getBeginDate() == null) {
-        prepStmt.setString(7, nullBeginDate);
+        prepStmt.setString(7, NULL_BEGIN_DATE);
       } else {
         prepStmt.setString(7, questionContainerHeader.getBeginDate());
       }
       if ((questionContainerHeader.getEndDate() == null) ||
           (questionContainerHeader.getEndDate().length() < 10)) {
-        prepStmt.setString(8, nullEndDate);
+        prepStmt.setString(8, NULL_END_DATE);
       } else {
         prepStmt.setString(8, questionContainerHeader.getEndDate());
       }
@@ -509,12 +509,12 @@ public class QuestionContainerDAO {
       prepStmt.setString(2, questionContainerHeader.getDescription());
       prepStmt.setString(3, questionContainerHeader.getComment());
       if (questionContainerHeader.getBeginDate() == null) {
-        prepStmt.setString(4, nullBeginDate);
+        prepStmt.setString(4, NULL_BEGIN_DATE);
       } else {
         prepStmt.setString(4, questionContainerHeader.getBeginDate());
       }
       if (questionContainerHeader.getEndDate() == null) {
-        prepStmt.setString(5, nullEndDate);
+        prepStmt.setString(5, NULL_END_DATE);
       } else {
         prepStmt.setString(5, questionContainerHeader.getEndDate());
       }
@@ -568,10 +568,6 @@ public class QuestionContainerDAO {
    */
   public static void addAVoter(Connection con, QuestionContainerPK questionContainerPK)
       throws SQLException {
-    SilverTrace
-        .info("questionContainer", "QuestionContainerDAO.addAVoter()", "root.MSG_GEN_ENTER_METHOD",
-            "questionContainerPK = " + questionContainerPK);
-
     String updateStatement =
         "update " + questionContainerPK.getTableName() + " set qcNbVoters = qcNbVoters + 1 " +
             " where qcId = ? ";
@@ -599,10 +595,9 @@ public class QuestionContainerDAO {
     String id = Integer.toString(rs.getInt(1));
     String userId = rs.getString(3);
     String comment = rs.getString(4);
-    boolean isAnonymous = (rs.getInt(5) == 1);
+    boolean isAnonymous = rs.getInt(5) == 1;
     String date = rs.getString(6);
-    Comment result = new Comment(new CommentPK(id, qcPK), qcPK, userId, comment, isAnonymous, date);
-    return result;
+    return new Comment(new CommentPK(id, qcPK), qcPK, userId, comment, isAnonymous, date);
   }
 
   /**
@@ -612,9 +607,6 @@ public class QuestionContainerDAO {
    * @throws SQLException
    */
   public static void addComment(Connection con, Comment comment) throws SQLException {
-    SilverTrace
-        .info("questionContainer", "QuestionContainerDAO.addComment()", "root.MSG_GEN_ENTER_METHOD",
-            "comment = " + comment);
     QuestionContainerPK questionContainerPK = comment.getQuestionContainerPK();
     CommentPK commentPK = new CommentPK("unknown", questionContainerPK);
     int newId;
@@ -625,8 +617,7 @@ public class QuestionContainerDAO {
     try {
       newId = DBUtil.getNextId(commentPK.getTableName(), "commentId");
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("QuestionContainerDAO.addComment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
 
     PreparedStatement prepStmt = null;

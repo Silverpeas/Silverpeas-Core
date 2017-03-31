@@ -24,33 +24,13 @@
 
 package org.silverpeas.core.questioncontainer.answer.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class AnswerRuntimeException extends SilverpeasRuntimeException {
-
   private static final long serialVersionUID = -7584480862051850784L;
 
-  public AnswerRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AnswerRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public AnswerRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public AnswerRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AnswerRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "answer";
-  }
-
 }

@@ -48,6 +48,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor {
 
+  private static final int PRIORITY = MAX_PRIORITY - 20;
   private static List<Pattern> ATTACHMENT_ID_FROM_LINK_PATTERNS = Arrays
       .asList(Pattern.compile("(?i)/attachmentId/([a-z\\-0-9]+)/"),
           Pattern.compile("(?i)/File/([a-z\\-0-9]+)"));
@@ -107,6 +108,6 @@ public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor 
 
   @Override
   public int getPriority() {
-    return 100;
+    return PRIORITY;
   }
 }

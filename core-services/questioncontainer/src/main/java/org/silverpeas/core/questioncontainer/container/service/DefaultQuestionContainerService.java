@@ -24,42 +24,39 @@
 
 package org.silverpeas.core.questioncontainer.container.service;
 
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.questioncontainer.container.dao.QuestionContainerDAO;
-import org.silverpeas.core.questioncontainer.container.model.Comment;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.answer.service.AnswerService;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.dao.AnswerDAO;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.questioncontainer.question.service.QuestionService;
+import org.silverpeas.core.questioncontainer.answer.service.AnswerService;
+import org.silverpeas.core.questioncontainer.container.dao.QuestionContainerDAO;
+import org.silverpeas.core.questioncontainer.container.model.Comment;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerRuntimeException;
 import org.silverpeas.core.questioncontainer.question.dao.QuestionDAO;
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
-import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
+import org.silverpeas.core.questioncontainer.question.service.QuestionService;
 import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
-import org.silverpeas.core.questioncontainer.score.service.ScoreService;
+import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
 import org.silverpeas.core.questioncontainer.score.dao.ScoreDAO;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.questioncontainer.score.service.ScoreService;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -74,6 +71,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
+
 /**
  * Stateless service to manage question container.
  * @author neysseri
@@ -83,16 +82,20 @@ import java.util.Map;
 public class DefaultQuestionContainerService
     implements QuestionContainerService, ComponentInstanceDeletion {
 
+  // if beginDate is null, it will be replace in database with it
+  private static final String NULL_BEGIN_DATE = "0000/00/00";
+  // if endDate is null, it will be replace in database with it
+  private static final String NULL_END_DATE = "9999/99/99";
+  private static final String PENALTY_CLUE = "PC";
+  private static final String OPENED_ANSWER = "OA";
+  private static final float PERCENT_MULTIPLICATOR = 100f;
+
   private QuestionService questionService;
   private QuestionResultService questionResultService;
   private AnswerService answerService;
   private ScoreService scoreService;
-  // if beginDate is null, it will be replace in database with it
-  private static final String nullBeginDate = "0000/00/00";
-  // if endDate is null, it will be replace in database with it
-  private static final String nullEndDate = "9999/99/99";
 
-  public DefaultQuestionContainerService() {
+  protected DefaultQuestionContainerService() {
     questionService = QuestionService.get();
     questionResultService = QuestionResultService.get();
     answerService = AnswerService.get();
@@ -102,23 +105,16 @@ public class DefaultQuestionContainerService
   @Override
   public Collection<QuestionContainerHeader> getQuestionContainerHeaders(
       List<QuestionContainerPK> pks) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getQuestionContainerHeaders()",
-            "root.MSG_GEN_ENTER_METHOD", "pks = " + pks.toString());
     try (Connection con = getConnection()) {
       return QuestionContainerDAO.getQuestionContainers(con, pks);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainerHeaders()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   private Collection<QuestionContainerHeader> setNbMaxPoints(
       Collection<QuestionContainerHeader> questionContainerHeaders) {
 
-    QuestionService questionService = this.questionService;
     Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
     List<QuestionContainerHeader> result = new ArrayList<>();
 
@@ -131,9 +127,7 @@ public class DefaultQuestionContainerService
         questions =
             questionService.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().getId());
       } catch (Exception e) {
-        throw new QuestionContainerRuntimeException(
-            "DefaultQuestionContainerService.setNbMaxPoints()", SilverpeasRuntimeException.ERROR,
-            "questionContainer.SETTING_NB_MAX_POINTS_TO_QUESTIONCONTAINER_FAILED", e);
+        throw new QuestionContainerRuntimeException(e);
       }
       for (Question question : questions) {
         nbMaxPoints += question.getNbPointsMax();
@@ -147,15 +141,13 @@ public class DefaultQuestionContainerService
   private QuestionContainerHeader setNbMaxPoint(QuestionContainerHeader questionContainerHeader) {
 
     int nbMaxPoints = 0;
-    QuestionService questionService = this.questionService;
     Collection<Question> questions;
     QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
     try {
       questions = questionService.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().
           getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.setNbMaxPoint()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     for (Question question : questions) {
       nbMaxPoints += question.getNbPointsMax();
@@ -172,28 +164,19 @@ public class DefaultQuestionContainerService
           QuestionContainerDAO.getNotClosedQuestionContainers(con, questionContainerPK);
       return this.setNbMaxPoints(questionContainerHeaders);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getNotClosedQuestionContainers()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_NOT_CLOSED_QUESTIONCONTAINERS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<QuestionContainerHeader> getOpenedQuestionContainers(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getOpenedQuestionContainers()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> result =
           QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
       return setNbMaxPoints(result);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getOpenedQuestionContainers()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -211,20 +194,13 @@ public class DefaultQuestionContainerService
       }
       return result;
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getOpenedQuestionContainersAndUserScores()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<QuestionContainerHeader> getQuestionContainersWithScores(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace.
-        info("questionContainer",
-            "DefaultQuestionContainerService.getQuestionContainersWithScores()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
@@ -238,10 +214,7 @@ public class DefaultQuestionContainerService
       }
       return result;
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainersWithScores()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINERS_AND_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -265,76 +238,44 @@ public class DefaultQuestionContainerService
       }
       return result;
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainersWithUserScores()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<QuestionContainerHeader> getClosedQuestionContainers(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getClosedQuestionContainers()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> result =
           QuestionContainerDAO.getClosedQuestionContainers(con, questionContainerPK);
       return setNbMaxPoints(result);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getClosedQuestionContainers()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_CLOSED_QUESTIONCONTAINERS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<QuestionContainerHeader> getInWaitQuestionContainers(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getInWaitQuestionContainers()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> result =
           QuestionContainerDAO.getInWaitQuestionContainers(con, questionContainerPK);
       return setNbMaxPoints(result);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getInWaitQuestionContainers()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_INWAIT_QUESTIONCONTAINERS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<ScoreDetail> getUserScoresByFatherId(QuestionContainerPK questionContainerPK,
       String userId) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getUserScoresByFatherId()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
       scores = scoreService.getUserScoresByFatherId(scorePK, questionContainerPK.getId(), userId);
-      if (scores != null) {
-        SilverTrace
-            .info("questionContainer", "DefaultQuestionContainerService.getUserScoresByFatherId()",
-                "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
-      } else {
-        SilverTrace
-            .info("questionContainer", "DefaultQuestionContainerService.getUserScoresByFatherId()",
-                "root.MSG_GEN_PARAM_VALUE", "Le score : null");
-      }
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getUserScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_USER_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return scores;
   }
@@ -342,86 +283,47 @@ public class DefaultQuestionContainerService
   @Override
   public Collection<ScoreDetail> getBestScoresByFatherId(QuestionContainerPK questionContainerPK,
       int nbBestScores) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getBestScoresByFatherId()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "questionContainerPK = " + questionContainerPK + ", nbBestScores = " + nbBestScores);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     try {
       scores = scoreService.getBestScoresByFatherId(scorePK, nbBestScores, questionContainerPK.getId());
       return scores;
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getBestScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_BEST_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<ScoreDetail> getWorstScoresByFatherId(QuestionContainerPK questionContainerPK,
       int nbScores) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getWorstScoresByFatherId()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "questionContainerPK = " + questionContainerPK + ", nbScores = " + nbScores);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     try {
       scores = scoreService.getWorstScoresByFatherId(scorePK, nbScores, questionContainerPK.getId());
       return scores;
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getWorstScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_WORST_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK) {
 
-    Collection<ScoreDetail> scores;
-    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     try {
-      scores = scoreService.getScoresByFatherId(scorePK, questionContainerPK.getId());
-      if (scores != null) {
-        SilverTrace
-            .info("questionContainer", "DefaultQuestionContainerService.getScoresByFatherId()",
-                "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
-      } else {
-        SilverTrace
-            .info("questionContainer", "DefaultQuestionContainerService.getScoresByFatherId()",
-                "root.MSG_GEN_PARAM_VALUE", "Le score : null");
-      }
-      return scores;
+      return scoreService.getScoresByFatherId(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getScoresByFatherId()", SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getAverageScoreByFatherId()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    float averageScore;
-    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     try {
-      averageScore = scoreService.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
-      return averageScore;
+      return scoreService.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getAverageScoreByFatherId()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_AVERAGE_SCORE_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -435,7 +337,6 @@ public class DefaultQuestionContainerService
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
-    QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     int nbMaxPoints = 0;
     try {
@@ -445,10 +346,7 @@ public class DefaultQuestionContainerService
       }
       questionContainerHeader.setNbMaxPoints(nbMaxPoints);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
     userVotes = getUserVotesToQuestionContainer(userId, questionContainerPK);
     comments = getComments(questionContainerPK);
@@ -459,21 +357,11 @@ public class DefaultQuestionContainerService
   @Override
   public QuestionContainerHeader getQuestionContainerHeader(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.getQuestionContainerHeader()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    QuestionContainerHeader questionContainerHeader = null;
     try (Connection con = getConnection()) {
-
-      questionContainerHeader =
-          QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
+      return QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
-    return questionContainerHeader;
   }
 
   @Override
@@ -486,8 +374,6 @@ public class DefaultQuestionContainerService
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
-    QuestionService questionService = this.questionService;
-    QuestionResultService questionResultService = this.questionResultService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     int nbMaxPoints = 0;
 
@@ -501,10 +387,7 @@ public class DefaultQuestionContainerService
       }
       questionContainerHeader.setNbMaxPoints(nbMaxPoints);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getQuestionContainerByParticipationId()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
 
     comments = getComments(questionContainerPK);
@@ -515,9 +398,6 @@ public class DefaultQuestionContainerService
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void closeQuestionContainer(QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.closeQuestionContainer()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     try (Connection con = getConnection()) {
 
       // begin PDC integration
@@ -527,10 +407,7 @@ public class DefaultQuestionContainerService
       // end PDC integration
       QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.closeQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.CLOSING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -546,10 +423,7 @@ public class DefaultQuestionContainerService
       // end PDC integration
       QuestionContainerDAO.openQuestionContainer(con, questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.openQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.OPENING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -559,14 +433,10 @@ public class DefaultQuestionContainerService
 
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = this.scoreService;
     try {
       nbVoters = scoreService.getNbVotersByFatherId(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getNbVotersByQuestionContainer()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_NUMBER_OF_VOTES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return nbVoters;
   }
@@ -580,10 +450,6 @@ public class DefaultQuestionContainerService
     AnswerPK answerPK;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     QuestionResult result;
-    QuestionResultService questionResultService = this.questionResultService;
-    AnswerService answerService = this.answerService;
-    QuestionService questionService = this.questionService;
-    ScoreService scoreService = this.scoreService;
     Answer answer;
     int participationId =
         scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId) + 1;
@@ -599,10 +465,7 @@ public class DefaultQuestionContainerService
       try {
         question = questionService.getQuestion(questionPK);
       } catch (Exception e) {
-        throw new QuestionContainerRuntimeException(
-            "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-            SilverpeasRuntimeException.ERROR,
-            "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
+        throw new QuestionContainerRuntimeException(e);
       }
 
       List<String> answers = reply.get(questionId);
@@ -614,25 +477,27 @@ public class DefaultQuestionContainerService
       String cluePenalty = answers.get(0);
       int penaltyValue = 0;
 
-      if (cluePenalty.startsWith("PC")) {
+      if (cluePenalty.startsWith(PENALTY_CLUE)) {
         // It's a clue penalty field
-        penaltyValue = Integer.parseInt(cluePenalty.substring(2, cluePenalty.length()));
+        penaltyValue =
+            Integer.parseInt(cluePenalty.substring(PENALTY_CLUE.length(), cluePenalty.length()));
         vectorBegin = 1;
       }
 
       // Treatment of the last vector element to know if the answer is opened
       String openedAnswer = answers.get(vectorSize - 1);
 
-      if (openedAnswer.startsWith("OA")) {
+      if (openedAnswer.startsWith(OPENED_ANSWER)) {
         // It's an open answer, Fetch the matching answerId
-        answerId = answers.get(vectorSize - 2);
-        openedAnswer = openedAnswer.substring(2, openedAnswer.length());
+        final int answerIdIndex = vectorSize - 2;
+        answerId = answers.get(answerIdIndex);
+        openedAnswer = openedAnswer.substring(OPENED_ANSWER.length(), openedAnswer.length());
 
         // User Score for this question
         answer = question.getAnswer(answerId);
         questionUserScore += answer.getNbPoints() - penaltyValue;
 
-        newVectorSize = vectorSize - 2;
+        newVectorSize = answerIdIndex;
         answerPK = new AnswerPK(answerId, questionContainerPK);
         result =
             new QuestionResult(null, new ForeignPK(questionPK), answerPK, userId, openedAnswer);
@@ -641,19 +506,13 @@ public class DefaultQuestionContainerService
         try {
           questionResultService.setQuestionResultToUser(result);
         } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(
-              "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-              SilverpeasRuntimeException.ERROR,
-              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
+          throw new QuestionContainerRuntimeException(e);
         }
         try {
           // Add this vote to the corresponding answer
           answerService.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
         } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(
-              "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-              SilverpeasRuntimeException.ERROR,
-              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
+          throw new QuestionContainerRuntimeException(e);
         }
       }
 
@@ -668,19 +527,13 @@ public class DefaultQuestionContainerService
         try {
           questionResultService.setQuestionResultToUser(result);
         } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(
-              "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-              SilverpeasRuntimeException.ERROR,
-              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
+          throw new QuestionContainerRuntimeException(e);
         }
         try {
           // Add this vote to the corresponding answer
           answerService.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
         } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(
-              "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-              SilverpeasRuntimeException.ERROR,
-              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
+          throw new QuestionContainerRuntimeException(e);
         }
       }
       if (question.getNbPointsMax() < questionUserScore) {
@@ -702,10 +555,7 @@ public class DefaultQuestionContainerService
       // Increment the number of voters
       QuestionContainerDAO.addAVoter(con, questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -723,37 +573,27 @@ public class DefaultQuestionContainerService
       Comment c = new Comment(null, questionContainerPK, userId, comment, isAnonymousComment, null);
       QuestionContainerDAO.addComment(con, c);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.addComment()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.ADDING_QUESTIONCONTAINER_COMMENT_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Override
   public QuestionContainerPK createQuestionContainer(QuestionContainerPK questionContainerPK,
       QuestionContainerDetail questionContainerDetail, String userId) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.createQuestionContainer()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "questionContainerPK = " + questionContainerPK + ", questionContainerDetail = " +
-                questionContainerDetail + ", userId = " + userId);
+    QuestionContainerPK finalQuestionContainerPK = questionContainerPK;
     QuestionContainerHeader questionContainerHeader = questionContainerDetail.getHeader();
-    questionContainerHeader.setPK(questionContainerPK);
+    questionContainerHeader.setPK(finalQuestionContainerPK);
     questionContainerHeader.setCreatorId(userId);
     try (Connection con = getConnection()) {
-      questionContainerPK =
+      finalQuestionContainerPK =
           QuestionContainerDAO.createQuestionContainerHeader(con, questionContainerHeader);
-      questionContainerHeader.setPK(questionContainerPK);
+      questionContainerHeader.setPK(finalQuestionContainerPK);
       QuestionContainerContentManager
           .createSilverContent(con, questionContainerHeader, userId, true);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.createQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.CREATING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
-    QuestionService questionService = this.questionService;
-    QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
+    QuestionPK questionPK = new QuestionPK(null, finalQuestionContainerPK);
     Collection<Question> questions = questionContainerDetail.getQuestions();
     List<Question> q = new ArrayList<>(questions.size());
     for (Question question : questions) {
@@ -762,15 +602,12 @@ public class DefaultQuestionContainerService
     }
 
     try {
-      questionService.createQuestions(q, questionContainerPK.getId());
+      questionService.createQuestions(q, finalQuestionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.createQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.CREATING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
     createIndex(questionContainerHeader);
-    return questionContainerPK;
+    return finalQuestionContainerPK;
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
@@ -783,10 +620,7 @@ public class DefaultQuestionContainerService
       // end PDC integration
       createIndex(questionContainerHeader);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.updateQuestionContainerHeader()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.UPDATING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -795,7 +629,6 @@ public class DefaultQuestionContainerService
   public void updateQuestions(QuestionContainerPK questionContainerPK,
       Collection<Question> questions) {
 
-    QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     for (Question question : questions) {
       question.setPK(questionPK);
@@ -806,9 +639,7 @@ public class DefaultQuestionContainerService
       // replace it with new ones
       questionService.createQuestions(questions, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.updateQuestions()", SilverpeasRuntimeException.ERROR,
-          "questionContainer.UPDATING_QUESTIONCONTAINER_QUESTIONS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -820,9 +651,6 @@ public class DefaultQuestionContainerService
     QuestionPK questionPK =
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
             questionContainerPK.getComponentName());
-    QuestionService questionService = this.questionService;
-    ScoreService scoreService = this.scoreService;
-    QuestionResultService questionResultService = this.questionResultService;
 
     try (Connection con = getConnection()) {
       QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
@@ -853,18 +681,13 @@ public class DefaultQuestionContainerService
       }
 
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.deleteVotes()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) {
-    SilverTrace
-        .info("questionContainer", "DefaultQuestionContainerService.deleteQuestionContainer()",
-            "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     ScorePK scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
     QuestionPK questionPK =
@@ -873,29 +696,20 @@ public class DefaultQuestionContainerService
     try {
       scoreService.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.deleteQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
     try {
       questionService.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
       deleteIndex(questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.deleteQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
     try (Connection con = getConnection()) {
       QuestionContainerDAO.deleteComments(con, questionContainerPK);
       QuestionContainerDAO.deleteQuestionContainerHeader(con, questionContainerPK);
       QuestionContainerContentManager.deleteSilverContent(con, questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.deleteQuestionContainer()",
-          SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
-          e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -904,9 +718,7 @@ public class DefaultQuestionContainerService
     try (Connection con = getConnection()) {
       return QuestionContainerDAO.getComments(con, questionContainerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.getComments()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_COMMENTS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -917,14 +729,11 @@ public class DefaultQuestionContainerService
     QuestionPK questionPK =
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
             questionContainerPK.getComponentName());
-    QuestionResultService questionResultService = this.questionResultService;
 
     try {
       suggestions = questionResultService.getQuestionResultToQuestion(new ForeignPK(questionPK));
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getSuggestions()", SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_SUGGESTIONS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return suggestions;
   }
@@ -932,15 +741,12 @@ public class DefaultQuestionContainerService
   @Override
   public QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK) {
     QuestionResult suggestion;
-    QuestionResultService questionResultService = this.questionResultService;
 
     try {
       suggestion =
           questionResultService.getUserAnswerToQuestion(userId, new ForeignPK(questionPK), answerPK);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.getSuggestion()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_SUGGESTIONS_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return suggestion;
   }
@@ -950,27 +756,19 @@ public class DefaultQuestionContainerService
     Collection<QuestionResult> votes = null;
     QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
-    QuestionService questionService = this.questionService;
     Collection<Question> questions;
 
     try {
       questions = questionService.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getUserVotesToQuestionContainer()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     for (Question question : questions) {
-      QuestionResultService questionResultService = this.questionResultService;
       try {
         votes = questionResultService
             .getUserQuestionResultsToQuestion(userId, new ForeignPK(question.getPK()));
       } catch (Exception e) {
-        throw new QuestionContainerRuntimeException(
-            "DefaultQuestionContainerService.getUserVotesToQuestionContainer()",
-            SilverpeasRuntimeException.ERROR,
-            "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED", e);
+        throw new QuestionContainerRuntimeException(e);
       }
       if (!votes.isEmpty()) {
         break;
@@ -985,14 +783,11 @@ public class DefaultQuestionContainerService
     float averagePoints;
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = this.scoreService;
 
     try {
       averagePoints = scoreService.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getAveragePoints()", SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_AVERAGE_SCORES_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return averagePoints;
   }
@@ -1004,16 +799,12 @@ public class DefaultQuestionContainerService
 
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = this.scoreService;
 
     try {
       nbPart =
           scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getUserNbParticipationsByFatherId()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_NB_PARTICIPATION_TO_USER_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return nbPart;
   }
@@ -1025,17 +816,13 @@ public class DefaultQuestionContainerService
 
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = this.scoreService;
 
     try {
       scoreDetail = scoreService
           .getUserScoreByFatherIdAndParticipationId(scorePK, questionContainerPK.getId(), userId,
               participationId);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getUserScoreByFatherIdAndParticipationId()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.GETTING_QUESTIONCONTAINER_USER_SCORE_TO_A_PARTICIPATION_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return scoreDetail;
   }
@@ -1045,9 +832,7 @@ public class DefaultQuestionContainerService
     try {
       scoreService.updateScore(scoreDetail);
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.updateScore()",
-          SilverpeasRuntimeException.ERROR,
-          "questionContainer.UPDATING_QUESTIONCONTAINER_SCORE_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -1071,13 +856,13 @@ public class DefaultQuestionContainerService
       indexEntry.setPreView(header.getDescription());
       indexEntry.setCreationDate(header.getCreationDate());
       indexEntry.setCreationUser(header.getCreatorId());
-      if (header.getBeginDate() == null) {
-        indexEntry.setStartDate(nullBeginDate);
+      if (isNotDefined(header.getBeginDate())) {
+        indexEntry.setStartDate(NULL_BEGIN_DATE);
       } else {
         indexEntry.setStartDate(header.getBeginDate());
       }
-      if (header.getEndDate() == null) {
-        indexEntry.setEndDate(nullEndDate);
+      if (isNotDefined(header.getEndDate())) {
+        indexEntry.setEndDate(NULL_END_DATE);
       } else {
         indexEntry.setEndDate(header.getEndDate());
       }
@@ -1111,89 +896,102 @@ public class DefaultQuestionContainerService
                 questionContainerHeader.getCreatorId(), true);
       }
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getSilverObjectId()", SilverpeasRuntimeException.ERROR,
-          "questionContainer.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return silverObjectId;
   }
 
   @Override
   public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
-    List<StringBuffer> csvRows = new ArrayList<>();
-    StringBuffer csvRow = new StringBuffer();
+    List<StringBuilder> csvRows = new ArrayList<>();
+    StringBuilder csvRow = new StringBuilder();
     OrganizationController orga = getOrganisationController();
     try {
       if (questionContainer.getHeader().isAnonymous()) {
         // anonymes
-        Collection<Question> questions = questionContainer.getQuestions();
-        for (Question question : questions) {
-          if (question.isOpenStyle()) {
-            // question ouverte
-            String id = question.getPK().getId();
-            QuestionContainerPK qcPK = new QuestionContainerPK(id, question.getPK().getSpaceId(),
-                question.getPK().getInstanceId());
-            Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
-            for (QuestionResult qR : openAnswers) {
-              addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
-            }
-          } else {
-            // question fermée
-            Collection<Answer> answers = question.getAnswers();
-            for (Answer answer : answers) {
-              int nbUsers = questionResultService
-                  .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
-              String percent = Math.round((answer.getNbVoters() * 100f) / nbUsers) + "%";
-              addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore,
-                  answer.getNbPoints());
-            }
-          }
-        }
+        exportCSVForAnonymous(questionContainer, addScore, csvRow);
       } else {
         // pour les enquêtes non anonymes
-        Collection<Question> questions = questionContainer.getQuestions();
-        for (Question question : questions) {
-          if (question.isOpenStyle()) {
-            // question ouverte
-            String id = question.getPK().getId();
-            QuestionContainerPK qcPK = new QuestionContainerPK(id, question.getPK().getSpaceId(),
-                question.getPK().getInstanceId());
-            Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
-            for (QuestionResult qR : openAnswers) {
-              addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(),
-                  orga.getUserDetail(qR.getUserId()).getDisplayedName(), false, 0);
-            }
-          } else {
-            // question fermée
-            Collection<Answer> answers = question.getAnswers();
-            for (Answer answer : answers) {
-              Collection<String> users =
-                  questionResultService.getUsersByAnswer(answer.getPK().getId());
-              for (String user : users) {
-                // suggestion
-                if (answer.isOpened()) {
-                  QuestionResult openAnswer = getSuggestion(user, question.getPK(), answer.getPK());
-                  addCSVValue(csvRow, question.getLabel(),
-                      answer.getLabel() + " : " + openAnswer.getOpenedAnswer(),
-                      orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
-                } else {
-                  addCSVValue(csvRow, question.getLabel(), answer.getLabel(),
-                      orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
-                }
-              }
-            }
-          }
-        }
+        exportCSVForAuthorized(questionContainer, addScore, csvRow, orga);
       }
       csvRows.add(csvRow);
     } catch (Exception e) {
-      SilverTrace.error("questionContainer", getClass().getSimpleName() + ".exportCSV()",
-          "root.EX_NO_MESSAGE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return writeCSVFile(csvRows);
   }
 
-  private void addCSVValue(StringBuffer row, String questionLabel, String answerLabel, String value,
+  private void exportCSVForAuthorized(final QuestionContainerDetail questionContainer,
+      final boolean addScore, final StringBuilder csvRow, final OrganizationController orga) {
+    Collection<Question> questions = questionContainer.getQuestions();
+    for (Question question : questions) {
+      if (question.isOpenStyle()) {
+        // question ouverte
+        String id = question.getPK().getId();
+        QuestionContainerPK qcPK = new QuestionContainerPK(id, question.getPK().getSpaceId(),
+            question.getPK().getInstanceId());
+        Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
+        for (QuestionResult qR : openAnswers) {
+          addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(),
+              orga.getUserDetail(qR.getUserId()).getDisplayedName(), false, 0);
+        }
+      } else {
+        // question fermée
+        Collection<Answer> answers = question.getAnswers();
+        for (Answer answer : answers) {
+          exportCSVAnswerPartForAuthorized(addScore, csvRow, question, answer, orga);
+        }
+      }
+    }
+  }
+
+  private void exportCSVAnswerPartForAuthorized(final boolean addScore, final StringBuilder csvRow,
+      final Question question, final Answer answer, final OrganizationController orga) {
+    Collection<String> users =
+        questionResultService.getUsersByAnswer(answer.getPK().getId());
+    for (String user : users) {
+      // suggestion
+      if (answer.isOpened()) {
+        QuestionResult openAnswer = getSuggestion(user, question.getPK(), answer.getPK());
+        addCSVValue(csvRow, question.getLabel(),
+            answer.getLabel() + " : " + openAnswer.getOpenedAnswer(),
+            orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
+      } else {
+        addCSVValue(csvRow, question.getLabel(), answer.getLabel(),
+            orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
+      }
+    }
+  }
+
+  private void exportCSVForAnonymous(final QuestionContainerDetail questionContainer,
+      final boolean addScore, final StringBuilder csvRow) {
+    Collection<Question> questions = questionContainer.getQuestions();
+    for (Question question : questions) {
+      if (question.isOpenStyle()) {
+        // question ouverte
+        String id = question.getPK().getId();
+        QuestionContainerPK qcPK = new QuestionContainerPK(id, question.getPK().getSpaceId(),
+            question.getPK().getInstanceId());
+        Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
+        for (QuestionResult qR : openAnswers) {
+          addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
+        }
+      } else {
+        // question fermée
+        Collection<Answer> answers = question.getAnswers();
+        for (Answer answer : answers) {
+          int nbUsers = questionResultService
+              .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
+          String percent =
+              Math.round((answer.getNbVoters() * PERCENT_MULTIPLICATOR) / nbUsers) + "%";
+          addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore,
+              answer.getNbPoints());
+        }
+      }
+    }
+  }
+
+  private void addCSVValue(StringBuilder row, String questionLabel, String answerLabel, String value,
       boolean addScore, int nbPoints) {
     row.append("\"");
     if (questionLabel != null) {
@@ -1212,19 +1010,18 @@ public class DefaultQuestionContainerService
     row.append(System.getProperty("line.separator"));
   }
 
-  private String writeCSVFile(List<StringBuffer> csvRows) {
+  private String writeCSVFile(List<StringBuilder> csvRows) {
     FileOutputStream fileOutput = null;
     String csvFilename = new Date().getTime() + ".csv";
     try {
       fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath() + csvFilename);
-      for (StringBuffer csvRow : csvRows) {
+      for (StringBuilder csvRow : csvRows) {
         fileOutput.write(csvRow.toString().getBytes());
         fileOutput.write("\n".getBytes());
       }
     } catch (Exception e) {
       csvFilename = null;
-      SilverTrace.error("questionContainer", getClass().getSimpleName() + ".writeCSVFile()",
-          "root.EX_NO_MESSAGE", e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       if (fileOutput != null) {
         try {
@@ -1232,8 +1029,7 @@ public class DefaultQuestionContainerService
           fileOutput.close();
         } catch (IOException e) {
           csvFilename = null;
-          SilverTrace.error("questionContainer", getClass().getSimpleName() + ".writeCSVFile()",
-              "root.EX_NO_MESSAGE", e);
+          SilverLogger.getLogger(this).error(e);
         }
       }
     }
@@ -1244,8 +1040,7 @@ public class DefaultQuestionContainerService
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new QuestionContainerRuntimeException(e);
     }
   }
 
@@ -1258,9 +1053,7 @@ public class DefaultQuestionContainerService
       htmlPath = getSpacesPath(pk.getInstanceId()) + getComponentLabel(pk.getInstanceId()) + " > " +
           questionHeader.getName();
     } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(
-          "DefaultQuestionContainerService.getHTMLQuestionPath()", SilverpeasRuntimeException.ERROR,
-          "survey.IMPOSSIBLE_D_OBTENIR_LE_PATH", e);
+      throw new QuestionContainerRuntimeException(e);
     }
     return htmlPath;
   }
@@ -1303,7 +1096,7 @@ public class DefaultQuestionContainerService
       QuestionDAO.deleteAllQuestionsByInstanceId(connection, componentInstanceId);
       QuestionContainerDAO.deleteAllQuestionContainersByInstanceId(connection, componentInstanceId);
     } catch (Exception e) {
-
+      SilverLogger.getLogger(this).error(e);
     }
   }
 }

@@ -24,12 +24,10 @@
 
 package org.silverpeas.core.questioncontainer.question.dao;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.questioncontainer.question.model.QuestionRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,6 +49,12 @@ public class QuestionDAO {
           "questionDisplayOrder, questionNbPointsMin, questionNbPointsMax, instanceId, style";
   private static final String DELETE_ALL_QUESTIONS =
       "DELETE FROM SB_Question_Question WHERE instanceId = ?";
+
+  /**
+   * Hidden constructor
+   */
+  private QuestionDAO() {
+  }
 
   /**
    * Build a Question object with data from the resultset
@@ -86,12 +90,9 @@ public class QuestionDAO {
     // String instanceId = rs.getString(15); // not used but inside result set
     String style = rs.getString(16);
 
-    Question result =
-        new Question(new QuestionPK(id, questionPK), fatherId, label, description, clue, image,
-            isQCM, type, isOpen, cluePenalty, maxTime, displayOrder, nbPointsMin, nbPointsMax,
-            style);
-
-    return result;
+    return new Question(new QuestionPK(id, questionPK), fatherId, label, description, clue, image,
+        isQCM, type, isOpen, cluePenalty, maxTime, displayOrder, nbPointsMin, nbPointsMax,
+        style);
   }
 
   /**
@@ -136,9 +137,6 @@ public class QuestionDAO {
    */
   public static Collection<Question> getQuestionsByFatherPK(Connection con, QuestionPK questionPK,
       String fatherId) throws SQLException {
-    SilverTrace
-        .info("question", "QuestionDAO.getQuestionsByFatherPK()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK + ", fatherId = " + fatherId);
 
     List<Question> result = new ArrayList<>();
     ResultSet rs = null;
@@ -185,8 +183,7 @@ public class QuestionDAO {
       // Get new PK identifier
       newId = DBUtil.getNextId(question.getPK().getTableName(), "questionId");
     } catch (Exception e) {
-      throw new QuestionRuntimeException("QuestionDAO.createQuestion()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
+      throw new QuestionRuntimeException(e);
     }
 
     QuestionPK questionPK = question.getPK();
@@ -311,9 +308,6 @@ public class QuestionDAO {
    */
   public static void deleteQuestionsByFatherPK(Connection con, QuestionPK questionPK,
       String fatherId) throws SQLException {
-    SilverTrace
-        .info("question", "QuestionDAO.deleteQuestionsByFatherPK()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK = " + questionPK + ", fatherId = " + fatherId);
 
     String deleteStatement = "DELETE FROM sb_question_question WHERE qcId = ? AND instanceId = ?";
 

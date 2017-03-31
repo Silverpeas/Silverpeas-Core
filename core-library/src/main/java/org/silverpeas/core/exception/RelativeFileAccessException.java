@@ -24,8 +24,12 @@
 package org.silverpeas.core.exception;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/09/13
+ * Thrown when a relative path is detected.
+ * @author Yohann Chastagnier
  */
-public class RelativeFileAccessException extends Exception {
+public class RelativeFileAccessException extends org.silverpeas.core.SilverpeasException {
+
+  public RelativeFileAccessException(final String message, final String... parameters) {
+    super(message, parameters);
+  }
 }

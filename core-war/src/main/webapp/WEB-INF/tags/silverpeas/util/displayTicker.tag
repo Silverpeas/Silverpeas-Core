@@ -173,7 +173,7 @@ var tickerNews = [];
     });
   }
 
-  window.tickerPromise.then(function() {
+  window.TICKER_PROMISE.then(function() {
     worker();
   });
 })(jQuery);

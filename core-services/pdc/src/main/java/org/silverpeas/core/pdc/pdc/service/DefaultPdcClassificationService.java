@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.PdcRuntimeException;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -206,23 +206,6 @@ public class DefaultPdcClassificationService implements PdcClassificationService
     if (classification != NONE_CLASSIFICATION) {
       classificationRepository.delete(classification);
     }
-  }
-
-  /**
-   * Classifies the specified content on the PdC with the specified classification. If the content
-   * is already classified, then the given classification replaces the existing one. The content
-   * must exist in Silverpeas before being classified. If an error occurs while classifying the
-   * content, a runtime exception PdcRuntimeException is thrown.
-   * Subscribers are notified if at least one of their subscription matches given classification.
-   *
-   * @param content the Silverpeas content to classify.
-   * @param withClassification the classification with which the content is positioned on the PdC.
-   * @throws PdcRuntimeException
-   */
-  @Override
-  public void classifyContent(final SilverpeasContent content,
-      final PdcClassification withClassification) throws PdcRuntimeException {
-    classifyContent(content, withClassification, true);
   }
 
   /**

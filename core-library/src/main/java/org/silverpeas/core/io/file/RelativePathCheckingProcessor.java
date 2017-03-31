@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,25 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.io.file;
 
-import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
+ * A processor to assert that the path of a {@link SilverpeasFile} does not contains relative parts.
+ * It the file doesn't exist, then {@¢ode NO_FILE} is returned.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractSilverpeasFileProcessor
-    implements SilverpeasFileProcessor, Initialization {
+public class RelativePathCheckingProcessor extends AbstractSilverpeasFileProcessor {
 
-  private static final int PRIORITY = MAX_PRIORITY - 50;
-
-  /**
-   * Registers itself among the SilverpeasFileFactory instance.
-   */
-  @Override
-  public final void init() {
-    SilverpeasFileProvider.addProcessor(this);
-  }
+  private static final int PRIORITY = MAX_PRIORITY - 5;
 
   @Override
   public int getPriority() {
@@ -47,7 +43,18 @@ public abstract class AbstractSilverpeasFileProcessor
   }
 
   @Override
-  public int compareTo(final SilverpeasFileProcessor o) {
-    return o.getPriority() - getPriority();
+  public String processBefore(final String path, ProcessingContext context) {
+    return path;
+  }
+
+  @Override
+  public SilverpeasFile processAfter(final SilverpeasFile file, ProcessingContext context) {
+    try {
+      FileUtil.assertPathNotRelative(file.getPath());
+      return file;
+    } catch (RelativeFileAccessException e) {
+      SilverLogger.getLogger(this).error(e);
+      return SilverpeasFile.NO_FILE;
+    }
   }
 }

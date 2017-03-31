@@ -164,37 +164,37 @@ public class FileUtilTest {
 
   @Test
   public void testCheckPathNotRelative() throws RelativeFileAccessException {
-    FileUtil.checkPathNotRelative(null);
-    FileUtil.checkPathNotRelative("klkl");
-    FileUtil.checkPathNotRelative("klkl.lk");
-    FileUtil.checkPathNotRelative("klkl/dsdsd/SdsdsD/dlsls.ld");
-    FileUtil.checkPathNotRelative("klkl/dsdsd/Sdsd..sD/dlsls.ld");
-    FileUtil.checkPathNotRelative("klkl/dsdsd/Sdsd./dlsls.ld");
-    FileUtil.checkPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld");
-    FileUtil.checkPathNotRelative(".klkl/dsdsd/.Sdsd/dlsls.ld");
-    FileUtil.checkPathNotRelative("..klkl/dsdsd/.Sdsd/dlsls.ld");
-    FileUtil.checkPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld.");
-    FileUtil.checkPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld..");
+    FileUtil.assertPathNotRelative(null);
+    FileUtil.assertPathNotRelative("klkl");
+    FileUtil.assertPathNotRelative("klkl.lk");
+    FileUtil.assertPathNotRelative("klkl/dsdsd/SdsdsD/dlsls.ld");
+    FileUtil.assertPathNotRelative("klkl/dsdsd/Sdsd..sD/dlsls.ld");
+    FileUtil.assertPathNotRelative("klkl/dsdsd/Sdsd./dlsls.ld");
+    FileUtil.assertPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld");
+    FileUtil.assertPathNotRelative(".klkl/dsdsd/.Sdsd/dlsls.ld");
+    FileUtil.assertPathNotRelative("..klkl/dsdsd/.Sdsd/dlsls.ld");
+    FileUtil.assertPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld.");
+    FileUtil.assertPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld..");
   }
 
   @Test(expected = RelativeFileAccessException.class)
   public void testCheckPathNotRelativeError1() throws RelativeFileAccessException {
-    FileUtil.checkPathNotRelative("../");
+    FileUtil.assertPathNotRelative("../");
   }
 
   @Test(expected = RelativeFileAccessException.class)
   public void testCheckPathNotRelativeError2() throws RelativeFileAccessException {
-    FileUtil.checkPathNotRelative("..\\");
+    FileUtil.assertPathNotRelative("..\\");
   }
 
   @Test(expected = RelativeFileAccessException.class)
   public void testCheckPathNotRelativeError3() throws RelativeFileAccessException {
-    FileUtil.checkPathNotRelative("/..");
+    FileUtil.assertPathNotRelative("/..");
   }
 
   @Test(expected = RelativeFileAccessException.class)
   public void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
-    FileUtil.checkPathNotRelative("\\..");
+    FileUtil.assertPathNotRelative("\\..");
   }
 
   @Test

@@ -47,7 +47,7 @@ public abstract class AbstractFileSender extends HttpServlet {
 
   protected void sendFile(final HttpServletRequest request, HttpServletResponse response,
       SilverpeasFile file) throws IOException {
-    if (file != null && file.exists() && file.isFileSecure()) {
+    if (file != null && file.exists()) {
       try {
         if (!EmbedMediaPlayerDispatcher.from(request, response).dispatchWithSilverpeasFile(file)) {
           FileResponse.fromServlet(request, response).sendSilverpeasFile(file);
@@ -59,11 +59,7 @@ public abstract class AbstractFileSender extends HttpServlet {
       }
     } else {
       response.setHeader("Content-Length", "0");
-      if (file != null && !file.isFileSecure()) {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      } else {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      }
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
       response.getOutputStream().flush();
     }
   }

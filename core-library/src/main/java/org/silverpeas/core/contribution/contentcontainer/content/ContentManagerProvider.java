@@ -34,6 +34,12 @@ import org.silverpeas.core.util.ServiceProvider;
 public class ContentManagerProvider {
 
   /**
+   * Hidden constructor.
+   */
+  private ContentManagerProvider() {
+  }
+
+  /**
    * Gets a content manager instance.
    * @return a ContentManager instance (managed by the IoC container).
    */

@@ -25,7 +25,6 @@
 --%>
 
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@page import="org.silverpeas.web.pdc.QueryParameters"%>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -51,17 +50,26 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 
 //recuperation des parametres pour le PDC
 QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryParameters");
-
-Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
+<c:set var="searchLabel" value='<%=resource.getString("pdcPeas.search")%>'/>
 <view:includePlugin name="pdc" />
 <script type="text/javascript">
   function sendQuery() {
     var values = $('#used_pdc').pdc('selectedValues');
     if (values.length > 0) {
       document.PdcWidgetAdvancedSearch.AxisValueCouples.value = values.flatten();
+      executePdcActionToBodyPartTarget("<c:url value="/RpdcSearch/jsp/AdvancedSearch"/>")
     }
-    executePdcActionToBodyPartTarget("<c:url value="/RpdcSearch/jsp/AdvancedSearch"/>")
+  }
+
+  function handleSearchAccess() {
+    var $button = $('.sp_button', $('.pdcFrameGroup'));
+    var values = $('#used_pdc').pdc('selectedValues');
+    if (values.length > 0) {
+      $button.removeClass('disabled');
+    } else {
+      $button.addClass('disabled');
+    }
   }
 
   function raz() {
@@ -85,11 +93,15 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
       <% } %>
       withSecondaryAxis : false,
       onLoaded : function(loadedPdC) {
+        handleSearchAccess();
         if (loadedPdC && loadedPdC.axis.length) {
           spLayout.getFooter().showPdc();
         } else {
           spLayout.getFooter().hidePdc();
         }
+      },
+      onAxisChanged : function() {
+        handleSearchAccess()
       }
     };
     return settings;
@@ -103,7 +115,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 <form name="PdcWidgetAdvancedSearch" action="#" method="get">
   <input type="hidden" name="mode"/>
   <input type="hidden" name="FromPDCFrame" value="true"/>
-  <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_OnlyPDC %>"/>
+  <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_ONLY_PDC %>"/>
   <input type="hidden" name="ResultPage" value=""/>
   <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
   <input type="hidden" name="spaces" value="<%=parameters.getSpaceId()%>"/>
@@ -113,7 +125,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 
   <div class="pdcFrameGroup">
     <div id="used_pdc"></div>
-    <%=searchButton.print()%>
+    <view:button label="${searchLabel}" action="javascript:onClick=sendQuery()"/>
     <a id="razButton" href="javaScript:raz()" title="<%=resource.getString("GML.reset")%>"><img src="<%=m_context%>/util/icons/arrow/refresh.png" alt="<%=resource.getString("GML.reset")%>"/></a>
   </div>
 

@@ -191,7 +191,7 @@ public class JavascriptPluginInclusion {
    * @return the promise as string.
    */
   private static String generatePromise(SupportedWebPlugins plugin, String promiseContent) {
-    String promise = "window." + plugin.name() + "Promise";
+    String promise = "window." + plugin.name() + "_PROMISE";
     promise += "=new Promise(function(resolve, reject){";
     promise += promiseContent;
     promise += "});";

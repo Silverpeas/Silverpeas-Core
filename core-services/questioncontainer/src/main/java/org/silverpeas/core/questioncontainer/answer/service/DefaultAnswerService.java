@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.questioncontainer.answer.service;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.dao.AnswerDAO;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -46,7 +44,7 @@ import java.util.Collection;
 @Transactional(Transactional.TxType.REQUIRED)
 public class DefaultAnswerService implements AnswerService {
 
-  public DefaultAnswerService() {
+  protected DefaultAnswerService() {
   }
 
   @Override
@@ -55,11 +53,9 @@ public class DefaultAnswerService implements AnswerService {
 
     Connection con = getConnection();
     try {
-      Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, questionPK);
-      return answers;
+      return AnswerDAO.getAnswersByQuestionPK(con, questionPK);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.getAnswersByQuestionPK()",
-          SilverpeasRuntimeException.ERROR, "answer.ANSWER_LIST_TO_QUESTION_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -72,8 +68,7 @@ public class DefaultAnswerService implements AnswerService {
     try {
       AnswerDAO.recordThisAnswerAsVote(con, questionPK, answerPK);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.recordThisAnswerAsVote()",
-          SilverpeasRuntimeException.ERROR, "answer.RECORDING_RESPONSE_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -81,15 +76,11 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   public void addAnswersToAQuestion(Collection<Answer> answers, ForeignPK questionPK) {
-    SilverTrace
-        .info("answer", "DefaultAnswerService.addAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK=" + questionPK);
     Connection con = getConnection();
     try {
       AnswerDAO.addAnswersToAQuestion(con, answers, questionPK);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.addAnswersToAQuestion()",
-          SilverpeasRuntimeException.ERROR, "answer.ADDING_ANSWERS_TO_QUESTION_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -97,15 +88,11 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   public void addAnswerToAQuestion(Answer answer, ForeignPK questionPK) {
-    SilverTrace
-        .info("answer", "DefaultAnswerService.addAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-            "questionPK=" + questionPK + " and answer = " + answer);
     Connection con = getConnection();
     try {
       AnswerDAO.addAnswerToAQuestion(con, answer, questionPK);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.addAnswerToAQuestion()",
-          SilverpeasRuntimeException.ERROR, "answer.ADDING_ANSWER_TO_QUESTION_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -118,8 +105,7 @@ public class DefaultAnswerService implements AnswerService {
     try {
       AnswerDAO.deleteAnswersToAQuestion(con, questionPK);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.deleteAnswersToAQuestion()",
-          SilverpeasRuntimeException.ERROR, "answer.DELETING_ANSWERS_TO_QUESTION_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -132,8 +118,7 @@ public class DefaultAnswerService implements AnswerService {
     try {
       AnswerDAO.deleteAnswerToAQuestion(con, questionPK, answerId);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.deleteAnswerToAQuestion()",
-          SilverpeasRuntimeException.ERROR, "answer.DELETING_ANSWER_TO_QUESTION_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -146,8 +131,7 @@ public class DefaultAnswerService implements AnswerService {
     try {
       AnswerDAO.updateAnswerToAQuestion(con, questionPK, answer);
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.updateAnswerToAQuestion()",
-          SilverpeasRuntimeException.ERROR, "answer.UPDATING_ANSWER_TO_QUESTION_FAILED", e);
+      throw new AnswerRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -157,8 +141,7 @@ public class DefaultAnswerService implements AnswerService {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new AnswerRuntimeException("DefaultAnswerService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new AnswerRuntimeException(e);
     }
   }
 }
