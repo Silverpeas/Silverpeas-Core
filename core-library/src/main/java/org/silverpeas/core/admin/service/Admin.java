@@ -3094,11 +3094,16 @@ class Admin implements Administration {
    * Converts client space id to driver space id
    */
   private int getDriverSpaceId(String sClientSpaceId) {
-    if (sClientSpaceId != null) {
-      if (sClientSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
-        return Integer.parseInt(sClientSpaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length()));
-      } else {
-        return Integer.parseInt(sClientSpaceId);
+    String clientSpaceId = sClientSpaceId;
+    if (clientSpaceId != null) {
+      if (clientSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+        clientSpaceId = clientSpaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length());
+      }
+      try {
+        return Integer.parseInt(clientSpaceId);
+      } catch (NumberFormatException e) {
+        SilverLogger.getLogger(this)
+            .warn("can not get driver space id from {0} : {1}", sClientSpaceId, e.getMessage());
       }
     }
     return -1;
