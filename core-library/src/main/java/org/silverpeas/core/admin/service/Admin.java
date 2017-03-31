@@ -2127,7 +2127,7 @@ class Admin implements Administration {
   }
 
   private String spaceRole2ComponentRole(String spaceRole, String componentName) {
-    return roleMapping.getString(componentName + "_" + spaceRole, spaceRole);
+    return roleMapping.getString(componentName + "_" + spaceRole, null);
   }
 
   private List<String> componentRole2SpaceRoles(String componentRole,
