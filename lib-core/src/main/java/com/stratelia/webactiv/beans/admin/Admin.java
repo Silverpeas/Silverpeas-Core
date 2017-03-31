@@ -2465,7 +2465,7 @@ public class Admin {
   }
 
   private String spaceRole2ComponentRole(String spaceRole, String componentName) {
-    return roleMapping.getString(componentName + "_" + spaceRole, spaceRole);
+    return roleMapping.getString(componentName + "_" + spaceRole);
   }
 
   private List<String> componentRole2SpaceRoles(String componentRole,
