@@ -20,30 +20,35 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationPasswordMustBeChangedOnFirstLogin;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationUserAccountBlockedException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswordVerifier;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.naming.InitialContext;
@@ -69,22 +74,6 @@ import java.util.Random;
  */
 public class AuthenticationService {
 
-  private static final String module = "authentication";
-  static final protected String m_DataSourceJNDIName;
-  static final protected String m_DomainTableName;
-  static final protected String m_DomainIdColumnName;
-  static final protected String m_DomainNameColumnName;
-  static final protected String m_DomainAuthenticationServerColumnName;
-  static final protected String m_KeyStoreTableName;
-  static final protected String m_KeyStoreKeyColumnName;
-  static final protected String m_KeyStoreLoginColumnName;
-  static final protected String m_KeyStoreDomainIdColumnName;
-  static final protected String m_UserTableName;
-  static final protected String m_UserIdColumnName;
-  static final protected String m_UserLoginColumnName;
-  static final protected String m_UserDomainColumnName;
-  static protected int m_AutoInc = 1;
-  private static final String ERROR_PREFIX = "Error";
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
   public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
   public static final String ERROR_INCORRECT_LOGIN_PWD = "Error_1";
@@ -92,29 +81,20 @@ public class AuthenticationService {
   public static final String ERROR_PASSWORD_NOT_AVAILABLE = "Error_5";
   public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "Error_6";
 
-  static {
-    SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.authentication.domains");
-
-    // Lecture du fichier de proprietes
-    m_DataSourceJNDIName = settings.getString("SQLDomainDataSourceJNDIName");
-
-    m_DomainTableName = settings.getString("SQLDomainTableName");
-    m_DomainIdColumnName = settings.getString("SQLDomainIdColumnName");
-    m_DomainNameColumnName = settings.getString("SQLDomainNameColumnName");
-    m_DomainAuthenticationServerColumnName = settings.getString(
-        "SQLDomainAuthenticationServerColumnName");
-
-    m_KeyStoreTableName = settings.getString("SQLKeyStoreTableName");
-    m_KeyStoreKeyColumnName = settings.getString("SQLKeyStoreKeyColumnName");
-    m_KeyStoreLoginColumnName = settings.getString("SQLKeyStoreLoginColumnName");
-    m_KeyStoreDomainIdColumnName = settings.getString("SQLKeyStoreDomainIdColumnName");
-
-    m_UserTableName = settings.getString("SQLUserTableName");
-    m_UserIdColumnName = settings.getString("SQLUserIdColumnName");
-    m_UserLoginColumnName = settings.getString("SQLUserLoginColumnName");
-    m_UserDomainColumnName = settings.getString("SQLUserDomainColumnName");
-  }
+  private static final String DATA_SOURCE_JNDI_NAME;
+  private static final String DOMAIN_TABLE_NAME;
+  private static final String DOMAIN_ID_COLUMN_NAME;
+  private static final String DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME;
+  private static final String KEY_STORE_TABLE_NAME;
+  private static final String KEY_STORE_KEY_COLUMN_NAME;
+  private static final String KEY_STORE_LOGIN_COLUMN_NAME;
+  private static final String KEY_STORE_DOMAIN_ID_COLUMN_NAME;
+  private static final String USER_TABLE_NAME;
+  private static final String USER_ID_COLUMN_NAME;
+  private static final String USER_LOGIN_COLUMN_NAME;
+  private static final String USER_DOMAIN_COLUMN_NAME;
+  private static final String ERROR_PREFIX = "Error";
+  private static int m_AutoInc = 1;
 
   @Inject
   private AdminController adminController;
@@ -128,16 +108,16 @@ public class AuthenticationService {
   /**
    * Opens a new connection to the Silverpeas database.
    */
-  static private Connection openConnection() throws AuthenticationException {
+  private static Connection openConnection() throws AuthenticationException {
     Connection connection;
 
     try {
-      DataSource dataSource = InitialContext.doLookup(m_DataSourceJNDIName);
+      DataSource dataSource = InitialContext.doLookup(DATA_SOURCE_JNDI_NAME);
       connection = dataSource.getConnection();
     } catch (Exception iex) {
       throw new AuthenticationHostException("AuthenticationService.openConnection()",
           SilverpeasException.ERROR, "root.root.EX_CONNECTION_OPEN_FAILED",
-          "Datasource=" + m_DataSourceJNDIName, iex);
+          "Datasource=" + DATA_SOURCE_JNDI_NAME, iex);
     }
     return connection;
   }
@@ -145,7 +125,7 @@ public class AuthenticationService {
   /**
    * Closes the specified connection to the Silverpeas database
    */
-  static private void closeConnection(Connection con) {
+  private static void closeConnection(Connection con) {
     DBUtil.close(con);
   }
 
@@ -163,7 +143,7 @@ public class AuthenticationService {
     try {
       domains = Arrays.asList(AdministrationServiceProvider.getAdminService().getAllDomains());
     } catch (AdminException e) {
-      SilverTrace.error(module, "AuthenticationService", "Problem to retrieve all the domains", e);
+      SilverLogger.getLogger(this).error(e);
       domains = Collections.emptyList();
     }
     return domains;
@@ -190,41 +170,39 @@ public class AuthenticationService {
         } else {
           key = authenticateByLoginAndDomain(userCredential);
         }
-      } catch (AuthenticationException ex) {
+      } catch (AuthenticationException e) {
+        AuthenticationException ae = e;
         String errorCause = ERROR_AUTHENTICATION_FAILURE;
-        Exception nested = ex.getNested();
-        if (nested != null) {
-          if (nested instanceof AuthenticationException) {
-            ex = (AuthenticationException) nested;
-          }
+        Exception nested = ae.getNested();
+        if (nested instanceof AuthenticationException) {
+          ae = (AuthenticationException) nested;
         }
-        if (ex instanceof AuthenticationBadCredentialException) {
+        if (ae instanceof AuthenticationBadCredentialException) {
           List<Domain> listDomain = getAllDomains();
           if(listDomain != null && listDomain.size() > 1) {
             errorCause = ERROR_INCORRECT_LOGIN_PWD_DOMAIN;
           } else {
             errorCause = ERROR_INCORRECT_LOGIN_PWD;
           }
-        } else if (ex instanceof AuthenticationHostException) {
+        } else if (ae instanceof AuthenticationHostException) {
           errorCause = ERROR_AUTHENTICATION_FAILURE;
-        } else if (ex instanceof AuthenticationPwdNotAvailException) {
+        } else if (ae instanceof AuthenticationPwdNotAvailException) {
           errorCause = ERROR_PASSWORD_NOT_AVAILABLE;
-        } else if (ex instanceof AuthenticationPasswordExpired) {
+        } else if (ae instanceof AuthenticationPasswordExpired) {
           errorCause = ERROR_PWD_EXPIRED;
-        } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
+        } else if (ae instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
           errorCause = ERROR_PWD_MUST_BE_CHANGED;
-        } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
+        } else if (ae instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
           errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
-        } else if (ex instanceof AuthenticationUserAccountBlockedException) {
+        } else if (ae instanceof AuthenticationUserAccountBlockedException) {
           errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
-        } else if (ex instanceof AuthenticationUserAccountDeactivatedException) {
+        } else if (ae instanceof AuthenticationUserAccountDeactivatedException) {
           errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
         }
 
-        SilverTrace.error(module, "AuthenticationService.authenticate()",
-            "authentication.EX_USER_REJECTED",
-            "DomainId=" + userCredential.getDomainId() + ", Login=" + userCredential.getLogin() +
-                ", ErrorCode=" + errorCause);
+        SilverLogger.getLogger(this)
+            .error("authentication error ({0}) with login ''{1}'' and domain id ''{2}''",
+                errorCause, userCredential.getLogin(), userCredential.getDomainId());
 
         return errorCause;
       }
@@ -272,7 +250,7 @@ public class AuthenticationService {
 
       // Store information about password change capabilities
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
-          (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
+          authenticationServer.isPasswordChangeAllowed() ? "yes" : "no");
 
       // Authentification test
       authenticationServer.authenticate(credential);
@@ -310,9 +288,9 @@ public class AuthenticationService {
       // Open connection
       connection = openConnection();
 
-      String query = "SELECT " + m_UserIdColumnName + " FROM "
-          + m_UserTableName + " WHERE " + m_UserLoginColumnName + " = ? AND "
-          + m_UserDomainColumnName + " = ?";
+      String query = "SELECT " + USER_ID_COLUMN_NAME + " FROM "
+          + USER_TABLE_NAME + " WHERE " + USER_LOGIN_COLUMN_NAME + " = ? AND "
+          + USER_DOMAIN_COLUMN_NAME + " = ?";
       prepStmt = connection.prepareStatement(query);
 
       prepStmt.setString(1, login);
@@ -322,8 +300,7 @@ public class AuthenticationService {
 
       authenticationOK = resultSet.next();
     } catch (Exception ex) {
-      SilverTrace.warn(module, "AuthenticationService.authenticate()",
-          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
+      SilverLogger.getLogger(this).warn(ex);
       return ERROR_AUTHENTICATION_FAILURE;
     } finally {
       DBUtil.close(resultSet, prepStmt);
@@ -341,9 +318,7 @@ public class AuthenticationService {
       try {
         key = getAuthenticationKey(login, domainId);
       } catch (Exception e) {
-        SilverTrace.warn(module, "AuthenticationService.authenticate()",
-            "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User="
-            + login, e);
+        SilverLogger.getLogger(this).warn(e);
         return ERROR_AUTHENTICATION_FAILURE;
       }
     }
@@ -400,8 +375,7 @@ public class AuthenticationService {
       // Authentication test
       authenticationServer.changePassword(credential, newPassword);
     } catch (AuthenticationException ex) {
-      SilverTrace.error(module, "AuthenticationService.changePassword()",
-          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
+      SilverLogger.getLogger(this).warn(ex);
       throw ex;
     } finally {
       closeConnection(connection);
@@ -437,8 +411,8 @@ public class AuthenticationService {
       throws AuthenticationException {
     Statement stmt = null;
     ResultSet rs = null;
-    String query = "SELECT " + m_DomainAuthenticationServerColumnName
-        + " FROM " + m_DomainTableName + " WHERE " + m_DomainIdColumnName
+    String query = "SELECT " + DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME
+        + " FROM " + DOMAIN_TABLE_NAME + " WHERE " + DOMAIN_ID_COLUMN_NAME
         + " = " + domainId + "";
 
 
@@ -446,7 +420,7 @@ public class AuthenticationService {
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
       if (rs.next()) {
-        String serverName = rs.getString(m_DomainAuthenticationServerColumnName);
+        String serverName = rs.getString(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME);
         if (!StringUtil.isDefined(serverName)) {
           throw new AuthenticationException(
               "AuthenticationService.getAuthenticationServerName()",
@@ -465,7 +439,7 @@ public class AuthenticationService {
       throw new AuthenticationException(
           "AuthenticationService.getAuthenticationServerName()",
           SilverpeasException.ERROR, "authentication.EX_DOMAIN_INFO_ERROR",
-          "DomainId=" + domainId);
+          "DomainId=" + domainId, ex);
     } finally {
       DBUtil.close(rs, stmt);
     }
@@ -490,26 +464,27 @@ public class AuthenticationService {
       throws AuthenticationException {
     PreparedStatement stmt = null;
 
-    String query = "INSERT INTO " + m_KeyStoreTableName + "("
-        + m_KeyStoreKeyColumnName + ", " + m_KeyStoreLoginColumnName + ", "
-        + m_KeyStoreDomainIdColumnName + ")" + " VALUES (?, ?, ?)";
+    String query = "INSERT INTO " + KEY_STORE_TABLE_NAME + "("
+        + KEY_STORE_KEY_COLUMN_NAME + ", " + KEY_STORE_LOGIN_COLUMN_NAME + ", "
+        + KEY_STORE_DOMAIN_ID_COLUMN_NAME + ")" + " VALUES (?, ?, ?)";
 
-    Connection m_Connection = null;
+    Connection connection = null;
     try {
-      m_Connection = openConnection();
+      connection = openConnection();
 
-      stmt = m_Connection.prepareStatement(query);
+      stmt = connection.prepareStatement(query);
       stmt.setInt(1, Integer.parseInt(sKey));
       stmt.setString(2, login);
       stmt.setInt(3, Integer.parseInt(domainId));
 
       stmt.executeUpdate();
     } catch (SQLException ex) {
-      SilverTrace.error(module, "AuthenticationService.storeAuthenticationKey()",
-          "authentication.EX_WRITE_KEY_ERROR", "User=" + login + " exception=" + ex.getSQLState());
+      SilverLogger.getLogger(this)
+          .error(SilverpeasExceptionMessages.failureOnAdding("authentication key for login", login),
+              ex);
     } finally {
       DBUtil.close(stmt);
-      closeConnection(m_Connection);
+      closeConnection(connection);
     }
   }
 
@@ -551,8 +526,7 @@ public class AuthenticationService {
       // Authentication test
       authenticationServer.resetPassword(login, newPassword);
     } catch (AuthenticationException ex) {
-      SilverTrace.error(module, "AuthenticationService.resetPassword()",
-          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
+      SilverLogger.getLogger(this).warn(ex);
       throw ex;
     } finally {
       closeConnection(connection);
@@ -619,9 +593,7 @@ public class AuthenticationService {
 
       return authenticationServer.isPasswordChangeAllowed();
     } catch (AuthenticationException ex) {
-      SilverTrace.error(module, "AuthenticationService.isPasswordChangeAllowed()",
-          "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception="
-          + ex.getMessage());
+      SilverLogger.getLogger(this).warn(ex);
     } finally {
       closeConnection(connection);
     }
@@ -635,5 +607,28 @@ public class AuthenticationService {
 
     // Return the AuthenticationServer instance with the specified unique name
     return AuthenticationServer.getAuthenticationServer(authenticationServerName);
+  }
+
+  static {
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.authentication.domains");
+
+    // Lecture du fichier de proprietes
+    DATA_SOURCE_JNDI_NAME = settings.getString("SQLDomainDataSourceJNDIName");
+
+    DOMAIN_TABLE_NAME = settings.getString("SQLDomainTableName");
+    DOMAIN_ID_COLUMN_NAME = settings.getString("SQLDomainIdColumnName");
+    DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME = settings.getString(
+        "SQLDomainAuthenticationServerColumnName");
+
+    KEY_STORE_TABLE_NAME = settings.getString("SQLKeyStoreTableName");
+    KEY_STORE_KEY_COLUMN_NAME = settings.getString("SQLKeyStoreKeyColumnName");
+    KEY_STORE_LOGIN_COLUMN_NAME = settings.getString("SQLKeyStoreLoginColumnName");
+    KEY_STORE_DOMAIN_ID_COLUMN_NAME = settings.getString("SQLKeyStoreDomainIdColumnName");
+
+    USER_TABLE_NAME = settings.getString("SQLUserTableName");
+    USER_ID_COLUMN_NAME = settings.getString("SQLUserIdColumnName");
+    USER_LOGIN_COLUMN_NAME = settings.getString("SQLUserLoginColumnName");
+    USER_DOMAIN_COLUMN_NAME = settings.getString("SQLUserDomainColumnName");
   }
 }
