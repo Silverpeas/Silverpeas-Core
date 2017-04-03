@@ -40,6 +40,7 @@ import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -336,19 +337,19 @@ public class UserManager {
   }
 
   /**
-   * Get the user corresponding to the given user Id (only infos in cache table)
-   *
-   * @param ddManager
-   * @param sUserId
-   * @return
-   * @throws AdminException
+   * Get the user corresponding to the given user Id (only infos in cache table).
+   * <p>If the user does not exists, null is returned.</p>
+   * @param ddManager the domain driver manager.
+   * @param sUserId the identifier of searched identifier.
+   * @return the corresponding {@link UserDetail} instance if any, null otherwise.
+   * @throws AdminException on technical error.
    */
   public UserDetail getUserDetail(DomainDriverManager ddManager, String sUserId) throws
       AdminException {
     try {
       ddManager.getOrganizationSchema();
       UserRow ur = ddManager.getOrganization().user.getUser(idAsInt(sUserId));
-      return userRow2UserDetail(ur);
+      return ur != null ? userRow2UserDetail(ur) : null;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user", sUserId), e);
     } finally {
@@ -357,13 +358,13 @@ public class UserManager {
   }
 
   /**
-   * Get the Silverpeas user specific id of user qualified by given login and domain id
-   *
-   * @param ddManager
-   * @param sSpecificId
-   * @param sDomainId
-   * @return
-   * @throws AdminException
+   * Get the Silverpeas user specific id of user qualified by given login and domain id.
+   * <p>If the user does not exists, null is returned.</p>
+   * @param ddManager the domain driver manager.
+   * @param sSpecificId the specific identifier of the searched user.
+   * @param sDomainId the identifier of the domain the user belong to.
+   * @return the corresponding {@link UserDetail} instance if any, null otherwise.
+   * @throws AdminException on technical error.
    */
   public String getUserIdBySpecificIdAndDomainId(DomainDriverManager ddManager, String sSpecificId,
       String sDomainId) throws AdminException {
@@ -371,7 +372,7 @@ public class UserManager {
       ddManager.getOrganizationSchema();
       UserRow ur = ddManager.getOrganization().user.getUserBySpecificId(idAsInt(sDomainId),
           sSpecificId);
-      return idAsString(ur.id);
+      return ur != null ? idAsString(ur.id) : null;
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("user with specific id " + sSpecificId, "in domain " + sDomainId), e);
@@ -381,20 +382,20 @@ public class UserManager {
   }
 
   /**
-   * Get the Silverpeas user id of user qualified by given login and domain id
-   *
-   * @param ddManager
-   * @param sLogin
-   * @param sDomainId
-   * @return
-   * @throws AdminException
+   * Get the Silverpeas user id of user qualified by given login and domain id.
+   * <p>If the user does not exists, null is returned.</p>
+   * @param ddManager the domain driver manager.
+   * @param sLogin the login of th searched user.
+   * @param sDomainId the identifier of the domain the user belong to.
+   * @return the corresponding {@link UserDetail} instance if any, null otherwise.
+   * @throws AdminException on technical error.
    */
   public String getUserIdByLoginAndDomain(DomainDriverManager ddManager, String sLogin,
       String sDomainId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       UserRow ur = ddManager.getOrganization().user.getUserByLogin(idAsInt(sDomainId), sLogin);
-      return idAsString(ur.id);
+      return ur != null ? idAsString(ur.id) : null;
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("users with login " + sLogin, "in domain " + sDomainId), e);
@@ -853,14 +854,14 @@ public class UserManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      return -1; // the null id.
-    }
     try {
       return Integer.parseInt(id);
     } catch (NumberFormatException e) {
-      return -1; // the null id.
+      SilverLogger.getLogger(this)
+          .warn("can not get integer id from {0} : {1}", id, e.getMessage());
     }
+    // the null id.
+    return -1;
   }
 
   /**
