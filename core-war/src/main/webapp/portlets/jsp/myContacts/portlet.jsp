@@ -56,13 +56,13 @@
 
 			<c:forEach var="member" items="${contactsConnected}">
 				<li class="user online">
-					<view:image type="avatar" css="avatar" alt="avatar" src="${member.userDetail.avatar}" />
+					<view:image type="avatar" css="avatar" alt="avatar" src="${member.avatar}" />
 
 				<span class="userName">
 					${member.lastName} ${member.firstName}
 					<img src="${context}/util/icons/connected.png"
-						alt="<fmt:message key="GML.user.online.for" /> ${member.duration}"
-						title="<fmt:message key="GML.user.online.for" /> ${member.duration}"/>
+						alt="<fmt:message key="GML.user.online.for" /> ${member.durationOfCurrentSession}"
+						title="<fmt:message key="GML.user.online.for" /> ${member.durationOfCurrentSession}"/>
 				</span>
 
 				<div class="userStatut">
@@ -70,18 +70,16 @@
 				</div>
 
 				<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
-					rel="${member.id},${member.userDetail.displayedName}">
+					rel="${member.id},${member.displayedName}">
 					<img src="${context}/util/icons/email.gif"
 						alt="<fmt:message key="ToContact" />"
 						title="<fmt:message key="ToContact" />"/>
 				</a>
 
-				<a href="#" title="<fmt:message key="tchat" />"  class="accessTchat-user"
-					onclick="javascript:window.open('${context}/RcommunicationUser/jsp/OpenDiscussion?userId=${member.id}',
-						'popupDiscussion${member.id}','menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=450');return false;">
+				<a href="javascript:SilverChat.gui.openChatWindow('${member.chatId}', '${member.displayedName}')" title="<fmt:message key="chat" />" class="accessTchat-user">
 					<img src="${context}/util/icons/talk2user.gif"
-						alt="<fmt:message key="tchat" />"
-						title="<fmt:message key="tchat" />"/>
+						alt="<fmt:message key="chat" />"
+						title="<fmt:message key="chat" />"/>
 				</a>
 			</li>
 		</c:forEach>

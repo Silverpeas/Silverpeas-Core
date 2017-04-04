@@ -38,6 +38,6 @@ public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Override
   public boolean isEnabled() {
-    return server.isAvailable();
+    return ChatServer.isEnabled();
   }
 }

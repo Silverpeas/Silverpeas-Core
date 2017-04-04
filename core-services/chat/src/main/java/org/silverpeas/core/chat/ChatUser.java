@@ -7,7 +7,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.SilverpeasBundleList;
 
 import java.util.Date;
 
@@ -20,6 +19,10 @@ import java.util.Date;
 public class ChatUser extends UserDetail {
 
   private final User user;
+
+  private ChatUser(final User user) {
+    this.user = user;
+  }
 
   /**
    * Gets a chat user from the specified Silverpeas unique identifier.
@@ -47,10 +50,6 @@ public class ChatUser extends UserDetail {
    */
   public static ChatUser fromUser(User user) {
     return new ChatUser(user);
-  }
-
-  private ChatUser(final User user) {
-    this.user = user;
   }
 
   /**

@@ -30,6 +30,8 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.chat.ChatUser;
+import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.service.ContactService;
@@ -44,7 +46,6 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -53,6 +54,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -77,21 +79,48 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
  */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
-  private DirectoryItemList lastAllListUsersCalled;
-  private DirectoryItemList lastListUsersCalled; // cache for pagination
-  private int elementsByPage = 10;
+  private static final int DEFAULT_ELEMENTS_PER_PAGE = 10;
+  private static final String CONTEXT_ATTR = "context";
+  public static final String VIEW_QUERY = "query";
   public static final String VIEW_ALL = "tous";
   public static final String VIEW_CONNECTED = "connected";
-  public static final String VIEW_QUERY = "query";
-  private String currentView = VIEW_ALL;
-  public static final int DIRECTORY_DEFAULT = 0; // all users
-  public static final int DIRECTORY_MINE = 1; // contacts of online user
-  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
-  public static final int DIRECTORY_OTHER = 3; // contact of another user
-  public static final int DIRECTORY_GROUP = 4; // all users of group
-  public static final int DIRECTORY_DOMAIN = 5; // all users of domain
-  public static final int DIRECTORY_SPACE = 6; // all users of space
+  public static final String SORT_ALPHA = "ALPHA";
+  public static final String SORT_NEWEST = "NEWEST";
+  public static final String SORT_PERTINENCE = "PERTINENCE";
+  /**
+   * By default, display all users.
+   */
+  public static final int DIRECTORY_DEFAULT = 0;
+  /**
+   * Display only the contacts of the current user.
+   */
+  public static final int DIRECTORY_MINE = 1;
+  /**
+   * Display only the contacts that are common to the current user and to another user.
+   */
+  public static final int DIRECTORY_COMMON = 2;
+  /**
+   * Display only the contacts of another user.
+   */
+  public static final int DIRECTORY_OTHER = 3;
+  /**
+   * Display all the users of a given group.
+   */
+  public static final int DIRECTORY_GROUP = 4;
+  /**
+   * Display all the users of a given domain.
+   */
+  public static final int DIRECTORY_DOMAIN = 5;
+  /**
+   * Display all the users that can access a given space.
+   */
+  public static final int DIRECTORY_SPACE = 6;
   private int currentDirectory = DIRECTORY_DEFAULT;
+  private String currentView = VIEW_ALL;
+  private DirectoryItemList lastAllListUsersCalled;
+  // cache for pagination
+  private DirectoryItemList lastListUsersCalled;
+  private int elementsByPage = DEFAULT_ELEMENTS_PER_PAGE;
   private UserDetail commonUserDetail;
   private UserDetail otherUserDetail;
   private List<Group> currentGroups;
@@ -103,9 +132,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String initSort = SORT_ALPHA;
   private String currentSort = SORT_ALPHA;
   private String previousSort = SORT_ALPHA;
-  public static final String SORT_ALPHA = "ALPHA";
-  public static final String SORT_NEWEST = "NEWEST";
-  public static final String SORT_PERTINENCE = "PERTINENCE";
 
   /**
    * Standard Session Controller Constructeur
@@ -119,7 +145,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         "org.silverpeas.directory.settings.DirectoryIcons",
         "org.silverpeas.directory.settings.DirectorySettings");
 
-    elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", 10);
+    elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", DEFAULT_ELEMENTS_PER_PAGE);
 
     relationShipService = RelationShipService.get();
   }
@@ -288,12 +314,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
           allUsers = getUsers();
         }
         for (MatchingIndexEntry result : plainSearchResults) {
-          String objectId = result.getObjectId();
-          String itemId = DirectoryItem.ITEM_TYPE.User.toString()+objectId;
-          if ("Contact".equals(result.getObjectType())) {
-            itemId = DirectoryItem.ITEM_TYPE.Contact.toString()+objectId;
-          }
-          DirectoryItem item = allUsers.getItemByUniqueId(itemId);
+          DirectoryItem item = getDirectoryItem(allUsers, result);
           if (item != null) {
             results.add(item);
           }
@@ -447,7 +468,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         lastAllListUsersCalled.add(new UserItem(getOrganisationController().getUserDetail(contactId)));
       }
     } catch (SQLException ex) {
-      SilverTrace.error("directory", "DirectorySessionController.getAllContactsOfUser", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
@@ -465,7 +486,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         lastAllListUsersCalled.add(new UserItem(getOrganisationController().getUserDetail(contactId)));
       }
     } catch (SQLException ex) {
-      SilverTrace.error("directory", "DirectorySessionController.getCommonContacts", "", ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
@@ -548,7 +569,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("phone", javaStringToHtmlString(item.getPhone()));
       template.setAttribute("fax", javaStringToHtmlString(item.getFax()));
       template.setAttribute("avatar", getAvatarFragment(item));
-      template.setAttribute("context", URLUtil.getApplicationURL());
+      template.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
       if (item instanceof UserItem) {
         UserItem user = (UserItem) item;
         fragments.add(getUserFragment(user, template));
@@ -561,7 +582,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
-    UserDetail userDetail = user.getUserDetail();
+    ChatUser userDetail = ChatUser.fromUser(user.getUserDetail());
     template.setAttribute("user", userDetail);
     if (StringUtil.isDefined(userDetail.getStatus())) {
       template.setAttribute("status", javaStringToHtmlParagraphe(userDetail.getStatus()));
@@ -569,8 +590,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("status", null);
     }
     template.setAttribute("type", getString("GML.user.type." + user.getAccessLevel()));
-    template.setAttribute("context", URLUtil.getApplicationURL());
+    template.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
     template.setAttribute("notMyself", !user.getOriginalId().equals(getUserId()));
+    template.setAttribute("chatEnabled", ChatServer.isEnabled());
     template.setAttribute("aContact", userDetail.isInRelationWith(getUserId()));
     Invitation invitationSent = getUserDetail().getInvitationSentTo(userDetail.getId());
     if (invitationSent != null) {
@@ -606,7 +628,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private UserFragmentVO getContactFragment(ContactItem contact, SilverpeasTemplate template) {
     ContactPK contactPK = contact.getContact().getPK();
     template.setAttribute("contact", contact.getContact());
-    template.setAttribute("context", URLUtil.getApplicationURL());
+    template.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
     template.setAttribute("url",
         URLUtil.getComponentInstanceURL(contactPK.getInstanceId()) + "ContactExternalView?Id=" +
             contactPK.getId());
@@ -766,5 +788,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     }
     return items;
+  }
+
+  private DirectoryItem getDirectoryItem(final DirectoryItemList allUsers,
+      final MatchingIndexEntry result) {
+    String objectId = result.getObjectId();
+    String itemId = DirectoryItem.ITEM_TYPE.User.toString() + objectId;
+    if ("Contact".equals(result.getObjectType())) {
+      itemId = DirectoryItem.ITEM_TYPE.Contact.toString() + objectId;
+    }
+    return allUsers.getItemByUniqueId(itemId);
   }
 }

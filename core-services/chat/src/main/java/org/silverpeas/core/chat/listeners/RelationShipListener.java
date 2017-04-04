@@ -48,6 +48,6 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
 
   @Override
   public boolean isEnabled() {
-    return server.isAvailable();
+    return ChatServer.isEnabled();
   }
 }

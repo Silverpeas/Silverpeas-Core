@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.ChatUser;
+import org.silverpeas.core.chat.servers.ChatServer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -63,5 +63,16 @@ public class ChatUserProfileEntity extends UserProfileEntity {
   @XmlElement
   public String getChatId() {
     return this.chatUser.getChatId();
+  }
+
+  /**
+   * Is the chat service is enabled? It is a short hand to check the chat service is enabled in
+   * the Javascript code in the web client side.
+   * @return true if the chat service is enabled and this user can chat with others users in
+   * Silverpeas.
+   */
+  @XmlElement
+  public boolean isChatEnabled() {
+    return ChatServer.isEnabled();
   }
 }

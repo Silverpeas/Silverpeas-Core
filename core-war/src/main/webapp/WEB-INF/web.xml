@@ -341,14 +341,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>org.silverpeas.web.pdc.servlets.PdcSearchRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>CommunicationUserRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.communicationuser.servlets.CommunicationUserRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>AjaxCommunicationUserServlet</servlet-name>
-    <servlet-class>org.silverpeas.web.communicationuser.servlets.AjaxCommunicationUserServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>PdcSubscriptionPeasRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.pdcsubscription.servlets.PdcSubscriptionPeasRequestRouter</servlet-class>
   </servlet>
@@ -789,14 +781,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>PdcSearchRequestRouter</servlet-name>
     <url-pattern>/RpdcSearch/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>CommunicationUserRequestRouter</servlet-name>
-    <url-pattern>/RcommunicationUser/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AjaxCommunicationUserServlet</servlet-name>
-    <url-pattern>/RAjaxCommunicationUserServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>PdcSubscriptionPeasRequestRouter</servlet-name>

@@ -7,9 +7,13 @@
      <li class="infoConnection">
 	$if(user.connected)$
 			$if(notMyself)$
-				<a href="#" title="Talk with $user.firstName$" onclick="javascript:window.open('$context$/RcommunicationUser/jsp/OpenDiscussion?userId=$user.id$','popupDiscussion$user.id$','menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=450')">
-				<img src="$context$/util/icons/online.gif" alt="Talk with $user.firstName$" title="Talk with $user.firstName$"/>
-				</a>
+				$if(chatEnabled)$
+				  <a href="#" title="Chat with $user.firstName$" onclick="javascript:SilverChat.gui.openChatWindow('$user.chatId$', '$user.displayedName$')">
+				  <img src="$context$/util/icons/online.gif" alt="Chat with $user.firstName$" title="Chat with $user.firstName$"/>
+				  </a>
+				$else$
+				  <img src="$context$/util/icons/online.gif" alt="connected"/>
+				$endif$
 			$else$
 				<img src="$context$/util/icons/online.gif" alt="connected"/>
 			$endif$

@@ -39,11 +39,6 @@ function setConnectedUsers(nb) {
   }
 }
 
-function openConnectedUsers() {
-  var chemin = getContext() + "/RcommunicationUser/jsp/Main";
-  SP_openWindow(chemin, "users_pop", 400, 400, "scrollbars=yes,resizable=yes");
-}
-
 (function() {
   whenSilverpeasReady(function() {
     spServerEventSource.addEventListener('USER_SESSION_EXPIRED', function(serverEvent) {

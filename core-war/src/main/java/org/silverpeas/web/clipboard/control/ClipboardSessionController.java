@@ -118,76 +118,17 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    */
   public String getJavaScriptTaskForHiddenFrame(HttpServletRequest request) {
     String message = Encode.forHtml(request.getParameter("message"));
-    StringBuilder str = new StringBuilder();
+    String js = "";
 
     if ("SHOWCLIPBOARD".equals(message)) {
-      // portage netscape
-      str.append(
-          "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard'," +
-              "'width=500,height=350,alwaysRaised');");
-      str.append("top.ClipboardWindow.focus();");
+      js = getJSForShowClipboard();
     } else if ("REFRESHCLIPBOARD".equals(message)) {
       // portage netscape
-      str.append("if(top.ClipboardWindow!=null){");
-      str.append("if (!top.ClipboardWindow.closed) {");
-      str.append(
-          "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp'," +
-              "'Clipboard','width=350,height=300,alwaysRaised');");
-      str.append("}");
-      str.append("}");
-
+      js = getJSForRefreshClipboard();
     } else if ("REFRESH".equals(message)) {
-      // parameters for refresh mecanisme
-      String space = request.getParameter("SpaceFrom");
-      String component = request.getParameter("ComponentFrom");
-      String targetFrame = request.getParameter("TargetFrame");
-      String jspPage = request.getParameter("JSPPage");
-
-      str.append("document.refreshform.action = '../..").
-          append(URLUtil.getURL(null, space, component)).append(jspPage).append("';");
-      str.append("document.refreshform.Space.value = '").append(space).append("';");
-      str.append("document.refreshform.Component.value = '").append(component).append("';");
-      str.append("document.refreshform.target = '").append(targetFrame).append("';");
-      str.append("document.refreshform.submit();");
+      js = getJSForRefresh(request);
     } else if ("IDLE".equals(message)) {
-      ServerMsg serverMsg = ServerMessageService.get().read(getUserId(), sessionId);
-
-      if (serverMsg != null) {
-        if ("ALERT".equals(serverMsg.getWhat())) {
-          str.append("alert ('");
-          str.append(WebEncodeHelper.javaStringToJsString(serverMsg.getContent()));
-          str.append("');");
-          str.append(
-              "self.location.href = '../../Rclipboard/jsp/Idle" +
-                  ".jsp?message=DELMSG&messageTYPE=SERVER&messageID=")
-              .
-                  append(serverMsg.getID()).append("';");
-        } else if ("JAVASCRIPT".equals(serverMsg.getWhat())) {
-          str.append(WebEncodeHelper.javaStringToJsString(serverMsg.getContent()));
-        }
-      } else {
-        PopupMsg popupMessage = PopupMessageService.get().read(getUserId());
-
-        if (popupMessage != null) {
-          if ("ALERT".equals(popupMessage.getWhat())) {
-            str.append("msgPopup = SP_openWindow('../..").
-                append(URLUtil.getURL(URLUtil.CMP_POPUP)).
-                append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
-                append("','popupmsg").
-                append(Long.toString(new Date().getTime())).append("',500,260,'scrollbars=yes');");
-          } else if ("JAVASCRIPT".equals(popupMessage.getWhat())) {
-            str.append(WebEncodeHelper.javaStringToJsString(popupMessage.getContent()));
-          } else if ("COMMUNICATION".equals(popupMessage.getWhat())) {
-            request.setAttribute("MessageID", popupMessage.getID());
-            str.append("OpenDiscussion('../..").
-                append(URLUtil.getURL(URLUtil.CMP_COMMUNICATIONUSER)).
-                append("OpenDiscussion?userId=").append(popupMessage.getSenderId()).
-                append("&MessageID=").append(popupMessage.getID()).append("','popupDiscussion").
-                append(popupMessage.getSenderId())
-                .append("',650,400,'menubar=no,scrollbars=no,statusbar=no');");
-          }
-        }
-      }
+      js = getJSForIdle();
     } else if ("DELMSG".equals(message)) {
       String messageId = request.getParameter("messageID");
       String messageType = request.getParameter("messageTYPE");
@@ -199,7 +140,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         }
       }
     }
-    return str.toString();
+    return js;
   }
 
   /**
@@ -268,9 +209,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @throws javax.naming.NamingException
    * @throws java.sql.SQLException
    */
-  public synchronized Collection<ClipboardSelection> getObjects() throws ClipboardException,
-      javax.naming.NamingException, java.sql.SQLException {
-    return new ArrayList<ClipboardSelection>(getClipboardObjects());
+  public synchronized Collection<ClipboardSelection> getObjects() throws ClipboardException {
+    return new ArrayList<>(getClipboardObjects());
   }
 
   @Override
@@ -371,5 +311,79 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    */
   public String getIntervalInSec() {
     return getSettings().getString("IntervalInSec");
+  }
+
+  private String getJSForIdle() {
+    StringBuilder str = new StringBuilder();
+    ServerMsg serverMsg = ServerMessageService.get().read(getUserId(), sessionId);
+
+    if (serverMsg != null) {
+      if ("ALERT".equals(serverMsg.getWhat())) {
+        str.append("alert ('");
+        str.append(WebEncodeHelper.javaStringToJsString(serverMsg.getContent()));
+        str.append("');");
+        str.append(
+            "self.location.href = '../../Rclipboard/jsp/Idle" +
+                ".jsp?message=DELMSG&messageTYPE=SERVER&messageID=")
+            .
+                append(serverMsg.getID()).append("';");
+      } else if ("JAVASCRIPT".equals(serverMsg.getWhat())) {
+        str.append(WebEncodeHelper.javaStringToJsString(serverMsg.getContent()));
+      }
+    } else {
+      PopupMsg popupMessage = PopupMessageService.get().read(getUserId());
+
+      if (popupMessage != null) {
+        if ("ALERT".equals(popupMessage.getWhat())) {
+          str.append("msgPopup = SP_openWindow('../..").
+              append(URLUtil.getURL(URLUtil.CMP_POPUP)).
+              append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
+              append("','popupmsg").
+              append(Long.toString(new Date().getTime())).append("',500,260,'scrollbars=yes');");
+        } else if ("JAVASCRIPT".equals(popupMessage.getWhat())) {
+          str.append(WebEncodeHelper.javaStringToJsString(popupMessage.getContent()));
+        }
+      }
+    }
+    return str.toString();
+  }
+
+  private String getJSForRefresh(final HttpServletRequest request) {
+    StringBuilder str = new StringBuilder();
+    // parameters for refresh mecanisme
+    String space = request.getParameter("SpaceFrom");
+    String component = request.getParameter("ComponentFrom");
+    String targetFrame = request.getParameter("TargetFrame");
+    String jspPage = request.getParameter("JSPPage");
+
+    str.append("document.refreshform.action = '../..").
+        append(URLUtil.getURL(null, space, component)).append(jspPage).append("';");
+    str.append("document.refreshform.Space.value = '").append(space).append("';");
+    str.append("document.refreshform.Component.value = '").append(component).append("';");
+    str.append("document.refreshform.target = '").append(targetFrame).append("';");
+    str.append("document.refreshform.submit();");
+    return str.toString();
+  }
+
+  private String getJSForRefreshClipboard() {
+    StringBuilder str = new StringBuilder();
+    str.append("if(top.ClipboardWindow!=null){");
+    str.append("if (!top.ClipboardWindow.closed) {");
+    str.append(
+        "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp'," +
+            "'Clipboard','width=350,height=300,alwaysRaised');");
+    str.append("}");
+    str.append("}");
+    return str.toString();
+  }
+
+  private String getJSForShowClipboard() {
+    StringBuilder str = new StringBuilder();
+    // portage netscape
+    str.append(
+        "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard'," +
+            "'width=500,height=350,alwaysRaised');");
+    str.append("top.ClipboardWindow.focus();");
+    return str.toString();
   }
 }

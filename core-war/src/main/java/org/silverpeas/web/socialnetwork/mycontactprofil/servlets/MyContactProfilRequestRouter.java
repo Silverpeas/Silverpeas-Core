@@ -24,13 +24,12 @@
 
 package org.silverpeas.web.socialnetwork.mycontactprofil.servlets;
 
-import org.silverpeas.core.web.directory.model.Member;
-import org.silverpeas.web.socialnetwork.mycontactprofil.control.MyContactProfilSessionController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.socialnetwork.mycontactprofil.control.MyContactProfilSessionController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class MyContactProfilRequestRouter
     extends ComponentRequestRouter<MyContactProfilSessionController> {
 
   private static final long serialVersionUID = 1L;
-  private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
+  private static final int NUMBER_CONTACTS_TO_DISPLAY = 3;
 
   /**
    * get Session ControlBeanName
@@ -78,7 +77,7 @@ public class MyContactProfilRequestRouter
       HttpRequest request) {
     String destination = "#";
     String userId = request.getParameter("userId");
-    if (function.equalsIgnoreCase("Infos")) {
+    if ("Infos".equalsIgnoreCase(function)) {
       request.setAttribute("View", function);
       destination = "/socialNetwork/jsp/myContactProfil/myContactProfile.jsp";
     } else if ("Main".equalsIgnoreCase(function)) {
@@ -87,7 +86,7 @@ public class MyContactProfilRequestRouter
     }
 
     request.setAttribute("UserFull", sc.getUserFull(userId));
-    request.setAttribute("Member", new Member(sc.getUserDetail(userId)));
+    request.setAttribute("UserDetail", sc.getUserDetail(userId));
     List<String> contactIds = sc.getContactsIdsForUser(userId);
     request.setAttribute("Contacts", chooseContactsToDisplay(contactIds, sc));
     request.setAttribute("ContactsNumber", contactIds.size());
@@ -114,7 +113,7 @@ public class MyContactProfilRequestRouter
       }
     } else {
       Random random = new Random();
-      int indexContactsChoosed = (random.nextInt(contactIds.size()));
+      int indexContactsChoosed = random.nextInt(contactIds.size());
       for (int i = 0; i < numberOfContactsTodisplay; i++) {
         String contactId = contactIds.get((indexContactsChoosed + i) % numberOfContactsTodisplay);
         contacts.add(sc.getUserDetail(contactId));

@@ -114,10 +114,12 @@
   }
 
   /**
-   * Open the Silverpeas tchat WEB page.
+   * Open the Silverpeas chat WEB page.
    */
-  function tchatWith(user) {
-    openWindow(user.tchatPage, 'popupDiscussion' + user.id, '650', '460', 'menubar=no,scrollbars=no,statusbar=no');
+  function chatWith(user) {
+    if (user.connected) {
+      SilverChat.gui.openChatWindow(user.chatId, user.fullName);
+    }
   }
 
   /**
@@ -138,7 +140,7 @@
   }
 
   /**
-   * Returns the HTML element with the user interation tool (including links to tchat, to send
+   * Returns the HTML element with the user interation tool (including links to chat, to send
    * messages, to send an invitation, ...)
    */
   function interactionWith(user) {
@@ -153,14 +155,15 @@
     }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
     append($('<a>', {
       href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user)).
-    append($('<a>', {
-      href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append(window.i18n.prop('tchat'))).click(function() {
-      if (user.connected)
-        tchatWith(user);
-    })).
-    append($('<div>').addClass('userzoom-tooltip-arrow'));
+    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user));
+    if (user.chatEnabled) {
+      interactionBox.addClass('chat-enabled').append($('<a>', {
+        href: '#'
+      }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(window.i18n.prop('chat'))).click(function() {
+        chatWith(user);
+      }));
+    }
+    interactionBox.append($('<div>').addClass('userzoom-tooltip-arrow'));
 
     var appendRelationActions = function(contact) {
       if (contact) {

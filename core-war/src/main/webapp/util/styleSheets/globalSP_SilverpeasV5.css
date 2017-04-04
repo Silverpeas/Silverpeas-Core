@@ -147,10 +147,10 @@ Definition des class de style Silverpeas
 .bgDegradeGris,
 .userzoom-tooltip,
 .userzoom-tooltip-interaction-accessProfil ,
-.userzoom-tooltip-interaction-accessTchat ,
+.userzoom-tooltip-interaction-accessChat ,
 .userzoom-tooltip-interaction-accessNotification ,
 .userzoom-tooltip-interaction-action-invitation,
-.userzoom-tooltip-interaction-accessTchat.disabled:hover{
+.userzoom-tooltip-interaction-accessChat.disabled:hover{
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
 }
 
@@ -4359,11 +4359,11 @@ input.search:focus {
 
 .userzoom-tooltip-interaction-accessProfil ,
 .userzoom-tooltip-interaction-accessNotification,
-.userzoom-tooltip-interaction-accessTchat {
+.userzoom-tooltip-interaction-accessChat {
   position:absolute;
   bottom:0px;
   left:0;
-  width:33%;
+  width:50%;
   border:1px solid #cdcdcd;
   border-right:1px solid #fff;
   border-bottom:0;
@@ -4372,28 +4372,41 @@ input.search:focus {
   cursor:pointer;
 }
 
+.chat-enabled .userzoom-tooltip-interaction-accessProfil ,
+.chat-enabled .userzoom-tooltip-interaction-accessNotification,
+.chat-enabled .userzoom-tooltip-interaction-accessChat {
+  width:33%;
+}
+
+
+
 .userzoom-tooltip-interaction-accessProfil {
   border-left:0;
 }
 
 .userzoom-tooltip-interaction-accessProfil:hover,
-.userzoom-tooltip-interaction-accessTchat:hover,
+.userzoom-tooltip-interaction-accessChat:hover,
 .userzoom-tooltip-interaction-accessNotification:hover {
   background:#E5E5E5 url();
   color:#000
 }
 
-.userzoom-tooltip-interaction-accessTchat {
+.userzoom-tooltip-interaction-accessNotification {
   left:auto;
   right:0;
 }
 
-.userzoom-tooltip-interaction-accessNotification {
+.chat-enabled .userzoom-tooltip-interaction-accessChat {
+  left:auto;
+  right:0;
+}
+
+.chat-enabled .userzoom-tooltip-interaction-accessNotification {
   left:33%;
 }
 
 .userzoom-tooltip-interaction-accessProfil   span,
-.userzoom-tooltip-interaction-accessTchat   span,
+.userzoom-tooltip-interaction-accessChat   span,
 .userzoom-tooltip-interaction-accessNotification   span{
   background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
   display:block;
@@ -4402,7 +4415,7 @@ input.search:focus {
   padding-left:32px;
 }
 
-.userzoom-tooltip-interaction-accessTchat   span{
+.userzoom-tooltip-interaction-accessChat   span{
   background-image:url(../icons/talk2user.gif)
 }
 
@@ -4410,7 +4423,7 @@ input.search:focus {
   background-image:url(../icons/email.gif)
 }
 
-.userzoom-tooltip-interaction-accessTchat.disabled    span{
+.userzoom-tooltip-interaction-accessChat.disabled    span{
   background-image:url(../icons/talk2user-disabled.gif);
   color:#bbb;
   cursor:default;
