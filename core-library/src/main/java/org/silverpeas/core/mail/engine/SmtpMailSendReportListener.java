@@ -24,7 +24,7 @@
 package org.silverpeas.core.mail.engine;
 
 import org.silverpeas.core.mail.MailToSend;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.mail.Address;
 import javax.mail.event.TransportEvent;
@@ -39,15 +39,16 @@ public class SmtpMailSendReportListener implements TransportListener {
 
   private final MailToSend mailToSend;
 
-  public SmtpMailSendReportListener(final MailToSend mailToSend) {
+  SmtpMailSendReportListener(final MailToSend mailToSend) {
     this.mailToSend = mailToSend;
   }
 
   @Override
   public void messageDelivered(final TransportEvent e) {
-    String logMessage = MessageFormat
+    String message = MessageFormat
         .format("Mail with subject ''{0}'' has been successfully delivered.",
             mailToSend.getSubject());
+    SilverLogger.getLogger(this).debug(message);
     report(e);
   }
 
@@ -55,9 +56,7 @@ public class SmtpMailSendReportListener implements TransportListener {
   public void messageNotDelivered(final TransportEvent e) {
     String message = MessageFormat
         .format("Mail with subject ''{0}'' has not been delivered.", mailToSend.getSubject());
-    SilverTrace
-        .error("mail", "SmtpMailSendReportListener.messageDelivered()", "root.MSG_GEN_PARAM_VALUE",
-            message);
+    SilverLogger.getLogger(this).error(message);
     report(e);
   }
 
@@ -65,15 +64,13 @@ public class SmtpMailSendReportListener implements TransportListener {
   public void messagePartiallyDelivered(final TransportEvent e) {
     String message = MessageFormat
         .format("Mail with subject ''{0}'' has been partially delivered.", mailToSend.getSubject());
-    SilverTrace
-        .error("mail", "SmtpMailSendReportListener.messageDelivered()", "root.MSG_GEN_PARAM_VALUE",
-            message);
+    SilverLogger.getLogger(this).warn(message);
     report(e);
   }
 
   /**
    * Performs the report of the send.
-   * @param e
+   * @param e the event about the message transport.
    */
   private void report(TransportEvent e) {
 
@@ -93,28 +90,26 @@ public class SmtpMailSendReportListener implements TransportListener {
     NOT DELIVERED ON SEND
      */
     if (e.getValidUnsentAddresses() != null && e.getValidUnsentAddresses().length > 0) {
-      StringBuilder logMessage = new StringBuilder(1000).append(MessageFormat
+      StringBuilder errorMessage = new StringBuilder(1000).append(MessageFormat
           .format("Mail with subject ''{0}'' - has not been delivered to emails:\n",
               mailToSend.getSubject()));
       for (Address address : e.getValidUnsentAddresses()) {
-        logMessage.append("\t").append(address).append("\n");
+        errorMessage.append("\t").append(address).append("\n");
       }
-      SilverTrace.error("mail", "SmtpMailSendReportListener.messageDelivered()",
-          "root.MSG_GEN_PARAM_VALUE", logMessage.toString());
+      SilverLogger.getLogger(this).error(errorMessage.toString(), e);
     }
 
     /*
     NOT DELIVERED BECAUSE BAD EMAILS
      */
     if (e.getInvalidAddresses() != null && e.getInvalidAddresses().length > 0) {
-      StringBuilder logMessage = new StringBuilder(1000).append(MessageFormat
+      StringBuilder errorMessage = new StringBuilder(1000).append(MessageFormat
           .format("Mail with subject ''{0}'' - has not been delivered to emails:\n",
               mailToSend.getSubject()));
       for (Address address : e.getInvalidAddresses()) {
-        logMessage.append("\t").append(address).append("\n");
+        errorMessage.append("\t").append(address).append("\n");
       }
-      SilverTrace.error("mail", "SmtpMailSendReportListener.messageDelivered()",
-          "root.MSG_GEN_PARAM_VALUE", logMessage.toString());
+      SilverLogger.getLogger(this).error(errorMessage.toString(), e);
     }
   }
 }

@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.mail.engine;
 
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.util.MailUtil;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.MailUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -54,9 +53,9 @@ import java.util.Properties;
 public class SmtpMailSender implements MailSender {
 
   /**
-   * Retrieves the system properties and configure a mail session.
+   * Retrieves the system properties and configure a mail session. For further explanations, please
+   * read the <code>RFC1891</code>.
    * @return an initialized session.
-   * @see <code>RFC1891</code>
    */
   private Session getMailSession(SmtpConfiguration smtpConfiguration) {
     Properties properties = System.getProperties();
@@ -77,32 +76,15 @@ public class SmtpMailSender implements MailSender {
     Session session = getMailSession(smtpConfiguration);
     try {
       InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
-      InternetAddress replyToAddress = null;
       List<InternetAddress[]> toAddresses = new ArrayList<>();
 
       // Parsing destination address for compliance with RFC822.
       final Collection<ReceiverMailAddressSet> addressBatches =
           mail.getTo().getBatchedReceiversList();
       for (ReceiverMailAddressSet addressBatch : addressBatches) {
-        try {
-          toAddresses.add(InternetAddress.parse(addressBatch.getEmailsSeparatedByComma(), false));
-        } catch (AddressException e) {
-          SilverTrace.warn("mail", "MailSender.send()", "root.MSG_GEN_PARAM_VALUE",
-              "From = " + fromMailAddress + ", To = " + addressBatch.getEmailsSeparatedByComma(),
-              e);
-        }
+        addReceiverMailAddress(toAddresses, addressBatch);
       }
-      try {
-        if (mail.isReplyToRequired()) {
-          replyToAddress = new InternetAddress(fromMailAddress.getEmail(), false);
-          if (StringUtil.isDefined(fromMailAddress.getName())) {
-            replyToAddress.setPersonal(fromMailAddress.getName(), Charsets.UTF_8.name());
-          }
-        }
-      } catch (AddressException e) {
-        SilverTrace.warn("mail", "MailSender.send()", "root.MSG_GEN_PARAM_VALUE",
-            "ReplyTo = " + fromMailAddress + " is malformed.", e);
-      }
+      InternetAddress replyToAddress = addRequiredReplyToAddress(mail, fromMailAddress);
       MimeMessage email = new MimeMessage(session);
       email.setFrom(fromAddress);
       if (replyToAddress != null) {
@@ -118,9 +100,34 @@ public class SmtpMailSender implements MailSender {
       performSend(mail, smtpConfiguration, session, email, toAddresses);
 
     } catch (MessagingException | UnsupportedEncodingException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      SilverLogger.getLogger(this).error(e);
     } catch (Exception e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  private InternetAddress addRequiredReplyToAddress(final MailToSend mail,
+      final MailAddress fromMailAddress) throws UnsupportedEncodingException {
+    InternetAddress replyToMailAddress = null;
+    try {
+      if (mail.isReplyToRequired()) {
+        replyToMailAddress = new InternetAddress(fromMailAddress.getEmail(), false);
+        if (StringUtil.isDefined(fromMailAddress.getName())) {
+          replyToMailAddress.setPersonal(fromMailAddress.getName(), Charsets.UTF_8.name());
+        }
+      }
+    } catch (AddressException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return replyToMailAddress;
+  }
+
+  private void addReceiverMailAddress(final List<InternetAddress[]> toAddresses,
+      final ReceiverMailAddressSet addressBatch) {
+    try {
+      toAddresses.add(InternetAddress.parse(addressBatch.getEmailsSeparatedByComma(), false));
+    } catch (AddressException e) {
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -136,7 +143,7 @@ public class SmtpMailSender implements MailSender {
    * @param session the current mail session.
    * @param messageToSend the technical message to send.
    * @param batchedToAddresses the receivers of the message.
-   * @throws MessagingException
+   * @throws MessagingException if an error occurs while delivering the message.
    */
   private void performSend(final MailToSend mail, final SmtpConfiguration smtpConfiguration,
       Session session, MimeMessage messageToSend, List<InternetAddress[]> batchedToAddresses)
@@ -171,8 +178,7 @@ public class SmtpMailSender implements MailSender {
       try {
         transport.close();
       } catch (Exception e) {
-        SilverTrace.
-            error("mail", "SmtpMailSender.send()", "root.EX_IGNORED", "ClosingTransport", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }

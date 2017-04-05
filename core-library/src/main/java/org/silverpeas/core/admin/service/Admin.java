@@ -173,7 +173,7 @@ class Admin implements Administration {
     roleMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
     m_nEntrepriseClientSpaceId = resources.getInteger("EntrepriseClientSpaceId", 0);
-    administratorMail = resources.getString("AdministratorEMail", null);
+    administratorMail = resources.getString("AdministratorEMail");
     m_sDAPIGeneralAdminId = resources.getString("DAPIGeneralAdminId");
     final ScheduledDBReset scheduledDBReset = new ScheduledDBReset();
     scheduledDBReset.initialize(resources.getString("DBConnectionResetScheduler", ""));
